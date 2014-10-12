@@ -1,0 +1,45 @@
+●VoronoiPathPlannerの有効化
+ccmake .
+から「GRASP_PLUGINS」に「VoronoiPathPlanner」を追加
+choreonoidのツールバーに　=VoronoiPathPlan=　が追加されていれば有効化成功
+
+●WagonPlanの概要
+VoronoiPathPlannerフォルダ内のCollisionMapフォルダにあるuse_collision_map.csvをもとに，
+障害物領域に対するボロノイ境界線上を基本とした経路計画を行う.
+CollisionMapの仕様
+初めの1行はMapの範囲と解像度を表している．
+例えば1行めが
+0 4.5 0 4 0.1
+となっていた場合，
+	x軸方向の範囲が0～4.5m
+	y軸方向の範囲が0～4m
+	解像度が0.1m(1マスが10cm四方を表す)
+となる．
+各マスの01は障害物領域を表す(1が障害物がある位置)．
+(行方向がy軸，列方向がx軸を表しており，通常のxy軸を時計回りに90度回転した状態となっている．)
+
+●WagonPlanの使用方法
+・SetCollisionTarget
+　Map作成時の障害物領域を判定するための接触判定モデルを設定する．
+　解像度に合った底面積となる角柱または円柱を利用するとよいと思われる(高さは使用ロボット以上とする).
+
+・makeCollisionMap
+　設定したCollisionTargetによる接触判定を利用してCollisionMapを作成する．
+　use_collision_map.csv以外の名前をつけて　VoronoiPathPlanner/CollisionMap/　に保存する．
+　名前と保存先を決定後，Mapの範囲と解像度を指定する．
+
+・loadCollisionMap
+　利用するMapを切り替える．
+　指定したMapデータがuse_collision_map.csvにコピーされ,計画に利用される．
+
+・Reset
+　StartとGoalをリセットする．
+
+・SetStart
+　現在のロボット位置をStartとして登録する．
+
+・SetGoal
+　現在のロボット位置をGoalとして登録する．
+
+・StartPlanning
+　設定したStart～Goal間のボロノイ境界線上を基本とした経路計画を行う.

@@ -1,0 +1,34 @@
+modelFile: HandSmartPal5.wrl
+
+graspPluginSetting: 
+  -
+    name: SmartPalRight
+    #base: WAIST_JOINT1
+    base: VEHICLE
+    #palm: RARM_JOINT7
+    palm: Base
+    fingerEnds: [ Tip1,Tip2,Tip3 ]
+    prehensionList: [prehension]
+    #fingerOpenPose: [-1.01]
+    armStandardPose: [0, 0, 0, -0.5, 0, 1.57, 0, 0, 0]
+    approachOffset: [0.0, -0.02, 0.05]
+    interlink: [   [WAIST_JOINT2, 1.0 , WAIST_JOINT1, -0.25  ]  ] 
+    dataFilePath: dataHand
+  -
+    name: SmartPalLeft
+    base: VEHICLE
+    palm: LARM_JOINT7
+    fingerEnds: [ LARM_JOINTG ]
+    prehensionList: [prehension]
+    fingerOpenPose: [-1.01]
+    armStandardPose: [0, 0, 0, 0.5, 0, 1.57, 0, 0, 0]
+    approachOffset: [0.0, 0.02, 0.05]
+    interlink: [   [WAIST_JOINT2, 1.0 , WAIST_JOINT1, -0.25  ]  ] 
+    dataFilePath: dataLeft
+
+standardPose: [ 
+0.0, 0.0,
+0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, -45.0, 75.0, 0, -45.0, 75.0, 0, 45.0, -75.0,
+]

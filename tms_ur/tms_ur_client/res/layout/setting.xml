@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	>
+	<TextView 
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:text="@string/titleUID"/>
+
+	<EditText
+	    android:id="@+id/editUID"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:inputType="text" />
+
+	<TextView 
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:text="@string/titleFTPIP"/>
+	<EditText
+		android:id="@+id/editFtpIP"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:inputType="text"
+    />
+	<TextView 
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:text="@string/titleFTPUsrName"/>
+	<EditText
+		android:id="@+id/editFtpUsr"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:inputType="text"/>
+	<TextView 
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:text="@string/titleFTPPass"/>
+	<EditText
+		android:id="@+id/editFtpPass"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:inputType="text"/>
+</LinearLayout>

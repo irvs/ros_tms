@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "tms_rc_smartpal_control")
+set(tms_rc_smartpal_control_MAINTAINER "Yoonseok Pyo <passionvirus@gmail.com>")
+set(tms_rc_smartpal_control_DEPRECATED "")
+set(tms_rc_smartpal_control_VERSION "1.0.3")
+set(tms_rc_smartpal_control_BUILD_DEPENDS "roscpp" "tf" "geometry_msgs" "nav_msgs" "message_generation")
+set(tms_rc_smartpal_control_RUN_DEPENDS "roscpp" "tf" "geometry_msgs" "nav_msgs" "message_runtime")
+set(tms_rc_smartpal_control_BUILDTOOL_DEPENDS "catkin")

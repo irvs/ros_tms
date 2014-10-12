@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C++ Express 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "newmat", "roboop\newmat.vcproj", "{8F80B13D-890B-4611-8F4B-2D36B855BB2D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "roboop", "roboop\roboop.vcproj", "{DDCF4A14-1271-4D2E-B6F0-0C2F373134FC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8F80B13D-890B-4611-8F4B-2D36B855BB2D} = {8F80B13D-890B-4611-8F4B-2D36B855BB2D}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AnalyticalGuess", "AnalyticalGuess\AnalyticalGuess.vcproj", "{15132046-C0D8-4EEC-A5AC-70DE733F9453}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kinematics", "libKinematics.vcproj", "{A66C86AB-D323-4116-AEBF-C19CD81ECE1F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DDCF4A14-1271-4D2E-B6F0-0C2F373134FC} = {DDCF4A14-1271-4D2E-B6F0-0C2F373134FC}
+		{8F80B13D-890B-4611-8F4B-2D36B855BB2D} = {8F80B13D-890B-4611-8F4B-2D36B855BB2D}
+		{15132046-C0D8-4EEC-A5AC-70DE733F9453} = {15132046-C0D8-4EEC-A5AC-70DE733F9453}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8F80B13D-890B-4611-8F4B-2D36B855BB2D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8F80B13D-890B-4611-8F4B-2D36B855BB2D}.Debug|Win32.Build.0 = Debug|Win32
+		{8F80B13D-890B-4611-8F4B-2D36B855BB2D}.Release|Win32.ActiveCfg = Release|Win32
+		{8F80B13D-890B-4611-8F4B-2D36B855BB2D}.Release|Win32.Build.0 = Release|Win32
+		{DDCF4A14-1271-4D2E-B6F0-0C2F373134FC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DDCF4A14-1271-4D2E-B6F0-0C2F373134FC}.Debug|Win32.Build.0 = Debug|Win32
+		{DDCF4A14-1271-4D2E-B6F0-0C2F373134FC}.Release|Win32.ActiveCfg = Release|Win32
+		{DDCF4A14-1271-4D2E-B6F0-0C2F373134FC}.Release|Win32.Build.0 = Release|Win32
+		{15132046-C0D8-4EEC-A5AC-70DE733F9453}.Debug|Win32.ActiveCfg = Debug|Win32
+		{15132046-C0D8-4EEC-A5AC-70DE733F9453}.Debug|Win32.Build.0 = Debug|Win32
+		{15132046-C0D8-4EEC-A5AC-70DE733F9453}.Release|Win32.ActiveCfg = Release|Win32
+		{15132046-C0D8-4EEC-A5AC-70DE733F9453}.Release|Win32.Build.0 = Release|Win32
+		{A66C86AB-D323-4116-AEBF-C19CD81ECE1F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A66C86AB-D323-4116-AEBF-C19CD81ECE1F}.Debug|Win32.Build.0 = Debug|Win32
+		{A66C86AB-D323-4116-AEBF-C19CD81ECE1F}.Release|Win32.ActiveCfg = Release|Win32
+		{A66C86AB-D323-4116-AEBF-C19CD81ECE1F}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

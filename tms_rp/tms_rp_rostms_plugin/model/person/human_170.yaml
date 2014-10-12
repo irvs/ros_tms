@@ -1,0 +1,53 @@
+modelFile: human_170.wrl
+
+graspPluginSetting: 
+  -
+    name: HumanRight
+    base: PELVIS_JOINT
+    palm: R_ARM_JOINT7
+    fingerEnds: [ R_ARM_JOINT8 ]
+    prehensionList: [prehension]
+    fingerOpenPose: [-0.5235987756]
+    armStandardPose: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+    approachOffset: [0.02, -0.02, -0.15]
+    interlink: [   [WAIST_JOINT2, 1.0 , WAIST_JOINT1, -0.25  ]  ] 
+  
+  -
+    name: HumanLeft
+    base: PELVIS_JOINT
+    palm: L_ARM_JOINT7
+    fingerEnds: [ L_ARM_JOINT8 ]
+    prehensionList: [prehension]
+    fingerOpenPose: [0.5235987756]
+    armStandardPose: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+    approachOffset: [0.02, -0.02, -0.15]
+    interlink: [   [WAIST_JOINT2, 1.0 , WAIST_JOINT1, -0.25  ]  ] 
+  
+  -
+    name: HumanRight_not_waist
+    base: BODY_JOINT
+    palm: R_ARM_JOINT7
+    fingerEnds: [ R_ARM_JOINT8 ]
+    prehensionList: [prehension]
+    fingerOpenPose: [-0.5235987756]
+    armStandardPose: [0, 0, 0, 0, 0, 0, 0]
+    approachOffset: [0.02, -0.02, -0.15]
+  
+  -
+    name: HumanLeft_not_waist
+    base: BODY_JOINT
+    palm: L_ARM_JOINT7
+    fingerEnds: [ L_ARM_JOINT8 ]
+    prehensionList: [prehension]
+    fingerOpenPose: [0.5235987756]
+    armStandardPose: [0, 0, 0, 0, 0, 0, 0]
+    approachOffset: [0.02, -0.02, -0.15]
+  
+standardPose: [ 
+0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+]

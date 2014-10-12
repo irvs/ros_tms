@@ -1,0 +1,23 @@
+[START]
+Reference_Motion prehension
+Finger0Contact  1 
+Finger0Comp  0
+Finger0Close  -0.05
+Finger1Contact 1
+Finger1Comp 0
+Finger1Close  -0.05
+GRCdes_Position  0 0 0.08
+GRCdes_Rpy   1.5707 0 -1.5707 
+GRCdes_Edges  0.05 0.05 0.05
+GRCmax_Position  0.0 0.0 0.05
+GRCmax_Rpy  1.5707 0 -1.5707 
+GRCmax_Edges  0.10 0.30 0.15
+GRCmin_Position  0 0 0
+GRCmin_Rpy  1.5707 0 -1.5707
+GRCmin_Edges  0.01 0.01 0.0001 
+Max_Load  0.4
+Min_Load  0
+Approach_Vector  1
+GRC_Pos_Deviation  0.0 0.0 0.0
+[END]
+

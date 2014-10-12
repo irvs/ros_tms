@@ -1,0 +1,10 @@
+modelFile: ThreeFingers.wrl
+
+graspPluginSetting: 
+  base: Base
+  palm: Base
+  fingerEnds: [ Tip1,Tip2,Tip3 ]
+  prehensionList: [prehension]
+  armStandardPose: [0, 0, 0, -1.57, 0, 0, 0]
+  GrasplotPluginDir: ./
+  pythonInterface: robotInterface.py

@@ -1,0 +1,32 @@
+#
+# README - Kinematik Library
+#
+# (c) 2008 Neuronics AG
+#
+# Autoren:
+#  Jonas Haller (JHA)
+#
+
+-------------------
+Kompilieren (auf Windows)
+-------------------
+
+- 'kinematik.sln' mit Visual Studio oeffnen
+- Im Release-Modus kompilieren
+
+-> 'kinematics.dll' und 'kinematics.lib' zur Verwendung in KNI und Katana4D werden erstellt
+
+
+-------------------
+Kompilieren (auf Linux)
+-------------------
+
+- Terminal / Konsole oeffnen
+- 'cd <path-to>/lib/kinematics/': Ins lib/kinematics/ Verzeichnis wechseln
+
+- 'make clean': Diesen und beide Unterordner aufraeumen
+- 'make': Kompilieren
+
+-> 'libKinematics.a' und 'libKinematics.so' werden im ordner '../linux/' erstellt
+
+

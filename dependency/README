@@ -1,0 +1,10 @@
+dependency program
+
+choreonoid 1.4
+(http://choreonoid.org/_downloads/choreonoid-1.4.0.zip)
+
+graspPlugin #329
+(hg clone http://subaru.ait.kyushu-u.ac.jp/hg/grasp-plugin-hg/ graspPlugin)
+
+ARIA 2.8.1
+(http://robots.mobilerobots.com/ARIA/download/current/libaria_2.8.1+ubuntu12+gcc4.6_amd64.deb)

@@ -1,0 +1,10 @@
+modelFile: Katana.main.wrl
+
+graspPluginSetting: 
+  base: BASE
+  palm: J5
+  fingerEnds: [ HAND_L, HAND_R ]
+  prehensionList: [prehension]
+  armStandardPose: [0, 0, 0, 0, 0]
+  GrasplotPluginDir: ./
+  pythonInterface: robotInterface.py

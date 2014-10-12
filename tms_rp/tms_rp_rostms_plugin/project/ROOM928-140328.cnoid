@@ -1,0 +1,753 @@
+items: 
+  id: 0
+  name: "Root"
+  plugin: Base
+  class: RootItem
+  children: 
+    - 
+      id: 1
+      name: "floor"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_room/floor928_hrp.wrl"
+        currentBaseLink: "root"
+        rootPosition: [  0.000000,  0.000000,  0.000000 ]
+        rootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [  ]
+        initialRootPosition: [  0.000000,  0.000000,  0.000000 ]
+        initialRootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [  ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 2
+      name: "wall"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_room/wall928_hrp.wrl"
+        currentBaseLink: ""
+        rootPosition: [  0.000000,  0.000000,  0.000000 ]
+        rootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [  ]
+        initialRootPosition: [  0.000000,  0.000000,  0.000000 ]
+        initialRootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [  ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 3
+      name: "big_sofa"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_furniture/big_sofa_hrp.wrl"
+        currentBaseLink: "WAIST"
+        rootPosition: [  6.000000,  3.000000,  0.000000 ]
+        rootAttitude: [ 
+           0.000000,  1.000000,  0.000000, 
+          -1.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [  ]
+        initialRootPosition: [  0.000000,  0.000000,  0.000000 ]
+        initialRootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [  ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 4
+      name: "mini_sofa"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_furniture/mini_sofa_hrp.wrl"
+        currentBaseLink: "WAIST"
+        rootPosition: [  5.000000,  1.000000,  0.000000 ]
+        rootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [  ]
+        initialRootPosition: [  0.000000,  0.000000,  0.000000 ]
+        initialRootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [  ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 5
+      name: "small_table"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_furniture/small_table_hrp.wrl"
+        currentBaseLink: "WAIST"
+        rootPosition: [  5.000000,  3.000000,  0.000000 ]
+        rootAttitude: [ 
+           0.000000,  1.000000,  0.000000, 
+          -1.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [  ]
+        initialRootPosition: [  0.000000,  0.000000,  0.000000 ]
+        initialRootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [  ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 6
+      name: "tv_table"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_furniture/tv_table_hrp.wrl"
+        currentBaseLink: "WAIST"
+        rootPosition: [  4.400000,  1.800000,  0.000000 ]
+        rootAttitude: [ 
+           0.000000, -1.000000,  0.000000, 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [  ]
+        initialRootPosition: [  0.000000,  0.000000,  0.000000 ]
+        initialRootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [  ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 7
+      name: "tv"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_furniture/tv_hrp.wrl"
+        currentBaseLink: "WAIST"
+        rootPosition: [  4.300000,  1.900000,  0.420000 ]
+        rootAttitude: [ 
+           0.000000, -1.000000,  0.000000, 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [  ]
+        initialRootPosition: [  0.000000,  0.000000,  0.000000 ]
+        initialRootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [  ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 8
+      name: "partition1050x900"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_furniture/partition1050x900_hrp.wrl"
+        currentBaseLink: "WAIST"
+        rootPosition: [  4.000000,  3.000000,  0.000000 ]
+        rootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [  ]
+        initialRootPosition: [  0.000000,  0.000000,  0.000000 ]
+        initialRootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [  ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 9
+      name: "partition1050x700"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_furniture/partition1050x700_hrp.wrl"
+        currentBaseLink: "WAIST"
+        rootPosition: [  4.000000,  3.000000,  0.000000 ]
+        rootAttitude: [ 
+           0.000000,  1.000000,  0.000000, 
+          -1.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [  ]
+        initialRootPosition: [  0.000000,  0.000000,  0.000000 ]
+        initialRootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [  ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 10
+      name: "partition1050x900"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_furniture/partition1050x900_hrp.wrl"
+        currentBaseLink: "WAIST"
+        rootPosition: [  4.000000,  2.300000,  0.000000 ]
+        rootAttitude: [ 
+           0.000000,  1.000000,  0.000000, 
+          -1.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [  ]
+        initialRootPosition: [  0.000000,  0.000000,  0.000000 ]
+        initialRootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [  ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 11
+      name: "shelf1"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_furniture/shelf1_hrp.wrl"
+        currentBaseLink: "root"
+        rootPosition: [  3.650000,  1.860000,  0.000000 ]
+        rootAttitude: [ 
+          -0.000004,  1.000000,  0.000000, 
+          -1.000000, -0.000004,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [  ]
+        initialRootPosition: [  2.850000,  2.000000,  0.000000 ]
+        initialRootAttitude: [ 
+          -0.000004,  1.000000,  0.000000, 
+          -1.000000, -0.000004,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [  ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 12
+      name: "bed"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_furniture/bed_hrp.wrl"
+        currentBaseLink: "root"
+        rootPosition: [  1.900000,  1.900000,  0.000000 ]
+        rootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [  ]
+        initialRootPosition: [  2.000000,  3.500000,  0.000000 ]
+        initialRootAttitude: [ 
+          -0.000004, -1.000000,  0.000000, 
+           1.000000, -0.000004,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [  ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 13
+      name: "desk1"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_furniture/desk1_hrp.wrl"
+        currentBaseLink: "root"
+        rootPosition: [  0.000000,  3.900000,  0.000000 ]
+        rootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [  ]
+        initialRootPosition: [  2.642500,  0.720000,  0.000000 ]
+        initialRootAttitude: [ 
+          -0.000004,  1.000000,  0.000000, 
+          -1.000000, -0.000004,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [  ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 14
+      name: "chair1"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_furniture/chair1_hrp.wrl"
+        currentBaseLink: "root"
+        rootPosition: [  0.800000,  3.800000,  0.000000 ]
+        rootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [  ]
+        initialRootPosition: [ -1.500000,  3.000000,  0.000000 ]
+        initialRootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [  ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 15
+      name: "big_shelf"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_furniture/big_shelf_hrp.wrl"
+        currentBaseLink: "root"
+        rootPosition: [  1.600000,  4.200000,  0.000000 ]
+        rootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [  ]
+        initialRootPosition: [  0.000000,  0.000000,  0.000000 ]
+        initialRootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [  ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 16
+      name: "table"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_furniture/table_hrp.wrl"
+        currentBaseLink: "root"
+        rootPosition: [  0.000000,  0.000000,  0.000000 ]
+        rootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [  ]
+        initialRootPosition: [  0.000000,  0.000000,  0.000000 ]
+        initialRootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [  ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 17
+      name: "chair1"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_furniture/chair1_hrp.wrl"
+        currentBaseLink: "root"
+        rootPosition: [  0.400000,  1.000000,  0.000000 ]
+        rootAttitude: [ 
+          -1.000000, -0.000000,  0.000000, 
+           0.000000, -1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [  ]
+        initialRootPosition: [ -1.500000,  3.000000,  0.000000 ]
+        initialRootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [  ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 18
+      name: "SmartPal4"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_robot/smartpal/SmartPal4.yaml"
+        currentBaseLink: "VEHICLE"
+        rootPosition: [  3.000000,  4.000000,  0.000000 ]
+        rootAttitude: [ 
+           0.000000,  1.000000,  0.000000, 
+          -1.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [ 
+           0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000 ]
+        initialRootPosition: [  0.000000,  0.000000,  0.000000 ]
+        initialRootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [ 
+           0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000 ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 19
+      name: "SmartPal5"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_robot/smartpal/SmartPal5.yaml"
+        currentBaseLink: "VEHICLE"
+        rootPosition: [  6.000000,  4.000000,  0.000000 ]
+        rootAttitude: [ 
+           0.000000,  1.000000,  0.000000, 
+          -1.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [ 
+           0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000 ]
+        initialRootPosition: [  0.000000,  0.000000,  0.000000 ]
+        initialRootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [ 
+           0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000 ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+    - 
+      id: 20
+      name: "Human_170"
+      plugin: Body
+      class: BodyItem
+      data: 
+        modelFile: "${PROGRAM_TOP}/extplugin/rostmsPlugin/model_person/human_170.yaml"
+        currentBaseLink: "PELVIS_JOINT"
+        rootPosition: [  3.000000,  1.000000,  0.900000 ]
+        rootAttitude: [ 
+           0.000000,  1.000000,  0.000000, 
+          -1.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        jointPositions: [ 
+           0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000 ]
+        initialRootPosition: [  0.000000,  0.000000,  0.900000 ]
+        initialRootAttitude: [ 
+           1.000000,  0.000000,  0.000000, 
+           0.000000,  1.000000,  0.000000, 
+           0.000000,  0.000000,  1.000000 ]
+        initialJointPositions: [ 
+           0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000, 
+           0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000,  0.000000 ]
+        zmp: [  0.000000,  0.000000,  0.000000 ]
+        selfCollisionDetection: false
+views: 
+  "Items": 
+    selected: [ 20 ]
+    checked: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ]
+    expanded: [ 6, 7, 9, 11, 13, 15, 16, 17, 19 ]
+  "Scene": 
+    mode: view
+    floorGird: false
+    collisions: false
+    shadow: false
+    floorGridSpan: 30
+    floorGridInterval: 0.5
+    hiPriorityRendering: false
+    camera: 
+      projection: perspetive
+      perspective: [ 40, 1.69587, 7.24414, 12.1801 ]
+      ortho: [ -7.75451, 7.75451, -4.83658, 4.83658, -7.00124, 23.7233 ]
+      eye: [ 4.10467, -6.25341, 4.92138 ]
+      center: [ 4.0946, -5.32163, 4.5585 ]
+      up: [ -0.0039286, 0.362861, 0.931835 ]
+  "Multi Value Seq": 
+    mode: view
+    editMode: freeLine
+    original: true
+    velocity: false
+    acceleration: false
+    limits: true
+    grid: true
+    gridWidth: 0.2
+    gridHeight: 0.2
+    lineWidth: 1
+    rulers: false
+    sync: true
+    controlPointStep: 1
+    controlPointOffset: 0
+    controlPointHeighlight: false
+    scrollMode: continuous
+    lower: -10
+    upper: 10
+  "Multi SE3 Seq": 
+    mode: view
+    editMode: freeLine
+    original: true
+    velocity: false
+    acceleration: false
+    limits: true
+    grid: true
+    gridWidth: 0.2
+    gridHeight: 0.2
+    lineWidth: 1
+    rulers: false
+    sync: true
+    controlPointStep: 1
+    controlPointOffset: 0
+    controlPointHeighlight: false
+    scrollMode: continuous
+    lower: -10
+    upper: 10
+    visibleElements: [ 0, 1, 2 ]
+  "Links": 
+    listingMode: "link list"
+    currentBodyItem: 20
+    bodyItems: 
+      - 
+        id: 7
+        selectedLinks: [ 0 ]
+      - 
+        id: 13
+        selectedLinks: [ 0 ]
+  "Body / Link": 
+    showRotationMatrix: false
+  "Joint Sliders": 
+    showAllJoints: true
+    jointId: false
+    name: true
+    numColumns: 1
+    spinBox: true
+    slider: true
+    labelOnLeft: true
+    currentBodyItem: 20
+  "Joint Trajectories": 
+    mode: view
+    editMode: freeLine
+    original: true
+    velocity: false
+    acceleration: false
+    limits: true
+    grid: true
+    gridWidth: 0.2
+    gridHeight: 0.2
+    lineWidth: 1
+    rulers: false
+    sync: true
+    controlPointStep: 1
+    controlPointOffset: 0
+    controlPointHeighlight: false
+    scrollMode: continuous
+    lower: -10
+    upper: 10
+  "Multi Affine3 Seq": 
+    mode: view
+    editMode: freeLine
+    original: true
+    velocity: false
+    acceleration: false
+    limits: true
+    grid: true
+    gridWidth: 0.2
+    gridHeight: 0.2
+    lineWidth: 1
+    rulers: false
+    sync: true
+    controlPointStep: 1
+    controlPointOffset: 0
+    controlPointHeighlight: false
+    scrollMode: continuous
+    lower: -10
+    upper: 10
+    visibleElements: [ 0, 1, 2 ]
+  "Pose Roll": 
+    defaultTransitionTime: 0
+    updateAll: true
+    autoUpdate: false
+    timeSync: true
+    listingMode: "part tree"
+    timeLength: 10
+    showLipSync: false
+    gridInterval: 1
+toolbars: 
+  "TimeBar": 
+    minTime: 0
+    maxTime: 30
+    frameRate: 100
+    playbackFrameRate: 50
+    currentTime: 0
+    speedScale: 1
+  "BodyBar": 
+    current: 20
+    stanceWidth: 0.15
+  "KinematicsBar": 
+    mode: IK
+    attitude: false
+    penetrationBlock: true
+    collisionLinkHighlight: false
+    snapDistance: 0.025
+    penetrationBlockDepth: 0.0005
+    lazyCollisionDetectionMode: true
+  "BodyMotionGenerationBar": 
+    balancer: false
+    autoGeneration: false
+    timeScaleRatio: 1
+    preInitialDuration: 1
+    postFinalDuration: 1
+    onlyTimeBarRange: false
+    makeNewBodyItem: true
+    stealthyStepMode: true
+    stealthyHeightRatioThresh: 2
+    flatLiftingHeight: 0.005
+    flatLandingHeight: 0.005
+    impactReductionHeight: 0.005
+    impactReductionTime: 0.04
+    autoZmp: true
+    minZmpTransitionTime: 0.1
+    zmpCenteringTimeThresh: 0.03
+    zmpTimeMarginBeforeLiftingSpin: 0
+    allLinkPositions: false
+    lipSyncMix: false
+  "GraspBar": 
+    graspEnv: [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 
+      -1 ]
+    objTag2Item: [ -1 ]
+Base: 
+  "MovieGenerator": 
+    directory: 
+    basename: scene
+    begin: 0
+    fps: 30
+    width: 640
+    heiht: 480
+Body: 
+  "KinematicFaultChecker": 
+    checkJointPositions: true
+    angleMargin: 0
+    translationMargin: 0
+    checkJointVelocities: true
+    velocityLimitRatio: 100
+    targetJoints: all
+    checkSelfCollisions: true
+    onlyTimeBarRange: false
+  "SceneBodyManager": 
+    sceneBodies: 
+      - 
+        bodyItem: 18
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 1
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 2
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 4
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 3
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 5
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 6
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 7
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 10
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 9
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 8
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 13
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 11
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 12
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 14
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 15
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 16
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 17
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 19
+        editable: true
+        centerOfMass: false
+        zmp: false
+      - 
+        bodyItem: 20
+        editable: true
+        centerOfMass: false
+        zmp: false

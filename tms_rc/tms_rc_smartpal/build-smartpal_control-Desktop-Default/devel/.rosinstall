@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/rt/catkin_ws/src/ros_tms/tms_rc/tms_rc_smartpal/build-smartpal_control-Desktop-Default/devel/setup.sh

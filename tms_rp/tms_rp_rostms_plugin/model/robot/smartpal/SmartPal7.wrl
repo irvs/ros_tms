@@ -1,0 +1,828 @@
+#VRML V2.0 utf8
+
+PROTO Joint [
+  exposedField     SFVec3f      center              0 0 0
+  exposedField     MFNode       children            []
+  exposedField     MFFloat      llimit              []
+  exposedField     MFFloat      lvlimit             []
+  exposedField     SFRotation   limitOrientation    0 0 1 0
+  exposedField     SFString     name                ""
+  exposedField     SFRotation   rotation            0 0 1 0
+  exposedField     SFVec3f      scale               1 1 1
+  exposedField     SFRotation   scaleOrientation    0 0 1 0
+  exposedField     MFFloat      stiffness           [ 0 0 0 ]
+  exposedField     SFVec3f      translation         0 0 0
+  exposedField     MFFloat      ulimit              []
+  exposedField     MFFloat      uvlimit             []
+  exposedField     SFString     jointType           ""
+  exposedField     SFInt32      jointId             -1
+  exposedField     SFVec3f      jointAxis           0 0 1
+
+  exposedField     SFFloat      gearRatio           1
+  exposedField     SFFloat      rotorInertia        0
+  exposedField     SFFloat      rotorResistor       0
+  exposedField     SFFloat      torqueConst         1
+  exposedField     SFFloat      encoderPulse        1
+]
+{
+  Transform {
+    center           IS center
+    children         IS children
+    rotation         IS rotation
+    scale            IS scale
+    scaleOrientation IS scaleOrientation
+    translation      IS translation
+  }
+}
+
+PROTO Segment [
+  field           SFVec3f     bboxCenter        0 0 0
+  field           SFVec3f     bboxSize          -1 -1 -1
+  exposedField    SFVec3f     centerOfMass      0 0 0
+  exposedField    MFNode      children          [ ]
+  exposedField    SFNode      coord             NULL
+  exposedField    MFNode      displacers        [ ]
+  exposedField    SFFloat     mass              0
+  exposedField    MFFloat     momentsOfInertia  [ 0 0 0 0 0 0 0 0 0 ]
+  exposedField    SFString    name              ""
+  eventIn         MFNode      addChildren
+  eventIn         MFNode      removeChildren
+]
+{
+  Group {
+    addChildren    IS addChildren
+    bboxCenter     IS bboxCenter
+    bboxSize       IS bboxSize
+    children       IS children
+    removeChildren IS removeChildren
+  }
+}
+
+PROTO Humanoid [
+  field           SFVec3f    bboxCenter            0 0 0
+  field           SFVec3f    bboxSize              -1 -1 -1
+  exposedField    SFVec3f    center                0 0 0
+  exposedField    MFNode     humanoidBody          [ ]
+  exposedField    MFString   info                  [ ]
+  exposedField    MFNode     joints                [ ]
+  exposedField    SFString   name                  ""
+  exposedField    SFRotation rotation              0 0 1 0
+  exposedField    SFVec3f    scale                 1 1 1
+  exposedField    SFRotation scaleOrientation      0 0 1 0
+  exposedField    MFNode     segments              [ ]
+  exposedField    MFNode     sites                 [ ]
+  exposedField    SFVec3f    translation           0 0 0
+  exposedField    SFString   version               "1.1"
+  exposedField    MFNode     viewpoints            [ ]
+]
+{
+  Transform {
+    bboxCenter       IS bboxCenter
+    bboxSize         IS bboxSize
+    center           IS center
+    rotation         IS rotation
+    scale            IS scale
+    scaleOrientation IS scaleOrientation
+    translation      IS translation
+    children [
+      Group {
+        children IS viewpoints
+      }
+      Group {
+        children IS humanoidBody
+      }
+    ]
+  }
+}
+
+PROTO VisionSensor [
+  exposedField SFVec3f    translation       0 0 0
+  exposedField SFRotation rotation          0 0 1 0
+  exposedField MFNode     children          [ ]
+  exposedField SFFloat    fieldOfView       0.785398
+  exposedField SFString   name              ""
+  exposedField SFFloat    frontClipDistance 0.01
+  exposedField SFFloat    backClipDistance  10.0
+  exposedField SFString   type              "NONE"
+  exposedField SFInt32    sensorId          -1
+  exposedField SFInt32    width             320
+  exposedField SFInt32    height            240
+  exposedField SFFloat    frameRate         30
+]
+{
+  Transform {
+    rotation         IS rotation
+    translation      IS translation
+    children         IS children
+  }
+}
+
+
+PROTO ForceSensor [
+  exposedField SFVec3f    maxForce    -1 -1 -1
+  exposedField SFVec3f    maxTorque   -1 -1 -1
+  exposedField SFVec3f    translation 0 0 0
+  exposedField SFRotation rotation    0 0 1 0
+  exposedField MFNode     children          [ ]
+  exposedField SFInt32    sensorId    -1
+]
+{
+  Transform {
+    translation IS translation
+    rotation    IS rotation
+    children    IS children
+  }
+}
+
+PROTO Gyro [
+  exposedField SFVec3f    maxAngularVelocity -1 -1 -1
+  exposedField SFVec3f    translation        0 0 0
+  exposedField SFRotation rotation           0 0 1 0
+  exposedField MFNode     children          [ ]
+  exposedField SFInt32    sensorId           -1
+]
+{
+  Transform {
+    translation IS translation
+    rotation    IS rotation
+    children    IS children
+  }
+}
+
+PROTO AccelerationSensor [
+  exposedField SFVec3f    maxAcceleration -1 -1 -1
+  exposedField SFVec3f    translation     0 0 0
+  exposedField SFRotation rotation        0 0 1 0
+  exposedField MFNode     children          [ ]
+  exposedField SFInt32    sensorId        -1
+]
+{
+  Transform {
+    translation IS translation
+    rotation    IS rotation
+    children    IS children
+  }
+}
+
+PROTO RangeSensor [
+  exposedField SFVec3f    translation     0 0 0
+  exposedField SFRotation rotation        0 0 1 0
+  exposedField MFNode     children        [ ]
+  exposedField SFInt32    sensorId        -1
+  exposedField SFFloat    scanAngle       3.14159 #[rad]
+  exposedField SFFloat    scanStep        0.1     #[rad]
+  exposedField SFFloat    scanRate        10      #[Hz]
+  exposedField SFFloat    maxDistance	    10
+]
+{
+  Transform {
+    translation IS translation
+    rotation    IS rotation
+    children    IS children
+  }
+}
+
+PROTO Plane [
+  exposedField SFVec3f size 10 10 0
+]
+{
+  Box {
+    size IS size
+  }
+}
+NavigationInfo {
+  avatarSize    0.5
+  headlight     TRUE
+  type  ["EXAMINE", "ANY"]
+}
+
+Background {
+  skyColor 0.4 0.6 0.4
+}
+
+Viewpoint {
+  position    3 0 0.835
+  orientation 0.5770 0.5775 0.5775 2.0935
+}
+
+DEF SmartPal7 Humanoid{
+  humanoidBody [
+    DEF VEHICLE Joint {
+      jointType "free"
+      ulimit [0.0 0.0 ]
+      llimit [0.0 0.0 ]
+      children[
+        DEF WAIST_LINK0 Segment{
+          centerOfMass 0.0 0.0 0.03750000000000001
+          mass 27.0
+          momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+          children[
+            Transform {
+              children[
+            Inline { url "SmartPal7/Pal7_body_vehicle.wrl" }
+              ]
+            }
+          ]
+        }
+        DEF WAIST_JOINT1 Joint {
+          jointType "rotate"
+          jointId 0
+          jointAxis 0.0 0.0 1.0
+          translation -0.0718 0 0.412
+          rotation 1 0 0 -1.5708
+ulimit[0.0]
+llimit[-0.959931089]
+          children[
+            DEF WAIST_LINK1 Segment{
+              centerOfMass 0.0 0.0 -0.1
+              mass 6.0
+              momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+              children[
+                Transform {
+                  children[
+                Inline { url "SmartPal7/Pal7_body_lumbar-J1.wrl" }
+                  ]
+                }
+              ]
+            }
+            DEF WAIST_JOINT2 Joint {
+              jointType "rotate"
+              jointId 1
+              jointAxis 0.0 0.0 1.0
+              translation 0.0718 -0.154 0
+              rotation 0 0 1 1.5708
+ulimit[2.530727415]
+llimit[0.0]
+              children[
+                DEF WAIST_LINK2 Segment{
+                  centerOfMass 0.11000000000000013 0.0 0.25
+                  mass 30.0
+                  momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+                  children[
+                    Transform {
+                      children[
+                    Inline { url "SmartPal7/Pal7_body_lumbar-J2.wrl" }
+                      ]
+                    }
+                  ]
+                }
+                DEF WAIST_JOINT3 Joint {
+                  jointType "rotate"
+                  jointId 2
+                  jointAxis 0.0 0.0 1.0
+                  translation -0.1227 0 0
+                  rotation 0 1 0 -1.5708
+ulimit[2.967059728]
+llimit[-2.967059728]
+                  uvlimit [0.0 0.0 ]
+                  lvlimit [0.0 0.0 ]
+                  rotorInertia 1.0
+                  rotorResistor 1.0
+                  children[
+                    DEF WAIST_LINK3 Segment{
+                      centerOfMass 0.0 0.0 0.0
+                      mass 0.6000000000000006
+                      momentsOfInertia [ 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]
+                      children[
+                        Transform {
+                          children[
+                        Inline { url "SmartPal7/Pal7_body_lumbar-J3.wrl" }
+                          ]
+                        }
+                      ]
+                    }
+                    DEF RARM_JOINT1 Joint {
+                      jointType "rotate"
+                      jointId 3
+                      jointAxis 0.0 0.0 1.0
+                      translation -0.2 0 0.4
+                      rotation 0 1 0 -1.5708
+ulimit[3.141592654]
+llimit[-1.745329252]
+                      children[
+                        DEF RARM_LINK1 Segment{
+                          centerOfMass 0.0 0.0 -0.1
+                          mass 0.6000000000000006
+                          momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+                          children[
+                            Transform {
+                              children[
+                            Inline { url "SmartPal7/Pal7_rightArm_J1.wrl" }
+                              ]
+                            }
+                          ]
+                        }
+                        DEF RARM_JOINT2 Joint {
+                          jointType "rotate"
+                          jointId 4
+                          jointAxis 0.0 0.0 1.0
+                          rotation 1 0 0 1.5708
+ulimit[0.261799388]
+llimit[-1.919862177]
+                          children[
+                            DEF RARM_LINK2 Segment{
+                              centerOfMass 0.0 0.0 -0.1
+                              mass 0.6000000000000006
+                              momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+                              children[
+                                Transform {
+                                  children[
+                                Inline { url "SmartPal7/Pal7_rightArm_J2.wrl" }
+                                  ]
+                                }
+                              ]
+                            }
+                            DEF RARM_JOINT3 Joint {
+                              jointType "rotate"
+                              jointId 5
+                              jointAxis 0.0 0.0 1.0
+                              rotation 0 1 0 -1.5708
+ulimit[2.094395102]
+llimit[-2.094395102]
+                              children[
+                                DEF RARM_LINK3 Segment{
+                                  centerOfMass 0.0 0.0 0.0
+                                  mass 1.0
+                                  momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+                                  children[
+                                    Transform {
+                                      children[
+                                    Inline { url "SmartPal7/Pal7_rightArm_J3.wrl" }
+                                      ]
+                                    }
+                                  ]
+                                }
+                                DEF RARM_JOINT4 Joint {
+                                  jointType "rotate"
+                                  jointId 6
+                                  jointAxis 0.0 0.0 1.0
+                                  translation 0.026 0 0.25
+                                  rotation 1 0 0 -1.5708
+ulimit[2.617993878]
+llimit[-0.034906585]
+                                  children[
+                                    DEF RARM_LINK4 Segment{
+                                      centerOfMass 0.0 0.0 -0.3000000000000003
+                                      mass 0.6000000000000006
+                                      momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+                                      children[
+                                        Transform {
+                                          children[
+                                        Inline { url "SmartPal7/Pal7_rightArm_J4.wrl" }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                    DEF RARM_JOINT5-1 Joint {
+                                      jointType "rotate"
+                                      jointAxis 0.0 0.0 1.0
+                                      rotation 1 0 0 1.5708
+                                      ulimit [0.0 0.0 ]
+                                      llimit [0.0 0.0 ]
+                                      uvlimit [0.0 0.0 ]
+                                      lvlimit [0.0 0.0 ]
+                                      rotorInertia 1.0
+                                      rotorResistor 1.0
+                                      children[
+                                        DEF RARM_LINK5-1 Segment{
+                                          centerOfMass 0.0 0.0 0.0
+                                          mass 0.4
+                                          momentsOfInertia [ 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]
+                                          children[
+                                          ]
+                                        }
+                                        DEF RARM_JOINT5 Joint {
+                                          jointType "rotate"
+                                          jointId 7
+                                          jointAxis 0.0 0.0 1.0
+                                          translation -0.026 0 0.004
+                                          rotation 0 0 1 -1.5708
+ulimit[2.094395102]
+llimit[-2.094395102]
+                                          children[
+                                            DEF RARM_LINK5 Segment{
+                                              centerOfMass 0.0 0.0 0.1
+                                              mass 0.4
+                                              momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+                                              children[
+                                                Transform {
+                                                  children[
+                                                Inline { url "SmartPal7/Pal7_rightArm_J5.wrl" }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                            DEF RARM_JOINT6 Joint {
+                                              jointType "rotate"
+                                              jointId 8
+                                              jointAxis 0.0 0.0 1.0
+                                              translation 0 0 0.2046
+                                              rotation 0 1 0 -1.5708
+ulimit[1.570796327]
+llimit[-1.570796327]
+                                              children[
+                                                DEF RARM_LINK6 Segment{
+                                                  centerOfMass -0.1 0.0 0.0
+                                                  mass 0.4
+                                                  momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+                                                  children[
+                                                    Transform {
+                                                      children[
+                                                    Inline { url "SmartPal7/Pal7_rightArm_J6.wrl" }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                                DEF RARM_JOINT7 Joint {
+                                                  jointType "rotate"
+                                                  jointId 9
+                                                  jointAxis 0.0 0.0 1.0
+                                                  translation 0.0739 0 0
+                                                  rotation 1 0 0 1.5708
+ulimit[1.570796327]
+llimit[-1.570796327]
+                                                  children[
+                                                    DEF RARM_LINK7 Segment{
+                                                      centerOfMass 0.0 0.0 -0.1
+                                                      mass 0.4
+                                                      momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+                                                      children[
+                                                        Transform {
+                                                          children[
+                                                        Inline { url "SmartPal7/Pal7_rightArm_J7.wrl" }
+                                                          ]
+                                                        }
+                                                        Transform {
+                                                          translation 0.045 0 0
+                                                          rotation -0.7071 -0.7071 0 3.1416
+                                                          children[
+                                                        Inline { url "SmartPal7/Pal7_rightGripper_gripper.wrl" }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                    DEF RARM_JOINTG Joint {
+                                                      jointType "rotate"
+                                                      jointId 10
+                                                      jointAxis 0.0 0.0 1.0
+                                                      translation 0.087 -0.027 -0.048
+                                                      ulimit [0.0]
+                                                      llimit [-1.0 ]
+                                                      children[
+                                                        DEF RARM_LINKG Segment{
+                                                          centerOfMass 0.0 0.0 -0.1
+                                                          mass 0.4
+                                                          momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+                                                          children[
+                                                            Transform {
+                                                              scale 0.001 0.001 0.001
+                                                              children[
+                                                            Inline { url "SmartPal7/thumb_right_remodel.wrl" }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                    DEF LARM_JOINT1 Joint {
+                      jointType "rotate"
+                      jointId 11
+                      jointAxis 0.0 0.0 1.0
+                      translation 0.2 0 0.4
+                      rotation 0 1 0 -1.5708
+ulimit[3.141592654]
+llimit[-1.745329252]
+                      children[
+                        DEF LARM_LINK1 Segment{
+                          centerOfMass 0.0 0.0 -0.1
+                          mass 0.6000000000000006
+                          momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+                          children[
+                            Transform {
+                              children[
+                            Inline { url "SmartPal7/Pal7_leftArm_J1.wrl" }
+                              ]
+                            }
+                          ]
+                        }
+                        DEF LARM_JOINT2 Joint {
+                          jointType "rotate"
+                          jointId 12
+                          jointAxis 0.0 0.0 -1.0
+                          rotation 1 0 0 1.5708
+ulimit[0.261799388]
+llimit[-1.919862177]
+                          children[
+                            DEF LARM_LINK2 Segment{
+                              centerOfMass 0.0 0.0 -0.1
+                              mass 0.6000000000000006
+                              momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+                              children[
+                                Transform {
+                                  children[
+                                Inline { url "SmartPal7/Pal7_leftArm_J2.wrl" }
+                                  ]
+                                }
+                              ]
+                            }
+                            DEF LARM_JOINT3 Joint {
+                              jointType "rotate"
+                              jointId 13
+                              jointAxis 0.0 0.0 1.0
+                              rotation 0 1 0 -1.5708
+ulimit[2.094395102]
+llimit[-2.094395102]
+                              children[
+                                DEF LARM_LINK3 Segment{
+                                  centerOfMass 0.0 0.0 0.0
+                                  mass 1.0
+                                  momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+                                  children[
+                                    Transform {
+                                      children[
+                                    Inline { url "SmartPal7/Pal7_leftArm_J3.wrl" }
+                                      ]
+                                    }
+                                  ]
+                                }
+                                DEF LARM_JOINT4 Joint {
+                                  jointType "rotate"
+                                  jointId 14
+                                  jointAxis 0.0 0.0 1.0
+                                  translation 0.026 0 0.25
+                                  rotation 1 0 0 -1.5708
+ulimit[2.617993878]
+llimit[-0.034906585]
+                                  children[
+                                    DEF LARM_LINK4 Segment{
+                                      centerOfMass 0.0 0.0 -0.3000000000000003
+                                      mass 0.6000000000000006
+                                      momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+                                      children[
+                                        Transform {
+                                          children[
+                                        Inline { url "SmartPal7/Pal7_leftArm_J4.wrl" }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                    DEF LARM_JOINT5-1 Joint {
+                                      jointType "rotate"
+                                      jointAxis 0.0 0.0 1.0
+                                      rotation 1 0 0 1.5708
+                                      ulimit [0.0 0.0 ]
+                                      llimit [0.0 0.0 ]
+                                      uvlimit [0.0 0.0 ]
+                                      lvlimit [0.0 0.0 ]
+                                      rotorInertia 1.0
+                                      rotorResistor 1.0
+                                      children[
+                                        DEF LARM_LINK5-1 Segment{
+                                          centerOfMass 0.0 0.0 0.0
+                                          mass 0.4
+                                          momentsOfInertia [ 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]
+                                          children[
+                                          ]
+                                        }
+                                        DEF LARM_JOINT5 Joint {
+                                          jointType "rotate"
+                                          jointId 15
+                                          jointAxis 0.0 0.0 1.0
+                                          translation -0.026 0 0.004
+                                          rotation 0 0 1 -1.5708
+ulimit[2.094395102]
+llimit[-2.094395102]
+                                          children[
+                                            DEF LARM_LINK5 Segment{
+                                              centerOfMass 0.0 0.0 0.1
+                                              mass 0.4
+                                              momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+                                              children[
+                                                Transform {
+                                                  children[
+                                                Inline { url "SmartPal7/Pal7_leftArm_J5.wrl" }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                            DEF LARM_JOINT6 Joint {
+                                              jointType "rotate"
+                                              jointId 16
+                                              jointAxis 0.0 0.0 1.0
+                                              translation 0 0 0.2046
+                                              rotation 0 1 0 -1.5708
+ulimit[1.570796327]
+llimit[-1.570796327]
+                                              children[
+                                                DEF LARM_LINK6 Segment{
+                                                  centerOfMass -0.1 0.0 0.0
+                                                  mass 0.4
+                                                  momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+                                                  children[
+                                                    Transform {
+                                                      children[
+                                                    Inline { url "SmartPal7/Pal7_leftArm_J6.wrl" }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                                DEF LARM_JOINT7 Joint {
+                                                  jointType "rotate"
+                                                  jointId 17
+                                                  jointAxis 0.0 0.0 1.0
+                                                  translation 0.0739 0 0
+                                                  rotation 1 0 0 1.5708
+ulimit[1.570796327]
+llimit[-1.570796327]
+                                                  children[
+                                                    DEF LARM_LINK7 Segment{
+                                                      centerOfMass 0.0 0.0 -0.1
+                                                      mass 0.4
+                                                      momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+                                                      children[
+                                                        Transform {
+                                                          children[
+                                                        Inline { url "SmartPal7/Pal7_leftArm_J7.wrl" }
+                                                          ]
+                                                        }
+                                                        Transform {
+                                                          translation 0.045 0 0
+                                                          rotation -0.7071 -0.7071 0 3.1416
+                                                          children[
+                                                        Inline { url "SmartPal7/Pal7_leftGripper_gripper.wrl" }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                    DEF LARM_JOINTG Joint {
+                                                      jointType "rotate"
+                                                      jointId 18
+                                                      jointAxis 0.0 0.0 1.0
+                                                      translation 0.087 0.027 -0.048
+                                                      rotation 1 0 0 3.1416
+                                                      ulimit [0.0]
+                                                      llimit [-1.0]
+                                                      children[
+                                                        DEF LARM_LINKG Segment{
+                                                          centerOfMass 0.0 0.0 -0.1
+                                                          mass 0.4
+                                                          momentsOfInertia [ 1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0 ]
+                                                          children[
+                                                            Transform {
+                                                              rotation 1 0 0 3.1416
+                                                              scale 0.001 0.001 0.001
+                                                              children[
+                                                            Inline { url "SmartPal7/thumb_left_remodel.wrl" }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                    DEF PAN Joint {
+                      jointType "rotate"
+                      jointId 19
+                      jointAxis 0.0 0.0 1.0
+                      translation 0 0 0.54
+                      ulimit [1.0]
+                      llimit [-1.0]
+                      uvlimit [0.0]
+                      lvlimit [0.0]
+                      rotorInertia 1.0
+                      rotorResistor 1.0
+                      children[
+                        DEF PAN_LINK Segment{
+                          centerOfMass 0.0 0.0 0.0
+                          mass 0.6000000000000006
+                          momentsOfInertia [ 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]
+                          children[
+                            Transform {
+                              children[
+                            Inline { url "SmartPal7/Pal7_pan.wrl" }
+                              ]
+                            }
+                          ]
+                        }
+                    DEF TILT Joint {
+                      jointType "rotate"
+                      jointId 20
+                      jointAxis 0.0 0.0 1.0
+                      translation 0 0 0.0
+                      rotation 0 1 0 1.5708
+                      ulimit [1.0]
+                      llimit [-1.0]
+                      uvlimit [0.0]
+                      lvlimit [0.0 ]
+                      rotorInertia 1.0
+                      rotorResistor 1.0
+                      children[
+                        DEF TILT_LINK Segment{
+                          centerOfMass 0.0 0.0 0.0
+                          mass 0.6000000000000006
+                          momentsOfInertia [ 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]
+                          children[
+                            Transform {
+                              children[
+                            Inline { url "SmartPal7/Pal7_tilt.wrl" }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+  joints [
+    USE VEHICLE,
+    USE WAIST_JOINT1,
+    USE WAIST_JOINT2,
+    USE WAIST_JOINT3,
+    USE RARM_JOINT1,
+    USE RARM_JOINT2,
+    USE RARM_JOINT3,
+    USE RARM_JOINT4,
+    USE RARM_JOINT5-1,
+    USE RARM_JOINT5,
+    USE RARM_JOINT6,
+    USE RARM_JOINT7,
+    USE RARM_JOINTG,
+    USE LARM_JOINT1,
+    USE LARM_JOINT2,
+    USE LARM_JOINT3,
+    USE LARM_JOINT4,
+    USE LARM_JOINT5-1,
+    USE LARM_JOINT5,
+    USE LARM_JOINT6,
+    USE LARM_JOINT7,
+    USE LARM_JOINTG,
+    USE PAN,
+    USE TILT,
+  ]
+  segments [
+    USE WAIST_LINK0,
+    USE WAIST_LINK1,
+    USE WAIST_LINK2,
+    USE WAIST_LINK3,
+    USE RARM_LINK1,
+    USE RARM_LINK2,
+    USE RARM_LINK3,
+    USE RARM_LINK4,
+    USE RARM_LINK5-1,
+    USE RARM_LINK5,
+    USE RARM_LINK6,
+    USE RARM_LINK7,
+    USE RARM_LINKG,
+    USE LARM_LINK1,
+    USE LARM_LINK2,
+    USE LARM_LINK3,
+    USE LARM_LINK4,
+    USE LARM_LINK5-1,
+    USE LARM_LINK5,
+    USE LARM_LINK6,
+    USE LARM_LINK7,
+    USE LARM_LINKG,
+    USE PAN_LINK,
+    USE TILT_LINK,
+  ]
+}

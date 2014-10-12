@@ -1,0 +1,8 @@
+#VRML V2.0 utf8
+
+#軸ホーンがz軸、本体上面がxz平面の負方向
+
+DEF servo2 Transform {
+	children [ Inline { url "servo.wrl" } ]
+	rotation 0 0 1 3.1415926535
+}

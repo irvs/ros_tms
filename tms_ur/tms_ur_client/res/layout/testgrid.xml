@@ -1,0 +1,70 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fadingEdge="horizontal"
+    android:orientation="vertical" >
+
+    <android.widget.GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="573dp"
+        android:fadingEdge="horizontal"
+        android:scrollbars="horizontal" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" >
+            
+            <ImageView
+                android:id="@+id/objImg"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginTop="40sp"
+    android:layout_marginLeft="40sp"
+    android:layout_marginBottom="40sp"
+    android:background="@drawable/border"
+    android:src="@drawable/noimagebig" />
+            
+             <ImageView
+                android:id="@+id/objImg"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginTop="40sp"
+    android:layout_marginLeft="40sp"
+    android:layout_marginBottom="40sp"
+    android:background="@drawable/border"
+    android:src="@drawable/noimagebig" />
+             
+              <ImageView
+               android:id="@+id/objImg"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginTop="40sp"
+    android:layout_marginLeft="40sp"
+    android:layout_marginBottom="40sp"
+    android:background="@drawable/border"
+    android:src="@drawable/noimagebig" />
+              
+               <ImageView
+                android:id="@+id/objImg"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginTop="40sp"
+    android:layout_marginLeft="40sp"
+    android:layout_marginBottom="40sp"
+    android:background="@drawable/border"
+    android:src="@drawable/noimagebig" />
+            
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

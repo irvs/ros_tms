@@ -1,0 +1,5 @@
+# <KNI>/lib/win32 README
+# Neuronics AG
+# 2007
+
+Static and dynamic libraries of KNI will be stored into this folder by visual studio

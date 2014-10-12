@@ -1,0 +1,15 @@
+modelFile: turtlebot_main.wrl
+
+graspPluginSetting:
+  name: turtlebot
+  base: BODY
+  palm: J3
+  fingerEnds: [ HAND_L ]
+  prehensionList: [prehension]
+  fingerOpenPose: [-1.01]
+  armStandardPose: [0, 0, 0, 0]
+  approachOffset: [-0.1407, 0.008, 0.0]
+ 
+standardPose: [ 
+0.0, 1.0, 0.0, 0.0
+]

@@ -1,0 +1,39 @@
+#VRML V2.0 utf8
+
+DEF servo Transform {
+	children [
+		#â~íå
+		Transform {
+			children [
+				Shape {
+					appearance	Appearance {
+						material	Material {
+							diffuseColor	0.75 0.75 0.75
+						}
+					}
+					geometry	Cylinder {
+						radius 0.012
+						height 0.028
+					}
+				}
+			]
+		}
+		#êÊí[(ãÖ)
+		Transform {
+			children [
+				Shape {
+					appearance	Appearance {
+						material	Material {
+							diffuseColor	0.75 0.75 0.75
+						}
+					}
+					geometry	Sphere {
+						radius 0.012
+					}
+				}
+			]
+			translation 0 0.014 0
+		}
+	]
+	rotation 1 0 0 -1.570796326795
+}

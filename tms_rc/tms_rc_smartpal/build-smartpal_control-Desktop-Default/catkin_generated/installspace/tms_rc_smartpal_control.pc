@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: tms_rc_smartpal_control
+Description: Description of tms_rc_smartpal_control
+Version: 1.0.3
+Cflags: 
+Libs: -L/usr/local/lib 
+Requires: roscpp tf geometry_msgs nav_msgs message_runtime

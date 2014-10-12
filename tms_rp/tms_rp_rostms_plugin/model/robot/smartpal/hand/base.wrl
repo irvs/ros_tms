@@ -1,0 +1,22 @@
+#VRML V2.0 utf8
+
+DEF base Transform {
+	children [
+		Transform {
+			children [
+				Shape {
+					appearance	Appearance {
+						material	Material {
+							diffuseColor	0.5 0.5 0.5
+						}
+					}
+					geometry	Cylinder {
+						radius 0.065
+						height 0.030
+					}
+				}
+			]
+		}
+	]
+	rotation 1 0 0 1.570796326795
+}

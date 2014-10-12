@@ -1,0 +1,41 @@
+●GiveObjToHumanPlannerの有効化
+ccmake .
+から「GRASP_PLUGINS」に「GiveObjToHumanPlanner」を追加
+choreonoidのツールバーに　=GiveObjToHumanPlan=　が追加されていれば有効化成功
+
+●GiveObjToHumanPlanの概要
+GiveObjToHumanPlannerフォルダ内のmanipulabilityMAPフォルダにある人・ロボットそれぞれのmax_param.csvをもとに，
+人とロボット両方のManipulabilityの値がともに高くなるような物品受け渡し位置を計画する.
+
+manipulabilityMAPの仕様
+palm_Pos_z***.csvという名前で手首点の高さごとにManipulabilityの値をマッピングしている．
+一列目はロボット座標系における手首点のx座標，
+二列目はロボット座標系における手首点のy座標，
+三列目はその点に対して逆運動学を解いたのManipulabilityの値となっている．
+
+すべての高さに対する結果を統合しまとめたものがmax_param.csvとなる．
+行の要素は順に以下のものを表す．
+手首のx位置　手首のy位置　手首のz位置　物体のx位置　物体のy位置　物体のz位置　この高さにおけるManipulabilityの最大値　各関節角　この高さのManipulability値の合計値
+位置は人もしくはロボットのローカル座標系の位置となる．
+
+●GiveObjToHumanPlanの使用方法
+・SetHuman
+　受け渡し対象者のモデルを設定する．
+　graspPlugin/HumanModelに人の簡易モデルがある．
+
+・MakeManipulabilityMap
+　事前にSetHumanをしておくこと．
+　ロボット，人それぞれのManipulabilityMAPを作成する．
+　それぞれ対応したフォルダを事前に作成しておかないとエラーとなる．
+　腰の使用の有無や，ロボット単体のMAP作成など，条件を変えたいときはソースの該当箇所を直接変更すること．
+
+・calcGiveObjPos
+　事前にSetHumanをしておくこと．
+　設定したロボットと人のManipulabilityMAPが存在することが前提条件．
+　ManipulabilityMAPを元に，物品受け渡し位置を計画する．
+  物品位置を中心とした円周上の点のうち，現在のロボット位置に最も近い位置を返す．
+
+・calcGetObjPos
+　設定したロボットのManipulabilityMAPが存在することが前提条件．
+　ManipulabilityMAPを元に，物品把持位置を計画する．
+  物品位置を中心とした円周上の点のうち，現在のロボット位置に最も近い位置を返す．

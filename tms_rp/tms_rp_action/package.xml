@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package>
+  <name>tms_rp_action</name>
+  <version>0.3.0</version>
+  <license>TODO</license>
+  <description>The tms_rp_action package</description>
+ 
+  <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>
+
+  <url type="website">http://robotics.ait.kyushu-u.ac.jp/</url>
+  <url type="git">http://orion.ait.kyushu-u.ac.jp/ros-tms/ros_tms/</url>
+
+  <author email="passionvirus@gmail.com">Yoonseok Pyo</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>message_runtime</run_depend>
+  
+  <export>
+  </export>
+</package>

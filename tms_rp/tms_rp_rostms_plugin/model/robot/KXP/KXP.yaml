@@ -1,0 +1,11 @@
+modelFile: KKP.main.wrl
+
+graspPluginSetting: 
+  base: BASE
+  palm: J6
+  fingerEnds: [ HAND_L, HAND_R ]
+  fingerOpenPose: [0.35, 0.35]
+  prehensionList: [prehension]
+  armStandardPose: [0, 0, 0, 0, 0]
+  GrasplotPluginDir: Plugin/libGrasplotKXP.so  
+  pythonInterface: robotInterface.py

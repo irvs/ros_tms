@@ -1,0 +1,47 @@
+#VRML V2.0 utf8
+
+#‰ñ“]²‚ªz²A’ê–Ê‚ªxz•½–Ê‚Ì•‰•ûŒü
+
+DEF bracket Transform {
+	children [
+		#’ê–Ê
+		Transform {
+			children [
+				Shape {
+					appearance	Appearance {
+						material	Material {
+							diffuseColor	0 1 0
+						}
+					}
+					geometry	Box {
+						size 0.025 0.003 0.041
+					}
+				}
+			]
+		}
+		#‘¤–Ê1
+		Transform {
+			children [
+				DEF BracketSide Shape {
+					appearance	Appearance {
+						material	Material {
+							diffuseColor	0 1 0
+						}
+					}
+					geometry	Box {
+						size 0.018 0.0275 0.003
+					}
+				}
+			]
+			translation 0 0.01525 0.019
+		}
+		#‘¤–Ê2
+		Transform {
+			children [ USE BracketSide ]
+			translation 0 0.01525 -0.019
+		}
+	]
+	#rotation 0 0 1 3.1415926535
+	translation 0 -0.020 0 #‰ñ“]²‚ğz²‚Éˆê’v‚³‚¹‚é
+}
+		
