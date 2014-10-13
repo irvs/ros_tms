@@ -2,7 +2,7 @@
 <package>
   <name>tms_rp_action</name>
   <version>0.3.0</version>
-  <license>TODO</license>
+  <license>BSD</license>
   <description>The tms_rp_action package</description>
  
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>

@@ -2,7 +2,7 @@
 <package>
   <name>tms_rc_pioneer</name>
   <version>1.0.2</version>
-  <license>TODO</license>
+  <license>BSD</license>
   <description>The tms_rc_pioneer package</description>
  
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>

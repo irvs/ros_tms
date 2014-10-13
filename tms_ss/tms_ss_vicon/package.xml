@@ -2,7 +2,7 @@
 <package>
   <name>tms_ss_vicon</name>
   <version>0.1.3</version>
-  <license>TODO</license>
+  <license>BSD</license>
   <description>The tms_ss_vicon package</description>
 
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>

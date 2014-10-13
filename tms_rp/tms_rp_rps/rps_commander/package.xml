@@ -2,7 +2,7 @@
 <package>
   <name>tms_rp_rps_commander</name>
   <version>1.0.2</version>
-  <license>TODO</license>
+  <license>BSD</license>
   <description>The tms_rp_rps_commander package</description>
  
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>

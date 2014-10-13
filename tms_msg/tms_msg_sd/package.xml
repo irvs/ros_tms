@@ -2,7 +2,7 @@
 <package>
   <name>tms_msg_sd</name>
   <version>1.0.2</version>
-  <license>TODO</license>
+  <license>BSD</license>
   <description>The tms_msg_sd package</description>
  
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>

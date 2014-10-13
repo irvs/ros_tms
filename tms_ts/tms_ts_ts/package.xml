@@ -2,7 +2,7 @@
 <package>
   <name>tms_ts_ts</name>
   <version>1.0.1</version>
-  <license>TODO</license>
+  <license>BSD</license>
   <description>The tms_ts_ts package</description>
  
   <maintainer email="hashiguchi@irvs.ait.kyushu-u.ac.jp">Yuka Hashiguchi</maintainer>

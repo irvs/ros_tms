@@ -2,7 +2,7 @@
 <package>
   <name>tms_ss_fss_exe</name>
   <version>2.9.0</version>
-  <license>TODO</license>
+  <license>BSD</license>
   <description>The tms_ss_fss_exe package</description>
  
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>

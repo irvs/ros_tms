@@ -2,7 +2,7 @@
 <package>
   <name>tms_ss_irs</name>
   <version>1.1.1</version>
-  <license>TODO</license>
+  <license>BSD</license>
   <description>The tms_ss_irs package</description>
  
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>
