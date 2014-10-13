@@ -1,15 +1,11 @@
-ros-tms
-=======
 # ROS-TMS
-
 * It is a service robot system with an informationally structured environment referred to the ROS-TMS. This system enables the integration of various data from distributed sensors, as well as storage of these data in an on-line database and the planning of the service motion of a robot using real-time information about the surroundings.
 
 # TMS: Town Management System
 **ROS-TMS** is new information management system for the informationally structured environment. This system enables to integrate various data from distributed sensors, store them to an online database, and plan service motion of a robot using real-time information about the surroundings.
 
-* version : v3.3.4
-* git tag v3.1.4 808633ca2 / v3.0.0 e3b481e9c
-* date : 2014.10.12 (since 2012.5.1 ROS-TMS / since 2005.11.1 TMS)
+# Version and developer information
+* date : 2014.10.13 (since 2012.5.1 ROS-TMS / since 2005.11.1 TMS)
 * director :
 
  Prof. Ryo Kurazume, Assistant Prof. Tokuo Tsuji
