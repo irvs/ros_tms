@@ -12,7 +12,7 @@
 
 * developer :
 
- 2014 : Yoonseok Pyo, Yuka Hashiguchi, Tetsuro Oishi, Kazuya Suginohara, Kazuto Nakashima, Yuta Watanabe, Daisuke Inada, Toshio Shigekane, Tokuo Tsuji, Omar Alaoui
+ 2014 : Yoonseok Pyo, Yuka Hashiguchi, Tetsuro Oishi, Kazuya Suginohara, Kazuto Nakashima, Yuta Watanabe, Daisuke Inada, Akio Shigekane, Tokuo Tsuji, Omar Alaoui
 
  2013 : Yoonseok Pyo, Akihiro Nagata, Shunya Kuwahata, Kouhei Nakashima, Kazuya Kusaka, Yuka Hashiguchi, Tetsuro Oishi, Kazuya Suginohara, Tokuo Tsuji
 
