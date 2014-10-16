@@ -7,6 +7,7 @@
 2005 none /robot/kobuki/kobuki_hrp.wrl
 2006 none /robot/KXP/KXP.yaml
 2011 none /robot/KXP/KXP.yaml
+2007 none /robot/wheelchair/wheelchair_hrp.wrl
 2008 none /robot/ardrone/ardrone_hrp.wrl
 2009 none /robot/refrigerator/refrigerator_hrp.wrl
 2010 none /robot/refrigerator/refrigerator_open_hrp.wrl

@@ -296,7 +296,8 @@ private:
         else if(SubjectName.compare("WheelChair") == 0)    id = 2007;   //added by Shigekane
         else if(SubjectName.compare("ardrone1") == 0) id = 2008;        
         else if(SubjectName.compare("oculus") == 0)   id = 3006;
-        else if(SubjectName.compare("m100") == 0)     id = 3016;
+        else if(SubjectName.compare("moverio") == 0)  id = 3016;
+        else if(SubjectName.compare("wagon") == 0)    id = 6019;
         else id = -1;
 
         if(id != -1)
