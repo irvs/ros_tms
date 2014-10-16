@@ -662,6 +662,37 @@ void TmsRpBar::onUpdateInfoButtonClicked()
   }
 
   //----------------------------------------------------------------------------
+  // update information of wagon
+  getRobotData.request.tmsdb.id = 6019;
+  getRobotData.request.tmsdb.sensor = 3001;
+
+  if (get_data_client.call(getRobotData)) {
+    os << "[TmsAction] Get info of object ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
+  } else {
+    os << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
+    return;
+  }
+
+  if (getRobotData.response.tmsdb.empty()==true) {
+    os << "[TmsAction] Error (ID="<< getRobotData.request.tmsdb.id <<")" <<endl;
+    callLater(bind(&TmsRpController::disappear,tac,"wagon"));
+  } else if (getRobotData.response.tmsdb[0].state==1) {
+    double rPosX = getRobotData.response.tmsdb[0].x/1000;
+    double rPosY = getRobotData.response.tmsdb[0].y/1000;
+    double rPosZ = 0;
+    Vector3 rpy (deg2rad(getRobotData.response.tmsdb[0].rr),deg2rad(getRobotData.response.tmsdb[0].rp),deg2rad(getRobotData.response.tmsdb[0].ry));
+    Matrix3 rot = rotFromRpy(rpy);
+
+    if(rPosX == 0.0 && rPosY == 0.0) {
+      callLater(bind(&TmsRpController::disappear,tac,"wagon"));
+    }
+    else{
+      callLater(bind(&TmsRpController::appear,tac,"wagon"));
+      callLater(bind(&TmsRpController::setPos,tac,"wagon",Vector3(rPosX,rPosY,rPosZ), rot));
+    }
+  }
+
+  //----------------------------------------------------------------------------
   // update information of objects in shelf
   tms_msg_db::TmsdbGetData getObjectData;
 /*
