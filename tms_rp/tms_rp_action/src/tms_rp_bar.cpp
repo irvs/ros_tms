@@ -238,12 +238,26 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
 
     tac.appear("smartpal5_1");
     tac.setPos("smartpal5_1",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
-
-    tac.disappear("smartpal5_2");
-    tac.setPos("smartpal5_2",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
   } else {
     tac.appear("smartpal5_1");
-    tac.disappear("smartpal5_2");
+    ROS_ERROR("[TmsAction] Failed to call service get_db_data");
+  }
+
+  //----------------------------------------------------------------------------
+  get_db_data.request.tmsdb.id = 2003 + sid;
+
+  if (get_data_client.call(get_db_data)){
+    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x)/1000;
+    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y)/1000;
+    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
+    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
+    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
+    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+
+    tac.appear("smartpal5_2");
+    tac.setPos("smartpal5_2",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+  } else {
+    tac.appear("smartpal5_2");
     ROS_ERROR("[TmsAction] Failed to call service get_db_data");
   }
 
@@ -457,7 +471,7 @@ TmsRpBar::~TmsRpBar()
 {
 }
 
-
+//------------------------------------------------------------------------------
 void TmsRpBar::onUpdateInfoButtonClicked()
 {
   PlanBase *pb = PlanBase::instance();
@@ -473,7 +487,7 @@ void TmsRpBar::onUpdateInfoButtonClicked()
   // update information of robot in floor
   tms_msg_db::TmsdbGetData getRobotData;
 
-  for(int32_t i=0; i<2; i++) {
+  for(int32_t i=0; i<3; i++) {
       getRobotData.request.tmsdb.id =2001 + i;
       getRobotData.request.tmsdb.sensor = 3001;
 
@@ -514,6 +528,46 @@ void TmsRpBar::onUpdateInfoButtonClicked()
           callLater(bind(&TmsRpController::setPos,tac,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot));
         }  
       }
+      else if(getRobotData.request.tmsdb.id == 2003) {
+        if(rPosX == 0.0 && rPosY == 0.0) {
+          callLater(bind(&TmsRpController::disappear,tac,"smartpal5_2"));
+        }
+        else{
+          callLater(bind(&TmsRpController::appear,tac,"smartpal5_2"));
+          callLater(bind(&TmsRpController::setPos,tac,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot));
+        }
+      }
+    }
+  }
+
+  //----------------------------------------------------------------------------
+  // update information of kobuki
+  getRobotData.request.tmsdb.id = 2005;
+  getRobotData.request.tmsdb.sensor = 3001;
+
+  if (get_data_client.call(getRobotData)) {
+    os << "[TmsAction] Get info of object ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
+  } else {
+    os << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
+    return;
+  }
+
+  if (getRobotData.response.tmsdb.empty()==true) {
+    os << "[TmsAction] Error (ID="<< getRobotData.request.tmsdb.id <<")" <<endl;
+    callLater(bind(&TmsRpController::disappear,tac,"kobuki"));
+  } else if (getRobotData.response.tmsdb[0].state==1) {
+    double rPosX = getRobotData.response.tmsdb[0].x/1000;
+    double rPosY = getRobotData.response.tmsdb[0].y/1000;
+    double rPosZ = getRobotData.response.tmsdb[0].z/1000;
+    Vector3 rpy (deg2rad(getRobotData.response.tmsdb[0].rr),deg2rad(getRobotData.response.tmsdb[0].rp),deg2rad(getRobotData.response.tmsdb[0].ry));
+    Matrix3 rot = rotFromRpy(rpy);
+
+    if(rPosX == 0.0 && rPosY == 0.0) {
+      callLater(bind(&TmsRpController::disappear,tac,"kobuki"));
+    }
+    else{
+      callLater(bind(&TmsRpController::appear,tac,"kobuki"));
+      callLater(bind(&TmsRpController::setPos,tac,"kobuki",Vector3(rPosX,rPosY,rPosZ), rot));
     }
   }
 
