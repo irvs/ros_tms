@@ -289,7 +289,7 @@ private:
         // publish to tms_db_writer
         int32_t id = 0;
 
-        if(SubjectName.compare("glasses") == 0)       id = 1001; //person_1
+        if(SubjectName.compare("moverio") == 0)       id = 1001; //person_1
         else if(SubjectName.compare("sp4") == 0)      id = 2001;
         else if(SubjectName.compare("sp5_1") == 0)    id = 2002;
         else if(SubjectName.compare("sp5_2") == 0)    id = 2003;
