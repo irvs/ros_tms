@@ -3,7 +3,7 @@
 
 //------------------------------------------------------------------------------
 #define MAX_ICS_OBJECT_NUM    25
-#define MAX_FURNITURE_NUM     16
+#define MAX_FURNITURE_NUM     20
 
 //------------------------------------------------------------------------------
 using namespace std;
@@ -22,9 +22,10 @@ std::string TmsRpBar::objectName[25] = {"chipstar_red","chipstar_orange",
                                         "teapot","chawan","teacup1","teacup2","cup1",
                                         "cup2","mugcup","remote","book_red","book_blue","dish"};
 
-std::string TmsRpBar::furnitureName[16] = {"big_sofa","mini_sofa","small_table","tv_table","tv",
+std::string TmsRpBar::furnitureName[20] = {"big_sofa","mini_sofa","small_table","tv_table","tv",
                                            "partition1","partition2","partition3","bed","shelf",
-                                           "big_shelf","desk","chair_desk","table","chair_table1","chair_table2"};
+                                           "big_shelf","desk","chair_desk","table","chair_table1","chair_table2",
+                                           "shelfdoor","shelf2","wagon","sidetable"};
 
 // initialize static variables
 bool TmsRpBar::isRosInit = false;
@@ -164,6 +165,10 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   tac.createRecord(6014,"table");
   tac.createRecord(6015,"chair_table1");
   tac.createRecord(6016,"chair_table2");
+  tac.createRecord(6017,"shelfdoor");
+  tac.createRecord(6018,"shelf2");
+  tac.createRecord(6019,"wagon");
+  tac.createRecord(6020,"sidetable");
 
   // create etc model
   tac.createRecord(20001,"blink_arrow");
