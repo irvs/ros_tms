@@ -82,7 +82,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
 
   bool objectState[25];
   static std::string objectName[25];
-  static std::string furnitureName[16];
+  static std::string furnitureName[20];
   static bool isRosInit;
 
   double goal_position_x;
