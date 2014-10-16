@@ -192,7 +192,6 @@ DEF wagon Humanoid{
     DEF root Joint {
       jointType "free"
       translation 0 0 0 
-      #rotation 1 0 0 1.570796
       ulimit [0.0 0.0 ]
       llimit [0.0 0.0 ]
       uvlimit [0.0 0.0 ]
@@ -207,7 +206,7 @@ DEF wagon Humanoid{
           children[
             Transform {
               children[
-            Inline { url "wagon_4pole90.wrl" }
+            Inline { url "wagon.wrl" }
               ]
             }
           ]
