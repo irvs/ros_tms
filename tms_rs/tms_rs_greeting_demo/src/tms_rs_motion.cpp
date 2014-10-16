@@ -73,8 +73,8 @@ int main(int argc, char **argv)
 	const double motion6[19] = {0.0, 0.0, 0.0, 4.7, -45.2, -49.0, 120.5, 23.5, 15.5, -22.4, 0.0, 0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 	const double motion7[19] = {0.0, 0.0, 0.0, 0.0, -22.2, 41.4, 40.0, 64.3, 5.5, 0.0, 0.0, 0.0, -22.2, 41.4, 40.0, 64.3, 5.5, 0.0, 0.0};
 	const double motion9[19] = {0.0, 0.0, 0.0, 0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 55.7, -25.5, 23.5, 115.0, 77.0, 0.0, -30.0, 0.0};
-	const double motion12[19] = {-126.0, 0.0, 0.0, 0.0, -24.0, 101.0, 35.8, 65.5, 0.0, -17.7, 0.0, 0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; //Open,Close
-	const double motion13[19] = {126.0, 0.0, 0.0, 0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+	const double motion12[19] = {-45.0, 0.0, 0.0, 0.0, -24.0, 101.0, 35.8, 65.5, 0.0, -17.7, 0.0, 0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; //Open,Close
+	const double motion13[19] = {45.0, 0.0, 0.0, 0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
 	while(ros::ok()) {
 		int motion_num;
@@ -115,9 +115,9 @@ int main(int argc, char **argv)
 			break;
 		case 5:
 			// "Open(Close) the door."
-			if (sp5_control(4, motion12)) ROS_INFO("succeed to call service motion5_1");
+			if (sp5_control(0, motion12)) ROS_INFO("succeed to call service motion5_1");
 			ros::Duration(3.0).sleep();
-			if (sp5_control(4, motion13)) ROS_INFO("succeed to call service motion5_2");
+			if (sp5_control(0, motion13)) ROS_INFO("succeed to call service motion5_2");
 
 			break;
 		default:
