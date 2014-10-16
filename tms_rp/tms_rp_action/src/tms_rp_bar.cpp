@@ -679,7 +679,7 @@ void TmsRpBar::onUpdateInfoButtonClicked()
   } else if (getRobotData.response.tmsdb[0].state==1) {
     double rPosX = getRobotData.response.tmsdb[0].x/1000;
     double rPosY = getRobotData.response.tmsdb[0].y/1000;
-    double rPosZ = 0;
+    double rPosZ = 0.35;
     Vector3 rpy (deg2rad(getRobotData.response.tmsdb[0].rr),deg2rad(getRobotData.response.tmsdb[0].rp),deg2rad(getRobotData.response.tmsdb[0].ry));
     Matrix3 rot = rotFromRpy(rpy);
 
