@@ -29,11 +29,11 @@ include_directories(
 )
 
 ## Declare a cpp executable
- add_executable(tms_rs_greeting src/tms_rs_greeting.cpp)
- add_dependencies(tms_rs_greeting tms_msg_rs_gencpp tms_rs_generate_messages_cpp tms_rc_generate_messages_cpp)
- target_link_libraries(tms_rs_greeting
-   ${catkin_LIBRARIES}
- )
+# add_executable(tms_rs_greeting src/tms_rs_greeting.cpp)
+# add_dependencies(tms_rs_greeting tms_msg_rs_gencpp tms_rs_generate_messages_cpp tms_rc_generate_messages_cpp)
+# target_link_libraries(tms_rs_greeting
+#   ${catkin_LIBRARIES}
+# )
  
  add_executable(tms_rs_motion src/tms_rs_motion.cpp)
  add_dependencies(tms_rs_motion tms_msg_rs_gencpp tms_rs_generate_messages_cpp tms_rc_generate_messages_cpp)
@@ -47,8 +47,8 @@ include_directories(
    ${catkin_LIBRARIES}
  )
  
- add_executable(on_off_refrigerator src/refrigerator_demo.cpp)
- add_dependencies(on_off_refrigerator tms_msg_rc_gencpp tms_rs_generate_messages_cpp tms_rc_generate_messages_cpp)
- target_link_libraries(on_off_refrigerator
+ add_executable(ref_demo src/refrigerator_demo.cpp)
+ add_dependencies(ref_demo tms_msg_rc_gencpp tms_rs_generate_messages_cpp tms_rc_generate_messages_cpp)
+ target_link_libraries(ref_demo
    ${catkin_LIBRARIES}
  )
