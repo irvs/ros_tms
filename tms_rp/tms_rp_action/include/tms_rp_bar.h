@@ -4,11 +4,13 @@
 #include <tms_rp_controller.h>
 
 #include <ros/ros.h>
+#include <std_msgs/String.h>
 #include <std_msgs/Int32.h>
 #include <tf/transform_datatypes.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Transform.h>
 #include <geometry_msgs/TransformStamped.h>
+#include <sensor_msgs/PointCloud2.h>
 
 #include <tms_msg_rp/rps_path_planning.h>
 #include <tms_msg_rc/rc_robot_control.h>
@@ -16,23 +18,12 @@
 #include <tms_msg_db/TmsdbGetData.h>
 #include <tms_msg_db/Tmsdb.h>
 #include <tms_msg_db/TmsdbStamped.h>
-#include <PRM/TrajectoryPlanner.h>
-
-#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <cnoid/ItemTreeView>
 #include <cnoid/MessageView>
 #include <cnoid/Archive>
 #include <cnoid/SpinBox>
 #include <cnoid/Button>
-#include <boost/bind.hpp>
-#include <boost/format.hpp>
-#include <boost/thread.hpp>
-#include <boost/algorithm/string.hpp>
-#include <sstream>
-#include <fstream>
-#include <time.h>
-
 #include <cnoid/BodyItem>
 #include <cnoid/ToolBar>
 #include <cnoid/SignalProxy>
@@ -40,6 +31,20 @@
 #include <cnoid/MainWindow>
 #include <cnoid/LazyCaller>
 #include <Grasp/exportdef.h>
+#include <PRM/TrajectoryPlanner.h>
+
+#include <boost/bind.hpp>
+#include <boost/format.hpp>
+#include <boost/thread.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+
+#include <sstream>
+#include <fstream>
+#include <time.h>
+#include <cstdlib>
+#include <string>
+#include <iostream>
 
 #include <QDialog>
 #include <QCheckBox>
@@ -47,9 +52,16 @@
 #include <QCheckBox>
 #include <QPushButton>
 
+#include <pcl/conversions.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl_conversions/pcl_conversions.h>
+
 #define PERSON 1
 //#define PERSON 0
 
+using namespace std;
 using namespace cnoid;
 
 namespace grasp {
@@ -79,6 +91,11 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   ros::ServiceClient sp5_control_client;
   ros::ServiceClient path_planning_client;
   ros::ServiceClient ardrone_client;
+  ros::Subscriber    subscribe_pcd;
+
+  pcl::PointCloud<pcl::PointXYZ> pointCloudData;
+
+  boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)>& sigBodyItemSelectionChanged() {return sigBodyItemSelectionChanged_;}
 
   bool objectState[25];
   static std::string objectName[25];
@@ -98,6 +115,17 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   std::ostream& os;
   TmsRpController& tac;
   Matrix3d mat0, mat_ccw90, mat_ccw180, mat_cw90;
+
+  cnoid::BodyItemPtr currentBodyItem_;
+  cnoid::ItemList<cnoid::BodyItem> selectedBodyItems_;
+  cnoid::ItemList<cnoid::BodyItem> targetBodyItems;
+
+  boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)> sigBodyItemSelectionChanged_;
+
+  void onItemSelectionChanged(const cnoid::ItemList<cnoid::BodyItem>& bodyItems);
+  void onPCDThreadButtonClicked();
+  void receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& msg);
+  void getPcdData();
 
   void onUpdateInfoButtonClicked();
   void onInitPoseButtonClicked();

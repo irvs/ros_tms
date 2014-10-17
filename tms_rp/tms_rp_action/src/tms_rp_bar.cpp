@@ -1,5 +1,7 @@
 ﻿#include <tms_rp_controller.h>
 #include <tms_rp_bar.h>
+#include <tms_rp_bar.h>
+#include <sg_points_get.h>
 
 //------------------------------------------------------------------------------
 #define MAX_ICS_OBJECT_NUM    25
@@ -116,10 +118,11 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   // ros nodehandle, topic, service init
   static ros::NodeHandle nh;
 
-  get_data_client            = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
-  sp5_control_client         = nh.serviceClient<tms_msg_rc::rc_robot_control>("sp5_control");
-  path_planning_client       = nh.serviceClient<tms_msg_rp::rps_path_planning>("rps_path_planning");
-  ardrone_client    = nh.serviceClient<tms_msg_rc::robot_control>("robot_control");
+  get_data_client       = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
+  sp5_control_client    = nh.serviceClient<tms_msg_rc::rc_robot_control>("sp5_control");
+  path_planning_client  = nh.serviceClient<tms_msg_rp::rps_path_planning>("rps_path_planning");
+  ardrone_client        = nh.serviceClient<tms_msg_rc::robot_control>("robot_control");
+  subscribe_pcd         = nh.subscribe("velodyne_points", 10, &TmsRpBar::receivePointCloudData, this);
 
   //------------------------------------------------------------------------------
   // create person model
@@ -464,11 +467,77 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
 
   addButton(("ardrone"), ("ardrone"))->
     sigClicked().connect(bind(&TmsRpBar::ardroneButtonClicked, this));
+
+  addButton(("PCD"), ("Receiver the point cloud data"))->
+    sigClicked().connect(bind(&TmsRpBar::onPCDThreadButtonClicked, this));
+
+  ItemTreeView::mainInstance()->sigSelectionChanged().connect(bind(&TmsRpBar::onItemSelectionChanged, this, _1));
 }
 
 //------------------------------------------------------------------------------
 TmsRpBar::~TmsRpBar()
 {
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::onItemSelectionChanged(const ItemList<BodyItem>& bodyItems)
+{
+  selectedBodyItems_ = bodyItems;
+  os << "selectedBodyItems_ size = " << selectedBodyItems_.size() << endl;
+  targetBodyItems = selectedBodyItems_;
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& msg)
+{
+  pcl::PointCloud<pcl::PointXYZ> cloud;
+  pcl::fromROSMsg (*msg, cloud);
+  pointCloudData = cloud;
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::getPcdData(){
+  os << "targetBodyItems size = " << targetBodyItems.size() << endl;
+
+  if(targetBodyItems.size()!=1){
+    os << "Please select one bodyitem" << endl;
+    return;
+  }
+
+  static ros::Rate loop_rate(10); // 0.1sec
+  while (ros::ok())
+  {
+    SgPointsRenderer::SgLastRenderer(0,true);
+    SgGroupPtr node  = (SgGroup*)targetBodyItems[0]->body()->link(0)->shape();
+    SgPointsGet visit;
+    node->accept(visit);
+    if(visit.shape.size()==0){
+    os  << "no shape node"  << visit.shape.size() << endl;
+    return;
+    }
+
+    SgPointsRenderer* cr = SgPointsRenderer::SgLastRenderer(0,false);
+    cr = new SgPointsRenderer(&pointCloudData);
+    visit.shape[0]->mesh()->triangles().clear();
+    node->addChild(cr);
+
+    os << "pcd size = " << pointCloudData.points.size() << endl;
+
+    ItemTreeView::mainInstance()->checkItem(targetBodyItems[0],false);
+    MessageView::mainInstance()->flush();
+    ItemTreeView::mainInstance()->checkItem(targetBodyItems[0],true);
+    MessageView::mainInstance()->flush();
+
+//    callLater(bind(&TmsRpController::disappear,tac,"smartpal5_2"));
+//    callLater(bind(&TmsRpController::appear,tac,"smartpal5_2"));
+
+    loop_rate.sleep();
+  }
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::onPCDThreadButtonClicked(){
+  static boost::thread t(boost::bind(&TmsRpBar::getPcdData, this));
 }
 
 //------------------------------------------------------------------------------
