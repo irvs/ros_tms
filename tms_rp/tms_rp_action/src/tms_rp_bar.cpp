@@ -1,5 +1,7 @@
 ﻿#include <tms_rp_controller.h>
 #include <tms_rp_bar.h>
+#include <tms_rp_bar.h>
+#include <sg_points_get.h>
 
 //------------------------------------------------------------------------------
 #define MAX_ICS_OBJECT_NUM    25
@@ -120,7 +122,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   sp5_control_client    = nh.serviceClient<tms_msg_rc::rc_robot_control>("sp5_control");
   path_planning_client  = nh.serviceClient<tms_msg_rp::rps_path_planning>("rps_path_planning");
   ardrone_client        = nh.serviceClient<tms_msg_rc::robot_control>("robot_control");
-  subscribe_pcd         = nh.subscribe("velodyne_points", 10, &VelodyneBar::receivePointCloudData, this);
+  subscribe_pcd         = nh.subscribe("velodyne_points", 10, &TmsRpBar::receivePointCloudData, this);
 
   //------------------------------------------------------------------------------
   // create person model
@@ -469,8 +471,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   addButton(("PCD"), ("Receiver the point cloud data"))->
     sigClicked().connect(bind(&TmsRpBar::onPCDButtonClicked, this));
 
-  ItemTreeView::mainInstance()->sigSelectionChanged().connect(bind(&VelodyneBar::onItemSelectionChanged, this, _1));
-}
+  ItemTreeView::mainInstance()->sigSelectionChanged().connect(bind(&TmsRpBar::onItemSelectionChanged, this, _1));
 }
 
 //------------------------------------------------------------------------------
@@ -495,7 +496,7 @@ void TmsRpBar::receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& m
 }
 
 //------------------------------------------------------------------------------
-void VelodyneBar::onPCDButtonClicked(){
+void TmsRpBar::onPCDButtonClicked(){
 
   os << "targetBodyItems size = " << targetBodyItems.size() << endl;
 

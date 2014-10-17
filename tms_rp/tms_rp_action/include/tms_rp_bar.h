@@ -91,12 +91,11 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   ros::ServiceClient sp5_control_client;
   ros::ServiceClient path_planning_client;
   ros::ServiceClient ardrone_client;
-  ros::Subscriber subscribe_pcd;
+  ros::Subscriber    subscribe_pcd;
 
   pcl::PointCloud<pcl::PointXYZ> pointCloudData;
 
-  boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)>& sigBodyItemSelectionChanged() {
-    return sigBodyItemSelectionChanged_;
+  boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)>& sigBodyItemSelectionChanged() {return sigBodyItemSelectionChanged_;}
 
   bool objectState[25];
   static std::string objectName[25];
