@@ -87,7 +87,7 @@ bool callback(tms_msg_rs::rs_home_appliances::Request  &req,
 	if (req.service == 0) { // Close
 		boost::thread th_motion1(boost::bind(&sp5_control_caller, UNIT_VEHICLE, CMD_MOVE_REL, 3, arg_vehicle));
 		boost::thread th_motion2(boost::bind(&sp5_control_caller, UNIT_ARM_R, CMD_MOVE_ABS, 8, arg_armR));
-		boost::thread th_speech(boost::bind(&sp5_tts_caller, open_ref));
+		boost::thread th_speech(boost::bind(&sp5_tts_caller, close_ref));
 		boost::thread th_refrigerator(boost::bind(&refrigerator_control_caller, 0));
 
 		ros::Duration(3.0).sleep();
@@ -96,7 +96,7 @@ bool callback(tms_msg_rs::rs_home_appliances::Request  &req,
 	} else if (req.service == 1) { // Open
 		boost::thread th_motion1(boost::bind(&sp5_control_caller, UNIT_VEHICLE, CMD_MOVE_REL, 3, arg_vehicle));
 		boost::thread th_motion2(boost::bind(&sp5_control_caller, UNIT_ARM_R, CMD_MOVE_ABS, 8, arg_armR));
-		boost::thread th_speech(boost::bind(&sp5_tts_caller, close_ref));
+		boost::thread th_speech(boost::bind(&sp5_tts_caller, open_ref));
 		boost::thread th_refrigerator(boost::bind(&refrigerator_control_caller, 1));
 
 		ros::Duration(3.0).sleep();
