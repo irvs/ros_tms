@@ -124,7 +124,6 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)> sigBodyItemSelectionChanged_;
 
   void onItemSelectionChanged(const cnoid::ItemList<cnoid::BodyItem>& bodyItems);
-  void onTestButtonClicked();
   void onPCDButtonClicked();
   void receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& msg);
 
