@@ -57,3 +57,4 @@ build-*/
 *.autosave
 *.pyc
 *.dat
+*.txt.user
