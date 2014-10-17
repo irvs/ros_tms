@@ -5,7 +5,13 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(tms_rp_action)
 
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs geometry_msgs)
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  std_msgs
+  geometry_msgs
+  sensor_msgs
+  pcl_ros
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -14,7 +20,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp std_msgs geometry_msgs)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES tms_rp_action
-  CATKIN_DEPENDS roscpp std_msgs geometry_msgs message_runtime
+  CATKIN_DEPENDS roscpp std_msgs geometry_msgs sensor_msgs message_runtime pcl_ros
   DEPENDS eigen
 )
 
