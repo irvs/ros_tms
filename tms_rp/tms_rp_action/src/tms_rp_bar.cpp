@@ -497,42 +497,42 @@ void TmsRpBar::receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& m
 
 //------------------------------------------------------------------------------
 void TmsRpBar::getPcdData(){
-  os << "targetBodyItems size = " << targetBodyItems.size() << endl;
+//  os << "targetBodyItems size = " << targetBodyItems.size() << endl;
 
-  if(targetBodyItems.size()!=1){
-    os << "Please select one bodyitem" << endl;
-    return;
-  }
+//  if(targetBodyItems.size()!=1){
+//    os << "Please select one bodyitem" << endl;
+//    return;
+//  }
 
-  static ros::Rate loop_rate(10); // 0.1sec
-  while (ros::ok())
-  {
-    SgPointsRenderer::SgLastRenderer(0,true);
-    SgGroupPtr node  = (SgGroup*)targetBodyItems[0]->body()->link(0)->shape();
-    SgPointsGet visit;
-    node->accept(visit);
-    if(visit.shape.size()==0){
-    os  << "no shape node"  << visit.shape.size() << endl;
-    return;
-    }
+//  static ros::Rate loop_rate(10); // 0.1sec
+//  while (ros::ok())
+//  {
+//    SgPointsRenderer::SgLastRenderer(0,true);
+//    SgGroupPtr node  = (SgGroup*)targetBodyItems[0]->body()->link(1)->shape();
+//    SgPointsGet visit;
+//    node->accept(visit);
+//    if(visit.shape.size()==0){
+//    os  << "no shape node"  << visit.shape.size() << endl;
+//    return;
+//    }
 
-    SgPointsRenderer* cr = SgPointsRenderer::SgLastRenderer(0,false);
-    cr = new SgPointsRenderer(&pointCloudData);
-    visit.shape[0]->mesh()->triangles().clear();
-    node->addChild(cr);
+//    SgPointsRenderer* cr = SgPointsRenderer::SgLastRenderer(0,false);
+//    cr = new SgPointsRenderer(&pointCloudData);
+//    visit.shape[0]->mesh()->triangles().clear();
+//    node->addChild(cr);
 
-    os << "pcd size = " << pointCloudData.points.size() << endl;
+//    os << "pcd size = " << pointCloudData.points.size() << endl;
 
-    ItemTreeView::mainInstance()->checkItem(targetBodyItems[0],false);
-    MessageView::mainInstance()->flush();
-    ItemTreeView::mainInstance()->checkItem(targetBodyItems[0],true);
-    MessageView::mainInstance()->flush();
+//    ItemTreeView::mainInstance()->checkItem(targetBodyItems[0],false);
+//    MessageView::mainInstance()->flush();
+//    ItemTreeView::mainInstance()->checkItem(targetBodyItems[0],true);
+//    MessageView::mainInstance()->flush();
 
-//    callLater(bind(&TmsRpController::disappear,tac,"smartpal5_2"));
-//    callLater(bind(&TmsRpController::appear,tac,"smartpal5_2"));
+////    callLater(bind(&TmsRpController::disappear,tac,"smartpal5_2"));
+////    callLater(bind(&TmsRpController::appear,tac,"smartpal5_2"));
 
-    loop_rate.sleep();
-  }
+//    loop_rate.sleep();
+//  }
 }
 
 //------------------------------------------------------------------------------
