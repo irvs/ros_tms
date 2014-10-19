@@ -44,7 +44,8 @@ class SgPointsRenderer : public cnoid::SgCustomGLNode {
 			  g = sqrt(1-r*r);
 			  b = 1;
 			  glColor3f(r,g,b);
-        glVertex3d(pcd->points[i].x,pcd->points[i].y,pcd->points[i].z);
+              //glVertex3d(pcd->points[i].x,pcd->points[i].y,pcd->points[i].z);
+              glVertex3d(pcd->points[i].x,pcd->points[i].y,1);
 			}
 
 			glEnd();
