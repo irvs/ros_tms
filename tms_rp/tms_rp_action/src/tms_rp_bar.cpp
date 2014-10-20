@@ -764,12 +764,12 @@ void TmsRpBar::onUpdateInfoButtonClicked()
   //----------------------------------------------------------------------------
   // update information of objects in shelf
   tms_msg_db::TmsdbGetData getObjectData;
-/*
+
   for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++) objectState[i]=false;
 
   for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++) {
     getObjectData.request.tmsdb.id =7001 + i;
-    getObjectData.request.tmsdb.sensor = 3002;
+    getObjectData.request.tmsdb.sensor = 3002; // ics
 
     if (get_data_client.call(getObjectData)) {
       os << "[TmsAction] Get info of object ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
@@ -803,14 +803,14 @@ void TmsRpBar::onUpdateInfoButtonClicked()
     }
   }
 
-  for(int i=0; i < MAX_ICS_OBJECT_NUM; i++){
-    if (objectState[i]==false) callLater(bind(&TmsRpController::disappear,tac,objectName[i]));
-  }
-*/
+//  for(int i=0; i < MAX_ICS_OBJECT_NUM; i++){
+//    if (objectState[i]==false) callLater(bind(&TmsRpController::disappear,tac,objectName[i]));
+//  }
+
   //----------------------------------------------------------------------------
   // update information of objects in refrigerator
 
-  for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++) objectState[i]=false;
+//  for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++) objectState[i]=false;
 
   for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++) {
     getObjectData.request.tmsdb.id =7001 + i;
