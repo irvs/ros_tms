@@ -15,9 +15,16 @@
 
 ros::ServiceClient motion_client2;
 
+// timeout
+using namespace boost::posix_time;
+time_duration const td4 = seconds(4);
+time_duration const td5 = seconds(5);
+time_duration const td6 = seconds(6);
+
 // motion
 const double aArmIni[8] = {0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 30.0};
 const double aWaistIni[3] = {0.0, 15.0, 10.0};
+const double aWaistIni4[4] = {0.0, 0.0, 15.0, 10.0};
 const double aArmHello[8] = {1.1, -14.3, 56.6, 120.5, 0.0, 23.5, 0.0, 30.0};
 const double aArmThankYou[8] = {4.7, -45.2, -49.0, 120.5, 23.5, 15.5, -22.4, 30.0};
 const double aWaistThankYou[4] = {-6.0, 30.0, 20.0, 10.0};
@@ -98,23 +105,22 @@ int main(int argc, char **argv) {
 		{
 			// Hello
 			boost::thread th_motion11(boost::bind(&sp5_control_caller, UNIT_ARM_R, CMD_MOVE_ABS, 8, aArmHello));
-			th_motion11.join();
+                        bool const has_completed = th_motion11.timed_join(td5);
 			// Thank you
 			boost::thread th_motion21(boost::bind(&sp5_control_caller, UNIT_ARM_R, CMD_MOVE_ABS, 8, aArmThankYou));
 			boost::thread th_motion22(boost::bind(&sp5_control_caller, UNIT_LUMBA, CMD_MOVE_REL, 4, aWaistThankYou));
-			th_motion22.join();
-			boost::thread th_motion23(boost::bind(&sp5_control_caller, UNIT_LUMBA, CMD_MOVE_ABS, 3, aWaistIni));
-			th_motion23.join();
+                        bool const has_completed1 = th_motion22.timed_join(td5);
+			boost::thread th_motion23(boost::bind(&sp5_control_caller, UNIT_LUMBA, CMD_MOVE_REL, 4, aWaistIni4));
+                        bool const has_completed2 = th_motion23.timed_join(td6);
 			// Enjoy
 			boost::thread th_motion31(boost::bind(&sp5_control_caller, UNIT_ARM_R, CMD_MOVE_ABS, 8, aRArmEnjoy));
-			th_motion31.join();
+                        bool const has_completed3 = th_motion31.timed_join(td5);
 			boost::thread th_motion41(boost::bind(&sp5_control_caller, UNIT_ARM_R, CMD_MOVE_ABS, 8, aArmIni));
 			//Do my best
-			th_motion41.join();
+                        bool const has_completed4 = th_motion41.timed_join(td5);
 			boost::thread th_motion42(boost::bind(&sp5_control_caller, UNIT_ARM_L, CMD_MOVE_ABS, 8, aArmDoMyBest));
-			th_motion42.join();
+                        bool const has_completed5 = th_motion42.timed_join(td5);
 			boost::thread th_motion43(boost::bind(&sp5_control_caller, UNIT_ARM_L, CMD_MOVE_ABS, 8, aArmIni));
-			ROS_INFO("Successflly finish demonstration^^");
 		}
 		default:
 		{

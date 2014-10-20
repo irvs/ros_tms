@@ -27,6 +27,10 @@ ros::ServiceClient motion_client;
 ros::ServiceClient speech_client;
 ros::ServiceClient refrigerator_client;
 
+
+using namespace boost::posix_time;
+time_duration const td1 = seconds(1);
+
 // motion
 const double Mturn[19] = {-36.0, 0.0, 0.0, 0.0, -24.0, 101.0, 35.8, 65.5, 0.0, -17.7, 0.0, 0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 const double Mreturn[19] = {36.0, 0.0, 0.0, 0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
@@ -86,21 +90,25 @@ bool callback(tms_msg_rs::rs_home_appliances::Request  &req,
 		tms_msg_rs::rs_home_appliances::Response &res) {
 	if (req.service == 0) { // Close
 		boost::thread th_motion1(boost::bind(&sp5_control_caller, UNIT_VEHICLE, CMD_MOVE_REL, 3, arg_vehicle));
-		boost::thread th_motion2(boost::bind(&sp5_control_caller, UNIT_ARM_R, CMD_MOVE_ABS, 8, arg_armR));
 		boost::thread th_speech(boost::bind(&sp5_tts_caller, close_ref));
+                bool const has_completed = th_motion1.timed_join(td1);
+		boost::thread th_motion2(boost::bind(&sp5_control_caller, UNIT_ARM_R, CMD_MOVE_ABS, 8, arg_armR));
 		boost::thread th_refrigerator(boost::bind(&refrigerator_control_caller, 0));
 
 		ros::Duration(3.0).sleep();
 		boost::thread th_remotion1(boost::bind(&sp5_control_caller, UNIT_VEHICLE, CMD_MOVE_REL, 3, arg_vehicle2));
+                bool const has_completed1 = th_remotion1.timed_join(td1);
 		boost::thread th_remotion2(boost::bind(&sp5_control_caller, UNIT_ARM_R, CMD_MOVE_ABS, 8, arg_armR2));
 	} else if (req.service == 1) { // Open
 		boost::thread th_motion1(boost::bind(&sp5_control_caller, UNIT_VEHICLE, CMD_MOVE_REL, 3, arg_vehicle));
-		boost::thread th_motion2(boost::bind(&sp5_control_caller, UNIT_ARM_R, CMD_MOVE_ABS, 8, arg_armR));
 		boost::thread th_speech(boost::bind(&sp5_tts_caller, open_ref));
+                bool const has_completed = th_motion1.timed_join(td1);
+		boost::thread th_motion2(boost::bind(&sp5_control_caller, UNIT_ARM_R, CMD_MOVE_ABS, 8, arg_armR));
 		boost::thread th_refrigerator(boost::bind(&refrigerator_control_caller, 1));
 
 		ros::Duration(3.0).sleep();
 		boost::thread th_remotion1(boost::bind(&sp5_control_caller, UNIT_VEHICLE, CMD_MOVE_REL, 3, arg_vehicle2));
+                bool const has_completed1 = th_remotion1.timed_join(td1);
 		boost::thread th_remotion2(boost::bind(&sp5_control_caller, UNIT_ARM_R, CMD_MOVE_ABS, 8, arg_armR2));
 	} else {
 		ROS_ERROR("Illegal service number");
