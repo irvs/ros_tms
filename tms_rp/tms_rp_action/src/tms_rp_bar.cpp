@@ -767,32 +767,32 @@ void TmsRpBar::onUpdateInfoButtonClicked()
 
   for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++) objectState[i]=false;
 
-  for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++) {
-    getObjectData.request.tmsdb.id =7001 + i;
-    getObjectData.request.tmsdb.sensor = 3002; // ics
+//  for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++) {
+//    getObjectData.request.tmsdb.id =7001 + i;
+//    getObjectData.request.tmsdb.sensor = 3002; // ics
 
-    if (get_data_client.call(getObjectData)) {
-      os << "[TmsAction] Get info of object ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
-    } else {
-      os << "[TmsAction] Failed to call service getObjectData ID: " << getObjectData.request.tmsdb.id << endl;
-      return;
-    }
+//    if (get_data_client.call(getObjectData)) {
+//      os << "[TmsAction] Get info of object ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
+//    } else {
+//      os << "[TmsAction] Failed to call service getObjectData ID: " << getObjectData.request.tmsdb.id << endl;
+//      return;
+//    }
 
-    if (getObjectData.response.tmsdb.empty()==true) {
-      os << "[TmsAction] nothing in shelf" <<endl;
-      return;
-    }
+//    if (getObjectData.response.tmsdb.empty()==true) {
+//      os << "[TmsAction] nothing in shelf" <<endl;
+//      return;
+//    }
 
-    if (getObjectData.response.tmsdb[0].state==1 && getObjectData.response.tmsdb[0].place==6010) {
-      int    oID   = getObjectData.response.tmsdb[0].id - 7001;
-      double oPosX = 3.66 + getObjectData.response.tmsdb[0].y/1000;
-      double oPosY = 1.87 - getObjectData.response.tmsdb[0].x/1000;
-      double oPosZ = 0.0 + getObjectData.response.tmsdb[0].z/1000;
-      callLater(bind(&TmsRpController::appear,tac,objectName[oID]));
-      callLater(bind(&TmsRpController::setPos,tac,objectName[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90));
-      objectState[oID] = true;
-    }
-  }
+//    if (getObjectData.response.tmsdb[0].state==1 && getObjectData.response.tmsdb[0].place==6010) {
+//      int    oID   = getObjectData.response.tmsdb[0].id - 7001;
+//      double oPosX = 3.66 + getObjectData.response.tmsdb[0].y/1000;
+//      double oPosY = 1.87 - getObjectData.response.tmsdb[0].x/1000;
+//      double oPosZ = 0.0 + getObjectData.response.tmsdb[0].z/1000;
+//      callLater(bind(&TmsRpController::appear,tac,objectName[oID]));
+//      callLater(bind(&TmsRpController::setPos,tac,objectName[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90));
+//      objectState[oID] = true;
+//    }
+//  }
 
 //  for(int i=0; i < MAX_ICS_OBJECT_NUM; i++){
 //    if (objectState[i]==false) callLater(bind(&TmsRpController::disappear,tac,objectName[i]));
@@ -828,6 +828,32 @@ void TmsRpBar::onUpdateInfoButtonClicked()
       callLater(bind(&TmsRpController::setPos,tac,objectName[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90));
       objectState[oID] = true;
     }
+
+    getObjectData.request.tmsdb.id =7001 + i;
+    getObjectData.request.tmsdb.sensor = 3002; // ics
+
+    if (get_data_client.call(getObjectData)) {
+      os << "[TmsAction] Get info of object ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
+    } else {
+      os << "[TmsAction] Failed to call service getObjectData ID: " << getObjectData.request.tmsdb.id << endl;
+      return;
+    }
+
+    if (getObjectData.response.tmsdb.empty()==true) {
+      os << "[TmsAction] nothing in shelf" <<endl;
+      return;
+    }
+
+    if (getObjectData.response.tmsdb[0].state==1 && getObjectData.response.tmsdb[0].place==6010) {
+      int    oID   = getObjectData.response.tmsdb[0].id - 7001;
+      double oPosX = 4.3  - getObjectData.response.tmsdb[0].y/1000;
+      double oPosY = 1.7 + getObjectData.response.tmsdb[0].x/1000;
+      double oPosZ = 0.08 + getObjectData.response.tmsdb[0].z/1000;
+      callLater(bind(&TmsRpController::appear,tac,objectName[oID]));
+      callLater(bind(&TmsRpController::setPos,tac,objectName[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90));
+      objectState[oID] = true;
+    }
+
   }
 
   for(int i=0; i < MAX_ICS_OBJECT_NUM; i++){
