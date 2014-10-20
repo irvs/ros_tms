@@ -792,15 +792,6 @@ void TmsRpBar::onUpdateInfoButtonClicked()
       callLater(bind(&TmsRpController::setPos,tac,objectName[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90));
       objectState[oID] = true;
     }
-    else if(getObjectData.response.tmsdb[0].state==1 && getObjectData.response.tmsdb[0].place==5001) {
-      int    oID   = getObjectData.response.tmsdb[0].id - 7001;
-      double oPosX = getObjectData.response.tmsdb[0].x/1000;
-      double oPosY = getObjectData.response.tmsdb[0].y/1000;
-      double oPosZ = getObjectData.response.tmsdb[0].z/1000;
-      callLater(bind(&TmsRpController::appear,tac,objectName[oID]));
-      callLater(bind(&TmsRpController::setPos,tac,objectName[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90));
-      objectState[oID] = true;
-    }
   }
 
 //  for(int i=0; i < MAX_ICS_OBJECT_NUM; i++){
