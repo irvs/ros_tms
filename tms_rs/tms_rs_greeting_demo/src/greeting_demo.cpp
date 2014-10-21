@@ -20,9 +20,12 @@ ros::ServiceClient speech_client;
 
 // timeout
 using namespace boost::posix_time;
+time_duration const td1 = seconds(1);
 time_duration const td4 = seconds(4);
 time_duration const td5 = seconds(5);
 time_duration const td6 = seconds(6);
+time_duration const td7 = seconds(7);
+time_duration const td15 = seconds(15);
 
 // motion
 const double aArmIni[8] = {0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 30.0};
@@ -140,26 +143,28 @@ int main(int argc, char **argv) {
 			boost::thread th_motion11(boost::bind(&sp5_control_caller, UNIT_ARM_R, CMD_MOVE_ABS, 8, aArmHello));
 			ros::Duration(2.0).sleep();
 			boost::thread th_speech1(boost::bind(&sp5_tts_caller, sHello));
-                        bool const has_completed = th_motion11.timed_join(td5);
+                        bool has_completed = th_motion11.timed_join(td5);
 			// Thank you
 			boost::thread th_motion21(boost::bind(&sp5_control_caller, UNIT_ARM_R, CMD_MOVE_ABS, 8, aArmThankYou));
+                        has_completed = th_motion21.timed_join(td1);
 			boost::thread th_motion22(boost::bind(&sp5_control_caller, UNIT_LUMBA, CMD_MOVE_REL, 4, aWaistThankYou));
-                        bool const has_completed0 = th_motion22.timed_join(td5);
+                        has_completed = th_motion22.timed_join(td6);
 			boost::thread th_speech2(boost::bind(&sp5_tts_caller, sThankYou));
-			boost::thread th_motion23(boost::bind(&sp5_control_caller, UNIT_LUMBA, CMD_MOVE_REL, 4, aWaistIni4));
-                        bool const has_completed1 = th_motion23.timed_join(td6);
+                        has_completed = th_speech2.timed_join(td1);
+			boost::thread th_motion23(boost::bind(&sp5_control_caller, UNIT_LUMBA, CMD_MOVE_ABS, 3, aWaistIni));
+                        has_completed = th_motion23.timed_join(td15);
 			// Enjoy
 			boost::thread th_motion31(boost::bind(&sp5_control_caller, UNIT_ARM_R, CMD_MOVE_ABS, 8, aRArmEnjoy));
-			ros::Duration(1.5).sleep();
+                        has_completed = th_motion31.timed_join(td1);
 			boost::thread th_speech3(boost::bind(&sp5_tts_caller, sEnjoy));
-                        bool const has_completed2 = th_motion31.timed_join(td5);
+                        has_completed = th_motion31.timed_join(td15);
 			boost::thread th_motion41(boost::bind(&sp5_control_caller, UNIT_ARM_R, CMD_MOVE_ABS, 8, aArmIni));
 			//Do my best
-                        bool const has_completed3 = th_motion41.timed_join(td5);
+                        has_completed = th_motion41.timed_join(td5);
 			boost::thread th_motion42(boost::bind(&sp5_control_caller, UNIT_ARM_L, CMD_MOVE_ABS, 8, aArmDoMyBest));
-			ros::Duration(2.5).sleep();
+                        has_completed = th_motion42.timed_join(td4);
 			boost::thread th_speech4(boost::bind(&sp5_tts_caller, sDoMyBest));
-                        bool const has_completed4 = th_motion42.timed_join(td5);
+                        has_completed = th_motion42.timed_join(td7);
 			boost::thread th_motion43(boost::bind(&sp5_control_caller, UNIT_ARM_L, CMD_MOVE_ABS, 8, aArmIni));
 		}
 		default:
