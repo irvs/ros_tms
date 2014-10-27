@@ -3,7 +3,6 @@
 
 #include <cnoid/ScenePieces>
 #include <cnoid/SceneGraph>
-#include <GeometryHandler/GeometryHandle.h>
 #include <math.h>
 
 #define PI 3.141592
