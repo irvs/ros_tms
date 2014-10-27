@@ -535,7 +535,7 @@ void TmsRpBar::receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& m
 
 //------------------------------------------------------------------------------
 void TmsRpBar::getPcdData(){
-//  os << "targetBodyItems size = " << targetBodyItems.size() << endl;
+  os << "targetBodyItems size = " << targetBodyItems.size() << endl;
 
 //  if(targetBodyItems.size()!=1){
 //    os << "Please select one bodyitem" << endl;

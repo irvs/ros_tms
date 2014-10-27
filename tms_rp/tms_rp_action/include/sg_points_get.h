@@ -39,9 +39,9 @@ class SgPointsRenderer : public cnoid::SgCustomGLNode {
 
 			for(int i=0; i<pcd->points.size(); i++) {
 			  d = sqrt((pcd->points[i].x)*(pcd->points[i].x) + (pcd->points[i].y)*(pcd->points[i].y));
-			  r = sin((d/10)*(PI/2)); //距離10mで最大、r^2+g^2=1
+              r = sin((d/10)*(PI/2)); //距離10mで最大、r^2+g^2=1
 			  g = sqrt(1-r*r);
-			  b = 1;
+              b = 1;
 			  glColor3f(r,g,b);
               //glVertex3d(pcd->points[i].x,pcd->points[i].y,pcd->points[i].z);
               glVertex3d(pcd->points[i].x,pcd->points[i].y,1);
