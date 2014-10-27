@@ -1,7 +1,7 @@
-﻿#include <tms_rp_controller.h>
-#include <tms_rp_bar.h>
+#include <tms_rp_controller.h>
 #include <tms_rp_bar.h>
 #include <sg_points_get.h>
+#include <draw_points.h>
 
 //------------------------------------------------------------------------------
 #define MAX_ICS_OBJECT_NUM    25
@@ -150,6 +150,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   // create space model
   tac.createRecord(5001,"floor928");
   tac.createRecord(5002,"wall928");
+  tac.createRecord(5005,"corridor928");
 
   // create furniture model
   tac.createRecord(6001,"big_sofa");
@@ -383,6 +384,24 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
     ROS_ERROR("[TmsAction] Failed to call service get_db_data");
   }
 
+
+  get_db_data.request.tmsdb.id = 5005 + sid;
+
+  if (get_data_client.call(get_db_data)){
+    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x)/1000;
+    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y)/1000;
+    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
+    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
+    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
+    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+
+    tac.appear("corridor928");
+    tac.setPos("corridor928", Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+  } else {
+    tac.appear("corridor928");
+    ROS_ERROR("[TmsAction] Failed to call service get_db_data");
+  }
+
   //----------------------------------------------------------------------------
   //  appear and setpos furniture model
   int32_t furnitureID = 0;
@@ -528,16 +547,43 @@ void TmsRpBar::getPcdData(){
 //    ItemTreeView::mainInstance()->checkItem(targetBodyItems[0],true);
 //    MessageView::mainInstance()->flush();
 
-////    callLater(bind(&TmsRpController::disappear,tac,"smartpal5_2"));
-////    callLater(bind(&TmsRpController::appear,tac,"smartpal5_2"));
+//    callLater(bind(&TmsRpController::disappear,tac,"smartpal5_2"));
+//    callLater(bind(&TmsRpController::appear,tac,"smartpal5_2"));
 
 //    loop_rate.sleep();
 //  }
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::onPCDThreadButtonClicked(){
-  static boost::thread t(boost::bind(&TmsRpBar::getPcdData, this));
+void TmsRpBar::onPCDThreadButtonClicked() {
+//  ROS_INFO("targetBodyItems size = %f",targetBodyItems.size());
+
+//  if(targetBodyItems.size()!=1){
+//    ROS_INFO("Please select one bodyitem");
+//    return;
+//  }
+
+//    SgDrawPoints::SgLastRenderer(0,true);
+//    SgGroupPtr node  = (SgGroup*)targetBodyItems[0]->body()->link(1)->shape();
+//    SgGetPoints visit;
+//    node->accept(visit);
+//    if(visit.shape.size()==0){
+//        ROS_INFO("no shape node");
+//        return;
+//    }
+
+//    SgDrawPoints* cr = SgDrawPoints::SgLastRenderer(0,false);
+//    cr = new SgDrawPoints();
+//    visit.shape[0]->mesh()->triangles().clear();
+//    node->addChild(cr);
+
+
+//    ItemTreeView::mainInstance()->checkItem(targetBodyItems[0],false);
+//    MessageView::mainInstance()->flush();
+//    ItemTreeView::mainInstance()->checkItem(targetBodyItems[0],true);
+//    MessageView::mainInstance()->flush();
+
+  //  static boost::thread t(boost::bind(&TmsRpBar::getPcdData, this));
 }
 
 //------------------------------------------------------------------------------
