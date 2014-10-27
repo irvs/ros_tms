@@ -1,4 +1,4 @@
-﻿#ifndef _TMS_ACTION_BAR_H_INCLUDED
+#ifndef _TMS_ACTION_BAR_H_INCLUDED
 #define _TMS_ACTION_BAR_H_INCLUDED
 
 #include <tms_rp_controller.h>
@@ -18,6 +18,12 @@
 #include <tms_msg_db/TmsdbGetData.h>
 #include <tms_msg_db/Tmsdb.h>
 #include <tms_msg_db/TmsdbStamped.h>
+
+#include <tms_msg_rp/rps_position.h>
+#include <tms_msg_rp/rps_route.h>
+#include <tms_msg_rp/rps_map_data.h>
+#include <tms_msg_rp/rps_map_y.h>
+#include <tms_msg_rp/rps_map_full.h>
 
 #include <cnoid/ItemTreeView>
 #include <cnoid/MessageView>
@@ -92,8 +98,10 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   ros::ServiceClient path_planning_client;
   ros::ServiceClient ardrone_client;
   ros::Subscriber    subscribe_pcd;
+  ros::Subscriber    subscribe_map;
 
   pcl::PointCloud<pcl::PointXYZ> pointCloudData;
+  tms_msg_rp::rps_map_full       staticMapData;
 
   boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)>& sigBodyItemSelectionChanged() {return sigBodyItemSelectionChanged_;}
 
@@ -125,6 +133,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void onItemSelectionChanged(const cnoid::ItemList<cnoid::BodyItem>& bodyItems);
   void onPCDThreadButtonClicked();
   void receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& msg);
+  void receiveMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg);
   void getPcdData();
 
   void onUpdateInfoButtonClicked();

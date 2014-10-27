@@ -76,3 +76,4 @@
 20005 none /etc/person_marker_hrp.wrl
 20006 none /etc/person_marker_hrp.wrl
 20007 none /robot/ardrone/ardrone_goal_hrp.wrl
+20008 none /etc/mini_pole_hrp.wrl
