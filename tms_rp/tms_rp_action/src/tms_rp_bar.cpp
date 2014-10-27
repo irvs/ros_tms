@@ -123,6 +123,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   path_planning_client  = nh.serviceClient<tms_msg_rp::rps_path_planning>("rps_path_planning");
   ardrone_client        = nh.serviceClient<tms_msg_rc::robot_control>("robot_control");
   subscribe_pcd         = nh.subscribe("velodyne_points", 10, &TmsRpBar::receivePointCloudData, this);
+  subscribe_map         = nh.subscribe("rps_map_data", 10, &TmsRpBar::receiveMapData, this);
 
   //------------------------------------------------------------------------------
   // create person model
@@ -183,6 +184,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   tac.createRecord(20005,"person_marker4");
   tac.createRecord(20006,"person_marker5");
   tac.createRecord(20007,"ardrone_goal_position");
+  tac.createRecord(20008,"mini_pole");
 
   // arrange model
   mat0       <<  1, 0, 0, 0, 1, 0, 0, 0, 1;  //   0
@@ -534,6 +536,12 @@ void TmsRpBar::receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& m
 }
 
 //------------------------------------------------------------------------------
+void TmsRpBar::receiveMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg)
+{
+  staticMapData = *msg;
+}
+
+//------------------------------------------------------------------------------
 void TmsRpBar::getPcdData(){
   os << "targetBodyItems size = " << targetBodyItems.size() << endl;
 
@@ -575,32 +583,31 @@ void TmsRpBar::getPcdData(){
 
 //------------------------------------------------------------------------------
 void TmsRpBar::onPCDThreadButtonClicked() {
-//  ROS_INFO("targetBodyItems size = %f",targetBodyItems.size());
+  ROS_INFO("targetBodyItems size = %ld",targetBodyItems.size());
 
-//  if(targetBodyItems.size()!=1){
-//    ROS_INFO("Please select one bodyitem");
-//    return;
-//  }
+  if(targetBodyItems.size()!=1){
+    ROS_INFO("Please select one bodyitem");
+    return;
+  }
 
-//    SgDrawPoints::SgLastRenderer(0,true);
-//    SgGroupPtr node  = (SgGroup*)targetBodyItems[0]->body()->link(1)->shape();
-//    SgGetPoints visit;
-//    node->accept(visit);
-//    if(visit.shape.size()==0){
-//        ROS_INFO("no shape node");
-//        return;
-//    }
+  SgPointsDrawing::SgLastRenderer(0,true);
+  SgGroupPtr node  = (SgGroup*)targetBodyItems[0]->body()->link(0)->shape();
+  SgPointsGet visit;
+  node->accept(visit);
+  if(visit.shape.size()==0){
+    ROS_INFO("no shape node, %ld", visit.shape.size());
+    return;
+  }
 
-//    SgDrawPoints* cr = SgDrawPoints::SgLastRenderer(0,false);
-//    cr = new SgDrawPoints();
-//    visit.shape[0]->mesh()->triangles().clear();
-//    node->addChild(cr);
+  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
+  cr = new SgPointsDrawing(&staticMapData);
+  visit.shape[0]->mesh()->triangles().clear();
+  node->addChild(cr);
 
-
-//    ItemTreeView::mainInstance()->checkItem(targetBodyItems[0],false);
-//    MessageView::mainInstance()->flush();
-//    ItemTreeView::mainInstance()->checkItem(targetBodyItems[0],true);
-//    MessageView::mainInstance()->flush();
+  ItemTreeView::mainInstance()->checkItem(targetBodyItems[0],false);
+  MessageView::mainInstance()->flush();
+  ItemTreeView::mainInstance()->checkItem(targetBodyItems[0],true);
+  MessageView::mainInstance()->flush();
 
   //  static boost::thread t(boost::bind(&TmsRpBar::getPcdData, this));
 }
