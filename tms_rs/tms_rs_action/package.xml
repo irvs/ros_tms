@@ -7,9 +7,10 @@
  
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>
 
-  <url type="website">http://robotics.ait.kyushu-u.ac.jp/</url>
-  <url type="git">http://orion.ait.kyushu-u.ac.jp/ros-tms/ros_tms/</url>
+  <url type="website">http://robotics.ait.kyushu-u.ac.jp/index-e.html</url>
+  <url type="git">https://github.com/irvs/ros_tms</url>
 
+  <author email="passionvirus@gmail.com">Yoonseok Pyo</author>
   <author email="alaoui.hao@gmail.com">Alaoui Hassani Atlas Omar</author>
 
   <buildtool_depend>catkin</buildtool_depend>
