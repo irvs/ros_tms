@@ -1,17 +1,19 @@
 <?xml version="1.0"?>
 <package>
   <name>tms_rs_greeting_demo</name>
-  <version>0.0.0</version>
+  <version>0.0.1</version>
+  <license>BSD</license>
   <description>The tms_rs_greeting_demo package</description>
 
   <maintainer email="hashiguchi@irvs.ait.kyushu-u.ac.jp">hashiguchi</maintainer>
 
-  <!-- One license tag required, multiple allowed, one license per tag -->
-  <!-- Commonly used license strings: -->
-  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>BSD</license>
+  <url type="website">http://robotics.ait.kyushu-u.ac.jp/index-e.html</url>
+  <url type="git">http://orion.ait.kyushu-u.ac.jp/HRSG/ros_tms/</url>
+
+  <author email="hashiguchi@irvs.ait.kyushu-u.ac.jp">hashiguchi</author>
 
   <buildtool_depend>catkin</buildtool_depend>
+
   <build_depend>roscpp</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>tms_msg_rs</build_depend>
@@ -22,13 +24,6 @@
   <run_depend>tms_msg_rs</run_depend>
   <run_depend>tms_msg_rc</run_depend>
 
-
-  <!-- The export tag contains other, unspecified, tags -->
   <export>
-    <!-- You can specify that this package is a metapackage here: -->
-    <!-- <metapackage/> -->
-
-    <!-- Other tools can request additional information be placed here -->
-
   </export>
 </package>

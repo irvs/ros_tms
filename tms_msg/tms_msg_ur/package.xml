@@ -7,8 +7,8 @@
  
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>
 
-  <url type="website">http://robotics.ait.kyushu-u.ac.jp/</url>
-  <url type="git">http://orion.ait.kyushu-u.ac.jp/ros-tms/ros_tms/</url>
+  <url type="website">http://robotics.ait.kyushu-u.ac.jp/index-e.html</url>
+  <url type="git">https://github.com/irvs/ros_tms</url>
 
   <author email="tetsuro@irvs.ait.kyushu-u.ac.jp">Tetsuro Oishi</author>
 
