@@ -135,6 +135,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   //tac.createRecord(2004,"turtlebot2");
   tac.createRecord(2005,"kobuki");
   tac.createRecord(2006,"kxp");
+  tac.createRecord(2007,"wheelchair");
   tac.createRecord(2008,"ardrone");
   tac.createRecord(2009,"refrigerator");
   tac.createRecord(2010,"refrigerator_open");
@@ -302,6 +303,24 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   } else {
     tac.appear("kxp");
     tac.disappear("kxp2");
+    ROS_ERROR("[TmsAction] Failed to call service get_db_data");
+  }
+
+  //----------------------------------------------------------------------------
+  get_db_data.request.tmsdb.id = 2007 + sid;
+
+  if (get_data_client.call(get_db_data)){
+    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x)/1000;
+    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y)/1000;
+    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
+    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
+    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
+    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+
+    tac.appear("wheelchair");
+    tac.setPos("wheelchair",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+  } else {
+    tac.appear("wheelchair");
     ROS_ERROR("[TmsAction] Failed to call service get_db_data");
   }
 
