@@ -5,17 +5,12 @@ field SFString vendor "Parametric Technology Corporation"
 field SFString product "Pro/ENGINEER"
 field SFString version ""
 field SFString sceneFile ""]
-{WorldInfo {}}
 
-PROTO Node_Info [
-field SFString node_type ""
-field SFString node_name ""]
-{WorldInfo {}}
 
 PROTO Geom_Type [
 field SFString geom_type_s "T_Empty"
 field SFInt32 trg_qual 1]
-{WorldInfo {}}
+
 
 PROTO Member_Info [
 field SFString member_name ""
@@ -24,7 +19,7 @@ field SFString proe_name ""
 field SFString proe_type_s  ""
 field SFString expl_status_s "Vrml_Exp_Unknown"
 field MFFloat drag_trf [] ]
-{WorldInfo {}}
+
 
 PROTO Model_Info [
 field SFInt32 proe_id 6
@@ -38,7 +33,7 @@ field SFString inst_type_s "Inst_Type_Main"
 field SFString generic_name "generic_name"
 field SFFloat s_factor 39.3701
 ]
-{WorldInfo {}}
+
 
 Header_Info{
 vendor "Parametric Technology Corporation"
