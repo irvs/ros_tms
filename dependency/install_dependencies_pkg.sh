@@ -32,3 +32,4 @@ qhull-bin \
 libqhull-dev \
 liblapack-dev \
 libqwt-dev \
+ros-indigo-kobuki-msgs \
