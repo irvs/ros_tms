@@ -13,6 +13,15 @@
 #include <tms_msg_rc/katana_pos_array.h>
 #include <tms_msg_rc/rc_robot_control.h>
 #include <tms_msg_rs/rs_home_appliances.h>
+#include <tms_msg_ss/ods_person_dt.h>
+#include <kobuki_msgs/Sound.h>
+#include <kobuki_msgs/MotorPower.h>
+#include <sensor_msgs/PointCloud2.h>
+
+#include <boost/thread.hpp>
+#include <boost/bind.hpp>
+#include <stdlib.h>
+#include <math.h>
 
 namespace tms_rp {
 
@@ -27,9 +36,15 @@ class TmsRpSubtask : public cnoid::ToolBar, public boost::signals::trackable
 	bool subtask(tms_msg_rp::rp_cmd::Request &req,tms_msg_rp::rp_cmd::Response &res);
 	bool sp5_control(bool type, int unit, int cmd, int arg_size, double* arg);
 	bool kxp_control(bool type, int unit, int cmd, int arg_size, double* arg);
+	void sensingCallback(const tms_msg_ss::ods_person_dt::ConstPtr& msg);
 
  private:
 	uint32_t sid;
+
+	// for thread
+	bool move(bool type, int robot_id, int arg_type);
+	bool random_move(void);
+	bool sensing(void);
 
 	ros::ServiceServer rp_subtask_server;
 	ros::ServiceClient get_data_client;
@@ -41,6 +56,10 @@ class TmsRpSubtask : public cnoid::ToolBar, public boost::signals::trackable
 	ros::ServiceClient voronoi_path_planning_client;
 	ros::ServiceClient give_obj_client;
 	ros::ServiceClient refrigerator_client;
+
+	ros::Publisher kobuki_sound;
+	ros::Publisher kobuki_motorpower;
+	ros::Subscriber sensing_sub;
 
 	std::ostream& os;
 	grasp::TmsRpController& tac;

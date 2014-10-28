@@ -306,8 +306,8 @@ Endpoints clustering(pcl::PointCloud<pcl::PointXYZRGB>& f_cloud, pcl::PointCloud
         //std::cout << "p2 " << fin_endpoints_vec[i].p2.x << " " << fin_endpoints_vec[i].p2.y << " " << fin_endpoints_vec[i].p2.z << std::endl;
     }
 
-    pcl::io::savePCDFile("src/person_detection/data/person_detection/group_cloud.pcd", *tmp_cloud);
-    pcl::io::savePCDFile("src/person_detection/data/person_detection/cluster_cloud.pcd", *tmp_cloud2);
+    pcl::io::savePCDFile("/home/hashiguchi/catkin_ws/src/ros_tms/tms_ss/tms_ss_ods/ods_person_detection/data/group_cloud.pcd", *tmp_cloud);
+    pcl::io::savePCDFile("/home/hashiguchi/catkin_ws/src/ros_tms/tms_ss/tms_ss_ods/ods_person_detection/data/cluster_cloud.pcd", *tmp_cloud2);
 
     cloud = *tmp_cloud;
 
