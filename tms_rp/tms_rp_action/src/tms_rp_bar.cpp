@@ -1,5 +1,6 @@
 #include <tms_rp_controller.h>
 #include <tms_rp_bar.h>
+#include <tms_rp_pp.h>
 #include <sg_points_get.h>
 #include <draw_points.h>
 
@@ -1572,13 +1573,15 @@ void TmsRpBar::standby(){
   os <<  "standby service" << endl;
   production_version = true;
   os << "production_version = " << production_version << endl;
+  tms_rp::TmsRpPathPlanning pp;
 
   static ros::Rate loop_rate(10); // 0.1sec
   while (ros::ok())
   {
-    //todo
     onUpdateInfoButtonClicked();
-    //
+
+    pp.mapPublish();
+
     ros::spinOnce();
     loop_rate.sleep();
   }
