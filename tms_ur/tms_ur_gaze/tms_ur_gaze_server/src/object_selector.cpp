@@ -7,8 +7,8 @@
 // include for ROS
 #include "ros/ros.h"
 #include "tms_msg_db/TmsdbGetData.h"
-#include "gaze_detection/result.h"
-#include "gaze_detection/object_list.h"
+#include "tms_ur_gaze_server/result.h"
+#include "tms_ur_gaze_server/object_list.h"
 
 // include for std
 #define _USE_MATH_DEFINES
@@ -275,12 +275,12 @@ bool Compare2(const Object *object1, const Object *object2) {
 
 //------------------------------------------------------------------------------
 // Sort the possible objects
-bool SortList(gaze_detection::object_list::Request  &req, 
-              gaze_detection::object_list::Response &res) {
+bool SortList(tms_ur_gaze_server::object_list::Request  &req, 
+              tms_ur_gaze_server::object_list::Response &res) {
   ros::NodeHandle n;
-  ros::Publisher display_pub = n.advertise<gaze_detection::result>("gaze_detection_answer", 10);
+  ros::Publisher display_pub = n.advertise<tms_ur_gaze_server::result>("tms_ur_gaze_server_answer", 10);
 
-  gaze_detection::result msg;
+  tms_ur_gaze_server::result msg;
 
   std::vector<Object*> object;  // for indirect referencing
   std::vector<Object*>::iterator it, begin, end;
@@ -337,7 +337,7 @@ bool SortList(gaze_detection::object_list::Request  &req,
   std::cout << std::endl;
   it = begin;
 
-  // Publish to gaze_detection_display
+  // Publish
   msg.name = (*it)->name;
   msg.name = (*it)->objectID;
   display_pub.publish(msg);

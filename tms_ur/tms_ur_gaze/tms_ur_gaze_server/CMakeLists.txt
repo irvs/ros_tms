@@ -17,6 +17,7 @@ add_message_files(
 add_service_files(
   FILES
   object_list.srv
+  recognized_text.srv
 )
 
 generate_messages(
