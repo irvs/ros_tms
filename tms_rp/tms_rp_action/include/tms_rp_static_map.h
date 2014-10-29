@@ -1,8 +1,7 @@
-#ifndef TMS_RP_PP_H
-#define TMS_RP_PP_H
+#ifndef TMS_RP_STATIC_MAP_H
+#define TMS_RP_STATIC_MAP_H
 
 #include <tms_rp_bar.h>
-
 #include <tms_msg_rp/rps_map_full.h>
 
 namespace tms_rp {
@@ -23,12 +22,12 @@ class CollisionMapData
   double  table_height;
 };
 
-class TmsRpPathPlanning : public cnoid::ToolBar, public boost::signals::trackable
+class TmsRpStaticMap : public cnoid::ToolBar, public boost::signals::trackable
 {
  public:
-  TmsRpPathPlanning();
-  static TmsRpPathPlanning* instance();
-  virtual ~TmsRpPathPlanning();
+  TmsRpStaticMap();
+  static TmsRpStaticMap* instance();
+  virtual ~TmsRpStaticMap();
   void mapPublish();
 
  private:
@@ -51,4 +50,4 @@ class TmsRpPathPlanning : public cnoid::ToolBar, public boost::signals::trackabl
 };
 }
 
-#endif // TMS_RP_RMP_H
+#endif // TMS_RP_STATIC_MAP_H

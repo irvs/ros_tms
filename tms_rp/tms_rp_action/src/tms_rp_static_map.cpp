@@ -1,20 +1,21 @@
-#include <tms_rp_pp.h>
+#include <tms_rp_static_map.h>
 
 //------------------------------------------------------------------------------
 using namespace std;
 using namespace boost;
 using namespace cnoid;
 using namespace grasp;
+using namespace tms_rp;
 
 //------------------------------------------------------------------------------
-tms_rp::TmsRpPathPlanning* tms_rp::TmsRpPathPlanning::instance()
+TmsRpStaticMap* TmsRpStaticMap::instance()
 {
-  static tms_rp::TmsRpPathPlanning* instance = new tms_rp::TmsRpPathPlanning();
+  static TmsRpStaticMap* instance = new TmsRpStaticMap();
   return instance;
 }
 
 //------------------------------------------------------------------------------
-tms_rp::TmsRpPathPlanning::TmsRpPathPlanning(): ToolBar("TmsRpPathPlanning"),
+TmsRpStaticMap::TmsRpStaticMap(): ToolBar("TmsRpStaticMap"),
         os(MessageView::mainInstance()->cout()),
         tac(*TmsRpController::instance()) {
   sid = 100000;
@@ -30,12 +31,12 @@ tms_rp::TmsRpPathPlanning::TmsRpPathPlanning(): ToolBar("TmsRpPathPlanning"),
 }
 
 //------------------------------------------------------------------------------
-tms_rp::TmsRpPathPlanning::~TmsRpPathPlanning()
+TmsRpStaticMap::~TmsRpStaticMap()
 {
 }
 
 //------------------------------------------------------------------------------
-bool tms_rp::TmsRpPathPlanning::initCollisionMap(vector<vector<CollisionMapData> >& map){
+bool TmsRpStaticMap::initCollisionMap(vector<vector<CollisionMapData> >& map){
   FILE *fp;
   string file_name;
   char home_dir[255];
@@ -140,7 +141,7 @@ bool tms_rp::TmsRpPathPlanning::initCollisionMap(vector<vector<CollisionMapData>
 }
 
 //------------------------------------------------------------------------------
-bool tms_rp::TmsRpPathPlanning::setVoronoiLine(vector<vector<CollisionMapData> >& map, string& message){
+bool TmsRpStaticMap::setVoronoiLine(vector<vector<CollisionMapData> >& map, string& message){
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -238,7 +239,7 @@ bool tms_rp::TmsRpPathPlanning::setVoronoiLine(vector<vector<CollisionMapData> >
 }
 
 //------------------------------------------------------------------------------
-bool tms_rp::TmsRpPathPlanning::calcDistFromObj(vector<vector<CollisionMapData> >& map, string& message){
+bool TmsRpStaticMap::calcDistFromObj(vector<vector<CollisionMapData> >& map, string& message){
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -278,7 +279,7 @@ bool tms_rp::TmsRpPathPlanning::calcDistFromObj(vector<vector<CollisionMapData> 
 }
 
 //------------------------------------------------------------------------------
-void tms_rp::TmsRpPathPlanning::convertMap(vector<vector<CollisionMapData> > map, tms_msg_rp::rps_map_full& pp_map){
+void TmsRpStaticMap::convertMap(vector<vector<CollisionMapData> > map, tms_msg_rp::rps_map_full& pp_map){
   pp_map.rps_map_x.clear();
 
   pp_map.x_llimit = x_llimit;
@@ -304,7 +305,7 @@ void tms_rp::TmsRpPathPlanning::convertMap(vector<vector<CollisionMapData> > map
 }
 
 //------------------------------------------------------------------------------
-void tms_rp::TmsRpPathPlanning::mapPublish(){
+void TmsRpStaticMap::mapPublish(){
   pp_map_pub.publish(pub_map);
 }
 
