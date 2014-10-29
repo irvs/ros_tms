@@ -5,65 +5,65 @@
 #include <cnoid/SceneGraph>
 #include <math.h>
 
-//#define PI 3.141592
+#define PI 3.141592
 
-//namespace grasp{
+namespace grasp{
 
-//class SgPointsRenderer;
+class SgPointsDrawing;
 
-//class SgPointsGet : public cnoid::SgVisitor {
-//	public:
-//    std::vector<cnoid::SgShape*> shape;
-//    virtual void visitShape(cnoid::SgShape* shape){
-//		  this->shape.push_back(shape);
-//		}
-//};
+class SgPointsDrawing : public cnoid::SgCustomGLNode {
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-//class SgPointsRenderer : public cnoid::SgCustomGLNode {
-//  public:
-//		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  SgPointsDrawing(tms_msg_rp::rps_map_full* mapData) {
+    setRenderingFunction(boost::bind(&SgPointsDrawing::renderPoints, this));
+    this->mapData = mapData;
+  }
 
-//		SgPointsRenderer(pcl::PointCloud<pcl::PointXYZ>* pcd) {
-//			setRenderingFunction(boost::bind(&SgPointsRenderer::renderPoints, this));
-//			this->pcd = pcd;
-//		}
+  void renderPoints() {
+    glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
+    glDisable(GL_LIGHTING);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-//		void renderPoints() {
-//			glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
-//			glDisable(GL_LIGHTING);
-//			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    float r=0,g=0,b=0;
 
-//			glBegin(GL_POINTS);
+    glPointSize(5.0);
+    glColor3f(r,g,b);
 
-//			float d=0,r=0,g=0,b=0;
+    glBegin(GL_POINTS);
 
-//			for(int i=0; i<pcd->points.size(); i++) {
-//			  d = sqrt((pcd->points[i].x)*(pcd->points[i].x) + (pcd->points[i].y)*(pcd->points[i].y));
-//			  r = sin((d/10)*(PI/2));
-//			  g = sqrt(1-r*r);
-//			  b = 1;=
-//			  glColor3f(r,g,b);
-//              //glVertex3d(pcd->points[i].x,pcd->points[i].y,pcd->points[i].z);
-//              glVertex3d(pcd->points[i].x,pcd->points[i].y,1);
-//			}
+    r = 1.0;
+    g = 0.0;
+    b = 0.0;
 
-//			glEnd();
-//			glPopAttrib();
-//		}
-//		virtual void accept(cnoid::SgVisitor& visitor){
-//			cnoid::SgCustomGLNode::accept(visitor);
-//			SgLastRenderer(this, true);
-//		}
-//		static SgPointsRenderer* SgLastRenderer(SgPointsRenderer* sg, bool isWrite){
-//			static SgPointsRenderer* last;
-//			if(isWrite) last=sg;
-//			return last;
-//		}
-//		pcl::PointCloud<pcl::PointXYZ>* pcd;
-//};
+    for(unsigned int x=0;x<mapData->rps_map_x.size();x++){
+      for(unsigned int y=0;y<mapData->rps_map_x[x].rps_map_y.size();y++){
+        if(mapData->rps_map_x[x].rps_map_y[y].voronoi){
+          glVertex3d(x*0.1,y*0.1,0.1);
+        }
+      }
+    }
 
-//typedef boost::intrusive_ptr<SgPointsRenderer> SgPointsRendererPtr;
-//}
+    glEnd();
 
+    glPopAttrib();
+  }
+
+  virtual void accept(cnoid::SgVisitor& visitor){
+    cnoid::SgCustomGLNode::accept(visitor);
+    SgLastRenderer(this, true);
+  }
+
+  static SgPointsDrawing* SgLastRenderer(SgPointsDrawing* sg, bool isWrite){
+    static SgPointsDrawing* last;
+    if(isWrite) last=sg;
+    return last;
+    }
+
+    tms_msg_rp::rps_map_full* mapData;
+};
+
+typedef boost::intrusive_ptr<SgPointsDrawing> SgPointsDrawingPtr;
+}
 
 #endif // DRAW_POINTS_H
