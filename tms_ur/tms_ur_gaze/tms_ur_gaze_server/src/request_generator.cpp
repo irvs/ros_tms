@@ -6,10 +6,10 @@
 //------------------------------------------------------------------------------
 // Include for ROS
 #include "ros/ros.h"
-#include "tms_ur_glass_test/object_list.h"
-#include "tms_ur_glass_test/dictation_data.h"
+#include "tms_ur_gaze_server/object_list.h"
+#include "tms_ur_gaze_server/dictation_data.h"
 #include "tms_msg_rp/rp_arrow.h"
-#include "msg_data/recognized_text.h"
+#include "tms_ur_gaze_server/recognized_text.h"
 
 // Include for std::
 #include <map>
@@ -56,7 +56,7 @@ void SetDataTable() {
 
 //------------------------------------------------------------------------------
 // List candidates based on the given tag
-void ListCandidates(std::string tag, tms_ur_glass_test::object_list* srv) {
+void ListCandidates(std::string tag, tms_ur_gaze_server::object_list* srv) {
   if (tag == "chipstar") {
     srv->request.id_in.push_back(7001); // chipstar_red
     srv->request.id_in.push_back(7002); // chipstar_orange
@@ -82,13 +82,13 @@ void ListCandidates(std::string tag, tms_ur_glass_test::object_list* srv) {
 
 //------------------------------------------------------------------------------
 // Callback function
-bool dictCallback(msg_data::recognized_text::Request  &req, 
-                  msg_data::recognized_text::Response &res) {
+bool dictCallback(tms_ur_gaze_server::recognized_text::Request  &req, 
+                  tms_ur_gaze_server::recognized_text::Response &res) {
   ros::NodeHandle n;
-  ros::ServiceClient client = n.serviceClient<tms_ur_glass_test::object_list>("object_decision");
+  ros::ServiceClient client = n.serviceClient<tms_ur_gaze_server::object_list>("object_decision");
   ros::ServiceClient disp_client = n.serviceClient<tms_msg_rp::rp_arrow>("rp_arrow");
   
-  tms_ur_glass_test::object_list srv;
+  tms_ur_gaze_server::object_list srv;
   tms_msg_rp::rp_arrow disp_srv;
 
   std::cout << "Detected sentence: " << req.request << std::endl;
