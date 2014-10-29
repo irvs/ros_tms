@@ -24,10 +24,10 @@ TmsRpStaticMap::TmsRpStaticMap(): ToolBar("TmsRpStaticMap"),
 
   pp_map_pub = nh.advertise<tms_msg_rp::rps_map_full>("rps_map_data", 1);
 
-  initCollisionMap(map);
-  setVoronoiLine(map, msg);
-  calcDistFromObj(map, msg);
-  convertMap(map, pub_map);
+  InitCollisionMap(map);
+  SetVoronoiLine(map, msg);
+  CalcDistFromObj(map, msg);
+  ConvertMap(map, pub_map);
 }
 
 //------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ TmsRpStaticMap::~TmsRpStaticMap()
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpStaticMap::initCollisionMap(vector<vector<CollisionMapData> >& map){
+bool TmsRpStaticMap::InitCollisionMap(vector<vector<CollisionMapData> >& map){
   FILE *fp;
   string file_name;
   char home_dir[255];
@@ -141,7 +141,7 @@ bool TmsRpStaticMap::initCollisionMap(vector<vector<CollisionMapData> >& map){
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpStaticMap::setVoronoiLine(vector<vector<CollisionMapData> >& map, string& message){
+bool TmsRpStaticMap::SetVoronoiLine(vector<vector<CollisionMapData> >& map, string& message){
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -239,7 +239,7 @@ bool TmsRpStaticMap::setVoronoiLine(vector<vector<CollisionMapData> >& map, stri
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpStaticMap::calcDistFromObj(vector<vector<CollisionMapData> >& map, string& message){
+bool TmsRpStaticMap::CalcDistFromObj(vector<vector<CollisionMapData> >& map, string& message){
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -279,7 +279,7 @@ bool TmsRpStaticMap::calcDistFromObj(vector<vector<CollisionMapData> >& map, str
 }
 
 //------------------------------------------------------------------------------
-void TmsRpStaticMap::convertMap(vector<vector<CollisionMapData> > map, tms_msg_rp::rps_map_full& pp_map){
+void TmsRpStaticMap::ConvertMap(vector<vector<CollisionMapData> > map, tms_msg_rp::rps_map_full& pp_map){
   pp_map.rps_map_x.clear();
 
   pp_map.x_llimit = x_llimit;
@@ -305,7 +305,7 @@ void TmsRpStaticMap::convertMap(vector<vector<CollisionMapData> > map, tms_msg_r
 }
 
 //------------------------------------------------------------------------------
-void TmsRpStaticMap::mapPublish(){
+void TmsRpStaticMap::MapPublish(){
   pp_map_pub.publish(pub_map);
 }
 

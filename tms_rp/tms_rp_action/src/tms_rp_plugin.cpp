@@ -2,6 +2,7 @@
 #include <tms_rp_controller.h>
 #include <tms_rp_rp.h>
 #include <tms_rp_static_map.h>
+#include <tms_rp_pp.h>
 
 #include <cnoid/Plugin>
 #include <cnoid/ItemManager>
@@ -27,6 +28,7 @@ namespace {
         addToolBar(grasp::TmsRpBar::instance());
         addToolBar(tms_rp::TmsRpSubtask::instance());
         addToolBar(tms_rp::TmsRpStaticMap::instance());
+        addToolBar(tms_rp::TmsRpPathPlanning::instance());
         addToolBar(tms_rp::TmsRpView::instance());
         return true;
       }

@@ -28,7 +28,8 @@ class TmsRpStaticMap : public cnoid::ToolBar, public boost::signals::trackable
   TmsRpStaticMap();
   static TmsRpStaticMap* instance();
   virtual ~TmsRpStaticMap();
-  void mapPublish();
+  void MapPublish();
+  bool SetVoronoiLine(vector<vector<CollisionMapData> >& map, string& message);
 
  private:
   uint32_t sid;
@@ -43,10 +44,9 @@ class TmsRpStaticMap : public cnoid::ToolBar, public boost::signals::trackable
 
   double x_llimit, x_ulimit, y_llimit, y_ulimit, cell_size; //M
 
-  bool initCollisionMap(vector<vector<CollisionMapData> >& map);
-  bool setVoronoiLine(vector<vector<CollisionMapData> >& map, string& message);
-  bool calcDistFromObj(vector<vector<CollisionMapData> >& map, string& message);
-  void convertMap(vector<vector<CollisionMapData> > map, tms_msg_rp::rps_map_full& pp_map);
+  bool InitCollisionMap(vector<vector<CollisionMapData> >& map);
+  bool CalcDistFromObj(vector<vector<CollisionMapData> >& map, string& message);
+  void ConvertMap(vector<vector<CollisionMapData> > map, tms_msg_rp::rps_map_full& pp_map);
 };
 }
 
