@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="gradle_plugins-0.1.22">
+    <CLASSES>
+      <root url="jar:///opt/ros/hydro/share/maven/org/ros/rosjava_bootstrap/gradle_plugins/0.1.22/gradle_plugins-0.1.22.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
