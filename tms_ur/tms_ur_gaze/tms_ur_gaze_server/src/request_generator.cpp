@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 // @file   : request_generator.cpp
-// @brief  : Based on the received text, create some request
+// @brief  : Based on the received text, creates some request
 // @author : Kazuto Nakashima
 // @date   : 2014.06.27
 //------------------------------------------------------------------------------
