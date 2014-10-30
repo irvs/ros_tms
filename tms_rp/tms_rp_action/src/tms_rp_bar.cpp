@@ -465,11 +465,11 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
 
   addLabel(("[TmsAction]"));
 
-  addButton(("UpdateInfo"), ("Update TMS DB information"))->
-    sigClicked().connect(bind(&TmsRpBar::onUpdateInfoButtonClicked, this));
+//  addButton(("UpdateInfo"), ("Update TMS DB information"))->
+//    sigClicked().connect(bind(&TmsRpBar::onUpdateInfoButtonClicked, this));
 
-  addButton(("SimulationInfo"), ("Update TMS DB information"))->
-    sigClicked().connect(bind(&TmsRpBar::onSimulationInfoButtonClicked, this)); 
+//  addButton(("SimulationInfo"), ("Update TMS DB information"))->
+//    sigClicked().connect(bind(&TmsRpBar::onSimulationInfoButtonClicked, this));
 
 //  addButton(("InitPose"), ("Init pose of robot all joint"))->
 //    sigClicked().connect(bind(&TmsRpBar::onInitPoseButtonClicked, this));
@@ -501,16 +501,16 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   // addButton(("setRobotInfo"), ("setRobotInfo"))->
   //   sigClicked().connect(bind(&TmsRpBar::onMoveButtonClicked, this));
 
-  addButton(("simulation"), ("simulation"))->
-    sigClicked().connect(bind(&TmsRpBar::simulationButtonClicked, this));
+  addButton(QIcon(":/action/icons/simulation.png"), ("simulation mode"))
+    ->sigClicked().connect(bind(&TmsRpBar::simulationButtonClicked, this));
 
-  addButton(("standby"), ("standby"))->
+  addButton(QIcon(":/action/icons/ros.png"), ("connect the ros"))->
     sigClicked().connect(bind(&TmsRpBar::standbyButtonClicked, this));
 
-  addButton(("ardrone"), ("ardrone"))->
+  addButton(QIcon(":/action/icons/drone.png"), ("drone move"))->
     sigClicked().connect(bind(&TmsRpBar::ardroneButtonClicked, this));
 
-  addButton(("PCD"), ("Receiver the point cloud data"))->
+  addButton(QIcon(":/action/icons/map.png"), ("voronoi map"))->
     sigClicked().connect(bind(&TmsRpBar::onPCDThreadButtonClicked, this));
 
   ItemTreeView::mainInstance()->sigSelectionChanged().connect(bind(&TmsRpBar::onItemSelectionChanged, this, _1));

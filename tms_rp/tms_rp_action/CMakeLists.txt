@@ -47,7 +47,7 @@ set(QT_USE_QTOPENGL TRUE)
 include(${QT_USE_FILE})
 include_directories(${QT_INCLUDE_DIR} ${QT_OPENGL_INCLUDE_DIR})
 add_definitions(-DQT_NO_KEYWORDS)
-
+QT4_ADD_RESOURCES(RCS src/tms_rp_icons.qrc)
 
 ###########
 ## Build ##
@@ -70,6 +70,7 @@ link_directories(
 add_library(
   ${libname}
   SHARED
+  ${RCS}
   src/tms_rp_plugin.cpp
   src/tms_rp_bar.cpp
   src/tms_rp_controller.cpp

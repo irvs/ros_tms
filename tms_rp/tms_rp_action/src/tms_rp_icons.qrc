@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/action">
+        <file>icons/simulation.png</file>
+        <file>icons/drone.png</file>
+        <file>icons/ros.png</file>
+        <file>icons/map.png</file>
+    </qresource>
+</RCC>
