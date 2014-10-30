@@ -23,7 +23,10 @@ class TmsRpPathPlanning : public cnoid::ToolBar, public boost::signals::trackabl
 
  private:
   std::ostream& os_;
+  grasp::TmsRpController& tac_;
 
+  ros::Subscriber static_map_sub_;
+  ros::ServiceServer service_voronoi_path_;
   ros::Publisher robot_path_pub_;
 
   double x_llimit, x_ulimit, y_llimit, y_ulimit, cell_size; // Meter

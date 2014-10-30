@@ -16,8 +16,8 @@ TmsRpStaticMap* TmsRpStaticMap::instance()
 
 //------------------------------------------------------------------------------
 TmsRpStaticMap::TmsRpStaticMap(): ToolBar("TmsRpStaticMap"),
-        os(MessageView::mainInstance()->cout()),
-        tac(*TmsRpController::instance()) {
+                                  os(MessageView::mainInstance()->cout()),
+                                  tac(*TmsRpController::instance()) {
   sid = 100000;
 
   static ros::NodeHandle nh;

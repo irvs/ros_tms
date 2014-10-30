@@ -1606,7 +1606,6 @@ void TmsRpBar::standby(){
   production_version = true;
   os << "production_version = " << production_version << endl;
   tms_rp::TmsRpStaticMap StaticMap;
-  tms_rp::TmsRpPathPlanning PathPlanning;
 
   static ros::Rate loop_rate(10); // 0.1sec
   while (ros::ok())

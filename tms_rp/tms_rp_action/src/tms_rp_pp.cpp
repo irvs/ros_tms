@@ -23,11 +23,12 @@ TmsRpPathPlanning::TmsRpPathPlanning(): kSmartPal5CollisionThreshold_(400.0),
                                         kSmoothVoronoiPathThreshold_(100.0),
                                         kPushWagonPathThreshold_(200.0),
                                         ToolBar("TmsRpPathPlanning"),
-                                        os_(MessageView::mainInstance()->cout()) {
+                                        os_(MessageView::mainInstance()->cout()),
+                                        tac_(*TmsRpController::instance()) {
   static ros::NodeHandle nh;
 
-  ros::Subscriber static_map_sub = nh.subscribe("/rps_map_data", 10, &TmsRpPathPlanning::GetStaticMap, this);
-  ros::ServiceServer service_voronoi_path = nh.advertiseService("/rps_voronoi_path_planning", &TmsRpPathPlanning::VoronoiPathPlanner, this);
+  static_map_sub_ = nh.subscribe("/rps_map_data", 10, &TmsRpPathPlanning::GetStaticMap, this);
+  service_voronoi_path_ = nh.advertiseService("/rps_voronoi_path_planning", &TmsRpPathPlanning::VoronoiPathPlanner, this);
   robot_path_pub_ = nh.advertise<tms_msg_rp::rps_route>("/rps_robot_path", 1);
 
 }
