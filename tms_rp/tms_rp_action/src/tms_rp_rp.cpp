@@ -6,9 +6,10 @@ using namespace boost;
 using namespace cnoid;
 using namespace grasp;
 
-double sp5arm_init_arg[26] = {	0.0, 0.0, 1.0, 1.0,	/*waist*/
-									0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0,/*right arm*/
-									0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0 /*left arm*/};	//degree
+//------------------------------------------------------------------------------
+double sp5arm_init_arg[26] = {	0.0,   0.0, 1.0, 1.0,	/*waist*/
+				0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0,/*right arm*/
+				0.0,  10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0 /*left arm */}; //degree
 
 //------------------------------------------------------------------------------
 tms_rp::TmsRpSubtask* tms_rp::TmsRpSubtask::instance()
@@ -17,31 +18,37 @@ tms_rp::TmsRpSubtask* tms_rp::TmsRpSubtask::instance()
   return instance;
 }
 
+//------------------------------------------------------------------------------
 tms_rp::TmsRpSubtask::TmsRpSubtask(): ToolBar("TmsRpSubtask"),
 		os(MessageView::mainInstance()->cout()), tac(*TmsRpController::instance()) {
-	sid = 100000;
+  sid = 100000;
 
-	static ros::NodeHandle nh1;
-	rp_subtask_server = nh1.advertiseService("rp_cmd", &TmsRpSubtask::subtask, this);
-	get_data_client            = nh1.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
-	sp5_control_client         = nh1.serviceClient<tms_msg_rc::rc_robot_control>("sp5_control");
-	sp5_virtual_control_client = nh1.serviceClient<tms_msg_rc::rc_robot_control>("sp5_virtual_control");
-	kxp_virtual_control_client = nh1.serviceClient<tms_msg_rc::rc_robot_control>("kxp_virtual_control");
-	kxp_mbase_client           = nh1.serviceClient<tms_msg_rc::tms_rc_pmove>("pmove");
-	kobuki_virtual_control_client = nh1.serviceClient<tms_msg_rc::rc_robot_control>("kobuki_virtual_control");
-	voronoi_path_planning_client  = nh1.serviceClient<tms_msg_rp::rps_voronoi_path_planning>("rps_voronoi_path_planning");
-	give_obj_client   = nh1.serviceClient<tms_msg_rp::rps_goal_planning>("rps_give_obj_pos_planning");
-	refrigerator_client = nh1.serviceClient<tms_msg_rs::rs_home_appliances>("refrigerator_controller");
+  static ros::NodeHandle nh1;
 
-	kobuki_sound = nh1.advertise<kobuki_msgs::Sound>("/mobile_base/commands/sound", 1);
-	kobuki_motorpower = nh1.advertise<kobuki_msgs::MotorPower>("/mobile_base/commands/motor_power", 1);
-	sensing_sub = nh1.subscribe("/ods_realtime_persondt", 10, &TmsRpSubtask::sensingCallback, this);
-	}
+  rp_subtask_server             = nh1.advertiseService("rp_cmd", &TmsRpSubtask::subtask, this);
 
+  get_data_client               = nh1.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
+  sp5_control_client            = nh1.serviceClient<tms_msg_rc::rc_robot_control>("sp5_control");
+  sp5_virtual_control_client    = nh1.serviceClient<tms_msg_rc::rc_robot_control>("sp5_virtual_control");
+  kxp_virtual_control_client    = nh1.serviceClient<tms_msg_rc::rc_robot_control>("kxp_virtual_control");
+  kxp_mbase_client              = nh1.serviceClient<tms_msg_rc::tms_rc_pmove>("pmove");
+  kobuki_virtual_control_client = nh1.serviceClient<tms_msg_rc::rc_robot_control>("kobuki_virtual_control");
+  voronoi_path_planning_client  = nh1.serviceClient<tms_msg_rp::rps_voronoi_path_planning>("rps_voronoi_path_planning");
+  give_obj_client               = nh1.serviceClient<tms_msg_rp::rps_goal_planning>("rps_give_obj_pos_planning");
+  refrigerator_client           = nh1.serviceClient<tms_msg_rs::rs_home_appliances>("refrigerator_controller");
+
+  kobuki_sound                  = nh1.advertise<kobuki_msgs::Sound>("/mobile_base/commands/sound", 1);
+  kobuki_motorpower             = nh1.advertise<kobuki_msgs::MotorPower>("/mobile_base/commands/motor_power", 1);
+
+  sensing_sub                   = nh1.subscribe("/ods_realtime_persondt", 10, &TmsRpSubtask::sensingCallback, this);
+}
+
+//------------------------------------------------------------------------------
 tms_rp::TmsRpSubtask::~TmsRpSubtask()
 {
 }
 
+//------------------------------------------------------------------------------
 bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string& robot_name, tms_msg_rp::rps_voronoi_path_planning& rp_srv) {
 	tms_msg_db::TmsdbGetData srv;
 
@@ -90,6 +97,7 @@ bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string& r
 	}
 }
 
+//------------------------------------------------------------------------------
 bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
                       tms_msg_rp::rp_cmd::Response &res)
 {
@@ -504,6 +512,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 	return true;
 }
 
+//------------------------------------------------------------------------------
 // service caller to sp5_(virtual_)control
 bool tms_rp::TmsRpSubtask::sp5_control(bool type, int unit, int cmd, int arg_size, double* arg) {
 	tms_msg_rc::rc_robot_control sp_control_srv;
@@ -526,6 +535,7 @@ bool tms_rp::TmsRpSubtask::sp5_control(bool type, int unit, int cmd, int arg_siz
 	return true;
 }
 
+//------------------------------------------------------------------------------
 // service caller to kxp_(virtual_)control
 bool tms_rp::TmsRpSubtask::kxp_control(bool type, int unit, int cmd, int arg_size, double* arg) {
 	tms_msg_rc::rc_robot_control kxp_control_srv;
@@ -549,6 +559,7 @@ bool tms_rp::TmsRpSubtask::kxp_control(bool type, int unit, int cmd, int arg_siz
 	return true;
 }
 
+//------------------------------------------------------------------------------
 void tms_rp::TmsRpSubtask::sensingCallback(const tms_msg_ss::ods_person_dt::ConstPtr& msg) {
 	double dis = sqrt(((msg->p2_x - msg->p1_x)*(msg->p2_x - msg->p1_x))+
 			((msg->p2_y - msg->p1_y)*(msg->p2_y - msg->p1_y)));
@@ -562,9 +573,9 @@ void tms_rp::TmsRpSubtask::sensingCallback(const tms_msg_ss::ods_person_dt::Cons
 		motor_msg.state = 0;
 		kobuki_motorpower.publish(motor_msg);
 	}
-//	return true;
 }
 
+//------------------------------------------------------------------------------
 // Subtask functions that is started in a thread
 bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type) {
 	ROS_INFO("[tms_rp]move command\n");
@@ -826,6 +837,7 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type) {
 	return true;
 }
 
+//------------------------------------------------------------------------------
 bool tms_rp::TmsRpSubtask::random_move(void) {
 	int ret;
 	const char buf[] = "roslaunch kobuki_random_walker safe_random_walker_app.launch\n";
@@ -839,6 +851,7 @@ bool tms_rp::TmsRpSubtask::random_move(void) {
 	return true;
 }
 
+//------------------------------------------------------------------------------
 bool tms_rp::TmsRpSubtask::sensing(void) {
 	int ret;
 	const char buf[] = "rosrun tms_ss_ods_person_detection ods_realtime_persondt\n";
@@ -859,6 +872,7 @@ tms_rp::TmsRpView* tms_rp::TmsRpView::instance()
   return instance;
 }
 
+//------------------------------------------------------------------------------
 tms_rp::TmsRpView::TmsRpView(): ToolBar("TmsRpView"), tac(*TmsRpController::instance()) {
 	static ros::NodeHandle nh2;
 	rp_blink_arrow_server  = nh2.advertiseService("rp_arrow", &TmsRpView::blink_arrow, this);
@@ -866,6 +880,7 @@ tms_rp::TmsRpView::TmsRpView(): ToolBar("TmsRpView"), tac(*TmsRpController::inst
 	mat0       <<  1, 0, 0, 0, 1, 0, 0, 0, 1;  //   0
 }
 
+//------------------------------------------------------------------------------
 tms_rp::TmsRpView::~TmsRpView()
 {
 }
@@ -933,3 +948,5 @@ bool tms_rp::TmsRpView::blink_arrow(tms_msg_rp::rp_arrow::Request &req,
   res.result = 0;
   return false;
 }
+
+//------------------------------------------------------------------------------
