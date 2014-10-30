@@ -204,7 +204,7 @@ Object object_tmp;
 //------------------------------------------------------------------------------
 // Store addresses of object_data into the vector, 'object',
 // and intend to manage or sort them in indirect referencing
-void StoreAdress(std::vector<Object*>* object, std::vector<Object>* object_data) {
+void StoreAddress(std::vector<Object*>* object, std::vector<Object>* object_data) {
   std::vector<Object>::iterator it, begin, end;
   begin = object_data->begin();
   end   = object_data->end();
@@ -306,7 +306,7 @@ bool SortList(tms_ur_gaze_server::object_list::Request  &req,
     ROS_ERROR("object_data contains nothing");
     return false;
   } else {
-    StoreAdress(&object, &object_data);
+    StoreAddress(&object, &object_data);
   }
 
   // Set iterator
