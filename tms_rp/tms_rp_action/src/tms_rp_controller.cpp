@@ -48,8 +48,8 @@ TmsRpController::TmsRpController() : os (MessageView::mainInstance()->cout() )
     //excutePathResult = getcwd(excutePath, 255);
     //os << "excutePath : " << excutePath << endl;
 
-		std::string homepath = getenv("HOME");
-    objectBasePath = homepath + "/catkin_ws/src/ros_tms/tms_rp/tms_rp_rostms_plugin/model";
+    std::string homepath = getenv("HOME");
+    objectBasePath = homepath + "/catkin_ws/src/ros_tms/tms_rp/tms_models";
 
     ifstream objListFile( (objectBasePath+"/model_list.txt").c_str() );
 	char line[1024];
