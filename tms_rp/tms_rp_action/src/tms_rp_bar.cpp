@@ -468,14 +468,18 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   addButton(QIcon(":/action/icons/simulation.png"), ("simulation mode"))
     ->sigClicked().connect(bind(&TmsRpBar::simulationButtonClicked, this));
 
-  addButton(QIcon(":/action/icons/ros.png"), ("connect the ros"))->
+  addButton(QIcon(":/action/icons/ros.png"), ("connect to the ros"))->
     sigClicked().connect(bind(&TmsRpBar::standbyButtonClicked, this));
-
-  addButton(QIcon(":/action/icons/drone.png"), ("drone move"))->
-    sigClicked().connect(bind(&TmsRpBar::ardroneButtonClicked, this));
 
   addButton(QIcon(":/action/icons/map.png"), ("voronoi map"))->
     sigClicked().connect(bind(&TmsRpBar::StaticMapButtonClicked, this));
+
+
+  addButton(QIcon(":/action/icons/drone.png"), ("drone"))->
+    sigClicked().connect(bind(&TmsRpBar::ardroneButtonClicked, this));
+
+  addButton(QIcon(":/action/icons/wheelchair.png"), ("wheelchair"))->
+    sigClicked().connect(bind(&TmsRpBar::ardroneButtonClicked, this));
 
   ItemTreeView::mainInstance()->sigSelectionChanged().connect(bind(&TmsRpBar::onItemSelectionChanged, this, _1));
 }

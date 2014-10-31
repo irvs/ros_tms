@@ -4,5 +4,6 @@
         <file>icons/drone.png</file>
         <file>icons/ros.png</file>
         <file>icons/map.png</file>
+        <file>icons/wheelchair.png</file>
     </qresource>
 </RCC>
