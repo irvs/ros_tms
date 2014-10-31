@@ -978,21 +978,17 @@ bool TmsRpController::createRobotRecord(int objId, std::string tagId){
   }
 
   BodyItemPtr item = objTag2Item()[tagId];
-	PlanBase::instance()->RemoveEnvironment(item);
-	  
+  PlanBase::instance()->RemoveEnvironment(item);
+
   PlanBase::instance()->SetGraspingRobot(objTag2Item()[tagId]);
-	PlanBase::instance()->targetArmFinger = PlanBase::instance()->armsList[0];
+  PlanBase::instance()->targetArmFinger = PlanBase::instance()->armsList[0];
   cout << PlanBase::instance()->targetArmFinger->name << " is target arm"<< endl;
-  
+
   if (robTag2Arm().find(string("SmartPalRight")) != robTag2Arm().end()) {
     robTag2Arm()[string("SmartPalRight")]->dataFilePath = objectBasePath + "/robot/smartpal/data/";
     cout << robTag2Arm()[string("SmartPalRight")]->dataFilePath << endl;
   }
 
-  // if (robTag2Arm().find(string("SmartPalLeft")) != robTag2Arm().end()) {
-  //   robTag2Arm()[string("SmartPalLeft")]->dataFilePath = objectBasePath + "/robot/smartpal/dataLeft/";
-  //   cout << robTag2Arm()[string("SmartPalLeft")]->dataFilePath  << endl;
-  // }
   return true;
 }
 
