@@ -187,7 +187,10 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   tac.createRecord(20005,"person_marker4");
   tac.createRecord(20006,"person_marker5");
   tac.createRecord(20007,"ardrone_goal_position");
-  tac.createRecord(20008,"mini_pole");
+  tac.createRecord(20008,"static_map");
+  tac.createRecord(20009,"dynamic_map");
+  tac.createRecord(20010,"local_map");
+  tac.createRecord(20011,"path_map");
 
   // arrange model
   mat0       <<  1, 0, 0, 0, 1, 0, 0, 0, 1;  //   0
@@ -472,17 +475,21 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   addButton(QIcon(":/action/icons/ros.png"), ("connect to the ros"))->
     sigClicked().connect(bind(&TmsRpBar::ConnectRosButtonClicked, this));
 
-  addButton(QIcon(":/action/icons/static_map.png"), ("staic map"))->
-    sigClicked().connect(bind(&TmsRpBar::StaticMapButtonClicked, this));
+  static_map_toggle_ = addToggleButton(QIcon(":/action/icons/static_map.png"), ("staic map"));
+  static_map_toggle_->sigToggled().connect(bind(&TmsRpBar::StaticMapButtonClicked, this));
+  static_map_toggle_->setChecked(false);
 
-  addButton(QIcon(":/action/icons/dynamic_map.png"), ("dynamic map"))->
-    sigClicked().connect(bind(&TmsRpBar::StaticMapButtonClicked, this));
+  dynamic_map_toggle_= addToggleButton(QIcon(":/action/icons/dynamic_map.png"), ("dynamic map"));
+  dynamic_map_toggle_->sigToggled().connect(bind(&TmsRpBar::StaticMapButtonClicked, this));
+  dynamic_map_toggle_->setChecked(false);
 
-  addButton(QIcon(":/action/icons/local_map.png"), ("local map"))->
-    sigClicked().connect(bind(&TmsRpBar::StaticMapButtonClicked, this));
+  local_map_toggle_ = addToggleButton(QIcon(":/action/icons/local_map.png"), ("local map"));
+  local_map_toggle_->sigToggled().connect(bind(&TmsRpBar::StaticMapButtonClicked, this));
+  local_map_toggle_->setChecked(false);
 
-  addButton(QIcon(":/action/icons/path_map.png"), ("path map"))->
-    sigClicked().connect(bind(&TmsRpBar::PathMapButtonClicked, this));
+  path_map_toggle_ = addToggleButton(QIcon(":/action/icons/path_map.png"), ("path map"));
+  path_map_toggle_->sigToggled().connect(bind(&TmsRpBar::PathMapButtonClicked, this));
+  path_map_toggle_->setChecked(false);
 
   addButton(QIcon(":/action/icons/drone.png"), ("drone"))->
     sigClicked().connect(bind(&TmsRpBar::ardroneButtonClicked, this));
@@ -568,10 +575,22 @@ void TmsRpBar::getPcdData(){
 
 //------------------------------------------------------------------------------
 void TmsRpBar::StaticMapButtonClicked() {
-  ROS_INFO("On viewer for static map");
   TmsRpController trc;
+
+  if(static_map_data_.rps_map_x.size()==0){
+    ROS_INFO("nothing the static map data");
+    return;
+  }
+
+  if(!static_map_toggle_->isChecked()){
+    trc.disappear("static_map");
+    return;
+  }
+
+  ROS_INFO("On viewer for static map");
+
   SgPointsDrawing::SgLastRenderer(0,true);
-  SgGroupPtr node  = (SgGroup*)trc.objTag2Item()["mini_pole"]->body()->link(0)->shape();
+  SgGroupPtr node  = (SgGroup*)trc.objTag2Item()["static_map"]->body()->link(0)->shape();
 
   SgPointsGet visit;
   node->accept(visit);
@@ -585,23 +604,29 @@ void TmsRpBar::StaticMapButtonClicked() {
   visit.shape[0]->mesh()->triangles().clear();
   node->addChild(cr);
 
-  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["mini_pole"],false);
+  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["static_map"],false);
   MessageView::mainInstance()->flush();
-  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["mini_pole"],true);
+  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["static_map"],true);
   MessageView::mainInstance()->flush();
 }
 
 //------------------------------------------------------------------------------
 void TmsRpBar::PathMapButtonClicked() {
+  TmsRpController trc;
+
   if(path_map_data_.rps_route.size()==0){
     ROS_INFO("nothing the path map data");
     return;
   }
 
+  if(!path_map_toggle_->isChecked()){
+    trc.disappear("path_map");
+    return;
+  }
+
   ROS_INFO("On viewer for path map");
-  TmsRpController trc;
   SgPointsDrawing::SgLastRenderer(0,true);
-  SgGroupPtr node  = (SgGroup*)trc.objTag2Item()["mini_pole"]->body()->link(0)->shape();
+  SgGroupPtr node  = (SgGroup*)trc.objTag2Item()["path_map"]->body()->link(0)->shape();
 
   SgPointsGet visit;
   node->accept(visit);
@@ -615,9 +640,9 @@ void TmsRpBar::PathMapButtonClicked() {
   visit.shape[0]->mesh()->triangles().clear();
   node->addChild(cr);
 
-  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["mini_pole"],false);
+  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["path_map"],false);
   MessageView::mainInstance()->flush();
-  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["mini_pole"],true);
+  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["path_map"],true);
   MessageView::mainInstance()->flush();
 }
 
