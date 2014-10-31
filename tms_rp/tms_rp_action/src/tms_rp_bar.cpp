@@ -463,43 +463,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   //------------------------------------------------------------------------------
   addSeparator();
 
-  addLabel(("[TmsAction]"));
-
-//  addButton(("UpdateInfo"), ("Update TMS DB information"))->
-//    sigClicked().connect(bind(&TmsRpBar::onUpdateInfoButtonClicked, this));
-
-//  addButton(("SimulationInfo"), ("Update TMS DB information"))->
-//    sigClicked().connect(bind(&TmsRpBar::onSimulationInfoButtonClicked, this));
-
-//  addButton(("InitPose"), ("Init pose of robot all joint"))->
-//    sigClicked().connect(bind(&TmsRpBar::onInitPoseButtonClicked, this));
-
-//  addButton(("InitPosition"), ("Init position of robot at x1.0 y1.0 z0.0"))->
-//    sigClicked().connect(bind(&TmsRpBar::onStartButtonClicked, this));
-
-//  addButton(("Move"), ("Move the robot"))->
-//    sigClicked().connect(bind(&TmsRpBar::onMoveToGoal, this));
-
-//  addButton(("Grasp"), ("Path Plan start"))->
-//    sigClicked().connect(bind(&TmsRpBar::onStartButtonClicked, this));
-
-//  addButton(("Take"), ("RTC stop"))->
-//    sigClicked().connect(bind(&TmsRpBar::onStartButtonClicked2, this));
-
-//  addButton(("Give"), ("Toggle searchBasePositionMode"))->
-//    sigClicked().connect(bind(&TmsRpBar::onStopButtonClicked, this));
-
-//  addButton(("Place"), ("caeateObjectTag"))->
-//    sigClicked().connect(bind(&TmsRpBar::onCreateRecordButtonClicked, this));
-
-//  addButton(("Function1"), ("deleteObjectTag"))->
-//    sigClicked().connect(bind(&TmsRpBar::onDeleteRecordButtonClicked, this));
-
-//  addButton(("Function2"), ("appear"))->
-//    sigClicked().connect(bind(&TmsRpBar::onAppearButtonClicked, this));
-
-  // addButton(("setRobotInfo"), ("setRobotInfo"))->
-  //   sigClicked().connect(bind(&TmsRpBar::onMoveButtonClicked, this));
+  addLabel(("[ROS-TMS]"));
 
   addButton(QIcon(":/action/icons/simulation.png"), ("simulation mode"))
     ->sigClicked().connect(bind(&TmsRpBar::simulationButtonClicked, this));
@@ -511,7 +475,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
     sigClicked().connect(bind(&TmsRpBar::ardroneButtonClicked, this));
 
   addButton(QIcon(":/action/icons/map.png"), ("voronoi map"))->
-    sigClicked().connect(bind(&TmsRpBar::onPCDThreadButtonClicked, this));
+    sigClicked().connect(bind(&TmsRpBar::StaticMapButtonClicked, this));
 
   ItemTreeView::mainInstance()->sigSelectionChanged().connect(bind(&TmsRpBar::onItemSelectionChanged, this, _1));
 }
@@ -584,16 +548,12 @@ void TmsRpBar::getPcdData(){
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::onPCDThreadButtonClicked() {
-  ROS_INFO("targetBodyItems size = %ld",targetBodyItems.size());
-
-  if(targetBodyItems.size()!=1){
-    ROS_INFO("Please select one bodyitem");
-    return;
-  }
-
+void TmsRpBar::StaticMapButtonClicked() {
+  ROS_INFO("On viewer for static map");
+  TmsRpController trc;
   SgPointsDrawing::SgLastRenderer(0,true);
-  SgGroupPtr node  = (SgGroup*)targetBodyItems[0]->body()->link(0)->shape();
+  SgGroupPtr node  = (SgGroup*)trc.objTag2Item()["mini_pole"]->body()->link(0)->shape();
+
   SgPointsGet visit;
   node->accept(visit);
   if(visit.shape.size()==0){
@@ -606,12 +566,10 @@ void TmsRpBar::onPCDThreadButtonClicked() {
   visit.shape[0]->mesh()->triangles().clear();
   node->addChild(cr);
 
-  ItemTreeView::mainInstance()->checkItem(targetBodyItems[0],false);
+  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["mini_pole"],false);
   MessageView::mainInstance()->flush();
-  ItemTreeView::mainInstance()->checkItem(targetBodyItems[0],true);
+  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["mini_pole"],true);
   MessageView::mainInstance()->flush();
-
-  //  static boost::thread t(boost::bind(&TmsRpBar::getPcdData, this));
 }
 
 //------------------------------------------------------------------------------
