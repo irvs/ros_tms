@@ -125,7 +125,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   path_planning_client  = nh.serviceClient<tms_msg_rp::rps_path_planning>("rps_path_planning");
   ardrone_client        = nh.serviceClient<tms_msg_rc::robot_control>("robot_control");
   subscribe_pcd         = nh.subscribe("velodyne_points", 10, &TmsRpBar::receivePointCloudData, this);
-  subscribe_map         = nh.subscribe("rps_map_data", 10, &TmsRpBar::receiveMapData, this);
+  subscribe_static_map_ = nh.subscribe("rps_map_data", 10,    &TmsRpBar::ReceiveStaticMapData, this);
+  subscribe_path_map_   = nh.subscribe("rps_robot_path", 10,  &TmsRpBar::ReceivePathMapData, this);
 
   //------------------------------------------------------------------------------
   // create person model
@@ -481,7 +482,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
     sigClicked().connect(bind(&TmsRpBar::StaticMapButtonClicked, this));
 
   addButton(QIcon(":/action/icons/path_map.png"), ("path map"))->
-    sigClicked().connect(bind(&TmsRpBar::StaticMapButtonClicked, this));
+    sigClicked().connect(bind(&TmsRpBar::PathMapButtonClicked, this));
 
   addButton(QIcon(":/action/icons/drone.png"), ("drone"))->
     sigClicked().connect(bind(&TmsRpBar::ardroneButtonClicked, this));
@@ -514,9 +515,15 @@ void TmsRpBar::receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& m
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::receiveMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg)
+void TmsRpBar::ReceiveStaticMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg)
 {
-  staticMapData = *msg;
+  static_map_data_ = *msg;
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::ReceivePathMapData(const tms_msg_rp::rps_route::ConstPtr& msg)
+{
+  path_map_data_ = *msg;
 }
 
 //------------------------------------------------------------------------------
@@ -574,7 +581,37 @@ void TmsRpBar::StaticMapButtonClicked() {
   }
 
   SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
-  cr = new SgPointsDrawing(&staticMapData);
+  cr = new SgPointsDrawing(&static_map_data_);
+  visit.shape[0]->mesh()->triangles().clear();
+  node->addChild(cr);
+
+  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["mini_pole"],false);
+  MessageView::mainInstance()->flush();
+  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["mini_pole"],true);
+  MessageView::mainInstance()->flush();
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::PathMapButtonClicked() {
+  if(path_map_data_.rps_route.size()==0){
+    ROS_INFO("nothing the path map data");
+    return;
+  }
+
+  ROS_INFO("On viewer for path map");
+  TmsRpController trc;
+  SgPointsDrawing::SgLastRenderer(0,true);
+  SgGroupPtr node  = (SgGroup*)trc.objTag2Item()["mini_pole"]->body()->link(0)->shape();
+
+  SgPointsGet visit;
+  node->accept(visit);
+  if(visit.shape.size()==0){
+    ROS_INFO("no shape node, %ld", visit.shape.size());
+    return;
+  }
+
+  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
+  cr = new SgPointsDrawing(&path_map_data_);
   visit.shape[0]->mesh()->triangles().clear();
   node->addChild(cr);
 

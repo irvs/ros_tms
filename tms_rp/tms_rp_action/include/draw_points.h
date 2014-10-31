@@ -12,40 +12,69 @@ namespace grasp{
 class SgPointsDrawing;
 
 class SgPointsDrawing : public cnoid::SgCustomGLNode {
- public:
+public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   SgPointsDrawing(tms_msg_rp::rps_map_full* mapData) {
-    setRenderingFunction(boost::bind(&SgPointsDrawing::renderPoints, this));
-    this->mapData = mapData;
+    setRenderingFunction(boost::bind(&SgPointsDrawing::RenderStaticMap, this));
+    this->static_map_ = mapData;
   }
 
-  void renderPoints() {
+  SgPointsDrawing(tms_msg_rp::rps_route* mapData) {
+    setRenderingFunction(boost::bind(&SgPointsDrawing::RenderPathMap, this));
+    this->path_map_ = mapData;
+  }
+
+  void RenderStaticMap() {
     glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
     glDisable(GL_LIGHTING);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
     float r=0,g=0,b=0;
-
     glPointSize(5.0);
     glColor3f(r,g,b);
-
     glBegin(GL_POINTS);
-
-    r = 1.0;
-    g = 0.0;
-    b = 0.0;
-
-    for(unsigned int x=0;x<mapData->rps_map_x.size();x++){
-      for(unsigned int y=0;y<mapData->rps_map_x[x].rps_map_y.size();y++){
-        if(mapData->rps_map_x[x].rps_map_y[y].voronoi){
-          glVertex3d(x*0.1,y*0.1,0.1);
+    r = 1.0;  g = 0.0;  b = 0.0;
+    for(unsigned int x=0;x<static_map_->rps_map_x.size();x++){
+      for(unsigned int y=0;y<static_map_->rps_map_x[x].rps_map_y.size();y++){
+        if(static_map_->rps_map_x[x].rps_map_y[y].voronoi){
+          glVertex3f((float)(x*0.1),(float)(y*0.1),0.1);
         }
       }
     }
-
     glEnd();
+    glPopAttrib();
+  }
 
+  void RenderPathMap() {
+    glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
+    glDisable(GL_LIGHTING);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    float r=0.0,g=0.0,b=0.0;
+    glPointSize(10.0);
+    glLineWidth(5);
+    float current_point_x, current_point_y, next_point_x, next_point_y;
+    for(unsigned int i=0;i<path_map_->rps_route.size()-1;i++){
+      // set point
+      current_point_x = path_map_->rps_route[i].x/1000;
+      current_point_y = path_map_->rps_route[i].y/1000;
+      next_point_x    = path_map_->rps_route[i+1].x/1000;
+      next_point_y    = path_map_->rps_route[i+1].y/1000;
+
+      // trajectory point
+      r=0.0,g=1.0,b=1.0;
+      glColor3f(r,g,b);
+      glBegin(GL_POINTS);
+      glVertex3f(current_point_x, current_point_y, 0.1);
+      glEnd();
+
+      // trajectory line
+      r=0.0,g=0.0,b=1.0;
+      glColor3f(r,g,b);
+      glBegin(GL_LINES);
+      glVertex3f(current_point_x, current_point_y, 0.1);
+      glVertex3f(next_point_x, next_point_y, 0.1);
+      glEnd();
+    }
     glPopAttrib();
   }
 
@@ -58,9 +87,10 @@ class SgPointsDrawing : public cnoid::SgCustomGLNode {
     static SgPointsDrawing* last;
     if(isWrite) last=sg;
     return last;
-    }
+  }
 
-    tms_msg_rp::rps_map_full* mapData;
+  tms_msg_rp::rps_map_full* static_map_;
+  tms_msg_rp::rps_route*    path_map_;
 };
 
 typedef boost::intrusive_ptr<SgPointsDrawing> SgPointsDrawingPtr;

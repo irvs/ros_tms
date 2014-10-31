@@ -98,10 +98,12 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   ros::ServiceClient path_planning_client;
   ros::ServiceClient ardrone_client;
   ros::Subscriber    subscribe_pcd;
-  ros::Subscriber    subscribe_map;
+  ros::Subscriber    subscribe_static_map_;
+  ros::Subscriber    subscribe_path_map_;
 
   pcl::PointCloud<pcl::PointXYZ> pointCloudData;
-  tms_msg_rp::rps_map_full       staticMapData;
+  tms_msg_rp::rps_map_full       static_map_data_;
+  tms_msg_rp::rps_route          path_map_data_;
 
   boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)>& sigBodyItemSelectionChanged() {return sigBodyItemSelectionChanged_;}
 
@@ -132,8 +134,10 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
 
   void onItemSelectionChanged(const cnoid::ItemList<cnoid::BodyItem>& bodyItems);
   void StaticMapButtonClicked();
+  void PathMapButtonClicked();
   void receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& msg);
-  void receiveMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg);
+  void ReceiveStaticMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg);
+  void ReceivePathMapData(const tms_msg_rp::rps_route::ConstPtr& msg);
   void getPcdData();
 
   void UpdateObjectInfo();
