@@ -391,7 +391,7 @@ bool tms_ts_nodelet::ROS_TMS_TS::tsCallback(tms_msg_ts::ts_req::Request &req, tm
 	}
 
 	ROS_TMS_TS::GenerateScript();
-//	ROS_TMS_TS::ExeScript();
+	ROS_TMS_TS::ExeScript();
 
 	res.result = 1; // success
 	return true;
