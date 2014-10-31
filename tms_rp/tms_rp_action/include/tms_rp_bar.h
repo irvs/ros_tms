@@ -136,16 +136,16 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void receiveMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg);
   void getPcdData();
 
-  void onUpdateInfoButtonClicked();
+  void UpdateObjectInfo();
   void onInitPoseButtonClicked();
   void onStartButtonClicked();
   void onStartButtonClicked2();
   void onChangePlanningMode();
   void onPathPlanButtonClicked();
   void simulationButtonClicked();
-  void standbyButtonClicked();
+  void ConnectRosButtonClicked();
   void simulation();
-  void standby();
+  void ConnectROS();
   void ardroneButtonClicked();
 };
 }

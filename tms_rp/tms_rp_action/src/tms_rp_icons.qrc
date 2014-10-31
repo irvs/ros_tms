@@ -3,7 +3,11 @@
         <file>icons/simulation.png</file>
         <file>icons/drone.png</file>
         <file>icons/ros.png</file>
-        <file>icons/map.png</file>
         <file>icons/wheelchair.png</file>
+        <file>icons/dynamic_map.png</file>
+        <file>icons/local_map.png</file>
+        <file>icons/path_map.png</file>
+        <file>icons/robot_map.png</file>
+        <file>icons/static_map.png</file>
     </qresource>
 </RCC>

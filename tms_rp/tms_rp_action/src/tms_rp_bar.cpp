@@ -469,11 +469,19 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
     ->sigClicked().connect(bind(&TmsRpBar::simulationButtonClicked, this));
 
   addButton(QIcon(":/action/icons/ros.png"), ("connect to the ros"))->
-    sigClicked().connect(bind(&TmsRpBar::standbyButtonClicked, this));
+    sigClicked().connect(bind(&TmsRpBar::ConnectRosButtonClicked, this));
 
-  addButton(QIcon(":/action/icons/map.png"), ("voronoi map"))->
+  addButton(QIcon(":/action/icons/static_map.png"), ("staic map"))->
     sigClicked().connect(bind(&TmsRpBar::StaticMapButtonClicked, this));
 
+  addButton(QIcon(":/action/icons/dynamic_map.png"), ("dynamic map"))->
+    sigClicked().connect(bind(&TmsRpBar::StaticMapButtonClicked, this));
+
+  addButton(QIcon(":/action/icons/local_map.png"), ("local map"))->
+    sigClicked().connect(bind(&TmsRpBar::StaticMapButtonClicked, this));
+
+  addButton(QIcon(":/action/icons/path_map.png"), ("path map"))->
+    sigClicked().connect(bind(&TmsRpBar::StaticMapButtonClicked, this));
 
   addButton(QIcon(":/action/icons/drone.png"), ("drone"))->
     sigClicked().connect(bind(&TmsRpBar::ardroneButtonClicked, this));
@@ -577,7 +585,7 @@ void TmsRpBar::StaticMapButtonClicked() {
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::onUpdateInfoButtonClicked()
+void TmsRpBar::UpdateObjectInfo()
 {
   PlanBase *pb = PlanBase::instance();
 
@@ -1435,9 +1443,6 @@ void TmsRpBar::onMoveToGoal()
       } else {
         os << "Failed to call service sp5_control" << endl;
       }
-      //callLater(bind(&TmsRpBar::onSimulationInfoButtonClicked,this));
-      //callLater(bind(&TmsRpBar::onUpdateInfoButtonClicked,this));
-      //onUpdateInfoButtonClicked();
       onSimulationInfoButtonClicked();
       ros::spinOnce();
       sleep(1); //temp
@@ -1538,9 +1543,9 @@ void TmsRpBar::simulationButtonClicked(){
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::standbyButtonClicked(){
-  os <<  "standby button clicked" << endl;
-  static boost::thread t(boost::bind(&TmsRpBar::standby, this));
+void TmsRpBar::ConnectRosButtonClicked(){
+  os <<  "ConnectROS button clicked" << endl;
+  static boost::thread t(boost::bind(&TmsRpBar::ConnectROS, this));
 }
 
 //------------------------------------------------------------------------------
@@ -1552,10 +1557,9 @@ void TmsRpBar::simulation(){
   static ros::Rate loop_rate(10); // 0.1sec
   while (ros::ok())
   {
-    //todo
-	  if (planning_mode == 0)
-		  onSimulationInfoButtonClicked();
-    //
+    if (planning_mode == 0)
+      onSimulationInfoButtonClicked();
+
     ros::spinOnce();
     loop_rate.sleep();
   }
@@ -1563,8 +1567,8 @@ void TmsRpBar::simulation(){
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::standby(){
-  os <<  "standby service" << endl;
+void TmsRpBar::ConnectROS(){
+  os <<  "Connect to the ROS" << endl;
   production_version = true;
   os << "production_version = " << production_version << endl;
   tms_rp::TmsRpStaticMap StaticMap;
@@ -1572,14 +1576,14 @@ void TmsRpBar::standby(){
   static ros::Rate loop_rate(10); // 0.1sec
   while (ros::ok())
   {
-    onUpdateInfoButtonClicked();
+    UpdateObjectInfo();
 
     StaticMap.MapPublish();
 
     ros::spinOnce();
     loop_rate.sleep();
   }
-  printf("end of standby\n");
+  printf("Disconnect to the ROS\n");
 }
 
 //------------------------------------------------------------------------------
