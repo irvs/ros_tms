@@ -1,6 +1,7 @@
-#include <tms_rp_controller.h>
 #include <tms_rp_bar.h>
+#include <tms_rp_controller.h>
 #include <tms_rp_static_map.h>
+#include <tms_rp_collision_map.h>
 #include <sg_points_get.h>
 #include <draw_points.h>
 #include <tms_rp_pp.h>
@@ -14,6 +15,7 @@ using namespace std;
 using namespace boost;
 using namespace cnoid;
 using namespace grasp;
+using namespace tms_rp;
 
 //------------------------------------------------------------------------------
 std::string TmsRpBar::objectName[25] = {"chipstar_red","chipstar_orange",
@@ -36,6 +38,94 @@ bool TmsRpBar::isRosInit = false;
 bool TmsRpBar::production_version = false;
 int TmsRpBar::planning_mode = 0; // view mode
 int TmsRpBar::grasping = 0;
+
+//------------------------------------------------------------------------------
+SetMapParamDialog::SetMapParamDialog() : QDialog(MainWindow::instance()) {
+
+  setWindowTitle("Set Collision Map Param");
+
+  QVBoxLayout* vbox = new QVBoxLayout();
+  setLayout(vbox);
+
+  QHBoxLayout* hbox;
+
+  hbox = new QHBoxLayout();
+  hbox->addWidget(new QLabel(" x_llimit  "));
+  x_llimit.setAlignment(Qt::AlignCenter);
+  x_llimit.setDecimals(2);
+  x_llimit.setRange(-10.00, 10.00);
+  x_llimit.setSingleStep(0.01);
+  x_llimit.setValue(0.00);
+  hbox->addWidget(&x_llimit);
+  hbox->addWidget(new QLabel("(m)"));
+  hbox->addStretch();
+  vbox->addLayout(hbox);
+
+  hbox = new QHBoxLayout();
+  hbox->addWidget(new QLabel(" x_ulimit  "));
+  x_ulimit.setAlignment(Qt::AlignCenter);
+  x_ulimit.setDecimals(2);
+  x_ulimit.setRange(-10.00, 10.00);
+  x_ulimit.setSingleStep(0.01);
+  x_ulimit.setValue(8.00);
+  hbox->addWidget(&x_ulimit);
+  hbox->addWidget(new QLabel("(m)"));
+  hbox->addStretch();
+  vbox->addLayout(hbox);
+
+  hbox = new QHBoxLayout();
+  hbox->addWidget(new QLabel(" y_llimit  "));
+  y_llimit.setAlignment(Qt::AlignCenter);
+  y_llimit.setDecimals(2);
+  y_llimit.setRange(-10.00, 10.00);
+  y_llimit.setSingleStep(0.01);
+  y_llimit.setValue(0.00);
+  hbox->addWidget(&y_llimit);
+  hbox->addWidget(new QLabel("(m)"));
+  hbox->addStretch();
+  vbox->addLayout(hbox);
+
+  hbox = new QHBoxLayout();
+  hbox->addWidget(new QLabel(" y_ulimit  "));
+  y_ulimit.setAlignment(Qt::AlignCenter);
+  y_ulimit.setDecimals(2);
+  y_ulimit.setRange(-10.00, 10.00);
+  y_ulimit.setSingleStep(0.01);
+  y_ulimit.setValue(4.50);
+  hbox->addWidget(&y_ulimit);
+  hbox->addWidget(new QLabel("(m)"));
+  hbox->addStretch();
+  vbox->addLayout(hbox);
+
+  hbox = new QHBoxLayout();
+  hbox->addWidget(new QLabel(" cell_size  "));
+  cell_size.setAlignment(Qt::AlignCenter);
+  cell_size.setDecimals(2);
+  cell_size.setRange(-10.00, 10.00);
+  cell_size.setSingleStep(0.01);
+  cell_size.setValue(0.01);
+  hbox->addWidget(&cell_size);
+  hbox->addWidget(new QLabel("(m)"));
+  hbox->addStretch();
+  vbox->addLayout(hbox);
+
+  cnoid::PushButton* okButton = new cnoid::PushButton("&OK");
+  okButton->setDefault(true);
+  connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
+  okButton->sigClicked().connect(boost::bind(&SetMapParamDialog::okClicked, this));
+
+  vbox->addWidget(okButton);
+}
+
+//------------------------------------------------------------------------------
+void SetMapParamDialog::okClicked(){
+  TmsRpCollisionMap::instance()->x_llimit = x_llimit.value();
+  TmsRpCollisionMap::instance()->x_ulimit = x_ulimit.value();
+  TmsRpCollisionMap::instance()->y_llimit = y_llimit.value();
+  TmsRpCollisionMap::instance()->y_ulimit = y_ulimit.value();
+  TmsRpCollisionMap::instance()->cell_size = cell_size.value();
+  MessageView::mainInstance()->cout() << "Set collision map param"<< endl;
+}
 
 //------------------------------------------------------------------------------
 SelectGoalPosDialog::SelectGoalPosDialog() : QDialog(cnoid::MainWindow::instance()) {
@@ -505,7 +595,14 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   addButton(QIcon(":/action/icons/smartpal.png"), ("smartpal"))->
     sigClicked().connect(bind(&TmsRpBar::ardroneButtonClicked, this));
 
-  ItemTreeView::mainInstance()->sigSelectionChanged().connect(bind(&TmsRpBar::onItemSelectionChanged, this, _1));
+  addButton(QIcon(":/action/icons/collision_target.png"), ("set collision target model"))->
+    sigClicked().connect(bind(&TmsRpBar::onSetCollisionTargetButtonClicked, this));
+
+  addButton(QIcon(":/action/icons/collision_map.png"), ("make collision map"))->
+    sigClicked().connect(bind(&TmsRpBar::onMakeCollisionMapButtonClicked, this));
+
+  ItemTreeView::mainInstance()->sigSelectionChanged().connect(
+    bind(&TmsRpBar::onItemSelectionChanged, this, _1));
 }
 
 //------------------------------------------------------------------------------
@@ -517,7 +614,7 @@ TmsRpBar::~TmsRpBar()
 void TmsRpBar::onItemSelectionChanged(const ItemList<BodyItem>& bodyItems)
 {
   selectedBodyItems_ = bodyItems;
-  os << "selectedBodyItems_ size = " << selectedBodyItems_.size() << endl;
+  cout << "selectedBodyItems_ size = " << selectedBodyItems_.size() << endl;
   targetBodyItems = selectedBodyItems_;
 }
 
@@ -579,6 +676,72 @@ void TmsRpBar::getPcdData(){
 
 //    loop_rate.sleep();
 //  }
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::onSetCollisionTargetButtonClicked()
+{
+  if(targetBodyItems.size()==1){
+    cout << "targetBodyItems size = " << targetBodyItems.size() << endl;
+    TmsRpCollisionMap::instance()->SetCollisionTarget(targetBodyItems[0]);
+    cout << TmsRpCollisionMap::instance()->collisionTarget->name() << " is collision target"<< endl;
+  }else{
+    cout <<  "Please selecet one bodyitem" << endl;
+    return;
+  }
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::onMakeCollisionMapButtonClicked()
+{
+  QString DirName  = QDir::currentPath();
+  QString fileName = QFileDialog::getSaveFileName(this,tr("Save Collision Map"),
+                                                  DirName,tr("CSV Files (*.csv)")
+                                                  );
+
+  if (fileName.isEmpty())
+    return;
+  else {
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly)) {
+      cout<<" can not open file"<<endl;
+      return;
+    }
+
+    SetMapParamDialog* SMPDialog = new SetMapParamDialog();
+    SMPDialog->show();
+    if(SMPDialog->exec()){}
+
+    vector<vector<int> > collision_map;
+    TmsRpCollisionMap::instance()->makeCollisionMap(collision_map);
+
+    QFile use_file(DirName+"/use_collision_map.csv");
+    if (!use_file.open(QIODevice::WriteOnly)) {
+      cout<<DirName.toStdString()<<endl;
+      cout<<"... can not open file"<<endl;
+      return;
+    }
+
+    char temp[1024];
+    sprintf(temp, "%f,%f,%f,%f,%f\n", TmsRpCollisionMap::instance()->x_llimit, TmsRpCollisionMap::instance()->x_ulimit,
+                                                                                      TmsRpCollisionMap::instance()->y_llimit, TmsRpCollisionMap::instance()->y_ulimit,
+                                                                                      TmsRpCollisionMap::instance()->cell_size);
+    file.write(temp);
+    use_file.write(temp);
+
+    for(int x=0;x<collision_map.size();x++){
+      for(int y=0;y<collision_map[x].size();y++){
+        sprintf(temp, "%d,", collision_map[x][y] );
+        file.write(temp);
+        use_file.write(temp);
+      }
+      file.write("\n");
+      use_file.write("\n");
+    }
+
+    file.close();
+    use_file.close();
+  }
 }
 
 //------------------------------------------------------------------------------

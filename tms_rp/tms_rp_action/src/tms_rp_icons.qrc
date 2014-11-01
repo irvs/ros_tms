@@ -10,5 +10,7 @@
         <file>icons/robot_map.png</file>
         <file>icons/static_map.png</file>
         <file>icons/smartpal.png</file>
+        <file>icons/collision_map.png</file>
+        <file>icons/collision_target.png</file>
     </qresource>
 </RCC>

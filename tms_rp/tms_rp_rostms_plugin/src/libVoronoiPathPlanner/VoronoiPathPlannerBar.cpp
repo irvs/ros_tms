@@ -115,15 +115,15 @@ VoronoiPathPlannerBar::VoronoiPathPlannerBar()
      os (MessageView::mainInstance()->cout() )
 {
   
-  addSeparator();
+//  addSeparator();
   
-  addLabel(("[CollisionMap]"));
+//  addLabel(("[CollisionMap]"));
 
-  addButton(("SetCollisionTarget"), ("set collision target model"))->
-    sigClicked().connect(bind(&VoronoiPathPlannerBar::onSetCollisionTargetButtonClicked, this));
+//  addButton(("SetCollisionTarget"), ("set collision target model"))->
+//    sigClicked().connect(bind(&VoronoiPathPlannerBar::onSetCollisionTargetButtonClicked, this));
 
-  addButton(("makeCollisionMap"), ("make collision map"))->
-    sigClicked().connect(bind(&VoronoiPathPlannerBar::onMakeCollisionMapButtonClicked, this));  
+//  addButton(("makeCollisionMap"), ("make collision map"))->
+//    sigClicked().connect(bind(&VoronoiPathPlannerBar::onMakeCollisionMapButtonClicked, this));
     
 //  addButton(("loadCollisionMap"), ("load collision map"))->
 //    sigClicked().connect(bind(&VoronoiPathPlannerBar::onLoadCollisionMapButtonClicked, this));
