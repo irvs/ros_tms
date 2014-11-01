@@ -43,7 +43,7 @@ public:
     for(unsigned int x=0;x<static_map_->rps_map_x.size();x++){
       for(unsigned int y=0;y<static_map_->rps_map_x[x].rps_map_y.size();y++){
         if(static_map_->rps_map_x[x].rps_map_y[y].voronoi){
-          glVertex3f((float)(x*0.1),(float)(y*0.1),0.1);
+          glVertex3f((float)(x*0.1),(float)(y*0.1),0.01);
         }
       }
     }
@@ -68,18 +68,18 @@ public:
       next_point_y      = path_map_->rps_route[i+1].y/1000;
 
       // trajectory point
-      r=0.0,g=1.0,b=1.0;
+      r=0.0,g=1.0,b=0.0;
       glColor3f(r,g,b);
       glBegin(GL_POINTS);
-      glVertex3f(current_point_x, current_point_y, 0.1);
+      glVertex3f(current_point_x, current_point_y, 0.01);
       glEnd();
 
       // trajectory line
       r=0.0,g=0.0,b=1.0;
       glColor3f(r,g,b);
       glBegin(GL_LINES);
-      glVertex3f(current_point_x, current_point_y, 0.1);
-      glVertex3f(next_point_x, next_point_y, 0.1);
+      glVertex3f(current_point_x, current_point_y, 0.01);
+      glVertex3f(next_point_x, next_point_y, 0.01);
       glEnd();
     }
     glPopAttrib();
@@ -154,7 +154,7 @@ public:
       glLineWidth(1);
       glBegin(GL_LINE_LOOP);
       for (int i=0; i<point_num; i++) {
-        glVertex3f(robot_points[i].x(), robot_points[i].y(), 0.1);
+        glVertex3f(robot_points[i].x(), robot_points[i].y(), 0.01);
       }
       glEnd();
     }
