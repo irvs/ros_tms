@@ -17,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-#  INCLUDE_DIRS include
+   INCLUDE_DIRS include
    LIBRARIES tms_ss_pot
    CATKIN_DEPENDS message_runtime roscpp std_msgs
    DEPENDS system_lib
@@ -26,16 +26,15 @@ catkin_package(
 ###########
 ## Build ##
 ###########
-include_directories(
+include_directories( include
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(pot_ctrl src/pot.cpp)
-add_executable(lsr_ctrl src/LaserTracker.cpp)
+add_executable(pot_ctrl src/pot_ctrl.cpp)
+add_executable(pot_scan src/pot_scan.cpp)
 
 add_dependencies(pot_ctrl tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
-add_dependencies(lsr_ctrl tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
-
+add_dependencies(pot_scan tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
 
 target_link_libraries(pot_ctrl   ${catkin_LIBRARIES})
-target_link_libraries(lsr_ctrl   ${catkin_LIBRARIES})
+target_link_libraries(pot_scan   ${catkin_LIBRARIES})
