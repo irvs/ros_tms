@@ -80,3 +80,4 @@
 20009 none /etc/mini_pole_hrp.wrl
 20010 none /etc/mini_pole_hrp.wrl
 20011 none /etc/mini_pole_hrp.wrl
+20012 none /etc/mini_pole_hrp.wrl

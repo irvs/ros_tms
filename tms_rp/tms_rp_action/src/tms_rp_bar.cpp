@@ -191,6 +191,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   tac.createRecord(20009,"dynamic_map");
   tac.createRecord(20010,"local_map");
   tac.createRecord(20011,"path_map");
+  tac.createRecord(20012,"robot_marker");
 
   // arrange model
   mat0       <<  1, 0, 0, 0, 1, 0, 0, 0, 1;  //   0
@@ -487,14 +488,21 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"),
   local_map_toggle_->sigToggled().connect(bind(&TmsRpBar::StaticMapButtonClicked, this));
   local_map_toggle_->setChecked(false);
 
-  path_map_toggle_ = addToggleButton(QIcon(":/action/icons/path_map.png"), ("path map"));
+  path_map_toggle_ = addToggleButton(QIcon(":/action/icons/path_map.png"), ("option of path view"));
   path_map_toggle_->sigToggled().connect(bind(&TmsRpBar::PathMapButtonClicked, this));
   path_map_toggle_->setChecked(false);
+
+  robot_map_toggle_ = addToggleButton(QIcon(":/action/icons/robot_map.png"), ("option of robot marker"));
+  robot_map_toggle_->sigToggled().connect(bind(&TmsRpBar::RobotMapButtonClicked, this));
+  robot_map_toggle_->setChecked(false);
 
   addButton(QIcon(":/action/icons/drone.png"), ("drone"))->
     sigClicked().connect(bind(&TmsRpBar::ardroneButtonClicked, this));
 
   addButton(QIcon(":/action/icons/wheelchair.png"), ("wheelchair"))->
+    sigClicked().connect(bind(&TmsRpBar::ardroneButtonClicked, this));
+
+  addButton(QIcon(":/action/icons/smartpal.png"), ("smartpal"))->
     sigClicked().connect(bind(&TmsRpBar::ardroneButtonClicked, this));
 
   ItemTreeView::mainInstance()->sigSelectionChanged().connect(bind(&TmsRpBar::onItemSelectionChanged, this, _1));
@@ -643,6 +651,42 @@ void TmsRpBar::PathMapButtonClicked() {
   ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["path_map"],false);
   MessageView::mainInstance()->flush();
   ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["path_map"],true);
+  MessageView::mainInstance()->flush();
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::RobotMapButtonClicked() {
+  TmsRpController trc;
+
+  if(path_map_data_.rps_route.size()==0){
+    ROS_INFO("nothing the path map data");
+    return;
+  }
+
+  if(!robot_map_toggle_->isChecked()){
+    trc.disappear("robot_marker");
+    return;
+  }
+
+  ROS_INFO("On viewer for robot marker");
+  SgPointsDrawing::SgLastRenderer(0,true);
+  SgGroupPtr node  = (SgGroup*)trc.objTag2Item()["robot_marker"]->body()->link(0)->shape();
+
+  SgPointsGet visit;
+  node->accept(visit);
+  if(visit.shape.size()==0){
+    ROS_INFO("no shape node, %ld", visit.shape.size());
+    return;
+  }
+
+  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
+  cr = new SgPointsDrawing(&path_map_data_,true);
+  visit.shape[0]->mesh()->triangles().clear();
+  node->addChild(cr);
+
+  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["robot_marker"],false);
+  MessageView::mainInstance()->flush();
+  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["robot_marker"],true);
   MessageView::mainInstance()->flush();
 }
 
