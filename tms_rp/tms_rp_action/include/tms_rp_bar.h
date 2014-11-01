@@ -126,6 +126,12 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   TmsRpController& tac;
   Matrix3d mat0, mat_ccw90, mat_ccw180, mat_cw90;
 
+  ToolButton* static_map_toggle_;
+  ToolButton* dynamic_map_toggle_;
+  ToolButton* local_map_toggle_;
+  ToolButton* path_map_toggle_;
+  ToolButton* robot_map_toggle_;
+
   cnoid::BodyItemPtr currentBodyItem_;
   cnoid::ItemList<cnoid::BodyItem> selectedBodyItems_;
   cnoid::ItemList<cnoid::BodyItem> targetBodyItems;
@@ -135,6 +141,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void onItemSelectionChanged(const cnoid::ItemList<cnoid::BodyItem>& bodyItems);
   void StaticMapButtonClicked();
   void PathMapButtonClicked();
+  void RobotMapButtonClicked();
   void receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& msg);
   void ReceiveStaticMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg);
   void ReceivePathMapData(const tms_msg_rp::rps_route::ConstPtr& msg);

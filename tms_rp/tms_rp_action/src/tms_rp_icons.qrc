@@ -9,5 +9,6 @@
         <file>icons/path_map.png</file>
         <file>icons/robot_map.png</file>
         <file>icons/static_map.png</file>
+        <file>icons/smartpal.png</file>
     </qresource>
 </RCC>
