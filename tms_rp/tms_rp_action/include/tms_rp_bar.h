@@ -55,8 +55,10 @@
 #include <QDialog>
 #include <QCheckBox>
 #include <QLayout>
-#include <QCheckBox>
 #include <QPushButton>
+#include <QFileDialog>
+#include <QTextStream>
+#include <QMessageBox>
 
 #include <pcl/conversions.h>
 #include <pcl/point_cloud.h>
@@ -79,6 +81,18 @@ class SelectGoalPosDialog : public QDialog
     cnoid::SpinBox goal_pos_ry;
     SelectGoalPosDialog() ;
     void okClicked();
+};
+
+class SetMapParamDialog : public QDialog
+{
+public:
+  DoubleSpinBox x_llimit;
+  DoubleSpinBox x_ulimit;
+  DoubleSpinBox y_llimit;
+  DoubleSpinBox y_ulimit;
+  DoubleSpinBox cell_size;
+  SetMapParamDialog() ;
+  void okClicked();
 };
 
 class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
@@ -120,6 +134,10 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   static int planning_mode; // 0:view mode / 1:planning mode
   static int grasping;
 
+  cnoid::BodyItemPtr currentBodyItem_;
+  cnoid::ItemList<cnoid::BodyItem> selectedBodyItems_;
+  cnoid::ItemList<cnoid::BodyItem> targetBodyItems;
+
  private:
   MessageView& mes;
   std::ostream& os;
@@ -132,11 +150,10 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   ToolButton* path_map_toggle_;
   ToolButton* robot_map_toggle_;
 
-  cnoid::BodyItemPtr currentBodyItem_;
-  cnoid::ItemList<cnoid::BodyItem> selectedBodyItems_;
-  cnoid::ItemList<cnoid::BodyItem> targetBodyItems;
-
   boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)> sigBodyItemSelectionChanged_;
+
+  void onSetCollisionTargetButtonClicked();
+  void onMakeCollisionMapButtonClicked();
 
   void onItemSelectionChanged(const cnoid::ItemList<cnoid::BodyItem>& bodyItems);
   void StaticMapButtonClicked();

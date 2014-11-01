@@ -75,8 +75,9 @@ add_library(
   src/tms_rp_bar.cpp
   src/tms_rp_controller.cpp
   src/tms_rp_rp.cpp
-  src/tms_rp_static_map.cpp
   src/tms_rp_pp.cpp
+  src/tms_rp_static_map.cpp
+  src/tms_rp_collision_map.cpp
 )
 
 add_dependencies(${libname} tms_msg_rp_gencpp tms_msg_db_gencpp tms_msg_rs_gencpp tms_msg_ss_gencpp)
