@@ -32,17 +32,17 @@ class TmsRpStaticMap : public cnoid::ToolBar, public boost::signals::trackable
   bool SetVoronoiLine(vector<vector<CollisionMapData> >& map, string& message);
 
  private:
-  uint32_t sid;
+  uint32_t sid_;
 
   ros::Publisher pp_map_pub;
   vector<vector<CollisionMapData> > map;
   tms_msg_rp::rps_map_full pub_map;
   string msg;
 
-  std::ostream& os;
-  grasp::TmsRpController& tac;
+  std::ostream& os_;
+  grasp::TmsRpController& tac_;
 
-  double x_llimit, x_ulimit, y_llimit, y_ulimit, cell_size; //M
+  double x_llimit_, x_ulimit_, y_llimit_, y_ulimit_, cell_size_; //M
 
   bool InitCollisionMap(vector<vector<CollisionMapData> >& map);
   bool CalcDistFromObj(vector<vector<CollisionMapData> >& map, string& message);

@@ -53,8 +53,8 @@ void TmsRpCollisionMap::initialCollision(){
 
 //------------------------------------------------------------------------------
 bool TmsRpCollisionMap::makeCollisionMap(vector<vector<int> >& out_collision_map){
-  if(cell_size<=0.0){
-    cout<<"Error : please set cell_size more than 0"<<endl;
+  if(cell_size_<=0.0){
+    cout<<"Error : please set cell_size_ more than 0"<<endl;
     return false;
   }
   out_collision_map.clear();
@@ -63,9 +63,9 @@ bool TmsRpCollisionMap::makeCollisionMap(vector<vector<int> >& out_collision_map
   vector<int>  temp_line;
   temp_line.clear();
 
-  for(double x = x_llimit;x<=x_ulimit+1.0e-10;x=x+cell_size){
+  for(double x = x_llimit_;x<=x_ulimit_+1.0e-10;x=x+cell_size_){
     temp_line.clear();
-    for(double y = y_llimit;y<=y_ulimit+1.0e-10;y=y+cell_size){
+    for(double y = y_llimit_;y<=y_ulimit_+1.0e-10;y=y+cell_size_){
       collisionTargetBase()->p()(0) = x;
       collisionTargetBase()->p()(1) = y;
       collisionTarget->bodyItemCollisionTarget->body()->calcForwardKinematics();

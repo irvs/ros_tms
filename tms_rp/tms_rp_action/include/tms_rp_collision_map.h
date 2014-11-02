@@ -18,7 +18,7 @@ public:
 class TmsRpCollisionMap : public boost::signals::trackable
 {
 public:
-  double x_llimit, x_ulimit, y_llimit, y_ulimit, cell_size;
+  double x_llimit_, x_ulimit_, y_llimit_, y_ulimit_, cell_size_;
   vector<ColdetLinkPairPtr> collisionMapPairs;
   CollisionTarget* collisionTarget;
   cnoid::Link* collisionTargetBase() { return collisionTarget->base; }
