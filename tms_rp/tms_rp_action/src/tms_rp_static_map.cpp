@@ -19,12 +19,12 @@ TmsRpStaticMap::TmsRpStaticMap(): ToolBar("TmsRpStaticMap"),
 
   static ros::NodeHandle nh;
 
-  pp_map_pub = nh.advertise<tms_msg_rp::rps_map_full>("rps_map_data", 1);
+  pp_map_pub_ = nh.advertise<tms_msg_rp::rps_map_full>("rps_map_data", 1);
 
-  InitCollisionMap(map);
-  SetVoronoiLine(map, msg);
-  CalcDistFromObj(map, msg);
-  ConvertMap(map, pub_map);
+  initCollisionMap(collision_map_);
+  setVoronoiLine(collision_map_, result_msg_);
+  calcDistFromObj(collision_map_, result_msg_);
+  convertMap(collision_map_, pub_map_);
 }
 
 //------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ TmsRpStaticMap::~TmsRpStaticMap()
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpStaticMap::InitCollisionMap(vector<vector<CollisionMapData> >& map){
+bool TmsRpStaticMap::initCollisionMap(vector<vector<CollisionMapData> >& map){
   FILE *fp;
   string file_name;
   char home_dir[255];
@@ -78,23 +78,23 @@ bool TmsRpStaticMap::InitCollisionMap(vector<vector<CollisionMapData> >& map){
   while(fgets(buff, 4096, fp) != NULL){ //collision
     CommaCount = 0;
     tp = strtok(buff, ",");
-    tempMapData.object=atof(tp);
+    tempMapData.object_=atof(tp);
 
-    if(tempMapData.object){
-      tempMapData.dist_from_obj = 0.0;
-      tempMapData.collision = true;
+    if(tempMapData.object_){
+      tempMapData.dist_from_obj_ = 0.0;
+      tempMapData.collision_ = true;
     }
     else{
-      tempMapData.dist_from_obj = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
-      tempMapData.collision = false;
+      tempMapData.dist_from_obj_ = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
+      tempMapData.collision_ = false;
     }
 
-    tempMapData.voronoi = false;
-    tempMapData.path = false;
-    tempMapData.thinning_flg = 0;
-    tempMapData.dist_from_voronoi = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
-    tempMapData.dist_from_goal = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
-    tempMapData.dist_from_path = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
+    tempMapData.voronoi_ = false;
+    tempMapData.path_ = false;
+    tempMapData.thinning_flg_ = 0;
+    tempMapData.dist_from_voronoi_ = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
+    tempMapData.dist_from_goal_ = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
+    tempMapData.dist_from_path_ = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
     tempMapLine.push_back(tempMapData);
 
     CommaCount++;
@@ -108,22 +108,22 @@ bool TmsRpStaticMap::InitCollisionMap(vector<vector<CollisionMapData> >& map){
       CommaCount++;
 
       if(tp != NULL){
-        tempMapData.object=atof(tp);
-        if(tempMapData.object){
-          tempMapData.dist_from_obj = 0.0;
-          tempMapData.collision = true;
+        tempMapData.object_=atof(tp);
+        if(tempMapData.object_){
+          tempMapData.dist_from_obj_ = 0.0;
+          tempMapData.collision_ = true;
         }
         else{
-          tempMapData.dist_from_obj = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
-          tempMapData.collision = false;
+          tempMapData.dist_from_obj_ = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
+          tempMapData.collision_ = false;
         }
 
-        tempMapData.voronoi = false;
-        tempMapData.path = false;
-        tempMapData.thinning_flg = 0;
-        tempMapData.dist_from_voronoi = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
-        tempMapData.dist_from_goal = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
-        tempMapData.dist_from_path = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
+        tempMapData.voronoi_ = false;
+        tempMapData.path_ = false;
+        tempMapData.thinning_flg_ = 0;
+        tempMapData.dist_from_voronoi_ = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
+        tempMapData.dist_from_goal_ = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
+        tempMapData.dist_from_path_ = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
         tempMapLine.push_back(tempMapData);
       }
     }
@@ -138,7 +138,7 @@ bool TmsRpStaticMap::InitCollisionMap(vector<vector<CollisionMapData> >& map){
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpStaticMap::SetVoronoiLine(vector<vector<CollisionMapData> >& map, string& message){
+bool TmsRpStaticMap::setVoronoiLine(vector<vector<CollisionMapData> >& map, string& message){
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -147,11 +147,11 @@ bool TmsRpStaticMap::SetVoronoiLine(vector<vector<CollisionMapData> >& map, stri
 
   for(unsigned int x=0;x<map.size();x++){
     for(unsigned int y=0;y<map[x].size();y++){
-      map[x][y].voronoi = false;
-      if(!map[x][y].collision)
-        map[x][y].thinning_flg=1;
+      map[x][y].voronoi_ = false;
+      if(!map[x][y].collision_)
+        map[x][y].thinning_flg_=1;
       else
-        map[x][y].thinning_flg=0;
+        map[x][y].thinning_flg_=0;
     }
   }
 
@@ -183,40 +183,40 @@ bool TmsRpStaticMap::SetVoronoiLine(vector<vector<CollisionMapData> >& map, stri
             break;
           }
 
-          if((map[x][y].thinning_flg==1)&&(map[i][j].thinning_flg==0)){
-            if(((map[x][y-1].thinning_flg==0)&&(map[x+1][y].thinning_flg==1)&&(map[x][y+1].thinning_flg==1)&&(map[x+1][y+1].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x][y-1].thinning_flg==1)&&(map[x-1][y].thinning_flg==1)&&(map[x+1][y].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x][y-1].thinning_flg==1)&&(map[x-1][y].thinning_flg==1)&&(map[x][y+1].thinning_flg==0))||
-            ((map[x-1][y].thinning_flg==0)&&(map[x+1][y].thinning_flg==1)&&(map[x][y+1].thinning_flg==1)&&(map[x+1][y+1].thinning_flg==0))||
-            ((map[x-1][y].thinning_flg==0)&&(map[x+1][y].thinning_flg==0)&&(map[x][y+1].thinning_flg==1))||
-            ((map[x][y-1].thinning_flg==0)&&(map[x-1][y].thinning_flg==1)&&(map[x][y+1].thinning_flg==0))||
-            ((map[x][y-1].thinning_flg==1)&&(map[x-1][y].thinning_flg==0)&&(map[x+1][y].thinning_flg==0))||
-            ((map[x][y-1].thinning_flg==0)&&(map[x+1][y].thinning_flg==1)&&(map[x][y+1].thinning_flg==0))||
-            ((map[x-1][y].thinning_flg==0)&&(map[x-1][y+1].thinning_flg==1)&&(map[x][y+1].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==1)&&(map[x][y-1].thinning_flg==0)&&(map[x-1][y].thinning_flg==0))||
-            ((map[x][y-1].thinning_flg==0)&&(map[x+1][y-1].thinning_flg==1)&&(map[x+1][y].thinning_flg==0))||
-            ((map[x+1][y].thinning_flg==0)&&(map[x][y+1].thinning_flg==0)&&(map[x+1][y+1].thinning_flg==1))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x][y-1].thinning_flg==1)&&(map[x+1][y-1].thinning_flg==0)&&(map[x-1][y].thinning_flg==1)&&(map[x+1][y].thinning_flg==1)&&(map[x-1][y+1].thinning_flg==0)&&(map[x+1][y+1].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x][y-1].thinning_flg==1)&&(map[x+1][y-1].thinning_flg==0)&&(map[x+1][y].thinning_flg==1)&&(map[x-1][y+1].thinning_flg==0)&&(map[x][y+1].thinning_flg==1)&&(map[x+1][y+1].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x+1][y-1].thinning_flg==0)&&(map[x-1][y].thinning_flg==1)&&(map[x+1][y].thinning_flg==1)&&(map[x-1][y+1].thinning_flg==0)&&(map[x][y+1].thinning_flg==1)&&(map[x+1][y+1].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x][y-1].thinning_flg==1)&&(map[x+1][y-1].thinning_flg==0)&&(map[x-1][y].thinning_flg==1)&&(map[x-1][y+1].thinning_flg==0)&&(map[x][y+1].thinning_flg==1)&&(map[x+1][y+1].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x][y-1].thinning_flg==0)&&(map[x+1][y-1].thinning_flg==0)&&(map[x-1][y].thinning_flg==0)&&(map[x-1][y+1].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x][y-1].thinning_flg==0)&&(map[x+1][y-1].thinning_flg==0)&&(map[x+1][y].thinning_flg==0)&&(map[x+1][y+1].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x-1][y].thinning_flg==0)&&(map[x-1][y+1].thinning_flg==0)&&(map[x][y+1].thinning_flg==0)&&(map[x+1][y+1].thinning_flg==0))||
-            ((map[x+1][y-1].thinning_flg==0)&&(map[x+1][y].thinning_flg==0)&&(map[x-1][y+1].thinning_flg==0)&&(map[x][y+1].thinning_flg==0)&&(map[x+1][y+1].thinning_flg==0))
+          if((map[x][y].thinning_flg_==1)&&(map[i][j].thinning_flg_==0)){
+            if(((map[x][y-1].thinning_flg_==0)&&(map[x+1][y].thinning_flg_==1)&&(map[x][y+1].thinning_flg_==1)&&(map[x+1][y+1].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x][y-1].thinning_flg_==1)&&(map[x-1][y].thinning_flg_==1)&&(map[x+1][y].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x][y-1].thinning_flg_==1)&&(map[x-1][y].thinning_flg_==1)&&(map[x][y+1].thinning_flg_==0))||
+            ((map[x-1][y].thinning_flg_==0)&&(map[x+1][y].thinning_flg_==1)&&(map[x][y+1].thinning_flg_==1)&&(map[x+1][y+1].thinning_flg_==0))||
+            ((map[x-1][y].thinning_flg_==0)&&(map[x+1][y].thinning_flg_==0)&&(map[x][y+1].thinning_flg_==1))||
+            ((map[x][y-1].thinning_flg_==0)&&(map[x-1][y].thinning_flg_==1)&&(map[x][y+1].thinning_flg_==0))||
+            ((map[x][y-1].thinning_flg_==1)&&(map[x-1][y].thinning_flg_==0)&&(map[x+1][y].thinning_flg_==0))||
+            ((map[x][y-1].thinning_flg_==0)&&(map[x+1][y].thinning_flg_==1)&&(map[x][y+1].thinning_flg_==0))||
+            ((map[x-1][y].thinning_flg_==0)&&(map[x-1][y+1].thinning_flg_==1)&&(map[x][y+1].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==1)&&(map[x][y-1].thinning_flg_==0)&&(map[x-1][y].thinning_flg_==0))||
+            ((map[x][y-1].thinning_flg_==0)&&(map[x+1][y-1].thinning_flg_==1)&&(map[x+1][y].thinning_flg_==0))||
+            ((map[x+1][y].thinning_flg_==0)&&(map[x][y+1].thinning_flg_==0)&&(map[x+1][y+1].thinning_flg_==1))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x][y-1].thinning_flg_==1)&&(map[x+1][y-1].thinning_flg_==0)&&(map[x-1][y].thinning_flg_==1)&&(map[x+1][y].thinning_flg_==1)&&(map[x-1][y+1].thinning_flg_==0)&&(map[x+1][y+1].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x][y-1].thinning_flg_==1)&&(map[x+1][y-1].thinning_flg_==0)&&(map[x+1][y].thinning_flg_==1)&&(map[x-1][y+1].thinning_flg_==0)&&(map[x][y+1].thinning_flg_==1)&&(map[x+1][y+1].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x+1][y-1].thinning_flg_==0)&&(map[x-1][y].thinning_flg_==1)&&(map[x+1][y].thinning_flg_==1)&&(map[x-1][y+1].thinning_flg_==0)&&(map[x][y+1].thinning_flg_==1)&&(map[x+1][y+1].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x][y-1].thinning_flg_==1)&&(map[x+1][y-1].thinning_flg_==0)&&(map[x-1][y].thinning_flg_==1)&&(map[x-1][y+1].thinning_flg_==0)&&(map[x][y+1].thinning_flg_==1)&&(map[x+1][y+1].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x][y-1].thinning_flg_==0)&&(map[x+1][y-1].thinning_flg_==0)&&(map[x-1][y].thinning_flg_==0)&&(map[x-1][y+1].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x][y-1].thinning_flg_==0)&&(map[x+1][y-1].thinning_flg_==0)&&(map[x+1][y].thinning_flg_==0)&&(map[x+1][y+1].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x-1][y].thinning_flg_==0)&&(map[x-1][y+1].thinning_flg_==0)&&(map[x][y+1].thinning_flg_==0)&&(map[x+1][y+1].thinning_flg_==0))||
+            ((map[x+1][y-1].thinning_flg_==0)&&(map[x+1][y].thinning_flg_==0)&&(map[x-1][y+1].thinning_flg_==0)&&(map[x][y+1].thinning_flg_==0)&&(map[x+1][y+1].thinning_flg_==0))
             )
-              map[x][y].thinning_flg=1;
+              map[x][y].thinning_flg_=1;
             else {
               flg=true;
-              map[x][y].thinning_flg=3;
+              map[x][y].thinning_flg_=3;
             }
           }
         }
       }
       for(int x=1;x<map.size()-1;x++){
         for(int y=1;y<map[x].size()-1;y++){
-          if(map[x][y].thinning_flg==3)
-          map[x][y].thinning_flg=0;
+          if(map[x][y].thinning_flg_==3)
+          map[x][y].thinning_flg_=0;
         }
       }
     }
@@ -224,19 +224,19 @@ bool TmsRpStaticMap::SetVoronoiLine(vector<vector<CollisionMapData> >& map, stri
 
   for(int x=0;x<map.size();x++){
     for(int y=0;y<map[x].size();y++){
-      if(map[x][y].thinning_flg==1){
-        map[x][y].voronoi=1;
-        map[x][y].dist_from_voronoi=0.0;
+      if(map[x][y].thinning_flg_==1){
+        map[x][y].voronoi_=1;
+        map[x][y].dist_from_voronoi_=0.0;
       }
       else
-        map[x][y].voronoi=0;
+        map[x][y].voronoi_=0;
     }
   }
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpStaticMap::CalcDistFromObj(vector<vector<CollisionMapData> >& map, string& message){
+bool TmsRpStaticMap::calcDistFromObj(vector<vector<CollisionMapData> >& map, string& message){
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -245,29 +245,29 @@ bool TmsRpStaticMap::CalcDistFromObj(vector<vector<CollisionMapData> >& map, str
 
   for(int x=0;x<map.size();x++){
     for(int y=0;y<map[x].size();y++){
-      if(map[x][y].object)
-        map[x][y].dist_from_obj = 0.0;
+      if(map[x][y].object_)
+        map[x][y].dist_from_obj_ = 0.0;
       else
-        map[x][y].dist_from_obj = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
+        map[x][y].dist_from_obj_ = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
     }
   }
 
   for(int x=1;x<map.size()-1;x++){
     for(int y=1;y<map[x].size()-1;y++){
-      if(!map[x][y].object){
-        map[x][y].dist_from_obj = min( min( min(map[x-1][y-1].dist_from_obj+sqrt(2.0)*cell_size_, map[x][y-1].dist_from_obj+1.0*cell_size_),
-        min(map[x-1][y+1].dist_from_obj+sqrt(2.0)*cell_size_, map[x-1][y].dist_from_obj+1.0*cell_size_)),
-        map[x][y].dist_from_obj);
+      if(!map[x][y].object_){
+        map[x][y].dist_from_obj_ = min( min( min(map[x-1][y-1].dist_from_obj_+sqrt(2.0)*cell_size_, map[x][y-1].dist_from_obj_+1.0*cell_size_),
+        min(map[x-1][y+1].dist_from_obj_+sqrt(2.0)*cell_size_, map[x-1][y].dist_from_obj_+1.0*cell_size_)),
+        map[x][y].dist_from_obj_);
       }
     }
   }
 
   for(int x=map.size()-2;x>0;x--){
     for(int y=map[x].size()-2;y>0;y--){
-      if(!map[x][y].object){
-        map[x][y].dist_from_obj = min( min( min(map[x+1][y].dist_from_obj+1.0*cell_size_, map[x+1][y-1].dist_from_obj+sqrt(2.0)*cell_size_),
-        min(map[x][y+1].dist_from_obj+1.0*cell_size_, map[x+1][y+1].dist_from_obj+sqrt(2.0)*cell_size_)),
-        map[x][y].dist_from_obj);
+      if(!map[x][y].object_){
+        map[x][y].dist_from_obj_ = min( min( min(map[x+1][y].dist_from_obj_+1.0*cell_size_, map[x+1][y-1].dist_from_obj_+sqrt(2.0)*cell_size_),
+        min(map[x][y+1].dist_from_obj_+1.0*cell_size_, map[x+1][y+1].dist_from_obj_+sqrt(2.0)*cell_size_)),
+        map[x][y].dist_from_obj_);
       }
     }
   }
@@ -276,7 +276,7 @@ bool TmsRpStaticMap::CalcDistFromObj(vector<vector<CollisionMapData> >& map, str
 }
 
 //------------------------------------------------------------------------------
-void TmsRpStaticMap::ConvertMap(vector<vector<CollisionMapData> > map, tms_msg_rp::rps_map_full& pp_map){
+void TmsRpStaticMap::convertMap(vector<vector<CollisionMapData> > map, tms_msg_rp::rps_map_full& pp_map){
   pp_map.rps_map_x.clear();
 
   pp_map.x_llimit = x_llimit_;
@@ -291,9 +291,9 @@ void TmsRpStaticMap::ConvertMap(vector<vector<CollisionMapData> > map, tms_msg_r
   for(unsigned int x=0;x<map.size();x++){
     temp_map_y.rps_map_y.clear();
     for(unsigned int y=0;y<map[x].size();y++){
-      temp_map_d.object = map[x][y].object;
-      temp_map_d.voronoi = map[x][y].voronoi;
-      temp_map_d.dist_from_obj_f = map[x][y].dist_from_obj;
+      temp_map_d.object = map[x][y].object_;
+      temp_map_d.voronoi = map[x][y].voronoi_;
+      temp_map_d.dist_from_obj_f = map[x][y].dist_from_obj_;
 
       temp_map_y.rps_map_y.push_back(temp_map_d);
     }
@@ -302,8 +302,8 @@ void TmsRpStaticMap::ConvertMap(vector<vector<CollisionMapData> > map, tms_msg_r
 }
 
 //------------------------------------------------------------------------------
-void TmsRpStaticMap::MapPublish(){
-  pp_map_pub.publish(pub_map);
+void TmsRpStaticMap::mapPublish(){
+  pp_map_pub_.publish(pub_map_);
 }
 
 //------------------------------------------------------------------------------

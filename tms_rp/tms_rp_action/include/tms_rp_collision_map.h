@@ -8,25 +8,29 @@ namespace tms_rp {
 class CollisionTarget
 {
 public:
-  CollisionTarget(BodyItemPtr bodyItem);
-  const string& name() { return bodyItemCollisionTarget->name(); }
+  cnoid::BodyItemPtr bodyItem_collision_target_;
+  cnoid::Link *base_;
 
-  cnoid::BodyItemPtr bodyItemCollisionTarget;
-  cnoid::Link *base;
+  CollisionTarget(BodyItemPtr bodyItem);
+  const string& name() { return bodyItem_collision_target_->name(); }
 };
 
 class TmsRpCollisionMap : public boost::signals::trackable
 {
 public:
   double x_llimit_, x_ulimit_, y_llimit_, y_ulimit_, cell_size_;
-  vector<ColdetLinkPairPtr> collisionMapPairs;
-  CollisionTarget* collisionTarget;
-  cnoid::Link* collisionTargetBase() { return collisionTarget->base; }
+  CollisionTarget* collision_target_;
+  vector<ColdetLinkPairPtr> collision_map_pairs_;
+
   TmsRpCollisionMap();
   static TmsRpCollisionMap* instance();
   virtual ~TmsRpCollisionMap();
+
+  cnoid::Link* collisionTargetBase() { return collision_target_->base_; }
+
   bool makeCollisionMap(vector<vector<int> >& out_collision_map);
-  void SetCollisionTarget(BodyItemPtr bodyItem);
+  void setCollisionTarget(BodyItemPtr bodyItem);
+
 private:
   void initialCollision();
   bool isColliding();
