@@ -209,9 +209,10 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   sp5_control_client_    = nh.serviceClient<tms_msg_rc::rc_robot_control>("sp5_control");
   path_planning_client_  = nh.serviceClient<tms_msg_rp::rps_path_planning>("rps_path_planning");
   ardrone_client_        = nh.serviceClient<tms_msg_rc::robot_control>("robot_control");
+  request_robot_path_    = nh.serviceClient<tms_msg_rp::rps_voronoi_path_planning>("/rps_voronoi_path_planning");
   subscribe_pcd_         = nh.subscribe("velodyne_points", 10, &TmsRpBar::receivePointCloudData, this);
-  subscribe_static_map_ = nh.subscribe("rps_map_data", 10,    &TmsRpBar::receiveStaticMapData, this);
-  subscribe_path_map_   = nh.subscribe("rps_robot_path", 10,  &TmsRpBar::receivePathMapData, this);
+  subscribe_static_map_  = nh.subscribe("rps_map_data", 10,    &TmsRpBar::receiveStaticMapData, this);
+  subscribe_path_map_    = nh.subscribe("rps_robot_path", 10,  &TmsRpBar::receivePathMapData, this);
 
   //----------------------------------------------------------------------------
   // create person model
@@ -277,6 +278,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   tac_.createRecord(20010,"local_map");
   tac_.createRecord(20011,"path_map");
   tac_.createRecord(20012,"robot_marker");
+  tac_.createRecord(20013,"collision_target");
+  tac_.createRecord(20014,"smartpal_goal");
 
   // arrange model
   mat0_       <<  1, 0, 0, 0, 1, 0, 0, 0, 1;  //   0
@@ -599,7 +602,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
     sigClicked().connect(bind(&TmsRpBar::ardroneButtonClicked, this));
 
   addButton(QIcon(":/action/icons/smartpal.png"), ("smartpal"))->
-    sigClicked().connect(bind(&TmsRpBar::ardroneButtonClicked, this));
+    sigClicked().connect(bind(&TmsRpBar::smartpalButtonClicked, this));
 
   ItemTreeView::mainInstance()->sigSelectionChanged().connect(
     bind(&TmsRpBar::itemSelectionChanged, this, _1));
@@ -661,15 +664,33 @@ void TmsRpBar::makeCollisionMapButtonClicked()
 {
   QString DirName  = QDir::currentPath();
   QString fileName = QFileDialog::getSaveFileName(this,tr("Save Collision Map"),
-                                                  DirName,tr("CSV Files (*.csv)")
-                                                  );
+                                                  DirName,tr("CSV Files (*.csv)"));
 
   if (fileName.isEmpty())
+  {
+    ROS_INFO("File name is empty");
     return;
-  else {
+  }
+  else
+  {
+    tac_.disappear("person_1");
+    tac_.disappear("smartpal4");
+    tac_.disappear("smartpal5_1");
+    tac_.disappear("smartpal5_2");
+    tac_.disappear("turtlebot2");
+    tac_.disappear("kobuki");
+    tac_.disappear("kxp");
+    tac_.disappear("wheelchair");
+    tac_.disappear("ardrone");
+    tac_.disappear("kxp2");
+    tac_.disappear("floor928");
+    tac_.disappear("corridor928");
+    tac_.disappear("wagon");
+
     QFile file(fileName);
-    if (!file.open(QIODevice::WriteOnly)) {
-      cout<<" can not open file"<<endl;
+    if (!file.open(QIODevice::WriteOnly))
+    {
+      ROS_INFO("Can not open the file");
       return;
     }
 
@@ -680,45 +701,39 @@ void TmsRpBar::makeCollisionMapButtonClicked()
     vector<vector<int> > collision_map;
     TmsRpCollisionMap::instance()->makeCollisionMap(collision_map);
 
-    QFile use_file(DirName+"/use_collision_map.csv");
-    if (!use_file.open(QIODevice::WriteOnly)) {
-      cout<<DirName.toStdString()<<endl;
-      cout<<"... can not open file"<<endl;
-      return;
-    }
-
     char temp[1024];
-    sprintf(temp, "%f,%f,%f,%f,%f\n", TmsRpCollisionMap::instance()->x_llimit_, TmsRpCollisionMap::instance()->x_ulimit_,
-                                                                                      TmsRpCollisionMap::instance()->y_llimit_, TmsRpCollisionMap::instance()->y_ulimit_,
-                                                                                      TmsRpCollisionMap::instance()->cell_size_);
+    sprintf(temp, "%f,%f,%f,%f,%f\n",
+            TmsRpCollisionMap::instance()->x_llimit_, TmsRpCollisionMap::instance()->x_ulimit_,
+            TmsRpCollisionMap::instance()->y_llimit_, TmsRpCollisionMap::instance()->y_ulimit_,
+            TmsRpCollisionMap::instance()->cell_size_);
     file.write(temp);
-    use_file.write(temp);
 
-    for(int x=0;x<collision_map.size();x++){
-      for(int y=0;y<collision_map[x].size();y++){
+    for(int x=0;x<collision_map.size();x++)
+    {
+      for(int y=0;y<collision_map[x].size();y++)
+      {
         sprintf(temp, "%d,", collision_map[x][y] );
         file.write(temp);
-        use_file.write(temp);
       }
       file.write("\n");
-      use_file.write("\n");
     }
-
     file.close();
-    use_file.close();
   }
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::staticMapButtonClicked() {
+void TmsRpBar::staticMapButtonClicked()
+{
   TmsRpController trc;
 
-  if(static_map_data_.rps_map_x.size()==0){
+  if(static_map_data_.rps_map_x.size()==0)
+  {
     ROS_INFO("nothing the static map data");
     return;
   }
 
-  if(!static_map_toggle_->isChecked()){
+  if(!static_map_toggle_->isChecked())
+  {
     trc.disappear("static_map");
     return;
   }
@@ -726,11 +741,12 @@ void TmsRpBar::staticMapButtonClicked() {
   ROS_INFO("On viewer for static map");
 
   SgPointsDrawing::SgLastRenderer(0,true);
-  SgGroupPtr node  = (SgGroup*)trc.objTag2Item()["static_map"]->body()->link(0)->shape();
+  SgGroupPtr node = (SgGroup*)trc.objTag2Item()["static_map"]->body()->link(0)->shape();
 
   SgPointsGet visit;
   node->accept(visit);
-  if(visit.shape.size()==0){
+  if(visit.shape.size()==0)
+  {
     ROS_INFO("no shape node, %ld", visit.shape.size());
     return;
   }
@@ -747,7 +763,8 @@ void TmsRpBar::staticMapButtonClicked() {
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::pathMapButtonClicked() {
+void TmsRpBar::pathMapButtonClicked()
+{
   TmsRpController trc;
 
   if(path_map_data_.rps_route.size()==0){
@@ -783,7 +800,8 @@ void TmsRpBar::pathMapButtonClicked() {
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::robotMapButtonClicked() {
+void TmsRpBar::robotMapButtonClicked()
+{
   TmsRpController trc;
 
   if(path_map_data_.rps_route.size()==0){
@@ -1763,26 +1781,30 @@ void TmsRpBar::pathPlanButtonClicked()
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::changePlanningMode(){
+void TmsRpBar::changePlanningMode()
+{
   PlanBase::instance()->arm()->base_p = PlanBase::instance()->body()->link(0)->p();
   PlanBase::instance()->arm()->base_R = PlanBase::instance()->body()->link(0)->R();
   PlanBase::instance()->arm()->searchBasePositionMode = !PlanBase::instance()->arm()->searchBasePositionMode;
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::simulationButtonClicked(){
+void TmsRpBar::simulationButtonClicked()
+{
   os_ <<  "virtual button clicked" << endl;
   static boost::thread t(boost::bind(&TmsRpBar::simulation, this));
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::connectRosButtonClicked(){
+void TmsRpBar::connectRosButtonClicked()
+{
   os_ <<  "connectROS button clicked" << endl;
   static boost::thread t(boost::bind(&TmsRpBar::connectROS, this));
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::simulation(){
+void TmsRpBar::simulation()
+{
   os_ <<  "simulation service" << endl;
   production_version_ = false;
   os_ << "production_version_ = " << production_version_ << endl;
@@ -1800,7 +1822,8 @@ void TmsRpBar::simulation(){
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::connectROS(){
+void TmsRpBar::connectROS()
+{
   os_ <<  "Connect to the ROS" << endl;
   production_version_ = true;
   os_ << "production_version_ = " << production_version_ << endl;
@@ -1856,3 +1879,78 @@ void TmsRpBar::ardroneButtonClicked()
 }
 
 //------------------------------------------------------------------------------
+void TmsRpBar::smartpalButtonClicked()
+{
+  Vector3 robot_pos = Vector3(0,0,0);
+  Matrix3 robot_ori;
+  Vector3 robot_rpy;
+  TmsRpController trc;
+  BodyItemPtr item;
+  tms_msg_rp::rps_voronoi_path_planning path_planning_srv;
+
+  ROS_INFO("request the pah planning");
+
+  // get current position of robot
+  item = trc.objTag2Item()["smartpal5_2"];
+  if(!item){
+    ROS_INFO("Error: The tagId(smartpal5_2) is not recorded.");
+  }
+  robot_pos = item->body()->link(0)->p();
+  robot_ori = item->body()->link(0)->R();
+  item->calcForwardKinematics();
+  item->notifyKinematicStateChange();
+
+  robot_rpy = rpyFromRot(robot_ori);
+
+  path_planning_srv.request.robot_id = 2003;
+  path_planning_srv.request.start_pos.x = robot_pos(0) * 1000;
+  path_planning_srv.request.start_pos.y = robot_pos(1) * 1000;
+  path_planning_srv.request.start_pos.z = 0.0;
+  path_planning_srv.request.start_pos.th = rad2deg(robot_rpy(2));
+  path_planning_srv.request.start_pos.roll = 0.0;
+  path_planning_srv.request.start_pos.pitch = 0.0;
+  path_planning_srv.request.start_pos.yaw = rad2deg(robot_rpy(2));
+
+  // get goal position of robot
+  item = trc.objTag2Item()["smartpal_goal"];
+  if(!item){
+    ROS_INFO("Error: The tagId(smartpal_goal) is not recorded.");
+  }
+  robot_pos = item->body()->link(0)->p();
+  robot_ori = item->body()->link(0)->R();
+  item->calcForwardKinematics();
+  item->notifyKinematicStateChange();
+
+  robot_rpy = rpyFromRot(robot_ori);
+
+  path_planning_srv.request.goal_pos.x = robot_pos(0) * 1000;
+  path_planning_srv.request.goal_pos.y = robot_pos(1) * 1000;
+  path_planning_srv.request.goal_pos.z = 0.0;
+  path_planning_srv.request.goal_pos.th = rad2deg(robot_rpy(2));
+  path_planning_srv.request.goal_pos.roll = 0.0;
+  path_planning_srv.request.goal_pos.pitch = 0.0;
+  path_planning_srv.request.goal_pos.yaw = rad2deg(robot_rpy(2));
+
+  ROS_INFO("robot's current position: x=%f, y=%f",path_planning_srv.request.start_pos.x,
+                                                  path_planning_srv.request.start_pos.y);
+  ROS_INFO("robot's current theta: %f",path_planning_srv.request.start_pos.th);
+
+  ROS_INFO("robot's goal position: x=%f, y=%f",path_planning_srv.request.goal_pos.x,
+                                               path_planning_srv.request.goal_pos.y);
+  ROS_INFO("robot's goal theta: %f",path_planning_srv.request.goal_pos.th);
+
+  ROS_INFO("call request_robot_path");
+
+  if (request_robot_path_.call(path_planning_srv))
+  {
+//    uint32_t result = path_planning_srv.response.success;
+//    ROS_INFO("[TmsAction] result = %d",result);
+  }
+  else
+  {
+    ROS_INFO("Failed to call service path_planning");
+  }
+}
+
+//------------------------------------------------------------------------------
+

@@ -30,7 +30,6 @@ TmsRpPathPlanning::TmsRpPathPlanning(): kSmartPal5CollisionThreshold_(400.0),
   static_map_sub_ = nh.subscribe("/rps_map_data", 10, &TmsRpPathPlanning::getStaticMap, this);
   service_voronoi_path_ = nh.advertiseService("/rps_voronoi_path_planning", &TmsRpPathPlanning::voronoiPathPlanner, this);
   robot_path_pub_ = nh.advertise<tms_msg_rp::rps_route>("/rps_robot_path", 1);
-
 }
 
 //------------------------------------------------------------------------------
@@ -756,8 +755,4 @@ bool TmsRpPathPlanning::smoothVoronoiPath(vector<vector<CollisionMapData> >& map
   return true;
 }
 
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
