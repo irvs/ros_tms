@@ -123,7 +123,7 @@ class TmsRpController{
 
 
     private:
-    std::ostream& os;
+    std::ostream& os_;
     bool setOutputData(std::vector<pathInfo>* trajectory, const int resolution);
 };
 

@@ -42,11 +42,11 @@ TmsRpPathPlanning::~TmsRpPathPlanning()
 void TmsRpPathPlanning::GetStaticMap(const tms_msg_rp::rps_map_full::ConstPtr& original_map){
   static_map_.clear();
 
-  x_llimit  = original_map->x_llimit;
-  x_ulimit  = original_map->x_ulimit;
-  y_llimit  = original_map->y_llimit;
-  y_ulimit  = original_map->y_ulimit;
-  cell_size = original_map->cell_size;
+  x_llimit_  = original_map->x_llimit;
+  x_ulimit_  = original_map->x_ulimit;
+  y_llimit_  = original_map->y_llimit;
+  y_ulimit_  = original_map->y_ulimit;
+  cell_size_ = original_map->cell_size;
 
   vector<CollisionMapData> temp_map_line;
   CollisionMapData temp_map_d;
@@ -353,15 +353,15 @@ bool TmsRpPathPlanning::CalcDistFromVoronoi(vector<vector<CollisionMapData> >& m
       if(map[x][y].voronoi&&(!map[x][y].collision))
         map[x][y].dist_from_voronoi = 0.0;
       else
-        map[x][y].dist_from_voronoi = (x_ulimit-x_llimit)*(y_ulimit-y_llimit);
+        map[x][y].dist_from_voronoi = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
     }
   }
 
   for(int x=1;x<map.size()-1;x++){
     for(int y=1;y<map[x].size()-1;y++){
       if(!map[x][y].collision){
-        map[x][y].dist_from_voronoi = min( min( min(map[x-1][y-1].dist_from_voronoi+sqrt(2.0)*cell_size, map[x][y-1].dist_from_voronoi+1.0*cell_size),
-                                           min(map[x-1][y+1].dist_from_voronoi+sqrt(2.0)*cell_size, map[x-1][y].dist_from_voronoi+1.0*cell_size)),
+        map[x][y].dist_from_voronoi = min( min( min(map[x-1][y-1].dist_from_voronoi+sqrt(2.0)*cell_size_, map[x][y-1].dist_from_voronoi+1.0*cell_size_),
+                                           min(map[x-1][y+1].dist_from_voronoi+sqrt(2.0)*cell_size_, map[x-1][y].dist_from_voronoi+1.0*cell_size_)),
                                            map[x][y].dist_from_voronoi);
       }
     }
@@ -370,8 +370,8 @@ bool TmsRpPathPlanning::CalcDistFromVoronoi(vector<vector<CollisionMapData> >& m
   for(int x=map.size()-2;x>0;x--){
     for(int y=map[x].size()-2;y>0;y--){
       if(!map[x][y].collision){
-        map[x][y].dist_from_voronoi = min( min( min(map[x+1][y].dist_from_voronoi+1.0*cell_size, map[x+1][y-1].dist_from_voronoi+sqrt(2.0)*cell_size),
-                                                min(map[x][y+1].dist_from_voronoi+1.0*cell_size, map[x+1][y+1].dist_from_voronoi+sqrt(2.0)*cell_size)),
+        map[x][y].dist_from_voronoi = min( min( min(map[x+1][y].dist_from_voronoi+1.0*cell_size_, map[x+1][y-1].dist_from_voronoi+sqrt(2.0)*cell_size_),
+                                                min(map[x][y+1].dist_from_voronoi+1.0*cell_size_, map[x+1][y+1].dist_from_voronoi+sqrt(2.0)*cell_size_)),
                                                 map[x][y].dist_from_voronoi);
       }
     }
@@ -388,16 +388,16 @@ bool TmsRpPathPlanning::ConnectToVoronoi(vector<vector<CollisionMapData> >& map,
     return false;
   }
 
-  if((connect_point[0]<x_llimit)||(connect_point[0]>x_ulimit)||(connect_point[1]<y_llimit)||(connect_point[1]>y_ulimit)){
+  if((connect_point[0]<x_llimit_)||(connect_point[0]>x_ulimit_)||(connect_point[1]<y_llimit_)||(connect_point[1]>y_ulimit_)){
     message = "Error : Connect point is out of range";
     cout<<message<<endl;
-    cout<<"	x:"<<connect_point[0]<<"	y:"<<connect_point[1]<<"	limit_x:"<<x_llimit<<" ~ "<<x_ulimit<<"	limit_y:"<<y_llimit<<" ~ "<<y_ulimit<<endl;
+    cout<<"	x:"<<connect_point[0]<<"	y:"<<connect_point[1]<<"	limit_x:"<<x_llimit_<<" ~ "<<x_ulimit_<<"	limit_y:"<<y_llimit_<<" ~ "<<y_ulimit_<<endl;
     return false;
   }
 
   int target_x, target_y, temp_x, temp_y, dx=0, dy=0;
-  target_x = (int)round( (connect_point[0] - x_llimit) / cell_size );
-  target_y = (int)round( (connect_point[1] - y_llimit) / cell_size );
+  target_x = (int)round( (connect_point[0] - x_llimit_) / cell_size_ );
+  target_y = (int)round( (connect_point[1] - y_llimit_) / cell_size_ );
   temp_x = target_x;
   temp_y = target_y;
 
@@ -499,19 +499,19 @@ bool TmsRpPathPlanning::CalcDistFromGoal(vector<vector<CollisionMapData> >& map,
     return false;
   }
 
-  if((goal_point[0]<x_llimit)||(goal_point[0]>x_ulimit)||(goal_point[1]<y_llimit)||(goal_point[1]>y_ulimit)){
+  if((goal_point[0]<x_llimit_)||(goal_point[0]>x_ulimit_)||(goal_point[1]<y_llimit_)||(goal_point[1]>y_ulimit_)){
     message = "Error : Goal is out of range";
     cout<<message<<endl;
     return false;
   }
 
   int temp_x, temp_y;
-  temp_x = (int)round( (goal_point[0] - x_llimit) / cell_size );
-  temp_y = (int)round( (goal_point[1] - y_llimit) / cell_size );
+  temp_x = (int)round( (goal_point[0] - x_llimit_) / cell_size_ );
+  temp_y = (int)round( (goal_point[1] - y_llimit_) / cell_size_ );
 
   for(int x=0;x<map.size();x++){
     for(int y=0;y<map[x].size();y++){
-      map[x][y].dist_from_goal = (x_ulimit-x_llimit)*(y_ulimit-y_llimit);
+      map[x][y].dist_from_goal = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
     }
   }
 
@@ -527,9 +527,9 @@ bool TmsRpPathPlanning::CalcDistFromGoal(vector<vector<CollisionMapData> >& map,
       for(unsigned int j=1;j<map[i].size()-1;j++){
         if(map[i][j].voronoi){
           temp = map[i][j].dist_from_goal;
-          map[i][j].dist_from_goal = min( min( min(map[i-1][j-1].dist_from_goal+sqrt(2.0)*cell_size, map[i-1][j].dist_from_goal+1.0*cell_size),
-                                                   map[i-1][j+1].dist_from_goal+sqrt(2.0)*cell_size ),
-                                          min( map[i][j-1].dist_from_goal+1.0*cell_size, map[i][j].dist_from_goal ) );
+          map[i][j].dist_from_goal = min( min( min(map[i-1][j-1].dist_from_goal+sqrt(2.0)*cell_size_, map[i-1][j].dist_from_goal+1.0*cell_size_),
+                                                   map[i-1][j+1].dist_from_goal+sqrt(2.0)*cell_size_ ),
+                                          min( map[i][j-1].dist_from_goal+1.0*cell_size_, map[i][j].dist_from_goal ) );
           if(change_flg==false){
           if(map[i][j].dist_from_goal!=temp)
             change_flg=true;
@@ -542,9 +542,9 @@ bool TmsRpPathPlanning::CalcDistFromGoal(vector<vector<CollisionMapData> >& map,
       for(int j=map[i].size()-2;j>0;j--){
         if(map[i][j].voronoi){
           temp = map[i][j].dist_from_goal;
-          map[i][j].dist_from_goal = min( min( map[i][j].dist_from_goal, map[i][j+1].dist_from_goal+1.0*cell_size ),
-                                          min( map[i+1][j-1].dist_from_goal+sqrt(2.0)*cell_size,
-                                                   min( map[i+1][j].dist_from_goal+1.0*cell_size, map[i+1][j+1].dist_from_goal+sqrt(2.0)*cell_size ) ) );
+          map[i][j].dist_from_goal = min( min( map[i][j].dist_from_goal, map[i][j+1].dist_from_goal+1.0*cell_size_ ),
+                                          min( map[i+1][j-1].dist_from_goal+sqrt(2.0)*cell_size_,
+                                                   min( map[i+1][j].dist_from_goal+1.0*cell_size_, map[i+1][j+1].dist_from_goal+sqrt(2.0)*cell_size_ ) ) );
           if(change_flg==false){
             if(map[i][j].dist_from_goal!=temp)
             change_flg=true;
@@ -566,25 +566,25 @@ bool TmsRpPathPlanning::CalcVoronoiPath(vector<vector<CollisionMapData> >& map, 
     cout<<message<<endl;
   }
 
-  if((start[0]<x_llimit)||(start[0]>x_ulimit)||(start[1]<y_llimit)||(start[1]>y_ulimit)){
+  if((start[0]<x_llimit_)||(start[0]>x_ulimit_)||(start[1]<y_llimit_)||(start[1]>y_ulimit_)){
     message = "Error : Start point is out of range";
     cout<<message<<endl;
-    cout<<"	x:"<<start[0]<<"	y:"<<start[1]<<"	limit_x:"<<x_llimit<<" ~ "<<x_ulimit<<"	limit_y:"<<y_llimit<<" ~ "<<y_ulimit<<endl;
+    cout<<"	x:"<<start[0]<<"	y:"<<start[1]<<"	limit_x:"<<x_llimit_<<" ~ "<<x_ulimit_<<"	limit_y:"<<y_llimit_<<" ~ "<<y_ulimit_<<endl;
     return false;
   }
 
-  if((goal[0]<x_llimit)||(goal[0]>x_ulimit)||(goal[1]<y_llimit)||(goal[1]>y_ulimit)){
+  if((goal[0]<x_llimit_)||(goal[0]>x_ulimit_)||(goal[1]<y_llimit_)||(goal[1]>y_ulimit_)){
     message = "Error : Goal point is out of range";
-    cout<<"	x:"<<goal[0]<<"	y:"<<goal[1]<<"	limit_x:"<<x_llimit<<" ~ "<<x_ulimit<<"	limit_y:"<<y_llimit<<" ~ "<<y_ulimit<<endl;
+    cout<<"	x:"<<goal[0]<<"	y:"<<goal[1]<<"	limit_x:"<<x_llimit_<<" ~ "<<x_ulimit_<<"	limit_y:"<<y_llimit_<<" ~ "<<y_ulimit_<<endl;
     cout<<message<<endl;
     return false;
   }
 
   int i_start_x, i_start_y, i_goal_x, i_goal_y, i_temp_x, i_temp_y, dx=0, dy=0;
-  i_start_x = (int)round( (start[0] - x_llimit) / cell_size );
-  i_start_y = (int)round( (start[1] - y_llimit) / cell_size );
-  i_goal_x = (int)round( (goal[0] - x_llimit) / cell_size );
-  i_goal_y = (int)round( (goal[1] - y_llimit) / cell_size );
+  i_start_x = (int)round( (start[0] - x_llimit_) / cell_size_ );
+  i_start_y = (int)round( (start[1] - y_llimit_) / cell_size_ );
+  i_goal_x = (int)round( (goal[0] - x_llimit_) / cell_size_ );
+  i_goal_y = (int)round( (goal[1] - y_llimit_) / cell_size_ );
 
   if(map[i_start_x][i_start_y].collision){
     message = "Error : Start is collision";
@@ -670,8 +670,8 @@ bool TmsRpPathPlanning::CalcVoronoiPath(vector<vector<CollisionMapData> >& map, 
     if(temp_dist==0.0)
     break;
 
-    temp_pos[0] = (i_temp_x * cell_size) + x_llimit;
-    temp_pos[1] = (i_temp_y * cell_size) + y_llimit;
+    temp_pos[0] = (i_temp_x * cell_size_) + x_llimit_;
+    temp_pos[1] = (i_temp_y * cell_size_) + y_llimit_;
     out_path.push_back(temp_pos);
   }
 
@@ -701,8 +701,8 @@ bool TmsRpPathPlanning::SmoothVoronoiPath(vector<vector<CollisionMapData> >& map
 
   int i_temp_x, i_temp_y, i_prev_x, i_prev_y, i_next_x, i_next_y;
   double temp_th = 0.0;
-  i_prev_x = (int)round( (start[0] - x_llimit) / cell_size );
-  i_prev_y = (int)round( (start[1] - y_llimit) / cell_size );
+  i_prev_x = (int)round( (start[0] - x_llimit_) / cell_size_ );
+  i_prev_y = (int)round( (start[1] - y_llimit_) / cell_size_ );
 
   vector<double> vec;
   vec.resize(2);
@@ -711,8 +711,8 @@ bool TmsRpPathPlanning::SmoothVoronoiPath(vector<vector<CollisionMapData> >& map
 
   for(unsigned int i=1;i<in_path.size();i++){
     smoothing = true;
-    i_next_x = (int)round( (in_path[i][0] - x_llimit) / cell_size );
-    i_next_y = (int)round( (in_path[i][1] - y_llimit) / cell_size );
+    i_next_x = (int)round( (in_path[i][0] - x_llimit_) / cell_size_ );
+    i_next_y = (int)round( (in_path[i][1] - y_llimit_) / cell_size_ );
 
     vec[0] = i_next_x - i_prev_x;
     vec[1] = i_next_y - i_prev_y;
@@ -734,15 +734,15 @@ bool TmsRpPathPlanning::SmoothVoronoiPath(vector<vector<CollisionMapData> >& map
     if(!smoothing){
       temp_pos[2] = atan2(i_next_y - i_prev_y, i_next_x - i_prev_x);
       out_path.push_back(temp_pos);
-      temp_pos[0] = (i_next_x * cell_size) + x_llimit;
-      temp_pos[1] = (i_next_y * cell_size) + y_llimit;
+      temp_pos[0] = (i_next_x * cell_size_) + x_llimit_;
+      temp_pos[1] = (i_next_y * cell_size_) + y_llimit_;
       out_path.push_back(temp_pos);
       i_prev_x = i_next_x;
       i_prev_y = i_next_y;
     }
   }
 
-  temp_pos[2] = atan2(goal[1] - ((i_prev_y * cell_size) + y_llimit), goal[0] - ((i_prev_x * cell_size) + x_llimit));
+  temp_pos[2] = atan2(goal[1] - ((i_prev_y * cell_size_) + y_llimit_), goal[0] - ((i_prev_x * cell_size_) + x_llimit_));
   out_path.push_back(temp_pos);
   temp_pos[0] = goal[0];
   temp_pos[1] = goal[1];

@@ -76,9 +76,9 @@ namespace grasp {
 class SelectGoalPosDialog : public QDialog
 {
   public:
-    cnoid::SpinBox goal_pos_x;
-    cnoid::SpinBox goal_pos_y;
-    cnoid::SpinBox goal_pos_ry;
+    cnoid::SpinBox goal_pos_x_;
+    cnoid::SpinBox goal_pos_y_;
+    cnoid::SpinBox goal_pos_ry_;
     SelectGoalPosDialog() ;
     void okClicked();
 };
@@ -86,11 +86,11 @@ class SelectGoalPosDialog : public QDialog
 class SetMapParamDialog : public QDialog
 {
 public:
-  DoubleSpinBox x_llimit;
-  DoubleSpinBox x_ulimit;
-  DoubleSpinBox y_llimit;
-  DoubleSpinBox y_ulimit;
-  DoubleSpinBox cell_size;
+  DoubleSpinBox x_llimit_;
+  DoubleSpinBox x_ulimit_;
+  DoubleSpinBox y_llimit_;
+  DoubleSpinBox y_ulimit_;
+  DoubleSpinBox cell_size_;
   SetMapParamDialog() ;
   void okClicked();
 };
@@ -101,48 +101,47 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   static TmsRpBar* instance();
   virtual ~TmsRpBar();
 
-  void onMoveToGoal();
-  void onSimulationInfoButtonClicked();
-
-  int argc;
-  char **argv;
-  uint32_t sid;
-  ros::ServiceClient get_data_client;
-  ros::ServiceClient sp5_control_client;
-  ros::ServiceClient path_planning_client;
-  ros::ServiceClient ardrone_client;
-  ros::Subscriber    subscribe_pcd;
+  int argc_;
+  char **argv_;
+  uint32_t sid_;
+  ros::ServiceClient get_data_client_;
+  ros::ServiceClient sp5_control_client_;
+  ros::ServiceClient path_planning_client_;
+  ros::ServiceClient ardrone_client_;
+  ros::Subscriber    subscribe_pcd_;
   ros::Subscriber    subscribe_static_map_;
   ros::Subscriber    subscribe_path_map_;
 
-  pcl::PointCloud<pcl::PointXYZ> pointCloudData;
+  pcl::PointCloud<pcl::PointXYZ> point_cloud_data_;
   tms_msg_rp::rps_map_full       static_map_data_;
   tms_msg_rp::rps_route          path_map_data_;
 
   boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)>& sigBodyItemSelectionChanged() {return sigBodyItemSelectionChanged_;}
 
-  bool objectState[25];
-  static std::string objectName[25];
-  static std::string furnitureName[20];
-  static bool isRosInit;
+  bool object_state_[25];
+  static std::string object_name_[25];
+  static std::string furniture_name_[20];
+  static bool is_ros_Init_;
 
-  double goal_position_x;
-  double goal_position_y;
-  double goal_position_ry;
+  double goal_position_x_;
+  double goal_position_y_;
+  double goal_position_ry_;
 
-  static bool production_version;
-  static int planning_mode; // 0:view mode / 1:planning mode
-  static int grasping;
+  static bool production_version_;
+  static int planning_mode_; // 0:view mode / 1:planning mode
+  static int grasping_;
 
   cnoid::BodyItemPtr currentBodyItem_;
   cnoid::ItemList<cnoid::BodyItem> selectedBodyItems_;
-  cnoid::ItemList<cnoid::BodyItem> targetBodyItems;
+  cnoid::ItemList<cnoid::BodyItem> target_body_items_;
+
+  void simulationInfoButtonClicked();
 
  private:
-  MessageView& mes;
-  std::ostream& os;
-  TmsRpController& tac;
-  Matrix3d mat0, mat_ccw90, mat_ccw180, mat_cw90;
+  MessageView& mes_;
+  std::ostream& os_;
+  TmsRpController& tac_;
+  Matrix3d mat0_, mat_ccw90_, mat_ccw180_, mat_cw90_;
 
   ToolButton* static_map_toggle_;
   ToolButton* dynamic_map_toggle_;
@@ -152,29 +151,35 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
 
   boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)> sigBodyItemSelectionChanged_;
 
-  void onSetCollisionTargetButtonClicked();
-  void onMakeCollisionMapButtonClicked();
+  void itemSelectionChanged(const cnoid::ItemList<cnoid::BodyItem>& bodyItems);
 
-  void onItemSelectionChanged(const cnoid::ItemList<cnoid::BodyItem>& bodyItems);
-  void StaticMapButtonClicked();
-  void PathMapButtonClicked();
-  void RobotMapButtonClicked();
+  void updateObjectInfo();
+
+  void simulation();
+  void connectROS();
+  void simulationButtonClicked();
+  void connectRosButtonClicked();
+
+  void setCollisionTargetButtonClicked();
+  void makeCollisionMapButtonClicked();
+
+  void staticMapButtonClicked();
+  void pathMapButtonClicked();
+  void robotMapButtonClicked();
+  void pathPlanButtonClicked();
+  void ardroneButtonClicked();
+
   void receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& msg);
-  void ReceiveStaticMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg);
-  void ReceivePathMapData(const tms_msg_rp::rps_route::ConstPtr& msg);
+  void receiveStaticMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg);
+  void receivePathMapData(const tms_msg_rp::rps_route::ConstPtr& msg);
+
+  void moveToGoal();
   void getPcdData();
 
-  void UpdateObjectInfo();
-  void onInitPoseButtonClicked();
-  void onStartButtonClicked();
-  void onStartButtonClicked2();
-  void onChangePlanningMode();
-  void onPathPlanButtonClicked();
-  void simulationButtonClicked();
-  void ConnectRosButtonClicked();
-  void simulation();
-  void ConnectROS();
-  void ardroneButtonClicked();
+  void initPoseButtonClicked();
+  void startButtonClicked();
+  void startButtonClicked2();
+  void changePlanningMode();
 };
 }
 

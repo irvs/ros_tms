@@ -1,9 +1,6 @@
 #include <tms_rp_static_map.h>
 
 //------------------------------------------------------------------------------
-using namespace std;
-using namespace boost;
-using namespace cnoid;
 using namespace grasp;
 using namespace tms_rp;
 
@@ -16,9 +13,9 @@ TmsRpStaticMap* TmsRpStaticMap::instance()
 
 //------------------------------------------------------------------------------
 TmsRpStaticMap::TmsRpStaticMap(): ToolBar("TmsRpStaticMap"),
-                                  os(MessageView::mainInstance()->cout()),
-                                  tac(*TmsRpController::instance()) {
-  sid = 100000;
+                                  os_(MessageView::mainInstance()->cout()),
+                                  tac_(*TmsRpController::instance()) {
+  sid_ = 100000;
 
   static ros::NodeHandle nh;
 
@@ -66,15 +63,15 @@ bool TmsRpStaticMap::InitCollisionMap(vector<vector<CollisionMapData> >& map){
     return false;
 
   tp = strtok(buff, ",");
-  x_llimit = atof(tp);
+  x_llimit_ = atof(tp);
   tp = strtok(NULL, ",");
-  x_ulimit = atof(tp);
+  x_ulimit_ = atof(tp);
   tp = strtok(NULL, ",");
-  y_llimit = atof(tp);
+  y_llimit_ = atof(tp);
   tp = strtok(NULL, ",");
-  y_ulimit = atof(tp);
+  y_ulimit_ = atof(tp);
   tp = strtok(NULL, ",");
-  cell_size = atof(tp);
+  cell_size_ = atof(tp);
 
   int CommaCount=0;
 
@@ -88,23 +85,23 @@ bool TmsRpStaticMap::InitCollisionMap(vector<vector<CollisionMapData> >& map){
       tempMapData.collision = true;
     }
     else{
-      tempMapData.dist_from_obj = (x_ulimit-x_llimit)*(y_ulimit-y_llimit);
+      tempMapData.dist_from_obj = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
       tempMapData.collision = false;
     }
 
     tempMapData.voronoi = false;
     tempMapData.path = false;
     tempMapData.thinning_flg = 0;
-    tempMapData.dist_from_voronoi = (x_ulimit-x_llimit)*(y_ulimit-y_llimit);
-    tempMapData.dist_from_goal = (x_ulimit-x_llimit)*(y_ulimit-y_llimit);
-    tempMapData.dist_from_path = (x_ulimit-x_llimit)*(y_ulimit-y_llimit);
+    tempMapData.dist_from_voronoi = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
+    tempMapData.dist_from_goal = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
+    tempMapData.dist_from_path = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
     tempMapLine.push_back(tempMapData);
 
     CommaCount++;
 
     while(tp != NULL){
 
-      if(CommaCount == int(round((y_ulimit-y_llimit)/cell_size))+1)
+      if(CommaCount == int(round((y_ulimit_-y_llimit_)/cell_size_))+1)
         break;
 
       tp = strtok(NULL, ",");
@@ -117,16 +114,16 @@ bool TmsRpStaticMap::InitCollisionMap(vector<vector<CollisionMapData> >& map){
           tempMapData.collision = true;
         }
         else{
-          tempMapData.dist_from_obj = (x_ulimit-x_llimit)*(y_ulimit-y_llimit);
+          tempMapData.dist_from_obj = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
           tempMapData.collision = false;
         }
 
         tempMapData.voronoi = false;
         tempMapData.path = false;
         tempMapData.thinning_flg = 0;
-        tempMapData.dist_from_voronoi = (x_ulimit-x_llimit)*(y_ulimit-y_llimit);
-        tempMapData.dist_from_goal = (x_ulimit-x_llimit)*(y_ulimit-y_llimit);
-        tempMapData.dist_from_path = (x_ulimit-x_llimit)*(y_ulimit-y_llimit);
+        tempMapData.dist_from_voronoi = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
+        tempMapData.dist_from_goal = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
+        tempMapData.dist_from_path = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
         tempMapLine.push_back(tempMapData);
       }
     }
@@ -251,15 +248,15 @@ bool TmsRpStaticMap::CalcDistFromObj(vector<vector<CollisionMapData> >& map, str
       if(map[x][y].object)
         map[x][y].dist_from_obj = 0.0;
       else
-        map[x][y].dist_from_obj = (x_ulimit-x_llimit)*(y_ulimit-y_llimit);
+        map[x][y].dist_from_obj = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
     }
   }
 
   for(int x=1;x<map.size()-1;x++){
     for(int y=1;y<map[x].size()-1;y++){
       if(!map[x][y].object){
-        map[x][y].dist_from_obj = min( min( min(map[x-1][y-1].dist_from_obj+sqrt(2.0)*cell_size, map[x][y-1].dist_from_obj+1.0*cell_size),
-        min(map[x-1][y+1].dist_from_obj+sqrt(2.0)*cell_size, map[x-1][y].dist_from_obj+1.0*cell_size)),
+        map[x][y].dist_from_obj = min( min( min(map[x-1][y-1].dist_from_obj+sqrt(2.0)*cell_size_, map[x][y-1].dist_from_obj+1.0*cell_size_),
+        min(map[x-1][y+1].dist_from_obj+sqrt(2.0)*cell_size_, map[x-1][y].dist_from_obj+1.0*cell_size_)),
         map[x][y].dist_from_obj);
       }
     }
@@ -268,8 +265,8 @@ bool TmsRpStaticMap::CalcDistFromObj(vector<vector<CollisionMapData> >& map, str
   for(int x=map.size()-2;x>0;x--){
     for(int y=map[x].size()-2;y>0;y--){
       if(!map[x][y].object){
-        map[x][y].dist_from_obj = min( min( min(map[x+1][y].dist_from_obj+1.0*cell_size, map[x+1][y-1].dist_from_obj+sqrt(2.0)*cell_size),
-        min(map[x][y+1].dist_from_obj+1.0*cell_size, map[x+1][y+1].dist_from_obj+sqrt(2.0)*cell_size)),
+        map[x][y].dist_from_obj = min( min( min(map[x+1][y].dist_from_obj+1.0*cell_size_, map[x+1][y-1].dist_from_obj+sqrt(2.0)*cell_size_),
+        min(map[x][y+1].dist_from_obj+1.0*cell_size_, map[x+1][y+1].dist_from_obj+sqrt(2.0)*cell_size_)),
         map[x][y].dist_from_obj);
       }
     }
@@ -282,11 +279,11 @@ bool TmsRpStaticMap::CalcDistFromObj(vector<vector<CollisionMapData> >& map, str
 void TmsRpStaticMap::ConvertMap(vector<vector<CollisionMapData> > map, tms_msg_rp::rps_map_full& pp_map){
   pp_map.rps_map_x.clear();
 
-  pp_map.x_llimit = x_llimit;
-  pp_map.x_ulimit = x_ulimit;
-  pp_map.y_llimit = y_llimit;
-  pp_map.y_ulimit = y_ulimit;
-  pp_map.cell_size = cell_size;
+  pp_map.x_llimit = x_llimit_;
+  pp_map.x_ulimit = x_ulimit_;
+  pp_map.y_llimit = y_llimit_;
+  pp_map.y_ulimit = y_ulimit_;
+  pp_map.cell_size = cell_size_;
 
   tms_msg_rp::rps_map_data temp_map_d;
   tms_msg_rp::rps_map_y temp_map_y;

@@ -29,7 +29,7 @@ class TmsRpPathPlanning : public cnoid::ToolBar, public boost::signals::trackabl
   ros::ServiceServer service_voronoi_path_;
   ros::Publisher robot_path_pub_;
 
-  double x_llimit, x_ulimit, y_llimit, y_ulimit, cell_size; // Meter
+  double x_llimit_, x_ulimit_, y_llimit_, y_ulimit_, cell_size_; // Meter
 
   const double kSmartPal5CollisionThreshold_; //mm
   const double kSmartPal4CollisionThreshold_; //mm
