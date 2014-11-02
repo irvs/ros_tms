@@ -27,8 +27,8 @@ TmsRpPathPlanning::TmsRpPathPlanning(): kSmartPal5CollisionThreshold_(400.0),
                                         tac_(*TmsRpController::instance()) {
   static ros::NodeHandle nh;
 
-  static_map_sub_ = nh.subscribe("/rps_map_data", 10, &TmsRpPathPlanning::GetStaticMap, this);
-  service_voronoi_path_ = nh.advertiseService("/rps_voronoi_path_planning", &TmsRpPathPlanning::VoronoiPathPlanner, this);
+  static_map_sub_ = nh.subscribe("/rps_map_data", 10, &TmsRpPathPlanning::getStaticMap, this);
+  service_voronoi_path_ = nh.advertiseService("/rps_voronoi_path_planning", &TmsRpPathPlanning::voronoiPathPlanner, this);
   robot_path_pub_ = nh.advertise<tms_msg_rp::rps_route>("/rps_robot_path", 1);
 
 }
@@ -39,7 +39,7 @@ TmsRpPathPlanning::~TmsRpPathPlanning()
 }
 
 //------------------------------------------------------------------------------
-void TmsRpPathPlanning::GetStaticMap(const tms_msg_rp::rps_map_full::ConstPtr& original_map){
+void TmsRpPathPlanning::getStaticMap(const tms_msg_rp::rps_map_full::ConstPtr& original_map){
   static_map_.clear();
 
   x_llimit_  = original_map->x_llimit;
@@ -54,10 +54,10 @@ void TmsRpPathPlanning::GetStaticMap(const tms_msg_rp::rps_map_full::ConstPtr& o
   for(unsigned int x=0;x<original_map->rps_map_x.size();x++){
     temp_map_line.clear();
     for(unsigned int y=0;y<original_map->rps_map_x[x].rps_map_y.size();y++){
-      temp_map_d.object         = original_map->rps_map_x[x].rps_map_y[y].object;
-      temp_map_d.collision      = original_map->rps_map_x[x].rps_map_y[y].object;
-      temp_map_d.voronoi        = original_map->rps_map_x[x].rps_map_y[y].voronoi;
-      temp_map_d.dist_from_obj	= original_map->rps_map_x[x].rps_map_y[y].dist_from_obj_f;
+      temp_map_d.object_         = original_map->rps_map_x[x].rps_map_y[y].object;
+      temp_map_d.collision_      = original_map->rps_map_x[x].rps_map_y[y].object;
+      temp_map_d.voronoi_        = original_map->rps_map_x[x].rps_map_y[y].voronoi;
+      temp_map_d.dist_from_obj_	= original_map->rps_map_x[x].rps_map_y[y].dist_from_obj_f;
 
       temp_map_line.push_back(temp_map_d);
     }
@@ -66,7 +66,7 @@ void TmsRpPathPlanning::GetStaticMap(const tms_msg_rp::rps_map_full::ConstPtr& o
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpPathPlanning::VoronoiPathPlanner(tms_msg_rp::rps_voronoi_path_planning::Request& req,
+bool TmsRpPathPlanning::voronoiPathPlanner(tms_msg_rp::rps_voronoi_path_planning::Request& req,
                                            tms_msg_rp::rps_voronoi_path_planning::Response& res)
 {
   res.success = 0;
@@ -76,7 +76,7 @@ bool TmsRpPathPlanning::VoronoiPathPlanner(tms_msg_rp::rps_voronoi_path_planning
   //~ clock_t t_start,t_end;
   //~ t_start = clock();
 
-  double collision_threshold = GetRobotCollisionThreshold(req.robot_id);
+  double collision_threshold = getRobotCollisionThreshold(req.robot_id);
 
   vector<double> start, goal;
   start.resize(3);
@@ -92,52 +92,52 @@ bool TmsRpPathPlanning::VoronoiPathPlanner(tms_msg_rp::rps_voronoi_path_planning
 
   ROS_INFO("Init map ...");
 
-  ROS_INFO("Calculate voronoi path...");
+  ROS_INFO("Calculate voronoi_ path...");
 
-  res.success = SetCollisionArea(static_map_, collision_threshold, res.message);
+  res.success = setCollisionArea(static_map_, collision_threshold, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = SetVoronoiLine(static_map_, res.message);
+  res.success = setVoronoiLine(static_map_, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = CalcDistFromVoronoi(static_map_, res.message);
+  res.success = calcDistFromVoronoi(static_map_, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = ConnectToVoronoi(static_map_, start, res.message);
+  res.success = connectToVoronoi(static_map_, start, res.message);
   if(!res.success){
     ROS_ERROR("Error : Start Point");
     ROS_ERROR((res.message).c_str());
     return false;
   }
-  res.success = CalcDistFromVoronoi(static_map_, res.message);
+  res.success = calcDistFromVoronoi(static_map_, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = ConnectToVoronoi(static_map_, goal, res.message);
+  res.success = connectToVoronoi(static_map_, goal, res.message);
   if(!res.success){
     ROS_ERROR("Error : Goal Point");
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = CalcDistFromVoronoi(static_map_, res.message);
+  res.success = calcDistFromVoronoi(static_map_, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = CalcDistFromGoal(static_map_, goal, res.message);
+  res.success = calcDistFromGoal(static_map_, goal, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
@@ -145,13 +145,13 @@ bool TmsRpPathPlanning::VoronoiPathPlanner(tms_msg_rp::rps_voronoi_path_planning
 
   vector<vector<double> > voronoi_path, smooth_path, comp_path;
 
-  res.success = CalcVoronoiPath(static_map_, start, goal, voronoi_path, res.message);
+  res.success = calcVoronoiPath(static_map_, start, goal, voronoi_path, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  SmoothVoronoiPath(static_map_, start, goal, voronoi_path, smooth_path, kSmoothVoronoiPathThreshold_/1000.0);
+  smoothVoronoiPath(static_map_, start, goal, voronoi_path, smooth_path, kSmoothVoronoiPathThreshold_/1000.0);
   //~ compVoronoiPath(smooth_path, comp_path);
 
   //~ t_end = clock();
@@ -192,7 +192,7 @@ bool TmsRpPathPlanning::VoronoiPathPlanner(tms_msg_rp::rps_voronoi_path_planning
 }
 
 //------------------------------------------------------------------------------
-double TmsRpPathPlanning::GetRobotCollisionThreshold(int robot_id){
+double TmsRpPathPlanning::getRobotCollisionThreshold(int robot_id){
   double collision_threshold = 0.0;
 
   switch(robot_id){
@@ -223,7 +223,7 @@ double TmsRpPathPlanning::GetRobotCollisionThreshold(int robot_id){
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpPathPlanning::SetCollisionArea(vector<vector<CollisionMapData> >& map, double threshold, string& message){
+bool TmsRpPathPlanning::setCollisionArea(vector<vector<CollisionMapData> >& map, double threshold, string& message){
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -232,10 +232,10 @@ bool TmsRpPathPlanning::SetCollisionArea(vector<vector<CollisionMapData> >& map,
 
   for(unsigned int x=0;x<map.size();x++){
     for(unsigned int y=0;y<map[x].size();y++){
-      if(map[x][y].dist_from_obj-threshold<1.0e-5)
-        map[x][y].collision = true;
+      if(map[x][y].dist_from_obj_-threshold<1.0e-5)
+        map[x][y].collision_ = true;
       else
-        map[x][y].collision = false;
+        map[x][y].collision_ = false;
     }
   }
 
@@ -243,7 +243,7 @@ bool TmsRpPathPlanning::SetCollisionArea(vector<vector<CollisionMapData> >& map,
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpPathPlanning::SetVoronoiLine(vector<vector<CollisionMapData> >& map, string& message){
+bool TmsRpPathPlanning::setVoronoiLine(vector<vector<CollisionMapData> >& map, string& message){
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -252,11 +252,11 @@ bool TmsRpPathPlanning::SetVoronoiLine(vector<vector<CollisionMapData> >& map, s
 
   for(unsigned int x=0;x<map.size();x++){
     for(unsigned int y=0;y<map[x].size();y++){
-      map[x][y].voronoi = false;
-      if(!map[x][y].collision)
-        map[x][y].thinning_flg=1;
+      map[x][y].voronoi_ = false;
+      if(!map[x][y].collision_)
+        map[x][y].thinning_flg_=1;
       else
-        map[x][y].thinning_flg=0;
+        map[x][y].thinning_flg_=0;
     }
   }
 
@@ -288,40 +288,40 @@ bool TmsRpPathPlanning::SetVoronoiLine(vector<vector<CollisionMapData> >& map, s
             break;
           }
 
-          if((map[x][y].thinning_flg==1)&&(map[i][j].thinning_flg==0)){
-            if(((map[x][y-1].thinning_flg==0)&&(map[x+1][y].thinning_flg==1)&&(map[x][y+1].thinning_flg==1)&&(map[x+1][y+1].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x][y-1].thinning_flg==1)&&(map[x-1][y].thinning_flg==1)&&(map[x+1][y].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x][y-1].thinning_flg==1)&&(map[x-1][y].thinning_flg==1)&&(map[x][y+1].thinning_flg==0))||
-            ((map[x-1][y].thinning_flg==0)&&(map[x+1][y].thinning_flg==1)&&(map[x][y+1].thinning_flg==1)&&(map[x+1][y+1].thinning_flg==0))||
-            ((map[x-1][y].thinning_flg==0)&&(map[x+1][y].thinning_flg==0)&&(map[x][y+1].thinning_flg==1))||
-            ((map[x][y-1].thinning_flg==0)&&(map[x-1][y].thinning_flg==1)&&(map[x][y+1].thinning_flg==0))||
-            ((map[x][y-1].thinning_flg==1)&&(map[x-1][y].thinning_flg==0)&&(map[x+1][y].thinning_flg==0))||
-            ((map[x][y-1].thinning_flg==0)&&(map[x+1][y].thinning_flg==1)&&(map[x][y+1].thinning_flg==0))||
-            ((map[x-1][y].thinning_flg==0)&&(map[x-1][y+1].thinning_flg==1)&&(map[x][y+1].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==1)&&(map[x][y-1].thinning_flg==0)&&(map[x-1][y].thinning_flg==0))||
-            ((map[x][y-1].thinning_flg==0)&&(map[x+1][y-1].thinning_flg==1)&&(map[x+1][y].thinning_flg==0))||
-            ((map[x+1][y].thinning_flg==0)&&(map[x][y+1].thinning_flg==0)&&(map[x+1][y+1].thinning_flg==1))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x][y-1].thinning_flg==1)&&(map[x+1][y-1].thinning_flg==0)&&(map[x-1][y].thinning_flg==1)&&(map[x+1][y].thinning_flg==1)&&(map[x-1][y+1].thinning_flg==0)&&(map[x+1][y+1].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x][y-1].thinning_flg==1)&&(map[x+1][y-1].thinning_flg==0)&&(map[x+1][y].thinning_flg==1)&&(map[x-1][y+1].thinning_flg==0)&&(map[x][y+1].thinning_flg==1)&&(map[x+1][y+1].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x+1][y-1].thinning_flg==0)&&(map[x-1][y].thinning_flg==1)&&(map[x+1][y].thinning_flg==1)&&(map[x-1][y+1].thinning_flg==0)&&(map[x][y+1].thinning_flg==1)&&(map[x+1][y+1].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x][y-1].thinning_flg==1)&&(map[x+1][y-1].thinning_flg==0)&&(map[x-1][y].thinning_flg==1)&&(map[x-1][y+1].thinning_flg==0)&&(map[x][y+1].thinning_flg==1)&&(map[x+1][y+1].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x][y-1].thinning_flg==0)&&(map[x+1][y-1].thinning_flg==0)&&(map[x-1][y].thinning_flg==0)&&(map[x-1][y+1].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x][y-1].thinning_flg==0)&&(map[x+1][y-1].thinning_flg==0)&&(map[x+1][y].thinning_flg==0)&&(map[x+1][y+1].thinning_flg==0))||
-            ((map[x-1][y-1].thinning_flg==0)&&(map[x-1][y].thinning_flg==0)&&(map[x-1][y+1].thinning_flg==0)&&(map[x][y+1].thinning_flg==0)&&(map[x+1][y+1].thinning_flg==0))||
-            ((map[x+1][y-1].thinning_flg==0)&&(map[x+1][y].thinning_flg==0)&&(map[x-1][y+1].thinning_flg==0)&&(map[x][y+1].thinning_flg==0)&&(map[x+1][y+1].thinning_flg==0))
+          if((map[x][y].thinning_flg_==1)&&(map[i][j].thinning_flg_==0)){
+            if(((map[x][y-1].thinning_flg_==0)&&(map[x+1][y].thinning_flg_==1)&&(map[x][y+1].thinning_flg_==1)&&(map[x+1][y+1].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x][y-1].thinning_flg_==1)&&(map[x-1][y].thinning_flg_==1)&&(map[x+1][y].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x][y-1].thinning_flg_==1)&&(map[x-1][y].thinning_flg_==1)&&(map[x][y+1].thinning_flg_==0))||
+            ((map[x-1][y].thinning_flg_==0)&&(map[x+1][y].thinning_flg_==1)&&(map[x][y+1].thinning_flg_==1)&&(map[x+1][y+1].thinning_flg_==0))||
+            ((map[x-1][y].thinning_flg_==0)&&(map[x+1][y].thinning_flg_==0)&&(map[x][y+1].thinning_flg_==1))||
+            ((map[x][y-1].thinning_flg_==0)&&(map[x-1][y].thinning_flg_==1)&&(map[x][y+1].thinning_flg_==0))||
+            ((map[x][y-1].thinning_flg_==1)&&(map[x-1][y].thinning_flg_==0)&&(map[x+1][y].thinning_flg_==0))||
+            ((map[x][y-1].thinning_flg_==0)&&(map[x+1][y].thinning_flg_==1)&&(map[x][y+1].thinning_flg_==0))||
+            ((map[x-1][y].thinning_flg_==0)&&(map[x-1][y+1].thinning_flg_==1)&&(map[x][y+1].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==1)&&(map[x][y-1].thinning_flg_==0)&&(map[x-1][y].thinning_flg_==0))||
+            ((map[x][y-1].thinning_flg_==0)&&(map[x+1][y-1].thinning_flg_==1)&&(map[x+1][y].thinning_flg_==0))||
+            ((map[x+1][y].thinning_flg_==0)&&(map[x][y+1].thinning_flg_==0)&&(map[x+1][y+1].thinning_flg_==1))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x][y-1].thinning_flg_==1)&&(map[x+1][y-1].thinning_flg_==0)&&(map[x-1][y].thinning_flg_==1)&&(map[x+1][y].thinning_flg_==1)&&(map[x-1][y+1].thinning_flg_==0)&&(map[x+1][y+1].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x][y-1].thinning_flg_==1)&&(map[x+1][y-1].thinning_flg_==0)&&(map[x+1][y].thinning_flg_==1)&&(map[x-1][y+1].thinning_flg_==0)&&(map[x][y+1].thinning_flg_==1)&&(map[x+1][y+1].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x+1][y-1].thinning_flg_==0)&&(map[x-1][y].thinning_flg_==1)&&(map[x+1][y].thinning_flg_==1)&&(map[x-1][y+1].thinning_flg_==0)&&(map[x][y+1].thinning_flg_==1)&&(map[x+1][y+1].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x][y-1].thinning_flg_==1)&&(map[x+1][y-1].thinning_flg_==0)&&(map[x-1][y].thinning_flg_==1)&&(map[x-1][y+1].thinning_flg_==0)&&(map[x][y+1].thinning_flg_==1)&&(map[x+1][y+1].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x][y-1].thinning_flg_==0)&&(map[x+1][y-1].thinning_flg_==0)&&(map[x-1][y].thinning_flg_==0)&&(map[x-1][y+1].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x][y-1].thinning_flg_==0)&&(map[x+1][y-1].thinning_flg_==0)&&(map[x+1][y].thinning_flg_==0)&&(map[x+1][y+1].thinning_flg_==0))||
+            ((map[x-1][y-1].thinning_flg_==0)&&(map[x-1][y].thinning_flg_==0)&&(map[x-1][y+1].thinning_flg_==0)&&(map[x][y+1].thinning_flg_==0)&&(map[x+1][y+1].thinning_flg_==0))||
+            ((map[x+1][y-1].thinning_flg_==0)&&(map[x+1][y].thinning_flg_==0)&&(map[x-1][y+1].thinning_flg_==0)&&(map[x][y+1].thinning_flg_==0)&&(map[x+1][y+1].thinning_flg_==0))
             )
-              map[x][y].thinning_flg=1;
+              map[x][y].thinning_flg_=1;
             else {
               flg=true;
-              map[x][y].thinning_flg=3;
+              map[x][y].thinning_flg_=3;
             }
           }
         }
       }
       for(int x=1;x<map.size()-1;x++){
         for(int y=1;y<map[x].size()-1;y++){
-          if(map[x][y].thinning_flg==3)
-          map[x][y].thinning_flg=0;
+          if(map[x][y].thinning_flg_==3)
+          map[x][y].thinning_flg_=0;
         }
       }
     }
@@ -329,19 +329,19 @@ bool TmsRpPathPlanning::SetVoronoiLine(vector<vector<CollisionMapData> >& map, s
 
   for(int x=0;x<map.size();x++){
     for(int y=0;y<map[x].size();y++){
-      if(map[x][y].thinning_flg==1){
-        map[x][y].voronoi=1;
-        map[x][y].dist_from_voronoi=0.0;
+      if(map[x][y].thinning_flg_==1){
+        map[x][y].voronoi_=1;
+        map[x][y].dist_from_voronoi_=0.0;
       }
       else
-        map[x][y].voronoi=0;
+        map[x][y].voronoi_=0;
     }
   }
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpPathPlanning::CalcDistFromVoronoi(vector<vector<CollisionMapData> >& map, string& message){
+bool TmsRpPathPlanning::calcDistFromVoronoi(vector<vector<CollisionMapData> >& map, string& message){
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -350,29 +350,29 @@ bool TmsRpPathPlanning::CalcDistFromVoronoi(vector<vector<CollisionMapData> >& m
 
   for(int x=0;x<map.size();x++){
     for(int y=0;y<map[x].size();y++){
-      if(map[x][y].voronoi&&(!map[x][y].collision))
-        map[x][y].dist_from_voronoi = 0.0;
+      if(map[x][y].voronoi_&&(!map[x][y].collision_))
+        map[x][y].dist_from_voronoi_ = 0.0;
       else
-        map[x][y].dist_from_voronoi = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
+        map[x][y].dist_from_voronoi_ = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
     }
   }
 
   for(int x=1;x<map.size()-1;x++){
     for(int y=1;y<map[x].size()-1;y++){
-      if(!map[x][y].collision){
-        map[x][y].dist_from_voronoi = min( min( min(map[x-1][y-1].dist_from_voronoi+sqrt(2.0)*cell_size_, map[x][y-1].dist_from_voronoi+1.0*cell_size_),
-                                           min(map[x-1][y+1].dist_from_voronoi+sqrt(2.0)*cell_size_, map[x-1][y].dist_from_voronoi+1.0*cell_size_)),
-                                           map[x][y].dist_from_voronoi);
+      if(!map[x][y].collision_){
+        map[x][y].dist_from_voronoi_ = min( min( min(map[x-1][y-1].dist_from_voronoi_+sqrt(2.0)*cell_size_, map[x][y-1].dist_from_voronoi_+1.0*cell_size_),
+                                           min(map[x-1][y+1].dist_from_voronoi_+sqrt(2.0)*cell_size_, map[x-1][y].dist_from_voronoi_+1.0*cell_size_)),
+                                           map[x][y].dist_from_voronoi_);
       }
     }
   }
 
   for(int x=map.size()-2;x>0;x--){
     for(int y=map[x].size()-2;y>0;y--){
-      if(!map[x][y].collision){
-        map[x][y].dist_from_voronoi = min( min( min(map[x+1][y].dist_from_voronoi+1.0*cell_size_, map[x+1][y-1].dist_from_voronoi+sqrt(2.0)*cell_size_),
-                                                min(map[x][y+1].dist_from_voronoi+1.0*cell_size_, map[x+1][y+1].dist_from_voronoi+sqrt(2.0)*cell_size_)),
-                                                map[x][y].dist_from_voronoi);
+      if(!map[x][y].collision_){
+        map[x][y].dist_from_voronoi_ = min( min( min(map[x+1][y].dist_from_voronoi_+1.0*cell_size_, map[x+1][y-1].dist_from_voronoi_+sqrt(2.0)*cell_size_),
+                                                min(map[x][y+1].dist_from_voronoi_+1.0*cell_size_, map[x+1][y+1].dist_from_voronoi_+sqrt(2.0)*cell_size_)),
+                                                map[x][y].dist_from_voronoi_);
       }
     }
   }
@@ -381,7 +381,7 @@ bool TmsRpPathPlanning::CalcDistFromVoronoi(vector<vector<CollisionMapData> >& m
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpPathPlanning::ConnectToVoronoi(vector<vector<CollisionMapData> >& map, vector<double> connect_point, string& message){
+bool TmsRpPathPlanning::connectToVoronoi(vector<vector<CollisionMapData> >& map, vector<double> connect_point, string& message){
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -401,9 +401,9 @@ bool TmsRpPathPlanning::ConnectToVoronoi(vector<vector<CollisionMapData> >& map,
   temp_x = target_x;
   temp_y = target_y;
 
-  double temp_dist = map[temp_x][temp_y].dist_from_voronoi;
+  double temp_dist = map[temp_x][temp_y].dist_from_voronoi_;
 
-  if(map[temp_x][temp_y].collision){
+  if(map[temp_x][temp_y].collision_){
     message = "Error : Connect point is collision";
     cout<<message<<endl;
     cout<<"	x:"<<temp_x<<"	y:"<<temp_y<<endl;
@@ -414,52 +414,52 @@ bool TmsRpPathPlanning::ConnectToVoronoi(vector<vector<CollisionMapData> >& map,
   return true;
 
   while(temp_dist!=0.0){
-    if( map[temp_x-1][temp_y].dist_from_voronoi < temp_dist ){
+    if( map[temp_x-1][temp_y].dist_from_voronoi_ < temp_dist ){
       dx = -1;
       dy = 0;
-      temp_dist = map[temp_x+dx][temp_y].dist_from_voronoi;
+      temp_dist = map[temp_x+dx][temp_y].dist_from_voronoi_;
     }
 
-    if( map[temp_x][temp_y-1].dist_from_voronoi < temp_dist ){
+    if( map[temp_x][temp_y-1].dist_from_voronoi_ < temp_dist ){
       dx = 0;
       dy = -1;
-      temp_dist = map[temp_x][temp_y+dy].dist_from_voronoi;
+      temp_dist = map[temp_x][temp_y+dy].dist_from_voronoi_;
     }
 
-    if( map[temp_x+1][temp_y].dist_from_voronoi < temp_dist ){
+    if( map[temp_x+1][temp_y].dist_from_voronoi_ < temp_dist ){
       dx = 1;
       dy = 0;
-      temp_dist = map[temp_x+dx][temp_y].dist_from_voronoi;
+      temp_dist = map[temp_x+dx][temp_y].dist_from_voronoi_;
     }
 
-    if( map[temp_x][temp_y+1].dist_from_voronoi < temp_dist ){
+    if( map[temp_x][temp_y+1].dist_from_voronoi_ < temp_dist ){
       dx = 0;
       dy = 1;
-      temp_dist = map[temp_x][temp_y+dy].dist_from_voronoi;
+      temp_dist = map[temp_x][temp_y+dy].dist_from_voronoi_;
     }
 
-    if( map[temp_x-1][temp_y-1].dist_from_voronoi < temp_dist ){
+    if( map[temp_x-1][temp_y-1].dist_from_voronoi_ < temp_dist ){
       dx = -1;
       dy = -1;
-      temp_dist = map[temp_x+dx][temp_y+dy].dist_from_voronoi;
+      temp_dist = map[temp_x+dx][temp_y+dy].dist_from_voronoi_;
     }
 
-    if( map[temp_x-1][temp_y+1].dist_from_voronoi < temp_dist ){
+    if( map[temp_x-1][temp_y+1].dist_from_voronoi_ < temp_dist ){
       dx = -1;
       dy = 1;
-      temp_dist = map[temp_x+dx][temp_y+dy].dist_from_voronoi;
+      temp_dist = map[temp_x+dx][temp_y+dy].dist_from_voronoi_;
     }
 
-    if( map[temp_x+1][temp_y-1].dist_from_voronoi < temp_dist ){
+    if( map[temp_x+1][temp_y-1].dist_from_voronoi_ < temp_dist ){
       dx = 1;
       dy = -1;
-      temp_dist = map[temp_x+dx][temp_y+dy].dist_from_voronoi;
+      temp_dist = map[temp_x+dx][temp_y+dy].dist_from_voronoi_;
     }
 
-    if( map[temp_x+1][temp_y+1].dist_from_voronoi < temp_dist ){
+    if( map[temp_x+1][temp_y+1].dist_from_voronoi_ < temp_dist ){
       dx = 1;
       dy = 1;
-      temp_dist = map[temp_x+dx][temp_y+dy].dist_from_voronoi;
+      temp_dist = map[temp_x+dx][temp_y+dy].dist_from_voronoi_;
     }
 
     temp_x += dx;
@@ -478,21 +478,21 @@ bool TmsRpPathPlanning::ConnectToVoronoi(vector<vector<CollisionMapData> >& map,
   while(temp_norm<vec_norm){
     temp_x = (int)round(target_x + temp_norm*vec[0]);
     temp_y = (int)round(target_y + temp_norm*vec[1]);
-    map[temp_x][temp_y].voronoi = true;
+    map[temp_x][temp_y].voronoi_ = true;
     temp_norm += 1.0;
   }
 
   temp_x = (int)round(target_x + vec_norm*vec[0]);
   temp_y = (int)round(target_y + vec_norm*vec[1]);
-  map[temp_x][temp_y].voronoi = true;
+  map[temp_x][temp_y].voronoi_ = true;
 
-  map[target_x][target_y].voronoi = true;
+  map[target_x][target_y].voronoi_ = true;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpPathPlanning::CalcDistFromGoal(vector<vector<CollisionMapData> >& map, vector<double> goal_point, string& message){
+bool TmsRpPathPlanning::calcDistFromGoal(vector<vector<CollisionMapData> >& map, vector<double> goal_point, string& message){
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -511,11 +511,11 @@ bool TmsRpPathPlanning::CalcDistFromGoal(vector<vector<CollisionMapData> >& map,
 
   for(int x=0;x<map.size();x++){
     for(int y=0;y<map[x].size();y++){
-      map[x][y].dist_from_goal = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
+      map[x][y].dist_from_goal_ = (x_ulimit_-x_llimit_)*(y_ulimit_-y_llimit_);
     }
   }
 
-  map[temp_x][temp_y].dist_from_goal = 0.0;
+  map[temp_x][temp_y].dist_from_goal_ = 0.0;
 
   bool change_flg = true;
   double temp = 0.0;
@@ -525,13 +525,13 @@ bool TmsRpPathPlanning::CalcDistFromGoal(vector<vector<CollisionMapData> >& map,
 
     for(unsigned int i=1;i<map.size()-1;i++){
       for(unsigned int j=1;j<map[i].size()-1;j++){
-        if(map[i][j].voronoi){
-          temp = map[i][j].dist_from_goal;
-          map[i][j].dist_from_goal = min( min( min(map[i-1][j-1].dist_from_goal+sqrt(2.0)*cell_size_, map[i-1][j].dist_from_goal+1.0*cell_size_),
-                                                   map[i-1][j+1].dist_from_goal+sqrt(2.0)*cell_size_ ),
-                                          min( map[i][j-1].dist_from_goal+1.0*cell_size_, map[i][j].dist_from_goal ) );
+        if(map[i][j].voronoi_){
+          temp = map[i][j].dist_from_goal_;
+          map[i][j].dist_from_goal_ = min( min( min(map[i-1][j-1].dist_from_goal_+sqrt(2.0)*cell_size_, map[i-1][j].dist_from_goal_+1.0*cell_size_),
+                                                   map[i-1][j+1].dist_from_goal_+sqrt(2.0)*cell_size_ ),
+                                          min( map[i][j-1].dist_from_goal_+1.0*cell_size_, map[i][j].dist_from_goal_ ) );
           if(change_flg==false){
-          if(map[i][j].dist_from_goal!=temp)
+          if(map[i][j].dist_from_goal_!=temp)
             change_flg=true;
           }
         }
@@ -540,13 +540,13 @@ bool TmsRpPathPlanning::CalcDistFromGoal(vector<vector<CollisionMapData> >& map,
 
     for(int i=map.size()-2;i>0;i--){
       for(int j=map[i].size()-2;j>0;j--){
-        if(map[i][j].voronoi){
-          temp = map[i][j].dist_from_goal;
-          map[i][j].dist_from_goal = min( min( map[i][j].dist_from_goal, map[i][j+1].dist_from_goal+1.0*cell_size_ ),
-                                          min( map[i+1][j-1].dist_from_goal+sqrt(2.0)*cell_size_,
-                                                   min( map[i+1][j].dist_from_goal+1.0*cell_size_, map[i+1][j+1].dist_from_goal+sqrt(2.0)*cell_size_ ) ) );
+        if(map[i][j].voronoi_){
+          temp = map[i][j].dist_from_goal_;
+          map[i][j].dist_from_goal_ = min( min( map[i][j].dist_from_goal_, map[i][j+1].dist_from_goal_+1.0*cell_size_ ),
+                                          min( map[i+1][j-1].dist_from_goal_+sqrt(2.0)*cell_size_,
+                                                   min( map[i+1][j].dist_from_goal_+1.0*cell_size_, map[i+1][j+1].dist_from_goal_+sqrt(2.0)*cell_size_ ) ) );
           if(change_flg==false){
-            if(map[i][j].dist_from_goal!=temp)
+            if(map[i][j].dist_from_goal_!=temp)
             change_flg=true;
           }
         }
@@ -558,7 +558,7 @@ bool TmsRpPathPlanning::CalcDistFromGoal(vector<vector<CollisionMapData> >& map,
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpPathPlanning::CalcVoronoiPath(vector<vector<CollisionMapData> >& map, vector<double> start, vector<double> goal, vector<vector<double> >& out_path, string& message){
+bool TmsRpPathPlanning::calcVoronoiPath(vector<vector<CollisionMapData> >& map, vector<double> start, vector<double> goal, vector<vector<double> >& out_path, string& message){
   out_path.clear();
 
   if(map.empty()){
@@ -586,28 +586,28 @@ bool TmsRpPathPlanning::CalcVoronoiPath(vector<vector<CollisionMapData> >& map, 
   i_goal_x = (int)round( (goal[0] - x_llimit_) / cell_size_ );
   i_goal_y = (int)round( (goal[1] - y_llimit_) / cell_size_ );
 
-  if(map[i_start_x][i_start_y].collision){
+  if(map[i_start_x][i_start_y].collision_){
     message = "Error : Start is collision";
     cout<<message<<endl;
     cout<<"	x:"<<i_start_x<<"	y:"<<i_start_y<<endl;
     return false;
   }
 
-  if(map[i_goal_x][i_goal_y].collision){
+  if(map[i_goal_x][i_goal_y].collision_){
     message = "Error : Goal is collision";
     cout<<message<<endl;
     cout<<"	x:"<<i_goal_x<<"	y:"<<i_goal_y<<endl;
     return false;
   }
 
-  map[i_start_x][i_start_y].path = true;
-  map[i_goal_x][i_goal_y].path = true;
+  map[i_start_x][i_start_y].path_ = true;
+  map[i_goal_x][i_goal_y].path_ = true;
 
   //~ out_path.push_back(start);
 
   i_temp_x = i_start_x;
   i_temp_y = i_start_y;
-  double temp_dist = map[i_temp_x][i_temp_y].dist_from_goal;
+  double temp_dist = map[i_temp_x][i_temp_y].dist_from_goal_;
   vector<double> temp_pos;
   temp_pos.resize(2);
 
@@ -615,57 +615,57 @@ bool TmsRpPathPlanning::CalcVoronoiPath(vector<vector<CollisionMapData> >& map, 
   return true;
 
   while(1){
-    if(temp_dist > map[i_temp_x-1][i_temp_y].dist_from_goal){
+    if(temp_dist > map[i_temp_x-1][i_temp_y].dist_from_goal_){
       dx = -1;
       dy = 0;
-      temp_dist = map[i_temp_x+dx][i_temp_y+dy].dist_from_goal;
+      temp_dist = map[i_temp_x+dx][i_temp_y+dy].dist_from_goal_;
     }
 
-    if(temp_dist > map[i_temp_x][i_temp_y-1].dist_from_goal){
+    if(temp_dist > map[i_temp_x][i_temp_y-1].dist_from_goal_){
       dx = 0;
       dy = -1;
-      temp_dist = map[i_temp_x+dx][i_temp_y+dy].dist_from_goal;
+      temp_dist = map[i_temp_x+dx][i_temp_y+dy].dist_from_goal_;
     }
 
-    if(temp_dist > map[i_temp_x+1][i_temp_y].dist_from_goal){
+    if(temp_dist > map[i_temp_x+1][i_temp_y].dist_from_goal_){
       dx = 1;
       dy = 0;
-      temp_dist = map[i_temp_x+dx][i_temp_y+dy].dist_from_goal;
+      temp_dist = map[i_temp_x+dx][i_temp_y+dy].dist_from_goal_;
     }
 
-    if(temp_dist > map[i_temp_x][i_temp_y+1].dist_from_goal){
+    if(temp_dist > map[i_temp_x][i_temp_y+1].dist_from_goal_){
       dx = 0;
       dy = 1;
-      temp_dist = map[i_temp_x+dx][i_temp_y+dy].dist_from_goal;
+      temp_dist = map[i_temp_x+dx][i_temp_y+dy].dist_from_goal_;
     }
 
-    if(temp_dist > map[i_temp_x-1][i_temp_y-1].dist_from_goal){
+    if(temp_dist > map[i_temp_x-1][i_temp_y-1].dist_from_goal_){
       dx = -1;
       dy = -1;
-      temp_dist = map[i_temp_x+dx][i_temp_y+dy].dist_from_goal;
+      temp_dist = map[i_temp_x+dx][i_temp_y+dy].dist_from_goal_;
     }
 
-    if(temp_dist > map[i_temp_x-1][i_temp_y+1].dist_from_goal){
+    if(temp_dist > map[i_temp_x-1][i_temp_y+1].dist_from_goal_){
       dx = -1;
       dy = 1;
-      temp_dist = map[i_temp_x+dx][i_temp_y+dy].dist_from_goal;
+      temp_dist = map[i_temp_x+dx][i_temp_y+dy].dist_from_goal_;
     }
 
-    if(temp_dist > map[i_temp_x+1][i_temp_y-1].dist_from_goal){
+    if(temp_dist > map[i_temp_x+1][i_temp_y-1].dist_from_goal_){
       dx = 1;
       dy = -1;
-      temp_dist = map[i_temp_x+dx][i_temp_y+dy].dist_from_goal;
+      temp_dist = map[i_temp_x+dx][i_temp_y+dy].dist_from_goal_;
     }
 
-    if(temp_dist > map[i_temp_x+1][i_temp_y+1].dist_from_goal){
+    if(temp_dist > map[i_temp_x+1][i_temp_y+1].dist_from_goal_){
       dx = 1;
       dy = 1;
-      temp_dist = map[i_temp_x+dx][i_temp_y+dy].dist_from_goal;
+      temp_dist = map[i_temp_x+dx][i_temp_y+dy].dist_from_goal_;
     }
 
     i_temp_x += dx;
     i_temp_y += dy;
-    map[i_temp_x][i_temp_y].path = true;
+    map[i_temp_x][i_temp_y].path_ = true;
 
     if(temp_dist==0.0)
     break;
@@ -685,7 +685,7 @@ bool TmsRpPathPlanning::CalcVoronoiPath(vector<vector<CollisionMapData> >& map, 
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpPathPlanning::SmoothVoronoiPath(vector<vector<CollisionMapData> >& map, vector<double> start, vector<double> goal, vector<vector<double> > in_path, vector<vector<double> >& out_path, double threshold){
+bool TmsRpPathPlanning::smoothVoronoiPath(vector<vector<CollisionMapData> >& map, vector<double> start, vector<double> goal, vector<vector<double> > in_path, vector<vector<double> >& out_path, double threshold){
   out_path.clear();
   vector<double> temp_pos;
   temp_pos.resize(3);
@@ -724,7 +724,7 @@ bool TmsRpPathPlanning::SmoothVoronoiPath(vector<vector<CollisionMapData> >& map
     while(temp_norm<vec_norm){
       i_temp_x = (int)round(i_prev_x + temp_norm*vec[0]);
       i_temp_y = (int)round(i_prev_y + temp_norm*vec[1]);
-      if(map[i_temp_x][i_temp_y].dist_from_voronoi>threshold){
+      if(map[i_temp_x][i_temp_y].dist_from_voronoi_>threshold){
         smoothing = false;
         break;
       }

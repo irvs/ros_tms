@@ -9,8 +9,8 @@ using namespace tms_rp;
 
 //------------------------------------------------------------------------------
 CollisionTarget::CollisionTarget(BodyItemPtr bodyItem){
-  bodyItemCollisionTarget = bodyItem;
-  base = bodyItemCollisionTarget->body()->link(0);
+  bodyItem_collision_target_ = bodyItem;
+  base_ = bodyItem_collision_target_->body()->link(0);
 }
 
 //------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ TmsRpCollisionMap* TmsRpCollisionMap::instance()
 
 //------------------------------------------------------------------------------
 TmsRpCollisionMap::TmsRpCollisionMap() {
-  collisionTarget = NULL;
+  collision_target_ = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -31,20 +31,20 @@ TmsRpCollisionMap::~TmsRpCollisionMap()
 }
 
 //------------------------------------------------------------------------------
-void TmsRpCollisionMap::SetCollisionTarget(BodyItemPtr bodyItem){
-  cout << "SetCollisionTarget" << endl;
-  collisionTarget = new CollisionTarget(bodyItem);
+void TmsRpCollisionMap::setCollisionTarget(BodyItemPtr bodyItem){
+  cout << "setCollisionTarget" << endl;
+  collision_target_ = new CollisionTarget(bodyItem);
 }
 
 //------------------------------------------------------------------------------
 void TmsRpCollisionMap::initialCollision(){
-  if(collisionTarget){
-    collisionMapPairs.clear();
+  if(collision_target_){
+    collision_map_pairs_.clear();
 
-    for(unsigned int j=0;j<collisionTarget->bodyItemCollisionTarget->body()->numLinks();j++){
+    for(unsigned int j=0;j<collision_target_->bodyItem_collision_target_->body()->numLinks();j++){
       for( list<BodyItemPtr>::iterator it = PlanBase::instance()->bodyItemEnv.begin(); it !=PlanBase::instance()->bodyItemEnv.end(); it++){
         for(unsigned int i=0;i<(*it)->body()->numLinks();i++){
-          collisionMapPairs.push_back(make_shared<ColdetLinkPair>(collisionTarget->bodyItemCollisionTarget->body(),collisionTarget->bodyItemCollisionTarget->body()->link(j), (*it)->body(),(*it)->body()->link(i)));
+          collision_map_pairs_.push_back(make_shared<ColdetLinkPair>(collision_target_->bodyItem_collision_target_->body(),collision_target_->bodyItem_collision_target_->body()->link(j), (*it)->body(),(*it)->body()->link(i)));
         }
       }
     }
@@ -68,8 +68,8 @@ bool TmsRpCollisionMap::makeCollisionMap(vector<vector<int> >& out_collision_map
     for(double y = y_llimit_;y<=y_ulimit_+1.0e-10;y=y+cell_size_){
       collisionTargetBase()->p()(0) = x;
       collisionTargetBase()->p()(1) = y;
-      collisionTarget->bodyItemCollisionTarget->body()->calcForwardKinematics();
-      collisionTarget->bodyItemCollisionTarget->notifyKinematicStateChange();
+      collision_target_->bodyItem_collision_target_->body()->calcForwardKinematics();
+      collision_target_->bodyItem_collision_target_->notifyKinematicStateChange();
       MessageView::mainInstance()->flush();
 
       temp_line.push_back(isColliding());
@@ -82,9 +82,9 @@ bool TmsRpCollisionMap::makeCollisionMap(vector<vector<int> >& out_collision_map
 
 //------------------------------------------------------------------------------
 bool TmsRpCollisionMap::isColliding(){
-  if(collisionTarget){
-    for(unsigned int i=0;i<collisionMapPairs.size();i++){
-      ColdetLinkPairPtr testPair = collisionMapPairs[i];
+  if(collision_target_){
+    for(unsigned int i=0;i<collision_map_pairs_.size();i++){
+      ColdetLinkPairPtr testPair = collision_map_pairs_[i];
       testPair->updatePositions();
       bool coll = testPair->checkCollision();
       if(coll){

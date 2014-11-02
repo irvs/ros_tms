@@ -542,7 +542,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   }
 
   //----------------------------------------------------------------------------
-  //  appear and setpos object model
+  //  appear and setpos object_ model
   for(int i=0; i<25; i++) {
     tac_.createRecord(7001+i, object_name_[i]);
   }
@@ -648,8 +648,8 @@ void TmsRpBar::setCollisionTargetButtonClicked()
 {
   if(target_body_items_.size()==1){
     cout << "target_body_items_ size = " << target_body_items_.size() << endl;
-    TmsRpCollisionMap::instance()->SetCollisionTarget(target_body_items_[0]);
-    cout << TmsRpCollisionMap::instance()->collisionTarget->name() << " is collision target"<< endl;
+    TmsRpCollisionMap::instance()->setCollisionTarget(target_body_items_[0]);
+    cout << TmsRpCollisionMap::instance()->collision_target_->name() << " is collision target"<< endl;
   }else{
     cout <<  "Please selecet one bodyitem" << endl;
     return;
@@ -839,7 +839,7 @@ void TmsRpBar::updateObjectInfo()
       getRobotData.request.tmsdb.sensor = 3001;
 
     if (get_data_client_.call(getRobotData)) {
-      os_ << "[TmsAction] Get info of object ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
+      os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
     } else {
       os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
       return;
@@ -893,7 +893,7 @@ void TmsRpBar::updateObjectInfo()
   getRobotData.request.tmsdb.sensor = 3001;
 
   if (get_data_client_.call(getRobotData)) {
-    os_ << "[TmsAction] Get info of object ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
+    os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
   } else {
     os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
     return;
@@ -924,7 +924,7 @@ void TmsRpBar::updateObjectInfo()
   getRobotData.request.tmsdb.sensor = 3001;
 
   if (get_data_client_.call(getRobotData)) {
-    os_ << "[TmsAction] Get info of object ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
+    os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
   } else {
     os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
     return;
@@ -955,7 +955,7 @@ void TmsRpBar::updateObjectInfo()
   getRobotData.request.tmsdb.sensor = 3001;
 
   if (get_data_client_.call(getRobotData)) {
-    os_ << "[TmsAction] Get info of object ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
+    os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
   } else {
     os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
     return;
@@ -986,7 +986,7 @@ void TmsRpBar::updateObjectInfo()
   getRobotData.request.tmsdb.sensor = 3001;
 
   if (get_data_client_.call(getRobotData)) {
-    os_ << "[TmsAction] Get info of object ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
+    os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
   } else {
     os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
     return;
@@ -1017,7 +1017,7 @@ void TmsRpBar::updateObjectInfo()
   getRobotData.request.tmsdb.sensor = 2009;
 
   if (get_data_client_.call(getRobotData)) {
-    os_ << "[TmsAction] Get info of object ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
+    os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
   } else {
     os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
     return;
@@ -1045,7 +1045,7 @@ void TmsRpBar::updateObjectInfo()
   getRobotData.request.tmsdb.sensor = 3001;
 
   if (get_data_client_.call(getRobotData)) {
-    os_ << "[TmsAction] Get info of object ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
+    os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
   } else {
     os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
     return;
@@ -1081,7 +1081,7 @@ void TmsRpBar::updateObjectInfo()
 //    getObjectData.request.tmsdb.sensor = 3002; // ics
 
 //    if (get_data_client_.call(getObjectData)) {
-//      os_ << "[TmsAction] Get info of object ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
+//      os_ << "[TmsAction] Get info of object_ ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
 //    } else {
 //      os_ << "[TmsAction] Failed to call service getObjectData ID: " << getObjectData.request.tmsdb.id << endl;
 //      return;
@@ -1117,7 +1117,7 @@ void TmsRpBar::updateObjectInfo()
     getObjectData.request.tmsdb.sensor = 3018; //refrigerator, irs
 
     if (get_data_client_.call(getObjectData)) {
-      os_ << "[TmsAction] Get info of object ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
+      os_ << "[TmsAction] Get info of object_ ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
     } else {
       os_ << "[TmsAction] Failed to call service getObjectData ID: " << getObjectData.request.tmsdb.id << endl;
       return;
@@ -1142,7 +1142,7 @@ void TmsRpBar::updateObjectInfo()
     getObjectData.request.tmsdb.sensor = 3002; // ics
 
     if (get_data_client_.call(getObjectData)) {
-      os_ << "[TmsAction] Get info of object ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
+      os_ << "[TmsAction] Get info of object_ ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
     } else {
       os_ << "[TmsAction] Failed to call service getObjectData ID: " << getObjectData.request.tmsdb.id << endl;
       return;
@@ -1168,7 +1168,7 @@ void TmsRpBar::updateObjectInfo()
         getObjectData.request.tmsdb.sensor = 3005; // fake
 
         if (get_data_client_.call(getObjectData)) {
-            os_ << "[TmsAction] Get info of object ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
+            os_ << "[TmsAction] Get info of object_ ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
         } else {
             os_ << "[TmsAction] Failed to call service getObjectData ID: " << getObjectData.request.tmsdb.id << endl;
             return;
@@ -1204,7 +1204,7 @@ void TmsRpBar::updateObjectInfo()
   getPersonData.request.tmsdb.sensor = 3001;
 
   if (get_data_client_.call(getPersonData)) {
-    os_ << "[TmsAction] Get info of object ID: " << getPersonData.request.tmsdb.id <<"  OK" << endl;
+    os_ << "[TmsAction] Get info of object_ ID: " << getPersonData.request.tmsdb.id <<"  OK" << endl;
   } else {
     os_ << "[TmsAction] Failed to call service getPersonData ID: " << getPersonData.request.tmsdb.id << endl;
     return;
@@ -1259,7 +1259,7 @@ void TmsRpBar::simulationInfoButtonClicked()
       getRobotData.request.tmsdb.sensor = 3005;
 
     if (get_data_client_.call(getRobotData)) {
-      os_ << "[TmsAction] Get info of object ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
+      os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
     } else {
       os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
       continue;
@@ -1401,7 +1401,7 @@ void TmsRpBar::simulationInfoButtonClicked()
   getRobotData.request.tmsdb.sensor = 2009;
 
   if (get_data_client_.call(getRobotData)) {
-    os_ << "[TmsAction] Get info of object ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
+    os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
   } else {
     os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
     return;
@@ -1430,7 +1430,7 @@ void TmsRpBar::simulationInfoButtonClicked()
     getObjectData.request.tmsdb.id =7001 + i;
 
       if (get_data_client_.call(getObjectData)) {
-        os_ << "[TmsAction] Get info of object ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
+        os_ << "[TmsAction] Get info of object_ ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
       } else {
         os_ << "[TmsAction] Failed to call service getObjectData ID: " << getObjectData.request.tmsdb.id << endl;
         return;
@@ -1464,7 +1464,7 @@ void TmsRpBar::simulationInfoButtonClicked()
         callSynchronously(bind(&TmsRpController::setPos,tac_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
         object_state_[oID] = true;
       }
-      // object's place = SmartPal5(2002)
+      // object_'s place = SmartPal5(2002)
       else if(getObjectData.response.tmsdb[ref_i].state==2 && (getObjectData.response.tmsdb[ref_i].place==2002 || getObjectData.response.tmsdb[ref_i].place==2006)) {
         int    oID   = getObjectData.response.tmsdb[ref_i].id - 7001;
           double oPosX = getObjectData.response.tmsdb[ref_i].x/1000;
@@ -1490,7 +1490,7 @@ void TmsRpBar::simulationInfoButtonClicked()
     getPersonData.request.tmsdb.sensor = 3001;
 
     if (get_data_client_.call(getPersonData)) {
-      os_ << "[TmsAction] Get info of object ID: " << getPersonData.request.tmsdb.id <<"  OK" << endl;
+      os_ << "[TmsAction] Get info of object_ ID: " << getPersonData.request.tmsdb.id <<"  OK" << endl;
     } else {
       os_ << "[TmsAction] Failed to call service getPersonData ID: " << getPersonData.request.tmsdb.id << endl;
       return;
@@ -1696,7 +1696,7 @@ void TmsRpBar::startButtonClicked()
   std::vector<double> end;
 
   if( !pb->targetObject || !pb->robTag2Arm.size()) {
-    os_ <<  "set object and robot" << endl;
+    os_ <<  "set object_ and robot" << endl;
     return;
   }
 
@@ -1722,7 +1722,7 @@ void TmsRpBar::startButtonClicked2()
   std::vector<double> end;
 
   if( !pb->targetObject || !pb->robTag2Arm.size()) {
-    os_ <<  "set object and robot" << endl;
+    os_ <<  "set object_ and robot" << endl;
     return;
   }
   for(int i=0;i<pb->bodyItemRobot()->body()->numJoints();i++){ // If initial position is not collided, it is stored as
@@ -1745,7 +1745,7 @@ void TmsRpBar::pathPlanButtonClicked()
   std::vector<double> end;
 
   if( !pb->robTag2Arm.size()) {
-    os_ <<  "set object and robot _" << endl;
+    os_ <<  "set object_ and robot _" << endl;
     return;
   }
   for(int i=0;i<pb->bodyItemRobot()->body()->numJoints();i++){ // If initial position is not collided, it is stored as
@@ -1804,14 +1804,14 @@ void TmsRpBar::connectROS(){
   os_ <<  "Connect to the ROS" << endl;
   production_version_ = true;
   os_ << "production_version_ = " << production_version_ << endl;
-  tms_rp::TmsRpStaticMap StaticMap;
+  tms_rp::TmsRpStaticMap static_map;
 
   static ros::Rate loop_rate(10); // 0.1sec
   while (ros::ok())
   {
     updateObjectInfo();
 
-    StaticMap.MapPublish();
+    static_map.mapPublish();
 
     ros::spinOnce();
     loop_rate.sleep();

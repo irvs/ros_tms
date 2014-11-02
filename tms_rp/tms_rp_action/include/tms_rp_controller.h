@@ -32,24 +32,27 @@
 #define rad2deg(x)	((x)*(180.0)/M_PI)
 #define deg2rad(x)	((x)*M_PI/180.0)
 
-namespace grasp {
+namespace grasp
+{
 
-class pathInfo{
-	public:
-	std::vector<double> pos;
-	cnoid::Vector3 robotPos;
-	cnoid::Matrix3 robotOri;
-	int state;
-	bool moveJoints;
-	bool moveBase;
-	cnoid::VectorXd joints;
+class pathInfo
+{
+public:
+  std::vector<double> pos;
+  cnoid::Vector3 robotPos;
+  cnoid::Matrix3 robotOri;
+  int state;
+  bool moveJoints;
+  bool moveBase;
+  cnoid::VectorXd joints;
 };
 
-class planGraspPath{
-	public:
-		enum STATE { APPROACH , CLOSING_GRIPPER, UP_HAND, BACKAWAY , DOWN_HAND, OPENING_GRIPPER };
-		enum PLANNING_MODE { GRAPSP_PLAN, RELEASE_PLAN, PATH_PLAN, PATH_PLAN_WITH_GRASPED_OBJECT };
-		enum BOOL_PARAMETER { TOLERANCE_MODE, PLAN_BASE_MODE, PLAN_JOINT_MODE, SYNC_JOINT_BASE_MODE};
+class planGraspPath
+{
+public:
+  enum STATE { APPROACH , CLOSING_GRIPPER, UP_HAND, BACKAWAY , DOWN_HAND, OPENING_GRIPPER };
+  enum PLANNING_MODE { GRAPSP_PLAN, RELEASE_PLAN, PATH_PLAN, PATH_PLAN_WITH_GRASPED_OBJECT };
+  enum BOOL_PARAMETER { TOLERANCE_MODE, PLAN_BASE_MODE, PLAN_JOINT_MODE, SYNC_JOINT_BASE_MODE};
 };
 
 class TmsRpController{
