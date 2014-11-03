@@ -108,6 +108,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   ros::ServiceClient sp5_control_client_;
   ros::ServiceClient path_planning_client_;
   ros::ServiceClient ardrone_client_;
+  ros::ServiceClient request_robot_path_;
   ros::Subscriber    subscribe_pcd_;
   ros::Subscriber    subscribe_static_map_;
   ros::Subscriber    subscribe_path_map_;
@@ -168,6 +169,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void robotMapButtonClicked();
   void pathPlanButtonClicked();
   void ardroneButtonClicked();
+  void smartpalButtonClicked();
 
   void receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& msg);
   void receiveStaticMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg);
