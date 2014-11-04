@@ -1,39 +1,40 @@
-#include <tms_rp_static_map.h>
+#include <tms_rp_voronoi_map.h>
 
 //------------------------------------------------------------------------------
 using namespace grasp;
 using namespace tms_rp;
 
 //------------------------------------------------------------------------------
-TmsRpStaticMap* TmsRpStaticMap::instance()
+TmsRpVoronoiMap* TmsRpVoronoiMap::instance()
 {
-  static TmsRpStaticMap* instance = new TmsRpStaticMap();
+  static TmsRpVoronoiMap* instance = new TmsRpVoronoiMap();
   return instance;
 }
 
 //------------------------------------------------------------------------------
-TmsRpStaticMap::TmsRpStaticMap(): ToolBar("TmsRpStaticMap"),
+TmsRpVoronoiMap::TmsRpVoronoiMap(): ToolBar("TmsRpVoronoiMap"),
                                   os_(MessageView::mainInstance()->cout()),
                                   tac_(*TmsRpController::instance()) {
   sid_ = 100000;
 
   static ros::NodeHandle nh;
 
-  pp_map_pub_ = nh.advertise<tms_msg_rp::rps_map_full>("rps_map_data", 1);
+  static_map_pub_  = nh.advertise<tms_msg_rp::rps_map_full>("rps_map_data", 1);
+  dynamic_map_pub_ = nh.advertise<tms_msg_rp::rps_map_full>("rps_dynamic_map", 1);
 
   initCollisionMap(collision_map_);
   setVoronoiLine(collision_map_, result_msg_);
   calcDistFromObj(collision_map_, result_msg_);
-  convertMap(collision_map_, pub_map_);
+  convertMap(collision_map_, static_map_);
 }
 
 //------------------------------------------------------------------------------
-TmsRpStaticMap::~TmsRpStaticMap()
+TmsRpVoronoiMap::~TmsRpVoronoiMap()
 {
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpStaticMap::initCollisionMap(vector<vector<CollisionMapData> >& map){
+bool TmsRpVoronoiMap::initCollisionMap(vector<vector<CollisionMapData> >& map){
   FILE *fp;
   string file_name;
   char home_dir[255];
@@ -138,7 +139,7 @@ bool TmsRpStaticMap::initCollisionMap(vector<vector<CollisionMapData> >& map){
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpStaticMap::setVoronoiLine(vector<vector<CollisionMapData> >& map, string& message){
+bool TmsRpVoronoiMap::setVoronoiLine(vector<vector<CollisionMapData> >& map, string& message){
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -236,7 +237,7 @@ bool TmsRpStaticMap::setVoronoiLine(vector<vector<CollisionMapData> >& map, stri
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpStaticMap::calcDistFromObj(vector<vector<CollisionMapData> >& map, string& message){
+bool TmsRpVoronoiMap::calcDistFromObj(vector<vector<CollisionMapData> >& map, string& message){
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -276,7 +277,7 @@ bool TmsRpStaticMap::calcDistFromObj(vector<vector<CollisionMapData> >& map, str
 }
 
 //------------------------------------------------------------------------------
-void TmsRpStaticMap::convertMap(vector<vector<CollisionMapData> > map, tms_msg_rp::rps_map_full& pp_map){
+void TmsRpVoronoiMap::convertMap(vector<vector<CollisionMapData> > map, tms_msg_rp::rps_map_full& pp_map){
   pp_map.rps_map_x.clear();
 
   pp_map.x_llimit = x_llimit_;
@@ -302,8 +303,52 @@ void TmsRpStaticMap::convertMap(vector<vector<CollisionMapData> > map, tms_msg_r
 }
 
 //------------------------------------------------------------------------------
-void TmsRpStaticMap::mapPublish(){
-  pp_map_pub_.publish(pub_map_);
+void TmsRpVoronoiMap::staticMapPublish(){
+  static_map_pub_.publish(static_map_);
 }
 
+//------------------------------------------------------------------------------
+void TmsRpVoronoiMap::dynamicMapPublish(){
+  int map_x = 0, map_y = 0;
+  vector<vector<CollisionMapData> > temp_Map;
+  string result_msg;
+
+  temp_Map.clear();
+  temp_Map = collision_map_;
+
+  Vector3 object_pos = Vector3(0,0,0);
+  Matrix3 object_ori;
+  Vector3 object_rpy;
+  BodyItemPtr item;
+  TmsRpController trc;
+
+  // get current position of object
+  item = trc.objTag2Item()["wagon"];
+  if(!item){
+    ROS_INFO("Error: The tagId is not recorded.");
+  }
+  object_pos = item->body()->link(0)->p();
+  object_ori = item->body()->link(0)->R();
+  item->calcForwardKinematics();
+  item->notifyKinematicStateChange();
+
+  object_rpy = grasp::rpyFromRot(object_ori);
+
+  map_x = (int)round( ( object_pos(0) - x_llimit_ ) / cell_size_ );
+  map_y = (int)round( ( object_pos(1) - y_llimit_ ) / cell_size_ );
+
+  for(int check_x_size=map_x-2;check_x_size<=map_x+2;check_x_size++)
+    for(int check_y_size=map_y-2;check_y_size<=map_y+2;check_y_size++)
+    {
+      temp_Map[check_x_size][check_y_size].object_        = 1;
+      temp_Map[check_x_size][check_y_size].dist_from_obj_ = 0.0;
+      temp_Map[check_x_size][check_y_size].collision_     = true;
+    }
+
+  setVoronoiLine(temp_Map, result_msg);
+  calcDistFromObj(temp_Map, result_msg);
+  convertMap(temp_Map, dynamic_map_);
+
+  dynamic_map_pub_.publish(dynamic_map_);
+}
 //------------------------------------------------------------------------------

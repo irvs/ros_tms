@@ -1,6 +1,6 @@
 #include <tms_rp_bar.h>
 #include <tms_rp_controller.h>
-#include <tms_rp_static_map.h>
+#include <tms_rp_voronoi_map.h>
 #include <tms_rp_collision_map.h>
 #include <sg_points_get.h>
 #include <draw_points.h>
@@ -212,6 +212,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   request_robot_path_    = nh.serviceClient<tms_msg_rp::rps_voronoi_path_planning>("/rps_voronoi_path_planning");
   subscribe_pcd_         = nh.subscribe("velodyne_points", 10, &TmsRpBar::receivePointCloudData, this);
   subscribe_static_map_  = nh.subscribe("rps_map_data", 10,    &TmsRpBar::receiveStaticMapData, this);
+  subscribe_dynamic_map_ = nh.subscribe("rps_dynamic_map", 10, &TmsRpBar::receiveDynamicMapData, this);
   subscribe_path_map_    = nh.subscribe("rps_robot_path", 10,  &TmsRpBar::receivePathMapData, this);
 
   //----------------------------------------------------------------------------
@@ -578,7 +579,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   static_map_toggle_->setChecked(false);
 
   dynamic_map_toggle_= addToggleButton(QIcon(":/action/icons/dynamic_map.png"), ("dynamic map"));
-  dynamic_map_toggle_->sigToggled().connect(bind(&TmsRpBar::staticMapButtonClicked, this));
+  dynamic_map_toggle_->sigToggled().connect(bind(&TmsRpBar::dynamicMapButtonClicked, this));
   dynamic_map_toggle_->setChecked(false);
 
   local_map_toggle_ = addToggleButton(QIcon(":/action/icons/local_map.png"), ("local map"));
@@ -633,6 +634,12 @@ void TmsRpBar::receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& m
 void TmsRpBar::receiveStaticMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg)
 {
   static_map_data_ = *msg;
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::receiveDynamicMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg)
+{
+  dynamic_map_data_ = *msg;
 }
 
 //------------------------------------------------------------------------------
@@ -759,6 +766,47 @@ void TmsRpBar::staticMapButtonClicked()
   ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["static_map"],false);
   MessageView::mainInstance()->flush();
   ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["static_map"],true);
+  MessageView::mainInstance()->flush();
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::dynamicMapButtonClicked()
+{
+  TmsRpController trc;
+
+  if(dynamic_map_data_.rps_map_x.size()==0)
+  {
+    ROS_INFO("nothing the dynamic map data");
+    return;
+  }
+
+  if(!dynamic_map_toggle_->isChecked())
+  {
+    trc.disappear("dynamic_map");
+    return;
+  }
+
+  ROS_INFO("On viewer for dynamic map");
+
+  SgPointsDrawing::SgLastRenderer(0,true);
+  SgGroupPtr node = (SgGroup*)trc.objTag2Item()["dynamic_map"]->body()->link(0)->shape();
+
+  SgPointsGet visit;
+  node->accept(visit);
+  if(visit.shape.size()==0)
+  {
+    ROS_INFO("no shape node, %ld", visit.shape.size());
+    return;
+  }
+
+  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
+  cr = new SgPointsDrawing(&dynamic_map_data_);
+  visit.shape[0]->mesh()->triangles().clear();
+  node->addChild(cr);
+
+  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["dynamic_map"],false);
+  MessageView::mainInstance()->flush();
+  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["dynamic_map"],true);
   MessageView::mainInstance()->flush();
 }
 
@@ -1827,14 +1875,15 @@ void TmsRpBar::connectROS()
   os_ <<  "Connect to the ROS" << endl;
   production_version_ = true;
   os_ << "production_version_ = " << production_version_ << endl;
-  tms_rp::TmsRpStaticMap static_map;
+  tms_rp::TmsRpVoronoiMap static_and_dynamic_map;
 
   static ros::Rate loop_rate(10); // 0.1sec
   while (ros::ok())
   {
     updateObjectInfo();
 
-    static_map.mapPublish();
+    static_and_dynamic_map.staticMapPublish();
+    static_and_dynamic_map.dynamicMapPublish();
 
     ros::spinOnce();
     loop_rate.sleep();
