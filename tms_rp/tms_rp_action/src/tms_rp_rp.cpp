@@ -105,6 +105,10 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 	int command = req.command;
 	int robot_id = req.robot_id;
 	int arg_type = (int)req.arg.at(0);
+	double argument[req.arg.size()];
+	for (int i=0; i<req.arg.size(); i++) {
+		argument[i] = req.arg.at(i);
+	}
 	grasp::TmsRpBar::grasping_ = 0;
 
 	tms_msg_db::TmsdbGetData srv;
@@ -113,7 +117,8 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 	switch (command) {
 		case 9001:
 		{// move
-			boost::thread th(boost::bind(&TmsRpSubtask::move, this, type, robot_id, arg_type));
+//			move(type, robot_id, arg_type, argument);
+			boost::thread th(boost::bind(&TmsRpSubtask::move, this, type, robot_id, arg_type, argument));
 			break;
 		}
 		case 9002:
@@ -577,7 +582,7 @@ void tms_rp::TmsRpSubtask::sensingCallback(const tms_msg_ss::ods_person_dt::Cons
 
 //------------------------------------------------------------------------------
 // Subtask functions that is started in a thread
-bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type) {
+bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *argument) {
 	ROS_INFO("[tms_rp]move command\n");
 
 	tms_msg_db::TmsdbGetData srv;
@@ -595,13 +600,13 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type) {
 
 	srv.request.tmsdb.id = arg_type;
 	if (arg_type == -1) { // move (x,y,th)
-//		rp_srv.request.goal_pos.x = req.arg.at(1);
-//		rp_srv.request.goal_pos.y = req.arg.at(2);
-//		rp_srv.request.goal_pos.z = 0.0;
-//		rp_srv.request.goal_pos.th = req.arg.at(3);
-//		rp_srv.request.goal_pos.roll = 0.0;
-//		rp_srv.request.goal_pos.pitch = 0.0;
-//		rp_srv.request.goal_pos.yaw = req.arg.at(3);
+		rp_srv.request.goal_pos.x = argument[1];
+		rp_srv.request.goal_pos.y = argument[2];
+		rp_srv.request.goal_pos.z = 0.0;
+		rp_srv.request.goal_pos.th = argument[3];
+		rp_srv.request.goal_pos.roll = 0.0;
+		rp_srv.request.goal_pos.pitch = 0.0;
+		rp_srv.request.goal_pos.yaw = argument[3];
 	} else if (arg_type > 1000 && arg_type < 2000) {
 		ROS_INFO("Argument's IDtype is Person.\n");
 	} else if (arg_type > 2000 && arg_type < 3000) { // RobotID
