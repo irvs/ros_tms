@@ -42,7 +42,7 @@ class TmsRpSubtask : public cnoid::ToolBar, public boost::signals::trackable
 	uint32_t sid_;
 
 	// for thread
-	bool move(bool type, int robot_id, int arg_type);
+	bool move(bool type, int robot_id, int arg_type, double *argument);
 	bool random_move(void);
 	bool sensing(void);
 
