@@ -1881,6 +1881,13 @@ void TmsRpBar::ardroneButtonClicked()
 //------------------------------------------------------------------------------
 void TmsRpBar::smartpalButtonClicked()
 {
+  boost::thread t(boost::bind(&TmsRpBar::moveSmartpal, this));
+}
+
+
+//------------------------------------------------------------------------------
+void TmsRpBar::moveSmartpal()
+{
   Vector3 robot_pos = Vector3(0,0,0);
   Matrix3 robot_ori;
   Vector3 robot_rpy;
@@ -1945,10 +1952,12 @@ void TmsRpBar::smartpalButtonClicked()
   {
 //    uint32_t result = path_planning_srv.response.success;
 //    ROS_INFO("[TmsAction] result = %d",result);
+    return;
   }
   else
   {
     ROS_INFO("Failed to call service path_planning");
+    return;
   }
 }
 
