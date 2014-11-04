@@ -75,7 +75,9 @@ private:
   std::string ArrayPop(std::string *stack, int *sp);
 
   int ConvertArgType(std::string arg_type);
-  bool GenerateCC(std::string state1, std::string state2, int cc_count);
+  int JudgeArgType(std::string state1, std::string state2);
+  void GenerateContainer(std::string f_name, std::string state_name1);
+  int GenerateCC(std::string state1, std::string state2, int cc_count);
   int AddStateCC(int cc_count);
   int BuildStateVector(std::string state1, std::string state2);
   int AddStateSQ(std::string state1, std::string state2);

@@ -69,10 +69,41 @@ int tms_ts_nodelet::ROS_TMS_TS::ConvertArgType(std::string arg_type) {
 	}
 }
 
-bool tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string state2, int cc_count) {
+/* return 0: token_block [+/|] token_block
+ *        1: token [+/|] token_block
+ *        2: token_block [+/|] token
+ *        3: token [+/|] token*/
+int tms_ts_nodelet::ROS_TMS_TS::JudgeArgType(std::string state1, std::string state2) {
+	std::vector<std::string> seq_of_argument1, seq_of_argument2;
+	seq_of_argument1.clear();
+	seq_of_argument2.clear();
+
+	boost::split(seq_of_argument1, state1, boost::is_any_of("$"));
+	boost::split(seq_of_argument2, state2, boost::is_any_of("$"));
+
+	if (!seq_of_argument1.empty() && !seq_of_argument2.empty()) {
+		if (seq_of_argument1.size() == 1 && seq_of_argument2.size() == 1) return 0;
+		else if(seq_of_argument1.size() != 1 && seq_of_argument2.size() == 1) return 1;
+		else if(seq_of_argument1.size() == 1 && seq_of_argument2.size() != 1) return 2;
+		else if(seq_of_argument1.size() != 1 && seq_of_argument2.size() != 1) return 3;}
+}
+
+void tms_ts_nodelet::ROS_TMS_TS::GenerateContainer(std::string f_name, std::string state_name1) {
+	generated_container += "def " + f_name + "():\n    " + f_name + " = smach.Concurrence"
+			"( outcomes=['succeeded', 'aborted', 'preempted'],\n"
+			"                            default_outcome = 'aborted',\n"
+			"                            outcome_map = {'succeeded': {'" + state_name1 + "':'succeeded'},\n"
+			"                                           'aborted': {'" + state_name1 + "':'aborted'},\n"
+			"                                           'preempted': {'" + state_name1 + "':'preempted'}},\n"
+			"                            child_termination_cb = lambda arg: True )\n\n"
+			"    with " + f_name + ":\n";
+}
+
+int tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string state2, int cc_count) {
 	int state_count = cc_count*2;
 	int sn1 = state_count;
 	int sn2 = state_count + 1;
+	int arg_type = JudgeArgType(state1, state2);
 
 	tms_msg_db::TmsdbGetData srv;
 	std::vector<std::string> seq_of_argument1, seq_of_argument2;
@@ -87,52 +118,113 @@ bool tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string stat
 	state_id2 = seq_of_argument2.at(0);
 
 	std::string state_name1, state_name2;
-
-	srv.request.tmsdb.id = StringToInt(seq_of_argument1.at(0)) + sid;
-	if(db_reader_client.call(srv))
-		state_name1 = srv.response.tmsdb[0].name;
-
-	srv.request.tmsdb.id = StringToInt(seq_of_argument2.at(0)) + sid;
-	if(db_reader_client.call(srv))
-		state_name2 = srv.response.tmsdb[0].name;
-
 	std::string f_name = "smc" + IntToString(cc_count);
-	generated_container += "def " + f_name + "():\n    " + f_name + " = smach.Concurrence( outcomes=['succeeded', 'aborted', 'preempted'],\n"
-			"                            default_outcome = 'aborted',\n"
-			"                            outcome_map = {'succeeded': {'" + IntToString(sn1) + state_name1 + "':'succeeded'},\n"
-			"                                           'aborted': {'" + IntToString(sn1) + state_name1 + "':'aborted'},\n"
-			"                                           'preempted': {'" + IntToString(sn1) + state_name1 + "':'preempted'}},\n"
-			"                            child_termination_cb = lambda arg: True )\n"
-			"\n"
-			"    with " + f_name + ":\n"
-			"        smach.Concurrence.add('" + IntToString(sn1) + state_name1 + "',\n"
-			"                           ServiceState('rp_cmd',\n"
-			"                                        rp_cmd,\n"
-			"                                        request = rp_cmdRequest(" + state_id1 + ", False, " + IntToString(robot_id) + ", [";
-	int check = 0;
-	for (int i = 1; i < seq_of_argument1.size(); i++) {
-		if ( check >= 1) {
-			generated_container += ", ";
-		}
-		generated_container += IntToString(ConvertArgType(seq_of_argument1.at(i)));
-		check++;
-	}
-	generated_container += "])))\n"
-			"        smach.Concurrence.add('" + IntToString(sn2) + state_name2 + "',\n"
-			"                           ServiceState('rp_cmd',\n"
-			"                                        rp_cmd,\n"
-			"                                        request = rp_cmdRequest(" + state_id2 + ", False, " + IntToString(robot_id) + ", [";
-	check = 0;
-		for (int j = 1; j < seq_of_argument2.size(); j++) {
+
+	if (arg_type == 0) {
+		ROS_INFO("type=0\n");
+		std::string state_right = IntToString(sn1) + "CC";
+		GenerateContainer(f_name, state_right);
+
+		generated_container +=
+				"        smach.Concurrence.add('" + IntToString(sn1) + "CC', " + state_data.at(StringToInt(state_id1)-1).state_name + ")\n\n"
+				"        smach.Concurrence.add('" + IntToString(sn2) + "CC', " + state_data.at(StringToInt(state_id2)-1).state_name + ")\n\n"
+				"    return " + f_name + "\n\n";
+		state_data.pop_back();
+		state_data.pop_back();
+	} else if (arg_type == 1) {
+		ROS_INFO("type=1\n");
+		srv.request.tmsdb.id = StringToInt(seq_of_argument1.at(0)) + sid;
+		if(db_reader_client.call(srv))
+			state_name1 = srv.response.tmsdb[0].name;
+
+		std::string state_right = IntToString(sn1) + state_name1;
+		GenerateContainer(f_name, state_right);
+		generated_container += "        smach.Concurrence.add('" + IntToString(sn1) + state_name1 + "',\n"
+				"                           ServiceState('rp_cmd',\n"
+				"                                        rp_cmd,\n"
+				"                                        request = rp_cmdRequest(" + state_id1 + ", False, " + IntToString(robot_id) + ", [";
+		int check = 0;
+		for (int i = 1; i < seq_of_argument1.size(); i++) {
 			if ( check >= 1) {
 				generated_container += ", ";
 			}
-			generated_container += IntToString(ConvertArgType(seq_of_argument2.at(j)));
+			generated_container += IntToString(ConvertArgType(seq_of_argument1.at(i)));
 			check++;
 		}
 		generated_container += "])))\n"
-			"    return " + f_name + "\n\n";
-	return true;
+				"        smach.Concurrence.add('" + IntToString(sn2) + "CC', " + state_data.at(StringToInt(state_id2)-1).state_name + ")\n\n";
+
+		generated_container += "    return " + f_name + "\n\n";
+		state_data.pop_back();
+	} else if (arg_type == 2) {
+		ROS_INFO("type=2\n");
+		srv.request.tmsdb.id = StringToInt(seq_of_argument2.at(0)) + sid;
+		if(db_reader_client.call(srv))
+			state_name2 = srv.response.tmsdb[0].name;
+
+		std::string state_right = IntToString(sn1) + "CC";
+		GenerateContainer(f_name, state_right);
+
+		generated_container +=
+				"        smach.Concurrence.add('" + IntToString(sn1) + "CC', " + state_data.at(StringToInt(state_id1)-1).state_name + ")\n\n"
+				"        smach.Concurrence.add('" + IntToString(sn2) + state_name2 + "',\n"
+				"                           ServiceState('rp_cmd',\n"
+				"                                        rp_cmd,\n"
+				"                                        request = rp_cmdRequest(" + state_id2 + ", False, " + IntToString(robot_id) + ", [";
+		int check = 0;
+			for (int j = 1; j < seq_of_argument2.size(); j++) {
+				if ( check >= 1) {
+					generated_container += ", ";
+				}
+				generated_container += IntToString(ConvertArgType(seq_of_argument2.at(j)));
+				check++;
+			}
+			generated_container += "])))\n"
+				"    return " + f_name + "\n\n";
+			state_data.erase(state_data.end() - 1);
+	} else if (arg_type == 3) {
+		ROS_INFO("type=3\n");
+		srv.request.tmsdb.id = StringToInt(seq_of_argument1.at(0)) + sid;
+		if(db_reader_client.call(srv))
+			state_name1 = srv.response.tmsdb[0].name;
+
+		srv.request.tmsdb.id = StringToInt(seq_of_argument2.at(0)) + sid;
+		if(db_reader_client.call(srv))
+			state_name2 = srv.response.tmsdb[0].name;
+
+		std::string state_right = IntToString(sn1) + state_name1;
+		GenerateContainer(f_name, state_right);
+
+		generated_container +=
+				"        smach.Concurrence.add('" + IntToString(sn1) + state_name1 + "',\n"
+				"                           ServiceState('rp_cmd',\n"
+				"                                        rp_cmd,\n"
+				"                                        request = rp_cmdRequest(" + state_id1 + ", False, " + IntToString(robot_id) + ", [";
+		int check = 0;
+		for (int i = 1; i < seq_of_argument1.size(); i++) {
+			if ( check >= 1) {
+				generated_container += ", ";
+			}
+			generated_container += IntToString(ConvertArgType(seq_of_argument1.at(i)));
+			check++;
+		}
+		generated_container += "])))\n"
+				"        smach.Concurrence.add('" + IntToString(sn2) + state_name2 + "',\n"
+				"                           ServiceState('rp_cmd',\n"
+				"                                        rp_cmd,\n"
+				"                                        request = rp_cmdRequest(" + state_id2 + ", False, " + IntToString(robot_id) + ", [";
+		check = 0;
+			for (int j = 1; j < seq_of_argument2.size(); j++) {
+				if ( check >= 1) {
+					generated_container += ", ";
+				}
+				generated_container += IntToString(ConvertArgType(seq_of_argument2.at(j)));
+				check++;
+			}
+			generated_container += "])))\n"
+				"    return " + f_name + "\n\n";
+	}
+	return arg_type;
 }
 
 int tms_ts_nodelet::ROS_TMS_TS::AddStateCC(int cc_count) {
@@ -148,10 +240,8 @@ int tms_ts_nodelet::ROS_TMS_TS::AddStateCC(int cc_count) {
 }
 
 int tms_ts_nodelet::ROS_TMS_TS::BuildStateVector(std::string state1, std::string state2) {
-	bool flag[4] = {0, 0, 0, 0};
 	tms_msg_db::TmsdbGetData srv;
 	StateData sd;
-
 	std::vector<std::string> seq_of_argument1, seq_of_argument2;
 	seq_of_argument1.clear();
 	seq_of_argument2.clear();
@@ -159,14 +249,9 @@ int tms_ts_nodelet::ROS_TMS_TS::BuildStateVector(std::string state1, std::string
 	boost::split(seq_of_argument1, state1, boost::is_any_of("$"));
 	boost::split(seq_of_argument2, state2, boost::is_any_of("$"));
 
-	if (!seq_of_argument1.empty() && !seq_of_argument2.empty()) {
-		if (seq_of_argument1.size() == 1 && seq_of_argument2.size() == 1) flag[0] = 1;
-		else if(seq_of_argument1.size() != 1 && seq_of_argument2.size() == 1) flag[1] = 1;
-		else if(seq_of_argument1.size() == 1 && seq_of_argument2.size() != 1) flag[2] = 1;
-		else if(seq_of_argument1.size() != 1 && seq_of_argument2.size() != 1) flag[3] = 1;}
-
-	if (flag[0] == 1) {
-	} else if (flag[1] == 1) {
+	int arg_type = JudgeArgType(state1, state2);
+	if (arg_type == 0) {
+	} else if (arg_type == 1) {
 		sd.state_id = StringToInt(seq_of_argument1.at(0));
 
 		srv.request.tmsdb.id = sd.state_id + sid;
@@ -179,7 +264,7 @@ int tms_ts_nodelet::ROS_TMS_TS::BuildStateVector(std::string state1, std::string
 
 		std::vector<StateData>::iterator it = state_data.begin();
 		it = state_data.insert(it, sd);
-	} else if (flag[2] == 1) {
+	} else if (arg_type == 2) {
 		// state2
 		sd.state_id = StringToInt(seq_of_argument2.at(0));
 
@@ -192,7 +277,7 @@ int tms_ts_nodelet::ROS_TMS_TS::BuildStateVector(std::string state1, std::string
 			sd.arg.push_back(ConvertArgType(seq_of_argument2.at(i)));
 
 		state_data.push_back(sd);
-	} else if (flag[3] == 1) {
+	} else if (arg_type == 3) {
 		// state1
 		sd.state_id = StringToInt(seq_of_argument1.at(0));
 
@@ -361,6 +446,7 @@ bool tms_ts_nodelet::ROS_TMS_TS::tsCallback(tms_msg_ts::ts_req::Request &req, tm
 
 		int cc_count = 0;
 		int index = 0;
+		int type;
 		for (int cnt = 0; cnt < seq_of_subtask.size(); cnt++) {
 			// distinguish operator
 			if (seq_of_subtask.at(cnt) == "+") { // sequential subtask
@@ -375,7 +461,7 @@ bool tms_ts_nodelet::ROS_TMS_TS::tsCallback(tms_msg_ts::ts_req::Request &req, tm
 				// create concurrence container
 				std::string state1 = ArrayPop(stack, &sp);
 				std::string state2 = ArrayPop(stack, &sp);
-				GenerateCC(state2, state1, cc_count);
+				type = GenerateCC(state2, state1, cc_count);
 				// add state to main function
 				index = AddStateCC(cc_count);
 				ArrayPush(stack, IntToString(index), &sp, N);
@@ -391,7 +477,7 @@ bool tms_ts_nodelet::ROS_TMS_TS::tsCallback(tms_msg_ts::ts_req::Request &req, tm
 	}
 
 	ROS_TMS_TS::GenerateScript();
-	ROS_TMS_TS::ExeScript();
+//	ROS_TMS_TS::ExeScript();
 
 	res.result = 1; // success
 	return true;
