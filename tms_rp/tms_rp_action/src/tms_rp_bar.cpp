@@ -1950,8 +1950,8 @@ void TmsRpBar::moveSmartpal()
 
   if (request_robot_path_.call(path_planning_srv))
   {
-//    uint32_t result = path_planning_srv.response.success;
-//    ROS_INFO("[TmsAction] result = %d",result);
+    uint32_t result = path_planning_srv.response.success;
+    ROS_INFO("[TmsAction] path_planning_srv result = %d",result);
     return;
   }
   else
