@@ -111,10 +111,12 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   ros::ServiceClient request_robot_path_;
   ros::Subscriber    subscribe_pcd_;
   ros::Subscriber    subscribe_static_map_;
+  ros::Subscriber    subscribe_dynamic_map_;
   ros::Subscriber    subscribe_path_map_;
 
   pcl::PointCloud<pcl::PointXYZ> point_cloud_data_;
   tms_msg_rp::rps_map_full       static_map_data_;
+  tms_msg_rp::rps_map_full       dynamic_map_data_;
   tms_msg_rp::rps_route          path_map_data_;
 
   boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)>& sigBodyItemSelectionChanged() {return sigBodyItemSelectionChanged_;}
@@ -165,6 +167,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void makeCollisionMapButtonClicked();
 
   void staticMapButtonClicked();
+  void dynamicMapButtonClicked();
   void pathMapButtonClicked();
   void robotMapButtonClicked();
   void pathPlanButtonClicked();
@@ -174,6 +177,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
 
   void receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& msg);
   void receiveStaticMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg);
+  void receiveDynamicMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg);
   void receivePathMapData(const tms_msg_rp::rps_route::ConstPtr& msg);
 
   void moveToGoal();

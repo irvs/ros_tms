@@ -2,7 +2,7 @@
 #define TMS_RP_PP_H
 
 #include <tms_rp_bar.h>
-#include <tms_rp_static_map.h>
+#include <tms_rp_voronoi_map.h>
 
 #include <tms_msg_rp/rps_map_full.h>
 #include <tms_msg_rp/rps_voronoi_path_planning.h>

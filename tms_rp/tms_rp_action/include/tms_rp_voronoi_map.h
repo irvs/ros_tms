@@ -1,5 +1,5 @@
-#ifndef TMS_RP_STATIC_MAP_H
-#define TMS_RP_STATIC_MAP_H
+#ifndef TMS_RP_VORONOI_MAP_H
+#define TMS_RP_VORONOI_MAP_H
 
 #include <tms_rp_bar.h>
 #include <tms_msg_rp/rps_map_full.h>
@@ -23,23 +23,27 @@ public:
   double  table_height_;
 };
 
-class TmsRpStaticMap : public cnoid::ToolBar, public boost::signals::trackable
+class TmsRpVoronoiMap : public cnoid::ToolBar, public boost::signals::trackable
 {
  public:
-  TmsRpStaticMap();
-  static TmsRpStaticMap* instance();
-  virtual ~TmsRpStaticMap();
-  void mapPublish();
+  TmsRpVoronoiMap();
+  static TmsRpVoronoiMap* instance();
+  virtual ~TmsRpVoronoiMap();
+
   bool setVoronoiLine(vector<vector<CollisionMapData> >& map, string& message);
+  void staticMapPublish();
+  void dynamicMapPublish();
 
  private:
   std::ostream& os_;
   grasp::TmsRpController& tac_;
   uint32_t sid_;
 
-  ros::Publisher pp_map_pub_;
+  ros::Publisher static_map_pub_;
+  ros::Publisher dynamic_map_pub_;
   vector<vector<CollisionMapData> > collision_map_;
-  tms_msg_rp::rps_map_full pub_map_;
+  tms_msg_rp::rps_map_full static_map_;
+  tms_msg_rp::rps_map_full dynamic_map_;
   string result_msg_;
 
   double x_llimit_, x_ulimit_, y_llimit_, y_ulimit_, cell_size_; //M
@@ -50,4 +54,4 @@ class TmsRpStaticMap : public cnoid::ToolBar, public boost::signals::trackable
 };
 }
 
-#endif // TMS_RP_STATIC_MAP_H
+#endif // TMS_RP_VORONOI_MAP_H

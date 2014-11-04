@@ -76,7 +76,7 @@ add_library(
   src/tms_rp_controller.cpp
   src/tms_rp_rp.cpp
   src/tms_rp_pp.cpp
-  src/tms_rp_static_map.cpp
+  src/tms_rp_voronoi_map.cpp
   src/tms_rp_collision_map.cpp
 )
 
