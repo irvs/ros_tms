@@ -19,13 +19,13 @@ class TmsRpPathPlanning : public cnoid::ToolBar, public boost::signals::trackabl
   static TmsRpPathPlanning* instance();
   virtual ~TmsRpPathPlanning();
 
-  vector<vector<CollisionMapData> > static_map_;
+  vector<vector<CollisionMapData> > dynamic_map_;
 
  private:
   std::ostream& os_;
   grasp::TmsRpController& trc_;
 
-  ros::Subscriber static_map_sub_;
+  ros::Subscriber dynamic_map_sub_;
   ros::ServiceServer service_voronoi_path_;
   ros::Publisher robot_path_pub_;
 
@@ -39,7 +39,7 @@ class TmsRpPathPlanning : public cnoid::ToolBar, public boost::signals::trackabl
   const double kSmoothVoronoiPathThreshold_;  //mm
   const double kPushWagonPathThreshold_;      //mm
 
-  void getStaticMap(const tms_msg_rp::rps_map_full::ConstPtr& original_map);
+  void getDynamicMap(const tms_msg_rp::rps_map_full::ConstPtr& original_map);
   bool voronoiPathPlanner(tms_msg_rp::rps_voronoi_path_planning::Request& req, tms_msg_rp::rps_voronoi_path_planning::Response& res);
 
   double getRobotCollisionThreshold(int robot_id);

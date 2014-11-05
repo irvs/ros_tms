@@ -1165,9 +1165,8 @@ void TmsRpBar::updateObjectInfo()
     getObjectData.request.tmsdb.id =7001 + i;
     getObjectData.request.tmsdb.sensor = 3018; //refrigerator, irs
 
-    if (get_data_client_.call(getObjectData)) {
-      os_ << "[TmsAction] Get info of object_ ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
-    } else {
+    if (!get_data_client_.call(getObjectData))
+    {
       os_ << "[TmsAction] Failed to call service getObjectData ID: " << getObjectData.request.tmsdb.id << endl;
       return;
     }
@@ -1190,9 +1189,8 @@ void TmsRpBar::updateObjectInfo()
     getObjectData.request.tmsdb.id =7001 + i;
     getObjectData.request.tmsdb.sensor = 3002; // ics
 
-    if (get_data_client_.call(getObjectData)) {
-      os_ << "[TmsAction] Get info of object_ ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
-    } else {
+    if (!get_data_client_.call(getObjectData))
+    {
       os_ << "[TmsAction] Failed to call service getObjectData ID: " << getObjectData.request.tmsdb.id << endl;
       return;
     }
@@ -1216,9 +1214,8 @@ void TmsRpBar::updateObjectInfo()
         getObjectData.request.tmsdb.id =7001 + i;
         getObjectData.request.tmsdb.sensor = 3005; // fake
 
-        if (get_data_client_.call(getObjectData)) {
-            os_ << "[TmsAction] Get info of object_ ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
-        } else {
+        if (!get_data_client_.call(getObjectData))
+        {
             os_ << "[TmsAction] Failed to call service getObjectData ID: " << getObjectData.request.tmsdb.id << endl;
             return;
         }
@@ -1478,9 +1475,8 @@ void TmsRpBar::simulationInfoButtonClicked()
   for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++) {
     getObjectData.request.tmsdb.id =7001 + i;
 
-      if (get_data_client_.call(getObjectData)) {
-        os_ << "[TmsAction] Get info of object_ ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
-      } else {
+      if (!get_data_client_.call(getObjectData))
+      {
         os_ << "[TmsAction] Failed to call service getObjectData ID: " << getObjectData.request.tmsdb.id << endl;
         return;
       }
@@ -1538,9 +1534,8 @@ void TmsRpBar::simulationInfoButtonClicked()
     getPersonData.request.tmsdb.id     = 1001;
     getPersonData.request.tmsdb.sensor = 3001;
 
-    if (get_data_client_.call(getPersonData)) {
-      os_ << "[TmsAction] Get info of object_ ID: " << getPersonData.request.tmsdb.id <<"  OK" << endl;
-    } else {
+    if (!get_data_client_.call(getPersonData))
+    {
       os_ << "[TmsAction] Failed to call service getPersonData ID: " << getPersonData.request.tmsdb.id << endl;
       return;
     }
@@ -1849,7 +1844,7 @@ void TmsRpBar::simulation()
     ros::spinOnce();
     loop_rate.sleep();
   }
-  printf("end of simulation");
+  ROS_INFO("End of simulation");
 }
 
 //------------------------------------------------------------------------------
@@ -1876,7 +1871,7 @@ void TmsRpBar::connectROS()
     ros::spinOnce();
     loop_rate.sleep();
   }
-  printf("Disconnect to the ROS\n");
+  ROS_INFO("Disconnect to the ROS\n");
 }
 
 //------------------------------------------------------------------------------

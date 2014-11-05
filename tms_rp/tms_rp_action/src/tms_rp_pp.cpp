@@ -24,10 +24,11 @@ TmsRpPathPlanning::TmsRpPathPlanning(): kSmartPal5CollisionThreshold_(400.0),
                                         kPushWagonPathThreshold_(200.0),
                                         ToolBar("TmsRpPathPlanning"),
                                         os_(MessageView::mainInstance()->cout()),
-                                        trc_(*TmsRpController::instance()) {
+                                        trc_(*TmsRpController::instance())
+{
   static ros::NodeHandle nh;
 
-  static_map_sub_ = nh.subscribe("/rps_map_data", 10, &TmsRpPathPlanning::getStaticMap, this);
+  dynamic_map_sub_ = nh.subscribe("/rps_dynamic_map", 10, &TmsRpPathPlanning::getDynamicMap, this);
   service_voronoi_path_ = nh.advertiseService("/rps_voronoi_path_planning", &TmsRpPathPlanning::voronoiPathPlanner, this);
   robot_path_pub_ = nh.advertise<tms_msg_rp::rps_route>("/rps_robot_path", 1);
 }
@@ -38,8 +39,9 @@ TmsRpPathPlanning::~TmsRpPathPlanning()
 }
 
 //------------------------------------------------------------------------------
-void TmsRpPathPlanning::getStaticMap(const tms_msg_rp::rps_map_full::ConstPtr& original_map){
-  static_map_.clear();
+void TmsRpPathPlanning::getDynamicMap(const tms_msg_rp::rps_map_full::ConstPtr& original_map)
+{
+  dynamic_map_.clear();
 
   x_llimit_  = original_map->x_llimit;
   x_ulimit_  = original_map->x_ulimit;
@@ -56,11 +58,11 @@ void TmsRpPathPlanning::getStaticMap(const tms_msg_rp::rps_map_full::ConstPtr& o
       temp_map_d.object_         = original_map->rps_map_x[x].rps_map_y[y].object;
       temp_map_d.collision_      = original_map->rps_map_x[x].rps_map_y[y].object;
       temp_map_d.voronoi_        = original_map->rps_map_x[x].rps_map_y[y].voronoi;
-      temp_map_d.dist_from_obj_	= original_map->rps_map_x[x].rps_map_y[y].dist_from_obj_f;
+      temp_map_d.dist_from_obj_	 = original_map->rps_map_x[x].rps_map_y[y].dist_from_obj_f;
 
       temp_map_line.push_back(temp_map_d);
     }
-    static_map_.push_back(temp_map_line);
+    dynamic_map_.push_back(temp_map_line);
   }
 }
 
@@ -93,50 +95,50 @@ bool TmsRpPathPlanning::voronoiPathPlanner(tms_msg_rp::rps_voronoi_path_planning
 
   ROS_INFO("Calculate voronoi_ path...");
 
-  res.success = setCollisionArea(static_map_, collision_threshold, res.message);
+  res.success = setCollisionArea(dynamic_map_, collision_threshold, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = setVoronoiLine(static_map_, res.message);
+  res.success = setVoronoiLine(dynamic_map_, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = calcDistFromVoronoi(static_map_, res.message);
+  res.success = calcDistFromVoronoi(dynamic_map_, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = connectToVoronoi(static_map_, start, res.message);
+  res.success = connectToVoronoi(dynamic_map_, start, res.message);
   if(!res.success){
     ROS_ERROR("Error : Start Point");
     ROS_ERROR((res.message).c_str());
     return false;
   }
-  res.success = calcDistFromVoronoi(static_map_, res.message);
+  res.success = calcDistFromVoronoi(dynamic_map_, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = connectToVoronoi(static_map_, goal, res.message);
+  res.success = connectToVoronoi(dynamic_map_, goal, res.message);
   if(!res.success){
     ROS_ERROR("Error : Goal Point");
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = calcDistFromVoronoi(static_map_, res.message);
+  res.success = calcDistFromVoronoi(dynamic_map_, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = calcDistFromGoal(static_map_, goal, res.message);
+  res.success = calcDistFromGoal(dynamic_map_, goal, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
@@ -144,13 +146,13 @@ bool TmsRpPathPlanning::voronoiPathPlanner(tms_msg_rp::rps_voronoi_path_planning
 
   vector<vector<double> > voronoi_path, smooth_path, comp_path;
 
-  res.success = calcVoronoiPath(static_map_, start, goal, voronoi_path, res.message);
+  res.success = calcVoronoiPath(dynamic_map_, start, goal, voronoi_path, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  smoothVoronoiPath(static_map_, start, goal, voronoi_path, smooth_path, kSmoothVoronoiPathThreshold_/1000.0);
+  smoothVoronoiPath(dynamic_map_, start, goal, voronoi_path, smooth_path, kSmoothVoronoiPathThreshold_/1000.0);
   //~ compVoronoiPath(smooth_path, comp_path);
 
   //~ t_end = clock();
@@ -191,7 +193,8 @@ bool TmsRpPathPlanning::voronoiPathPlanner(tms_msg_rp::rps_voronoi_path_planning
 }
 
 //------------------------------------------------------------------------------
-double TmsRpPathPlanning::getRobotCollisionThreshold(int robot_id){
+double TmsRpPathPlanning::getRobotCollisionThreshold(int robot_id)
+{
   double collision_threshold = 0.0;
 
   switch(robot_id){
@@ -222,7 +225,8 @@ double TmsRpPathPlanning::getRobotCollisionThreshold(int robot_id){
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpPathPlanning::setCollisionArea(vector<vector<CollisionMapData> >& map, double threshold, string& message){
+bool TmsRpPathPlanning::setCollisionArea(vector<vector<CollisionMapData> >& map, double threshold, string& message)
+{
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -242,7 +246,8 @@ bool TmsRpPathPlanning::setCollisionArea(vector<vector<CollisionMapData> >& map,
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpPathPlanning::setVoronoiLine(vector<vector<CollisionMapData> >& map, string& message){
+bool TmsRpPathPlanning::setVoronoiLine(vector<vector<CollisionMapData> >& map, string& message)
+{
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -340,7 +345,8 @@ bool TmsRpPathPlanning::setVoronoiLine(vector<vector<CollisionMapData> >& map, s
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpPathPlanning::calcDistFromVoronoi(vector<vector<CollisionMapData> >& map, string& message){
+bool TmsRpPathPlanning::calcDistFromVoronoi(vector<vector<CollisionMapData> >& map, string& message)
+{
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -380,7 +386,8 @@ bool TmsRpPathPlanning::calcDistFromVoronoi(vector<vector<CollisionMapData> >& m
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpPathPlanning::connectToVoronoi(vector<vector<CollisionMapData> >& map, vector<double> connect_point, string& message){
+bool TmsRpPathPlanning::connectToVoronoi(vector<vector<CollisionMapData> >& map, vector<double> connect_point, string& message)
+{
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -491,7 +498,8 @@ bool TmsRpPathPlanning::connectToVoronoi(vector<vector<CollisionMapData> >& map,
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpPathPlanning::calcDistFromGoal(vector<vector<CollisionMapData> >& map, vector<double> goal_point, string& message){
+bool TmsRpPathPlanning::calcDistFromGoal(vector<vector<CollisionMapData> >& map, vector<double> goal_point, string& message)
+{
   if(map.empty()){
     message = "Error : Map is empty";
     cout<<message<<endl;
@@ -557,7 +565,8 @@ bool TmsRpPathPlanning::calcDistFromGoal(vector<vector<CollisionMapData> >& map,
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpPathPlanning::calcVoronoiPath(vector<vector<CollisionMapData> >& map, vector<double> start, vector<double> goal, vector<vector<double> >& out_path, string& message){
+bool TmsRpPathPlanning::calcVoronoiPath(vector<vector<CollisionMapData> >& map, vector<double> start, vector<double> goal, vector<vector<double> >& out_path, string& message)
+{
   out_path.clear();
 
   if(map.empty()){
@@ -684,7 +693,8 @@ bool TmsRpPathPlanning::calcVoronoiPath(vector<vector<CollisionMapData> >& map, 
 }
 
 //------------------------------------------------------------------------------
-bool TmsRpPathPlanning::smoothVoronoiPath(vector<vector<CollisionMapData> >& map, vector<double> start, vector<double> goal, vector<vector<double> > in_path, vector<vector<double> >& out_path, double threshold){
+bool TmsRpPathPlanning::smoothVoronoiPath(vector<vector<CollisionMapData> >& map, vector<double> start, vector<double> goal, vector<vector<double> > in_path, vector<vector<double> >& out_path, double threshold)
+{
   out_path.clear();
   vector<double> temp_pos;
   temp_pos.resize(3);
