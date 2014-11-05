@@ -60,15 +60,19 @@ bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string& r
 		srv.request.tmsdb.sensor = 3005; // fake odometry
 	}
 
+	int ref_i=0;
 	if(get_data_client_.call(srv)) {
-		robot_name = srv.response.tmsdb[0].name;
-		rp_srv.request.start_pos.x = srv.response.tmsdb[0].x;
-		rp_srv.request.start_pos.y = srv.response.tmsdb[0].y;
+		for (int j=0; j<srv.response.tmsdb.size()-1; j++) {
+			if (srv.response.tmsdb[j].time < srv.response.tmsdb[j+1].time) ref_i = j+1;
+		}
+		robot_name = srv.response.tmsdb[ref_i].name;
+		rp_srv.request.start_pos.x = srv.response.tmsdb[ref_i].x;
+		rp_srv.request.start_pos.y = srv.response.tmsdb[ref_i].y;
 		rp_srv.request.start_pos.z = 0.0;
-		rp_srv.request.start_pos.th = srv.response.tmsdb[0].ry; // =yaw
-		rp_srv.request.start_pos.roll = 0.0; // srv.response.tmsdb[0].rr
-		rp_srv.request.start_pos.pitch = 0.0; // srv.response.tmsdb[0].rp
-		rp_srv.request.start_pos.yaw = srv.response.tmsdb[0].ry; // srv.response.tmsdb[0].ry
+		rp_srv.request.start_pos.th = srv.response.tmsdb[ref_i].ry; // =yaw
+		rp_srv.request.start_pos.roll = 0.0; // srv.response.tmsdb[ref_i].rr
+		rp_srv.request.start_pos.pitch = 0.0; // srv.response.tmsdb[ref_i].rp
+		rp_srv.request.start_pos.yaw = srv.response.tmsdb[ref_i].ry; // srv.response.tmsdb[ref_i].ry
 		// set odom for production version
 		if (type == true && robot_id == 2002) {
 			double arg[1] = {0.0};
@@ -80,14 +84,18 @@ bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string& r
 		if (type == true) {
 			srv.request.tmsdb.sensor = 3003; // odometory
 			if (get_data_client_.call(srv)) {
-				robot_name = srv.response.tmsdb[0].name;
-				rp_srv.request.start_pos.x = srv.response.tmsdb[0].x;
-				rp_srv.request.start_pos.y = srv.response.tmsdb[0].y;
+				ref_i=0;
+				for (int j=0; j<srv.response.tmsdb.size()-1; j++) {
+					if (srv.response.tmsdb[j].time < srv.response.tmsdb[j+1].time) ref_i = j+1;
+				}
+				robot_name = srv.response.tmsdb[ref_i].name;
+				rp_srv.request.start_pos.x = srv.response.tmsdb[ref_i].x;
+				rp_srv.request.start_pos.y = srv.response.tmsdb[ref_i].y;
 				rp_srv.request.start_pos.z = 0.0;
-				rp_srv.request.start_pos.th = srv.response.tmsdb[0].ry;
-				rp_srv.request.start_pos.roll = 0.0; // srv.response.tmsdb[0].rr
-				rp_srv.request.start_pos.pitch = 0.0; // srv.response.tmsdb[0].rp
-				rp_srv.request.start_pos.yaw = 0.0; // srv.response.tmsdb[0].ry
+				rp_srv.request.start_pos.th = srv.response.tmsdb[ref_i].ry;
+				rp_srv.request.start_pos.roll = 0.0; // srv.response.tmsdb[ref_i].rr
+				rp_srv.request.start_pos.pitch = 0.0; // srv.response.tmsdb[ref_i].rp
+				rp_srv.request.start_pos.yaw = srv.response.tmsdb[ref_i].ry; // srv.response.tmsdb[ref_i].ry
 			} else {
 				ROS_INFO("Failed to get robot current data\n");
 				return false;
@@ -762,75 +770,94 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 		ROS_INFO("Cannot get goal candidate!\n");
 		return false;
 	}
-	// =====call service "voronoi_path_planning"=====
-	if (voronoi_path_planning_client_.call(rp_srv)) {
-		os_ << "result: " << rp_srv.response.success << " message: " << rp_srv.response.message << endl;
 
-		  // call virtual_controller
-		  if (rp_srv.response.VoronoiPath.size()!=0) {
-		    	switch (robot_id) {
-		    	case 2002: // smartpal5_1
-		    	{
-		    		double arg[3];
-		    		for (int i=0; i< rp_srv.response.VoronoiPath.size(); i++) {
-			    		arg[0] = rp_srv.response.VoronoiPath[i].x;
-			    		arg[1] = rp_srv.response.VoronoiPath[i].y;
-			    		arg[2] = rp_srv.response.VoronoiPath[i].th;
-			    		callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
+	ROS_INFO("start[%f,%f,%f], goal[%f,%f,%f]\n", rp_srv.request.start_pos.x, rp_srv.request.start_pos.y,
+			rp_srv.request.start_pos.th, rp_srv.request.goal_pos.x, rp_srv.request.goal_pos.y, rp_srv.request.goal_pos.th);
+	// =====call service "voronoi_path_planning"=====
+	int i = 1;
+	if (voronoi_path_planning_client_.call(rp_srv)) {
+		if (rp_srv.response.VoronoiPath.size() > 1) {
+			while(1) {
+				os_ << "result: " << rp_srv.response.success << " message: " << rp_srv.response.message << endl;
+
+				// call virtual_controller
+				switch (robot_id) {
+				case 2002: // smartpal5_1
+					{
+						double arg[3];
+						arg[0] = rp_srv.response.VoronoiPath[i].x;
+						arg[1] = rp_srv.response.VoronoiPath[i].y;
+						arg[2] = rp_srv.response.VoronoiPath[i].th;
+						callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
 			    		if (type == true) sp5_control(type, UNIT_ALL, CMD_GETSTATE, 1, arg); // set_odom
 			    		else {
-						callSynchronously(bind(&grasp::TmsRpBar::simulationInfoButtonClicked,grasp::TmsRpBar::instance()));
+			    			callSynchronously(bind(&grasp::TmsRpBar::simulationInfoButtonClicked,grasp::TmsRpBar::instance()));
 			    			sleep(1); //temp
-			    		}
-		    		}
-		    		break;
-		    	}
-		    	case 2005: //kobuki
-		    	{
-		    		for (int i=0; i< rp_srv.response.VoronoiPath.size(); i++) {
-		    			tms_msg_rc::rc_robot_control kobuki_srv;
-		    			kobuki_srv.request.unit = 1;
-		    			kobuki_srv.request.cmd = 15;
-		    			kobuki_srv.request.arg.resize(3);
-		    			kobuki_srv.request.arg[0] = rp_srv.response.VoronoiPath[i].x;
-		    			kobuki_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
-		    			kobuki_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
+			    			}
+			    		break;
+			    	}
+			    	case 2005: //kobuki
+			    	{
+			    		tms_msg_rc::rc_robot_control kobuki_srv;
+			    		kobuki_srv.request.unit = 1;
+			    		kobuki_srv.request.cmd = 15;
+			    		kobuki_srv.request.arg.resize(3);
+			    		kobuki_srv.request.arg[0] = rp_srv.response.VoronoiPath[i].x;
+			    		kobuki_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
+			    		kobuki_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
 			    		if (kobuki_virtual_control_client.call(kobuki_srv)) ROS_INFO("result: %d", kobuki_srv.response.result);
 			    		else                  ROS_ERROR("Failed to call service kobuki_move");
 
 			    		if (type == true) {} // set odom
 			    		else {
-						callSynchronously(bind(&grasp::TmsRpBar::simulationInfoButtonClicked,grasp::TmsRpBar::instance()));
+			    			callSynchronously(bind(&grasp::TmsRpBar::simulationInfoButtonClicked,grasp::TmsRpBar::instance()));
 			    			sleep(1); //temp
-			    		}
-		    		}
-		    		break;
-		    	}
-		    	case 2006: // kxp
-		    	{
-		    		for (int i=0; i< rp_srv.response.VoronoiPath.size(); i++) {
-		    			tms_msg_rc::tms_rc_pmove kxp_srv;
-		    			kxp_srv.request.w_x = rp_srv.response.VoronoiPath[i].x;
-		    			kxp_srv.request.w_y = rp_srv.response.VoronoiPath[i].y;
-		    			kxp_srv.request.w_th = rp_srv.response.VoronoiPath[i].th;
+			    			}
+			    		break;
+			    	}
+			    	case 2006: // kxp
+			    	{
+			    		tms_msg_rc::tms_rc_pmove kxp_srv;
+			    		kxp_srv.request.w_x = rp_srv.response.VoronoiPath[i].x;
+			    		kxp_srv.request.w_y = rp_srv.response.VoronoiPath[i].y;
+			    		kxp_srv.request.w_th = rp_srv.response.VoronoiPath[i].th;
 			    		if (kxp_mbase_client.call(kxp_srv)) ROS_INFO("result: %d", kxp_srv.response.success);
 			    		else                  ROS_ERROR("Failed to call service kxp_mbase");
 
 			    		if (type == true) {} // set odom
 			    		else {
-						callSynchronously(bind(&grasp::TmsRpBar::simulationInfoButtonClicked,grasp::TmsRpBar::instance()));
+			    			callSynchronously(bind(&grasp::TmsRpBar::simulationInfoButtonClicked,grasp::TmsRpBar::instance()));
 			    			sleep(1); //temp
-			    		}
-		    		}
-		    		break;
-		    	}
-		    	default:
-		    	{
-		    		ROS_ERROR("No such robot in TMS_DB!\n");
-		    		return false;
-		    	}
-		    	}
-		  } else {
+			    			}
+			    		break;
+			    	}
+			    	default:
+			    	{
+			    		ROS_ERROR("No such robot in TMS_DB!\n");
+			    		return false;
+			    	}
+				}
+				i++;
+				if (i==2 && rp_srv.response.VoronoiPath.size()==2) i++;
+				// Update Robot Path Planning
+				if (i == 3) {
+					get_robot_pos(type, robot_id, robot_name, rp_srv);
+
+					// end determination
+					if (rp_srv.request.start_pos.x == rp_srv.request.goal_pos.x &&
+							rp_srv.request.start_pos.y == rp_srv.request.goal_pos.y &&
+							rp_srv.request.start_pos.th == rp_srv.request.goal_pos.th) break;
+
+					rp_srv.response.VoronoiPath.clear();
+					voronoi_path_planning_client_.call(rp_srv);
+					if (rp_srv.response.VoronoiPath.size() <= 1) {
+						os_ << "Noting rps_path_planning data" << endl;
+						return false;
+					}
+					i = 1;
+				}
+			}
+		} else {
 			os_ << "Noting rps_path_planning data" << endl;
 			return false;
 		}
