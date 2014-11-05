@@ -1,6 +1,8 @@
 #include <tms_ts/tms_ts_nodelet.hpp>
 #define N 20
 
+int tms_ts_nodelet::ROS_TMS_TS::count_callback = 0;
+
 void tms_ts_nodelet::ROS_TMS_TS::onInit() {
 	// initialize member variable
 	state_data.clear();
@@ -312,6 +314,28 @@ int tms_ts_nodelet::ROS_TMS_TS::AddStateSQ(std::string state1, std::string state
 	return vector_size;
 }
 
+int tms_ts_nodelet::ROS_TMS_TS::AddOneStateSQ(std::string state1) {
+	tms_msg_db::TmsdbGetData srv;
+	StateData sd;
+	std::vector<std::string> seq_of_argument1;
+	seq_of_argument1.clear();
+
+	boost::split(seq_of_argument1, state1, boost::is_any_of("$"));
+
+	// state1
+	sd.state_id = StringToInt(seq_of_argument1.at(0));
+
+	srv.request.tmsdb.id = sd.state_id + sid;
+	if(db_reader_client.call(srv))
+		sd.state_name = srv.response.tmsdb[0].name;
+
+	sd.arg.clear();
+	for (int i=1; i<seq_of_argument1.size(); i++)
+		sd.arg.push_back(ConvertArgType(seq_of_argument1.at(i)));
+
+	state_data.push_back(sd);
+}
+
 void tms_ts_nodelet::ROS_TMS_TS::GenerateScript() {
 	for (int j=0; j<state_data.size(); j++) {
 		if (state_data.at(j).arg.at(0) == -1) { // CC
@@ -386,7 +410,8 @@ void tms_ts_nodelet::ROS_TMS_TS::GenerateScript() {
 	    	exit(1);
 	    }
 
-	    ofs << import << generated_container << main_function << generated_main << introspection_server;
+	    ofs << import << generated_container << main_function1 << count_callback
+	    		<< main_function2 << generated_main << introspection_server;
 	    ofs.close();
 	}
     ROS_INFO("Finish generating python script to tms_ts_smach/scripts/%s\n", ROS_TMS_TS::file_name.c_str());
@@ -454,9 +479,13 @@ bool tms_ts_nodelet::ROS_TMS_TS::tsCallback(tms_msg_ts::ts_req::Request &req, tm
 				// add state to main function
 				std::string state1 = ArrayPop(stack, &sp);
 				std::string state2 = ArrayPop(stack, &sp);
-				ROS_INFO("state1:%s, state2:%s", state1.c_str(), state2.c_str());
-				index = AddStateSQ(state2, state1);
-				ArrayPush(stack, IntToString(index), &sp, N);
+				if (state2 == "False") { // There is one state
+					index = AddOneStateSQ(state1);
+				} else {
+					ROS_INFO("state1:%s, state2:%s", state1.c_str(), state2.c_str());
+					index = AddStateSQ(state2, state1);
+					ArrayPush(stack, IntToString(index), &sp, N);
+				}
 			} else if (seq_of_subtask.at(cnt) == "|") { // concurrent subtask
 				// create concurrence container
 				std::string state1 = ArrayPop(stack, &sp);
@@ -477,8 +506,9 @@ bool tms_ts_nodelet::ROS_TMS_TS::tsCallback(tms_msg_ts::ts_req::Request &req, tm
 	}
 
 	ROS_TMS_TS::GenerateScript();
-//	ROS_TMS_TS::ExeScript();
+	ROS_TMS_TS::ExeScript();
 
+	count_callback++;
 	res.result = 1; // success
 	return true;
 }
