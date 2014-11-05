@@ -143,7 +143,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
  private:
   MessageView& mes_;
   std::ostream& os_;
-  TmsRpController& tac_;
+  TmsRpController& trc_;
   Matrix3d mat0_, mat_ccw90_, mat_ccw180_, mat_cw90_;
 
   ToolButton* static_map_toggle_;
@@ -166,10 +166,10 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void setCollisionTargetButtonClicked();
   void makeCollisionMapButtonClicked();
 
-  void staticMapButtonClicked();
-  void dynamicMapButtonClicked();
-  void pathMapButtonClicked();
-  void robotMapButtonClicked();
+  void viewStaticMap();
+  void viewDynamicMap();
+  void viewPathOfRobot();
+  void viewMarkerOfRobot();
   void pathPlanButtonClicked();
   void ardroneButtonClicked();
   void smartpalButtonClicked();

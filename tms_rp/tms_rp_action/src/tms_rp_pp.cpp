@@ -24,7 +24,7 @@ TmsRpPathPlanning::TmsRpPathPlanning(): kSmartPal5CollisionThreshold_(400.0),
                                         kPushWagonPathThreshold_(200.0),
                                         ToolBar("TmsRpPathPlanning"),
                                         os_(MessageView::mainInstance()->cout()),
-                                        tac_(*TmsRpController::instance()) {
+                                        trc_(*TmsRpController::instance()) {
   static ros::NodeHandle nh;
 
   static_map_sub_ = nh.subscribe("/rps_map_data", 10, &TmsRpPathPlanning::getStaticMap, this);
