@@ -1,0 +1,20 @@
+#pragma once
+
+// CTarget コマンド ターゲット
+
+class CTarget
+{
+public:
+	CTarget();
+	virtual ~CTarget();
+
+public:
+	int id;
+	double px;
+	double py;
+
+public:
+	void SetPosi(double x, double y);
+};
+
+
