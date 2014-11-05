@@ -138,7 +138,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   cnoid::ItemList<cnoid::BodyItem> selectedBodyItems_;
   cnoid::ItemList<cnoid::BodyItem> target_body_items_;
 
-  void simulationInfoButtonClicked();
+  void updateEnvironmentInfomation(bool is_simulation);
 
  private:
   MessageView& mes_;
@@ -155,8 +155,6 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)> sigBodyItemSelectionChanged_;
 
   void itemSelectionChanged(const cnoid::ItemList<cnoid::BodyItem>& bodyItems);
-
-  void updateObjectInfo();
 
   void simulation();
   void connectROS();
