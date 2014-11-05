@@ -49,8 +49,9 @@ public:
 		  "from smach_ros import ServiceState\n"
 		  "from smach import Concurrence\n\n"
 		  "from tms_msg_rp.srv import *\n\n"),
-  main_function("def main():\n"
-		  "    rospy.init_node('tms_ts_smach_executive')\n\n"
+  main_function1("def main():\n"
+		  "    rospy.init_node('tms_ts_smach_executive"),
+  main_function2("')\n\n"
 		  "    sm_root = smach.StateMachine(['succeeded','aborted','preempted'])\n\n"
 		  "    with sm_root:\n\n"),
   introspection_server("    sis = smach_ros.IntrospectionServer('tms_ts_smach_test',"
@@ -78,6 +79,7 @@ private:
   int JudgeArgType(std::string state1, std::string state2);
   void GenerateContainer(std::string f_name, std::string state_name1);
   int GenerateCC(std::string state1, std::string state2, int cc_count);
+  int AddOneStateSQ(std::string state1);
   int AddStateCC(int cc_count);
   int BuildStateVector(std::string state1, std::string state2);
   int AddStateSQ(std::string state1, std::string state2);
@@ -86,6 +88,7 @@ private:
   bool ExeScript(void);
 
   bool tsCallback(tms_msg_ts::ts_req::Request &req, tms_msg_ts::ts_req::Response &res);
+  static int count_callback;
 
   const int sid;
   int robot_id;
@@ -94,7 +97,7 @@ private:
   int place_id;
 
   const std::string import;
-  const std::string main_function;
+  const std::string main_function1, main_function2;
   const std::string introspection_server;
 
   struct StateData {

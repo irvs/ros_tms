@@ -25,7 +25,7 @@
 //using namespace std;
 //using namespace boost;
 
-#define MAX_TASK_NUM 10
+#define MAX_TASK_NUM 30
 
 class TmsTsMaster {
 public:
