@@ -236,7 +236,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 
 				if (type == true) sp5_control(type, UNIT_ALL, CMD_GETSTATE, 1, arg); // set_odom
 				else {
-					callSynchronously(bind(&grasp::TmsRpBar::simulationInfoButtonClicked,grasp::TmsRpBar::instance()));
+					callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 					sleep(1);
 				}
 				break;
@@ -246,7 +246,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 				callSynchronously(bind(&TmsRpSubtask::kxp_control,this, type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
 
 				if (type == false) {
-					callSynchronously(bind(&grasp::TmsRpBar::simulationInfoButtonClicked,grasp::TmsRpBar::instance()));
+					callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 					sleep(1);
 				}
 				break;
@@ -358,7 +358,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 				    		if (type == true) sp5_control(type, UNIT_ALL, CMD_GETSTATE, 1, arg); // set_odom
 				    		else {
 				    			sleep(1);
-							callSynchronously(bind(&grasp::TmsRpBar::simulationInfoButtonClicked,grasp::TmsRpBar::instance()));
+							callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 				    			sleep(1);
 				    		}
 						}
@@ -429,7 +429,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 
 				    		if (type == false) {
 				    			sleep(1);
-							callSynchronously(bind(&grasp::TmsRpBar::simulationInfoButtonClicked,grasp::TmsRpBar::instance()));
+							callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 				    			sleep(1);
 				    		}
 						}
@@ -454,7 +454,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 			}
 			if (type == false) {
 				sleep(1);
-				callSynchronously(bind(&grasp::TmsRpBar::simulationInfoButtonClicked,grasp::TmsRpBar::instance()));
+				callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 				sleep(1);
 			}
 			//grasp::TmsRpBar::grasping_ = 0;
@@ -791,7 +791,7 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 						callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
 			    		if (type == true) sp5_control(type, UNIT_ALL, CMD_GETSTATE, 1, arg); // set_odom
 			    		else {
-			    			callSynchronously(bind(&grasp::TmsRpBar::simulationInfoButtonClicked,grasp::TmsRpBar::instance()));
+						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
 			    			}
 			    		break;
@@ -810,7 +810,7 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 
 			    		if (type == true) {} // set odom
 			    		else {
-			    			callSynchronously(bind(&grasp::TmsRpBar::simulationInfoButtonClicked,grasp::TmsRpBar::instance()));
+						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
 			    			}
 			    		break;
@@ -826,7 +826,7 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 
 			    		if (type == true) {} // set odom
 			    		else {
-			    			callSynchronously(bind(&grasp::TmsRpBar::simulationInfoButtonClicked,grasp::TmsRpBar::instance()));
+						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
 			    			}
 			    		break;

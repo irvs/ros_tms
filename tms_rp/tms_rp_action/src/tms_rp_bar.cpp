@@ -311,22 +311,22 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   }
 
   //----------------------------------------------------------------------------
-//  get_db_data.request.tmsdb.id = 2001;
-//  get_db_data.request.tmsdb.state = 1;
-//  if (get_data_client_.call(get_db_data)){
-//    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x)/1000;
-//    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y)/1000;
-//    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
-//    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
-//    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
-//    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+  get_db_data.request.tmsdb.id = 2001 + sid_;
 
-//    trc_.appear("smartpal4");
-//    trc_.setPos("smartpal4",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
-//  } else {
-//    trc_.appear("smartpal4");
-//    ROS_ERROR("[TmsAction] Failed to call service get_db_data");
-//  }
+  if (get_data_client_.call(get_db_data)){
+    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x)/1000;
+    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y)/1000;
+    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
+    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
+    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
+    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+
+    trc_.appear("smartpal4");
+    trc_.setPos("smartpal4",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+  } else {
+    trc_.appear("smartpal4");
+    ROS_ERROR("[TmsAction] Failed to call service get_db_data");
+  }
 
   //----------------------------------------------------------------------------
   get_db_data.request.tmsdb.id = 2002 + sid_;
@@ -868,195 +868,282 @@ void TmsRpBar::viewMarkerOfRobot()
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::updateObjectInfo()
+void TmsRpBar::updateEnvironmentInfomation(bool is_simulation)
 {
   PlanBase *pb = PlanBase::instance();
+  double rPosX,rPosY,rPosZ;
+  Matrix3 rot;
 
-  if (!pb->robTag2Arm.size()) {
-    os_ <<  "[TmsAction] set robot before updateinfo!" << endl;
+  if (!pb->robTag2Arm.size())
+  {
+    ROS_INFO("Please set a robot item before start");
     return;
   }
+  else
+  {
+    if (is_simulation)
+      ROS_DEBUG("Update ROS-TMS database information (simulation mode)");
+    else
+      ROS_DEBUG("Update ROS-TMS database information (ros mode)");
+  }
 
-  os_ << "[TmsAction] Update TMS DB Information" << endl;
-
-  //----------------------------------------------------------------------------
-  // update information of robot in floor
+  // update information of robot in the environment
   tms_msg_db::TmsdbGetData getRobotData;
 
-  for(int32_t i=0; i<3; i++) {
-      getRobotData.request.tmsdb.id =2001 + i;
-      getRobotData.request.tmsdb.sensor = 3001;
-
-    if (get_data_client_.call(getRobotData)) {
-      os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
-    } else {
-      os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
-      return;
+  for (int32_t i=2001; i<=2011; i++) // robot IDs
+  {
+    if (is_simulation)  // simulation mode
+    {
+      // turtlebot2, ardrone, refrigerator, none
+      if (i==2004 || i==2008 || i==2009 || i==2010) continue;
+    }
+    else                // real world mode
+    {
+      if (i==2005)
+        callSynchronously(bind(&TmsRpController::disappear,trc_,"kobuki"));
+      if (i==2006)
+        callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp"));
+      if (i==2011)
+        callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp2"));
+      // turtlebot2, kobuki, kxp, refrigerator, none, kxp2
+      if (i==2004 || i==2005 || i==2006 || i==2009 || i==2010 || i==2011) continue;
     }
 
-    if (getRobotData.response.tmsdb.empty()==true) {
-      os_ << "[TmsAction] nothing on floor (ID="<< getRobotData.request.tmsdb.id <<")" <<endl;
-      return;
+    getRobotData.request.tmsdb.id = i;
+
+    if (is_simulation)
+      getRobotData.request.tmsdb.sensor = 3005; // ID of fake sensor for simulation
+    else
+      getRobotData.request.tmsdb.sensor = 3001; // ID of Vicon sensor
+
+    if (!get_data_client_.call(getRobotData))
+    {
+      ROS_INFO("Failed to call service get information of ID: %d",getRobotData.request.tmsdb.id);
+      continue;
     }
 
-    if (getRobotData.response.tmsdb[0].state==1) {
-      double rPosX = getRobotData.response.tmsdb[0].x/1000;
-      double rPosY = getRobotData.response.tmsdb[0].y/1000;
-      double rPosZ = 0.0;
-      Vector3 rpy (deg2rad(getRobotData.response.tmsdb[0].rp),deg2rad(getRobotData.response.tmsdb[0].rr),deg2rad(getRobotData.response.tmsdb[0].ry));
-      Matrix3 rot = rotFromRpy(rpy);
-
-      if(getRobotData.request.tmsdb.id == 2001) {
-        if(rPosX == 0.0 && rPosY == 0.0) {
-          callLater(bind(&TmsRpController::disappear,trc_,"smartpal4"));
-        }
-        else{
-          callLater(bind(&TmsRpController::appear,trc_,"smartpal4"));
-          callLater(bind(&TmsRpController::setPos,trc_,"smartpal4",Vector3(rPosX,rPosY,rPosZ), rot));
-        }
-      }
-      else if(getRobotData.request.tmsdb.id == 2002) {
-        if(rPosX == 0.0 && rPosY == 0.0) {
-          callLater(bind(&TmsRpController::disappear,trc_,"smartpal5_1"));
-        }
-        else{
-          callLater(bind(&TmsRpController::appear,trc_,"smartpal5_1"));
-          callLater(bind(&TmsRpController::setPos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot));
-        }
-      }
-      else if(getRobotData.request.tmsdb.id == 2003) {
-        if(rPosX == 0.0 && rPosY == 0.0) {
-          callLater(bind(&TmsRpController::disappear,trc_,"smartpal5_2"));
-        }
-        else{
-          callLater(bind(&TmsRpController::appear,trc_,"smartpal5_2"));
-          callLater(bind(&TmsRpController::setPos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot));
+    int32_t ref_i = 0;
+    if (getRobotData.response.tmsdb.empty()==true)
+    {
+      ROS_INFO("No information of ID #%d in DB",getRobotData.request.tmsdb.id);
+      continue;
+    }
+    else
+    {
+      if (is_simulation)
+      {
+        for (int j=0; j<getRobotData.response.tmsdb.size()-1; j++)
+        {
+          if (getRobotData.response.tmsdb[j].time < getRobotData.response.tmsdb[j+1].time)
+            ref_i = j+1;
         }
       }
+      else
+      {
+        ref_i = 0;
+      }
     }
-  }
 
-  //----------------------------------------------------------------------------
-  // update information of kobuki
-  getRobotData.request.tmsdb.id = 2005;
-  getRobotData.request.tmsdb.sensor = 3001;
+    if (getRobotData.response.tmsdb[ref_i].state==1 || getRobotData.response.tmsdb[ref_i].state==2)
+    {
+      rPosX = getRobotData.response.tmsdb[ref_i].x/1000;
+      rPosY = getRobotData.response.tmsdb[ref_i].y/1000;
+      rPosZ = getRobotData.response.tmsdb[ref_i].offset_z/1000;
+      rot = rotFromRpy(deg2rad(getRobotData.response.tmsdb[ref_i].rr),
+                       deg2rad(getRobotData.response.tmsdb[ref_i].rp),
+                       deg2rad(getRobotData.response.tmsdb[ref_i].ry));
 
-  if (get_data_client_.call(getRobotData)) {
-    os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
-  } else {
-    os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
-    return;
-  }
+      // calc joint position
+      std::vector<double> seq_of_joint;
+      if (getRobotData.response.tmsdb[ref_i].joint.empty()==false && is_simulation)
+      {
+        std::vector<std::string> s_seq_of_joint;
+        s_seq_of_joint.clear();
+        boost::split(s_seq_of_joint, getRobotData.response.tmsdb[ref_i].joint, boost::is_any_of(";"));
+        seq_of_joint.clear();
 
-  if (getRobotData.response.tmsdb.empty()==true) {
-    os_ << "[TmsAction] Error (ID="<< getRobotData.request.tmsdb.id <<")" <<endl;
-    callLater(bind(&TmsRpController::disappear,trc_,"kobuki"));
-  } else if (getRobotData.response.tmsdb[0].state==1) {
-    double rPosX = getRobotData.response.tmsdb[0].x/1000;
-    double rPosY = getRobotData.response.tmsdb[0].y/1000;
-    double rPosZ = getRobotData.response.tmsdb[0].z/1000;
-    Vector3 rpy (deg2rad(getRobotData.response.tmsdb[0].rr),deg2rad(getRobotData.response.tmsdb[0].rp),deg2rad(getRobotData.response.tmsdb[0].ry));
-    Matrix3 rot = rotFromRpy(rpy);
+        // string to double
+        std::stringstream ss;
+        double d_tmp;
+        for (int i=0; i<s_seq_of_joint.size(); i++)
+        {
+          ss.clear();
+          ss.str("");
+          ss << s_seq_of_joint.at(i);
+          ss >> d_tmp;
+          seq_of_joint.push_back(deg2rad(d_tmp));
+        }
+      }
 
-    if(rPosX == 0.0 && rPosY == 0.0) {
-      callLater(bind(&TmsRpController::disappear,trc_,"kobuki"));
-    }
-    else{
-      callLater(bind(&TmsRpController::appear,trc_,"kobuki"));
-      callLater(bind(&TmsRpController::setPos,trc_,"kobuki",Vector3(rPosX,rPosY,rPosZ), rot));
-    }
-  }
-
-  //----------------------------------------------------------------------------
-  // update information of kxp
-  getRobotData.request.tmsdb.id = 2006;
-  getRobotData.request.tmsdb.sensor = 3001;
-
-  if (get_data_client_.call(getRobotData)) {
-    os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
-  } else {
-    os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
-    return;
-  }
-
-  if (getRobotData.response.tmsdb.empty()==true) {
-    os_ << "[TmsAction] Error (ID="<< getRobotData.request.tmsdb.id <<")" <<endl;
-    callLater(bind(&TmsRpController::disappear,trc_,"kxp"));
-  } else if (getRobotData.response.tmsdb[0].state==1) {
-    double rPosX = getRobotData.response.tmsdb[0].x/1000;
-    double rPosY = getRobotData.response.tmsdb[0].y/1000;
-    double rPosZ = getRobotData.response.tmsdb[0].z/1000;
-    Vector3 rpy (deg2rad(getRobotData.response.tmsdb[0].rr),deg2rad(getRobotData.response.tmsdb[0].rp),deg2rad(getRobotData.response.tmsdb[0].ry));
-    Matrix3 rot = rotFromRpy(rpy);
-
-    if(rPosX == 0.0 && rPosY == 0.0) {
-      callLater(bind(&TmsRpController::disappear,trc_,"kxp"));
-    }
-    else{
-      callLater(bind(&TmsRpController::appear,trc_,"kxp"));
-      callLater(bind(&TmsRpController::setPos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot));
-    }
-  }
-
-  //----------------------------------------------------------------------------
-  // update information of wheelchair
-  getRobotData.request.tmsdb.id = 2007;
-  getRobotData.request.tmsdb.sensor = 3001;
-
-  if (get_data_client_.call(getRobotData)) {
-    os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
-  } else {
-    os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
-    return;
-  }
-
-  if (getRobotData.response.tmsdb.empty()==true) {
-    os_ << "[TmsAction] Error (ID="<< getRobotData.request.tmsdb.id <<")" <<endl;
-    callLater(bind(&TmsRpController::disappear,trc_,"wheelchair"));
-  } else if (getRobotData.response.tmsdb[0].state==1) {
-    double rPosX = getRobotData.response.tmsdb[0].x/1000;
-    double rPosY = getRobotData.response.tmsdb[0].y/1000;
-    double rPosZ = getRobotData.response.tmsdb[0].z/1000;
-    Vector3 rpy (deg2rad(getRobotData.response.tmsdb[0].rr),deg2rad(getRobotData.response.tmsdb[0].rp),deg2rad(getRobotData.response.tmsdb[0].ry));
-    Matrix3 rot = rotFromRpy(rpy);
-
-    if(rPosX == 0.0 && rPosY == 0.0) {
-      callLater(bind(&TmsRpController::disappear,trc_,"wheelchair"));
-    }
-    else{
-      callLater(bind(&TmsRpController::appear,trc_,"wheelchair"));
-      callLater(bind(&TmsRpController::setPos,trc_,"wheelchair",Vector3(rPosX,rPosY,rPosZ), rot));
-    }
-  }
-
-  //----------------------------------------------------------------------------
-  // update information of ardrone
-  getRobotData.request.tmsdb.id = 2008;
-  getRobotData.request.tmsdb.sensor = 3001;
-
-  if (get_data_client_.call(getRobotData)) {
-    os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
-  } else {
-    os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
-    return;
-  }
-
-  if (getRobotData.response.tmsdb.empty()==true) {
-    os_ << "[TmsAction] Error (ID="<< getRobotData.request.tmsdb.id <<")" <<endl;
-    callLater(bind(&TmsRpController::disappear,trc_,"ardrone"));
-  } else if (getRobotData.response.tmsdb[0].state==1) {
-    double rPosX = getRobotData.response.tmsdb[0].x/1000;
-    double rPosY = getRobotData.response.tmsdb[0].y/1000;
-    double rPosZ = getRobotData.response.tmsdb[0].z/1000;
-    Vector3 rpy (deg2rad(getRobotData.response.tmsdb[0].rr),deg2rad(getRobotData.response.tmsdb[0].rp),deg2rad(getRobotData.response.tmsdb[0].ry));
-    Matrix3 rot = rotFromRpy(rpy);
-
-    if(rPosX == 0.0 && rPosY == 0.0) {
-      callLater(bind(&TmsRpController::disappear,trc_,"ardrone"));
-    }
-    else{
-      callLater(bind(&TmsRpController::appear,trc_,"ardrone"));
-      callLater(bind(&TmsRpController::setPos,trc_,"ardrone",Vector3(rPosX,rPosY,rPosZ), rot));
+      // set position of robot and decide the appear
+      if (getRobotData.request.tmsdb.id == 2001)
+      {
+        if (rPosX == 0.0 && rPosY == 0.0)
+        {
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal4"));
+        }
+        else
+        {
+          callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal4"));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal4",Vector3(rPosX,rPosY,rPosZ), rot));
+        }
+      }
+      else if (getRobotData.request.tmsdb.id == 2002)
+      {
+        if(rPosX == 0.0 && rPosY == 0.0)
+        {
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_1"));
+        }
+        else
+        {
+          if (!is_simulation)
+          {
+            callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_1"));
+            callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot));
+          }
+          else if (grasping_ == 0)
+          {
+            callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_1"));
+            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+          }
+          else if (grasping_ == 2)
+          {
+            callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_1"));
+            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+          }
+          else
+          {
+            callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_1"));
+            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+          }
+        }
+      }
+      else if (getRobotData.request.tmsdb.id == 2003)
+      {
+        if (rPosX == 0.0 && rPosY == 0.0)
+        {
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_2"));
+        }
+        else
+        {
+          if (!is_simulation)
+          {
+            callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_2"));
+            callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot));
+          }
+          else if (grasping_ == 0)
+          {
+            callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_2"));
+            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+          }
+          else if (grasping_ == 2)
+          {
+            callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_2"));
+            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+          }
+          else
+          {
+            callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_2"));
+            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+          }
+        }
+      }
+      else if (getRobotData.request.tmsdb.id == 2005)
+      {
+        if (rPosX == 0.0 && rPosY == 0.0)
+        {
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"kobuki"));
+        }
+        else
+        {
+          callSynchronously(bind(&TmsRpController::appear,trc_,"kobuki"));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,"kobuki",Vector3(rPosX,rPosY,rPosZ), rot));
+        }
+      }
+      else if (getRobotData.request.tmsdb.id == 2006)
+      {
+        if (rPosX == 0.0 && rPosY == 0.0)
+        {
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp"));
+        }
+        else
+        {
+          if (!is_simulation)
+          {
+            callSynchronously(bind(&TmsRpController::appear,trc_,"kxp"));
+            callSynchronously(bind(&TmsRpController::setPos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot));
+          }
+          else if (grasping_ == 0)
+          {
+            callSynchronously(bind(&TmsRpController::appear,trc_,"kxp"));
+            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+          }
+          else if (grasping_ == 2)
+          {
+            callSynchronously(bind(&TmsRpController::appear,trc_,"kxp"));
+            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+          }
+          else
+          {
+            callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp"));
+            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+          }
+        }
+      }
+      else if (getRobotData.request.tmsdb.id == 2007)
+      {
+        if (rPosX == 0.0 && rPosY == 0.0)
+        {
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"wheelchair"));
+        }
+        else
+        {
+          callSynchronously(bind(&TmsRpController::appear,trc_,"wheelchair"));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,"wheelchair",Vector3(rPosX,rPosY,rPosZ), rot));
+        }
+      }
+      else if (getRobotData.request.tmsdb.id == 2008)
+      {
+        if (rPosX == 0.0 && rPosY == 0.0)
+        {
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"ardrone"));
+        }
+        else
+        {
+          callSynchronously(bind(&TmsRpController::appear,trc_,"ardrone"));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,"ardrone",Vector3(rPosX,rPosY,rPosZ), rot));
+        }
+      }
+      else if (getRobotData.request.tmsdb.id == 2011)
+      {
+        if(rPosX == 0.0 && rPosY == 0.0)
+        {
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp2"));
+        }
+        else
+        {
+          if (!is_simulation)
+          {
+            callSynchronously(bind(&TmsRpController::appear,trc_,"kxp2"));
+            callSynchronously(bind(&TmsRpController::setPos,trc_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot));
+          }
+          else if (grasping_ == 0)
+          {
+            callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp2"));
+            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+          }
+          else if (grasping_ == 2)
+          {
+            callSynchronously(bind(&TmsRpController::appear,trc_,"kxp2"));
+            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+          }
+          else
+          {
+            callSynchronously(bind(&TmsRpController::appear,trc_,"kxp2"));
+            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+          }
+        }
+      }
     }
   }
 
@@ -1065,506 +1152,212 @@ void TmsRpBar::updateObjectInfo()
   getRobotData.request.tmsdb.id = 2009;
   getRobotData.request.tmsdb.sensor = 2009;
 
-  if (get_data_client_.call(getRobotData)) {
-    os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
-  } else {
-    os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
-    return;
+  if (!get_data_client_.call(getRobotData))
+  {
+    ROS_INFO("Failed to call service get information of ID: %d",getRobotData.request.tmsdb.id);
   }
+  else if (getRobotData.response.tmsdb.empty()==true)
+  {
+    ROS_INFO("No information of ID #%d in DB",getRobotData.request.tmsdb.id);
 
-  if (getRobotData.response.tmsdb.empty()==true) {
-    os_ << "[TmsAction] Error (ID="<< getRobotData.request.tmsdb.id <<")" <<endl;
-    return;
   }
-
-  if (getRobotData.response.tmsdb[0].state==0) {
-    callLater(bind(&TmsRpController::disappear,trc_,"refrigerator"));
-    callLater(bind(&TmsRpController::disappear,trc_,"refrigerator_open"));
-  } else if (getRobotData.response.tmsdb[0].state==1) {
-    callLater(bind(&TmsRpController::appear,trc_,"refrigerator"));
-    callLater(bind(&TmsRpController::disappear,trc_,"refrigerator_open"));
-  } else if (getRobotData.response.tmsdb[0].state==2) {
-    callLater(bind(&TmsRpController::disappear,trc_,"refrigerator"));
-    callLater(bind(&TmsRpController::appear,trc_,"refrigerator_open"));
+  else if (getRobotData.response.tmsdb[0].state==0)
+  {
+    callSynchronously(bind(&TmsRpController::disappear,trc_,"refrigerator"));
+    callSynchronously(bind(&TmsRpController::disappear,trc_,"refrigerator_open"));
+  }
+  else if (getRobotData.response.tmsdb[0].state==1)
+  {
+    callSynchronously(bind(&TmsRpController::appear,trc_,"refrigerator"));
+    callSynchronously(bind(&TmsRpController::disappear,trc_,"refrigerator_open"));
+  }
+  else if (getRobotData.response.tmsdb[0].state==2)
+  {
+    callSynchronously(bind(&TmsRpController::disappear,trc_,"refrigerator"));
+    callSynchronously(bind(&TmsRpController::appear,trc_,"refrigerator_open"));
   }
 
   //----------------------------------------------------------------------------
   // update information of wagon
   getRobotData.request.tmsdb.id = 6019;
-  getRobotData.request.tmsdb.sensor = 3001;
 
-  if (get_data_client_.call(getRobotData)) {
-    os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
-  } else {
-    os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
-    return;
+  if (is_simulation)
+    getRobotData.request.tmsdb.sensor = 3005; // ID of fake sensor for simulation
+  else
+    getRobotData.request.tmsdb.sensor = 3001; // ID of Vicon sensor
+
+
+  if (!get_data_client_.call(getRobotData))
+  {
+    ROS_INFO("Failed to call service get information of ID: %d",getRobotData.request.tmsdb.id);
   }
-
-  if (getRobotData.response.tmsdb.empty()==true) {
-    os_ << "[TmsAction] Error (ID="<< getRobotData.request.tmsdb.id <<")" <<endl;
+  else if (getRobotData.response.tmsdb.empty()==true)
+  {
+    ROS_INFO("No information of ID #%d in DB",getRobotData.request.tmsdb.id);
     callLater(bind(&TmsRpController::disappear,trc_,"wagon"));
-  } else if (getRobotData.response.tmsdb[0].state==1) {
-    double rPosX = getRobotData.response.tmsdb[0].x/1000;
-    double rPosY = getRobotData.response.tmsdb[0].y/1000;
-    double rPosZ = 0.35;
-    Vector3 rpy (deg2rad(getRobotData.response.tmsdb[0].rr),deg2rad(getRobotData.response.tmsdb[0].rp),deg2rad(getRobotData.response.tmsdb[0].ry));
-    Matrix3 rot = rotFromRpy(rpy);
+  }
+  else if (getRobotData.response.tmsdb[0].state==1)
+  {
+    rPosX = getRobotData.response.tmsdb[0].x/1000;
+    rPosY = getRobotData.response.tmsdb[0].y/1000;
+    rPosZ = 0.35;
+    rot = rotFromRpy(deg2rad(getRobotData.response.tmsdb[0].rr),
+                     deg2rad(getRobotData.response.tmsdb[0].rp),
+                     deg2rad(getRobotData.response.tmsdb[0].ry));
 
-    if(rPosX == 0.0 && rPosY == 0.0) {
-      callLater(bind(&TmsRpController::disappear,trc_,"wagon"));
+    if(rPosX == 0.0 && rPosY == 0.0)
+    {
+      callSynchronously(bind(&TmsRpController::disappear,trc_,"wagon"));
     }
-    else{
-      callLater(bind(&TmsRpController::appear,trc_,"wagon"));
-      callLater(bind(&TmsRpController::setPos,trc_,"wagon",Vector3(rPosX,rPosY,rPosZ), rot));
+    else
+    {
+      callSynchronously(bind(&TmsRpController::appear,trc_,"wagon"));
+      callSynchronously(bind(&TmsRpController::setPos,trc_,"wagon",Vector3(rPosX,rPosY,rPosZ), rot));
     }
   }
 
   //----------------------------------------------------------------------------
   // update information of objects in shelf
   tms_msg_db::TmsdbGetData getObjectData;
+  int    oID;;
+  double oPosX, oPosY, oPosZ;
 
   for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++) object_state_[i]=false;
 
-//  for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++) {
-//    getObjectData.request.tmsdb.id =7001 + i;
-//    getObjectData.request.tmsdb.sensor = 3002; // ics
-
-//    if (get_data_client_.call(getObjectData)) {
-//      os_ << "[TmsAction] Get info of object_ ID: " << getObjectData.request.tmsdb.id <<"  OK" << endl;
-//    } else {
-//      os_ << "[TmsAction] Failed to call service getObjectData ID: " << getObjectData.request.tmsdb.id << endl;
-//      return;
-//    }
-
-//    if (getObjectData.response.tmsdb.empty()==true) {
-//      os_ << "[TmsAction] nothing in shelf" <<endl;
-//      return;
-//    }
-
-//    if (getObjectData.response.tmsdb[0].state==1 && getObjectData.response.tmsdb[0].place==6010) {
-//      int    oID   = getObjectData.response.tmsdb[0].id - 7001;
-//      double oPosX = 3.66 + getObjectData.response.tmsdb[0].y/1000;
-//      double oPosY = 1.87 - getObjectData.response.tmsdb[0].x/1000;
-//      double oPosZ = 0.0 + getObjectData.response.tmsdb[0].z/1000;
-//      callLater(bind(&TmsRpController::appear,trc_,object_name_[oID]));
-//      callLater(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
-//      object_state_[oID] = true;
-//    }
-//  }
-
-//  for(int i=0; i < MAX_ICS_OBJECT_NUM; i++){
-//    if (object_state_[i]==false) callLater(bind(&TmsRpController::disappear,trc_,object_name_[i]));
-//  }
-
-  //----------------------------------------------------------------------------
-  // update information of objects in refrigerator
-
-//  for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++) object_state_[i]=false;
-
-  for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++) {
+  for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++)
+  {
     getObjectData.request.tmsdb.id =7001 + i;
     getObjectData.request.tmsdb.sensor = 3018; //refrigerator, irs
 
     if (!get_data_client_.call(getObjectData))
     {
-      os_ << "[TmsAction] Failed to call service getObjectData ID: " << getObjectData.request.tmsdb.id << endl;
-      return;
+      ROS_INFO("Failed to call service get information of ID: %d",getObjectData.request.tmsdb.id);
+      continue;
     }
 
-    if (getObjectData.response.tmsdb.empty()==true) {
-      os_ << "[TmsAction] nothing in refrigerator" <<endl;
-      return;
+    if (getObjectData.response.tmsdb.empty()==true)
+    {
+      ROS_INFO("Nothing in refrigerator");
+      continue;
+    }
+    else
+    {
+      if (getObjectData.response.tmsdb[0].state==1 && getObjectData.response.tmsdb[0].place==2009)
+      {
+        oID   = getObjectData.response.tmsdb[0].id - 7001;
+        oPosX = 4.5 - getObjectData.response.tmsdb[0].y/1000;
+        oPosY = 2.3 + getObjectData.response.tmsdb[0].x/1000;
+        oPosZ = 0.0 + getObjectData.response.tmsdb[0].z/1000;
+        callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+        callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
+        object_state_[oID] = true;
+      }
     }
 
-    if (getObjectData.response.tmsdb[0].state==1 && getObjectData.response.tmsdb[0].place==2009) {
-      int    oID   = getObjectData.response.tmsdb[0].id - 7001;
-      double oPosX = 4.5 - getObjectData.response.tmsdb[0].y/1000;
-      double oPosY = 2.3 + getObjectData.response.tmsdb[0].x/1000;
-      double oPosZ = 0.0 + getObjectData.response.tmsdb[0].z/1000;
-      callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
-      callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
-      object_state_[oID] = true;
-    }
     //----------------------------------------------------------------------------
     getObjectData.request.tmsdb.id =7001 + i;
-    getObjectData.request.tmsdb.sensor = 3002; // ics
+    getObjectData.request.tmsdb.sensor = 3002; // shelf, ics
 
     if (!get_data_client_.call(getObjectData))
     {
-      os_ << "[TmsAction] Failed to call service getObjectData ID: " << getObjectData.request.tmsdb.id << endl;
-      return;
+      ROS_INFO("Failed to call service get information of ID: %d",getObjectData.request.tmsdb.id);
+      continue;
     }
 
-    if (getObjectData.response.tmsdb.empty()==true) {
-      os_ << "[TmsAction] nothing in shelf" <<endl;
-      return;
+    if (getObjectData.response.tmsdb.empty()==true)
+    {
+      ROS_INFO("Nothing in shelf");
+      continue;
+    }
+    else
+    {
+      if (getObjectData.response.tmsdb[0].state==1 && getObjectData.response.tmsdb[0].place==6010)
+      {
+        oID   = getObjectData.response.tmsdb[0].id - 7001;
+        oPosX = 4.3  - getObjectData.response.tmsdb[0].y/1000;
+        oPosY = 1.7 + getObjectData.response.tmsdb[0].x/1000;
+        oPosZ = 0.08 + getObjectData.response.tmsdb[0].z/1000;
+        callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+        callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
+        object_state_[oID] = true;
+      }
     }
 
-    if (getObjectData.response.tmsdb[0].state==1 && getObjectData.response.tmsdb[0].place==6010) {
-      int    oID   = getObjectData.response.tmsdb[0].id - 7001;
-      double oPosX = 4.3  - getObjectData.response.tmsdb[0].y/1000;
-      double oPosY = 1.7 + getObjectData.response.tmsdb[0].x/1000;
-      double oPosZ = 0.08 + getObjectData.response.tmsdb[0].z/1000;
-      callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
-      callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
-      object_state_[oID] = true;
-    }
+    if(object_state_[i] == false)
+    {
+      getObjectData.request.tmsdb.id =7001 + i;
+      getObjectData.request.tmsdb.sensor = 3005; // fake
 
-    if(object_state_[i] == false) {
-        getObjectData.request.tmsdb.id =7001 + i;
-        getObjectData.request.tmsdb.sensor = 3005; // fake
+      if (!get_data_client_.call(getObjectData))
+      {
+        ROS_INFO("Failed to call service get information of ID: %d",getObjectData.request.tmsdb.id);
+        continue;
+      }
 
-        if (!get_data_client_.call(getObjectData))
+      if (getObjectData.response.tmsdb.empty()==true)
+      {
+        ROS_INFO("Nothing in big shelf");
+        continue;
+      }
+      else
+      {
+        if (getObjectData.response.tmsdb[0].state==1 && getObjectData.response.tmsdb[0].place==6011)
         {
-            os_ << "[TmsAction] Failed to call service getObjectData ID: " << getObjectData.request.tmsdb.id << endl;
-            return;
+          oID   = getObjectData.response.tmsdb[0].id - 7001;
+          oPosX = getObjectData.response.tmsdb[0].x/1000;
+          oPosY = getObjectData.response.tmsdb[0].y/1000;
+          oPosZ = getObjectData.response.tmsdb[0].z/1000;
+          callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
+          object_state_[oID] = true;
         }
-
-        if (getObjectData.response.tmsdb.empty()==true) {
-            os_ << "[TmsAction] nothing in big shelf" <<endl;
-            return;
-        }
-
-        if (getObjectData.response.tmsdb[0].state==1 && getObjectData.response.tmsdb[0].place==6011) {
-            int    oID   = getObjectData.response.tmsdb[0].id - 7001;
-            double oPosX = getObjectData.response.tmsdb[0].x/1000;
-            double oPosY = getObjectData.response.tmsdb[0].y/1000;
-            double oPosZ = getObjectData.response.tmsdb[0].z/1000;
-            callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
-            callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
-            object_state_[oID] = true;
-        }
+      }
     }
   }
 
-  for(int i=0; i < MAX_ICS_OBJECT_NUM; i++){
-    if (object_state_[i]==false) callLater(bind(&TmsRpController::disappear,trc_,object_name_[i]));
+  for(int i=0; i < MAX_ICS_OBJECT_NUM; i++)
+  {
+    if (object_state_[i]==false)
+    {
+      callSynchronously(bind(&TmsRpController::disappear,trc_,object_name_[i]));
+    }
   }
 
-  //----------------------------------------------------------------------------
-  // update information of person in floor
-#if PERSON==1
+  // update information of person
+  #if PERSON==1
   tms_msg_db::TmsdbGetData getPersonData;
 
   getPersonData.request.tmsdb.id     = 1001;
   getPersonData.request.tmsdb.sensor = 3001;
 
-  if (get_data_client_.call(getPersonData)) {
-    os_ << "[TmsAction] Get info of object_ ID: " << getPersonData.request.tmsdb.id <<"  OK" << endl;
-  } else {
-    os_ << "[TmsAction] Failed to call service getPersonData ID: " << getPersonData.request.tmsdb.id << endl;
-    return;
+  if (!get_data_client_.call(getPersonData))
+  {
+    ROS_INFO("Failed to call service get information of ID: %d",getPersonData.request.tmsdb.id);
   }
-
-  if (getPersonData.response.tmsdb.empty()==true) {
-    os_ << "[TmsAction] nothing on floor (ID="<< getPersonData.request.tmsdb.id <<")" <<endl;
-    return;
+  else if (getPersonData.response.tmsdb.empty()==true)
+  {
+    ROS_INFO("no # %d person on floor", getPersonData.request.tmsdb.id);
   }
+  else if (getPersonData.response.tmsdb[0].state==1)
+  {
+    oPosX = getPersonData.response.tmsdb[0].x/1000;
+    oPosY = getPersonData.response.tmsdb[0].y/1000;
+    oPosZ = 0.9;
+    rot = rotFromRpy(0,0,deg2rad(getPersonData.response.tmsdb[0].ry));
 
-  if (getPersonData.response.tmsdb[0].state==1) {
-    double pPosX = getPersonData.response.tmsdb[0].x/1000;
-    double pPosY = getPersonData.response.tmsdb[0].y/1000;
-    double pPosZ = 0.9;
-    //Vector3 rpy (getPersonData.response.tmsdb[0].rr,getPersonData.response.tmsdb[0].rp,getPersonData.response.tmsdb[0].ry);
-    Vector3 rpy(0,0,deg2rad(getPersonData.response.tmsdb[0].ry));
-    Matrix3 rot = rotFromRpy(rpy);
-
-    if(pPosX == 0.0 && pPosY == 0.0) {
-      callLater(bind(&TmsRpController::disappear,trc_,"person_1"));
-    }
-    else{
-      callLater(bind(&TmsRpController::appear,trc_,"person_1"));
-      callLater(bind(&TmsRpController::setPos,trc_,"person_1",Vector3(pPosX,pPosY,pPosZ),rot));
-    }
-  }
-#else
-  callLater(bind(&TmsRpController::disappear,trc_,"person_1"));
-#endif
-  os_ << "[TmsAction] End of update!" << endl;
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::simulationInfoButtonClicked()
-{
-  PlanBase *pb = PlanBase::instance();
-
-  if (!pb->robTag2Arm.size()) {
-    os_ <<  "[TmsAction] set robot before updateinfo!" << endl;
-    return;
-  }
-
-  os_ << "[TmsAction] Update TMS DB Information" << endl;
-
-  //----------------------------------------------------------------------------
-  // update information of robot in floor
-  tms_msg_db::TmsdbGetData getRobotData;
-
-  for(int32_t i=2001; i<=2011; i++) {
-    if (i==2004 || i==2007 || i==2008 || i==2009 || i==2010) continue;
-      getRobotData.request.tmsdb.id =i;// + i;
-      getRobotData.request.tmsdb.sensor = 3005;
-
-    if (get_data_client_.call(getRobotData)) {
-      os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
-    } else {
-      os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
-      continue;
-    }
-
-    int ref_i = 0;
-    if (getRobotData.response.tmsdb.empty()==true) {
-      os_ << "[TmsAction] nothing on floor (ID="<< getRobotData.request.tmsdb.id <<")" <<endl;
-      continue;
-    } else {
-        for (int j=0; j<getRobotData.response.tmsdb.size()-1; j++) {
-          if (getRobotData.response.tmsdb[j].time < getRobotData.response.tmsdb[j+1].time) ref_i = j+1;
-        }
-      }
-
-    if (getRobotData.response.tmsdb[ref_i].state==1 || getRobotData.response.tmsdb[ref_i].state==2) {
-      double rPosX = getRobotData.response.tmsdb[ref_i].x/1000;
-      double rPosY = getRobotData.response.tmsdb[ref_i].y/1000;
-      double rPosZ = getRobotData.response.tmsdb[ref_i].offset_z/1000;
-      Vector3 rpy (deg2rad(getRobotData.response.tmsdb[ref_i].rr),deg2rad(getRobotData.response.tmsdb[ref_i].rp),deg2rad(getRobotData.response.tmsdb[ref_i].ry));
-      Matrix3 rot = rotFromRpy(rpy);
-      // calc joint position
-      std::vector<double> seq_of_joint;
-      if (getRobotData.response.tmsdb[ref_i].joint.empty()==false) {
-          std::vector<std::string> s_seq_of_joint;
-          s_seq_of_joint.clear();
-          boost::split(s_seq_of_joint, getRobotData.response.tmsdb[ref_i].joint, boost::is_any_of(";"));
-
-          seq_of_joint.clear();
-
-          // string to double
-          std::stringstream ss;
-          double d_tmp;
-          for (int i=0; i<s_seq_of_joint.size(); i++) {
-            ss.clear();
-            ss.str("");
-
-            ss << s_seq_of_joint.at(i);
-            ss >> d_tmp;
-            seq_of_joint.push_back(deg2rad(d_tmp));
-            //ROS_INFO("j[%d] = [%f]  ", i, seq_of_joint.at(i));
-          }
-      }
-
-      if(getRobotData.request.tmsdb.id == 2001) {
-        if(rPosX == 0.0 && rPosY == 0.0) {
-          callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal4"));
-        }
-        else{
-          callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal4"));
-          callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal4",Vector3(rPosX,rPosY,rPosZ), rot));
-        }
-      }
-      else if(getRobotData.request.tmsdb.id == 2002) {
-        if(rPosX == 0.0 && rPosY == 0.0) {
-          callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_1"));
-        }
-        else{
-          if (grasping_ == 0) {
-              callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_1"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
-          } else if (grasping_ == 2) {
-              callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_1"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
-          }else {
-              callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_1"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
-          }
-          // joint appear
-          //int state;
-          //callSynchronously(bind(&TmsRpController::setRobotPosture, trc_, 0, "2002", seq_of_joint, &state));
-          }
-      }
-      else if(getRobotData.request.tmsdb.id == 2003) {
-        if(rPosX == 0.0 && rPosY == 0.0) {
-          callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_2"));
-        }
-        else{
-          if (grasping_ == 0) {
-              callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_2"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
-          } else if (grasping_ == 2) {
-              callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_2"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
-          } else {
-              callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_2"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
-          }
-        }
-      }
-      else if(getRobotData.request.tmsdb.id == 2005) {
-        if(rPosX == 0.0 && rPosY == 0.0) {
-          callSynchronously(bind(&TmsRpController::disappear,trc_,"kobuki"));
-        }
-        else{
-          callSynchronously(bind(&TmsRpController::appear,trc_,"kobuki"));
-          callSynchronously(bind(&TmsRpController::setPos,trc_,"kobuki",Vector3(rPosX,rPosY,rPosZ), rot));
-        }
-      }
-      else if(getRobotData.request.tmsdb.id == 2006) {
-        if(rPosX == 0.0 && rPosY == 0.0) {
-          callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp"));
-        }
-        else{
-          if (grasping_ == 0) {
-              callSynchronously(bind(&TmsRpController::appear,trc_,"kxp"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
-          } else if (grasping_ == 2) {
-              callSynchronously(bind(&TmsRpController::appear,trc_,"kxp"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
-          }else {
-              callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
-          }
-        }
-      }
-      else if(getRobotData.request.tmsdb.id == 2011) {
-        if(rPosX == 0.0 && rPosY == 0.0) {
-          callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp2"));
-        }
-        else{
-          if (grasping_ == 0) {
-              callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp2"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
-          } else if (grasping_ == 2) {
-              callSynchronously(bind(&TmsRpController::appear,trc_,"kxp2"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
-          } else {
-              callSynchronously(bind(&TmsRpController::appear,trc_,"kxp2"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
-          }
-        }
-      }
-    }
-  }
-
-  // update information of refrigerator
-  getRobotData.request.tmsdb.id = 2009;
-  getRobotData.request.tmsdb.sensor = 2009;
-
-  if (get_data_client_.call(getRobotData)) {
-    os_ << "[TmsAction] Get info of object_ ID: " << getRobotData.request.tmsdb.id <<"  OK" << endl;
-  } else {
-    os_ << "[TmsAction] Failed to call service getRobotData ID: " << getRobotData.request.tmsdb.id << endl;
-    return;
-  }
-
-  if (getRobotData.response.tmsdb.empty()==true) {
-    os_ << "[TmsAction] Error (ID="<< getRobotData.request.tmsdb.id <<")" <<endl;
-    return;
-  }
-
-  if (getRobotData.response.tmsdb[0].state==1) {
-    callSynchronously(bind(&TmsRpController::appear,trc_,"refrigerator"));
-    callSynchronously(bind(&TmsRpController::disappear,trc_,"refrigerator_open"));
-  } else if (getRobotData.response.tmsdb[0].state==2) {
-    callSynchronously(bind(&TmsRpController::disappear,trc_,"refrigerator"));
-    callSynchronously(bind(&TmsRpController::appear,trc_,"refrigerator_open"));
-  }
-
-  //----------------------------------------------------------------------------
-  // update information of objects
-  tms_msg_db::TmsdbGetData getObjectData;
-
-  for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++) object_state_[i]=false;
-
-  for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++) {
-    getObjectData.request.tmsdb.id =7001 + i;
-
-      if (!get_data_client_.call(getObjectData))
-      {
-        os_ << "[TmsAction] Failed to call service getObjectData ID: " << getObjectData.request.tmsdb.id << endl;
-        return;
-      }
-
-      int ref_i = 0;
-      if (getObjectData.response.tmsdb.empty()==true) {
-        os_ << "[TmsAction] nothing in shelf" <<endl;
-        return;
-      } else {
-        for (int j=0; j<getObjectData.response.tmsdb.size()-1; j++) {
-          if (getObjectData.response.tmsdb[j].time < getObjectData.response.tmsdb[j+1].time) ref_i = j+1;
-        }
-      }
-
-      if (getObjectData.response.tmsdb[ref_i].state==1 && getObjectData.response.tmsdb[ref_i].place==6010) {
-        int    oID   = getObjectData.response.tmsdb[ref_i].id - 7001;
-        double oPosX = 3.66 + getObjectData.response.tmsdb[ref_i].y/1000;
-        double oPosY = 1.87 - getObjectData.response.tmsdb[ref_i].x/1000;
-        double oPosZ = 0.0 + getObjectData.response.tmsdb[ref_i].z/1000;
-        callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
-        callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
-        object_state_[oID] = true;
-      }
-      else if(getObjectData.response.tmsdb[ref_i].state==1 && getObjectData.response.tmsdb[ref_i].place==5001) {
-        int    oID   = getObjectData.response.tmsdb[ref_i].id - 7001;
-        double oPosX = getObjectData.response.tmsdb[ref_i].x/1000;
-        double oPosY = getObjectData.response.tmsdb[ref_i].y/1000;
-        double oPosZ = getObjectData.response.tmsdb[ref_i].z/1000;
-        callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
-        callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
-        object_state_[oID] = true;
-      }
-      // object_'s place = SmartPal5(2002)
-      else if(getObjectData.response.tmsdb[ref_i].state==2 && (getObjectData.response.tmsdb[ref_i].place==2002 || getObjectData.response.tmsdb[ref_i].place==2006)) {
-        int    oID   = getObjectData.response.tmsdb[ref_i].id - 7001;
-          double oPosX = getObjectData.response.tmsdb[ref_i].x/1000;
-          double oPosY = getObjectData.response.tmsdb[ref_i].y/1000;
-          double oPosZ = getObjectData.response.tmsdb[ref_i].z/1000;
-          Vector3 rpy (deg2rad(getObjectData.response.tmsdb[ref_i].rr),deg2rad(getObjectData.response.tmsdb[ref_i].rp),deg2rad(getObjectData.response.tmsdb[ref_i].ry));
-          Matrix3 rot = rotFromRpy(rpy);
-          callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
-          callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), rot));
-        object_state_[oID] = true;
-      }
-    }
-
-    for(int i=0; i < MAX_ICS_OBJECT_NUM; i++){
-      if (object_state_[i]==false) callSynchronously(bind(&TmsRpController::disappear,trc_,object_name_[i]));
-    }
-
-    // update information of person in floor
-  #if PERSON==1
-    tms_msg_db::TmsdbGetData getPersonData;
-
-    getPersonData.request.tmsdb.id     = 1001;
-    getPersonData.request.tmsdb.sensor = 3001;
-
-    if (!get_data_client_.call(getPersonData))
+    if(oPosX == 0.0 && oPosY == 0.0)
     {
-      os_ << "[TmsAction] Failed to call service getPersonData ID: " << getPersonData.request.tmsdb.id << endl;
-      return;
+      callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1"));
     }
-
-    if (getPersonData.response.tmsdb.empty()==true) {
-      os_ << "[TmsAction] nothing on floor (ID="<< getPersonData.request.tmsdb.id <<")" <<endl;
-      return;
+    else
+    {
+      callSynchronously(bind(&TmsRpController::appear,trc_,"person_1"));
+      callSynchronously(bind(&TmsRpController::setPos,trc_,"person_1",Vector3(oPosX,oPosY,oPosZ),rot));
     }
-
-    if (getPersonData.response.tmsdb[0].state==1) {
-      double pPosX = getPersonData.response.tmsdb[0].x/1000;
-      double pPosY = getPersonData.response.tmsdb[0].y/1000;
-      double pPosZ = 0.9;
-      //Vector3 rpy (getPersonData.response.tmsdb[0].rr,getPersonData.response.tmsdb[0].rp,getPersonData.response.tmsdb[0].ry);
-      Vector3 rpy(0,0,deg2rad(getPersonData.response.tmsdb[0].ry));
-      Matrix3 rot = rotFromRpy(rpy);
-
-      if(pPosX == 0.0 && pPosY == 0.0) {
-        callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1"));
-      }
-      else{
-        callSynchronously(bind(&TmsRpController::appear,trc_,"person_1"));
-        callSynchronously(bind(&TmsRpController::setPos,trc_,"person_1",Vector3(pPosX,pPosY,pPosZ), rot));
-      }
-    }
+  }
   #else
     callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1"));
   #endif
-  os_ << "[TmsAction] End of update!" << endl;
 }
 
 //------------------------------------------------------------------------------
@@ -1720,7 +1513,7 @@ void TmsRpBar::moveToGoal()
       } else {
         os_ << "Failed to call service sp5_control" << endl;
       }
-      simulationInfoButtonClicked();
+      updateEnvironmentInfomation(true);
       ros::spinOnce();
       sleep(1); //temp
     }
@@ -1839,7 +1632,7 @@ void TmsRpBar::simulation()
   while (ros::ok())
   {
     if (planning_mode_ == 0)
-      simulationInfoButtonClicked();
+      updateEnvironmentInfomation(true);
 
     ros::spinOnce();
     loop_rate.sleep();
@@ -1858,7 +1651,7 @@ void TmsRpBar::connectROS()
   static ros::Rate loop_rate(100); // 0.01sec
   while (ros::ok())
   {
-    updateObjectInfo();
+    updateEnvironmentInfomation(false);
 
     static_and_dynamic_map.staticMapPublish();
     static_and_dynamic_map.dynamicMapPublish();
