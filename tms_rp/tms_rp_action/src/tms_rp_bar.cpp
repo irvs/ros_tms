@@ -186,7 +186,7 @@ TmsRpBar* TmsRpBar::instance() {
 //------------------------------------------------------------------------------
 TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
                       os_(MessageView::mainInstance()->cout()),
-                      tac_(*TmsRpController::instance()),
+                      trc_(*TmsRpController::instance()),
                       argc_(), argv_() {
   // initialize ros connect
   try{
@@ -217,70 +217,70 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
 
   //----------------------------------------------------------------------------
   // create person model
-  tac_.createRecord(1001,"person_1");
+  trc_.createRecord(1001,"person_1");
 
   // create robot model
-  tac_.createRecord(2001,"smartpal4");
-  tac_.createRecord(2002,"smartpal5_1");
-  tac_.createRecord(2003,"smartpal5_2");
-  //tac_.createRecord(2004,"turtlebot2");
-  tac_.createRecord(2005,"kobuki");
-  tac_.createRecord(2006,"kxp");
-  tac_.createRecord(2007,"wheelchair");
-  tac_.createRecord(2008,"ardrone");
-  tac_.createRecord(2009,"refrigerator");
-  tac_.createRecord(2010,"refrigerator_open");
-  tac_.createRecord(2011,"kxp2");
+  trc_.createRecord(2001,"smartpal4");
+  trc_.createRecord(2002,"smartpal5_1");
+  trc_.createRecord(2003,"smartpal5_2");
+  //trc_.createRecord(2004,"turtlebot2");
+  trc_.createRecord(2005,"kobuki");
+  trc_.createRecord(2006,"kxp");
+  trc_.createRecord(2007,"wheelchair");
+  trc_.createRecord(2008,"ardrone");
+  trc_.createRecord(2009,"refrigerator");
+  trc_.createRecord(2010,"refrigerator_open");
+  trc_.createRecord(2011,"kxp2");
 
   // create sensor model
-  tac_.createRecord(3011,"portable_sensor_1");
-  tac_.createRecord(3012,"portable_sensor_2");
-  tac_.createRecord(3013,"portable_sensor_3");
-  tac_.createRecord(3014,"portable_sensor_4");
-  tac_.createRecord(3015,"portable_sensor_5");
+  trc_.createRecord(3011,"portable_sensor_1");
+  trc_.createRecord(3012,"portable_sensor_2");
+  trc_.createRecord(3013,"portable_sensor_3");
+  trc_.createRecord(3014,"portable_sensor_4");
+  trc_.createRecord(3015,"portable_sensor_5");
 
   // create space model
-  tac_.createRecord(5001,"floor928");
-  tac_.createRecord(5002,"wall928");
-  tac_.createRecord(5005,"corridor928");
+  trc_.createRecord(5001,"floor928");
+  trc_.createRecord(5002,"wall928");
+  trc_.createRecord(5005,"corridor928");
 
   // create furniture model
-  tac_.createRecord(6001,"big_sofa");
-  tac_.createRecord(6002,"mini_sofa");
-  tac_.createRecord(6003,"small_table");
-  tac_.createRecord(6004,"tv_table");
-  tac_.createRecord(6005,"tv");
-  tac_.createRecord(6006,"partition1");
-  tac_.createRecord(6007,"partition2");
-  tac_.createRecord(6008,"partition3");
-  tac_.createRecord(6009,"bed");
-  tac_.createRecord(6010,"shelf");
-  tac_.createRecord(6011,"big_shelf");
-  tac_.createRecord(6012,"desk");
-  tac_.createRecord(6013,"chair_desk");
-  tac_.createRecord(6014,"table");
-  tac_.createRecord(6015,"chair_table1");
-  tac_.createRecord(6016,"chair_table2");
-  tac_.createRecord(6017,"shelfdoor");
-  tac_.createRecord(6018,"shelf2");
-  tac_.createRecord(6019,"wagon");
-  tac_.createRecord(6020,"sidetable");
+  trc_.createRecord(6001,"big_sofa");
+  trc_.createRecord(6002,"mini_sofa");
+  trc_.createRecord(6003,"small_table");
+  trc_.createRecord(6004,"tv_table");
+  trc_.createRecord(6005,"tv");
+  trc_.createRecord(6006,"partition1");
+  trc_.createRecord(6007,"partition2");
+  trc_.createRecord(6008,"partition3");
+  trc_.createRecord(6009,"bed");
+  trc_.createRecord(6010,"shelf");
+  trc_.createRecord(6011,"big_shelf");
+  trc_.createRecord(6012,"desk");
+  trc_.createRecord(6013,"chair_desk");
+  trc_.createRecord(6014,"table");
+  trc_.createRecord(6015,"chair_table1");
+  trc_.createRecord(6016,"chair_table2");
+  trc_.createRecord(6017,"shelfdoor");
+  trc_.createRecord(6018,"shelf2");
+  trc_.createRecord(6019,"wagon");
+  trc_.createRecord(6020,"sidetable");
 
   // create etc model
-  tac_.createRecord(20001,"blink_arrow");
-  tac_.createRecord(20002,"person_marker1");
-  tac_.createRecord(20003,"person_marker2");
-  tac_.createRecord(20004,"person_marker3");
-  tac_.createRecord(20005,"person_marker4");
-  tac_.createRecord(20006,"person_marker5");
-  tac_.createRecord(20007,"ardrone_goal_position");
-  tac_.createRecord(20008,"static_map");
-  tac_.createRecord(20009,"dynamic_map");
-  tac_.createRecord(20010,"local_map");
-  tac_.createRecord(20011,"path_map");
-  tac_.createRecord(20012,"robot_marker");
-  tac_.createRecord(20013,"collision_target");
-  tac_.createRecord(20014,"smartpal_goal");
+  trc_.createRecord(20001,"blink_arrow");
+  trc_.createRecord(20002,"person_marker1");
+  trc_.createRecord(20003,"person_marker2");
+  trc_.createRecord(20004,"person_marker3");
+  trc_.createRecord(20005,"person_marker4");
+  trc_.createRecord(20006,"person_marker5");
+  trc_.createRecord(20007,"ardrone_goal_position");
+  trc_.createRecord(20008,"static_map");
+  trc_.createRecord(20009,"dynamic_map");
+  trc_.createRecord(20010,"local_map");
+  trc_.createRecord(20011,"path_map");
+  trc_.createRecord(20012,"robot_marker");
+  trc_.createRecord(20013,"collision_target");
+  trc_.createRecord(20014,"smartpal_goal");
 
   // arrange model
   mat0_       <<  1, 0, 0, 0, 1, 0, 0, 0, 1;  //   0
@@ -303,10 +303,10 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
     posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
 
-    tac_.appear("person_1");
-    tac_.setPos("person_1",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+    trc_.appear("person_1");
+    trc_.setPos("person_1",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
   } else {
-    tac_.appear("person_1");
+    trc_.appear("person_1");
     ROS_ERROR("[TmsAction] Failed to call service get_db_data");
   }
 
@@ -321,10 +321,10 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
 //    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
 //    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
 
-//    tac_.appear("smartpal4");
-//    tac_.setPos("smartpal4",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+//    trc_.appear("smartpal4");
+//    trc_.setPos("smartpal4",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
 //  } else {
-//    tac_.appear("smartpal4");
+//    trc_.appear("smartpal4");
 //    ROS_ERROR("[TmsAction] Failed to call service get_db_data");
 //  }
 
@@ -339,10 +339,10 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
     posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
 
-    tac_.appear("smartpal5_1");
-    tac_.setPos("smartpal5_1",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+    trc_.appear("smartpal5_1");
+    trc_.setPos("smartpal5_1",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
   } else {
-    tac_.appear("smartpal5_1");
+    trc_.appear("smartpal5_1");
     ROS_ERROR("[TmsAction] Failed to call service get_db_data");
   }
 
@@ -357,10 +357,10 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
     posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
 
-    tac_.appear("smartpal5_2");
-    tac_.setPos("smartpal5_2",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+    trc_.appear("smartpal5_2");
+    trc_.setPos("smartpal5_2",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
   } else {
-    tac_.appear("smartpal5_2");
+    trc_.appear("smartpal5_2");
     ROS_ERROR("[TmsAction] Failed to call service get_db_data");
   }
 
@@ -375,10 +375,10 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
     posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
 
-    tac_.appear("kobuki");
-    tac_.setPos("kobuki",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+    trc_.appear("kobuki");
+    trc_.setPos("kobuki",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
   } else {
-    tac_.appear("kobuki");
+    trc_.appear("kobuki");
     ROS_ERROR("[TmsAction] Failed to call service get_db_data");
   }
 
@@ -393,14 +393,14 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
     posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
 
-    tac_.appear("kxp");
-    tac_.setPos("kxp",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+    trc_.appear("kxp");
+    trc_.setPos("kxp",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
 
-    tac_.disappear("kxp2");
-    tac_.setPos("kxp2",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+    trc_.disappear("kxp2");
+    trc_.setPos("kxp2",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
   } else {
-    tac_.appear("kxp");
-    tac_.disappear("kxp2");
+    trc_.appear("kxp");
+    trc_.disappear("kxp2");
     ROS_ERROR("[TmsAction] Failed to call service get_db_data");
   }
 
@@ -415,10 +415,10 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
     posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
 
-    tac_.appear("wheelchair");
-    tac_.setPos("wheelchair",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+    trc_.appear("wheelchair");
+    trc_.setPos("wheelchair",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
   } else {
-    tac_.appear("wheelchair");
+    trc_.appear("wheelchair");
     ROS_ERROR("[TmsAction] Failed to call service get_db_data");
   }
 
@@ -433,14 +433,14 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
     posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
 
-    tac_.appear("ardrone");
-    tac_.setPos("ardrone",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+    trc_.appear("ardrone");
+    trc_.setPos("ardrone",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
 
-    tac_.disappear("ardrone_goal_position");
-    tac_.setPos("ardrone_goal_position",   Vector3(posX+1,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+    trc_.disappear("ardrone_goal_position");
+    trc_.setPos("ardrone_goal_position",   Vector3(posX+1,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
   } else {
-    tac_.appear("ardrone");
-    tac_.disappear("ardrone_goal_position");
+    trc_.appear("ardrone");
+    trc_.disappear("ardrone_goal_position");
     ROS_ERROR("[TmsAction] Failed to call service get_db_data");
   }
 
@@ -455,14 +455,14 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
     posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
 
-    tac_.appear("refrigerator");
-    tac_.setPos("refrigerator",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+    trc_.appear("refrigerator");
+    trc_.setPos("refrigerator",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
 
-    tac_.disappear("refrigerator_open");
-    tac_.setPos("refrigerator_open",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+    trc_.disappear("refrigerator_open");
+    trc_.setPos("refrigerator_open",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
   } else {
-    tac_.appear("refrigerator");
-    tac_.disappear("refrigerator_open");
+    trc_.appear("refrigerator");
+    trc_.disappear("refrigerator_open");
     ROS_ERROR("[TmsAction] Failed to call service get_db_data");
   }
 
@@ -477,10 +477,10 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
     posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
 
-    tac_.appear("floor928");
-    tac_.setPos("floor928",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+    trc_.appear("floor928");
+    trc_.setPos("floor928",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
   } else {
-    tac_.appear("floor928");
+    trc_.appear("floor928");
     ROS_ERROR("[TmsAction] Failed to call service get_db_data");
   }
 
@@ -495,10 +495,10 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
     posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
 
-    tac_.appear("wall928");
-    tac_.setPos("wall928", Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+    trc_.appear("wall928");
+    trc_.setPos("wall928", Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
   } else {
-    tac_.appear("wall928");
+    trc_.appear("wall928");
     ROS_ERROR("[TmsAction] Failed to call service get_db_data");
   }
 
@@ -513,10 +513,10 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
     posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
 
-    tac_.appear("corridor928");
-    tac_.setPos("corridor928", Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+    trc_.appear("corridor928");
+    trc_.setPos("corridor928", Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
   } else {
-    tac_.appear("corridor928");
+    trc_.appear("corridor928");
     ROS_ERROR("[TmsAction] Failed to call service get_db_data");
   }
 
@@ -536,11 +536,11 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
       posRR= deg2rad(get_db_data.response.tmsdb[0].rr);
       posRP= deg2rad(get_db_data.response.tmsdb[0].rp);
       posRY= deg2rad(get_db_data.response.tmsdb[0].ry);
-      tac_.appear(furniture_name_[furnitureID]);
-      tac_.setPos(furniture_name_[furnitureID],Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+      trc_.appear(furniture_name_[furnitureID]);
+      trc_.setPos(furniture_name_[furnitureID],Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
 
     } else {
-      tac_.appear(furniture_name_[furnitureID]);
+      trc_.appear(furniture_name_[furnitureID]);
       os_ << "[TmsAction] Failed to call service get_db_data ID: " << get_db_data.request.tmsdb.id << endl;
     }
   }
@@ -548,12 +548,12 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   //----------------------------------------------------------------------------
   //  appear and setpos object_ model
   for(int i=0; i<25; i++) {
-    tac_.createRecord(7001+i, object_name_[i]);
+    trc_.createRecord(7001+i, object_name_[i]);
   }
 
   //----------------------------------------------------------------------------
-  tac_.createRobotRecord(2002,"smartpal5_1");
-  //tac_.createRobotRecord(2006,"kxp");
+  trc_.createRobotRecord(2002,"smartpal5_1");
+  //trc_.createRobotRecord(2006,"kxp");
 
   //------------------------------------------------------------------------------
   addLabel(("[ROS-TMS]"));
@@ -575,23 +575,23 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   addSeparator();
 
   static_map_toggle_ = addToggleButton(QIcon(":/action/icons/static_map.png"), ("staic map"));
-  static_map_toggle_->sigToggled().connect(bind(&TmsRpBar::staticMapButtonClicked, this));
+//  static_map_toggle_->sigToggled().connect(bind(&TmsRpBar::viewStaticMap, this));
   static_map_toggle_->setChecked(false);
 
   dynamic_map_toggle_= addToggleButton(QIcon(":/action/icons/dynamic_map.png"), ("dynamic map"));
-  dynamic_map_toggle_->sigToggled().connect(bind(&TmsRpBar::dynamicMapButtonClicked, this));
+//  dynamic_map_toggle_->sigToggled().connect(bind(&TmsRpBar::viewDynamicMap, this));
   dynamic_map_toggle_->setChecked(false);
 
   local_map_toggle_ = addToggleButton(QIcon(":/action/icons/local_map.png"), ("local map"));
-  local_map_toggle_->sigToggled().connect(bind(&TmsRpBar::staticMapButtonClicked, this));
+//  local_map_toggle_->sigToggled().connect(bind(&TmsRpBar::viewStaticMap, this));
   local_map_toggle_->setChecked(false);
 
   path_map_toggle_ = addToggleButton(QIcon(":/action/icons/path_map.png"), ("option of path view"));
-  path_map_toggle_->sigToggled().connect(bind(&TmsRpBar::pathMapButtonClicked, this));
+//  path_map_toggle_->sigToggled().connect(bind(&TmsRpBar::viewPathOfRobot, this));
   path_map_toggle_->setChecked(false);
 
   robot_map_toggle_ = addToggleButton(QIcon(":/action/icons/robot_map.png"), ("option of robot marker"));
-  robot_map_toggle_->sigToggled().connect(bind(&TmsRpBar::robotMapButtonClicked, this));
+//  robot_map_toggle_->sigToggled().connect(bind(&TmsRpBar::viewMarkerOfRobot, this));
   robot_map_toggle_->setChecked(false);
 
   addSeparator();
@@ -680,19 +680,19 @@ void TmsRpBar::makeCollisionMapButtonClicked()
   }
   else
   {
-    tac_.disappear("person_1");
-    tac_.disappear("smartpal4");
-    tac_.disappear("smartpal5_1");
-    tac_.disappear("smartpal5_2");
-    tac_.disappear("turtlebot2");
-    tac_.disappear("kobuki");
-    tac_.disappear("kxp");
-    tac_.disappear("wheelchair");
-    tac_.disappear("ardrone");
-    tac_.disappear("kxp2");
-    tac_.disappear("floor928");
-    tac_.disappear("corridor928");
-    tac_.disappear("wagon");
+    trc_.disappear("person_1");
+    trc_.disappear("smartpal4");
+    trc_.disappear("smartpal5_1");
+    trc_.disappear("smartpal5_2");
+    trc_.disappear("turtlebot2");
+    trc_.disappear("kobuki");
+    trc_.disappear("kxp");
+    trc_.disappear("wheelchair");
+    trc_.disappear("ardrone");
+    trc_.disappear("kxp2");
+    trc_.disappear("floor928");
+    trc_.disappear("corridor928");
+    trc_.disappear("wagon");
 
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly))
@@ -729,9 +729,13 @@ void TmsRpBar::makeCollisionMapButtonClicked()
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::staticMapButtonClicked()
+void TmsRpBar::viewStaticMap()
 {
-  TmsRpController trc;
+  if(!static_map_toggle_->isChecked())
+  {
+    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"static_map"));
+    return;
+  }
 
   if(static_map_data_.rps_map_x.size()==0)
   {
@@ -739,16 +743,10 @@ void TmsRpBar::staticMapButtonClicked()
     return;
   }
 
-  if(!static_map_toggle_->isChecked())
-  {
-    trc.disappear("static_map");
-    return;
-  }
-
-  ROS_INFO("On viewer for static map");
+  ROS_INFO("on view option for static map");
 
   SgPointsDrawing::SgLastRenderer(0,true);
-  SgGroupPtr node = (SgGroup*)trc.objTag2Item()["static_map"]->body()->link(0)->shape();
+  SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["static_map"]->body()->link(0)->shape();
 
   SgPointsGet visit;
   node->accept(visit);
@@ -763,16 +761,18 @@ void TmsRpBar::staticMapButtonClicked()
   visit.shape[0]->mesh()->triangles().clear();
   node->addChild(cr);
 
-  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["static_map"],false);
-  MessageView::mainInstance()->flush();
-  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["static_map"],true);
-  MessageView::mainInstance()->flush();
+  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"static_map"));
+  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"static_map"));
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::dynamicMapButtonClicked()
+void TmsRpBar::viewDynamicMap()
 {
-  TmsRpController trc;
+  if(!dynamic_map_toggle_->isChecked())
+  {
+    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"dynamic_map"));
+    return;
+  }
 
   if(dynamic_map_data_.rps_map_x.size()==0)
   {
@@ -780,16 +780,10 @@ void TmsRpBar::dynamicMapButtonClicked()
     return;
   }
 
-  if(!dynamic_map_toggle_->isChecked())
-  {
-    trc.disappear("dynamic_map");
-    return;
-  }
-
-  ROS_INFO("On viewer for dynamic map");
+  ROS_INFO("on view option for dynamic map");
 
   SgPointsDrawing::SgLastRenderer(0,true);
-  SgGroupPtr node = (SgGroup*)trc.objTag2Item()["dynamic_map"]->body()->link(0)->shape();
+  SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["dynamic_map"]->body()->link(0)->shape();
 
   SgPointsGet visit;
   node->accept(visit);
@@ -804,30 +798,26 @@ void TmsRpBar::dynamicMapButtonClicked()
   visit.shape[0]->mesh()->triangles().clear();
   node->addChild(cr);
 
-  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["dynamic_map"],false);
-  MessageView::mainInstance()->flush();
-  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["dynamic_map"],true);
-  MessageView::mainInstance()->flush();
+  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"dynamic_map"));
+  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"dynamic_map"));
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::pathMapButtonClicked()
+void TmsRpBar::viewPathOfRobot()
 {
-  TmsRpController trc;
+  if(!path_map_toggle_->isChecked()){
+    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"path_map"));
+    return;
+  }
 
   if(path_map_data_.rps_route.size()==0){
-    ROS_INFO("nothing the path map data");
+    ROS_INFO("nothing the path map data for viewPathOfRobot");
     return;
   }
 
-  if(!path_map_toggle_->isChecked()){
-    trc.disappear("path_map");
-    return;
-  }
-
-  ROS_INFO("On viewer for path map");
+  ROS_INFO("on view option for path map");
   SgPointsDrawing::SgLastRenderer(0,true);
-  SgGroupPtr node  = (SgGroup*)trc.objTag2Item()["path_map"]->body()->link(0)->shape();
+  SgGroupPtr node  = (SgGroup*)trc_.objTag2Item()["path_map"]->body()->link(0)->shape();
 
   SgPointsGet visit;
   node->accept(visit);
@@ -841,30 +831,25 @@ void TmsRpBar::pathMapButtonClicked()
   visit.shape[0]->mesh()->triangles().clear();
   node->addChild(cr);
 
-  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["path_map"],false);
-  MessageView::mainInstance()->flush();
-  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["path_map"],true);
-  MessageView::mainInstance()->flush();
+  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"path_map"));
+  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"path_map"));
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::robotMapButtonClicked()
+void TmsRpBar::viewMarkerOfRobot()
 {
-  TmsRpController trc;
-
-  if(path_map_data_.rps_route.size()==0){
-    ROS_INFO("nothing the path map data");
-    return;
-  }
-
   if(!robot_map_toggle_->isChecked()){
-    trc.disappear("robot_marker");
+    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"robot_marker"));
+    return;
+  }
+    if(path_map_data_.rps_route.size()==0){
+    ROS_INFO("nothing the path map data for robot_marker");
     return;
   }
 
-  ROS_INFO("On viewer for robot marker");
+  ROS_INFO("On view option for robot marker");
   SgPointsDrawing::SgLastRenderer(0,true);
-  SgGroupPtr node  = (SgGroup*)trc.objTag2Item()["robot_marker"]->body()->link(0)->shape();
+  SgGroupPtr node  = (SgGroup*)trc_.objTag2Item()["robot_marker"]->body()->link(0)->shape();
 
   SgPointsGet visit;
   node->accept(visit);
@@ -878,10 +863,8 @@ void TmsRpBar::robotMapButtonClicked()
   visit.shape[0]->mesh()->triangles().clear();
   node->addChild(cr);
 
-  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["robot_marker"],false);
-  MessageView::mainInstance()->flush();
-  ItemTreeView::mainInstance()->checkItem(trc.objTag2Item()["robot_marker"],true);
-  MessageView::mainInstance()->flush();
+  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"robot_marker"));
+  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"robot_marker"));
 }
 
 //------------------------------------------------------------------------------
@@ -925,29 +908,29 @@ void TmsRpBar::updateObjectInfo()
 
       if(getRobotData.request.tmsdb.id == 2001) {
         if(rPosX == 0.0 && rPosY == 0.0) {
-          callLater(bind(&TmsRpController::disappear,tac_,"smartpal4"));
+          callLater(bind(&TmsRpController::disappear,trc_,"smartpal4"));
         }
         else{
-          callLater(bind(&TmsRpController::appear,tac_,"smartpal4"));
-          callLater(bind(&TmsRpController::setPos,tac_,"smartpal4",Vector3(rPosX,rPosY,rPosZ), rot));
+          callLater(bind(&TmsRpController::appear,trc_,"smartpal4"));
+          callLater(bind(&TmsRpController::setPos,trc_,"smartpal4",Vector3(rPosX,rPosY,rPosZ), rot));
         }
       }
       else if(getRobotData.request.tmsdb.id == 2002) {
         if(rPosX == 0.0 && rPosY == 0.0) {
-          callLater(bind(&TmsRpController::disappear,tac_,"smartpal5_1"));
+          callLater(bind(&TmsRpController::disappear,trc_,"smartpal5_1"));
         }
         else{
-          callLater(bind(&TmsRpController::appear,tac_,"smartpal5_1"));
-          callLater(bind(&TmsRpController::setPos,tac_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot));
+          callLater(bind(&TmsRpController::appear,trc_,"smartpal5_1"));
+          callLater(bind(&TmsRpController::setPos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot));
         }
       }
       else if(getRobotData.request.tmsdb.id == 2003) {
         if(rPosX == 0.0 && rPosY == 0.0) {
-          callLater(bind(&TmsRpController::disappear,tac_,"smartpal5_2"));
+          callLater(bind(&TmsRpController::disappear,trc_,"smartpal5_2"));
         }
         else{
-          callLater(bind(&TmsRpController::appear,tac_,"smartpal5_2"));
-          callLater(bind(&TmsRpController::setPos,tac_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot));
+          callLater(bind(&TmsRpController::appear,trc_,"smartpal5_2"));
+          callLater(bind(&TmsRpController::setPos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot));
         }
       }
     }
@@ -967,7 +950,7 @@ void TmsRpBar::updateObjectInfo()
 
   if (getRobotData.response.tmsdb.empty()==true) {
     os_ << "[TmsAction] Error (ID="<< getRobotData.request.tmsdb.id <<")" <<endl;
-    callLater(bind(&TmsRpController::disappear,tac_,"kobuki"));
+    callLater(bind(&TmsRpController::disappear,trc_,"kobuki"));
   } else if (getRobotData.response.tmsdb[0].state==1) {
     double rPosX = getRobotData.response.tmsdb[0].x/1000;
     double rPosY = getRobotData.response.tmsdb[0].y/1000;
@@ -976,11 +959,11 @@ void TmsRpBar::updateObjectInfo()
     Matrix3 rot = rotFromRpy(rpy);
 
     if(rPosX == 0.0 && rPosY == 0.0) {
-      callLater(bind(&TmsRpController::disappear,tac_,"kobuki"));
+      callLater(bind(&TmsRpController::disappear,trc_,"kobuki"));
     }
     else{
-      callLater(bind(&TmsRpController::appear,tac_,"kobuki"));
-      callLater(bind(&TmsRpController::setPos,tac_,"kobuki",Vector3(rPosX,rPosY,rPosZ), rot));
+      callLater(bind(&TmsRpController::appear,trc_,"kobuki"));
+      callLater(bind(&TmsRpController::setPos,trc_,"kobuki",Vector3(rPosX,rPosY,rPosZ), rot));
     }
   }
 
@@ -998,7 +981,7 @@ void TmsRpBar::updateObjectInfo()
 
   if (getRobotData.response.tmsdb.empty()==true) {
     os_ << "[TmsAction] Error (ID="<< getRobotData.request.tmsdb.id <<")" <<endl;
-    callLater(bind(&TmsRpController::disappear,tac_,"kxp"));
+    callLater(bind(&TmsRpController::disappear,trc_,"kxp"));
   } else if (getRobotData.response.tmsdb[0].state==1) {
     double rPosX = getRobotData.response.tmsdb[0].x/1000;
     double rPosY = getRobotData.response.tmsdb[0].y/1000;
@@ -1007,11 +990,11 @@ void TmsRpBar::updateObjectInfo()
     Matrix3 rot = rotFromRpy(rpy);
 
     if(rPosX == 0.0 && rPosY == 0.0) {
-      callLater(bind(&TmsRpController::disappear,tac_,"kxp"));
+      callLater(bind(&TmsRpController::disappear,trc_,"kxp"));
     }
     else{
-      callLater(bind(&TmsRpController::appear,tac_,"kxp"));
-      callLater(bind(&TmsRpController::setPos,tac_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot));
+      callLater(bind(&TmsRpController::appear,trc_,"kxp"));
+      callLater(bind(&TmsRpController::setPos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot));
     }
   }
 
@@ -1029,7 +1012,7 @@ void TmsRpBar::updateObjectInfo()
 
   if (getRobotData.response.tmsdb.empty()==true) {
     os_ << "[TmsAction] Error (ID="<< getRobotData.request.tmsdb.id <<")" <<endl;
-    callLater(bind(&TmsRpController::disappear,tac_,"wheelchair"));
+    callLater(bind(&TmsRpController::disappear,trc_,"wheelchair"));
   } else if (getRobotData.response.tmsdb[0].state==1) {
     double rPosX = getRobotData.response.tmsdb[0].x/1000;
     double rPosY = getRobotData.response.tmsdb[0].y/1000;
@@ -1038,11 +1021,11 @@ void TmsRpBar::updateObjectInfo()
     Matrix3 rot = rotFromRpy(rpy);
 
     if(rPosX == 0.0 && rPosY == 0.0) {
-      callLater(bind(&TmsRpController::disappear,tac_,"wheelchair"));
+      callLater(bind(&TmsRpController::disappear,trc_,"wheelchair"));
     }
     else{
-      callLater(bind(&TmsRpController::appear,tac_,"wheelchair"));
-      callLater(bind(&TmsRpController::setPos,tac_,"wheelchair",Vector3(rPosX,rPosY,rPosZ), rot));
+      callLater(bind(&TmsRpController::appear,trc_,"wheelchair"));
+      callLater(bind(&TmsRpController::setPos,trc_,"wheelchair",Vector3(rPosX,rPosY,rPosZ), rot));
     }
   }
 
@@ -1060,7 +1043,7 @@ void TmsRpBar::updateObjectInfo()
 
   if (getRobotData.response.tmsdb.empty()==true) {
     os_ << "[TmsAction] Error (ID="<< getRobotData.request.tmsdb.id <<")" <<endl;
-    callLater(bind(&TmsRpController::disappear,tac_,"ardrone"));
+    callLater(bind(&TmsRpController::disappear,trc_,"ardrone"));
   } else if (getRobotData.response.tmsdb[0].state==1) {
     double rPosX = getRobotData.response.tmsdb[0].x/1000;
     double rPosY = getRobotData.response.tmsdb[0].y/1000;
@@ -1069,11 +1052,11 @@ void TmsRpBar::updateObjectInfo()
     Matrix3 rot = rotFromRpy(rpy);
 
     if(rPosX == 0.0 && rPosY == 0.0) {
-      callLater(bind(&TmsRpController::disappear,tac_,"ardrone"));
+      callLater(bind(&TmsRpController::disappear,trc_,"ardrone"));
     }
     else{
-      callLater(bind(&TmsRpController::appear,tac_,"ardrone"));
-      callLater(bind(&TmsRpController::setPos,tac_,"ardrone",Vector3(rPosX,rPosY,rPosZ), rot));
+      callLater(bind(&TmsRpController::appear,trc_,"ardrone"));
+      callLater(bind(&TmsRpController::setPos,trc_,"ardrone",Vector3(rPosX,rPosY,rPosZ), rot));
     }
   }
 
@@ -1095,14 +1078,14 @@ void TmsRpBar::updateObjectInfo()
   }
 
   if (getRobotData.response.tmsdb[0].state==0) {
-    callLater(bind(&TmsRpController::disappear,tac_,"refrigerator"));
-    callLater(bind(&TmsRpController::disappear,tac_,"refrigerator_open"));
+    callLater(bind(&TmsRpController::disappear,trc_,"refrigerator"));
+    callLater(bind(&TmsRpController::disappear,trc_,"refrigerator_open"));
   } else if (getRobotData.response.tmsdb[0].state==1) {
-    callLater(bind(&TmsRpController::appear,tac_,"refrigerator"));
-    callLater(bind(&TmsRpController::disappear,tac_,"refrigerator_open"));
+    callLater(bind(&TmsRpController::appear,trc_,"refrigerator"));
+    callLater(bind(&TmsRpController::disappear,trc_,"refrigerator_open"));
   } else if (getRobotData.response.tmsdb[0].state==2) {
-    callLater(bind(&TmsRpController::disappear,tac_,"refrigerator"));
-    callLater(bind(&TmsRpController::appear,tac_,"refrigerator_open"));
+    callLater(bind(&TmsRpController::disappear,trc_,"refrigerator"));
+    callLater(bind(&TmsRpController::appear,trc_,"refrigerator_open"));
   }
 
   //----------------------------------------------------------------------------
@@ -1119,7 +1102,7 @@ void TmsRpBar::updateObjectInfo()
 
   if (getRobotData.response.tmsdb.empty()==true) {
     os_ << "[TmsAction] Error (ID="<< getRobotData.request.tmsdb.id <<")" <<endl;
-    callLater(bind(&TmsRpController::disappear,tac_,"wagon"));
+    callLater(bind(&TmsRpController::disappear,trc_,"wagon"));
   } else if (getRobotData.response.tmsdb[0].state==1) {
     double rPosX = getRobotData.response.tmsdb[0].x/1000;
     double rPosY = getRobotData.response.tmsdb[0].y/1000;
@@ -1128,11 +1111,11 @@ void TmsRpBar::updateObjectInfo()
     Matrix3 rot = rotFromRpy(rpy);
 
     if(rPosX == 0.0 && rPosY == 0.0) {
-      callLater(bind(&TmsRpController::disappear,tac_,"wagon"));
+      callLater(bind(&TmsRpController::disappear,trc_,"wagon"));
     }
     else{
-      callLater(bind(&TmsRpController::appear,tac_,"wagon"));
-      callLater(bind(&TmsRpController::setPos,tac_,"wagon",Vector3(rPosX,rPosY,rPosZ), rot));
+      callLater(bind(&TmsRpController::appear,trc_,"wagon"));
+      callLater(bind(&TmsRpController::setPos,trc_,"wagon",Vector3(rPosX,rPosY,rPosZ), rot));
     }
   }
 
@@ -1163,14 +1146,14 @@ void TmsRpBar::updateObjectInfo()
 //      double oPosX = 3.66 + getObjectData.response.tmsdb[0].y/1000;
 //      double oPosY = 1.87 - getObjectData.response.tmsdb[0].x/1000;
 //      double oPosZ = 0.0 + getObjectData.response.tmsdb[0].z/1000;
-//      callLater(bind(&TmsRpController::appear,tac_,object_name_[oID]));
-//      callLater(bind(&TmsRpController::setPos,tac_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
+//      callLater(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+//      callLater(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
 //      object_state_[oID] = true;
 //    }
 //  }
 
 //  for(int i=0; i < MAX_ICS_OBJECT_NUM; i++){
-//    if (object_state_[i]==false) callLater(bind(&TmsRpController::disappear,tac_,object_name_[i]));
+//    if (object_state_[i]==false) callLater(bind(&TmsRpController::disappear,trc_,object_name_[i]));
 //  }
 
   //----------------------------------------------------------------------------
@@ -1199,8 +1182,8 @@ void TmsRpBar::updateObjectInfo()
       double oPosX = 4.5 - getObjectData.response.tmsdb[0].y/1000;
       double oPosY = 2.3 + getObjectData.response.tmsdb[0].x/1000;
       double oPosZ = 0.0 + getObjectData.response.tmsdb[0].z/1000;
-      callSynchronously(bind(&TmsRpController::appear,tac_,object_name_[oID]));
-      callSynchronously(bind(&TmsRpController::setPos,tac_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
+      callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+      callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
       object_state_[oID] = true;
     }
     //----------------------------------------------------------------------------
@@ -1224,8 +1207,8 @@ void TmsRpBar::updateObjectInfo()
       double oPosX = 4.3  - getObjectData.response.tmsdb[0].y/1000;
       double oPosY = 1.7 + getObjectData.response.tmsdb[0].x/1000;
       double oPosZ = 0.08 + getObjectData.response.tmsdb[0].z/1000;
-      callSynchronously(bind(&TmsRpController::appear,tac_,object_name_[oID]));
-      callSynchronously(bind(&TmsRpController::setPos,tac_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
+      callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+      callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
       object_state_[oID] = true;
     }
 
@@ -1250,15 +1233,15 @@ void TmsRpBar::updateObjectInfo()
             double oPosX = getObjectData.response.tmsdb[0].x/1000;
             double oPosY = getObjectData.response.tmsdb[0].y/1000;
             double oPosZ = getObjectData.response.tmsdb[0].z/1000;
-            callSynchronously(bind(&TmsRpController::appear,tac_,object_name_[oID]));
-            callSynchronously(bind(&TmsRpController::setPos,tac_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
+            callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+            callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
             object_state_[oID] = true;
         }
     }
   }
 
   for(int i=0; i < MAX_ICS_OBJECT_NUM; i++){
-    if (object_state_[i]==false) callLater(bind(&TmsRpController::disappear,tac_,object_name_[i]));
+    if (object_state_[i]==false) callLater(bind(&TmsRpController::disappear,trc_,object_name_[i]));
   }
 
   //----------------------------------------------------------------------------
@@ -1290,15 +1273,15 @@ void TmsRpBar::updateObjectInfo()
     Matrix3 rot = rotFromRpy(rpy);
 
     if(pPosX == 0.0 && pPosY == 0.0) {
-      callLater(bind(&TmsRpController::disappear,tac_,"person_1"));
+      callLater(bind(&TmsRpController::disappear,trc_,"person_1"));
     }
     else{
-      callLater(bind(&TmsRpController::appear,tac_,"person_1"));
-      callLater(bind(&TmsRpController::setPos,tac_,"person_1",Vector3(pPosX,pPosY,pPosZ),rot));
+      callLater(bind(&TmsRpController::appear,trc_,"person_1"));
+      callLater(bind(&TmsRpController::setPos,trc_,"person_1",Vector3(pPosX,pPosY,pPosZ),rot));
     }
   }
 #else
-  callLater(bind(&TmsRpController::disappear,tac_,"person_1"));
+  callLater(bind(&TmsRpController::disappear,trc_,"person_1"));
 #endif
   os_ << "[TmsAction] End of update!" << endl;
 }
@@ -1372,90 +1355,90 @@ void TmsRpBar::simulationInfoButtonClicked()
 
       if(getRobotData.request.tmsdb.id == 2001) {
         if(rPosX == 0.0 && rPosY == 0.0) {
-          callSynchronously(bind(&TmsRpController::disappear,tac_,"smartpal4"));
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal4"));
         }
         else{
-          callSynchronously(bind(&TmsRpController::appear,tac_,"smartpal4"));
-          callSynchronously(bind(&TmsRpController::setPos,tac_,"smartpal4",Vector3(rPosX,rPosY,rPosZ), rot));
+          callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal4"));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal4",Vector3(rPosX,rPosY,rPosZ), rot));
         }
       }
       else if(getRobotData.request.tmsdb.id == 2002) {
         if(rPosX == 0.0 && rPosY == 0.0) {
-          callSynchronously(bind(&TmsRpController::disappear,tac_,"smartpal5_1"));
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_1"));
         }
         else{
           if (grasping_ == 0) {
-              callSynchronously(bind(&TmsRpController::appear,tac_,"smartpal5_1"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,tac_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+              callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_1"));
+              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           } else if (grasping_ == 2) {
-              callSynchronously(bind(&TmsRpController::appear,tac_,"smartpal5_1"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,tac_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+              callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_1"));
+              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           }else {
-              callSynchronously(bind(&TmsRpController::disappear,tac_,"smartpal5_1"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,tac_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+              callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_1"));
+              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           }
           // joint appear
           //int state;
-          //callSynchronously(bind(&TmsRpController::setRobotPosture, tac_, 0, "2002", seq_of_joint, &state));
+          //callSynchronously(bind(&TmsRpController::setRobotPosture, trc_, 0, "2002", seq_of_joint, &state));
           }
       }
       else if(getRobotData.request.tmsdb.id == 2003) {
         if(rPosX == 0.0 && rPosY == 0.0) {
-          callSynchronously(bind(&TmsRpController::disappear,tac_,"smartpal5_2"));
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_2"));
         }
         else{
           if (grasping_ == 0) {
-              callSynchronously(bind(&TmsRpController::disappear,tac_,"smartpal5_2"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,tac_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+              callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_2"));
+              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           } else if (grasping_ == 2) {
-              callSynchronously(bind(&TmsRpController::appear,tac_,"smartpal5_2"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,tac_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+              callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_2"));
+              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           } else {
-              callSynchronously(bind(&TmsRpController::appear,tac_,"smartpal5_2"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,tac_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+              callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_2"));
+              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           }
         }
       }
       else if(getRobotData.request.tmsdb.id == 2005) {
         if(rPosX == 0.0 && rPosY == 0.0) {
-          callSynchronously(bind(&TmsRpController::disappear,tac_,"kobuki"));
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"kobuki"));
         }
         else{
-          callSynchronously(bind(&TmsRpController::appear,tac_,"kobuki"));
-          callSynchronously(bind(&TmsRpController::setPos,tac_,"kobuki",Vector3(rPosX,rPosY,rPosZ), rot));
+          callSynchronously(bind(&TmsRpController::appear,trc_,"kobuki"));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,"kobuki",Vector3(rPosX,rPosY,rPosZ), rot));
         }
       }
       else if(getRobotData.request.tmsdb.id == 2006) {
         if(rPosX == 0.0 && rPosY == 0.0) {
-          callSynchronously(bind(&TmsRpController::disappear,tac_,"kxp"));
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp"));
         }
         else{
           if (grasping_ == 0) {
-              callSynchronously(bind(&TmsRpController::appear,tac_,"kxp"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,tac_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+              callSynchronously(bind(&TmsRpController::appear,trc_,"kxp"));
+              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           } else if (grasping_ == 2) {
-              callSynchronously(bind(&TmsRpController::appear,tac_,"kxp"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,tac_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+              callSynchronously(bind(&TmsRpController::appear,trc_,"kxp"));
+              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           }else {
-              callSynchronously(bind(&TmsRpController::disappear,tac_,"kxp"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,tac_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+              callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp"));
+              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           }
         }
       }
       else if(getRobotData.request.tmsdb.id == 2011) {
         if(rPosX == 0.0 && rPosY == 0.0) {
-          callSynchronously(bind(&TmsRpController::disappear,tac_,"kxp2"));
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp2"));
         }
         else{
           if (grasping_ == 0) {
-              callSynchronously(bind(&TmsRpController::disappear,tac_,"kxp2"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,tac_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+              callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp2"));
+              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           } else if (grasping_ == 2) {
-              callSynchronously(bind(&TmsRpController::appear,tac_,"kxp2"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,tac_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+              callSynchronously(bind(&TmsRpController::appear,trc_,"kxp2"));
+              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           } else {
-              callSynchronously(bind(&TmsRpController::appear,tac_,"kxp2"));
-              callSynchronously(bind(&TmsRpController::set_all_Pos,tac_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+              callSynchronously(bind(&TmsRpController::appear,trc_,"kxp2"));
+              callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           }
         }
       }
@@ -1479,11 +1462,11 @@ void TmsRpBar::simulationInfoButtonClicked()
   }
 
   if (getRobotData.response.tmsdb[0].state==1) {
-    callSynchronously(bind(&TmsRpController::appear,tac_,"refrigerator"));
-    callSynchronously(bind(&TmsRpController::disappear,tac_,"refrigerator_open"));
+    callSynchronously(bind(&TmsRpController::appear,trc_,"refrigerator"));
+    callSynchronously(bind(&TmsRpController::disappear,trc_,"refrigerator_open"));
   } else if (getRobotData.response.tmsdb[0].state==2) {
-    callSynchronously(bind(&TmsRpController::disappear,tac_,"refrigerator"));
-    callSynchronously(bind(&TmsRpController::appear,tac_,"refrigerator_open"));
+    callSynchronously(bind(&TmsRpController::disappear,trc_,"refrigerator"));
+    callSynchronously(bind(&TmsRpController::appear,trc_,"refrigerator_open"));
   }
 
   //----------------------------------------------------------------------------
@@ -1517,8 +1500,8 @@ void TmsRpBar::simulationInfoButtonClicked()
         double oPosX = 3.66 + getObjectData.response.tmsdb[ref_i].y/1000;
         double oPosY = 1.87 - getObjectData.response.tmsdb[ref_i].x/1000;
         double oPosZ = 0.0 + getObjectData.response.tmsdb[ref_i].z/1000;
-        callSynchronously(bind(&TmsRpController::appear,tac_,object_name_[oID]));
-        callSynchronously(bind(&TmsRpController::setPos,tac_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
+        callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+        callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
         object_state_[oID] = true;
       }
       else if(getObjectData.response.tmsdb[ref_i].state==1 && getObjectData.response.tmsdb[ref_i].place==5001) {
@@ -1526,8 +1509,8 @@ void TmsRpBar::simulationInfoButtonClicked()
         double oPosX = getObjectData.response.tmsdb[ref_i].x/1000;
         double oPosY = getObjectData.response.tmsdb[ref_i].y/1000;
         double oPosZ = getObjectData.response.tmsdb[ref_i].z/1000;
-        callSynchronously(bind(&TmsRpController::appear,tac_,object_name_[oID]));
-        callSynchronously(bind(&TmsRpController::setPos,tac_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
+        callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+        callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
         object_state_[oID] = true;
       }
       // object_'s place = SmartPal5(2002)
@@ -1538,14 +1521,14 @@ void TmsRpBar::simulationInfoButtonClicked()
           double oPosZ = getObjectData.response.tmsdb[ref_i].z/1000;
           Vector3 rpy (deg2rad(getObjectData.response.tmsdb[ref_i].rr),deg2rad(getObjectData.response.tmsdb[ref_i].rp),deg2rad(getObjectData.response.tmsdb[ref_i].ry));
           Matrix3 rot = rotFromRpy(rpy);
-          callSynchronously(bind(&TmsRpController::appear,tac_,object_name_[oID]));
-          callSynchronously(bind(&TmsRpController::setPos,tac_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), rot));
+          callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), rot));
         object_state_[oID] = true;
       }
     }
 
     for(int i=0; i < MAX_ICS_OBJECT_NUM; i++){
-      if (object_state_[i]==false) callSynchronously(bind(&TmsRpController::disappear,tac_,object_name_[i]));
+      if (object_state_[i]==false) callSynchronously(bind(&TmsRpController::disappear,trc_,object_name_[i]));
     }
 
     // update information of person in floor
@@ -1576,15 +1559,15 @@ void TmsRpBar::simulationInfoButtonClicked()
       Matrix3 rot = rotFromRpy(rpy);
 
       if(pPosX == 0.0 && pPosY == 0.0) {
-        callSynchronously(bind(&TmsRpController::disappear,tac_,"person_1"));
+        callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1"));
       }
       else{
-        callSynchronously(bind(&TmsRpController::appear,tac_,"person_1"));
-        callSynchronously(bind(&TmsRpController::setPos,tac_,"person_1",Vector3(pPosX,pPosY,pPosZ), rot));
+        callSynchronously(bind(&TmsRpController::appear,trc_,"person_1"));
+        callSynchronously(bind(&TmsRpController::setPos,trc_,"person_1",Vector3(pPosX,pPosY,pPosZ), rot));
       }
     }
   #else
-    callSynchronously(bind(&TmsRpController::disappear,tac_,"person_1"));
+    callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1"));
   #endif
   os_ << "[TmsAction] End of update!" << endl;
 }
@@ -1877,13 +1860,18 @@ void TmsRpBar::connectROS()
   os_ << "production_version_ = " << production_version_ << endl;
   tms_rp::TmsRpVoronoiMap static_and_dynamic_map;
 
-  static ros::Rate loop_rate(10); // 0.1sec
+  static ros::Rate loop_rate(100); // 0.01sec
   while (ros::ok())
   {
     updateObjectInfo();
 
     static_and_dynamic_map.staticMapPublish();
     static_and_dynamic_map.dynamicMapPublish();
+
+    viewStaticMap();
+    viewDynamicMap();
+    viewPathOfRobot();
+    viewMarkerOfRobot();
 
     ros::spinOnce();
     loop_rate.sleep();

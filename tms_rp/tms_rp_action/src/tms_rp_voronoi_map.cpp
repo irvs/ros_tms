@@ -14,7 +14,7 @@ TmsRpVoronoiMap* TmsRpVoronoiMap::instance()
 //------------------------------------------------------------------------------
 TmsRpVoronoiMap::TmsRpVoronoiMap(): ToolBar("TmsRpVoronoiMap"),
                                   os_(MessageView::mainInstance()->cout()),
-                                  tac_(*TmsRpController::instance()) {
+                                  trc_(*TmsRpController::instance()) {
   sid_ = 100000;
 
   static ros::NodeHandle nh;

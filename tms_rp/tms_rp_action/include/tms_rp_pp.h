@@ -23,7 +23,7 @@ class TmsRpPathPlanning : public cnoid::ToolBar, public boost::signals::trackabl
 
  private:
   std::ostream& os_;
-  grasp::TmsRpController& tac_;
+  grasp::TmsRpController& trc_;
 
   ros::Subscriber static_map_sub_;
   ros::ServiceServer service_voronoi_path_;

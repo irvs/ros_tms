@@ -36,7 +36,7 @@ class TmsRpVoronoiMap : public cnoid::ToolBar, public boost::signals::trackable
 
  private:
   std::ostream& os_;
-  grasp::TmsRpController& tac_;
+  grasp::TmsRpController& trc_;
   uint32_t sid_;
 
   ros::Publisher static_map_pub_;

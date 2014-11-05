@@ -62,7 +62,7 @@ class TmsRpSubtask : public cnoid::ToolBar, public boost::signals::trackable
 	ros::Subscriber sensing_sub;
 
 	std::ostream& os_;
-	grasp::TmsRpController& tac_;
+	grasp::TmsRpController& trc_;
 };
 
 class TmsRpView : public cnoid::ToolBar, public boost::signals::trackable
@@ -79,7 +79,7 @@ class TmsRpView : public cnoid::ToolBar, public boost::signals::trackable
 
  private:
 	Matrix3d mat0_;
-	grasp::TmsRpController& tac_;
+	grasp::TmsRpController& trc_;
 };
 }
 

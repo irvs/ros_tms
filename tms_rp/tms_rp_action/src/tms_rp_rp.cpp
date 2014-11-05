@@ -20,7 +20,7 @@ tms_rp::TmsRpSubtask* tms_rp::TmsRpSubtask::instance()
 
 //------------------------------------------------------------------------------
 tms_rp::TmsRpSubtask::TmsRpSubtask(): ToolBar("TmsRpSubtask"),
-                os_(MessageView::mainInstance()->cout()), tac_(*TmsRpController::instance()) {
+                os_(MessageView::mainInstance()->cout()), trc_(*TmsRpController::instance()) {
   sid_ = 100000;
 
   static ros::NodeHandle nh1;
@@ -317,8 +317,8 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 				    			cnoid::Vector3 rpy (0, 0, deg2rad(arg[2]));
 				    			cnoid::Matrix3 rot = grasp::rotFromRpy(rpy);
 
-							callSynchronously(bind(&grasp::TmsRpController::disappear,tac_,"smartpal5_1"));
-							callSynchronously(bind(&grasp::TmsRpController::setPos,tac_,"smartpal5_1",cnoid::Vector3(rPosX,rPosY,rPosZ), rot));
+							callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"smartpal5_1"));
+							callSynchronously(bind(&grasp::TmsRpController::setPos,trc_,"smartpal5_1",cnoid::Vector3(rPosX,rPosY,rPosZ), rot));
 				    		}
 
 				    		pb->bodyItemRobot()->body()->calcForwardKinematics();
@@ -388,8 +388,8 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 				    			cnoid::Vector3 rpy (0, 0, deg2rad(arg[2]));
 				    			cnoid::Matrix3 rot = grasp::rotFromRpy(rpy);
 
-							callSynchronously(bind(&grasp::TmsRpController::disappear,tac_,"kxp"));
-							callSynchronously(bind(&grasp::TmsRpController::setPos,tac_,"kxp",cnoid::Vector3(rPosX,rPosY,rPosZ), rot));
+							callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"kxp"));
+							callSynchronously(bind(&grasp::TmsRpController::setPos,trc_,"kxp",cnoid::Vector3(rPosX,rPosY,rPosZ), rot));
 							}
 
 				    		pb->bodyItemRobot()->body()->calcForwardKinematics();
@@ -878,7 +878,7 @@ tms_rp::TmsRpView* tms_rp::TmsRpView::instance()
 }
 
 //------------------------------------------------------------------------------
-tms_rp::TmsRpView::TmsRpView(): ToolBar("TmsRpView"), tac_(*TmsRpController::instance()) {
+tms_rp::TmsRpView::TmsRpView(): ToolBar("TmsRpView"), trc_(*TmsRpController::instance()) {
 	static ros::NodeHandle nh2;
 	rp_blink_arrow_server  = nh2.advertiseService("rp_arrow", &TmsRpView::blink_arrow, this);
 
@@ -924,28 +924,28 @@ bool tms_rp::TmsRpView::blink_arrow(tms_msg_rp::rp_arrow::Request &req,
 
   if (mode==0)
   {
-    callLater(bind(&grasp::TmsRpController::disappear,tac_,arrow_name));
+    callLater(bind(&grasp::TmsRpController::disappear,trc_,arrow_name));
     res.result = 1;
     return true;
   }
   else if (mode==1)
   {
-    callLater(bind(&grasp::TmsRpController::setPos,tac_,arrow_name,cnoid::Vector3(req.x/1000,req.y/1000,req.z/1000), mat0_));
-    callLater(bind(&grasp::TmsRpController::appear,tac_,arrow_name));
+    callLater(bind(&grasp::TmsRpController::setPos,trc_,arrow_name,cnoid::Vector3(req.x/1000,req.y/1000,req.z/1000), mat0_));
+    callLater(bind(&grasp::TmsRpController::appear,trc_,arrow_name));
     res.result = 1;
     return true;
   }
   else if (mode==2)
   {
-    callLater(bind(&grasp::TmsRpController::setPos,tac_,arrow_name,cnoid::Vector3(req.x/1000,req.y/1000,req.z/1000), mat0_));
+    callLater(bind(&grasp::TmsRpController::setPos,trc_,arrow_name,cnoid::Vector3(req.x/1000,req.y/1000,req.z/1000), mat0_));
     for (int32_t i=0; i < 2; i++)
     {
-      callLater(bind(&grasp::TmsRpController::appear,tac_,arrow_name));
+      callLater(bind(&grasp::TmsRpController::appear,trc_,arrow_name));
       sleep(1);
-      callLater(bind(&grasp::TmsRpController::disappear,tac_,arrow_name));
+      callLater(bind(&grasp::TmsRpController::disappear,trc_,arrow_name));
       sleep(1);
     }
-    callLater(bind(&grasp::TmsRpController::appear,tac_,arrow_name));
+    callLater(bind(&grasp::TmsRpController::appear,trc_,arrow_name));
     res.result = 1;
     return true;
   }
