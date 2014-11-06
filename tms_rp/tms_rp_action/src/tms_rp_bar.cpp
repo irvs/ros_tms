@@ -214,8 +214,9 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   subscribe_static_map_  = nh.subscribe("rps_map_data", 10,    &TmsRpBar::receiveStaticMapData, this);
   subscribe_dynamic_map_ = nh.subscribe("rps_dynamic_map", 10, &TmsRpBar::receiveDynamicMapData, this);
   subscribe_path_map_    = nh.subscribe("rps_robot_path", 10,  &TmsRpBar::receivePathMapData, this);
-  subscribe_lrf_raw_data1_ = nh.subscribe("/urg1/most_intense", 10,  &TmsRpBar::receiveLrfRawData1, this);
-  subscribe_lrf_raw_data2_ = nh.subscribe("/urg2/most_intense", 10,  &TmsRpBar::receiveLrfRawData2, this);
+  subscribe_lrf_raw_data1_  = nh.subscribe("/urg1/most_intense", 10,  &TmsRpBar::receiveLrfRawData1, this);
+  subscribe_lrf_raw_data2_  = nh.subscribe("/urg2/most_intense", 10,  &TmsRpBar::receiveLrfRawData2, this);
+  subscribe_person_tracker_ = nh.subscribe("/tracking_points", 10,  &TmsRpBar::receivePersonTrackerInfo, this);
 
   //----------------------------------------------------------------------------
   // create person model
@@ -284,6 +285,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   trc_.createRecord(20013,"collision_target");
   trc_.createRecord(20014,"smartpal_goal");
   trc_.createRecord(20015,"lrf_raw_data");
+  trc_.createRecord(20016,"person_tracker");
 
   // arrange model
   mat0_       <<  1, 0, 0, 0, 1, 0, 0, 0, 1;  //   0
@@ -597,6 +599,9 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   point2d_toggle_ = addToggleButton(QIcon(":/action/icons/lrf_raw_data.png"), ("option of lrf raw data"));
   point2d_toggle_->setChecked(false);
 
+  Person_toggle_ = addToggleButton(QIcon(":/action/icons/person.png"), ("option of person marker"));
+  Person_toggle_->setChecked(false);
+
   addSeparator();
 
   addButton(QIcon(":/action/icons/drone.png"), ("drone"))->
@@ -661,6 +666,12 @@ void TmsRpBar::receiveLrfRawData1(const sensor_msgs::LaserScan::ConstPtr& msg)
 void TmsRpBar::receiveLrfRawData2(const sensor_msgs::LaserScan::ConstPtr& msg)
 {
   lrf_raw_data2_ = *msg;
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::receivePersonTrackerInfo(const tms_msg_ss::tracking_points::ConstPtr& msg)
+{
+  person_position_ = *msg;
 }
 
 //------------------------------------------------------------------------------
