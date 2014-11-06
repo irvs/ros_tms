@@ -162,7 +162,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   ToolButton* path_map_toggle_;
   ToolButton* robot_map_toggle_;
   ToolButton* point2d_toggle_;
-  ToolButton* Person_toggle_;
+  ToolButton* person_toggle_;
 
   boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)> sigBodyItemSelectionChanged_;
 
@@ -181,6 +181,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void viewPathOfRobot();
   void viewMarkerOfRobot();
   void viewLrfRawData();
+  void viewPersonPostion();
 
   void pathPlanButtonClicked();
   void ardroneButtonClicked();

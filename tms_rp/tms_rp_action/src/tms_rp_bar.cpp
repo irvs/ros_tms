@@ -599,8 +599,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   point2d_toggle_ = addToggleButton(QIcon(":/action/icons/lrf_raw_data.png"), ("option of lrf raw data"));
   point2d_toggle_->setChecked(false);
 
-  Person_toggle_ = addToggleButton(QIcon(":/action/icons/person.png"), ("option of person marker"));
-  Person_toggle_->setChecked(false);
+  person_toggle_ = addToggleButton(QIcon(":/action/icons/person.png"), ("option of person marker"));
+  person_toggle_->setChecked(false);
 
   addSeparator();
 
@@ -935,6 +935,44 @@ void TmsRpBar::viewLrfRawData()
 
   callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"lrf_raw_data"));
   callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"lrf_raw_data"));
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::viewPersonPostion()
+{
+  if(!person_toggle_->isChecked())
+  {
+    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"person_tracker"));
+    return;
+  }
+
+  if(person_position_.tracking_grid.size()==0)
+  {
+    ROS_INFO("nothing the person");
+    return;
+  }
+
+
+  ROS_INFO("on view option for person tracker");
+
+  SgPointsDrawing::SgLastRenderer(0,true);
+  SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["person_tracker"]->body()->link(0)->shape();
+
+  SgPointsGet visit;
+  node->accept(visit);
+  if(visit.shape.size()==0)
+  {
+    ROS_INFO("no shape node, %ld", visit.shape.size());
+    return;
+  }
+
+  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
+  cr = new SgPointsDrawing(&person_position_);
+  visit.shape[0]->mesh()->triangles().clear();
+  node->addChild(cr);
+
+  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"person_tracker"));
+  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"person_tracker"));
 }
 
 //------------------------------------------------------------------------------
@@ -1740,6 +1778,7 @@ void TmsRpBar::connectROS()
     viewPathOfRobot();
     viewMarkerOfRobot();
     viewLrfRawData();
+    viewPersonPostion();
 
     ros::spinOnce();
     loop_rate.sleep();
