@@ -5,12 +5,12 @@ project(tms_ss_tracker)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  urg_node
   std_msgs
   genmsg
   roscpp
   visualization_msgs
   cv_bridge
-  message_generation
 )
 
 find_package(Qt4 4.6 REQUIRED COMPONENTS QtCore QtGui)
@@ -51,14 +51,14 @@ find_package(Boost REQUIRED COMPONENTS thread)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
- add_message_files(
-   FILES
-   tracking_grid.msg
-   tracking_points.msg
+# add_message_files(
+#   FILES
+#   tracking_grid.msg
+#   tracking_points.msg
 #   Num.msg
 #   Message1.msg
 #   Message2.msg
- )
+# )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -127,7 +127,7 @@ add_executable(tracker src/tracker.cpp src/Target.cpp src/Laser.cpp src/Multiple
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(tracker tms_ss_tracker_gencpp)
+add_dependencies(tracker DEPENDS tms_msg_ss_gencpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(tracking_node
