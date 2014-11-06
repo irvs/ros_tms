@@ -35,8 +35,10 @@
 #include <std_msgs/String.h>
 #include <sensor_msgs/LaserScan.h>
 #include <sensor_msgs/MultiEchoLaserScan.h>
-#include <tms_ss_tracker/tracking_points.h>
-#include <tms_ss_tracker/tracking_grid.h>
+#include <urg_c/urg_sensor.h>
+#include <urg_c/urg_utils.h>
+#include <tms_msg_ss/tracking_points.h>
+#include <tms_msg_ss/tracking_grid.h>
 
 pthread_mutex_t mutex_laser = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
@@ -80,8 +82,8 @@ void *Visualization( void *ptr )
 
     while (ros::ok())
     {
-        tms_ss_tracker::tracking_grid grid;
-        tms_ss_tracker::tracking_points points;
+        tms_msg_ss::tracking_grid grid;
+        tms_msg_ss::tracking_points points;
         int id = 0;
         int flag = 0;
         for (int i = 0; i < 3; i++)
@@ -437,7 +439,7 @@ int main( int argc, char **argv )
 
     ros::init(argc, argv, "tracker");
     ros::NodeHandle n;
-    ros::Publisher  pub  = n.advertise<tms_ss_tracker::tracking_points>("tracking_points", 10);
+    ros::Publisher  pub  = n.advertise<tms_msg_ss::tracking_points>("tracking_points", 10);
     ros::Subscriber sub  = n.subscribe("/urg2/most_intense" , 10, LaserSensingCallback);
     ros::Subscriber sub1 = n.subscribe("/urg1/most_intense" , 10, LaserSensingCallback1);
     if ( pthread_create( &thread_v, NULL, Visualization, (void *)&pub) )
