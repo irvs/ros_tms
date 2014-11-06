@@ -34,8 +34,8 @@ bool Client::Initialize()
 	argv[0] = new char[sizeof("-ORBInitRef")];
 	argv[1] = new char[128];
 
-    strcpy(orb_ip,		"192.168.4.201");
-	strcpy(orb_port, 	"5006");
+    strcpy(orb_ip,		"192.168.4.211");
+	strcpy(orb_port, 	"5005");
 	strcpy(context_name,"root");
 
 	snprintf(argv[0], sizeof("-ORBInitRef"), "-ORBInitRef");
