@@ -1,4 +1,4 @@
-// Laser.h : CLaser クラスのインターフェイス
+// Laser.h : CLaser aaa
 //
 
 
@@ -61,7 +61,7 @@ public:
 	double m_DivAngle[m_cnMaxConnect];
 	LRFParam m_LRFParam[m_cnMaxConnect];
 
-	// 出力用
+	// aaa
 	CvMat* m_Particle[m_cnMaxParticleNum];
 	double m_ParticleLikelihood[m_cnMaxParticleNum];
 	int m_ParticleLabel[m_cnMaxParticleNum];

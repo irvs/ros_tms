@@ -1,6 +1,6 @@
 #pragma once
 
-// CTarget コマンド ターゲット
+// CTarget a
 
 class CTarget
 {
