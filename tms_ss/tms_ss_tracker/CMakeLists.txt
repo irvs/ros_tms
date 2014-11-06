@@ -5,7 +5,6 @@ project(tms_ss_tracker)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-#  urg_node
   std_msgs
   genmsg
   roscpp
@@ -125,19 +124,16 @@ include_directories(
 
 ## Declare a cpp executable
 add_executable(tracker src/tracker.cpp src/Target.cpp src/Laser.cpp src/MultipleParticleFilter.cpp src/PF.cpp)
-add_executable(LaserTracker src/LaserTracker.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(tracker tms_ss_tracker_gencpp)
-add_dependencies(LaserTracker LaserTracker_gencpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(tracking_node
 #   ${catkin_LIBRARIES}
 # )
 target_link_libraries(tracker ${catkin_LIBRARIES})
-target_link_libraries(LaserTracker ${catkin_LIBRARIES})
 
 #############
 ## Install ##
