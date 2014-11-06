@@ -1,34 +1,9 @@
-/*
- * Copyright (c) 2010, Willow Garage, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Willow Garage, Inc. nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
-
-// %Tag(FULLTEXT)%
-// %Tag(INCLUDES)%
+//----------------------------------------------------------
+// @file   : tracker.cpp
+// @adder : Watanabe Yuuta 
+// @version: Ver0.0.1 (since 2014.05.02)
+// @date   : 2016.11.06
+//----------------------------------------------------------
 
 #include <ros/ros.h>
 #include <pthread.h>
@@ -100,19 +75,20 @@ void *Visualization( void *ptr )
                     continue;
                 }
                 std::cout << "laser.m_pTarget " << laser.m_pTarget[i]->cnt << std::endl;
-               ID =  (laser.m_pTarget[i]->id) % 20;
-               X  = -(laser.m_pTarget[i]->py) + 5200;
-               Y  =  (laser.m_pTarget[i]->px) +100;
-               //std::cout << "FX FY"<< FX << " "<< FY <<std::endl;
-                if(0.0<X && X < 8000.0 && 0.0<Y && Y<4500.0){
-		grid.id = ID;
-                grid.x  = X;
-                grid.y  = Y;
-               
-                points.tracking_grid.push_back(grid);
+                ID =  (laser.m_pTarget[i]->id) % 20;
+                X  = -(laser.m_pTarget[i]->py) + 5200;
+                Y  =  (laser.m_pTarget[i]->px) + 100;
+                //std::cout << "FX FY"<< FX << " "<< FY <<std::endl;
+                if (0.0 < X && X < 8000.0 && 0.0 < Y && Y < 4500.0)
+                {
+                    grid.id = ID;
+                    grid.x  = X;
+                    grid.y  = Y;
+
+                    points.tracking_grid.push_back(grid);
                 }
                 id ++;
-          
+
             }
         }
         if (id - 3 > 0) std::cout << "Number of Markers " << id - 3 << std::endl;
@@ -273,7 +249,7 @@ void *Processing( void *ptr )
 
                         if (n == 0)
                         {
-			    std::cout << "itigou_push start！" << std::endl;
+                            std::cout << "itigou_push start！" << std::endl;
                             itigou_x.push_back(laser.m_LRFClsPoints[0][i].x);
                             itigou_y.push_back(laser.m_LRFClsPoints[0][i].y);
                             std::cout << "itigou_push end！" << std::endl;
@@ -385,9 +361,9 @@ void *Processing( void *ptr )
             }
 
         }
-std::cout << "m_PF start！" << std::endl;
+        std::cout << "m_PF start！" << std::endl;
         m_PF.update(&laser);
-std::cout << "m_PF end！" << std::endl;
+        std::cout << "m_PF end！" << std::endl;
         ros::Time begin = ros::Time::now();
         if (m_PF.m_ParticleFilter.size() > 0) std::cout << "Time " << begin << " Number of PFs " << m_PF.m_ParticleFilter.size() << std::endl;
 
@@ -410,7 +386,7 @@ void LaserSensingCallback(const sensor_msgs::LaserScan::ConstPtr &scan)
 
     if ( scanData.size() == 0 ) scanData.resize(num);
 
-            scanData = scan->ranges;
+    scanData = scan->ranges;
 
     pthread_mutex_unlock(&mutex_laser);
     CallbackCalled = true;
@@ -423,7 +399,7 @@ void LaserSensingCallback1(const sensor_msgs::LaserScan::ConstPtr &scan)
 
     if ( scanData1.size() == 0 ) scanData1.resize(num);
 
-           scanData1 = scan->ranges;
+    scanData1 = scan->ranges;
 
     pthread_mutex_unlock(&mutex_laser);
     CallbackCalled = true;
