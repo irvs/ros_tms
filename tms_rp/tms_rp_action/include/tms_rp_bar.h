@@ -13,18 +13,21 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/LaserScan.h>
 
-#include <tms_msg_rp/rps_path_planning.h>
 #include <tms_msg_rc/rc_robot_control.h>
 #include <tms_msg_rc/robot_control.h>
-#include <tms_msg_db/TmsdbGetData.h>
-#include <tms_msg_db/Tmsdb.h>
-#include <tms_msg_db/TmsdbStamped.h>
 
+#include <tms_msg_rp/rps_path_planning.h>
 #include <tms_msg_rp/rps_position.h>
 #include <tms_msg_rp/rps_route.h>
 #include <tms_msg_rp/rps_map_data.h>
 #include <tms_msg_rp/rps_map_y.h>
 #include <tms_msg_rp/rps_map_full.h>
+
+#include <tms_msg_db/TmsdbGetData.h>
+#include <tms_msg_db/Tmsdb.h>
+#include <tms_msg_db/TmsdbStamped.h>
+
+#include <tms_msg_ss/tracking_points.h>
 
 #include <cnoid/ItemTreeView>
 #include <cnoid/MessageView>
@@ -116,6 +119,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   ros::Subscriber    subscribe_path_map_;
   ros::Subscriber    subscribe_lrf_raw_data1_;
   ros::Subscriber    subscribe_lrf_raw_data2_;
+  ros::Subscriber    subscribe_person_tracker_;
 
   pcl::PointCloud<pcl::PointXYZ> point_cloud_data_;
   tms_msg_rp::rps_map_full       static_map_data_;
@@ -123,6 +127,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   tms_msg_rp::rps_route          path_map_data_;
   sensor_msgs::LaserScan         lrf_raw_data1_;
   sensor_msgs::LaserScan         lrf_raw_data2_;
+  tms_msg_ss::tracking_points    person_position_;
 
   boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)>& sigBodyItemSelectionChanged() {return sigBodyItemSelectionChanged_;}
 
@@ -157,6 +162,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   ToolButton* path_map_toggle_;
   ToolButton* robot_map_toggle_;
   ToolButton* point2d_toggle_;
+  ToolButton* person_toggle_;
 
   boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)> sigBodyItemSelectionChanged_;
 
@@ -175,6 +181,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void viewPathOfRobot();
   void viewMarkerOfRobot();
   void viewLrfRawData();
+  void viewPersonPostion();
 
   void pathPlanButtonClicked();
   void ardroneButtonClicked();
@@ -187,6 +194,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void receivePathMapData(const tms_msg_rp::rps_route::ConstPtr& msg);
   void receiveLrfRawData1(const sensor_msgs::LaserScan::ConstPtr& msg);
   void receiveLrfRawData2(const sensor_msgs::LaserScan::ConstPtr& msg);
+  void receivePersonTrackerInfo(const tms_msg_ss::tracking_points::ConstPtr& msg);
 
   void moveToGoal();
   void getPcdData();

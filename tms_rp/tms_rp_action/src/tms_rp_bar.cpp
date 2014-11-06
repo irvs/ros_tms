@@ -214,8 +214,9 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   subscribe_static_map_  = nh.subscribe("rps_map_data", 10,    &TmsRpBar::receiveStaticMapData, this);
   subscribe_dynamic_map_ = nh.subscribe("rps_dynamic_map", 10, &TmsRpBar::receiveDynamicMapData, this);
   subscribe_path_map_    = nh.subscribe("rps_robot_path", 10,  &TmsRpBar::receivePathMapData, this);
-  subscribe_lrf_raw_data1_ = nh.subscribe("/urg1/most_intense", 10,  &TmsRpBar::receiveLrfRawData1, this);
-  subscribe_lrf_raw_data2_ = nh.subscribe("/urg2/most_intense", 10,  &TmsRpBar::receiveLrfRawData2, this);
+  subscribe_lrf_raw_data1_  = nh.subscribe("/urg1/most_intense", 10,  &TmsRpBar::receiveLrfRawData1, this);
+  subscribe_lrf_raw_data2_  = nh.subscribe("/urg2/most_intense", 10,  &TmsRpBar::receiveLrfRawData2, this);
+  subscribe_person_tracker_ = nh.subscribe("/tracking_points", 10,  &TmsRpBar::receivePersonTrackerInfo, this);
 
   //----------------------------------------------------------------------------
   // create person model
@@ -284,6 +285,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   trc_.createRecord(20013,"collision_target");
   trc_.createRecord(20014,"smartpal_goal");
   trc_.createRecord(20015,"lrf_raw_data");
+  trc_.createRecord(20016,"person_tracker");
 
   // arrange model
   mat0_       <<  1, 0, 0, 0, 1, 0, 0, 0, 1;  //   0
@@ -597,6 +599,9 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   point2d_toggle_ = addToggleButton(QIcon(":/action/icons/lrf_raw_data.png"), ("option of lrf raw data"));
   point2d_toggle_->setChecked(false);
 
+  person_toggle_ = addToggleButton(QIcon(":/action/icons/person.png"), ("option of person marker"));
+  person_toggle_->setChecked(false);
+
   addSeparator();
 
   addButton(QIcon(":/action/icons/drone.png"), ("drone"))->
@@ -661,6 +666,12 @@ void TmsRpBar::receiveLrfRawData1(const sensor_msgs::LaserScan::ConstPtr& msg)
 void TmsRpBar::receiveLrfRawData2(const sensor_msgs::LaserScan::ConstPtr& msg)
 {
   lrf_raw_data2_ = *msg;
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::receivePersonTrackerInfo(const tms_msg_ss::tracking_points::ConstPtr& msg)
+{
+  person_position_ = *msg;
 }
 
 //------------------------------------------------------------------------------
@@ -924,6 +935,44 @@ void TmsRpBar::viewLrfRawData()
 
   callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"lrf_raw_data"));
   callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"lrf_raw_data"));
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::viewPersonPostion()
+{
+  if(!person_toggle_->isChecked())
+  {
+    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"person_tracker"));
+    return;
+  }
+
+  if(person_position_.tracking_grid.size()==0)
+  {
+    ROS_INFO("nothing the person");
+    return;
+  }
+
+
+  ROS_INFO("on view option for person tracker");
+
+  SgPointsDrawing::SgLastRenderer(0,true);
+  SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["person_tracker"]->body()->link(0)->shape();
+
+  SgPointsGet visit;
+  node->accept(visit);
+  if(visit.shape.size()==0)
+  {
+    ROS_INFO("no shape node, %ld", visit.shape.size());
+    return;
+  }
+
+  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
+  cr = new SgPointsDrawing(&person_position_);
+  visit.shape[0]->mesh()->triangles().clear();
+  node->addChild(cr);
+
+  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"person_tracker"));
+  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"person_tracker"));
 }
 
 //------------------------------------------------------------------------------
@@ -1729,6 +1778,7 @@ void TmsRpBar::connectROS()
     viewPathOfRobot();
     viewMarkerOfRobot();
     viewLrfRawData();
+    viewPersonPostion();
 
     ros::spinOnce();
     loop_rate.sleep();

@@ -84,3 +84,4 @@
 20013 none /etc/collision_obj_hrp.wrl
 20014 none /robot/smartpal/SmartPal5.yaml
 20015 none /etc/mini_pole_hrp.wrl
+20016 none /etc/mini_pole_hrp.wrl

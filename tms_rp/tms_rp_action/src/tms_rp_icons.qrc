@@ -13,5 +13,6 @@
         <file>icons/collision_map.png</file>
         <file>icons/collision_target.png</file>
         <file>icons/lrf_raw_data.png</file>
+        <file>icons/person.png</file>
     </qresource>
 </RCC>

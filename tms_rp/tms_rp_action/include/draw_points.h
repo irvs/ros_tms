@@ -7,6 +7,7 @@
 #include <QPoint>
 
 #include <sensor_msgs/LaserScan.h>
+#include <tms_msg_ss/tracking_points.h>
 
 namespace grasp
 {
@@ -41,6 +42,12 @@ public:
     setRenderingFunction(boost::bind(&SgPointsDrawing::renderLaserRawData, this));
     this->laser_raw_data1_ = raw_data1;
     this->laser_raw_data2_ = raw_data2;
+  }
+
+  SgPointsDrawing(tms_msg_ss::tracking_points* person_data)
+  {
+    setRenderingFunction(boost::bind(&SgPointsDrawing::renderObject, this));
+    this->person_data_ = person_data;
   }
 
   void renderStaticMap() {
@@ -225,34 +232,25 @@ public:
     glPopAttrib();
   }
 
-  void renderObject() {
+  void renderObject()
+  {
     glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
     glDisable(GL_LIGHTING);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    float r=0,g=0,b=0;
-    glPointSize(5.0);
+    float r=0,g=0,b=1;
+    glPointSize(10.0);
     glColor3f(r,g,b);
 
-    float radius=0.1, halfLength=1.0;
-    int slices=20;
-    for(int i=0; i<slices; i++)
+    glBegin(GL_POINTS);
+    for(unsigned int i=0;i<person_data_->tracking_grid.size();i++)
     {
-      float theta = ((float)i)*2.0*M_PI;
-      float nextTheta = ((float)i+1)*2.0*M_PI;
-      glBegin(GL_TRIANGLE_STRIP);
-      /*vertex at middle of end */
-      glVertex3f(0.0, halfLength, 0.0);
-      /*vertices at edges of circle*/
-      glVertex3f(radius*cos(theta), halfLength, radius*sin(theta));
-      glVertex3f(radius*cos(nextTheta), halfLength, radius*sin(nextTheta));
-      /* the same vertices at the bottom of the cylinder*/
-      glVertex3f(radius*cos(nextTheta), -halfLength, radius*sin(nextTheta));
-      glVertex3f(radius*cos(theta), -halfLength, radius*sin(theta));
-      glVertex3f(0.0, -halfLength, 0.0);
-      glEnd();
+      glVertex3f(person_data_->tracking_grid[i].x/1000,person_data_->tracking_grid[i].y/1000,1);
     }
+    glEnd();
+
     glPopAttrib();
   }
+
   virtual void accept(cnoid::SgVisitor& visitor){
     cnoid::SgCustomGLNode::accept(visitor);
     SgLastRenderer(this, true);
@@ -268,6 +266,7 @@ public:
   tms_msg_rp::rps_route*    path_map_;
   sensor_msgs::LaserScan*   laser_raw_data1_;
   sensor_msgs::LaserScan*   laser_raw_data2_;
+  tms_msg_ss::tracking_points* person_data_;
 };
 
 typedef boost::intrusive_ptr<SgPointsDrawing> SgPointsDrawingPtr;
