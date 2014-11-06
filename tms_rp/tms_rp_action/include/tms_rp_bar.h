@@ -11,6 +11,7 @@
 #include <geometry_msgs/Transform.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <sensor_msgs/LaserScan.h>
 
 #include <tms_msg_rp/rps_path_planning.h>
 #include <tms_msg_rc/rc_robot_control.h>
@@ -113,11 +114,15 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   ros::Subscriber    subscribe_static_map_;
   ros::Subscriber    subscribe_dynamic_map_;
   ros::Subscriber    subscribe_path_map_;
+  ros::Subscriber    subscribe_lrf_raw_data1_;
+  ros::Subscriber    subscribe_lrf_raw_data2_;
 
   pcl::PointCloud<pcl::PointXYZ> point_cloud_data_;
   tms_msg_rp::rps_map_full       static_map_data_;
   tms_msg_rp::rps_map_full       dynamic_map_data_;
   tms_msg_rp::rps_route          path_map_data_;
+  sensor_msgs::LaserScan         lrf_raw_data1_;
+  sensor_msgs::LaserScan         lrf_raw_data2_;
 
   boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)>& sigBodyItemSelectionChanged() {return sigBodyItemSelectionChanged_;}
 
@@ -151,6 +156,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   ToolButton* local_map_toggle_;
   ToolButton* path_map_toggle_;
   ToolButton* robot_map_toggle_;
+  ToolButton* point2d_toggle_;
 
   boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)> sigBodyItemSelectionChanged_;
 
@@ -168,6 +174,8 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void viewDynamicMap();
   void viewPathOfRobot();
   void viewMarkerOfRobot();
+  void viewLrfRawData();
+
   void pathPlanButtonClicked();
   void ardroneButtonClicked();
   void smartpalButtonClicked();
@@ -177,6 +185,8 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void receiveStaticMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg);
   void receiveDynamicMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg);
   void receivePathMapData(const tms_msg_rp::rps_route::ConstPtr& msg);
+  void receiveLrfRawData1(const sensor_msgs::LaserScan::ConstPtr& msg);
+  void receiveLrfRawData2(const sensor_msgs::LaserScan::ConstPtr& msg);
 
   void moveToGoal();
   void getPcdData();
