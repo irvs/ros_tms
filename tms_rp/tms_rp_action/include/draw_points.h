@@ -6,32 +6,44 @@
 #include <math.h>
 #include <QPoint>
 
-#define PI 3.141592
+#include <sensor_msgs/LaserScan.h>
 
-namespace grasp{
+namespace grasp
+{
 
 class SgPointsDrawing;
 
-class SgPointsDrawing : public cnoid::SgCustomGLNode {
+class SgPointsDrawing : public cnoid::SgCustomGLNode
+{
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-  SgPointsDrawing(tms_msg_rp::rps_map_full* mapData) {
-    setRenderingFunction(boost::bind(&SgPointsDrawing::RenderStaticMap, this));
-    this->static_map_ = mapData;
+  SgPointsDrawing(tms_msg_rp::rps_map_full* map_data)
+  {
+    setRenderingFunction(boost::bind(&SgPointsDrawing::renderStaticMap, this));
+    this->static_map_ = map_data;
   }
 
-  SgPointsDrawing(tms_msg_rp::rps_route* mapData) {
-    setRenderingFunction(boost::bind(&SgPointsDrawing::RenderPathMap, this));
-    this->path_map_ = mapData;
+  SgPointsDrawing(tms_msg_rp::rps_route* map_data)
+  {
+    setRenderingFunction(boost::bind(&SgPointsDrawing::renderPathMap, this));
+    this->path_map_ = map_data;
   }
 
-  SgPointsDrawing(tms_msg_rp::rps_route* mapData, bool) {
-    setRenderingFunction(boost::bind(&SgPointsDrawing::RenderRobotMap, this));
-    this->path_map_ = mapData;
+  SgPointsDrawing(tms_msg_rp::rps_route* map_data, bool)
+  {
+    setRenderingFunction(boost::bind(&SgPointsDrawing::renderRobotMap, this));
+    this->path_map_ = map_data;
   }
 
-  void RenderStaticMap() {
+  SgPointsDrawing(sensor_msgs::LaserScan* raw_data1, sensor_msgs::LaserScan* raw_data2)
+  {
+    setRenderingFunction(boost::bind(&SgPointsDrawing::renderLaserRawData, this));
+    this->laser_raw_data1_ = raw_data1;
+    this->laser_raw_data2_ = raw_data2;
+  }
+
+  void renderStaticMap() {
     glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
     glDisable(GL_LIGHTING);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -51,7 +63,7 @@ public:
     glPopAttrib();
   }
 
-  void RenderPathMap() {
+  void renderPathMap() {
     glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
     glDisable(GL_LIGHTING);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -85,7 +97,7 @@ public:
     glPopAttrib();
   }
 
-  void RenderRobotMap() {
+  void renderRobotMap() {
     glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
     glDisable(GL_LIGHTING);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -161,19 +173,101 @@ public:
     glPopAttrib();
   }
 
+  void renderLaserRawData() {
+    glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
+    glDisable(GL_LIGHTING);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    float r=0,g=0,b=0;
+    glPointSize(3.0);
+    glBegin(GL_POINTS);
+
+    float angle, distance, lrf_x, lrf_y;
+    float lrf_set_x;
+    float lrf_set_y;
+
+    r=1,g=0,b=0;
+    glColor3f(r,g,b);
+
+    lrf_set_x = 2.5;
+    lrf_set_y = 0.15;
+
+    for(int i=0; i<laser_raw_data1_->ranges.size(); i++)
+    {
+      angle = (i * 0.25 - 45)* M_PI/180.;
+      if(angle>=0 && angle<=M_PI)
+      {
+        distance = laser_raw_data1_->ranges[i];
+        lrf_x = distance * cos(angle) + lrf_set_x;
+        lrf_y = distance * sin(angle) + lrf_set_y;
+        glVertex3d(lrf_x,lrf_y,0.875);
+       }
+    }
+
+    r=1,g=1,b=0;
+    glColor3f(r,g,b);
+
+    lrf_set_x = 5.2;
+    lrf_set_y = 0.15;
+
+    for(int i=0; i<laser_raw_data2_->ranges.size(); i++)
+    {
+      angle = (i * 0.25 - 45)* M_PI/180.;
+      if(angle>=0 && angle<=M_PI)
+      {
+        distance = laser_raw_data2_->ranges[i];
+        lrf_x = distance * cos(angle) + lrf_set_x;
+        lrf_y = distance * sin(angle) + lrf_set_y;
+        glVertex3d(lrf_x,lrf_y,1.05);
+       }
+    }
+
+    glEnd();
+    glPopAttrib();
+  }
+
+  void renderObject() {
+    glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
+    glDisable(GL_LIGHTING);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    float r=0,g=0,b=0;
+    glPointSize(5.0);
+    glColor3f(r,g,b);
+
+    float radius=0.1, halfLength=1.0;
+    int slices=20;
+    for(int i=0; i<slices; i++)
+    {
+      float theta = ((float)i)*2.0*M_PI;
+      float nextTheta = ((float)i+1)*2.0*M_PI;
+      glBegin(GL_TRIANGLE_STRIP);
+      /*vertex at middle of end */
+      glVertex3f(0.0, halfLength, 0.0);
+      /*vertices at edges of circle*/
+      glVertex3f(radius*cos(theta), halfLength, radius*sin(theta));
+      glVertex3f(radius*cos(nextTheta), halfLength, radius*sin(nextTheta));
+      /* the same vertices at the bottom of the cylinder*/
+      glVertex3f(radius*cos(nextTheta), -halfLength, radius*sin(nextTheta));
+      glVertex3f(radius*cos(theta), -halfLength, radius*sin(theta));
+      glVertex3f(0.0, -halfLength, 0.0);
+      glEnd();
+    }
+    glPopAttrib();
+  }
   virtual void accept(cnoid::SgVisitor& visitor){
     cnoid::SgCustomGLNode::accept(visitor);
     SgLastRenderer(this, true);
   }
 
-  static SgPointsDrawing* SgLastRenderer(SgPointsDrawing* sg, bool isWrite){
+  static SgPointsDrawing* SgLastRenderer(SgPointsDrawing* sg, bool is_write){
     static SgPointsDrawing* last;
-    if(isWrite) last=sg;
+    if(is_write) last=sg;
     return last;
   }
 
   tms_msg_rp::rps_map_full* static_map_;
   tms_msg_rp::rps_route*    path_map_;
+  sensor_msgs::LaserScan*   laser_raw_data1_;
+  sensor_msgs::LaserScan*   laser_raw_data2_;
 };
 
 typedef boost::intrusive_ptr<SgPointsDrawing> SgPointsDrawingPtr;

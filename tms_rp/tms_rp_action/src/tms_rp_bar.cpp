@@ -214,6 +214,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   subscribe_static_map_  = nh.subscribe("rps_map_data", 10,    &TmsRpBar::receiveStaticMapData, this);
   subscribe_dynamic_map_ = nh.subscribe("rps_dynamic_map", 10, &TmsRpBar::receiveDynamicMapData, this);
   subscribe_path_map_    = nh.subscribe("rps_robot_path", 10,  &TmsRpBar::receivePathMapData, this);
+  subscribe_lrf_raw_data1_ = nh.subscribe("/urg1/most_intense", 10,  &TmsRpBar::receiveLrfRawData1, this);
+  subscribe_lrf_raw_data2_ = nh.subscribe("/urg2/most_intense", 10,  &TmsRpBar::receiveLrfRawData2, this);
 
   //----------------------------------------------------------------------------
   // create person model
@@ -281,6 +283,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   trc_.createRecord(20012,"robot_marker");
   trc_.createRecord(20013,"collision_target");
   trc_.createRecord(20014,"smartpal_goal");
+  trc_.createRecord(20015,"lrf_raw_data");
 
   // arrange model
   mat0_       <<  1, 0, 0, 0, 1, 0, 0, 0, 1;  //   0
@@ -575,24 +578,24 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   addSeparator();
 
   static_map_toggle_ = addToggleButton(QIcon(":/action/icons/static_map.png"), ("staic map"));
-//  static_map_toggle_->sigToggled().connect(bind(&TmsRpBar::viewStaticMap, this));
   static_map_toggle_->setChecked(false);
 
   dynamic_map_toggle_= addToggleButton(QIcon(":/action/icons/dynamic_map.png"), ("dynamic map"));
-//  dynamic_map_toggle_->sigToggled().connect(bind(&TmsRpBar::viewDynamicMap, this));
   dynamic_map_toggle_->setChecked(false);
 
   local_map_toggle_ = addToggleButton(QIcon(":/action/icons/local_map.png"), ("local map"));
-//  local_map_toggle_->sigToggled().connect(bind(&TmsRpBar::viewStaticMap, this));
   local_map_toggle_->setChecked(false);
 
   path_map_toggle_ = addToggleButton(QIcon(":/action/icons/path_map.png"), ("option of path view"));
-//  path_map_toggle_->sigToggled().connect(bind(&TmsRpBar::viewPathOfRobot, this));
   path_map_toggle_->setChecked(false);
 
   robot_map_toggle_ = addToggleButton(QIcon(":/action/icons/robot_map.png"), ("option of robot marker"));
-//  robot_map_toggle_->sigToggled().connect(bind(&TmsRpBar::viewMarkerOfRobot, this));
   robot_map_toggle_->setChecked(false);
+
+  addSeparator();
+
+  point2d_toggle_ = addToggleButton(QIcon(":/action/icons/lrf_raw_data.png"), ("option of lrf raw data"));
+  point2d_toggle_->setChecked(false);
 
   addSeparator();
 
@@ -646,6 +649,18 @@ void TmsRpBar::receiveDynamicMapData(const tms_msg_rp::rps_map_full::ConstPtr& m
 void TmsRpBar::receivePathMapData(const tms_msg_rp::rps_route::ConstPtr& msg)
 {
   path_map_data_ = *msg;
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::receiveLrfRawData1(const sensor_msgs::LaserScan::ConstPtr& msg)
+{
+  lrf_raw_data1_ = *msg;
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::receiveLrfRawData2(const sensor_msgs::LaserScan::ConstPtr& msg)
+{
+  lrf_raw_data2_ = *msg;
 }
 
 //------------------------------------------------------------------------------
@@ -865,6 +880,50 @@ void TmsRpBar::viewMarkerOfRobot()
 
   callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"robot_marker"));
   callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"robot_marker"));
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::viewLrfRawData()
+{
+  if(!point2d_toggle_->isChecked())
+  {
+    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"lrf_raw_data"));
+    return;
+  }
+
+  if(lrf_raw_data1_.ranges.size()==0)
+  {
+    ROS_INFO("nothing the LRF raw data 1");
+    return;
+  }
+
+  if(lrf_raw_data2_.ranges.size()==0)
+  {
+    ROS_INFO("nothing the LRF raw data 2");
+    return;
+  }
+
+
+  ROS_INFO("on view option for LRF raw data");
+
+  SgPointsDrawing::SgLastRenderer(0,true);
+  SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["lrf_raw_data"]->body()->link(0)->shape();
+
+  SgPointsGet visit;
+  node->accept(visit);
+  if(visit.shape.size()==0)
+  {
+    ROS_INFO("no shape node, %ld", visit.shape.size());
+    return;
+  }
+
+  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
+  cr = new SgPointsDrawing(&lrf_raw_data1_,&lrf_raw_data2_);
+  visit.shape[0]->mesh()->triangles().clear();
+  node->addChild(cr);
+
+  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"lrf_raw_data"));
+  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"lrf_raw_data"));
 }
 
 //------------------------------------------------------------------------------
@@ -1632,19 +1691,19 @@ void TmsRpBar::simulation()
   static ros::Rate loop_rate(10); // 0.1sec
   while (ros::ok())
   {
-	  static_and_dynamic_map.staticMapPublish();
-	  static_and_dynamic_map.dynamicMapPublish();
+    static_and_dynamic_map.staticMapPublish();
+    static_and_dynamic_map.dynamicMapPublish();
 
-	  viewStaticMap();
-	  viewDynamicMap();
-	  viewPathOfRobot();
-	  viewMarkerOfRobot();
+    viewStaticMap();
+    viewDynamicMap();
+    viewPathOfRobot();
+    viewMarkerOfRobot();
 
-	  if (planning_mode_ == 0)
-		  updateEnvironmentInfomation(true);
+    if (planning_mode_ == 0)
+      updateEnvironmentInfomation(true);
 
-	  ros::spinOnce();
-	  loop_rate.sleep();
+    ros::spinOnce();
+    loop_rate.sleep();
   }
   ROS_INFO("End of simulation");
 }
@@ -1669,6 +1728,7 @@ void TmsRpBar::connectROS()
     viewDynamicMap();
     viewPathOfRobot();
     viewMarkerOfRobot();
+    viewLrfRawData();
 
     ros::spinOnce();
     loop_rate.sleep();
