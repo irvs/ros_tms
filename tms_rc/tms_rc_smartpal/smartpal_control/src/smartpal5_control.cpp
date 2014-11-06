@@ -419,10 +419,10 @@ int main(int argc, char **argv)
   sleep(2);
 
   // power on
-  smartpal->vehicleSetPower(ON);
+  smartpal->lumbaSetPower(ON);
   smartpal->armSetPower(ArmR, ON);
   smartpal->armSetPower(ArmL, ON);
-  smartpal->lumbaSetPower(ON);
+  smartpal->vehicleSetPower(ON);
 
   sleep(2);
 
