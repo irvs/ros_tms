@@ -128,8 +128,8 @@ int tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string state
 		GenerateContainer(f_name, state_right);
 
 		generated_container +=
-				"        smach.Concurrence.add('" + IntToString(sn1) + "CC', " + state_data.at(StringToInt(state_id1)-1).state_name + ")\n\n"
-				"        smach.Concurrence.add('" + IntToString(sn2) + "CC', " + state_data.at(StringToInt(state_id2)-1).state_name + ")\n\n"
+				"        smach.Concurrence.add('" + IntToString(sn1) + "CC', " + state_data.at(StringToInt(state_id1)-1).state_name + "())\n\n"
+				"        smach.Concurrence.add('" + IntToString(sn2) + "CC', " + state_data.at(StringToInt(state_id2)-1).state_name + "())\n\n"
 				"    return " + f_name + "\n\n";
 		state_data.pop_back();
 		state_data.pop_back();
@@ -154,7 +154,7 @@ int tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string state
 			check++;
 		}
 		generated_container += "])))\n"
-				"        smach.Concurrence.add('" + IntToString(sn2) + "CC', " + state_data.at(StringToInt(state_id2)-1).state_name + ")\n\n";
+				"        smach.Concurrence.add('" + IntToString(sn2) + "CC', " + state_data.at(StringToInt(state_id2)-1).state_name + "())\n\n";
 
 		generated_container += "    return " + f_name + "\n\n";
 		state_data.pop_back();
@@ -168,7 +168,7 @@ int tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string state
 		GenerateContainer(f_name, state_right);
 
 		generated_container +=
-				"        smach.Concurrence.add('" + IntToString(sn1) + "CC', " + state_data.at(StringToInt(state_id1)-1).state_name + ")\n\n"
+				"        smach.Concurrence.add('" + IntToString(sn1) + "CC', " + state_data.at(StringToInt(state_id1)-1).state_name + "())\n\n"
 				"        smach.Concurrence.add('" + IntToString(sn2) + state_name2 + "',\n"
 				"                           ServiceState('rp_cmd',\n"
 				"                                        rp_cmd,\n"
