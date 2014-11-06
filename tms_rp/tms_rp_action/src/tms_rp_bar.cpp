@@ -1627,15 +1627,24 @@ void TmsRpBar::simulation()
   os_ <<  "simulation service" << endl;
   production_version_ = false;
   os_ << "production_version_ = " << production_version_ << endl;
+  tms_rp::TmsRpVoronoiMap static_and_dynamic_map;
 
   static ros::Rate loop_rate(10); // 0.1sec
   while (ros::ok())
   {
-    if (planning_mode_ == 0)
-      updateEnvironmentInfomation(true);
+	  static_and_dynamic_map.staticMapPublish();
+	  static_and_dynamic_map.dynamicMapPublish();
 
-    ros::spinOnce();
-    loop_rate.sleep();
+	  viewStaticMap();
+	  viewDynamicMap();
+	  viewPathOfRobot();
+	  viewMarkerOfRobot();
+
+	  if (planning_mode_ == 0)
+		  updateEnvironmentInfomation(true);
+
+	  ros::spinOnce();
+	  loop_rate.sleep();
   }
   ROS_INFO("End of simulation");
 }
