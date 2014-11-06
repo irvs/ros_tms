@@ -35,8 +35,6 @@
 #include <std_msgs/String.h>
 #include <sensor_msgs/LaserScan.h>
 #include <sensor_msgs/MultiEchoLaserScan.h>
-#include <urg_c/urg_sensor.h>
-#include <urg_c/urg_utils.h>
 #include <tms_msg_ss/tracking_points.h>
 #include <tms_msg_ss/tracking_grid.h>
 

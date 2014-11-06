@@ -1,4 +1,4 @@
-// Target.cpp : ŽÀ‘•ƒtƒ@ƒCƒ‹
+// Target.cpp : aaa
 //
 #ifdef WIN32
 #pragma warning(disable : 4996)
