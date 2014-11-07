@@ -33,6 +33,7 @@ class TmsRpVoronoiMap : public cnoid::ToolBar, public boost::signals::trackable
   bool setVoronoiLine(vector<vector<CollisionMapData> >& map, string& message);
   void staticMapPublish();
   void dynamicMapPublish();
+  void dynamicMapPublish(tms_msg_ss::tracking_points person_pos);
 
  private:
   std::ostream& os_;

@@ -1771,7 +1771,7 @@ void TmsRpBar::connectROS()
     updateEnvironmentInfomation(false);
 
     static_and_dynamic_map.staticMapPublish();
-    static_and_dynamic_map.dynamicMapPublish();
+    static_and_dynamic_map.dynamicMapPublish(person_position_);
 
     viewStaticMap();
     viewDynamicMap();
