@@ -248,6 +248,37 @@ public:
     }
     glEnd();
 
+    float radius, height, slices, stacks, rings;
+    radius = 0.1;
+    height = 1.7;
+    slices = 15; stacks = rings = 1;
+
+    for(unsigned int i=0;i<person_data_->tracking_grid.size();i++)
+    {
+      GLUquadricObj *cylinder = gluNewQuadric();
+      gluQuadricDrawStyle(cylinder, GLU_FILL);
+      gluQuadricNormals(cylinder, GLU_SMOOTH);
+
+      glPushMatrix();
+      glTranslated(person_data_->tracking_grid[i].x/1000, person_data_->tracking_grid[i].y/1000, 0.0);
+
+      gluCylinder(cylinder,radius,radius,height,slices,stacks);
+      glPushMatrix();
+      glTranslated(0.0, 0.0, height);
+      r=0,g=0,b=0.5;
+      glColor3f(r,g,b);
+      gluDisk(cylinder, 0.0, radius, slices, 1);
+      glPopMatrix();
+      gluQuadricOrientation(cylinder, GLU_INSIDE);
+      r=0,g=0,b=1;
+      glColor3f(r,g,b);
+      gluCylinder(cylinder, 0.0, 0.0, height, slices, stacks);
+      gluDisk(cylinder,0.0,radius,slices,rings);
+      gluDeleteQuadric(cylinder);
+
+      glPopMatrix();
+    }
+
     glPopAttrib();
   }
 
