@@ -14,4 +14,16 @@
  * the License.
  */
 
-include 'tms_ur_demo_client'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.12.+'
+    }
+}
+
+allprojects {
+    group 'com.github.rosjava.tms_ur_demo'
+}

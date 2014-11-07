@@ -22,8 +22,6 @@ public class TmsUrDemoClient extends RosActivity implements View.OnClickListener
     private java.lang.Object mSpeechRecognizer;
     private RecognitionClient recognitionClient;
 
-    private Intent intent;
-
     private TextView guiMessage;
     public static TextView guiResult;
 
@@ -83,9 +81,9 @@ public class TmsUrDemoClient extends RosActivity implements View.OnClickListener
                 /**
                  * Intent setting for speech recognition service
                  */
-                intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
                 intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
                 /**
                  * Start speech recognition
