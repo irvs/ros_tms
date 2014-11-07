@@ -28,24 +28,11 @@ dependencies {
         exclude group: 'junit'
         exclude group: 'xml-apis'
     }
-    /*
-        compile('org.ros.rosjava_core:rosjava:[0.1,0.2)') {
-            exclude group: 'junit'
-            exclude group: 'xml-apis'
-        }
-        */
     compile 'org.ros.rosjava_messages:std_msgs:[0.1,)'
     compile 'org.ros.rosjava_messages:sensor_msgs:[0.1,)'
     /* Binary archives for ROS service */
-    compile files('libs/tms_msg_rs-1.0.2.jar')
-    //compile files('libs/tms_msg_db-1.0.2.jar')
-    compile files('libs/tms_msg_rc-1.0.2.jar')
-    compile files('libs/tms_msg_rp-1.0.2.jar')
-    compile files('libs/tms_msg_sa-1.0.2.jar')
-    compile files('libs/tms_msg_ss-1.0.2.jar')
-    compile files('libs/tms_msg_ts-1.0.2.jar')
-    compile files('libs/tms_msg_ur-1.0.2.jar')
     compile files('libs/tms_ur_gaze_server-0.0.0.jar')
+    compile project(':openCVLibrary249')
 }
 
 android {
@@ -53,7 +40,7 @@ android {
     buildToolsVersion "20.0.0"
 
     defaultConfig {
-        applicationId "irvs.tms.tms_ur.tms_ur_demo.tms_ur_demo_client"
+        applicationId "irvs.tms.tms_ur.tms_ur_glass.tms_ur_gaze_client"
         minSdkVersion 13
         targetSdkVersion 13
         versionCode 1
