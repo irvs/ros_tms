@@ -187,7 +187,7 @@ Viewpoint {
   orientation 0.5770 0.5775 0.5775 2.0935
 }
 
-DEF wagon Humanoid{
+DEF shelfdoor Humanoid{
   humanoidBody [
     DEF root Joint {
       jointType "free"
@@ -199,14 +199,14 @@ DEF wagon Humanoid{
       rotorInertia 1.0
       rotorResistor 1.0
       children[
-        DEF wagon Segment{
+        DEF shelfdoor Segment{
           centerOfMass 0.0 0.0 0.0 
           mass 0.0 
           momentsOfInertia [ 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]
           children[
             Transform {
               children[
-            Inline { url "wagon.wrl" }
+            Inline { url "shelfdoor.wrl" }
               ]
             }
           ]
@@ -218,6 +218,6 @@ DEF wagon Humanoid{
     USE root,
   ]
   segments [
-    USE wagon,
+    USE shelfdoor,
   ]
 }

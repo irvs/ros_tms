@@ -2,7 +2,7 @@
 <package>
   <name>tms_dev_viewer</name>
   <version>1.2.1</version>
-  <license>TODO</license>
+  <license>BSD</license>
   <description>The tms_dev_viewer package</description>
  
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>

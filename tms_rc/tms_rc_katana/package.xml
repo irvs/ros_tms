@@ -2,7 +2,7 @@
 <package>
   <name>tms_rc_katana</name>
   <version>1.0.2</version>
-  <license>TODO</license>
+  <license>BSD</license>
   <description>The tms_rc_katana package</description>
  
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>

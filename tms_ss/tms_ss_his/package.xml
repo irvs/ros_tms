@@ -2,7 +2,7 @@
 <package>
   <name>tms_ss_his</name>
   <version>1.0.1</version>
-  <license>TODO</license>
+  <license>BSD</license>
   <description>The tms_ss_his package</description>
  
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>

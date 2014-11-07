@@ -2,7 +2,7 @@
 <package>
   <name>tms_rs_refrigerator</name>
   <version>0.0.1</version>
-  <license>TODO</license>
+  <license>BSD</license>
   <description>The tms_rs_refrigerator package</description>
 
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>
