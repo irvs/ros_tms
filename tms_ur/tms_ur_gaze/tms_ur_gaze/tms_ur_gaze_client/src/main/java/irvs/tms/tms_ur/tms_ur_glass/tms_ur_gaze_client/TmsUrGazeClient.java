@@ -14,6 +14,8 @@ import android.widget.TextView;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.ros.address.InetAddressFactory;
 import org.ros.android.RosActivity;
@@ -33,7 +35,7 @@ import java.util.ArrayList;
  *     - For each frame, captured images are set as background image after processing
  */
 
-public class TmsUrGazeClient extends RosActivity implements View.OnClickListener,RecognitionListener/*,CameraBridgeViewBase.CvCameraViewListener2*/
+public class TmsUrGazeClient extends RosActivity implements View.OnClickListener,RecognitionListener,CameraBridgeViewBase.CvCameraViewListener2
 {
     private java.lang.Object mSpeechRecognizer;
 
@@ -75,10 +77,8 @@ public class TmsUrGazeClient extends RosActivity implements View.OnClickListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        /*
         mCameraView = (CameraBridgeViewBase)findViewById(R.id.camera_view);
         mCameraView.setCvCameraViewListener(this);
-        */
 
         Button button1 = (Button)findViewById(R.id.button);
         button1.setOnClickListener(this);
@@ -217,7 +217,6 @@ public class TmsUrGazeClient extends RosActivity implements View.OnClickListener
      * Overridden functions for OpenCV
      */
 
-    /*
     @Override
     public void onPause() {
         if (mCameraView != null) {
@@ -229,7 +228,7 @@ public class TmsUrGazeClient extends RosActivity implements View.OnClickListener
     @Override
     protected void onResume() {
         super.onResume();
-        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_4,this,mLoaderCallback);
+        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_4, this, mLoaderCallback);
     }
 
     @Override
@@ -254,5 +253,5 @@ public class TmsUrGazeClient extends RosActivity implements View.OnClickListener
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         return inputFrame.rgba();
     }
-    */
+
 }

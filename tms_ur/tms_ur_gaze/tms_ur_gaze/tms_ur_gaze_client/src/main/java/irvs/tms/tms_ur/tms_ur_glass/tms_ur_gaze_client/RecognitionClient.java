@@ -12,8 +12,8 @@ import org.ros.node.ConnectedNode;
 import org.ros.node.service.ServiceClient;
 import org.ros.node.service.ServiceResponseListener;
 
-import msg_data.recognized_textRequest;
-import msg_data.recognized_textResponse;
+import tms_ur_gaze_server.recognized_textRequest;
+import tms_ur_gaze_server.recognized_textResponse;
 
 /**
  * Created by kazuto on 9/18/14.
@@ -32,19 +32,15 @@ public class RecognitionClient extends AbstractNodeMain {
         Log.i("ROS:Recognition Client", "onStart()");
         /* try to connect some times just to be sure */
         try {
-            serviceClient = connectedNode.newServiceClient("recognition_test", msg_data.recognized_text._TYPE);
+            serviceClient = connectedNode.newServiceClient("recognition_test", tms_ur_gaze_server.recognized_text._TYPE);
         } catch (ServiceNotFoundException e) {
             try {
-                serviceClient = connectedNode.newServiceClient("recognition_test", msg_data.recognized_text._TYPE);
+                serviceClient = connectedNode.newServiceClient("recognition_test", tms_ur_gaze_server.recognized_text._TYPE);
             } catch (ServiceNotFoundException e2) {
                 try {
-                    serviceClient = connectedNode.newServiceClient("recognition_test", msg_data.recognized_text._TYPE);
+                    serviceClient = connectedNode.newServiceClient("recognition_test", tms_ur_gaze_server.recognized_text._TYPE);
                 } catch (ServiceNotFoundException e3) {
-                    try {
-                        serviceClient = connectedNode.newServiceClient("recognition_test", msg_data.recognized_text._TYPE);
-                    } catch (ServiceNotFoundException e4) {
-                        throw new RosRuntimeException(e4);
-                    }
+                    throw new RosRuntimeException(e3);
                 }
             }
         }
@@ -56,13 +52,13 @@ public class RecognitionClient extends AbstractNodeMain {
     public void sendText(final String string) {
         final Handler handler = new Handler();
 
-        final msg_data.recognized_textRequest request = serviceClient.newMessage();
+        final tms_ur_gaze_server.recognized_textRequest request = serviceClient.newMessage();
         request.setRequest(string);
 
         Log.i("ROS:Recognition Client","Call service with " + string);
         serviceClient.call(request, new ServiceResponseListener<recognized_textResponse>() {
             @Override
-            public void onSuccess(final msg_data.recognized_textResponse srvResponse) {
+            public void onSuccess(final tms_ur_gaze_server.recognized_textResponse srvResponse) {
                 Log.i("ROS:Recognition Client", "Succeeded to call service");
                 handler.post(new Runnable(){
                     @Override
