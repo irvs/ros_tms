@@ -11,8 +11,8 @@ import org.ros.node.ConnectedNode;
 import org.ros.node.service.ServiceClient;
 import org.ros.node.service.ServiceResponseListener;
 
-import msg_data.rs_home_appliancesRequest;
-import msg_data.rs_home_appliancesResponse;
+import tms_msg_rs.rs_home_appliancesRequest;
+import tms_msg_rs.rs_home_appliancesResponse;
 
 /**
  * RecognitionClient node
@@ -38,15 +38,14 @@ public class RecognitionClient extends AbstractNodeMain {
          * int32 result     // 0: failure, 1: Success
          * --------------------------------------------
          */
-        Log.i("RecognitionClient", "onStart()");
         try {
-            serviceClient = connectedNode.newServiceClient("ref_demo", msg_data.rs_home_appliances._TYPE);
+            serviceClient = connectedNode.newServiceClient("ref_demo", tms_msg_rs.rs_home_appliances._TYPE);
         } catch (ServiceNotFoundException e) {
             try {
-                serviceClient = connectedNode.newServiceClient("ref_demo", msg_data.rs_home_appliances._TYPE);
+                serviceClient = connectedNode.newServiceClient("ref_demo", tms_msg_rs.rs_home_appliances._TYPE);
             } catch (ServiceNotFoundException e2) {
                 try {
-                    serviceClient = connectedNode.newServiceClient("ref_demo", msg_data.rs_home_appliances._TYPE);
+                    serviceClient = connectedNode.newServiceClient("ref_demo", tms_msg_rs.rs_home_appliances._TYPE);
                 } catch (ServiceNotFoundException e3) {
                     //throw new RosRuntimeException(e3);
                 }
@@ -58,7 +57,7 @@ public class RecognitionClient extends AbstractNodeMain {
      * Sends the recognized text to server
      */
     public void sendRequest(int num) {
-        final msg_data.rs_home_appliancesRequest request = serviceClient.newMessage();
+        final tms_msg_rs.rs_home_appliancesRequest request = serviceClient.newMessage();
 
         /**
          * Set the parameter of the service
@@ -72,7 +71,7 @@ public class RecognitionClient extends AbstractNodeMain {
         Log.i("RecognitionClient","Call service");
         serviceClient.call(request, new ServiceResponseListener<rs_home_appliancesResponse>() {
             @Override
-            public void onSuccess(final msg_data.rs_home_appliancesResponse srvResponse) {
+            public void onSuccess(final tms_msg_rs.rs_home_appliancesResponse srvResponse) {
                 Log.i("RecognitionClient", "Succeeded to call service");
             }
             @Override
