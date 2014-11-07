@@ -343,6 +343,7 @@ void TmsRpVoronoiMap::dynamicMapPublish()
   {
     for(int check_y_size=map_y-2;check_y_size<=map_y+2;check_y_size++)
     {
+      if (check_x_size < 0 || check_y_size < 0 || check_x_size > 80 || check_y_size > 45) continue;
       temp_Map[check_x_size][check_y_size].object_        = 1;
       temp_Map[check_x_size][check_y_size].dist_from_obj_ = 0.0;
       temp_Map[check_x_size][check_y_size].collision_     = true;
@@ -392,6 +393,7 @@ void TmsRpVoronoiMap::dynamicMapPublish(tms_msg_ss::tracking_points person_pos)
   {
     for(int check_y_size=map_y-2;check_y_size<=map_y+2;check_y_size++)
     {
+      if (check_x_size < 0 || check_y_size < 0 || check_x_size > 80 || check_y_size > 45) continue;
       temp_Map[check_x_size][check_y_size].object_        = 1;
       temp_Map[check_x_size][check_y_size].dist_from_obj_ = 0.0;
       temp_Map[check_x_size][check_y_size].collision_     = true;
@@ -411,6 +413,7 @@ void TmsRpVoronoiMap::dynamicMapPublish(tms_msg_ss::tracking_points person_pos)
     {
       for(int check_y_size=map_y-2;check_y_size<=map_y+2;check_y_size++)
       {
+      if (check_x_size < 0 || check_y_size < 0 || check_x_size > 80 || check_y_size > 45) continue;
         temp_Map[check_x_size][check_y_size].object_        = 1;
         temp_Map[check_x_size][check_y_size].dist_from_obj_ = 0.0;
         temp_Map[check_x_size][check_y_size].collision_     = true;
