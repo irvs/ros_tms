@@ -1,16 +1,20 @@
 #include <tms_ts/tms_ts_nodelet.hpp>
+#define N 20
+
+int tms_ts_nodelet::ROS_TMS_TS::count_callback = 0;
 
 void tms_ts_nodelet::ROS_TMS_TS::onInit() {
-	// vector配列初期化
-	sub_task.clear();
+	// initialize member variable
+	state_data.clear();
 	file_name = "";
+	generated_container = "";
+	generated_main = "";
 
 	ros::NodeHandle nh;
 	ros::NodeHandle& private_nh = getPrivateNodeHandle();
 	service = private_nh.advertiseService("tms_ts", &ROS_TMS_TS::tsCallback, this);
 	// for connecting to ROSTMS_DB task,subtask
 	db_reader_client = nh.serviceClient<tms_msg_db::TmsdbGetData>("tms_db_reader/dbreader");
-	db_reader_client2 = nh.serviceClient<tms_msg_db::TmsdbGetData>("tms_db_reader/dbreader");
 }
 
 std::string tms_ts_nodelet::ROS_TMS_TS::rosCheckTime(boost::posix_time::ptime time)
@@ -22,7 +26,360 @@ std::string tms_ts_nodelet::ROS_TMS_TS::rosCheckTime(boost::posix_time::ptime ti
     return oss.str();
 }
 
+std::string tms_ts_nodelet::ROS_TMS_TS::IntToString(int number) {
+	std::stringstream ss;
+	ss << number;
+	return ss.str();
+}
+
+int tms_ts_nodelet::ROS_TMS_TS::StringToInt(std::string str) {
+    std::istringstream iss(str);
+    int num = 0;
+    iss >> num;
+    return num;
+}
+
+int tms_ts_nodelet::ROS_TMS_TS::ArrayPush(std::string *stack, std::string data, int *sp, size_t n) {
+    if ( *sp < n ) {
+        stack[(*sp)++] = data;
+		ROS_INFO("Push: %s\n", data.c_str());
+        return *sp;
+    } else {
+        return 0;
+    }
+}
+
+std::string tms_ts_nodelet::ROS_TMS_TS::ArrayPop(std::string *stack, int *sp) {
+    if ( *sp > 0 ) {
+        return stack[--(*sp)];
+    } else {
+        return "False";
+    }
+}
+
+int tms_ts_nodelet::ROS_TMS_TS::ConvertArgType(std::string arg_type) {
+	if (arg_type == "oid") { // object_id
+		return object_id;
+	} else if (arg_type == "uid") { // user_id
+		return user_id;
+	} else if (arg_type == "pid") { // place_id
+		return place_id;
+	} else if (arg_type == "rid") { // robot_id
+		return robot_id;
+	} else {
+		return 0;
+	}
+}
+
+/* return 0: token_block [+/|] token_block
+ *        1: token [+/|] token_block
+ *        2: token_block [+/|] token
+ *        3: token [+/|] token*/
+int tms_ts_nodelet::ROS_TMS_TS::JudgeArgType(std::string state1, std::string state2) {
+	std::vector<std::string> seq_of_argument1, seq_of_argument2;
+	seq_of_argument1.clear();
+	seq_of_argument2.clear();
+
+	boost::split(seq_of_argument1, state1, boost::is_any_of("$"));
+	boost::split(seq_of_argument2, state2, boost::is_any_of("$"));
+
+	if (!seq_of_argument1.empty() && !seq_of_argument2.empty()) {
+		if (seq_of_argument1.size() == 1 && seq_of_argument2.size() == 1) return 0;
+		else if(seq_of_argument1.size() != 1 && seq_of_argument2.size() == 1) return 1;
+		else if(seq_of_argument1.size() == 1 && seq_of_argument2.size() != 1) return 2;
+		else if(seq_of_argument1.size() != 1 && seq_of_argument2.size() != 1) return 3;}
+}
+
+void tms_ts_nodelet::ROS_TMS_TS::GenerateContainer(std::string f_name, std::string state_name1) {
+	generated_container += "def " + f_name + "():\n    " + f_name + " = smach.Concurrence"
+			"( outcomes=['succeeded', 'aborted', 'preempted'],\n"
+			"                            default_outcome = 'aborted',\n"
+			"                            outcome_map = {'succeeded': {'" + state_name1 + "':'succeeded'},\n"
+			"                                           'aborted': {'" + state_name1 + "':'aborted'},\n"
+			"                                           'preempted': {'" + state_name1 + "':'preempted'}},\n"
+			"                            child_termination_cb = lambda arg: True )\n\n"
+			"    with " + f_name + ":\n";
+}
+
+int tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string state2, int cc_count) {
+	int state_count = cc_count*2;
+	int sn1 = state_count;
+	int sn2 = state_count + 1;
+	int arg_type = JudgeArgType(state1, state2);
+
+	tms_msg_db::TmsdbGetData srv;
+	std::vector<std::string> seq_of_argument1, seq_of_argument2;
+	seq_of_argument1.clear();
+	seq_of_argument2.clear();
+
+	boost::split(seq_of_argument1, state1, boost::is_any_of("$"));
+	boost::split(seq_of_argument2, state2, boost::is_any_of("$"));
+
+	std::string state_id1, state_id2;
+	state_id1 = seq_of_argument1.at(0);
+	state_id2 = seq_of_argument2.at(0);
+
+	std::string state_name1, state_name2;
+	std::string f_name = "smc" + IntToString(cc_count);
+
+	if (arg_type == 0) {
+		ROS_INFO("type=0\n");
+		std::string state_right = IntToString(sn1) + "CC";
+		GenerateContainer(f_name, state_right);
+
+		generated_container +=
+				"        smach.Concurrence.add('" + IntToString(sn1) + "CC', " + state_data.at(StringToInt(state_id1)-1).state_name + "())\n\n"
+				"        smach.Concurrence.add('" + IntToString(sn2) + "CC', " + state_data.at(StringToInt(state_id2)-1).state_name + "())\n\n"
+				"    return " + f_name + "\n\n";
+		state_data.pop_back();
+		state_data.pop_back();
+	} else if (arg_type == 1) {
+		ROS_INFO("type=1\n");
+		srv.request.tmsdb.id = StringToInt(seq_of_argument1.at(0)) + sid;
+		if(db_reader_client.call(srv))
+			state_name1 = srv.response.tmsdb[0].name;
+
+		std::string state_right = IntToString(sn1) + state_name1;
+		GenerateContainer(f_name, state_right);
+		generated_container += "        smach.Concurrence.add('" + IntToString(sn1) + state_name1 + "',\n"
+				"                           ServiceState('rp_cmd',\n"
+				"                                        rp_cmd,\n"
+				"                                        request = rp_cmdRequest(" + state_id1 + ", False, " + IntToString(robot_id) + ", [";
+		int check = 0;
+		for (int i = 1; i < seq_of_argument1.size(); i++) {
+			if ( check >= 1) {
+				generated_container += ", ";
+			}
+			generated_container += IntToString(ConvertArgType(seq_of_argument1.at(i)));
+			check++;
+		}
+		generated_container += "])))\n"
+				"        smach.Concurrence.add('" + IntToString(sn2) + "CC', " + state_data.at(StringToInt(state_id2)-1).state_name + "())\n\n";
+
+		generated_container += "    return " + f_name + "\n\n";
+		state_data.pop_back();
+	} else if (arg_type == 2) {
+		ROS_INFO("type=2\n");
+		srv.request.tmsdb.id = StringToInt(seq_of_argument2.at(0)) + sid;
+		if(db_reader_client.call(srv))
+			state_name2 = srv.response.tmsdb[0].name;
+
+		std::string state_right = IntToString(sn1) + "CC";
+		GenerateContainer(f_name, state_right);
+
+		generated_container +=
+				"        smach.Concurrence.add('" + IntToString(sn1) + "CC', " + state_data.at(StringToInt(state_id1)-1).state_name + "())\n\n"
+				"        smach.Concurrence.add('" + IntToString(sn2) + state_name2 + "',\n"
+				"                           ServiceState('rp_cmd',\n"
+				"                                        rp_cmd,\n"
+				"                                        request = rp_cmdRequest(" + state_id2 + ", False, " + IntToString(robot_id) + ", [";
+		int check = 0;
+			for (int j = 1; j < seq_of_argument2.size(); j++) {
+				if ( check >= 1) {
+					generated_container += ", ";
+				}
+				generated_container += IntToString(ConvertArgType(seq_of_argument2.at(j)));
+				check++;
+			}
+			generated_container += "])))\n"
+				"    return " + f_name + "\n\n";
+			state_data.erase(state_data.end() - 1);
+	} else if (arg_type == 3) {
+		ROS_INFO("type=3\n");
+		srv.request.tmsdb.id = StringToInt(seq_of_argument1.at(0)) + sid;
+		if(db_reader_client.call(srv))
+			state_name1 = srv.response.tmsdb[0].name;
+
+		srv.request.tmsdb.id = StringToInt(seq_of_argument2.at(0)) + sid;
+		if(db_reader_client.call(srv))
+			state_name2 = srv.response.tmsdb[0].name;
+
+		std::string state_right = IntToString(sn1) + state_name1;
+		GenerateContainer(f_name, state_right);
+
+		generated_container +=
+				"        smach.Concurrence.add('" + IntToString(sn1) + state_name1 + "',\n"
+				"                           ServiceState('rp_cmd',\n"
+				"                                        rp_cmd,\n"
+				"                                        request = rp_cmdRequest(" + state_id1 + ", False, " + IntToString(robot_id) + ", [";
+		int check = 0;
+		for (int i = 1; i < seq_of_argument1.size(); i++) {
+			if ( check >= 1) {
+				generated_container += ", ";
+			}
+			generated_container += IntToString(ConvertArgType(seq_of_argument1.at(i)));
+			check++;
+		}
+		generated_container += "])))\n"
+				"        smach.Concurrence.add('" + IntToString(sn2) + state_name2 + "',\n"
+				"                           ServiceState('rp_cmd',\n"
+				"                                        rp_cmd,\n"
+				"                                        request = rp_cmdRequest(" + state_id2 + ", False, " + IntToString(robot_id) + ", [";
+		check = 0;
+			for (int j = 1; j < seq_of_argument2.size(); j++) {
+				if ( check >= 1) {
+					generated_container += ", ";
+				}
+				generated_container += IntToString(ConvertArgType(seq_of_argument2.at(j)));
+				check++;
+			}
+			generated_container += "])))\n"
+				"    return " + f_name + "\n\n";
+	}
+	return arg_type;
+}
+
+int tms_ts_nodelet::ROS_TMS_TS::AddStateCC(int cc_count) {
+	std::string function_name = "smc" + IntToString(cc_count);
+
+	StateData sd;
+	sd.state_id = cc_count;
+	sd.state_name = function_name;
+	sd.arg.clear();
+	sd.arg.push_back(-1); // differentiate CC and SQ
+	state_data.push_back(sd);
+	return state_data.size();
+}
+
+int tms_ts_nodelet::ROS_TMS_TS::BuildStateVector(std::string state1, std::string state2) {
+	tms_msg_db::TmsdbGetData srv;
+	StateData sd;
+	std::vector<std::string> seq_of_argument1, seq_of_argument2;
+	seq_of_argument1.clear();
+	seq_of_argument2.clear();
+
+	boost::split(seq_of_argument1, state1, boost::is_any_of("$"));
+	boost::split(seq_of_argument2, state2, boost::is_any_of("$"));
+
+	int arg_type = JudgeArgType(state1, state2);
+	if (arg_type == 0) {
+	} else if (arg_type == 1) {
+		sd.state_id = StringToInt(seq_of_argument1.at(0));
+
+		srv.request.tmsdb.id = sd.state_id + sid;
+		if(db_reader_client.call(srv))
+			sd.state_name = srv.response.tmsdb[0].name;
+
+		sd.arg.clear();
+		for (int i=1; i<seq_of_argument1.size(); i++)
+			sd.arg.push_back(ConvertArgType(seq_of_argument1.at(i)));
+
+		std::vector<StateData>::iterator it = state_data.begin();
+		it = state_data.insert(it, sd);
+	} else if (arg_type == 2) {
+		// state2
+		sd.state_id = StringToInt(seq_of_argument2.at(0));
+
+		srv.request.tmsdb.id = sd.state_id + sid;
+		if(db_reader_client.call(srv))
+			sd.state_name = srv.response.tmsdb[0].name;
+
+		sd.arg.clear();
+		for (int i=1; i<seq_of_argument2.size(); i++)
+			sd.arg.push_back(ConvertArgType(seq_of_argument2.at(i)));
+
+		state_data.push_back(sd);
+	} else if (arg_type == 3) {
+		// state1
+		sd.state_id = StringToInt(seq_of_argument1.at(0));
+
+		srv.request.tmsdb.id = sd.state_id + sid;
+		if(db_reader_client.call(srv))
+			sd.state_name = srv.response.tmsdb[0].name;
+
+		sd.arg.clear();
+		for (int i=1; i<seq_of_argument1.size(); i++)
+			sd.arg.push_back(ConvertArgType(seq_of_argument1.at(i)));
+
+		state_data.push_back(sd);
+
+		// state2
+		sd.state_id = StringToInt(seq_of_argument2.at(0));
+
+		srv.request.tmsdb.id = sd.state_id + sid;
+		if(db_reader_client.call(srv))
+			sd.state_name = srv.response.tmsdb[0].name;
+
+		sd.arg.clear();
+		for (int i=1; i<seq_of_argument2.size(); i++)
+			sd.arg.push_back(ConvertArgType(seq_of_argument2.at(i)));
+
+		state_data.push_back(sd);
+	}
+	return state_data.size();
+}
+
+int tms_ts_nodelet::ROS_TMS_TS::AddStateSQ(std::string state1, std::string state2) {
+	int vector_size = BuildStateVector(state1, state2);
+	return vector_size;
+}
+
+int tms_ts_nodelet::ROS_TMS_TS::AddOneStateSQ(std::string state1) {
+	tms_msg_db::TmsdbGetData srv;
+	StateData sd;
+	std::vector<std::string> seq_of_argument1;
+	seq_of_argument1.clear();
+
+	boost::split(seq_of_argument1, state1, boost::is_any_of("$"));
+
+	// state1
+	sd.state_id = StringToInt(seq_of_argument1.at(0));
+
+	srv.request.tmsdb.id = sd.state_id + sid;
+	if(db_reader_client.call(srv))
+		sd.state_name = srv.response.tmsdb[0].name;
+
+	sd.arg.clear();
+	for (int i=1; i<seq_of_argument1.size(); i++)
+		sd.arg.push_back(ConvertArgType(seq_of_argument1.at(i)));
+
+	state_data.push_back(sd);
+}
+
 void tms_ts_nodelet::ROS_TMS_TS::GenerateScript() {
+	for (int j=0; j<state_data.size(); j++) {
+		if (state_data.at(j).arg.at(0) == -1) { // CC
+			generated_main += "        smach.StateMachine.add('" + state_data.at(j).state_name + "', "
+					"" + state_data.at(j).state_name + "(), transitions={'succeeded':'";
+	    	if (j == state_data.size() - 1) {
+	    		generated_main += "succeeded', 'aborted':'aborted', 'preempted':'preempted'})\n\n";
+	    	} else {
+	    		if (state_data.at(j+1).arg.at(0) == -1)
+	    			generated_main += state_data.at(j+1).state_name + "', 'aborted':'aborted', 'preempted':'preempted'})\n\n";
+	    		else
+	    			generated_main += state_data.at(j+1).state_name + IntToString(j+1) +
+	    			"', 'aborted':'aborted', 'preempted':'preempted'})\n\n";
+	    	}
+		} else { // SQ
+			generated_main += "        smach.StateMachine.add('" + state_data.at(j).state_name + IntToString(j) + "',\n"
+					"                           ServiceState('rp_cmd',\n"
+					"                                        rp_cmd,\n"
+					"                                        request = rp_cmdRequest(" +
+					IntToString(state_data.at(j).state_id) + ", "
+					"False, " + IntToString(robot_id) + ", [";
+	    	int check = 0;
+	    	for (int k = 0; k < state_data.at(j).arg.size(); k++) {
+	    		if ( check >= 1) {
+	    			generated_main += ", ";
+	    		}
+	    		generated_main += IntToString(state_data.at(j).arg.at(k));
+	    		check++;
+	    	}
+	    	generated_main += "])),\n";
+	    	// final state
+	    	if (j == state_data.size() - 1) {
+	    		generated_main += "                           transitions={'succeeded':'succeeded'})\n\n";
+	    	} else {
+	    		if (state_data.at(j+1).arg.at(0) == -1)
+	    			generated_main += "                           transitions={'succeeded':'" +
+	    			state_data.at(j+1).state_name + "'})\n\n";
+	    		else
+	    			generated_main += "                           transitions={'succeeded':'" +
+	    			state_data.at(j+1).state_name + IntToString(j+1) + "'})\n\n";
+	    	}
+		}
+	}
+
 	// ファイル名生成(time)
 	std::ostringstream oss_filename;
 	oss_filename.str(""); // initialize
@@ -38,7 +395,6 @@ void tms_ts_nodelet::ROS_TMS_TS::GenerateScript() {
 	file_name_full += "/catkin_ws/src/ros_tms/tms_ts/tms_ts_smach/scripts/";
 	file_name_full +=  ROS_TMS_TS::file_name;
 
-	// 出力ファイルが既に存在するとエラー
 	std::ofstream ofs(file_name_full.c_str(), std::ios::in);
 	if (ofs) {
 		// error, file exists!
@@ -54,85 +410,18 @@ void tms_ts_nodelet::ROS_TMS_TS::GenerateScript() {
 	    	exit(1);
 	    }
 
-	    // =======================================================================
-	    // =========================pythonスクリプト生成 =========================
-	    // =======================================================================
-	    ofs << "#!/usr/bin/env python\n\nimport roslib; roslib.load_manifest('tms_ts_smach')\n"
-	    		"import rospy\nimport smach\nimport smach_ros\n\nfrom smach_ros import ServiceState\n"
-	    		"from tms_msg_rp.srv import *\n\n" << std::endl;
-
-	    std::ostringstream state_name;
-	    std::ostringstream next_state_name;
-	    std::ostringstream command;
-	    std::ostringstream argument;
-
-	    // DEFINE STATE
-	    for (int i = 0; i < ROS_TMS_TS::sub_task.size(); i++) {
-	    	// 状態の名前定義
-	    	state_name.str(""); // 初期化
-	    	state_name << ROS_TMS_TS::sub_task.at(i).subtask_name << i;
-	    	// ファイル出力
-	    	ofs << "class " << state_name.str() << "(smach.State):\n    def __init__(self):\n"
-	    			"        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])\n\n"
-	    			"    def execute(self, userdata):\n        rospy.loginfo('Executing state " << state_name.str() << "')\n\n" << std::endl;
-	    }
-
-	    // MAIN
-	    ofs << "def main():\n    rospy.init_node('tms_ts_smach_test')\n\n"
-	    		"    sm_root = smach.StateMachine(['succeeded','aborted','preempted'])\n\n"
-	    		"    with sm_root:\n" << std::endl;
-
-	    // TRANSITION
-	      // SERVICE CALL : rosservice call /rp_cmd "command" "robot_id" "[argument]"\n
-	    for (int i = 0; i < ROS_TMS_TS::sub_task.size(); i++) {
-	    	// 状態名定義
-	    	state_name.str(""); // 初期化
-	    	state_name << ROS_TMS_TS::sub_task.at(i).subtask_name << i;
-
-	    	// サブタスクID定義
-	    	command.str("");
-	    	command << ROS_TMS_TS::sub_task.at(i).subtask_id;
-	    	ofs << "        smach.StateMachine.add('" << state_name.str() << "',\n                           ServiceState('rp_cmd',\n"
-	    			"                                        rp_cmd,\n                                        request = rp_cmdRequest("
-	    			<< command.str() << ", False, " << ROS_TMS_TS::robot_id << ", [";
-//	    			<< command.str() << ", " << ROS_TMS_TS::robot_id << ", " << ROS_TMS_TS::sub_task.at(i).arg << ")),\n"; // 引数生成
-	    	int check = 0;
-	    	for (int j = 0; j < ROS_TMS_TS::sub_task.at(i).arg.size(); j++) {
-	    		if ( check >= 1) {
-	    			ofs << ", ";
-	    		}
-	    		argument.str("");
-	    		argument << ROS_TMS_TS::sub_task.at(i).arg.at(j);
-	    		ofs << argument.str();
-	    		check++;
-	    	}
-	    	ofs << "])),\n";
-	    	// 最終状態
-	    	if (i == ROS_TMS_TS::sub_task.size() - 1) {
-	    	    ofs << "                           transitions={'succeeded':'succeeded'})\n" << std::endl;
-	    	} else {
-	    		next_state_name.str(""); // 初期化
-		    	next_state_name << ROS_TMS_TS::sub_task.at(i+1).subtask_name << i+1;
-		    	ofs << "                           transitions={'succeeded':'" << next_state_name.str() << "'})\n" << std::endl;
-	    	}
-	    }
-
-	    // FOR SMACH VIEWER
-	    ofs << "    sis = smach_ros.IntrospectionServer('server_name', sm_root, '/SM_ROOT')\n"
-	    		"    sis.start()\n\n    outcome = sm_root.execute()\n\n    rospy.spin()\n"
-	    		"    sis.stop()\n\nif __name__ == '__main__':\n    main()" << std::endl;
-
+	    ofs << import << generated_container << main_function1 << count_callback
+	    		<< main_function2 << generated_main << introspection_server;
 	    ofs.close();
 	}
     ROS_INFO("Finish generating python script to tms_ts_smach/scripts/%s\n", ROS_TMS_TS::file_name.c_str());
 }
 
-//  pythonスクリプトの実行
 bool tms_ts_nodelet::ROS_TMS_TS::ExeScript() {
 	int ret;
 
-	std::string chmod(""); // フォルダ移動 & 権限付与
-	std::string command(""); // 実行命令
+	std::string chmod(""); // move directory & chmod
+	std::string command(""); // running command
 
 	chmod = "cd ~/catkin_ws/src/ros_tms/tms_ts/tms_ts_smach && chmod +x scripts/" + ROS_TMS_TS::file_name;
 	command = "cd ~/catkin_ws/src/ros_tms/tms_ts/tms_ts_smach && ./scripts/" + ROS_TMS_TS::file_name;
@@ -160,94 +449,57 @@ bool tms_ts_nodelet::ROS_TMS_TS::ExeScript() {
 }
 
 bool tms_ts_nodelet::ROS_TMS_TS::tsCallback(tms_msg_ts::ts_req::Request &req, tms_msg_ts::ts_req::Response &res) {
-
-	int sid = 100000;
-	// リクエストされたidを保持
 	robot_id = req.robot_id;
 	object_id = req.object_id;
 	user_id = req.user_id;
 	place_id = req.place_id;
 
-// requestと一致するタスクidを持つタスク情報をrostms_db idテーブルから取得
+	// get task's data from id table
 	tms_msg_db::TmsdbGetData srv;
-	tms_msg_db::TmsdbGetData srv2;
 	srv.request.tmsdb.id = req.task_id + sid;
 
 	if(db_reader_client.call(srv)) {
 		ROS_INFO("get task data from tms_db\n");
+	    std::string stack[N]; // stack
+	    int sp = 0; // stack pointer
 
 	    std::string subtask = srv.response.tmsdb[0].etcdata;
 	    std::vector<std::string> seq_of_subtask;
 
-	    // initialize
 	    seq_of_subtask.clear();
-	    boost::split(seq_of_subtask, subtask, boost::is_any_of(";"));
+	    boost::split(seq_of_subtask, subtask, boost::is_any_of(" "));
 
-	    for (int cnt = 0; cnt < seq_of_subtask.size(); cnt++) {
-	    	ROS_TMS_TS::SubTask st;
-//	    	st.arg.clear(); // initialize
-
-	    	if (cnt % 2 == 0) { // 偶数 subtaskID
-		    	st.subtask_id = seq_of_subtask.at(cnt);
-		    	ROS_INFO("subtask_id = [%s]\n", seq_of_subtask.at(cnt).c_str());
-	    		srv2.request.tmsdb.id = std::atoi(seq_of_subtask.at(cnt).c_str()) + sid;
-
-		    	if(db_reader_client2.call(srv2)) {
-		    		st.subtask_name = srv2.response.tmsdb[0].name;
-	//		    		std::string argument = srv2.response.tmsdb[0].etcdata;
-	//		    		std::vector<std::string> arg;
-	//		    		arg.clear();
-	//		    		boost::split(arg, argument, boost::is_any_of(";"));
-	//		    		for (int cnt2 = 0; cnt2 < arg.size(); cnt2++) {
-	//		    			ROS_INFO("subtask[%s]'s arg[%d] = [%s]\n", seq_of_subtask.at(cnt).c_str(), cnt2, arg.at(cnt2).c_str());
-	//		    			st.arg.push_back(arg.at(cnt2));
-	//		    		}
-
-		    		ROS_INFO("arg = %s", seq_of_subtask.at(cnt + 1).c_str());
-//		    		ROS_INFO("arg type = %s", seq_of_subtask.at(cnt + 1).substr(0, 3).c_str());
-//		    		ROS_INFO("pose type = %s", seq_of_subtask.at(cnt + 1).substr(3, seq_of_subtask.at(cnt + 1).size()).c_str());
-
-		    		// argumentの代入
-		    		std::vector<std::string> seq_of_argument;
-		    		seq_of_argument.clear();
-		    		boost::trim_if (seq_of_subtask.at(cnt + 1), boost::is_any_of("$") );
-		    		boost::split(seq_of_argument, seq_of_subtask.at(cnt + 1), boost::is_any_of("$"));
-
-		    		for (int i=0; i<seq_of_argument.size(); i++) {
-			    		if (seq_of_argument.at(i) == "oid") { // object_id
-			    			st.arg.push_back(ROS_TMS_TS::object_id);
-			    		} else if (seq_of_argument.at(i) == "uid") { // user_id
-			    			st.arg.push_back(ROS_TMS_TS::user_id);
-			    		} else if (seq_of_argument.at(i) == "pid") { // place_id
-			    			st.arg.push_back(ROS_TMS_TS::place_id);
-			    		} else if (seq_of_argument.at(i) == "rid") { // robot_id
-			    			st.arg.push_back(ROS_TMS_TS::robot_id);
-//			    		} else if (seq_of_argument.at(i).substr(0, 2) == "p_") { // pose_id
-//			    			// 特定の姿勢に関するデータの取得先は要検討 ?pose database?
-//			    			if (seq_of_subtask.at(cnt + 1).substr(3, seq_of_argument.at(i).size() - 1) == "take") {
-//			    				st.arg.push_back(11001);
-//			    			} else if (seq_of_subtask.at(cnt + 1).substr(3, seq_of_subtask.at(cnt + 1).size()) == "give") {
-//			    				st.arg.push_back(11002);
-//			    			} else if (seq_of_subtask.at(cnt + 1).substr(3, seq_of_subtask.at(cnt + 1).size()) == "init") {
-//			    				st.arg.push_back(11003);
-//			    			} else {
-//			    				ROS_ERROR("No such argument p_*\n");
-//			    				return 0;
-//			    			}
-			    		} else {
-			    			ROS_ERROR("No such argument!\n");
-			    			return 0;
-			    		}
-		    		}
-		    		ROS_TMS_TS::sub_task.push_back(st);
-		    	} else {
-		    		ROS_INFO("Failed to call service tms_db_get_subtask_data.\n");
-		    		res.result = 0; // false1
-		    		return true;
-		    	}
-	    	}
-	    }
-	}else { //TMSDBからtask_listsの取得に失敗したとき
+		int cc_count = 0;
+		int index = 0;
+		int type;
+		for (int cnt = 0; cnt < seq_of_subtask.size(); cnt++) {
+			// distinguish operator
+			if (seq_of_subtask.at(cnt) == "+") { // sequential subtask
+				ROS_INFO("+\n");
+				// add state to main function
+				std::string state1 = ArrayPop(stack, &sp);
+				std::string state2 = ArrayPop(stack, &sp);
+				if (state2 == "False") { // There is one state
+					index = AddOneStateSQ(state1);
+				} else {
+					ROS_INFO("state1:%s, state2:%s", state1.c_str(), state2.c_str());
+					index = AddStateSQ(state2, state1);
+					ArrayPush(stack, IntToString(index), &sp, N);
+				}
+			} else if (seq_of_subtask.at(cnt) == "|") { // concurrent subtask
+				// create concurrence container
+				std::string state1 = ArrayPop(stack, &sp);
+				std::string state2 = ArrayPop(stack, &sp);
+				type = GenerateCC(state2, state1, cc_count);
+				// add state to main function
+				index = AddStateCC(cc_count);
+				ArrayPush(stack, IntToString(index), &sp, N);
+				cc_count++;
+			} else {
+				ArrayPush(stack, seq_of_subtask.at(cnt), &sp, N);
+			}
+		}
+	}else {
 		ROS_INFO("Failed to call service tms_db_get_task_data.\n");
 		res.result = 0; // false1
 		return true;
@@ -256,6 +508,7 @@ bool tms_ts_nodelet::ROS_TMS_TS::tsCallback(tms_msg_ts::ts_req::Request &req, tm
 	ROS_TMS_TS::GenerateScript();
 	ROS_TMS_TS::ExeScript();
 
+	count_callback++;
 	res.result = 1; // success
 	return true;
 }

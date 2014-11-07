@@ -1,0 +1,59 @@
+＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+パーティクルフィルタを用いた人物追跡のデモ
+
+＊＊＊＊＊＊＊＊＊＊＊＊＊＊　
+
+①　コンパイル方法
+
+urg_node
+urg_c
+laser_proc
+
+をそれぞれ入れておく
+
+cd ~/catkin_ws/src
+git clone https://github.com/ros-drivers/urg_node.git 
+git clone https://github.com/ros-drivers/urg_c.git 
+https://github.com/ros-perception/laser_proc　からダウンロード
+
+
+~/catkin_ws/src　に　tracking　フォルダーをコピー
+
+cd ~/catkin_ws
+catkin_make
+
+
+②　実行前の確認
+
+ifconfig -a 
+eth1 があることを確認
+
+ない場合には
+cd ~src/AX88179_178A_LINUX_DRIVER_v1.9.0_SOURCE
+sudo modprobe -r asix
+make 
+sudo make install
+sudo modprobe asix
+
+
+③　実行方法
+URGの　ip address = 192.19.0.1 と仮定する
+
+端末を立ち上げて
+rosrun rviz rviz
+  rviz -> add -> MarkerArray
+  rviz -> topic -> visualization_marker_array
+
+以下はなくてもいい　レーザの生データで座標変換前なので、ずれている
+  rviz -> Global Options -> Fixed Frame -> laser
+  rviz -> add -> LaserScan
+  rviz -> topic -> /usr1/most_intense
+ 
+端末を立ち上げて
+roslaunch tracking urg.launch 
+
+端末を立ち上げて
+rosrun tracking tracker 
+
+赤が右　緑が前
+

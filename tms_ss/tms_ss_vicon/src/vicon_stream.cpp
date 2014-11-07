@@ -289,14 +289,16 @@ private:
         // publish to tms_db_writer
         int32_t id = 0;
 
-        if(SubjectName.compare("glasses") == 0)       id = 1001; //person_1
-        else if(SubjectName.compare("sp4") == 0)      id = 2001;
-        else if(SubjectName.compare("sp5_1") == 0)    id = 2002;
-        else if(SubjectName.compare("sp5_2") == 0)    id = 2003;
-        else if(SubjectName.compare("WheelChair") == 0)    id = 2007;   //added by Shigekane
-        else if(SubjectName.compare("ardrone1") == 0) id = 2008;        
-        else if(SubjectName.compare("oculus") == 0)   id = 3006;
-        else if(SubjectName.compare("m100") == 0)     id = 3016;
+        if(SubjectName.compare("moverio") == 0)         id = 1001; //person_1
+        else if(SubjectName.compare("sp4") == 0)        id = 2001;
+        else if(SubjectName.compare("sp5_1") == 0)      id = 2002;
+        else if(SubjectName.compare("sp5_2") == 0)      id = 2003;
+        else if(SubjectName.compare("wheelchair") == 0) id = 2007;
+        else if(SubjectName.compare("ardrone1") == 0)   id = 2008;
+        else if(SubjectName.compare("oculus") == 0)     id = 3006;
+        else if(SubjectName.compare("moverio") == 0)    id = 3016;
+        else if(SubjectName.compare("oculus2") == 0)    id = 3019;
+        else if(SubjectName.compare("wagon") == 0)      id = 6019;
         else id = -1;
 
         if(id != -1)

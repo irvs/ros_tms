@@ -40,7 +40,28 @@ namespace tms_ts_nodelet
 class ROS_TMS_TS : public nodelet::Nodelet
 {
 public:
-  ROS_TMS_TS() : robot_id(0), object_id(0), user_id(0), place_id(0)
+  ROS_TMS_TS() : sid(100000), robot_id(0), object_id(0), user_id(0), place_id(0),
+  import("#!/usr/bin/env python\n\n"
+		  "import roslib; roslib.load_manifest('tms_ts_smach')\n"
+		  "import rospy\n"
+		  "import smach\n"
+		  "import smach_ros\n\n"
+		  "from smach_ros import ServiceState\n"
+		  "from smach import Concurrence\n\n"
+		  "from tms_msg_rp.srv import *\n\n"),
+  main_function1("def main():\n"
+		  "    rospy.init_node('tms_ts_smach_executive"),
+  main_function2("')\n\n"
+		  "    sm_root = smach.StateMachine(['succeeded','aborted','preempted'])\n\n"
+		  "    with sm_root:\n\n"),
+  introspection_server("    sis = smach_ros.IntrospectionServer('tms_ts_smach_test',"
+		  " sm_root, '/ROS_TMS')\n"
+		  "    sis.start()\n\n"
+		  "    outcome = sm_root.execute()\n\n"
+		  "    rospy.spin()\n"
+		  "    sis.stop()\n\n"
+		  "if __name__ == '__main__':\n"
+		  "    main()\n")
   {}
 
 private:
@@ -48,35 +69,51 @@ private:
 
   std::string rosCheckTime(boost::posix_time::ptime time);
 
-  // スクリプト生成関数
+  std::string IntToString(int number);
+  int StringToInt(std::string str);
+
+  int ArrayPush(std::string *stack, std::string data, int *sp, size_t n);
+  std::string ArrayPop(std::string *stack, int *sp);
+
+  int ConvertArgType(std::string arg_type);
+  int JudgeArgType(std::string state1, std::string state2);
+  void GenerateContainer(std::string f_name, std::string state_name1);
+  int GenerateCC(std::string state1, std::string state2, int cc_count);
+  int AddOneStateSQ(std::string state1);
+  int AddStateCC(int cc_count);
+  int BuildStateVector(std::string state1, std::string state2);
+  int AddStateSQ(std::string state1, std::string state2);
   void GenerateScript(void);
-  // スクリプト実行関数(smach)
+
   bool ExeScript(void);
 
-  // コールバック関数(from ts_master)
   bool tsCallback(tms_msg_ts::ts_req::Request &req, tms_msg_ts::ts_req::Response &res);
+  static int count_callback;
 
-  // リクエスト情報格納用変数
+  const int sid;
   int robot_id;
   int object_id;
   int user_id;
   int place_id;
 
-  // タスク・サブタスク情報格納用変数
-  struct SubTask {
-	  std::string subtask_id;
-	  std::string subtask_name;
-	  std::vector<double> arg;
-	  //int arg;
-  };
-  std::vector<SubTask> sub_task;
+  const std::string import;
+  const std::string main_function1, main_function2;
+  const std::string introspection_server;
 
-  // smach	ファイル名
+  struct StateData {
+  	int state_id;
+  	std::string state_name;
+  	std::vector<int> arg;
+  	};
+
+  std::vector<StateData> state_data;
+
   std::string file_name;
+  std::string generated_container;
+  std::string generated_main;
 
-  ros::ServiceServer service; // URとの通信
-  ros::ServiceClient db_reader_client; // task_dataを取得するためのTMSDBとの通信
-  ros::ServiceClient db_reader_client2; // subtask_dataを取得するためのTMSDBとの通信
+  ros::ServiceServer service; // connect to UR
+  ros::ServiceClient db_reader_client; // connect to DB
 };
 
 

@@ -1,7 +1,6 @@
 ///-----------------------------------------------------------------------------
-/// @FileName smartpal5_control.cpp
-/// @Date 2014.06.18 / 2013.06.02
-/// @author Yoonseok Pyo (passionvirus@gmail.com)
+/// @FileName smartpal5_control.cpp /// @Date 2014.06.18 / 2013.06.02 
+/// @author Yoonseok Pyo (passionvirus@gmail.com) 
 ///-----------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
@@ -116,7 +115,7 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
       res.result = SUCCESS; //temp
       break;
     case  7: // getViconData
-      getRobotData.request.tmsdb.id     = 2002; // SmartPal5_1 ID
+      getRobotData.request.tmsdb.id     = 2003; // SmartPal5_2 ID
       getRobotData.request.tmsdb.sensor = 3001; // Vicon ID
       if (get_data_client.call(getRobotData)) {
         ROS_INFO("Get info of object ID: %d\n", getRobotData.request.tmsdb.id);
@@ -384,7 +383,7 @@ int main(int argc, char **argv)
   ros::ServiceServer service  = nh.advertiseService("sp5_control", robotControl);
   ros::Publisher pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
 
-  int32_t id_robot = 2002;                 // SmartPal5_1 ID
+  int32_t id_robot = 2003;                 // SmartPal5_2 ID
   int32_t id_odometry_and_joints = 3003;   // Sensor ID
   int32_t id_place = 5002;                 // Place ID
   
@@ -419,10 +418,10 @@ int main(int argc, char **argv)
   sleep(2);
 
   // power on
-  smartpal->vehicleSetPower(ON);
+  smartpal->lumbaSetPower(ON);
   smartpal->armSetPower(ArmR, ON);
   smartpal->armSetPower(ArmL, ON);
-  smartpal->lumbaSetPower(ON);
+  smartpal->vehicleSetPower(ON);
 
   sleep(2);
 

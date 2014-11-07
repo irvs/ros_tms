@@ -41,15 +41,15 @@ TmsRpController* TmsRpController::instance()
 }
 
 
-TmsRpController::TmsRpController() : os (MessageView::mainInstance()->cout() )
+TmsRpController::TmsRpController() : os_ (MessageView::mainInstance()->cout() )
 {
     //char excutePath[255];
     //char* excutePathResult;
     //excutePathResult = getcwd(excutePath, 255);
-    //os << "excutePath : " << excutePath << endl;
+    //os_ << "excutePath : " << excutePath << endl;
 
-		std::string homepath = getenv("HOME");
-    objectBasePath = homepath + "/catkin_ws/src/ros_tms/tms_rp/tms_rp_rostms_plugin/model";
+    std::string homepath = getenv("HOME");
+    objectBasePath = homepath + "/catkin_ws/src/ros_tms/tms_rp/tms_models";
 
     ifstream objListFile( (objectBasePath+"/model_list.txt").c_str() );
 	char line[1024];
@@ -66,7 +66,7 @@ TmsRpController::TmsRpController() : os (MessageView::mainInstance()->cout() )
 		objId2PrePlan.insert(pair <int, string>(id,gp));
 	}
 	if(objId2File.size()==0){
-		os << "Error: cannot read objList.txt" << endl; 
+		os_ << "Error: cannot read objList.txt" << endl;
 	}
 	isToleranceMode=false;
 	isPlanBaseMode=true;
@@ -92,7 +92,7 @@ bool TmsRpController::graspPathPlanStart_(
 			std::vector<pathInfo>* trajectory, int* state,
 			std::vector<double>* obj_pos, std::vector<double>* obj_rot)
 {
-	os << "in GraspPathController::graspPathPlanStart" << endl;
+	os_ << "in GraspPathController::graspPathPlanStart" << endl;
 	*state = 0;
 
 //	if(!checkPlanningMode()){
@@ -103,11 +103,11 @@ bool TmsRpController::graspPathPlanStart_(
 	PlanBase* tc = PlanBase::instance();
 
 	if(robTag2Arm().find(robotId) == robTag2Arm().end()){
-		os << "Error no robotid " << robotId << endl;
+		os_ << "Error no robotid " << robotId << endl;
 		*state = 1;
 		return false;
 	}
-	os << "set robot" << endl;
+	os_ << "set robot" << endl;
 	tc->targetArmFinger = robTag2Arm()[robotId];
 
 	tc->arm()->searchBasePositionMode = isPlanBaseMode;
@@ -119,11 +119,11 @@ bool TmsRpController::graspPathPlanStart_(
 	else tc->setTrajectoryPlanDOF();
 
 	if(objTag2Item().find(objectTagId) == objTag2Item().end()){
-		os << "Error no objectTagId " << objectTagId << endl;
+		os_ << "Error no objectTagId " << objectTagId << endl;
 		*state = 2;
 		return false;
 	}
-	os << "set object id" << endl;
+	os_ << "set object id" << endl;
 	tc->SetGraspedObject(objTag2Item()[objectTagId]);
 	tc->targetObject->preplanningFileName = objTag2PrePlan[objectTagId];
 
@@ -132,11 +132,11 @@ bool TmsRpController::graspPathPlanStart_(
 
 	if(tc->bodyItemRobot()->body()->numJoints() != (int)begin.size() ||
 		tc->bodyItemRobot()->body()->numJoints() != (int)end.size() ){
-		os << "Error: the number of Joints of input shoud be "<< tc->bodyItemRobot()->body()->numJoints() << endl;
+		os_ << "Error: the number of Joints of input shoud be "<< tc->bodyItemRobot()->body()->numJoints() << endl;
 		*state = 3;
 		return false;
 	}
-	os << "joint number OK" << endl;
+	os_ << "joint number OK" << endl;
 
 	for(int i=0;i<(int)begin.size();i++){
         tc->bodyItemRobot()->body()->joint(i)->q() = begin[i];
@@ -156,11 +156,11 @@ bool TmsRpController::graspPathPlanStart_(
 	GraspController::instance()->graspPranningReultList.clear();
 	bool success = GraspController::instance()->loadAndSelectGraspPattern();
 	if(!success){
-		os << "Error: Cannot find grasping posure" << endl;
+		os_ << "Error: Cannot find grasping_ posure" << endl;
 		*state = 4;
 		return false;
 	}
-	os << "get grasp position" << endl;
+	os_ << "get grasp position" << endl;
 	if(!isSyncJointBaseMode && isPlanBaseMode)  tc->setTrajectoryPlanDOF();
 	MotionState graspMotionState = tc->getMotionState();
     Vector3 Pp_(tc->palm()->p());
@@ -299,7 +299,7 @@ bool TmsRpController::graspPathPlanStart_(
     tc->object()->R() = object_R;
 
 	if(tc->graspMotionSeq.size() < 2){
-		os << "Error: Cannot find grasping posure" << endl;
+		os_ << "Error: Cannot find grasping_ posure" << endl;
 		*state = 4;
 		return false;
 	}
@@ -321,7 +321,7 @@ bool TmsRpController::graspPathPlanStart_(
 	cout <<"pathplan " << end1-start1 << " sec "<<endl;
 
 	if(!success){
-		os << "Error: Cannot find motion path" << endl;
+		os_ << "Error: Cannot find motion path" << endl;
 		*state = 5;
 		return false;
 	}
@@ -330,10 +330,10 @@ bool TmsRpController::graspPathPlanStart_(
 	objectPalmPos = tc->graspMotionSeq.back().objectPalmPos;
 	objectPalmRot = tc->graspMotionSeq.back().objectPalmRot;
 
-	os << objectPalmPos << endl;
-	os << objectPalmRot << endl;
+	os_ << objectPalmPos << endl;
+	os_ << objectPalmRot << endl;
 
-	os << "Planning Finished" << endl;
+	os_ << "Planning Finished" << endl;
 
 	//==== Hand open
 	//tc->handJoint()->link(1)->q = 80.0*M_PI/180.0;
@@ -353,7 +353,7 @@ bool TmsRpController::graspPathPlanStart(
 	PlanBase* tc = PlanBase::instance();
 
 	if(robTag2Arm().find(robotId) == robTag2Arm().end()){
-		os << "Error no robotid " << robotId << endl;
+		os_ << "Error no robotid " << robotId << endl;
 		*state = 1;
 		return false;
 	}
@@ -368,7 +368,7 @@ bool TmsRpController::graspPathPlanStart(
 	else tc->setTrajectoryPlanDOF();
 
 	if(objTag2Item().find(objectTagId) == objTag2Item().end()){
-		os << "Error no objectTagId " << objectTagId << endl;
+		os_ << "Error no objectTagId " << objectTagId << endl;
 		*state = 2;
 		return false;
 	}
@@ -380,7 +380,7 @@ bool TmsRpController::graspPathPlanStart(
 
 	if(tc->bodyItemRobot()->body()->numJoints() != (int)begin.size() ||
 		tc->bodyItemRobot()->body()->numJoints() != (int)end.size() ){
-		os << "Error: the number of Joints of input shoud be "<< tc->bodyItemRobot()->body()->numJoints() << endl;
+		os_ << "Error: the number of Joints of input shoud be "<< tc->bodyItemRobot()->body()->numJoints() << endl;
 		*state = 3;
 		return false;
 	}
@@ -403,7 +403,7 @@ bool TmsRpController::graspPathPlanStart(
 	GraspController::instance()->graspPranningReultList.clear();
 	bool success = GraspController::instance()->loadAndSelectGraspPattern();
 	if(!success){
-		os << "Error: Cannot find grasping posure" << endl;
+		os_ << "Error: Cannot find grasping_ posure" << endl;
 		*state = 4;
 		return false;
 	}
@@ -545,7 +545,7 @@ bool TmsRpController::graspPathPlanStart(
 	tc->object()->R() = object_R;
 
 	if(tc->graspMotionSeq.size() < 2){
-		os << "Error: Cannot find grasping posure" << endl;
+		os_ << "Error: Cannot find grasping_ posure" << endl;
 		*state = 4;
 		return false;
 	}
@@ -567,7 +567,7 @@ bool TmsRpController::graspPathPlanStart(
 	cout <<"pathplan " << end1-start1 << " sec "<<endl;
 
 	if(!success){
-		os << "Error: Cannot find motion path" << endl;
+		os_ << "Error: Cannot find motion path" << endl;
 		*state = 5;
 		return false;
 	}
@@ -576,7 +576,7 @@ bool TmsRpController::graspPathPlanStart(
 	objectPalmPos = tc->graspMotionSeq.back().objectPalmPos;
 	objectPalmRot = tc->graspMotionSeq.back().objectPalmRot;
 
-	os << "Planning Finished" << endl;
+	os_ << "Planning Finished" << endl;
 	cout << "Planning Finished" << endl;
 	//==== Hand open
 	//tc->handJoint()->link(1)->q() = 80.0*M_PI/180.0;
@@ -596,7 +596,7 @@ bool TmsRpController::pathPlanStart(
 
 	PlanBase* tc = PlanBase::instance();
 	if(robTag2Arm().find(robotId) == robTag2Arm().end()){
-		os << "Error no robotid " << robotId << endl;
+		os_ << "Error no robotid " << robotId << endl;
 		*state = 1;
 		return false;
 	}
@@ -605,7 +605,7 @@ bool TmsRpController::pathPlanStart(
 
 	/*
 	if(objTag2Item().find(objectTagId) == objTag2Item().end()){
-		os << "Error no objectTagId " << objectTagId << endl;
+		os_ << "Error no objectTagId " << objectTagId << endl;
 		*state = 2;
 		return false;
 	}
@@ -617,7 +617,7 @@ bool TmsRpController::pathPlanStart(
 	//==== start point
 	if(tc->bodyItemRobot()->body()->numJoints() != (int)begin.size() ||
 		tc->bodyItemRobot()->body()->numJoints() != (int)end.size() ){
-		os << "Error: the number of Joints of input shoud be "<< tc->bodyItemRobot()->body()->numJoints() << endl;
+		os_ << "Error: the number of Joints of input shoud be "<< tc->bodyItemRobot()->body()->numJoints() << endl;
 		*state = 3;
 		return false;
 	}
@@ -644,12 +644,12 @@ bool TmsRpController::pathPlanStart(
 	cout <<"pathplan " << end1-start1 << " sec "<<endl;
 
 	if(!success){
-		os << "Error: Cannot find motion path" << endl;
+		os_ << "Error: Cannot find motion path" << endl;
 		*state = 5;
 		return false;
 	}
-	os << "Output Trajectory Size " << trajectory->size() << endl;
-	os << "Planning Finished" << endl;
+	os_ << "Output Trajectory Size " << trajectory->size() << endl;
+	os_ << "Planning Finished" << endl;
 
 	return true;
 }
@@ -668,12 +668,12 @@ bool TmsRpController::releasePathPlanStart(
 	Matrix3 objectPalmRot = tc->targetArmFinger->objectPalmRot;
 
 
-	os << "obj palm "<< objectPalmPos.transpose() << endl;
-	os << placePos.transpose() << endl;
+	os_ << "obj palm "<< objectPalmPos.transpose() << endl;
+	os_ << placePos.transpose() << endl;
 
 	*state = 0;
 	if(robTag2Arm().find(robotId) == robTag2Arm().end()){
-		os << "Error no robotid " << robotId << endl;
+		os_ << "Error no robotid " << robotId << endl;
 		*state = 1;
 		return false;
 	}
@@ -681,7 +681,7 @@ bool TmsRpController::releasePathPlanStart(
 	if(!isSyncJointBaseMode) tc->setTrajectoryPlanDOF();
 
 	if(objTag2Item().find(objectTagId) == objTag2Item().end()){
-		os << "Error no objectTagId " << objectTagId << endl;
+		os_ << "Error no objectTagId " << objectTagId << endl;
 		*state = 2;
 		return false;
 	}
@@ -692,7 +692,7 @@ bool TmsRpController::releasePathPlanStart(
 
 	if(tc->bodyItemRobot()->body()->numJoints() != (int)begin.size() ||
 		tc->bodyItemRobot()->body()->numJoints() != (int)end.size() ){
-		os << "Error: the number of Joints of input shoud be "<< tc->bodyItemRobot()->body()->numJoints() << endl;
+		os_ << "Error: the number of Joints of input shoud be "<< tc->bodyItemRobot()->body()->numJoints() << endl;
 		*state = 3;
 		return false;
 	}
@@ -717,7 +717,7 @@ bool TmsRpController::releasePathPlanStart(
 	tc->setObjectContactState(PlanBase::ON_ENVIRONMENT);
 	bool success = selectReleasePattern(placePos, placeRot);
 	if(!success){
-		os << "Error: Cannot find grasping posure" << endl;
+		os_ << "Error: Cannot find grasping_ posure" << endl;
 		*state = 4;
 		return false;
 	}
@@ -730,7 +730,7 @@ bool TmsRpController::releasePathPlanStart(
 	if(!isSyncJointBaseMode) tc->setTrajectoryPlanDOF();
 	MotionState graspMotionState = tc->getMotionState();
 
-	os << "place "<< placePos.transpose() << "obj " << tc->object()->p() <<endl;
+	os_ << "place "<< placePos.transpose() << "obj " << tc->object()->p() <<endl;
 
 
 	Vector3 Pp_(tc->palm()->p());
@@ -819,13 +819,13 @@ bool TmsRpController::releasePathPlanStart(
 	cout <<"pathplan " << end1-start1 << " sec "<<endl;
 
 	if(!success){
-		os << "Error: Cannot find motion path" << endl;
+		os_ << "Error: Cannot find motion path" << endl;
 		*state = 5;
 		return false;
 	}
-	os << "Output Trajectory Size " << trajectory->size() << endl;
+	os_ << "Output Trajectory Size " << trajectory->size() << endl;
 
-	os << "Planning Finished" << endl;
+	os_ << "Planning Finished" << endl;
 
 	return true;
 }
@@ -835,14 +835,14 @@ bool TmsRpController::setRobotPosture(int mode,  std::string robotId, std::vecto
 
 	*state = 0;
 	if(robTag2Arm().find(robotId) == robTag2Arm().end()){ 
-		os << "Error no robotid " << robotId << endl; 
+		os_ << "Error no robotid " << robotId << endl;
 		*state = 1;
 		return false;
 	}
 	tc->targetArmFinger = robTag2Arm()[robotId];
 
 	if(tc->bodyItemRobot()->body()->numJoints() != (int)begin.size() ){
-		os << "Error: the number of Joints of input shoud be "<< tc->bodyItemRobot()->body()->numJoints() << endl; 
+		os_ << "Error: the number of Joints of input shoud be "<< tc->bodyItemRobot()->body()->numJoints() << endl;
 		*state = 3;
 		return false;
 	}
@@ -861,12 +861,12 @@ bool TmsRpController::setRobotState(int mode,  std::string robotId, Vector3 pos,
 
 	*state = 0;
 	if(robTag2Arm().find(robotId) == robTag2Arm().end()){ 
-		os << "Error no robotid " << robotId << endl; 
+		os_ << "Error no robotid " << robotId << endl;
 		*state = 1;
 		return false;
 	}
 	if(tc->bodyItemRobot()->body()->numJoints() != (int)begin.size() ){
-		os << "Error: the number of Joints of input shoud be "<< tc->bodyItemRobot()->body()->numJoints() << endl; 
+		os_ << "Error: the number of Joints of input shoud be "<< tc->bodyItemRobot()->body()->numJoints() << endl;
 		*state = 3;
 		return false;
 	}
@@ -940,7 +940,7 @@ bool TmsRpController::selectReleasePattern(Vector3 objVisPos, Matrix3 objVisRot)
 		pb->calcForwardKinematics();
 		pb->flush();
 	} else {
-		os << " No feasible grasping posture found" << endl;
+		os_ << " No feasible grasping_ posture found" << endl;
 	}
 
 	
@@ -952,14 +952,14 @@ bool TmsRpController::createRecord(int objId, std::string tagId) {
 	string objFileName = objectBasePath + objId2File[objId];
 	
   if (objTag2Item().find(tagId) != objTag2Item().end() || tagId=="ALLID") {
-    os << "Error: the tagId is already recorded " << tagId << endl;
+    os_ << "Error: the tagId is already recorded " << tagId << endl;
     return false;
 	}	
 
   Item* parentItem = RootItem::mainInstance();	
 	BodyItemPtr temp = new BodyItem();
 	if( !temp->load(objFileName,parentItem,"OpenHRP-VRML-MODEL") ){
-		os << "modelLoadError: " << objFileName << endl;
+		os_ << "modelLoadError: " << objFileName << endl;
 		return false;	
 	}
 	temp->setName(tagId);
@@ -973,32 +973,28 @@ bool TmsRpController::createRecord(int objId, std::string tagId) {
 
 bool TmsRpController::createRobotRecord(int objId, std::string tagId){
   if (robTag2Arm().find(tagId) != robTag2Arm().end() || tagId=="ALLID") {
-    os << "Error: the tagId is already recorded " << tagId << endl;
+    os_ << "Error: the tagId is already recorded " << tagId << endl;
     return false;
   }
 
   BodyItemPtr item = objTag2Item()[tagId];
-	PlanBase::instance()->RemoveEnvironment(item);
-	  
+  PlanBase::instance()->RemoveEnvironment(item);
+
   PlanBase::instance()->SetGraspingRobot(objTag2Item()[tagId]);
-	PlanBase::instance()->targetArmFinger = PlanBase::instance()->armsList[0];
+  PlanBase::instance()->targetArmFinger = PlanBase::instance()->armsList[0];
   cout << PlanBase::instance()->targetArmFinger->name << " is target arm"<< endl;
-  
+
   if (robTag2Arm().find(string("SmartPalRight")) != robTag2Arm().end()) {
     robTag2Arm()[string("SmartPalRight")]->dataFilePath = objectBasePath + "/robot/smartpal/data/";
     cout << robTag2Arm()[string("SmartPalRight")]->dataFilePath << endl;
   }
 
-  // if (robTag2Arm().find(string("SmartPalLeft")) != robTag2Arm().end()) {
-  //   robTag2Arm()[string("SmartPalLeft")]->dataFilePath = objectBasePath + "/robot/smartpal/dataLeft/";
-  //   cout << robTag2Arm()[string("SmartPalLeft")]->dataFilePath  << endl;
-  // }
   return true;
 }
 
 bool TmsRpController::deleteRecord(std::string tagId){
 	if(objTag2Item().find(tagId) == objTag2Item().end()){ 
-		os << "Error: the tagId is not recorded " << tagId << endl;
+		os_ << "Error: the tagId is not recorded " << tagId << endl;
 		return false;	
 	}
 	BodyItemPtr item = objTag2Item()[tagId];
@@ -1011,7 +1007,7 @@ bool TmsRpController::deleteRecord(std::string tagId){
 
 bool TmsRpController::appear(std::string tagId) {
   if (objTag2Item().find(tagId) == objTag2Item().end()) {
-		os << "Error: the tagId is not recorded " << tagId << endl;
+                os_ << "Error: the tagId is not recorded " << tagId << endl;
 		return false;	
   }
 
@@ -1022,7 +1018,7 @@ bool TmsRpController::appear(std::string tagId) {
 
 bool TmsRpController::disappear(std::string tagId){
 	if(objTag2Item().find(tagId) == objTag2Item().end()){ 
-		os << "Error: the tagId is not recorded " << tagId << endl;
+		os_ << "Error: the tagId is not recorded " << tagId << endl;
 		return false;	
 	}
 	BodyItemPtr item = objTag2Item()[tagId];
@@ -1040,7 +1036,7 @@ bool TmsRpController::setPos(string tagId, Vector3 pos, Matrix3 ori){
 		item = robTag2Arm()[tagId]->bodyItemRobot;
 	}
   if(!item){
-		os << "Error: the tagId is not recorded " << tagId << endl;
+                os_ << "Error: the tagId is not recorded " << tagId << endl;
 		return false;
 	}
   item->body()->link(0)->p() = pos;
@@ -1060,18 +1056,18 @@ bool TmsRpController::set_all_Pos(string tagId, Vector3 pos, Matrix3 ori, std::v
 		item = robTag2Arm()[tagId]->bodyItemRobot;
 	}
 	if(!item){
-		os << "Error: the tagId is not recorded " << tagId << endl;
+		os_ << "Error: the tagId is not recorded " << tagId << endl;
 		return false;
 	}
 	if(item->body()->numJoints() != (int)begin.size() ){
-		os << "Error: the number of Joints of input shoud be "<< item->body()->numJoints() << endl;
+		os_ << "Error: the number of Joints of input shoud be "<< item->body()->numJoints() << endl;
 		return false;
 	}
 
 	item->body()->link(0)->p() = pos;
 	item->body()->link(0)->R() = ori;
 	for(int i=0;i<(int)begin.size();i++){
-		os << "begin[" << i << "]=" << begin[i] << endl;
+		os_ << "begin[" << i << "]=" << begin[i] << endl;
 		item->body()->joint(i)->q() = begin[i];
 	}
 	item->calcForwardKinematics();
@@ -1089,7 +1085,7 @@ bool TmsRpController::getPos(string tagId, Vector3 *pos, Matrix3 *ori){
 		item = robTag2Arm()[tagId]->bodyItemRobot;
 	}
   if(!item){
-		os << "Error: the tagId is not recorded " << tagId << endl;
+                os_ << "Error: the tagId is not recorded " << tagId << endl;
 		return false;
 	}
   *pos = item->body()->link(0)->p();
@@ -1200,7 +1196,7 @@ bool TmsRpController::setOutputData(std::vector<pathInfo>* trajectory, const int
 	temp.moveJoints= false;
 	trajectory->push_back(temp);
 	
-	os << "Output Trajectory Size " << trajectory->size() << endl;
+	os_ << "Output Trajectory Size " << trajectory->size() << endl;
 	return true;
 }
 

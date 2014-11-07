@@ -37,6 +37,8 @@ add_message_files(
   ods_person_dt.msg
   Robot.msg
   Furniture.msg
+  tracking_points.msg
+  tracking_grid.msg
   Sensor.msg
 )
 

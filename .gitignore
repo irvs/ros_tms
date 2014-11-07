@@ -48,7 +48,6 @@ Makefile
 CMakeFiles/
 assets/
 gen/
-build.gradle
 build.xml
 lint.xml
 local.properties
@@ -57,3 +56,4 @@ build-*/
 *.autosave
 *.pyc
 *.dat
+*.txt.user

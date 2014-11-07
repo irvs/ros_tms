@@ -32,24 +32,27 @@
 #define rad2deg(x)	((x)*(180.0)/M_PI)
 #define deg2rad(x)	((x)*M_PI/180.0)
 
-namespace grasp {
+namespace grasp
+{
 
-class pathInfo{
-	public:
-	std::vector<double> pos;
-	cnoid::Vector3 robotPos;
-	cnoid::Matrix3 robotOri;
-	int state;
-	bool moveJoints;
-	bool moveBase;
-	cnoid::VectorXd joints;
+class pathInfo
+{
+public:
+  std::vector<double> pos;
+  cnoid::Vector3 robotPos;
+  cnoid::Matrix3 robotOri;
+  int state;
+  bool moveJoints;
+  bool moveBase;
+  cnoid::VectorXd joints;
 };
 
-class planGraspPath{
-	public:
-		enum STATE { APPROACH , CLOSING_GRIPPER, UP_HAND, BACKAWAY , DOWN_HAND, OPENING_GRIPPER };
-		enum PLANNING_MODE { GRAPSP_PLAN, RELEASE_PLAN, PATH_PLAN, PATH_PLAN_WITH_GRASPED_OBJECT };
-		enum BOOL_PARAMETER { TOLERANCE_MODE, PLAN_BASE_MODE, PLAN_JOINT_MODE, SYNC_JOINT_BASE_MODE};
+class planGraspPath
+{
+public:
+  enum STATE { APPROACH , CLOSING_GRIPPER, UP_HAND, BACKAWAY , DOWN_HAND, OPENING_GRIPPER };
+  enum PLANNING_MODE { GRAPSP_PLAN, RELEASE_PLAN, PATH_PLAN, PATH_PLAN_WITH_GRASPED_OBJECT };
+  enum BOOL_PARAMETER { TOLERANCE_MODE, PLAN_BASE_MODE, PLAN_JOINT_MODE, SYNC_JOINT_BASE_MODE};
 };
 
 class TmsRpController{
@@ -94,37 +97,37 @@ class TmsRpController{
     bool appear(std::string tagId, std::string robId);
     bool disappear(std::string tagId);
     bool disappear(std::string tagId, std::string robId);
-		bool setPos(std::string tagId, cnoid::Vector3 pos, cnoid::Matrix3 ori);
-		bool set_all_Pos(std::string tagId, cnoid::Vector3 pos, cnoid::Matrix3 ori, std::vector<double> begin);
-		bool getPos(std::string tagId, cnoid::Vector3 *pos, cnoid::Matrix3 *ori); 
-		bool setBoolParameter(int mode,bool onoff);
+    bool setPos(std::string tagId, cnoid::Vector3 pos, cnoid::Matrix3 ori);
+    bool set_all_Pos(std::string tagId, cnoid::Vector3 pos, cnoid::Matrix3 ori, std::vector<double> begin);
+    bool getPos(std::string tagId, cnoid::Vector3 *pos, cnoid::Matrix3 *ori);
+    bool setBoolParameter(int mode,bool onoff);
 
-		std::string objectBasePath;
-		std::map <int, std::string> objId2File;
-		std::map <int, std::string> objId2PrePlan;
-		std::map <std::string, std::string> objTag2PrePlan;
-		
-		std::map <std::string,cnoid::BodyItemPtr>& objTag2Item(){
-			return PlanBase::instance()->objTag2Item;
-		}			
-		std::map <std::string,ArmFingers*>& robTag2Arm(){
-			return PlanBase::instance()->robTag2Arm;
-		}
-		
-		void setTrajectoryPlanWholeDOF();
+    std::string objectBasePath;
+    std::map <int, std::string> objId2File;
+    std::map <int, std::string> objId2PrePlan;
+    std::map <std::string, std::string> objTag2PrePlan;
 
-		bool isToleranceMode;
-		bool isPlanBaseMode;
-		bool isPlanJointMode;
-		bool isSyncJointBaseMode;
-		
-		cnoid::Vector3 objectPalmPos;
-		cnoid::Matrix3 objectPalmRot;
-		
-		
-	private:
-		std::ostream& os;
-		bool setOutputData(std::vector<pathInfo>* trajectory, const int resolution);
+    std::map <std::string,cnoid::BodyItemPtr>& objTag2Item(){
+      return PlanBase::instance()->objTag2Item;
+    }
+    std::map <std::string,ArmFingers*>& robTag2Arm(){
+      return PlanBase::instance()->robTag2Arm;
+    }
+
+    void setTrajectoryPlanWholeDOF();
+
+    bool isToleranceMode;
+    bool isPlanBaseMode;
+    bool isPlanJointMode;
+    bool isSyncJointBaseMode;
+
+    cnoid::Vector3 objectPalmPos;
+    cnoid::Matrix3 objectPalmRot;
+
+
+    private:
+    std::ostream& os_;
+    bool setOutputData(std::vector<pathInfo>* trajectory, const int resolution);
 };
 
 

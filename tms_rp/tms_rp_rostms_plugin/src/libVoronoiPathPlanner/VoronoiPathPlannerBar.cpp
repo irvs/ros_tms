@@ -115,32 +115,32 @@ VoronoiPathPlannerBar::VoronoiPathPlannerBar()
      os (MessageView::mainInstance()->cout() )
 {
   
-  addSeparator();
+//  addSeparator();
   
-  addLabel(("=VoronoiPathPlan="));
+//  addLabel(("[CollisionMap]"));
 
-  addButton(("SetCollisionTarget"), ("set collision target model"))->
-    sigClicked().connect(bind(&VoronoiPathPlannerBar::onSetCollisionTargetButtonClicked, this));
+//  addButton(("SetCollisionTarget"), ("set collision target model"))->
+//    sigClicked().connect(bind(&VoronoiPathPlannerBar::onSetCollisionTargetButtonClicked, this));
 
-  addButton(("makeCollisionMap"), ("make collision map"))->
-    sigClicked().connect(bind(&VoronoiPathPlannerBar::onMakeCollisionMapButtonClicked, this));  
+//  addButton(("makeCollisionMap"), ("make collision map"))->
+//    sigClicked().connect(bind(&VoronoiPathPlannerBar::onMakeCollisionMapButtonClicked, this));
     
-  addButton(("loadCollisionMap"), ("load collision map"))->
-    sigClicked().connect(bind(&VoronoiPathPlannerBar::onLoadCollisionMapButtonClicked, this));
+//  addButton(("loadCollisionMap"), ("load collision map"))->
+//    sigClicked().connect(bind(&VoronoiPathPlannerBar::onLoadCollisionMapButtonClicked, this));
     
-  addSeparator();
+//  addSeparator();
   
-  addButton(("Reset"), ("Reset Start & Goal Pos"))->
-    sigClicked().connect(bind(&VoronoiPathPlannerBar::onResetButtonClicked, this));
+//  addButton(("Reset"), ("Reset Start & Goal Pos"))->
+//    sigClicked().connect(bind(&VoronoiPathPlannerBar::onResetButtonClicked, this));
   
-  addButton(("SetStart"), ("Set Start Pos"))->
-    sigClicked().connect(bind(&VoronoiPathPlannerBar::onSetStartPosButtonClicked, this));
+//  addButton(("SetStart"), ("Set Start Pos"))->
+//    sigClicked().connect(bind(&VoronoiPathPlannerBar::onSetStartPosButtonClicked, this));
     
-  addButton(("SetGoal"), ("Set Goal Pos"))->
-    sigClicked().connect(bind(&VoronoiPathPlannerBar::onSetGoalPosButtonClicked, this));
+//  addButton(("SetGoal"), ("Set Goal Pos"))->
+//    sigClicked().connect(bind(&VoronoiPathPlannerBar::onSetGoalPosButtonClicked, this));
 
-  addButton(("StartPlanning"), ("Start Voronoi Path Planning"))->
-    sigClicked().connect(bind(&VoronoiPathPlannerBar::onStartPlanButtonClicked, this)); 
+//  addButton(("StartPlanning"), ("Start Voronoi Path Planning"))->
+//    sigClicked().connect(bind(&VoronoiPathPlannerBar::onStartPlanButtonClicked, this));
 
   addSeparator();
   
@@ -233,9 +233,10 @@ void VoronoiPathPlannerBar::onMakeCollisionMapButtonClicked()
     vector<vector<int> > collision_map;
     VoronoiPathPlanner::instance()->makeCollisionMap(collision_map);
     
-    QFile use_file(DirName+"use_collision_map.csv");
+    QFile use_file(DirName+"/use_collision_map.csv");
     if (!use_file.open(QIODevice::WriteOnly)) {
-      cout<<" can not open file"<<endl;
+      cout<<DirName.toStdString()<<endl;
+      cout<<"... can not open file"<<endl;
       return;
     }
     
