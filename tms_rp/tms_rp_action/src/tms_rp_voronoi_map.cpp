@@ -303,12 +303,14 @@ void TmsRpVoronoiMap::convertMap(vector<vector<CollisionMapData> > map, tms_msg_
 }
 
 //------------------------------------------------------------------------------
-void TmsRpVoronoiMap::staticMapPublish(){
+void TmsRpVoronoiMap::staticMapPublish()
+{
   static_map_pub_.publish(static_map_);
 }
 
 //------------------------------------------------------------------------------
-void TmsRpVoronoiMap::dynamicMapPublish(){
+void TmsRpVoronoiMap::dynamicMapPublish()
+{
   int map_x = 0, map_y = 0;
   vector<vector<CollisionMapData> > temp_Map;
   string result_msg;
@@ -322,7 +324,7 @@ void TmsRpVoronoiMap::dynamicMapPublish(){
   BodyItemPtr item;
   TmsRpController trc;
 
-  // get current position of object
+  // add current position of obstacle (wagon)
   item = trc.objTag2Item()["wagon"];
   if(!item){
     ROS_INFO("Error: The tagId is not recorded.");
@@ -338,12 +340,83 @@ void TmsRpVoronoiMap::dynamicMapPublish(){
   map_y = (int)round( ( object_pos(1) - y_llimit_ ) / cell_size_ );
 
   for(int check_x_size=map_x-2;check_x_size<=map_x+2;check_x_size++)
+  {
     for(int check_y_size=map_y-2;check_y_size<=map_y+2;check_y_size++)
     {
       temp_Map[check_x_size][check_y_size].object_        = 1;
       temp_Map[check_x_size][check_y_size].dist_from_obj_ = 0.0;
       temp_Map[check_x_size][check_y_size].collision_     = true;
     }
+  }
+
+  setVoronoiLine(temp_Map, result_msg);
+  calcDistFromObj(temp_Map, result_msg);
+  convertMap(temp_Map, dynamic_map_);
+
+  dynamic_map_pub_.publish(dynamic_map_);
+}
+
+//------------------------------------------------------------------------------
+void TmsRpVoronoiMap::dynamicMapPublish(tms_msg_ss::tracking_points person_pos)
+{
+  int map_x = 0, map_y = 0;
+  int obstacle_pos_x = 0, obstacle_pos_y = 0;
+  vector<vector<CollisionMapData> > temp_Map;
+  string result_msg;
+
+  temp_Map.clear();
+  temp_Map = collision_map_;
+
+  Vector3 object_pos = Vector3(0,0,0);
+  Matrix3 object_ori;
+  Vector3 object_rpy;
+  BodyItemPtr item;
+  TmsRpController trc;
+
+  // add current position of obstacle (wagon)
+  item = trc.objTag2Item()["wagon"];
+  if(!item){
+    ROS_INFO("Error: The tagId is not recorded.");
+  }
+  object_pos = item->body()->link(0)->p();
+  object_ori = item->body()->link(0)->R();
+  item->calcForwardKinematics();
+  item->notifyKinematicStateChange();
+
+  object_rpy = grasp::rpyFromRot(object_ori);
+
+  map_x = (int)round( ( object_pos(0) - x_llimit_ ) / cell_size_ );
+  map_y = (int)round( ( object_pos(1) - y_llimit_ ) / cell_size_ );
+
+  for(int check_x_size=map_x-2;check_x_size<=map_x+2;check_x_size++)
+  {
+    for(int check_y_size=map_y-2;check_y_size<=map_y+2;check_y_size++)
+    {
+      temp_Map[check_x_size][check_y_size].object_        = 1;
+      temp_Map[check_x_size][check_y_size].dist_from_obj_ = 0.0;
+      temp_Map[check_x_size][check_y_size].collision_     = true;
+    }
+  }
+
+  // add current position of obstacle (person)
+  for(unsigned int i=0;i<person_pos.tracking_grid.size();i++)
+  {
+    obstacle_pos_x = person_pos.tracking_grid[i].x/1000;
+    obstacle_pos_y = person_pos.tracking_grid[i].y/1000;
+
+    map_x = (int)round( ( obstacle_pos_x - x_llimit_ ) / cell_size_ );
+    map_y = (int)round( ( obstacle_pos_y - y_llimit_ ) / cell_size_ );
+
+    for(int check_x_size=map_x-2;check_x_size<=map_x+2;check_x_size++)
+    {
+      for(int check_y_size=map_y-2;check_y_size<=map_y+2;check_y_size++)
+      {
+        temp_Map[check_x_size][check_y_size].object_        = 1;
+        temp_Map[check_x_size][check_y_size].dist_from_obj_ = 0.0;
+        temp_Map[check_x_size][check_y_size].collision_     = true;
+      }
+    }
+  }
 
   setVoronoiLine(temp_Map, result_msg);
   calcDistFromObj(temp_Map, result_msg);
