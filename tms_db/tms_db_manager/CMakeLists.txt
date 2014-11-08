@@ -8,9 +8,6 @@ find_package(catkin REQUIRED COMPONENTS
   tms_msg_db
 )
 
-###################################
-## catkin specific configuration ##
-###################################
 catkin_package(
   # INCLUDE_DIRS include
   LIBRARIES tms_db_manager
