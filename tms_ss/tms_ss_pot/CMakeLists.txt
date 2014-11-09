@@ -10,8 +10,12 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   tms_msg_ss
   tms_msg_db
-  message_generation
+  cv_bridge
   )
+
+find_package(Qt4 4.6 REQUIRED COMPONENTS QtCore QtGui)
+include(${QT_USE_FILE})
+find_package(Boost REQUIRED COMPONENTS thread)
 
 ###################################
 ## catkin specific configuration ##
@@ -26,15 +30,36 @@ catkin_package(
 ###########
 ## Build ##
 ###########
-include_directories( include
+
+include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
+  /usr/local/include/opencv2
+  /usr/local/include/opencv
+  ${BOOST_INCLUDE_DIRS}
+  ${QT_INCLUDE_DIRS}
 )
 
-add_executable(pot_ctrl src/pot_ctrl.cpp)
-add_executable(pot_scan src/pot_scan.cpp)
+## Declare a cpp library
+ add_library(tms_ss_pot
+   include/tms_ss_pot/Particle_filter.cpp
+   include/tms_ss_pot/Target.cpp
+   include/tms_ss_pot/Laser.cpp
+   include/tms_ss_pot/Multiple_particle_filter.cpp
+ )
+
+
+add_executable(pot_ctrl src/pot_ctrl.cpp include/tms_ss_pot/Particle_filter.cpp include/tms_ss_pot/Target.cpp include/tms_ss_pot/Laser.cpp include/tms_ss_pot/Multiple_particle_filter.cpp)
+add_executable(pot_tracker_s src/pot_tracker_single.cpp include/tms_ss_pot/Particle_filter.cpp include/tms_ss_pot/Target.cpp include/tms_ss_pot/Laser.cpp include/tms_ss_pot/Multiple_particle_filter.cpp)
+add_executable(pot_urg_scans src/pot_urg_scans.cpp)
+add_executable(pot_urg_scan src/pot_urg_scan.cpp)
 
 add_dependencies(pot_ctrl tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
-add_dependencies(pot_scan tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
+add_dependencies(pot_tracker_s tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
+add_dependencies(pot_urg_scans tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
+add_dependencies(pot_urg_scan tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
 
-target_link_libraries(pot_ctrl   ${catkin_LIBRARIES})
-target_link_libraries(pot_scan   ${catkin_LIBRARIES})
+target_link_libraries(pot_ctrl        ${catkin_LIBRARIES})
+target_link_libraries(pot_tracker_s   ${catkin_LIBRARIES})
+target_link_libraries(pot_urg_scans   ${catkin_LIBRARIES})
+target_link_libraries(pot_urg_scan    ${catkin_LIBRARIES})
