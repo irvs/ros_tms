@@ -96,10 +96,10 @@ void LaserSensingCallback1(const sensor_msgs::LaserScan::ConstPtr &scan)
 int main( int argc, char **argv )
 {
     ros::MultiThreadedSpinner spinner(4);
-    ros::init(argc, argv, "LsrScan");
+    ros::init(argc, argv, "pot_urg_scans");
     ros::NodeHandle nh;
-    pub   = nh.advertise<sensor_msgs::LaserScan>("/LsrScan0", 1000);
-    pub1  = nh.advertise<sensor_msgs::LaserScan>("/LsrScan1", 1000);
+    pub   = nh.advertise<sensor_msgs::LaserScan>("/LaserTracker0", 1000);
+    pub1  = nh.advertise<sensor_msgs::LaserScan>("/LaserTracker1", 1000);
     sub   = nh.subscribe("/urg0/scan", 1000, LaserSensingCallback);
     sub1  = nh.subscribe("/urg1/scan", 1000, LaserSensingCallback1);
     spinner.spin();

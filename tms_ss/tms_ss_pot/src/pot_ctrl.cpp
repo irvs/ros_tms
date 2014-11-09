@@ -1,5 +1,5 @@
 //----------------------------------------------------------
-// @file   : rps.cpp
+// @file   : pot_ctrl.cpp
 // @author : Watanabe Yuuta 
 // @version: Ver0.1.4 (since 2014.05.02)
 // @date   : 2016.06.09
@@ -12,10 +12,19 @@
 #include <time.h>
 #include <vector>
 #include <math.h>
-
+#include <tms_ss_pot/Particle_filter.h>
+#include <tms_ss_pot/define.h>
+#include <tms_ss_pot/Target.h>
+#include <tms_ss_pot/Laser.h>
+#include <tms_ss_pot/Multiple_particle_filter.h>
 
 int main() {
-#if 1
+  pos_t titi;
+  std::cout << "maxconnect" << MAX_CONNECT  << std::endl; 
+  titi.x = 9;
+  titi.y = 8;
+   std::cout << titi.y  << titi.x << std::endl;
+#if 0
   std::vector<double> before_x;
   std::vector<double> before_y;
   std::vector<double> after_x;
@@ -74,11 +83,12 @@ int main() {
   it_x = before_x.begin();
   it_y = before_y.begin();
   }
-#endif
+
 std::cout << "before_x.size() " << before_x.size() << std::endl;
 for(int i=0; i < before_x.size() ; i++){
 std::cout << "x y"<< before_x[i] << before_y[i] << std::endl;
 }
+#endif
 #if 0
     // ファイル入力ストリームの初期化
     std::ifstream ifs("test3.txt");
