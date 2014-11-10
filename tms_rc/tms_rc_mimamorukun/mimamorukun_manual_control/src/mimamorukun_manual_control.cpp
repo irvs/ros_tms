@@ -1,14 +1,15 @@
 //------------------------------------------------------------------------------
-// FileName : wc_controller.cpp
-// Date		: 2014.06.03
+// FileName : mimamorukun_manual_control.cpp
+// Date		: 2014.11.07
 // author 	: Akio Shigekane
 //------------------------------------------------------------------------------
 //2014. 9.23     	adjust scale of speed
 //2014.11.01        adjust wheel spin PID constants
+//2014.11.07        included to ROT_TMS project
 
 #include <ros/ros.h>
-#include <nav_msgs/Odometry.h>			// odom
-#include <geometry_msgs/Twist.h>		// cmd_vel
+#include <nav_msgs/Odometry.h>
+#include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Pose2D.h>
 
@@ -18,6 +19,7 @@
 #include <string>
 
 #include <sensor_msgs/Joy.h>
+#include <tms_msg_db/TmsdbGetData.h>
 
 #define ROS_RATE   10
 
@@ -44,6 +46,8 @@ int spd_cmd_L = 0;
 int spd_cmd_R = 0;
 double joy_cmd_spd = 0.0;
 double joy_cmd_turn = 0.0;
+
+ros::ServiceClient db_client;
 
 class MachinePose_s{
 private:
@@ -73,6 +77,20 @@ double Limit(double val,double max,double min){
     if(val > max)       return max;
     else if(min > val)  return min;
     else                return val;
+}
+
+void MachinePose_s::updateVicon(){
+    // printf("line:%s\n",__LINE__);
+    tms_msg_db::TmsdbGetData srv;
+    srv.request.tmsdb.id = 2007;
+    if(db_client.call(srv)){
+        mchn_pose.pos_vicon.x = srv.response.tmsdb[0].x;
+        mchn_pose.pos_vicon.y = srv.response.tmsdb[0].y;
+        mchn_pose.pos_vicon.theta = srv.response.tmsdb[0].ry;
+    }else{
+        ROS_ERROR("Failed to get vicon data from DB via tms_db_reader");
+    }
+    return ;
 }
 
 void MachinePose_s::updateOdom(){
@@ -145,7 +163,7 @@ void MachinePose_s::updateOdom(){
 
 /*    POS_X += dX;
 	POS_Y += dY;*/
-	return ;
+    return ;
 }
 
 void init(){
@@ -201,9 +219,11 @@ void receiveJoy(const sensor_msgs::Joy::ConstPtr& joy){
 
 
 int main(int argc, char **argv){
-    ros::init(argc, argv, "wc_controller");
     ROS_INFO("wc_controller");
+    ros::init(argc, argv, "wc_controller");
     ros::NodeHandle n;
+
+    db_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
 
     int Kp_,Ki_,Kd_;
     string s_Kp_,s_Ki_,s_Kd_;
@@ -239,25 +259,20 @@ int main(int argc, char **argv){
     current_time 	= ros::Time::now();
     last_time 		= ros::Time::now();
 
-    //ros::Rate r(10);
-    // ros::Rate r(100);
     ros::Rate   r(ROS_RATE);
     while(n.ok()){
-        //3.5[rot]   = 10[sec]
-        //10.0[rot]  = 27.11[sec]
-        //150[pulse] = 1[sec]
-        //cmd = 7596
+        // ROS_INFO("");
         move(joy_cmd_spd,joy_cmd_turn);
+        mchn_pose.updateVicon();
         //mchn_pose.updateOdom();
+        ROS_INFO("x:%4.2lf y:%4.2lf th:%4.2lf",
+            mchn_pose.pos_vicon.x,
+            mchn_pose.pos_vicon.y,
+            mchn_pose.pos_vicon.theta);
 
-//        Odometry();
-/*    ROS_INFO("ENC_L:%8ld   ENC_R:%8ld",ENC_L,ENC_R);
-    ROS_INFO("X:%d   Y:%d  ANG:%lf",POS_X,POS_Y,POS_ANG);*/
-	
 /*        ROS_INFO("L::cmd:%6d  raw:%6d mm:%lf    R::cmd:%6d  raw:%6d mm:%lf"
             ,spd_cmd_L,1*spd_raw_L,1*spd_mm_L
             ,spd_cmd_R,1*spd_raw_R,1*spd_mm_R);*/
-        ROS_INFO("");
         last_time = current_time;
         current_time = ros::Time::now();
         ros::spinOnce();
