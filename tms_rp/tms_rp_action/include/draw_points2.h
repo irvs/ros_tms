@@ -69,7 +69,11 @@ public:
     glPopAttrib();
   }
 
-  sensor_msgs::LaserScan*   laser_raw_data1_;
+  void removeLaserRawData2()
+  {
+    SceneView::instance()->removeEntity(group);
+  }
+  sensor_msgs::LaserScan*   laser_raw_data_;
 };
 
 }
