@@ -69,15 +69,22 @@
         <iframe src="https://docs.google.com/file/d/0ByyF7QlkYfbUTmp3dzhHNjZjekk/preview" height="400" width="600"></iframe>
 
         <h3><a class="anchor" href="#page1" id="page1"><span class="octicon octicon-link"></span></a>
-            日用品の位置追跡
+            Intelligent cabinet system
         </h3>
-        <p>どこに何が入っているのかがわかる知的収納庫を開発しています．複数のセンサを埋め込むことで家具・収納庫を知能化します． </p>
+        <p>The cabinets installed in the room are equipped with RFID readers and load cells to detect the types and positions of the objects in the cabinet.
+        Every object in the environment has an RFID tag containing a unique ID that identifies it.
+        This ID is used to retrieve the attributes of the object, such as its name and location in the database.
+        Using the RFID readers, we can detect the presence of a new object inside the cabinet.
+        In addition, the load cell information allows us to determine its exact position inside the cabinet.
+        An example of object detection in the intelligent cabinet is shown in below figure.
+        </p>
         <iframe src="https://docs.google.com/file/d/0ByyF7QlkYfbUdE5uZFlpd09YWTA/preview" height="400" width="600"></iframe>
 
         <h3><a class="anchor" href="#page1" id="page1"><span class="octicon octicon-link"></span></a>
-            ロボット搭載カメラを用いた家具上変化検出
+          Object detection system
         </h3>
-        <p>ロボットに搭載されたカメラを用いてテーブル上や棚内などの変化を前時刻の情景と比較して検出し、無くなったあるいは新たに置かれた物品を検出する研究を行っています。  </p>
+        <p>If neither the FSS nor the ICS is available for detecting objects such as those placed on a desk, the object detection system using a RGB-D camera on a robot is provided in this platform as shown in below figure.
+        In this system, a newly appeared object or movement of an object is detected as a change in the environment. </p>
         <table width="90%">
           <tbody>
             <tr><th class="bg" width="100%">本棚内の変化検出</th></tr>
@@ -86,9 +93,17 @@
         </table>
 
         <h3><a class="anchor" href="#page1" id="page1"><span class="octicon octicon-link"></span></a>
-            生活支援ロボットの行動動作計画
+          Floor sensing system (FSS)
         </h3>
-        <p>床上に設置したレーザ距離センサを用いて人の足を検出し，歩行軌跡の計測や生活行動の推定を行っています．さらに，これらの情報と，生活者にアクティブRFIDタグ（自ら電波を送信するタグ）を身に付けてもらうことで得られる情報を用いて，複数人物を同時に追跡する研究も行っています． </p>
+        <p>The current platform is equipped with a floor sensing system to detect objects on the floor and people walking around.
+        This sensing systems is composed of a laser range finder located on one side of the room and a mirror installed along another side of the room.
+        This configuration allows a reduction of dead angles of the LRF and is more robust against occlusions.
+        An example of object detection using this system is shown in below.
+        People tracking is performed by first applying static background subtraction and then extracting clusters in the remainder of the measurements.
+        Clusters are later tracked by matching profiles of cluster corresponding to legs and extending the motion using the accelerations of the legs.
+        Moreover, this system can measure the poses of the robot and movable furniture such as a wagon using tags, which have encoded reflection patterns optically identified by the LRF.
+
+        </p>
         <iframe src="https://docs.google.com/file/d/0ByyF7QlkYfbUeEJjQlBZbzZtenM/preview" height="400" width="600"></iframe><br>
         <img src="images/kku_2.png" alt="photo"><br>
 
