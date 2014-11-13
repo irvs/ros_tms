@@ -362,15 +362,17 @@ void *Processing( void *ptr )
 
         }
         std::cout << "m_PF start！" << std::endl;
+        pthread_mutex_lock(&mutex_target);
         m_PF.update(&laser);
+        pthread_mutex_unlock(&mutex_target);
         std::cout << "m_PF end！" << std::endl;
         ros::Time begin = ros::Time::now();
         if (m_PF.m_ParticleFilter.size() > 0) std::cout << "Time " << begin << " Number of PFs " << m_PF.m_ParticleFilter.size() << std::endl;
 
-        if (!(iteration % 100)) laser.GetBackLRFDataGaussian();
+        //if (!(iteration % 100)) laser.GetBackLRFDataGaussian();
 
         r.sleep();
-        iteration ++;
+        //iteration ++;
     }
 
     cvReleaseMat(&Temp);

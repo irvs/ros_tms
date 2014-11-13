@@ -106,7 +106,7 @@ int CLaser::GetLRFParam()
 			case 0:
 			default:
 				param.tx = 0.0;
-				param.ty = 0.0;
+				param.ty = 1.4;
 				param.tz = 0.0;
 				param.rx = 0.0;
 				param.ry = 0.0;
@@ -117,7 +117,7 @@ int CLaser::GetLRFParam()
 				break;
 			case 1:
 				param.tx = 0.0;
-				param.ty = 2.8;
+				param.ty = -1.4;
 				param.tz = 0.0;
 				param.rx = 0.0;
 				param.ry = 0.0;

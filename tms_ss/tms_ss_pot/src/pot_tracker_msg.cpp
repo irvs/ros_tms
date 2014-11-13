@@ -1,5 +1,5 @@
 //----------------------------------------------------------
-// @file   : pot_tracker_single.cpp
+// @file   : pot_tracker_double.cpp
 // @author : Watanabe Yuuta
 // @version: Ver0.1.4 (since 2014.05.02)
 // @date   : 2016.06.09
@@ -8,8 +8,8 @@
 #include <ros/ros.h>
 #include <pthread.h>
 #include <std_msgs/String.h>
-#include <tms_msg_ss/tracking_points.h>
-#include <tms_msg_ss/tracking_grid.h>
+#include <tms_msg_ss/pot_tracking_points.h>
+#include <tms_msg_ss/pot_tracking_grid.h>
 
 pthread_mutex_t mutex_laser = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
@@ -21,10 +21,6 @@ pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 #include "tms_ss_pot/Laser.h"
 #include "tms_ss_pot/Particle_filter.h"
 #include "tms_ss_pot/Multiple_particle_filter.h"
-
-#include <tms_msg_db/TmsdbGetData.h>
-#include <tms_msg_db/TmsdbStamped.h>
-#include <tms_msg_db/Tmsdb.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <string>
@@ -46,14 +42,29 @@ void *Visualization( void *ptr )
     float Y;
     ros::Rate r(10);
     ros::Publisher *pub = (ros::Publisher *)ptr;
-    int latest_id = 0;
+    IDparam tmp_param;
+    std::vector< IDparam > idparam;
+    std::vector< IDparam >::iterator v;
+
+    tmp_param.id = 0;
+    tmp_param.flag = 0;
+    tmp_param.count = 0;
+    tmp_param.start_pos.x = 0.0;
+    tmp_param.start_pos.y = 0.0;
+    tmp_param.tmp_pos.x = 0.0;
+    tmp_param.tmp_pos.y = 0.0;
+    tmp_param.end_pos.x = 0.0;
+    tmp_param.end_pos.y = 0.0;
+    tmp_param.vector.x = 0.0;
+    tmp_param.vector.y = 0.0;
+    idparam.push_back(tmp_param);
 
     while (ros::ok())
     {
-        tms_msg_ss::tracking_grid grid;
-        tms_msg_ss::tracking_points points;
-        int id = 0;
-        int flag = 0;
+        //std::cout << "visual_start"<<std::endl;
+        tms_msg_ss::pot_tracking_grid grid;
+        tms_msg_ss::pot_tracking_points points;
+
         pthread_mutex_lock(&mutex_target);
 
         for (int i = 0; i < MAX_TRACKING_OBJECT; i++)
@@ -65,28 +76,89 @@ void *Visualization( void *ptr )
                     //cout << laser.m_pTarget[i]->cnt << endl;
                     continue;
                 }
-                std::cout << "laser.m_pTarget " << laser.m_pTarget[i]->cnt << std::endl;
+                //std::cout << "laser.m_pTarget " << laser.m_pTarget[i]->cnt << std::endl;
                 ID =  (laser.m_pTarget[i]->id);
                 X  = -(laser.m_pTarget[i]->py);
                 Y  =  (laser.m_pTarget[i]->px);
-                //std::cout << "FX FY"<< FX << " "<< FY <<std::endl;
-                    grid.id = ID;
-                    grid.x  = X;
-                    grid.y  = Y;
+                //std::cout << "ID " << ID << "X " << X << "Y " << Y << std::endl;
 
-                    points.tracking_grid.push_back(grid);
-                id ++;
+                for (v = idparam.begin(); v != idparam.end(); ++v)
+                {
+                    v -> flag = 0;
+                }
 
+
+                for (v = idparam.begin(); v != idparam.end() + 1; ++v)
+                {
+                    if ( v -> id == ID)
+                    {
+                        v -> flag = 1;
+                        v -> count++;
+                        if ((v -> count) % 10 == 0)
+                        {
+                            v -> vector.x = X - (v -> tmp_pos.x);
+                            v -> vector.y = Y - (v -> tmp_pos.y);
+                            v -> tmp_pos.x = X;
+                            v -> tmp_pos.y = Y;
+                        }
+                        v -> end_pos.x = X;
+                        v -> end_pos.y = Y;
+                        //std::cout << "v = id " << std::endl;
+                        break;
+                    }
+                    else if (v == idparam.end())
+                    {
+                        tmp_param.id = ID;
+                        tmp_param.flag = 1;
+                        tmp_param.count = 0;
+                        tmp_param.start_pos.x = X;
+                        tmp_param.start_pos.y = Y;
+                        tmp_param.tmp_pos.x = X;
+                        tmp_param.tmp_pos.y = Y;
+                        tmp_param.end_pos.x = X;
+                        tmp_param.end_pos.y = Y;
+                        tmp_param.vector.x = X;
+                        tmp_param.vector.y = Y;
+                        idparam.push_back(tmp_param);
+                        break;
+                    }
+                }
+
+                for (v = idparam.begin(); v != idparam.end(); ++v)
+                {
+                    grid.id = v -> id;
+                    grid.flag = v -> flag;
+                    grid.count = v -> count;
+                    grid.start_x = v -> start_pos.x;
+                    grid.start_y = v -> start_pos.y;
+                    grid.tmp_x = v -> tmp_pos.x;
+                    grid.tmp_y = v -> tmp_pos.y;
+                    grid.end_x = v -> end_pos.x;
+                    grid.end_y = v -> end_pos.y;
+                    grid.vector_x = v -> vector.x;
+                    grid.vector_y = v -> vector.y;
+
+                    //std::cout << "id " << grid.id << "flag " << grid.flag << "x " << grid.end_x << "y " << grid.end_y << std::endl;
+                    points.pot_tracking_grid.push_back(grid);
+                }
+
+                for (v = idparam.begin(); v != idparam.end(); ++v)
+                {
+                    //std::cout << "v -> flag" << v -> flag << std::endl;
+                    if (v -> flag == 0)
+                    {
+                        //  std::cout << "nakasima" << std::endl;
+                        idparam.erase (v);
+                    }
+                    //std::cout << "nakasima_2" << std::endl;
+                }
             }
+
         }
-        if (id > 0) std::cout << "Number of Markers " << id << std::endl;
 
         pthread_mutex_unlock(&mutex_target);
-
-        latest_id = id;
-
         pub->publish(points);
-        //std::cout << "pub"<<std::endl;
+        //std::cout << "visual_end"<<std::endl;
         r.sleep();
     }
     return 0;
@@ -98,7 +170,7 @@ void *Processing( void *ptr )
     //  CParticleFilter m_PF;
     CMultipleParticleFilter m_PF;
     //ros::Rate r(30);
-    ros::Rate r(20);
+    ros::Rate r(30);
     laser.Init();
 
     //  int area[2]={STAGE_X, STAGE_Y};
@@ -220,8 +292,9 @@ void *Processing( void *ptr )
                 }
             }
         }
-
+        pthread_mutex_lock(&mutex_target);
         m_PF.update(&laser);
+        pthread_mutex_unlock(&mutex_target);
 
         ros::Time begin = ros::Time::now();
         if (m_PF.m_ParticleFilter.size() > 0) std::cout << "Time " << begin << " Number of PFs " << m_PF.m_ParticleFilter.size() << std::endl;
@@ -267,9 +340,9 @@ int main( int argc, char **argv )
     pthread_t thread_v;
     ros::MultiThreadedSpinner spinner(4);
 
-    ros::init(argc, argv, "pot_tracker");
+    ros::init(argc, argv, "pot_tracker_msg");
     ros::NodeHandle n;
-    ros::Publisher  pub = n.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 1);
+    ros::Publisher  pub = n.advertise<tms_msg_ss::pot_tracking_points>("tracking_point_inf", 10);
     ros::Subscriber sub = n.subscribe("/LaserTracker0", 1000, LaserSensingCallback);
     if ( pthread_create( &thread_v, NULL, Visualization, (void *)&pub) )
     {

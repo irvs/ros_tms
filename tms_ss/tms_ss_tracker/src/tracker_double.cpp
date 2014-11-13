@@ -1,30 +1,30 @@
 //----------------------------------------------------------
-// @file   : pot_tracker_single.cpp
-// @author : Watanabe Yuuta
-// @version: Ver0.1.4 (since 2014.05.02)
-// @date   : 2014.11.11
+// @file   : tracker_double.cpp
+// @adder : Watanabe Yuuta 
+// @version: Ver0.0.1 (since 2014.05.02)
+// @date   : 2016.11.06
 //----------------------------------------------------------
 
 #include <ros/ros.h>
 #include <pthread.h>
 #include <std_msgs/String.h>
-#include <visualization_msgs/Marker.h>
-#include <visualization_msgs/MarkerArray.h>
+#include <sensor_msgs/LaserScan.h>
+#include <sensor_msgs/MultiEchoLaserScan.h>
+#include <tms_msg_ss/tracking_points.h>
+#include <tms_msg_ss/tracking_grid.h>
 
 pthread_mutex_t mutex_laser = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 
+//#include "opencv2/opencv.hpp"
 #include "opencv/cv.h"
-#include <sensor_msgs/LaserScan.h>
-#include "tms_ss_pot/define.h"
-#include "tms_ss_pot/Target.h"
-#include "tms_ss_pot/Laser.h"
-#include "tms_ss_pot/Particle_filter.h"
-#include "tms_ss_pot/Multiple_particle_filter.h"
 
-#include <tms_msg_db/TmsdbGetData.h>
-#include <tms_msg_db/TmsdbStamped.h>
-#include <tms_msg_db/Tmsdb.h>
+#include "define.h"
+#include "Target.h"
+#include "Laser.h"
+
+#include "PF.h"
+#include "MultipleParticleFilter.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <string>
@@ -40,153 +40,70 @@ std::vector<float> scanData1;
 CLaser laser;
 bool CallbackCalled = false;
 
+ros::Publisher  pub ;
+ros::Subscriber sub ;
+ros::Subscriber sub1;
+
 void *Visualization( void *ptr )
 {
-    uint32_t shape = visualization_msgs::Marker::CYLINDER;
-    uint32_t shape_arrow = visualization_msgs::Marker::ARROW;
-    float output_x;
-    float output_y;
+    int   ID;
+    float X;
+    float Y;
     ros::Rate r(10);
     ros::Publisher *pub = (ros::Publisher *)ptr;
-    visualization_msgs::MarkerArray latest_markerArray;
     int latest_id = 0;
-    float colorset[14][4] = {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {1, 1, 0, 0}, {0, 1, 1, 0}, {1, 0, 1, 0}, {1, 1, 1, 0},
-        {0.5, 0, 0, 0}, {0, 0.5, 0, 0}, {0, 0, 0.5, 0}, {0.5, 0.5, 0, 0}, {0, 0.5, 0.5, 0}, {0.5, 0, 0.5, 0}, {0.5, 0.5, 0.5, 0}
-    };
 
     while (ros::ok())
     {
-        visualization_msgs::MarkerArray markerArray;
-        //    markerArray.markers.clear();
-
+        tms_msg_ss::tracking_grid grid;
+        tms_msg_ss::tracking_points points;
         int id = 0;
         int flag = 0;
         for (int i = 0; i < 3; i++)
         {
-            visualization_msgs::Marker marker;
-            marker.header.frame_id = "/laser";
-            marker.header.stamp = ros::Time::now();
-
-            //    marker.ns = "tracker";
-            marker.id = id;
-            marker.type = shape_arrow;
-            marker.action = visualization_msgs::Marker::ADD;
-
-            marker.pose.position.x = 0;
-            marker.pose.position.y = 0;
-            marker.pose.position.z = 0;
-            marker.pose.orientation.x = 0.0;
-            marker.pose.orientation.y = 0.0;
-            marker.pose.orientation.z = 0.0;
-            marker.pose.orientation.w = 1.0;
-
-            marker.scale.x = 1.0;
-            marker.scale.y = 0.1;
-            marker.scale.z = 0.1;
-
-            marker.color.r = 0.0f;
-            marker.color.g = 0.0f;
-            marker.color.b = 0.0f;
-            marker.color.a = 1.0;
-
-
-            switch (i)
-            {
-            case 0:
-                marker.pose.orientation.x = sin(90.0 * PI / 180.0 / 2.0);
-                marker.pose.orientation.w = cos(90.0 * PI / 180.0 / 2.0);
-                marker.color.r = 1.0f;
-                break;
-            case 1:
-                marker.pose.orientation.z = sin(90.0 * PI / 180.0 / 2.0);
-                marker.pose.orientation.w = cos(90.0 * PI / 180.0 / 2.0);
-                marker.color.g = 1.0f;
-                break;
-            case 2:
-                marker.pose.orientation.y = sin(-90.0 * PI / 180.0 / 2.0);
-                marker.pose.orientation.w = cos(-90.0 * PI / 180.0 / 2.0);
-                marker.color.b = 1.0f;
-                break;
-            }
-
-            //    marker.lifetime = ros::Duration();
-
-            markerArray.markers.push_back(marker);
             id ++;
         }
-
         pthread_mutex_lock(&mutex_target);
 
         for (int i = 0; i < MAX_TRACKING_OBJECT; i++)
         {
             if (laser.m_pTarget[i] != NULL)
             {
-                if (laser.m_pTarget[i]->cnt < 250)
+                if (laser.m_pTarget[i]->cnt < 200)
                 {
-                    //       cout << laser.m_pTarget[i]->cnt << endl;
+                    //cout << laser.m_pTarget[i]->cnt << endl;
                     continue;
                 }
-                std::cout << "laser.m_pTarget " << laser.m_pTarget[i]->cnt << std::endl;
+                //std::cout << "laser.m_pTarget " << laser.m_pTarget[i]->cnt << std::endl;
+                ID =  (laser.m_pTarget[i]->id) % 20;
+                X  = -(laser.m_pTarget[i]->py) + 5200;
+                Y  =  (laser.m_pTarget[i]->px) + 100;
+                //std::cout << "FX FY"<< FX << " "<< FY <<std::endl;
+                if (0.0 < X && X < 8000.0 && 0.0 < Y && Y < 4500.0)
+                {
+                    grid.id = ID;
+                    grid.x  = X;
+                    grid.y  = Y;
 
-                visualization_msgs::Marker marker;
-                marker.header.frame_id = "/laser";
-                marker.header.stamp = ros::Time::now();
-
-                //         marker.ns = "tracker";
-                marker.id = id;
-                marker.type = shape;
-                marker.action = visualization_msgs::Marker::ADD;
-
-                marker.pose.position.x = laser.m_pTarget[i]->px * 0.001;
-                marker.pose.position.y = laser.m_pTarget[i]->py * 0.001;
-                marker.pose.position.z = 0.5;
-                marker.pose.orientation.x = 0.0;
-                marker.pose.orientation.y = 0.0;
-                marker.pose.orientation.z = 0.0;
-                marker.pose.orientation.w = 1.0;
-
-                marker.scale.x = 0.1;
-                marker.scale.y = 0.1;
-                marker.scale.z = 1.0;
-
-                int color = laser.m_pTarget[i]->id % 14;
-                marker.color.r = colorset[color][0];
-                marker.color.g = colorset[color][1];
-                marker.color.b = colorset[color][2];
-                marker.color.a = 1.0;
-
-                //         marker.lifetime = ros::Duration();
-
-                markerArray.markers.push_back(marker);
+                    points.tracking_grid.push_back(grid);
+                }
                 id ++;
-                output_x = - (laser.m_pTarget[i]->py) + 2500 ;
-                output_y =    laser.m_pTarget[i]->px +  500  ;
 
             }
         }
-        if (id - 3 > 0) std::cout << "Number of Markers " << id - 3 << std::endl;
+        //if (id - 3 > 0) std::cout << "Number of Markers " << id - 3 << std::endl;
 
         pthread_mutex_unlock(&mutex_target);
 
-        //std::cout << "Number of Markers " << markerArray.markers.size() << std::endl;
-
-        if (latest_id > id)
-        {
-            for (int i = 0; i < latest_markerArray.markers.size(); i++) latest_markerArray.markers[i].action = visualization_msgs::Marker::DELETE;
-            pub->publish(latest_markerArray);
-        }
-
         latest_id = id;
-        latest_markerArray = markerArray;
 
-        pub->publish(markerArray);
+        pub->publish(points);
         //std::cout << "pub"<<std::endl;
-
         r.sleep();
     }
-
     return 0;
 }
+
 
 void *Processing( void *ptr )
 {
@@ -344,61 +261,9 @@ void *Processing( void *ptr )
                 }
 
                 if (n == 1)
-                {
-                    it_x = itigou_x.end();
-                    it_y = itigou_y.end();
-                    if (nigou_x.size() > 3)
-                    {
-                        for (int i = 0; i < nigou_x.size() ; i++)
-                        {
-                            if (itigou_x.size() > 3)
-                            {
-                                for (it_x = itigou_x.end(), it_y = itigou_y.end(); it_x != itigou_x.begin() - 1 ; --it_x, --it_y)
-                                {
-                                    double r = 10000;
-                                    r = sqrt(pow(*it_x - nigou_x[i], 2) + pow(*it_y - nigou_y[i], 2));
-
-                                    if (r < 0.0)
-                                    {
-                                        if (it_x == itigou_x.end())
-                                        {
-                                            std::cout << "1--" << std::endl;
-                                            itigou_x.insert(it_x, nigou_x[i]);
-                                            itigou_y.insert(it_y, nigou_y[i]);
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            std::cout << "2--" << std::endl;
-                                            itigou_x.insert(it_x + 1, nigou_x[i]);
-                                            itigou_y.insert(it_y + 1, nigou_y[i]);
-                                            break;
-                                        }
-                                    }
-
-                                    if (it_x == itigou_x.begin())
-                                    {
-                                        std::cout << "3--" << std::endl;
-                                        itigou_x.insert(itigou_x.end(), nigou_x[i]);
-                                        itigou_y.insert(itigou_y.end(), nigou_y[i]);
-                                        break;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                std::cout << "4--" << std::endl;
-                                //nigou ari itigou nasi
-                                for (int i = 0; i < nigou_x.size() ; i++)
-                                {
-                                    itigou_x.push_back(nigou_x[i]);
-                                    itigou_y.push_back(nigou_y[i]);
-                                }
-                                break;
-                            }
-                        }
-                        //dainyuu
-                        std::cout << "5--" << std::endl;
+                {   
+                    itigou_x.insert(itigou_x.begin(), nigou_x.begin(), nigou_x.end());
+                    itigou_y.insert(itigou_y.begin(), nigou_y.begin(), nigou_y.end());
                         laser.m_LRFClsPoints[0].clear();
                         laser.m_LRFClsPoints[0].resize(itigou_x.size());
                         for (int i = 0; i < itigou_x.size() ; i++)
@@ -406,19 +271,7 @@ void *Processing( void *ptr )
                             laser.m_LRFClsPoints[0][i].x = itigou_x[i];
                             laser.m_LRFClsPoints[0][i].y = itigou_y[i];
                         }
-                    }
-                    else
-                    {
-                        // nigou nasi
-                        std::cout << "6--" << std::endl;
-                        laser.m_LRFClsPoints[0].clear();
-                        laser.m_LRFClsPoints[0].resize(itigou_x.size());
-                        for (int i = 0; i < itigou_x.size() ; i++)
-                        {
-                            laser.m_LRFClsPoints[0][i].x = itigou_x[i];
-                            laser.m_LRFClsPoints[0][i].y = itigou_y[i];
-                        }
-                    }
+
 
                     itigou_x.clear();
                     itigou_y.clear();
@@ -429,6 +282,7 @@ void *Processing( void *ptr )
             }
 
         }
+
         pthread_mutex_lock(&mutex_target);
         m_PF.update(&laser);
         pthread_mutex_unlock(&mutex_target);
@@ -436,7 +290,7 @@ void *Processing( void *ptr )
         ros::Time begin = ros::Time::now();
         if (m_PF.m_ParticleFilter.size() > 0) std::cout << "Time " << begin << " Number of PFs " << m_PF.m_ParticleFilter.size() << std::endl;
 
-        if (!(iteration % 100)) laser.GetBackLRFDataGaussian();
+        if (!(iteration % 100000)) laser.GetBackLRFDataGaussian();
 
         r.sleep();
         iteration ++;
@@ -455,17 +309,8 @@ void LaserSensingCallback(const sensor_msgs::LaserScan::ConstPtr &scan)
 
     if ( scanData.size() == 0 ) scanData.resize(num);
 
-    for (int i = 0; i < num ; i++)
-    {
-        if (isnan(scan->ranges[i]) == 0)
-        {
-            scanData[i] = scan->ranges[i];
-        }
-        else
-        {
-            scanData[i] = 5.6;
-        }
-    }
+    scanData = scan->ranges;
+
     pthread_mutex_unlock(&mutex_laser);
     CallbackCalled = true;
 }
@@ -477,17 +322,8 @@ void LaserSensingCallback1(const sensor_msgs::LaserScan::ConstPtr &scan)
 
     if ( scanData1.size() == 0 ) scanData1.resize(num);
 
-    for (int i = 0; i < num ; i++)
-    {
-        if (isnan(scan->ranges[i]) == 0)
-        {
-            scanData1[i] = scan->ranges[i];
-        }
-        else
-        {
-            scanData1[i] = 5.6;
-        }
-    }
+    scanData1 = scan->ranges;
+
     pthread_mutex_unlock(&mutex_laser);
     CallbackCalled = true;
 }
@@ -498,11 +334,11 @@ int main( int argc, char **argv )
     pthread_t thread_v;
     ros::MultiThreadedSpinner spinner(4);
 
-    ros::init(argc, argv, "pot_tracker_double");
+    ros::init(argc, argv, "tracker_double");
     ros::NodeHandle n;
-    ros::Publisher  pub = n.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 1);
-    ros::Subscriber sub  = n.subscribe("/LaserTracker0" , 1000, LaserSensingCallback);
-    ros::Subscriber sub1 = n.subscribe("/LaserTracker1", 1000, LaserSensingCallback1);
+    ros::Publisher  pub  = n.advertise<tms_msg_ss::tracking_points>("tracking_points", 10);
+    ros::Subscriber sub  = n.subscribe("/urg2/most_intense" , 10, LaserSensingCallback);
+    ros::Subscriber sub1 = n.subscribe("/urg1/most_intense" , 10, LaserSensingCallback1);
     if ( pthread_create( &thread_v, NULL, Visualization, (void *)&pub) )
     {
         printf("error creating thread.");

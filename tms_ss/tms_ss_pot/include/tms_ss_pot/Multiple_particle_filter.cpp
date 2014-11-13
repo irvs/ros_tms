@@ -1,4 +1,4 @@
-// ParticleFilter.cpp : 
+// ParticleFilter.cpp :
 //
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,7 +23,7 @@ extern pthread_mutex_t mutex_target;
 CMultipleParticleFilter::CMultipleParticleFilter()
 {
     m_max_ID = 100;
-    m_min_distance = 1500;//1000.0;  // 1000mm
+    m_min_distance = 1000;//1000.0;  // 1000mm
     //m_min_distance = 560.0;   // 400mm
     m_ID = 0;
 }
@@ -40,7 +40,8 @@ void CMultipleParticleFilter::update(CLaser *Laser)
 
     for (int n = 0; n < 1; n++)
     {
-        //for (int n = 0; n < m_pLaser->m_cnMaxConnect; n++){
+        //    for (int n = 0; n < m_pLaser->m_cnMaxConnect; n++)
+        //  {
         if (m_pLaser->m_bNodeActive[n])
         {
             std::vector<int> label(m_pLaser->m_LRFClsPoints[n].size(), -1);     //
@@ -58,9 +59,6 @@ void CMultipleParticleFilter::update(CLaser *Laser)
                 {
                     p[0] = it->state[0];
                     p[1] = it->state[1];
-                    //std::cout << "state" << p[0] << " " << p[1] << std::endl;
-
-                    //std::cout << "p[0] p[1]" << p[0] << " " <<  p[1] << std::endl;
 
                     double r = sqrt(pow(p[0] - obs[0], 2) + pow(p[1] - obs[1], 2));
                     //std::cout << "n__" << n << "r__" << r << std::endl;
