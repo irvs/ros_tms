@@ -4,6 +4,7 @@
 #include <tms_rp_collision_map.h>
 #include <sg_points_get.h>
 #include <draw_points.h>
+#include <draw_points2.h>
 #include <tms_rp_pp.h>
 
 //------------------------------------------------------------------------------
@@ -891,6 +892,24 @@ void TmsRpBar::viewMarkerOfRobot()
 
   callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"robot_marker"));
   callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"robot_marker"));
+}
+
+//------------------------------------------------------------------------------
+void TmsRpBar::viewLrfRawDataNew()
+{
+  if(!point2d_toggle_->isChecked())
+    return;
+
+  if(lrf_raw_data1_.ranges.size()==0)
+  {
+    ROS_INFO("nothing the LRF raw data 1");
+    return;
+  }
+
+  ROS_INFO("on view option for LRF raw data");
+
+  SgPointsDrawing2 test;
+  test.renderLaserRawData2(&lrf_raw_data1_);
 }
 
 //------------------------------------------------------------------------------

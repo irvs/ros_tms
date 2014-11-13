@@ -181,6 +181,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void viewPathOfRobot();
   void viewMarkerOfRobot();
   void viewLrfRawData();
+  void viewLrfRawDataNew();
   void viewPersonPostion();
 
   void pathPlanButtonClicked();
