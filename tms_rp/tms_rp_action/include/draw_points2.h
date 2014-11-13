@@ -14,13 +14,11 @@ class SgPointsDrawing2 : public cnoid::SgCustomGLNode
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-  SgPointsDrawing2(sensor_msgs::LaserScan* raw_data)
+  SgPointsDrawing2()
   {
-    setRenderingFunction2(boost::bind(&SgPointsDrawing2::renderLaserRawData2, this));
-    this->laser_raw_data_ = raw_data;
   }
 
-  void renderLaserRawData2() {
+  void renderLaserRawData2(sensor_msgs::LaserScan* raw_data) {
     glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
     glDisable(GL_LIGHTING);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -38,18 +36,18 @@ public:
     lrf_set_x = 2.5;
     lrf_set_y = 0.15;
 
-    for(int i=0; i<laser_raw_data1_->ranges.size(); i++)
+    for(int i=0; i<raw_data->ranges.size(); i++)
     {
       angle = (i * 0.25 - 45)* M_PI/180.;
       if(angle>=0 && angle<=M_PI)
       {
-        distance = laser_raw_data1_->ranges[i];
+        distance = raw_data->ranges[i];
         lrf_x = distance * cos(angle) + lrf_set_x;
         lrf_y = distance * sin(angle) + lrf_set_y;
         glVertex3d(lrf_x,lrf_y,0.875);
        }
     }
-
+    ROS_INFO("setVertices");
     SgVertexArrayPtr vertices = new SgVertexArray();
     //vertices->reserve(numPoints); a lot of PCD
     SgVector3 vertex = SgVector3(1,1,1);
@@ -59,10 +57,10 @@ public:
 
     if (pointSet)
     {
-      SgInvariantGroupPtr group = new SgInvariantGroup();
-      group->addChild(pointSet);
-      SceneView::instance()->addEntity(group);
-      //os << pointSet->vertices()->size() << " points have been added.";
+      group_ = new SgInvariantGroup();
+      group_->addChild(pointSet);
+      SceneView::instance()->addEntity(group_);
+      ROS_INFO("points have been added %d",pointSet->vertices()->size());
     }
 
     glEnd();
@@ -71,9 +69,11 @@ public:
 
   void removeLaserRawData2()
   {
-    SceneView::instance()->removeEntity(group);
+    SceneView::instance()->removeEntity(group_);
   }
+
   sensor_msgs::LaserScan*   laser_raw_data_;
+  SgInvariantGroupPtr group_;
 };
 
 }
