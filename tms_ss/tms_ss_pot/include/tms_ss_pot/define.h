@@ -3,7 +3,7 @@
 
 #define MAX_CONNECT 2
 #define PI 3.14159265358979323846
-#define MAX_DATA_SIZE_LRF 1000//726//727//1081//726//1081//727//1081//700
+#define MAX_DATA_SIZE_LRF 1500//726//727//1081//726//1081//727//1081//700
 #define MAX_TRACKING_OBJECT 10//99
 #define MAX_PARTICLE_NUM 2000//2000//8000
 #define MAX_PARTICLE_NUM_MCMC 1000//1000
@@ -23,17 +23,35 @@
 #define norm(x,y,z) sqrt(sqr(x)+sqr(y)+sqr(z))
 #define deg2rad(x) ((double)x*PI/180.0)
 
-typedef struct _LRFParam{
-	double tx;
-	double ty;
-	double tz;
-	double rx;
-	double ry;
-	double rz;
-	int step;
-	double viewangle;
-	double divangle;
+typedef struct _LRFParam
+{
+    double tx;
+    double ty;
+    double tz;
+    double rx;
+    double ry;
+    double rz;
+    int step;
+    double viewangle;
+    double divangle;
 } LRFParam;
+
+typedef struct
+{
+    double x;
+    double y;
+} pos;
+
+typedef struct
+{
+    int id;
+    int flag;
+    int count;
+    pos start_pos;
+    pos tmp_pos;
+    pos end_pos;
+    pos vector;
+} IDparam;
 
 #define ZeroMemory(arg1, arg2) memset(arg1, 0, arg2)
 #define CopyMemory(arg1, arg2, arg3) memcpy(arg1, arg2, arg3)
