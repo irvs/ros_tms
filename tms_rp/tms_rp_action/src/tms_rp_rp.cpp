@@ -593,16 +593,11 @@ void tms_rp::TmsRpSubtask::sensingCallback(const tms_msg_ss::ods_person_dt::Cons
 bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *argument) {
 	ROS_INFO("[tms_rp]move command\n");
 
+	double error_x, error_y, error_th;
 	tms_msg_db::TmsdbGetData srv;
 	tms_msg_rp::rps_voronoi_path_planning rp_srv;
 
 	rp_srv.request.robot_id = robot_id;
-	// init arm
-//	if ((robot_id == 2003 || robot_id == 2002) && type == true) {
-//		sp5_control(type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4);
-//		sp5_control(type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg);
-//		sp5_control(type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12);
-//	}
 	std::string robot_name("");
 	get_robot_pos(type, robot_id, robot_name, rp_srv);
 
@@ -858,9 +853,10 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 					get_robot_pos(type, robot_id, robot_name, rp_srv);
 
 					// end determination
-					if (rp_srv.request.start_pos.x == rp_srv.request.goal_pos.x &&
-							rp_srv.request.start_pos.y == rp_srv.request.goal_pos.y &&
-							rp_srv.request.start_pos.th == rp_srv.request.goal_pos.th) break;
+					error_x = fabs(rp_srv.request.start_pos.x - rp_srv.request.goal_pos.x);
+					error_y = fabs(rp_srv.request.start_pos.y - rp_srv.request.goal_pos.y);
+					error_th = fabs(rp_srv.request.start_pos.th - rp_srv.request.goal_pos.th);
+					if (error_x<5 && error_y<5 && error_th<2) break; // dis_error:5mm, ang_error:2deg
 
 					rp_srv.response.VoronoiPath.clear();
 					voronoi_path_planning_client_.call(rp_srv);
@@ -1000,5 +996,3 @@ bool tms_rp::TmsRpView::blink_arrow(tms_msg_rp::rp_arrow::Request &req,
   res.result = 0;
   return false;
 }
-
-//------------------------------------------------------------------------------
