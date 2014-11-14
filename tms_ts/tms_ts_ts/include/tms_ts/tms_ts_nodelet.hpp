@@ -48,7 +48,8 @@ public:
 		  "import smach_ros\n\n"
 		  "from smach_ros import ServiceState\n"
 		  "from smach import Concurrence\n\n"
-		  "from tms_msg_rp.srv import *\n\n"),
+		  "from tms_msg_rp.srv import *\n"
+		  "from tms_msg_ts.srv import *\n\n"),
   main_function1("def main():\n"
 		  "    rospy.init_node('tms_ts_smach_executive"),
   main_function2("')\n\n"

@@ -2,6 +2,8 @@
 //rosrun nodelet nodelet load tms_ts_nodelet/TS nodelet_manager __name:=nodelet1 nodelet1/tms_ts:=req1
 #include <tms_ts/ts_master.hpp>
 
+int TmsTsMaster::state_condition = -1;
+
 std::list<TmsTsMaster::Task> task_list_;
 // return first data of the list
 int at_rostime(void) {
@@ -51,13 +53,13 @@ TmsTsMaster::TmsTsMaster(int argc, char **argv) {
 	ros::init(argc, argv, "tms_ts_master");
 	ros::NodeHandle n;
 	service = n.advertiseService("tms_ts_master", &TmsTsMaster::ts_master_callback, this);
+	state_control_srv = n.advertiseService("ts_state_control", &TmsTsMaster::stsCallback, this);
 }
 
 // rosspin
 void TmsTsMaster::ros_spin() {
-	while(ros::ok()) {
-	ros::spin();
-	}
+	ros::MultiThreadedSpinner spinner(2);
+	spinner.spin();
 }
 
 std::string TmsTsMaster::CreateSrvCall(long long int rostime, int task_id, int robot_id, int object_id,
@@ -152,6 +154,29 @@ bool TmsTsMaster::ts_master_callback(tms_msg_ts::ts_req::Request &req,
 		++it;  // iterator +1
 	}
 	res.result = 1; // success
+	return true;
+}
+
+bool TmsTsMaster::stsCallback(tms_msg_ts::ts_state_control::Request &req,
+		tms_msg_ts::ts_state_control::Response &res) {
+	if (req.type == 0) {
+		// judge segment(from TS)
+		while (state_condition == -1) {} // TIMEOUT
+		if (state_condition == 0) {
+			state_condition = -1;
+			res.result = 1;
+			return false;
+		}
+		else if (state_condition == 1) {
+			state_condition = -1;
+			res.result = 1;
+			return true;
+		}
+	} else if (req.type == 1) {
+		// update segment(from RP)
+		state_condition = req.state;
+	}
+	ROS_INFO("test stsCallback");
 	return true;
 }
 

@@ -27,15 +27,16 @@ tms_rp::TmsRpSubtask::TmsRpSubtask(): ToolBar("TmsRpSubtask"),
 
   rp_subtask_server             = nh1.advertiseService("rp_cmd", &TmsRpSubtask::subtask, this);
 
-  get_data_client_               = nh1.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
-  sp5_control_client_            = nh1.serviceClient<tms_msg_rc::rc_robot_control>("sp5_control");
+  get_data_client_              = nh1.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
+  sp5_control_client_           = nh1.serviceClient<tms_msg_rc::rc_robot_control>("sp5_control");
   sp5_virtual_control_client    = nh1.serviceClient<tms_msg_rc::rc_robot_control>("sp5_virtual_control");
   kxp_virtual_control_client    = nh1.serviceClient<tms_msg_rc::rc_robot_control>("kxp_virtual_control");
   kxp_mbase_client              = nh1.serviceClient<tms_msg_rc::tms_rc_pmove>("pmove");
   kobuki_virtual_control_client = nh1.serviceClient<tms_msg_rc::rc_robot_control>("kobuki_virtual_control");
-  voronoi_path_planning_client_  = nh1.serviceClient<tms_msg_rp::rps_voronoi_path_planning>("rps_voronoi_path_planning");
+  voronoi_path_planning_client_ = nh1.serviceClient<tms_msg_rp::rps_voronoi_path_planning>("rps_voronoi_path_planning");
   give_obj_client               = nh1.serviceClient<tms_msg_rp::rps_goal_planning>("rps_give_obj_pos_planning");
   refrigerator_client           = nh1.serviceClient<tms_msg_rs::rs_home_appliances>("refrigerator_controller");
+  state_client                  = nh1.serviceClient<tms_msg_ts::ts_state_control>("ts_state_control");
 
   kobuki_sound                  = nh1.advertise<kobuki_msgs::Sound>("/mobile_base/commands/sound", 1);
   kobuki_motorpower             = nh1.advertise<kobuki_msgs::MotorPower>("/mobile_base/commands/motor_power", 1);
@@ -125,7 +126,6 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 	switch (command) {
 		case 9001:
 		{// move
-//			move(type, robot_id, arg_type, argument);
 			boost::thread th(boost::bind(&TmsRpSubtask::move, this, type, robot_id, arg_type, argument));
 			break;
 		}
@@ -598,11 +598,11 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 
 	rp_srv.request.robot_id = robot_id;
 	// init arm
-	if (robot_id == 2002 && type == true) {
-		sp5_control(type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4);
-		sp5_control(type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg);
-		sp5_control(type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12);
-	}
+//	if ((robot_id == 2003 || robot_id == 2002) && type == true) {
+//		sp5_control(type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4);
+//		sp5_control(type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg);
+//		sp5_control(type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12);
+//	}
 	std::string robot_name("");
 	get_robot_pos(type, robot_id, robot_name, rp_srv);
 
@@ -796,7 +796,21 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 			    			}
 			    		break;
 			    	}
-			    	case 2005: //kobuki
+				case 2003: // smartpal5_2
+					{
+						double arg[3];
+						arg[0] = rp_srv.response.VoronoiPath[i].x;
+						arg[1] = rp_srv.response.VoronoiPath[i].y;
+						arg[2] = rp_srv.response.VoronoiPath[i].th;
+						callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
+			    		if (type == true) sp5_control(type, UNIT_ALL, CMD_GETSTATE, 1, arg); // set_odom
+			    		else {
+						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
+			    			sleep(1); //temp
+			    			}
+			    		break;
+			    	}
+		    	case 2005: //kobuki
 			    	{
 			    		tms_msg_rc::rc_robot_control kobuki_srv;
 			    		kobuki_srv.request.unit = 1;
@@ -865,7 +879,13 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 		ROS_ERROR("Failed to call service rps_path_planning\n");
 		return false;
 	}
-//	res.result=1;
+//	apprise TS_control of finishing subtask execution
+	tms_msg_ts::ts_state_control s_srv;
+	s_srv.request.type = 1;
+	s_srv.request.state = 1;
+	if (state_client.call(s_srv)) ROS_INFO("succeed to call state_client srv");
+	else return false;
+
 	return true;
 }
 

@@ -58,6 +58,7 @@ std::string tms_ts_nodelet::ROS_TMS_TS::ArrayPop(std::string *stack, int *sp) {
 }
 
 int tms_ts_nodelet::ROS_TMS_TS::ConvertArgType(std::string arg_type) {
+	ROS_INFO("arg:%s", arg_type.c_str());
 	if (arg_type == "oid") { // object_id
 		return object_id;
 	} else if (arg_type == "uid") { // user_id
@@ -67,7 +68,7 @@ int tms_ts_nodelet::ROS_TMS_TS::ConvertArgType(std::string arg_type) {
 	} else if (arg_type == "rid") { // robot_id
 		return robot_id;
 	} else {
-		return 0;
+		return StringToInt(arg_type);
 	}
 }
 
@@ -144,7 +145,7 @@ int tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string state
 		generated_container += "        smach.Concurrence.add('" + IntToString(sn1) + state_name1 + "',\n"
 				"                           ServiceState('rp_cmd',\n"
 				"                                        rp_cmd,\n"
-				"                                        request = rp_cmdRequest(" + state_id1 + ", False, " + IntToString(robot_id) + ", [";
+				"                                        request = rp_cmdRequest(" + state_id1 + ", True, " + IntToString(robot_id) + ", [";
 		int check = 0;
 		for (int i = 1; i < seq_of_argument1.size(); i++) {
 			if ( check >= 1) {
@@ -172,7 +173,7 @@ int tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string state
 				"        smach.Concurrence.add('" + IntToString(sn2) + state_name2 + "',\n"
 				"                           ServiceState('rp_cmd',\n"
 				"                                        rp_cmd,\n"
-				"                                        request = rp_cmdRequest(" + state_id2 + ", False, " + IntToString(robot_id) + ", [";
+				"                                        request = rp_cmdRequest(" + state_id2 + ", True, " + IntToString(robot_id) + ", [";
 		int check = 0;
 			for (int j = 1; j < seq_of_argument2.size(); j++) {
 				if ( check >= 1) {
@@ -201,7 +202,7 @@ int tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string state
 				"        smach.Concurrence.add('" + IntToString(sn1) + state_name1 + "',\n"
 				"                           ServiceState('rp_cmd',\n"
 				"                                        rp_cmd,\n"
-				"                                        request = rp_cmdRequest(" + state_id1 + ", False, " + IntToString(robot_id) + ", [";
+				"                                        request = rp_cmdRequest(" + state_id1 + ", True, " + IntToString(robot_id) + ", [";
 		int check = 0;
 		for (int i = 1; i < seq_of_argument1.size(); i++) {
 			if ( check >= 1) {
@@ -214,7 +215,7 @@ int tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string state
 				"        smach.Concurrence.add('" + IntToString(sn2) + state_name2 + "',\n"
 				"                           ServiceState('rp_cmd',\n"
 				"                                        rp_cmd,\n"
-				"                                        request = rp_cmdRequest(" + state_id2 + ", False, " + IntToString(robot_id) + ", [";
+				"                                        request = rp_cmdRequest(" + state_id2 + ", True, " + IntToString(robot_id) + ", [";
 		check = 0;
 			for (int j = 1; j < seq_of_argument2.size(); j++) {
 				if ( check >= 1) {
@@ -236,7 +237,7 @@ int tms_ts_nodelet::ROS_TMS_TS::AddStateCC(int cc_count) {
 	sd.state_id = cc_count;
 	sd.state_name = function_name;
 	sd.arg.clear();
-	sd.arg.push_back(-1); // differentiate CC and SQ
+	sd.arg.push_back(-10000); // differentiate CC and SQ
 	state_data.push_back(sd);
 	return state_data.size();
 }
@@ -338,13 +339,13 @@ int tms_ts_nodelet::ROS_TMS_TS::AddOneStateSQ(std::string state1) {
 
 void tms_ts_nodelet::ROS_TMS_TS::GenerateScript() {
 	for (int j=0; j<state_data.size(); j++) {
-		if (state_data.at(j).arg.at(0) == -1) { // CC
+		if (state_data.at(j).arg.at(0) == -10000) { // CC
 			generated_main += "        smach.StateMachine.add('" + state_data.at(j).state_name + "', "
 					"" + state_data.at(j).state_name + "(), transitions={'succeeded':'";
 	    	if (j == state_data.size() - 1) {
 	    		generated_main += "succeeded', 'aborted':'aborted', 'preempted':'preempted'})\n\n";
 	    	} else {
-	    		if (state_data.at(j+1).arg.at(0) == -1)
+	    		if (state_data.at(j+1).arg.at(0) == -10000)
 	    			generated_main += state_data.at(j+1).state_name + "', 'aborted':'aborted', 'preempted':'preempted'})\n\n";
 	    		else
 	    			generated_main += state_data.at(j+1).state_name + IntToString(j+1) +
@@ -356,7 +357,7 @@ void tms_ts_nodelet::ROS_TMS_TS::GenerateScript() {
 					"                                        rp_cmd,\n"
 					"                                        request = rp_cmdRequest(" +
 					IntToString(state_data.at(j).state_id) + ", "
-					"False, " + IntToString(robot_id) + ", [";
+					"True, " + IntToString(robot_id) + ", [";
 	    	int check = 0;
 	    	for (int k = 0; k < state_data.at(j).arg.size(); k++) {
 	    		if ( check >= 1) {
@@ -370,7 +371,12 @@ void tms_ts_nodelet::ROS_TMS_TS::GenerateScript() {
 	    	if (j == state_data.size() - 1) {
 	    		generated_main += "                           transitions={'succeeded':'succeeded'})\n\n";
 	    	} else {
-	    		if (state_data.at(j+1).arg.at(0) == -1)
+	    		generated_main += "                           transitions={'succeeded':'control" + IntToString(j) + "'})\n\n" +
+	    				"        smach.StateMachine.add('control" + IntToString(j) + "',\n"
+	    						"                           ServiceState('ts_state_control',\n"
+	    						"                                        ts_state_control,\n"
+	    						"                                        request = ts_state_controlRequest(0, 0, 0)),\n";
+	    		if (state_data.at(j+1).arg.at(0) == -10000)
 	    			generated_main += "                           transitions={'succeeded':'" +
 	    			state_data.at(j+1).state_name + "'})\n\n";
 	    		else

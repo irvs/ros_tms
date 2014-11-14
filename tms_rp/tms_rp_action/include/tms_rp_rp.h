@@ -3,6 +3,7 @@
 
 #include <tms_rp_bar.h>
 
+#include <tms_msg_ts/ts_state_control.h>
 #include <tms_msg_rp/rp_cmd.h>
 #include <tms_msg_rp/rp_arrow.h>
 #include <tms_msg_rp/rps_voronoi_path_planning.h>
@@ -56,6 +57,7 @@ class TmsRpSubtask : public cnoid::ToolBar, public boost::signals::trackable
 	ros::ServiceClient voronoi_path_planning_client_;
 	ros::ServiceClient give_obj_client;
 	ros::ServiceClient refrigerator_client;
+	ros::ServiceClient state_client;
 
 	ros::Publisher kobuki_sound;
 	ros::Publisher kobuki_motorpower;
