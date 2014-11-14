@@ -37,6 +37,7 @@
 #include <cnoid/BodyItem>
 #include <cnoid/ToolBar>
 #include <cnoid/SignalProxy>
+#include <cnoid/SceneView>
 #include <cnoid/MessageView>
 #include <cnoid/MainWindow>
 #include <cnoid/LazyCaller>
@@ -144,6 +145,8 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   static int planning_mode_; // 0:view mode / 1:planning mode
   static int grasping_;
 
+  SgInvariantGroupPtr group_lrf_raw_data_;
+
   cnoid::BodyItemPtr currentBodyItem_;
   cnoid::ItemList<cnoid::BodyItem> selectedBodyItems_;
   cnoid::ItemList<cnoid::BodyItem> target_body_items_;
@@ -172,6 +175,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void connectROS();
   void simulationButtonClicked();
   void connectRosButtonClicked();
+  void viewToggleClicked();
 
   void setCollisionTargetButtonClicked();
   void makeCollisionMapButtonClicked();

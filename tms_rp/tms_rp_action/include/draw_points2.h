@@ -52,8 +52,7 @@ public:
     //vertices->reserve(numPoints); a lot of PCD
     SgVector3 vertex = SgVector3(1,1,1);
     vertices->push_back(vertex);
-    SgPointSetPtr pointSet = new SgPointSet();
-    pointSet->setVertices(vertices);
+
 
     if (pointSet)
     {
