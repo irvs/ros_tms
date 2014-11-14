@@ -37,6 +37,7 @@
 #include <cnoid/BodyItem>
 #include <cnoid/ToolBar>
 #include <cnoid/SignalProxy>
+#include <cnoid/SceneView>
 #include <cnoid/MessageView>
 #include <cnoid/MainWindow>
 #include <cnoid/LazyCaller>
@@ -55,6 +56,7 @@
 #include <cstdlib>
 #include <string>
 #include <iostream>
+#include <exception>
 
 #include <QDialog>
 #include <QCheckBox>
@@ -144,6 +146,8 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   static int planning_mode_; // 0:view mode / 1:planning mode
   static int grasping_;
 
+  SgInvariantGroupPtr group_lrf_raw_data_;
+
   cnoid::BodyItemPtr currentBodyItem_;
   cnoid::ItemList<cnoid::BodyItem> selectedBodyItems_;
   cnoid::ItemList<cnoid::BodyItem> target_body_items_;
@@ -170,6 +174,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
 
   void simulation();
   void connectROS();
+  void viewEvironmentData();
   void simulationButtonClicked();
   void connectRosButtonClicked();
 
@@ -181,7 +186,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void viewPathOfRobot();
   void viewMarkerOfRobot();
   void viewLrfRawData();
-  void viewLrfRawDataNew();
+  void viewLrfRawDataOld();
   void viewPersonPostion();
 
   void pathPlanButtonClicked();

@@ -4,7 +4,6 @@
 #include <tms_rp_collision_map.h>
 #include <sg_points_get.h>
 #include <draw_points.h>
-#include <draw_points2.h>
 #include <tms_rp_pp.h>
 
 //------------------------------------------------------------------------------
@@ -20,19 +19,19 @@ using namespace tms_rp;
 
 //------------------------------------------------------------------------------
 std::string TmsRpBar::object_name_[25] = {"chipstar_red","chipstar_orange",
-                                        "chipstar_green","greentea_bottle",
-                                        "soukentea_bottle","cancoffee",
-                                        "seasoner_bottle","dispenser",
-                                        "soysauce_bottle_black","soysauce_bottle_blue",
-                                        "soysauce_bottle_white","pepper_bottle_black",
-                                        "pepper_bottle_red","sake_bottle",
-                                        "teapot","chawan","teacup1","teacup2","cup1",
-                                        "cup2","mugcup","remote","book_red","book_blue","dish"};
+                                          "chipstar_green","greentea_bottle",
+                                          "soukentea_bottle","cancoffee",
+                                          "seasoner_bottle","dispenser",
+                                          "soysauce_bottle_black","soysauce_bottle_blue",
+                                          "soysauce_bottle_white","pepper_bottle_black",
+                                          "pepper_bottle_red","sake_bottle",
+                                          "teapot","chawan","teacup1","teacup2","cup1",
+                                          "cup2","mugcup","remote","book_red","book_blue","dish"};
 
 std::string TmsRpBar::furniture_name_[20] = {"big_sofa","mini_sofa","small_table","tv_table","tv",
-                                           "partition1","partition2","partition3","bed","shelf",
-                                           "big_shelf","desk","chair_desk","table","chair_table1","chair_table2",
-                                           "shelfdoor","shelf2","wagon","sidetable"};
+                                             "partition1","partition2","partition3","bed","shelf",
+                                             "big_shelf","desk","chair_desk","table","chair_table1","chair_table2",
+                                             "shelfdoor","shelf2","wagon","sidetable"};
 
 // initialize static variables
 bool TmsRpBar::is_ros_Init_ = false;
@@ -218,6 +217,9 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   subscribe_lrf_raw_data1_  = nh.subscribe("/urg1/most_intense", 10,  &TmsRpBar::receiveLrfRawData1, this);
   subscribe_lrf_raw_data2_  = nh.subscribe("/urg2/most_intense", 10,  &TmsRpBar::receiveLrfRawData2, this);
   subscribe_person_tracker_ = nh.subscribe("/tracking_points", 10,  &TmsRpBar::receivePersonTrackerInfo, this);
+
+  //----------------------------------------------------------------------------
+  group_lrf_raw_data_ = new SgInvariantGroup();
 
   //----------------------------------------------------------------------------
   // create person model
@@ -895,25 +897,88 @@ void TmsRpBar::viewMarkerOfRobot()
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::viewLrfRawDataNew()
+void TmsRpBar::viewLrfRawData()
 {
-  if(!point2d_toggle_->isChecked())
-    return;
+  sensor_msgs::LaserScan lrf_data1, lrf_data2;
+  unsigned int num_points;
 
-  if(lrf_raw_data1_.ranges.size()==0)
+  lrf_data1 = lrf_raw_data1_;
+  lrf_data2 = lrf_raw_data2_;
+
+  SceneView::instance()->removeEntity(group_lrf_raw_data_);
+
+  if(!point2d_toggle_->isChecked())
+  {
+    return;
+  }
+
+  num_points= lrf_data1.ranges.size();
+  //ROS_INFO("num_points = %d", num_points);
+
+
+  if(num_points==0)
   {
     ROS_INFO("nothing the LRF raw data 1");
     return;
   }
 
-  ROS_INFO("on view option for LRF raw data");
 
-  SgPointsDrawing2 test;
-  test.renderLaserRawData2(&lrf_raw_data1_);
+  //ROS_INFO("on view option for LRF raw data");
+
+
+  SgVertexArrayPtr vertices = new SgVertexArray();
+  SgColorArrayPtr  colors   = new SgColorArray();
+
+  vertices->reserve(num_points);
+  float angle, distance, lrf_x, lrf_y;
+  float lrf_set_x;
+  float lrf_set_y;
+  float lrf_set_z;
+  lrf_set_x = 2.5;
+  lrf_set_y = 0.15;
+  lrf_set_z = 0.875;
+
+  SgVector3 vertex;
+  SgVector3 color;
+
+  for(unsigned int i=0; i<num_points; i++)
+  {
+    angle = (i * 0.25 - 45)* M_PI/180.;
+    distance = lrf_data1.ranges[i];
+    lrf_x  = distance * cos(angle) + lrf_set_x;
+    lrf_y  = distance * sin(angle) + lrf_set_y;
+
+    if(angle>=0 && angle<=M_PI)
+    {
+      vertex = SgVector3(lrf_x,lrf_y,lrf_set_z);
+      color  = SgVector3(1.0,0.0,0.0);
+      vertices->push_back(vertex);
+      colors->push_back(color);
+    }
+    else
+    {
+      vertex = SgVector3(0,0,0);
+      color  = SgVector3(0.0,0.0,1.0);
+      vertices->push_back(vertex);
+      colors->push_back(color);
+    }
+  }
+
+  SgPointSetPtr lrf_point_set = new SgPointSet();
+  lrf_point_set->setPointSize(3.0);
+  lrf_point_set->setColors(colors);
+  lrf_point_set->setVertices(vertices);
+
+  if(lrf_point_set)
+  {
+    group_lrf_raw_data_->clearChildren();
+    group_lrf_raw_data_->addChild(lrf_point_set);
+    SceneView::instance()->addEntity(group_lrf_raw_data_);
+  }
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::viewLrfRawData()
+void TmsRpBar::viewLrfRawDataOld()
 {
   if(!point2d_toggle_->isChecked())
   {
@@ -934,7 +999,7 @@ void TmsRpBar::viewLrfRawData()
   }
 
 
-  ROS_INFO("on view option for LRF raw data");
+  //ROS_INFO("on view option for LRF raw data");
 
   SgPointsDrawing::SgLastRenderer(0,true);
   SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["lrf_raw_data"]->body()->link(0)->shape();
@@ -1745,7 +1810,8 @@ void TmsRpBar::simulationButtonClicked()
 void TmsRpBar::connectRosButtonClicked()
 {
   os_ <<  "connectROS button clicked" << endl;
-  static boost::thread t(boost::bind(&TmsRpBar::connectROS, this));
+  static boost::thread thread_connectROS(boost::bind(&TmsRpBar::connectROS, this));
+  //static boost::thread thread_viewEvironmentData(boost::bind(&TmsRpBar::viewEvironmentData, this));
 }
 
 //------------------------------------------------------------------------------
@@ -1756,7 +1822,7 @@ void TmsRpBar::simulation()
   os_ << "production_version_ = " << production_version_ << endl;
   tms_rp::TmsRpVoronoiMap static_and_dynamic_map;
 
-  static ros::Rate loop_rate(10); // 0.1sec
+  static ros::Rate loop_rate(20); // 0.05sec
   while (ros::ok())
   {
     static_and_dynamic_map.staticMapPublish();
@@ -1784,7 +1850,7 @@ void TmsRpBar::connectROS()
   os_ << "production_version_ = " << production_version_ << endl;
   tms_rp::TmsRpVoronoiMap static_and_dynamic_map;
 
-  static ros::Rate loop_rate(100); // 0.01sec
+  static ros::Rate loop_rate(20); // 0.05sec
   while (ros::ok())
   {
     updateEnvironmentInfomation(false);
@@ -1796,7 +1862,8 @@ void TmsRpBar::connectROS()
     viewDynamicMap();
     viewPathOfRobot();
     viewMarkerOfRobot();
-    viewLrfRawData();
+    viewLrfRawDataOld();
+    //viewLrfRawData();
     viewPersonPostion();
 
     ros::spinOnce();
@@ -1805,6 +1872,18 @@ void TmsRpBar::connectROS()
   ROS_INFO("Disconnect to the ROS\n");
 }
 
+//------------------------------------------------------------------------------
+void TmsRpBar::viewEvironmentData()
+{
+  static ros::Rate loop_rate(20); // 0.05sec
+  while (ros::ok())
+  {
+    ROS_INFO("rate test2");
+    //viewLrfRawData(lrf_raw_data1_);
+    loop_rate.sleep();
+  }
+  ROS_INFO("Disconnect to the ROS\n");
+}
 //------------------------------------------------------------------------------
 void TmsRpBar::ardroneButtonClicked()
 {
