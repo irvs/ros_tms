@@ -899,6 +899,12 @@ void TmsRpBar::viewMarkerOfRobot()
 //------------------------------------------------------------------------------
 void TmsRpBar::viewLrfRawData()
 {
+  sensor_msgs::LaserScan lrf_data1, lrf_data2;
+  unsigned int num_points;
+
+  lrf_data1 = lrf_raw_data1_;
+  lrf_data2 = lrf_raw_data2_;
+
   SceneView::instance()->removeEntity(group_lrf_raw_data_);
 
   if(!point2d_toggle_->isChecked())
@@ -906,15 +912,19 @@ void TmsRpBar::viewLrfRawData()
     return;
   }
 
-  if(lrf_raw_data1_.ranges.size()==0)
+  num_points= lrf_data1.ranges.size();
+  //ROS_INFO("num_points = %d", num_points);
+
+
+  if(num_points==0)
   {
     ROS_INFO("nothing the LRF raw data 1");
     return;
   }
 
-  ROS_INFO("on view option for LRF raw data");
 
-  unsigned int num_points = lrf_raw_data1_.ranges.size();
+  //ROS_INFO("on view option for LRF raw data");
+
 
   SgVertexArrayPtr vertices = new SgVertexArray();
   SgColorArrayPtr  colors   = new SgColorArray();
@@ -931,39 +941,44 @@ void TmsRpBar::viewLrfRawData()
   SgVector3 vertex;
   SgVector3 color;
 
-  for(int i=3; i<num_points; ++i)
+  for(unsigned int i=0; i<num_points; i++)
   {
     angle = (i * 0.25 - 45)* M_PI/180.;
+    distance = lrf_data1.ranges[i];
+    lrf_x  = distance * cos(angle) + lrf_set_x;
+    lrf_y  = distance * sin(angle) + lrf_set_y;
+
     if(angle>=0 && angle<=M_PI)
     {
-      distance = lrf_raw_data1_.ranges[i];
-      lrf_x  = distance * cos(angle) + lrf_set_x;
-      lrf_y  = distance * sin(angle) + lrf_set_y;
       vertex = SgVector3(lrf_x,lrf_y,lrf_set_z);
       color  = SgVector3(1.0,0.0,0.0);
+      vertices->push_back(vertex);
+      colors->push_back(color);
+    }
+    else
+    {
+      vertex = SgVector3(0,0,0);
+      color  = SgVector3(0.0,0.0,1.0);
       vertices->push_back(vertex);
       colors->push_back(color);
     }
   }
 
   SgPointSetPtr lrf_point_set = new SgPointSet();
-  lrf_point_set->setPointSize(5.0);
+  lrf_point_set->setPointSize(3.0);
   lrf_point_set->setColors(colors);
   lrf_point_set->setVertices(vertices);
-  ROS_INFO("point size %d",lrf_point_set->pointSize());
 
   if(lrf_point_set)
   {
     group_lrf_raw_data_->clearChildren();
     group_lrf_raw_data_->addChild(lrf_point_set);
     SceneView::instance()->addEntity(group_lrf_raw_data_);
-    ROS_INFO("points have been added %d",group_lrf_raw_data_->numChildren());
   }
-SgPointsDrawing::SgLastRenderer(0,true);
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::viewLrfRawDataNew()
+void TmsRpBar::viewLrfRawDataOld()
 {
   if(!point2d_toggle_->isChecked())
   {
@@ -984,7 +999,7 @@ void TmsRpBar::viewLrfRawDataNew()
   }
 
 
-  ROS_INFO("on view option for LRF raw data");
+  //ROS_INFO("on view option for LRF raw data");
 
   SgPointsDrawing::SgLastRenderer(0,true);
   SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["lrf_raw_data"]->body()->link(0)->shape();
@@ -1796,7 +1811,7 @@ void TmsRpBar::connectRosButtonClicked()
 {
   os_ <<  "connectROS button clicked" << endl;
   static boost::thread thread_connectROS(boost::bind(&TmsRpBar::connectROS, this));
-  static boost::thread thread_viewEvironmentData(boost::bind(&TmsRpBar::viewEvironmentData, this));
+  //static boost::thread thread_viewEvironmentData(boost::bind(&TmsRpBar::viewEvironmentData, this));
 }
 
 //------------------------------------------------------------------------------
@@ -1807,7 +1822,7 @@ void TmsRpBar::simulation()
   os_ << "production_version_ = " << production_version_ << endl;
   tms_rp::TmsRpVoronoiMap static_and_dynamic_map;
 
-  static ros::Rate loop_rate(10); // 0.1sec
+  static ros::Rate loop_rate(20); // 0.05sec
   while (ros::ok())
   {
     static_and_dynamic_map.staticMapPublish();
@@ -1835,10 +1850,9 @@ void TmsRpBar::connectROS()
   os_ << "production_version_ = " << production_version_ << endl;
   tms_rp::TmsRpVoronoiMap static_and_dynamic_map;
 
-  static ros::Rate loop_rate(100); // 0.01sec
+  static ros::Rate loop_rate(20); // 0.05sec
   while (ros::ok())
   {
-    ROS_INFO("rate test1");
     updateEnvironmentInfomation(false);
 
     static_and_dynamic_map.staticMapPublish();
@@ -1848,6 +1862,7 @@ void TmsRpBar::connectROS()
     viewDynamicMap();
     viewPathOfRobot();
     viewMarkerOfRobot();
+    viewLrfRawDataOld();
     //viewLrfRawData();
     viewPersonPostion();
 
@@ -1860,11 +1875,11 @@ void TmsRpBar::connectROS()
 //------------------------------------------------------------------------------
 void TmsRpBar::viewEvironmentData()
 {
-  static ros::Rate loop_rate(10); // 0.1sec
+  static ros::Rate loop_rate(20); // 0.05sec
   while (ros::ok())
   {
     ROS_INFO("rate test2");
-    viewLrfRawData();
+    //viewLrfRawData(lrf_raw_data1_);
     loop_rate.sleep();
   }
   ROS_INFO("Disconnect to the ROS\n");

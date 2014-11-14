@@ -56,6 +56,7 @@
 #include <cstdlib>
 #include <string>
 #include <iostream>
+#include <exception>
 
 #include <QDialog>
 #include <QCheckBox>
@@ -185,7 +186,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void viewPathOfRobot();
   void viewMarkerOfRobot();
   void viewLrfRawData();
-  void viewLrfRawDataNew();
+  void viewLrfRawDataOld();
   void viewPersonPostion();
 
   void pathPlanButtonClicked();
