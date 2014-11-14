@@ -75,9 +75,9 @@ bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string& r
 		rp_srv.request.start_pos.pitch = 0.0; // srv.response.tmsdb[ref_i].rp
 		rp_srv.request.start_pos.yaw = srv.response.tmsdb[ref_i].ry; // srv.response.tmsdb[ref_i].ry
 		// set odom for production version
-		if (type == true && robot_id == 2002) {
+		if (type == true && (robot_id == 2002 || robot_id == 2003)) {
 			double arg[1] = {0.0};
-			sp5_control(true, UNIT_ALL, CMD_GETSTATE, 1, arg);
+			sp5_control(true, UNIT_ALL, SET_ODOM, 1, arg);
 		}
 	} else {
 		ROS_INFO("Failed to call service tms_db_get_current_robot_data.\n");
@@ -123,6 +123,9 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 	tms_msg_db::TmsdbGetData srv;
 	tms_msg_rp::rps_voronoi_path_planning rp_srv;
 
+	double arg[1] = {0.0};
+	if ((robot_id==2002 || robot_id==2003) && type==true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg); // set_odom
+
 	switch (command) {
 		case 9001:
 		{// move
@@ -134,7 +137,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 			ROS_INFO("[tms_rp]grasp command\n");
 
 			grasp::TmsRpBar::planning_mode_ = 1;
-			if (robot_id == 2002 && type == true) {
+			if ((robot_id == 2002 || robot_id == 2003) && type == true) {
 				sp5_control(type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4);
 				sp5_control(type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg);
 				sp5_control(type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12);
@@ -234,7 +237,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 			{
 				callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
 
-				if (type == true) sp5_control(type, UNIT_ALL, CMD_GETSTATE, 1, arg); // set_odom
+				if (type == true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg); // set_odom
 				else {
 					callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 					sleep(1);
@@ -317,7 +320,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 							arg[2] = rp_srv.response.VoronoiPath[i].th;
 
 							callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
-				    		if (type == true) sp5_control(type, UNIT_ALL, CMD_GETSTATE, 1, arg); // set_odom
+				    		if (type == true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg); // set_odom
 				    		else {
 				    			double rPosX = arg[0]/1000;
 				    			double rPosY = arg[1]/1000;
@@ -355,7 +358,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 							arg[12] = 2; // obj_state
 							callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
 
-				    		if (type == true) sp5_control(type, UNIT_ALL, CMD_GETSTATE, 1, arg); // set_odom
+				    		if (type == true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg); // set_odom
 				    		else {
 				    			sleep(1);
 							callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
@@ -443,7 +446,6 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 //				goal_arg[15] = 0.0;
 				// 関節角遷移
 //				callSynchronously(bind(&TmsRpBar::kxp_control,this, type, UNIT_ALL, CMD_CALC_BACKGROUND, 19, goal_arg));
-
 				break;
 			}
 			default:
@@ -784,7 +786,7 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 						arg[1] = rp_srv.response.VoronoiPath[i].y;
 						arg[2] = rp_srv.response.VoronoiPath[i].th;
 						callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
-			    		if (type == true) sp5_control(type, UNIT_ALL, CMD_GETSTATE, 1, arg); // set_odom
+			    		if (type == true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg); // set_odom
 			    		else {
 						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
@@ -798,7 +800,7 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 						arg[1] = rp_srv.response.VoronoiPath[i].y;
 						arg[2] = rp_srv.response.VoronoiPath[i].th;
 						callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
-			    		if (type == true) sp5_control(type, UNIT_ALL, CMD_GETSTATE, 1, arg); // set_odom
+			    		if (type == true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg); // set_odom
 			    		else {
 						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
@@ -896,6 +898,7 @@ bool tms_rp::TmsRpSubtask::random_move(void) {
 		ROS_ERROR("Command Error\n");
 		return false;
 	  }
+	// end determination
 	return true;
 }
 
@@ -910,6 +913,7 @@ bool tms_rp::TmsRpSubtask::sensing(void) {
 		ROS_ERROR("Command Error\n");
 		return false;
 	}
+	// end determination
 	return true;
 }
 
