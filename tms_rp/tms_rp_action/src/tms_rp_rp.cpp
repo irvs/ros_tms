@@ -110,7 +110,7 @@ bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string& r
 bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
                       tms_msg_rp::rp_cmd::Response &res)
 {
-	bool type = req.type;
+	bool type = grasp::TmsRpBar::production_version_/*req.type*/;
 	int command = req.command;
 	int robot_id = req.robot_id;
 	int arg_type = (int)req.arg.at(0);
