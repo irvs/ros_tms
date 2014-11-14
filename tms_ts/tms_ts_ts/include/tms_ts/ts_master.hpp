@@ -21,6 +21,7 @@
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 #include <tms_msg_ts/ts_req.h>
+#include <tms_msg_ts/ts_state_control.h>
 
 //using namespace std;
 //using namespace boost;
@@ -74,10 +75,12 @@ private:
 	//std::string IntToString(int number);
 	bool ts_master_callback(tms_msg_ts::ts_req::Request &req,
 			tms_msg_ts::ts_req::Response &res);
+	bool stsCallback(tms_msg_ts::ts_state_control::Request &req,
+				tms_msg_ts::ts_state_control::Response &res);
 
 	boost::mutex mtx; // スレッドの排他制御用
-	ros::ServiceServer service;
-
+	static int state_condition;
+	ros::ServiceServer service, state_control_srv;
 };
 
 #endif /* TS_MASTER_HPP_ */

@@ -1,0 +1,5 @@
+uint64 rostime
+int32 type
+int32 state
+---
+int32 result
