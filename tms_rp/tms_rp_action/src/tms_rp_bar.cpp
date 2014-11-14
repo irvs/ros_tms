@@ -220,8 +220,6 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
 
   //----------------------------------------------------------------------------
   group_lrf_raw_data_ = new SgInvariantGroup();
-//  static boost::thread thread_viewLrfRaswdata(boost::bind(&TmsRpBar::viewLrfRawData, this));
-//  thread_viewLrfRaswdata.join();
 
   //----------------------------------------------------------------------------
   // create person model
@@ -574,9 +572,6 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   addButton(QIcon(":/action/icons/ros.png"), ("connect to the ros"))->
     sigClicked().connect(bind(&TmsRpBar::connectRosButtonClicked, this));
 
-  addButton(QIcon(":/action/icons/ros.png"), ("test"))->
-    sigClicked().connect(bind(&TmsRpBar::viewToggleClicked, this));
-
   addSeparator();
 
   addButton(QIcon(":/action/icons/collision_target.png"), ("set collision target model"))->
@@ -904,9 +899,10 @@ void TmsRpBar::viewMarkerOfRobot()
 //------------------------------------------------------------------------------
 void TmsRpBar::viewLrfRawData()
 {
+  SceneView::instance()->removeEntity(group_lrf_raw_data_);
+
   if(!point2d_toggle_->isChecked())
   {
-    SceneView::instance()->removeEntity(group_lrf_raw_data_);
     return;
   }
 
@@ -958,11 +954,12 @@ void TmsRpBar::viewLrfRawData()
 
   if(lrf_point_set)
   {
+    group_lrf_raw_data_->clearChildren();
     group_lrf_raw_data_->addChild(lrf_point_set);
     SceneView::instance()->addEntity(group_lrf_raw_data_);
     ROS_INFO("points have been added %d",group_lrf_raw_data_->numChildren());
   }
-
+SgPointsDrawing::SgLastRenderer(0,true);
 }
 
 //------------------------------------------------------------------------------
@@ -1798,14 +1795,8 @@ void TmsRpBar::simulationButtonClicked()
 void TmsRpBar::connectRosButtonClicked()
 {
   os_ <<  "connectROS button clicked" << endl;
-  static boost::thread t(boost::bind(&TmsRpBar::connectROS, this));
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::viewToggleClicked()
-{
-  os_ <<  "viewToggle button clicked" << endl;
-  static boost::thread t(boost::bind(&TmsRpBar::viewLrfRawData, this));
+  static boost::thread thread_connectROS(boost::bind(&TmsRpBar::connectROS, this));
+  static boost::thread thread_viewEvironmentData(boost::bind(&TmsRpBar::viewEvironmentData, this));
 }
 
 //------------------------------------------------------------------------------
@@ -1847,7 +1838,7 @@ void TmsRpBar::connectROS()
   static ros::Rate loop_rate(100); // 0.01sec
   while (ros::ok())
   {
-    ROS_INFO("rate test");
+    ROS_INFO("rate test1");
     updateEnvironmentInfomation(false);
 
     static_and_dynamic_map.staticMapPublish();
@@ -1866,6 +1857,18 @@ void TmsRpBar::connectROS()
   ROS_INFO("Disconnect to the ROS\n");
 }
 
+//------------------------------------------------------------------------------
+void TmsRpBar::viewEvironmentData()
+{
+  static ros::Rate loop_rate(10); // 0.1sec
+  while (ros::ok())
+  {
+    ROS_INFO("rate test2");
+    viewLrfRawData();
+    loop_rate.sleep();
+  }
+  ROS_INFO("Disconnect to the ROS\n");
+}
 //------------------------------------------------------------------------------
 void TmsRpBar::ardroneButtonClicked()
 {

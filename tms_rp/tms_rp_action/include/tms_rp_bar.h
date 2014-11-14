@@ -173,9 +173,9 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
 
   void simulation();
   void connectROS();
+  void viewEvironmentData();
   void simulationButtonClicked();
   void connectRosButtonClicked();
-  void viewToggleClicked();
 
   void setCollisionTargetButtonClicked();
   void makeCollisionMapButtonClicked();
