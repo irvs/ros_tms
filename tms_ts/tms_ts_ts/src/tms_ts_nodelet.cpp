@@ -367,15 +367,15 @@ void tms_ts_nodelet::ROS_TMS_TS::GenerateScript() {
 	    		check++;
 	    	}
 	    	generated_main += "])),\n";
+    		generated_main += "                           transitions={'succeeded':'control" + IntToString(j) + "'})\n\n" +
+    				"        smach.StateMachine.add('control" + IntToString(j) + "',\n"
+    						"                           ServiceState('ts_state_control',\n"
+    						"                                        ts_state_control,\n"
+    						"                                        request = ts_state_controlRequest(0, 0, 0)),\n";
 	    	// final state
 	    	if (j == state_data.size() - 1) {
 	    		generated_main += "                           transitions={'succeeded':'succeeded'})\n\n";
 	    	} else {
-	    		generated_main += "                           transitions={'succeeded':'control" + IntToString(j) + "'})\n\n" +
-	    				"        smach.StateMachine.add('control" + IntToString(j) + "',\n"
-	    						"                           ServiceState('ts_state_control',\n"
-	    						"                                        ts_state_control,\n"
-	    						"                                        request = ts_state_controlRequest(0, 0, 0)),\n";
 	    		if (state_data.at(j+1).arg.at(0) == -10000)
 	    			generated_main += "                           transitions={'succeeded':'" +
 	    			state_data.at(j+1).state_name + "'})\n\n";
