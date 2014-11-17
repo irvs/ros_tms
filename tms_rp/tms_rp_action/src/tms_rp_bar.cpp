@@ -772,8 +772,6 @@ void TmsRpBar::viewStaticMap()
     return;
   }
 
-  ROS_INFO("on view option for static map");
-
   SgPointsDrawing::SgLastRenderer(0,true);
   SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["static_map"]->body()->link(0)->shape();
 
@@ -809,8 +807,6 @@ void TmsRpBar::viewDynamicMap()
     return;
   }
 
-  ROS_INFO("on view option for dynamic map");
-
   SgPointsDrawing::SgLastRenderer(0,true);
   SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["dynamic_map"]->body()->link(0)->shape();
 
@@ -834,17 +830,18 @@ void TmsRpBar::viewDynamicMap()
 //------------------------------------------------------------------------------
 void TmsRpBar::viewPathOfRobot()
 {
-  if(!path_map_toggle_->isChecked()){
+  if(!path_map_toggle_->isChecked())
+  {
     callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"path_map"));
     return;
   }
 
-  if(path_map_data_.rps_route.size()==0){
+  if(path_map_data_.rps_route.size()==0)
+  {
     ROS_INFO("nothing the path map data for viewPathOfRobot");
     return;
   }
 
-  ROS_INFO("on view option for path map");
   SgPointsDrawing::SgLastRenderer(0,true);
   SgGroupPtr node  = (SgGroup*)trc_.objTag2Item()["path_map"]->body()->link(0)->shape();
 
@@ -867,16 +864,17 @@ void TmsRpBar::viewPathOfRobot()
 //------------------------------------------------------------------------------
 void TmsRpBar::viewMarkerOfRobot()
 {
-  if(!robot_map_toggle_->isChecked()){
+  if(!robot_map_toggle_->isChecked())
+  {
     callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"robot_marker"));
     return;
   }
-    if(path_map_data_.rps_route.size()==0){
+    if(path_map_data_.rps_route.size()==0)
+    {
     ROS_INFO("nothing the path map data for robot_marker");
     return;
   }
 
-  ROS_INFO("On view option for robot marker");
   SgPointsDrawing::SgLastRenderer(0,true);
   SgGroupPtr node  = (SgGroup*)trc_.objTag2Item()["robot_marker"]->body()->link(0)->shape();
 
@@ -913,18 +911,12 @@ void TmsRpBar::viewLrfRawData()
   }
 
   num_points= lrf_data1.ranges.size();
-  //ROS_INFO("num_points = %d", num_points);
-
 
   if(num_points==0)
   {
     ROS_INFO("nothing the LRF raw data 1");
     return;
   }
-
-
-  //ROS_INFO("on view option for LRF raw data");
-
 
   SgVertexArrayPtr vertices = new SgVertexArray();
   SgColorArrayPtr  colors   = new SgColorArray();
@@ -1035,9 +1027,6 @@ void TmsRpBar::viewPersonPostion()
     ROS_INFO("nothing the person");
     return;
   }
-
-
-  ROS_INFO("on view option for person tracker");
 
   SgPointsDrawing::SgLastRenderer(0,true);
   SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["person_tracker"]->body()->link(0)->shape();
@@ -1811,7 +1800,6 @@ void TmsRpBar::connectRosButtonClicked()
 {
   os_ <<  "connectROS button clicked" << endl;
   static boost::thread thread_connectROS(boost::bind(&TmsRpBar::connectROS, this));
-  //static boost::thread thread_viewEvironmentData(boost::bind(&TmsRpBar::viewEvironmentData, this));
 }
 
 //------------------------------------------------------------------------------
