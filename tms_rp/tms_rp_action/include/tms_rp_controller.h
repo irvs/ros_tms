@@ -23,7 +23,7 @@
 #define CMD_ABORT               5
 #define CMD_STOP                6
 #define CMD_GETSTATE            7
-#define SET_ODOM                8
+#define SET_ODOM                7
 #define CMD_GETPOSE             8
 #define CMD_SYNC_OBJ            8
 #define CMD_CALC_BACKGROUND     9

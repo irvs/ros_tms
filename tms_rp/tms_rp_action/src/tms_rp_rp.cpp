@@ -124,7 +124,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 	tms_msg_rp::rps_voronoi_path_planning rp_srv;
 
 	double arg[1] = {0.0};
-	if ((robot_id==2002 || robot_id==2003) && type==true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg); // set_odom
+	if ((robot_id==2002 || robot_id==2003) && type==true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg);
 
 	switch (command) {
 		case 9001:
@@ -237,7 +237,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 			{
 				callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
 
-				if (type == true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg); // set_odom
+				if (type == true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg);
 				else {
 					callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 					sleep(1);
@@ -320,7 +320,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 							arg[2] = rp_srv.response.VoronoiPath[i].th;
 
 							callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
-				    		if (type == true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg); // set_odom
+				    		if (type == true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg);
 				    		else {
 				    			double rPosX = arg[0]/1000;
 				    			double rPosY = arg[1]/1000;
@@ -358,7 +358,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 							arg[12] = 2; // obj_state
 							callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
 
-				    		if (type == true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg); // set_odom
+				    		if (type == true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg);
 				    		else {
 				    			sleep(1);
 							callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
@@ -775,7 +775,8 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 	if (voronoi_path_planning_client_.call(rp_srv)) {
 		if (rp_srv.response.VoronoiPath.size() > 1) {
 			while(1) {
-				os_ << "result: " << rp_srv.response.success << " message: " << rp_srv.response.message << endl;
+				ROS_INFO("result:%d, message:%s", rp_srv.response.success, rp_srv.response.message.c_str());
+//				os_ << "result: " << rp_srv.response.success << " message: " << rp_srv.response.message << endl;
 
 				// call virtual_controller
 				switch (robot_id) {
@@ -786,9 +787,12 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 						arg[1] = rp_srv.response.VoronoiPath[i].y;
 						arg[2] = rp_srv.response.VoronoiPath[i].th;
 						callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
-			    		if (type == true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg); // set_odom
+			    		if (type == true) {
+			    			sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg);
+			    			}
 			    		else {
-						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
+			    			ROS_INFO("test");
+			    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
 			    			}
 			    		break;
@@ -800,9 +804,10 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 						arg[1] = rp_srv.response.VoronoiPath[i].y;
 						arg[2] = rp_srv.response.VoronoiPath[i].th;
 						callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
-			    		if (type == true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg); // set_odom
+			    		if (type == true)
+			    			sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg);
 			    		else {
-						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
+			    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
 			    			}
 			    		break;
@@ -826,7 +831,7 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 			    			}
 			    		break;
 			    	}
-			    	case 2006: // kxp
+			    case 2006: // kxp
 			    	{
 			    		tms_msg_rc::tms_rc_pmove kxp_srv;
 			    		kxp_srv.request.w_x = rp_srv.response.VoronoiPath[i].x;
@@ -842,7 +847,7 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 			    			}
 			    		break;
 			    	}
-			    	default:
+			    default:
 			    	{
 			    		ROS_ERROR("No such robot in TMS_DB!\n");
 			    		return false;
