@@ -46,6 +46,7 @@ class TmsRpVoronoiMap : public cnoid::ToolBar, public boost::signals::trackable
   tms_msg_rp::rps_map_full static_map_;
   tms_msg_rp::rps_map_full dynamic_map_;
   string result_msg_;
+  ros::ServiceClient get_data_client_;
 
   double x_llimit_, x_ulimit_, y_llimit_, y_ulimit_, cell_size_; //M
 
