@@ -437,7 +437,6 @@ void TmsRpVoronoiMap::dynamicMapPublish(tms_msg_ss::tracking_points person_pos)
     if(isRobot==true)
     {
       distance_robot_and_object = sqrt((obstacle_pos_x-robot_x)*(obstacle_pos_x-robot_x)+(obstacle_pos_y-robot_y)*(obstacle_pos_y-robot_y));
-      ROS_INFO("d = %f",distance_robot_and_object);
       if(distance_robot_and_object < 1.0)
       {
         continue;
