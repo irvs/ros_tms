@@ -22,3 +22,4 @@ float64   probability
 int32     state
 string    task
 string    note
+string    tag
