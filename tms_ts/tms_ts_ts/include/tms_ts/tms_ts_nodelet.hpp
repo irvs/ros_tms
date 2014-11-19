@@ -78,10 +78,10 @@ private:
 
   int ConvertArgType(std::string arg_type);
   int JudgeArgType(std::string state1, std::string state2);
-  void GenerateContainer(std::string f_name, std::string state_name1);
+  void GenerateContainer(std::string f_name, std::string state_name1, std::string state_name2);
   int GenerateCC(std::string state1, std::string state2, int cc_count);
   int AddOneStateSQ(std::string state1);
-  int AddStateCC(int cc_count);
+  int AddStateCC(int cc_count, int sub_count);
   int BuildStateVector(std::string state1, std::string state2);
   int AddStateSQ(std::string state1, std::string state2);
   void GenerateScript(void);
@@ -105,6 +105,7 @@ private:
   	int state_id;
   	std::string state_name;
   	std::vector<int> arg;
+  	int cc_subtasks; // num of CC subtasks
   	};
 
   std::vector<StateData> state_data;
