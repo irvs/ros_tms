@@ -161,23 +161,29 @@ bool TmsTsMaster::stsCallback(tms_msg_ts::ts_state_control::Request &req,
 		tms_msg_ts::ts_state_control::Response &res) {
 	if (req.type == 0) {
 		// judge segment(from TS)
-		while (state_condition == -1) {} // TIMEOUT
-		if (state_condition == 0) {
-			state_condition = -1;
-			res.result = 1;
+		if (req.cc_subtasks == 0) {
+			while (state_condition == -1) {} // TIMEOUT
+			if (state_condition == 0) {
+				state_condition = -1;
+				res.result = 1;
+				return true;
+			}
+		} else if (req.cc_subtasks >= 2) {
+			while (state_condition < (req.cc_subtasks-1)) {} // TIMEOUT
+			if (state_condition == (req.cc_subtasks-1)) {
+				state_condition = -1;
+				res.result = 1;
+				return true;
+			}
+		} else
 			return false;
-		}
-		else if (state_condition == 1) {
-			state_condition = -1;
-			res.result = 1;
-			return true;
-		}
 	} else if (req.type == 1) {
 		// update segment(from RP)
-		state_condition = req.state;
-	}
-	ROS_INFO("test stsCallback");
-	return true;
+		if (req.state == 0)
+			return false;
+		state_condition += req.state;
+	} else
+		return false;
 }
 
 int main(int argc, char **argv)
