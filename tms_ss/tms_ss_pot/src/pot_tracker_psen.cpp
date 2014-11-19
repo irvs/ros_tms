@@ -1,17 +1,17 @@
 //----------------------------------------------------------
-// @file   : pot_tracker_single.cpp
-// @author : Watanabe Yuuta 
+// @file   : pot_tracker_double.cpp
+// @author : Watanabe Yuuta
 // @version: Ver0.1.4 (since 2014.05.02)
-// @date   : 2016.06.09
+// @date   : 2016.11.18
 //----------------------------------------------------------
 
 #include <ros/ros.h>
 #include <pthread.h>
 #include <std_msgs/String.h>
-#include <visualization_msgs/Marker.h>
-#include <visualization_msgs/MarkerArray.h>
+#include <tms_msg_ss/pot_tracking_psen.h>
+#include <tms_msg_ss/pot_tracking_psens.h>
 
-pthread_mutex_t mutex_laser = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex_laser  = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 
 #include "opencv/cv.h"
@@ -21,10 +21,6 @@ pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 #include "tms_ss_pot/Laser.h"
 #include "tms_ss_pot/Particle_filter.h"
 #include "tms_ss_pot/Multiple_particle_filter.h"
-
-#include <tms_msg_db/TmsdbGetData.h>
-#include <tms_msg_db/TmsdbStamped.h>
-#include <tms_msg_db/Tmsdb.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <string>
@@ -38,178 +34,139 @@ pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 std::vector<float> scanData;
 CLaser laser;
 bool CallbackCalled = false;
-std::ofstream ofs("plot2.txt");
+Psenparam tmp_param;
+std::vector< Psenparam > psenparam;
+std::vector< Psenparam >::iterator v;
+
 
 void *Visualization( void *ptr )
 {
-    uint32_t shape = visualization_msgs::Marker::CYLINDER;
-    uint32_t shape_arrow = visualization_msgs::Marker::ARROW;
-    float output_x[10];
-    float output_y[10];
-    float b_output_x[10];
-    float b_output_y[10];
-    int rlcount = 0;
+    int   ID;
+    float X;
+    float Y;
+    int right_count = 0;
+    int left_count  = 0;
     ros::Rate r(10);
     ros::Publisher *pub = (ros::Publisher *)ptr;
-    visualization_msgs::MarkerArray latest_markerArray;
-    int latest_id = 0;
-    float colorset[14][4] = {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {1, 1, 0, 0}, {0, 1, 1, 0}, {1, 0, 1, 0}, {1, 1, 1, 0},
-        {0.5, 0, 0, 0}, {0, 0.5, 0, 0}, {0, 0, 0.5, 0}, {0.5, 0.5, 0, 0}, {0, 0.5, 0.5, 0}, {0.5, 0, 0.5, 0}, {0.5, 0.5, 0.5, 0}
-    };
 
     while (ros::ok())
     {
-        visualization_msgs::MarkerArray markerArray;
-        //    markerArray.markers.clear();
-
-        int id = 0;
-        int flag = 0;
-        for (int i = 0; i < 3; i++)
-        {
-            visualization_msgs::Marker marker;
-            marker.header.frame_id = "/laser";
-            marker.header.stamp = ros::Time::now();
-
-            //    marker.ns = "tracker";
-            marker.id = id;
-            marker.type = shape_arrow;
-            marker.action = visualization_msgs::Marker::ADD;
-
-            marker.pose.position.x = 0;
-            marker.pose.position.y = 0;
-            marker.pose.position.z = 0;
-            marker.pose.orientation.x = 0.0;
-            marker.pose.orientation.y = 0.0;
-            marker.pose.orientation.z = 0.0;
-            marker.pose.orientation.w = 1.0;
-
-            marker.scale.x = 1.0;
-            marker.scale.y = 0.1;
-            marker.scale.z = 0.1;
-
-            marker.color.r = 0.0f;
-            marker.color.g = 0.0f;
-            marker.color.b = 0.0f;
-            marker.color.a = 1.0;
-
-
-            switch (i)
-            {
-            case 0:
-                marker.pose.orientation.x = sin(90.0 * PI / 180.0 / 2.0);
-                marker.pose.orientation.w = cos(90.0 * PI / 180.0 / 2.0);
-                marker.color.r = 1.0f;
-                break;
-            case 1:
-                marker.pose.orientation.z = sin(90.0 * PI / 180.0 / 2.0);
-                marker.pose.orientation.w = cos(90.0 * PI / 180.0 / 2.0);
-                marker.color.g = 1.0f;
-                break;
-            case 2:
-                marker.pose.orientation.y = sin(-90.0 * PI / 180.0 / 2.0);
-                marker.pose.orientation.w = cos(-90.0 * PI / 180.0 / 2.0);
-                marker.color.b = 1.0f;
-                break;
-            }
-
-            //    marker.lifetime = ros::Duration();
-
-            markerArray.markers.push_back(marker);
-            id ++;
-        }
-
+        tms_msg_ss::pot_tracking_psen psen;
+        tms_msg_ss::pot_tracking_psens psens;
         pthread_mutex_lock(&mutex_target);
+
+        for (v = psenparam.begin(); v != psenparam.end(); ++v)
+        {
+            v -> flag = 0;
+        }
 
         for (int i = 0; i < MAX_TRACKING_OBJECT; i++)
         {
             if (laser.m_pTarget[i] != NULL)
             {
-
                 if (laser.m_pTarget[i]->cnt < 200)
                 {
-                    //std::cout << "laser.m_pTarget->cnt" << laser.m_pTarget[i]->cnt << std::endl;
+                    //cout << laser.m_pTarget[i]->cnt << endl;
                     continue;
                 }
-                //cout << laser.m_pTarget[i]->cnt << endl;
 
-                visualization_msgs::Marker marker;
-                marker.header.frame_id = "/laser";
-                marker.header.stamp = ros::Time::now();
+                ID =  (laser.m_pTarget[i]->id);
+                X  = -(laser.m_pTarget[i]->py);
+                Y  =  (laser.m_pTarget[i]->px);
 
-                //         marker.ns = "tracker";
-                marker.id = id;
-                marker.type = shape;
-                marker.action = visualization_msgs::Marker::ADD;
-
-                marker.pose.position.x = laser.m_pTarget[i]->px * 0.001;
-                marker.pose.position.y = laser.m_pTarget[i]->py * 0.001;
-                std::cout << "x y " << laser.m_pTarget[i]->px << " " << laser.m_pTarget[i]->py;
-                marker.pose.position.z = 0.5;
-                marker.pose.orientation.x = 0.0;
-                marker.pose.orientation.y = 0.0;
-                marker.pose.orientation.z = 0.0;
-                marker.pose.orientation.w = 1.0;
-
-                marker.scale.x = 0.1;
-                marker.scale.y = 0.1;
-                marker.scale.z = 1.0;
-
-                int color = laser.m_pTarget[i]->id % 14;
-                std::cout << "laser.m_pTarget->id " << laser.m_pTarget[i]->id << std::endl;
-                marker.color.r = colorset[color][0];
-                marker.color.g = colorset[color][1];
-                marker.color.b = colorset[color][2];
-                marker.color.a = 1.0;
-
-                //         marker.lifetime = ros::Duration();
-
-                markerArray.markers.push_back(marker);
-                id ++;
-                output_x[i] = - (laser.m_pTarget[i]->py);
-                output_y[i] =    laser.m_pTarget[i]->px;
-
-                ofs << output_x[i] << " " << output_y[i] << " " ;
-            }
-            else
-            {
-                ofs << "\t\t" ;
+                if (psenparam.size() > 0)
+                {
+                    for (v = psenparam.begin(); v != psenparam.end(); ++v)
+                    {
+                        if ( v -> id == ID)
+                        {
+                            v -> flag = 1;
+                            if (X < 0)
+                            {
+                                if (v -> x >= 0)
+                                {
+                                    right_count++;
+                                }
+                            }
+                            else if (X >= 0)
+                            {
+                                if (v -> x < 0)
+                                {
+                                    left_count++;
+                                }
+                            }
+                            v -> x = X;
+                            v -> y = Y;
+                            break;
+                        }
+                        else if (v == psenparam.end() - 1 )
+                        {
+                            tmp_param.id = ID;
+                            tmp_param.flag = 1;
+                            tmp_param.x = X;
+                            tmp_param.y = Y;
+                            psenparam.insert(psenparam.begin(), tmp_param);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    tmp_param.id = ID;
+                    tmp_param.flag = 1;
+                    tmp_param.x = X;
+                    tmp_param.y = Y;
+                    //psenparam.insert(psenparam.begin(), tmp_param);
+                    psenparam.push_back(tmp_param);
+                }
             }
         }
-        ofs << std::endl ;
-        if (id - 3 > 0) std::cout << "Number of Markers " << id - 3 << std::endl;
-
-        pthread_mutex_unlock(&mutex_target);
-
-        //std::cout << "Number of Markers " << markerArray.markers.size() << std::endl;
-
-        if (latest_id > id)
+        if (psenparam.size() > 0 )
         {
-            for (int i = 0; i < latest_markerArray.markers.size(); i++) latest_markerArray.markers[i].action = visualization_msgs::Marker::DELETE;
-            pub->publish(latest_markerArray);
+            std::cout << "<<id  " ;
+            for (v = psenparam.begin(); v != psenparam.end(); ++v)
+            {
+                psen.id = v -> id;
+                psen.x = v -> x;
+                psen.y = v -> y;
+                psen.righter = right_count;
+                psen.lefter  = left_count;
+                psens.pot_tracking_psen.push_back(psen);
+                std::cout << v -> id << "." << v->flag << " ";
+            }
+            std::cout << " >>" << std::endl;
+            psenparam.resize(psenparam.size());
+L:
+            int n_flag = 0;
+            for (v = psenparam.begin(); v != psenparam.end(); ++v)
+            {
+                if (v -> flag == 0)
+                {
+                    //std::cout << "v " << v -> id << " erase start " << std::endl;
+                    psenparam.erase (v);
+                    //std::cout << "erase complete" << std::endl;
+                    n_flag = 1;
+                    break;
+                }
+            }
+            if (n_flag == 1)
+            {
+                goto L;
+            }
         }
-
-        latest_id = id;
-        latest_markerArray = markerArray;
-
-        pub->publish(markerArray);
-        //std::cout << "pub"<<std::endl;
-
+        pub->publish(psens);
+        pthread_mutex_unlock(&mutex_target);
         r.sleep();
     }
-
-    return 0;
 }
+
+
 
 void *Processing( void *ptr )
 {
-    //  CParticleFilter m_PF;
     CMultipleParticleFilter m_PF;
-    //ros::Rate r(30);
-    ros::Rate r(20);
+    ros::Rate r(30);
     laser.Init();
-
-    //  int area[2]={STAGE_X, STAGE_Y};
-    //  m_PF.initialize(area, MAX_PARTICLE_NUM, MAX_PARTICLE_NUM_MCMC);
 
     /**********************************/
     laser.m_bNodeActive[0] = true;
@@ -322,7 +279,6 @@ void *Processing( void *ptr )
                         laser.m_LRFClsPoints[n][i].y = cvmGet(laser.m_LRFClsPos[n][i], 1, 0) * 1000.0;
 
                         //std::cout << laser.m_LRFClsPoints[n][i].x << " " << laser.m_LRFClsPoints[n][i].y << std::endl;
-
                     }
                 }
             }
@@ -330,6 +286,7 @@ void *Processing( void *ptr )
         pthread_mutex_lock(&mutex_target);
         m_PF.update(&laser);
         pthread_mutex_unlock(&mutex_target);
+
         ros::Time begin = ros::Time::now();
         if (m_PF.m_ParticleFilter.size() > 0) std::cout << "Time " << begin << " Number of PFs " << m_PF.m_ParticleFilter.size() << std::endl;
 
@@ -347,23 +304,19 @@ void *Processing( void *ptr )
 
 void LaserSensingCallback(const sensor_msgs::LaserScan::ConstPtr &scan)
 {
-    pthread_mutex_lock(&mutex_laser);
-    int num = floor((scan->angle_max - scan->angle_min) / scan->angle_increment);
-    if ( scanData.size() == 0 ) scanData.resize(num);
-
-    for (int i = 0; i < num ; i++)
+    if (scan->ranges.size() > 0)
     {
-        if (isnan(scan->ranges[i]) == 0)
+        pthread_mutex_lock(&mutex_laser);
+        int steps = 683;
+        if ( scanData.size() == 0 ) scanData.resize(steps);
+
+        for (int i = 0, j = scan->ranges.size() - steps; i < steps ; i++, j++)
         {
-            scanData[i] = scan->ranges[i];
+            scanData[i] = scan->ranges[j];
         }
-        else
-        {
-            scanData[i] = 5.6;
-        }
+        pthread_mutex_unlock(&mutex_laser);
+        CallbackCalled = true;
     }
-    pthread_mutex_unlock(&mutex_laser);
-    CallbackCalled = true;
 }
 
 int main( int argc, char **argv )
@@ -371,11 +324,11 @@ int main( int argc, char **argv )
     std::cout << "tracker_start" << std::endl;
     pthread_t thread_p;
     pthread_t thread_v;
-    ros::MultiThreadedSpinner spinner(4);
+    ros::MultiThreadedSpinner spinner(0);
 
-    ros::init(argc, argv, "pot_tracker_single");
+    ros::init(argc, argv, "pot_tracker_psen");
     ros::NodeHandle n;
-    ros::Publisher  pub = n.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 1);
+    ros::Publisher  pub = n.advertise<tms_msg_ss::pot_tracking_psens>("tracking_psen0", 10);
     ros::Subscriber sub = n.subscribe("/LaserTracker0", 1000, LaserSensingCallback);
     if ( pthread_create( &thread_v, NULL, Visualization, (void *)&pub) )
     {
