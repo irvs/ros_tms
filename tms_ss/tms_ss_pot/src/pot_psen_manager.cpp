@@ -44,7 +44,7 @@ void *Management( void *ptr )
 {
     while (ros::ok())
     {
-      
+      //
         // double . toutyoutenn hasamu onajimuki
         counter_r = lrf_counter0_r - lrf_counter1_r;
         counter_l = lrf_counter0_l - lrf_counter1_l;
