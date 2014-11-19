@@ -72,7 +72,7 @@ public:
     ROS_ASSERT(initDbManager());
     //TimerEvent
     update_timer = nh.createTimer(ros::Duration(update_time), &DbManager::manageDataCallback, this);
-    remove_timer = nh.createTimer(ros::Duration(1*60*60), &DbManager::removeForeverDataCallback, this);
+    remove_timer = nh.createTimer(ros::Duration(12*60*60), &DbManager::removeForeverDataCallback, this);
   }  
 
   //----------------------------------------------------------------------------
@@ -130,7 +130,6 @@ private:
   //----------------------------------------------------------------------------
   bool storeBackupData()
   {
-    char select_query[1024];
     char delete_query[1024];
     char insert_query[1024];
 
@@ -185,31 +184,15 @@ private:
 
     if(is_debug) ROS_INFO("removeForeverDataCallback triggered");
 
-    char select_query[1024];
     char delete_query[1024];
-    char insert_query[1024];
 
     ros::Time update_period = ros::Time::now() + ros::Duration(9*60*60) - ros::Duration(14*24*60*60); // 24day (GMT +9)
     string iso_update_period = boost::posix_time::to_iso_extended_string(update_period.toBoost());
 
     //------------------------------------------------------------------------
-    // Insert old data in history_data table into the backup_data table
-    sprintf(insert_query,
-            "INSERT INTO rostmsdb.backup_data SELECT * FROM rostmsdb.history_data WHERE time <'%s';",
-            iso_update_period.c_str());
-
-    if(is_debug) ROS_INFO("%s\n", insert_query);
-
-    if (mysql_query(connector, insert_query))
-    {
-      ROS_ERROR("%s", mysql_error(connector));
-      ROS_ERROR("DB write error!");
-    }
-
-    //------------------------------------------------------------------------
-    // Delete old data in history_data table
+    // Delete old data in backup_data table
     sprintf(delete_query,
-            "DELETE FROM rostmsdb.history_data WHERE time <'%s';",
+            "DELETE FROM rostmsdb.backup_data WHERE time <'%s';",
             iso_update_period.c_str());
 
     if(is_debug) ROS_INFO("%s\n", delete_query);
@@ -220,7 +203,7 @@ private:
       ROS_ERROR("DB write error!");
     }
 
-    return true;
+    return;
   }
 };
 

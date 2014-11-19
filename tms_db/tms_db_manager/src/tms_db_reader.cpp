@@ -40,7 +40,6 @@
 #define MODE_PLACE_TYPE    12
 #define MODE_HIERARCHY     13
 #define MODE_TAG_IDTABLE   14
-#define MODE_TAG_TYPE      15
 #define MODE_ERROR        999
 
 //------------------------------------------------------------------------------
@@ -151,13 +150,9 @@ private:
     uint32_t    temp_place;
 
     //--------------------------------------------------------------------------
-    if(req.tmsdb.id == sid && req.tmsdb.tag.empty()==false)
+    if(req.tmsdb.tag.empty()==false)
     {
       mode = MODE_TAG_IDTABLE;
-    }
-    else if (req.tmsdb.id == 0 && req.tmsdb.tag.empty()==false && req.tmsdb.type.empty()==false)
-    {
-      mode = MODE_TAG_TYPE;
     }
     else if (req.tmsdb.id == 0 && req.tmsdb.type.empty()==true && req.tmsdb.sensor == 0 && req.tmsdb.place == 0 && req.tmsdb.name.empty()==true)
     {
@@ -326,7 +321,6 @@ private:
     //--------------------------------------------------------------------------
     if(mode == MODE_HIERARCHY)
     {
-
       bool loop_end_tag = false;
       temp_place = req.tmsdb.id;
 
@@ -413,13 +407,9 @@ private:
     {
       sprintf(select_query, "SELECT * FROM rostmsdb.id;");
     }
-    else if (mode == MODE_TAG_IDTABLE)
+    if(mode == MODE_TAG_IDTABLE)
     {
-      sprintf(select_query, "SELECT * FROM rostmsdb.id WHERE tag=\"%s\";", req.tmsdb.tag.c_str());
-    }
-    else if (mode == MODE_TAG_TYPE)
-    {
-      sprintf(select_query, "SELECT * FROM rostmsdb.data_%s WHERE tag=\"%s\";", req.tmsdb.tag.c_str(), req.tmsdb.type.c_str());
+      sprintf(select_query, "SELECT * FROM rostmsdb.id WHERE tag LIKE \"%%%s%%\";", req.tmsdb.tag.c_str());
     }
     else if (mode == MODE_NAME_IDTABLE)
     {
