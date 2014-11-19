@@ -34,17 +34,18 @@ pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 std::vector<float> scanData;
 CLaser laser;
 bool CallbackCalled = false;
+IDparam tmp_param;
+std::vector< IDparam > idparam;
+std::vector< IDparam >::iterator v;
 
 void *Visualization( void *ptr )
 {
+    int count = 0;
     int   ID;
     float X;
     float Y;
     ros::Rate r(10);
     ros::Publisher *pub = (ros::Publisher *)ptr;
-    IDparam tmp_param;
-    std::vector< IDparam > idparam;
-    std::vector< IDparam >::iterator v;
 
     tmp_param.id = 0;
     tmp_param.flag = 0;
@@ -61,11 +62,10 @@ void *Visualization( void *ptr )
 
     while (ros::ok())
     {
+        pthread_mutex_lock(&mutex_target);
         //std::cout << "visual_start"<<std::endl;
         tms_msg_ss::pot_tracking_grid grid;
         tms_msg_ss::pot_tracking_points points;
-
-        pthread_mutex_lock(&mutex_target);
 
         for (int i = 0; i < MAX_TRACKING_OBJECT; i++)
         {
@@ -88,7 +88,7 @@ void *Visualization( void *ptr )
                 }
 
 
-                for (v = idparam.begin(); v != idparam.end() + 1; ++v)
+                for (v = idparam.begin(); v != idparam.end(); ++v)
                 {
                     if ( v -> id == ID)
                     {
@@ -106,7 +106,7 @@ void *Visualization( void *ptr )
                         //std::cout << "v = id " << std::endl;
                         break;
                     }
-                    else if (v == idparam.end())
+                    else if (v == idparam.end() - 1 )
                     {
                         tmp_param.id = ID;
                         tmp_param.flag = 1;
@@ -119,7 +119,7 @@ void *Visualization( void *ptr )
                         tmp_param.end_pos.y = Y;
                         tmp_param.vector.x = X;
                         tmp_param.vector.y = Y;
-                        idparam.push_back(tmp_param);
+                        idparam.insert(idparam.begin(), tmp_param);
                         break;
                     }
                 }
@@ -142,16 +142,14 @@ void *Visualization( void *ptr )
                     points.pot_tracking_grid.push_back(grid);
                 }
 
-                for (v = idparam.begin(); v != idparam.end(); ++v)
-                {
-                    //std::cout << "v -> flag" << v -> flag << std::endl;
-                    if (v -> flag == 0)
+                    for (v = idparam.begin(); v != idparam.end(); ++v)
                     {
-                        //  std::cout << "nakasima" << std::endl;
-                        idparam.erase (v);
+                        //std::cout << "v -> flag" << v -> flag << std::endl;
+                        if (v -> flag == 0 && v -> id != 0)
+                        {
+                            idparam.erase (v);
+                        }
                     }
-                    //std::cout << "nakasima_2" << std::endl;
-                }
             }
 
         }
@@ -159,6 +157,7 @@ void *Visualization( void *ptr )
         pthread_mutex_unlock(&mutex_target);
         pub->publish(points);
         //std::cout << "visual_end"<<std::endl;
+        count++;
         r.sleep();
     }
     return 0;
@@ -338,7 +337,7 @@ int main( int argc, char **argv )
     std::cout << "tracker_start" << std::endl;
     pthread_t thread_p;
     pthread_t thread_v;
-    ros::MultiThreadedSpinner spinner(4);
+    ros::MultiThreadedSpinner spinner(0);
 
     ros::init(argc, argv, "pot_tracker_msg");
     ros::NodeHandle n;
