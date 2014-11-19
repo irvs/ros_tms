@@ -1,9 +1,9 @@
-﻿//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // @file   : tms_db_writer.cpp
 // @brief  : write data into rostms database
 // @author : Yoonseok Pyo
-// @version: Ver0.2.1 (since 2014.05.07)
-// @date   : 2014.07.02
+// @version: Ver0.2.2 (since 2014.05.07)
+// @date   : 2014.11.19
 //------------------------------------------------------------------------------
 //include for ROS
 #include <ros/ros.h>
@@ -70,23 +70,23 @@ public:
     //Init parameter
     nh_priv.param("is_debug", is_debug, is_debug);
     //Init Vicon Stream
-    ROS_ASSERT(InitDbwriter());
+    ROS_ASSERT(initDbWriter());
     // Subscriber for tms_db_data topic
-    data_sub = nh.subscribe("tms_db_data", 100, &DbWriter::DbWriteCallback, this);
-    WriteInitData();
+    data_sub = nh.subscribe("tms_db_data", 100, &DbWriter::dbWriteCallback, this);
+    writeInitData();
   }  
 
   //----------------------------------------------------------------------------
   ~DbWriter()
   {
-    ROS_ASSERT(ShutdownDbwriter());
+    ROS_ASSERT(shutdownDbWriter());
   } 
 
 //------------------------------------------------------------------------------
 private:
-  bool InitDbwriter()
+  bool initDbWriter()
   {
-    printf("tms_db_writer : Init OK!\n");
+    ROS_INFO("tms_db_writer : Init OK!\n");
 
     //Connection to a MySQL database 
     connector = mysql_init(NULL);
@@ -101,42 +101,48 @@ private:
       return false;
     }
 
-    printf("MySQL(rostmsdb) opened.\n");
+    ROS_INFO("MySQL(rostmsdb) opened.\n");
     return true;
   }
 
   //----------------------------------------------------------------------------
-  bool ShutdownDbwriter() {
+  bool shutdownDbWriter()
+  {
     //Close connection
     mysql_close(connector);
-    printf("MySQL(rostmsdb) closed.\n");
+    ROS_INFO("MySQL(rostmsdb) closed.\n");
     return true;
   }
 
   //----------------------------------------------------------------------------
-  bool WriteInitData() {
+  bool writeInitData()
+  {
     tms_msg_db::Tmsdb temp_dbdata;
 
-    WriteData(2008);
-    WriteData(2009);
+    writeData(2008);  // ardrone
+    writeData(2009);  // refrigerator
 
-    for(int32_t i=1; i <= MAX_STRUCTURE_NUM; i++) {
-      WriteData(STRUCTURE_ID + i);
+    for(int32_t i=1; i <= MAX_STRUCTURE_NUM; i++)
+    {
+      writeData(STRUCTURE_ID + i);
     }
 
-    for(int32_t i=1; i <= MAX_SPACE_NUM; i++) {
-      WriteData(SPACE_ID + i);
+    for(int32_t i=1; i <= MAX_SPACE_NUM; i++)
+    {
+      writeData(SPACE_ID + i);
     }
 
-    for(int32_t i=1; i <= MAX_FURNITURE_NUM; i++) {
-      WriteData(FURNITURE_ID + i);
+    for(int32_t i=1; i <= MAX_FURNITURE_NUM; i++)
+    {
+      writeData(FURNITURE_ID + i);
     }
 
     return true;
   }
 
   //----------------------------------------------------------------------------
-  bool WriteData(int32_t id) {
+  bool writeData(int32_t id)
+  {
     tms_msg_db::Tmsdb temp_dbdata;
     ros::Time now;
     char select_query[1024];
@@ -144,11 +150,12 @@ private:
     char delete_query[1024];
 
     sprintf(select_query, "SELECT * FROM rostmsdb.id WHERE id=%d;", id);
-    if(is_debug) printf("%s\n", select_query);
+    if(is_debug) ROS_INFO("%s\n", select_query);
     mysql_query(connector, select_query);
     result = mysql_use_result(connector);
-    while ((row = mysql_fetch_row(result)) != NULL) {
-      for(int32_t j=0;j<24;j++) if(is_debug) ROS_INFO("%s, ",row[j]);
+    while ((row = mysql_fetch_row(result)) != NULL)
+    {
+      for(int32_t j=0;j<25;j++) if(is_debug) ROS_INFO("%s, ",row[j]);
       now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
       temp_dbdata.time        = boost::posix_time::to_iso_extended_string(now.toBoost());
       temp_dbdata.type        = row[1];
@@ -174,6 +181,7 @@ private:
       temp_dbdata.state       = atoi(row[21]);
       temp_dbdata.task        = row[22];
       temp_dbdata.note        = row[23];
+      temp_dbdata.tag         = row[24];
     }
     if(mysql_num_rows(result) != 0)
       mysql_free_result(result);
@@ -187,9 +195,10 @@ private:
             temp_dbdata.id,
             temp_dbdata.sensor);
 
-    if(is_debug) printf("%s\n", delete_query);
+    if(is_debug) ROS_INFO("%s\n", delete_query);
 
-    if (mysql_query(connector, delete_query)) {
+    if (mysql_query(connector, delete_query))
+    {
       ROS_ERROR("%s", mysql_error(connector));
       ROS_ERROR("DB write error!");
     }
@@ -197,46 +206,49 @@ private:
     //------------------------------------------------------------------------
     // Insert new data to rostmsdb.data_xxx
     sprintf(insert_query,
-      "INSERT INTO rostmsdb.data_%s VALUES ('%s','%s',%d,'%s',%f,%f,%f,%f,%f,%f,%f,%f,%f,'%s',%f,'%s','%s',%d,'%s',%d,%f,%d,'%s','%s');",
-        temp_dbdata.type.c_str(),
-        temp_dbdata.time.c_str(),
-        temp_dbdata.type.c_str(),
-        temp_dbdata.id,
-        temp_dbdata.name.c_str(),
-        temp_dbdata.x,
-        temp_dbdata.y,
-        temp_dbdata.z,
-        temp_dbdata.rr,
-        temp_dbdata.rp,
-        temp_dbdata.ry,
-        temp_dbdata.offset_x,
-        temp_dbdata.offset_y,
-        temp_dbdata.offset_z,
-        temp_dbdata.joint.c_str(),
-        temp_dbdata.weight,
-        temp_dbdata.rfid.c_str(),
-        temp_dbdata.etcdata.c_str(),
-        temp_dbdata.place,
-        temp_dbdata.extfile.c_str(),
-        temp_dbdata.sensor,
-        temp_dbdata.probability,
-        temp_dbdata.state,
-        temp_dbdata.task.c_str(),
-        temp_dbdata.note.c_str());
+      "INSERT INTO rostmsdb.data_%s VALUES ('%s','%s',%d,'%s',%f,%f,%f,%f,%f,%f,%f,%f,%f,'%s',%f,'%s','%s',%d,'%s',%d,%f,%d,'%s','%s','%s');",
+      temp_dbdata.type.c_str(),
+      temp_dbdata.time.c_str(),
+      temp_dbdata.type.c_str(),
+      temp_dbdata.id,
+      temp_dbdata.name.c_str(),
+      temp_dbdata.x,
+      temp_dbdata.y,
+      temp_dbdata.z,
+      temp_dbdata.rr,
+      temp_dbdata.rp,
+      temp_dbdata.ry,
+      temp_dbdata.offset_x,
+      temp_dbdata.offset_y,
+      temp_dbdata.offset_z,
+      temp_dbdata.joint.c_str(),
+      temp_dbdata.weight,
+      temp_dbdata.rfid.c_str(),
+      temp_dbdata.etcdata.c_str(),
+      temp_dbdata.place,
+      temp_dbdata.extfile.c_str(),
+      temp_dbdata.sensor,
+      temp_dbdata.probability,
+      temp_dbdata.state,
+      temp_dbdata.task.c_str(),
+      temp_dbdata.note.c_str(),
+      temp_dbdata.tag.c_str());
 
-    if(is_debug) printf("%s\n",insert_query);
+    if(is_debug) ROS_INFO("%s\n",insert_query);
 
-    if (mysql_query(connector, insert_query)) {
+    if (mysql_query(connector, insert_query))
+    {
       fprintf(stderr, "%s\n", mysql_error(connector));
-      printf("Write error!\n");
+      ROS_ERROR("Write error!\n");
     }
     
     return true;
   }
 
   //----------------------------------------------------------------------------
-  // DbWriteCallback function
-  void DbWriteCallback(const tms_msg_db::TmsdbStamped::ConstPtr& msg){
+  // dbWriteCallback function
+  void dbWriteCallback(const tms_msg_db::TmsdbStamped::ConstPtr& msg)
+  {
     int32_t msg_size;
     char select_query[1024];
     char insert_query[1024];
@@ -247,30 +259,32 @@ private:
     std::string temp_probability;
 
     msg_size = msg->tmsdb.size();
-    if(is_debug) printf("msg_size = %d\n", msg_size);
-    for(int32_t i=0; i<msg_size; i++) {
+    if(is_debug) ROS_INFO("msg_size = %d\n", msg_size);
+    for(int32_t i=0; i<msg_size; i++)
+    {
       // Search the type, name, etc infomation in ID table
       sprintf(select_query, "SELECT type,name,probability FROM rostmsdb.id WHERE id=%d", msg->tmsdb[i].id);
-      if(is_debug) printf("%s\n", select_query);
+      if(is_debug) ROS_INFO("%s\n", select_query);
       mysql_query(connector, select_query);
       result   = mysql_use_result(connector);
       row      = mysql_fetch_row(result);
       temp_row = row;
-      if(is_debug) printf("%s,%s\n",temp_row[0],temp_row[1]);
+      if(is_debug) ROS_INFO("%s,%s\n",temp_row[0],temp_row[1]);
       temp_type         = temp_row[0];
       temp_name         = temp_row[1];
       temp_probability  = 0.0;
       mysql_free_result(result);
 
-      if (msg->tmsdb[i].sensor != 0) {
+      if (msg->tmsdb[i].sensor != 0)
+      {
         // Search the sensor's probability infomation in ID table
         sprintf(select_query, "SELECT probability FROM rostmsdb.id WHERE id=%d", msg->tmsdb[i].sensor);
-        if(is_debug) printf("%s\n", select_query);
+        if(is_debug) ROS_INFO("%s\n", select_query);
         mysql_query(connector, select_query);
         result  = mysql_use_result(connector);
         row     = mysql_fetch_row(result);
         temp_row = row;
-        if(is_debug) printf("%s\n",temp_row[0]);
+        if(is_debug) ROS_INFO("%s\n",temp_row[0]);
         temp_probability  = temp_row[0]==NULL?"0.0":temp_row[0];
         mysql_free_result(result);
       }
@@ -278,7 +292,7 @@ private:
       //------------------------------------------------------------------------
       // Insert new data to rostmsdb.history_data
       sprintf(insert_query, 
-        "INSERT INTO rostmsdb.history_data VALUES ('%s','%s',%d,'%s',%f,%f,%f,%f,%f,%f,%f,%f,%f,'%s',%f,'%s','%s',%d,'%s',%d,%f,%d,'%s','%s');",
+        "INSERT INTO rostmsdb.history_data VALUES ('%s','%s',%d,'%s',%f,%f,%f,%f,%f,%f,%f,%f,%f,'%s',%f,'%s','%s',%d,'%s',%d,%f,%d,'%s','%s','%s');",
         msg->tmsdb[i].time.c_str(),
         msg->tmsdb[i].type.empty()?temp_type.c_str():msg->tmsdb[i].type.c_str(),
         msg->tmsdb[i].id,
@@ -302,13 +316,15 @@ private:
         atof(temp_probability.c_str()),
         msg->tmsdb[i].state,
         msg->tmsdb[i].task.empty()?"":msg->tmsdb[i].task.c_str(),
-        msg->tmsdb[i].note.empty()?"":msg->tmsdb[i].note.c_str());
+        msg->tmsdb[i].note.empty()?"":msg->tmsdb[i].note.c_str(),
+        msg->tmsdb[i].tag.empty()?"":msg->tmsdb[i].tag.c_str());
 
-      if(is_debug) printf("%s\n",insert_query);
+      if(is_debug) ROS_INFO("%s\n",insert_query);
 
-      if (mysql_query(connector, insert_query)) {
+      if (mysql_query(connector, insert_query))
+      {
         fprintf(stderr, "%s\n", mysql_error(connector));
-        printf("Write error!\n");
+        ROS_INFO("Write error!\n");
       }
 
       //------------------------------------------------------------------------
@@ -320,9 +336,10 @@ private:
               msg->tmsdb[i].id,
               msg->tmsdb[i].sensor);
 
-      if(is_debug) printf("%s\n", delete_query);
+      if(is_debug) ROS_INFO("%s\n", delete_query);
 
-      if (mysql_query(connector, delete_query)) {
+      if (mysql_query(connector, delete_query))
+      {
         ROS_ERROR("%s", mysql_error(connector));
         ROS_ERROR("DB write error!");
       } 
@@ -330,45 +347,48 @@ private:
       //------------------------------------------------------------------------
       // Insert new data to rostmsdb.data_xxx
       sprintf(insert_query, 
-        "INSERT INTO rostmsdb.data_%s VALUES ('%s','%s',%d,'%s',%f,%f,%f,%f,%f,%f,%f,%f,%f,'%s',%f,'%s','%s',%d,'%s',%d,%f,%d,'%s','%s');",
-          temp_type.c_str(),
-          msg->tmsdb[i].time.c_str(),
-          msg->tmsdb[i].type.empty()?temp_type.c_str():msg->tmsdb[i].type.c_str(),
-          msg->tmsdb[i].id,
-          msg->tmsdb[i].name.empty()?temp_name.c_str():msg->tmsdb[i].name.c_str(),
-          msg->tmsdb[i].x,
-          msg->tmsdb[i].y,
-          msg->tmsdb[i].z,
-          msg->tmsdb[i].rr,
-          msg->tmsdb[i].rp,
-          msg->tmsdb[i].ry,
-          msg->tmsdb[i].offset_x,
-          msg->tmsdb[i].offset_y,
-          msg->tmsdb[i].offset_z,
-          msg->tmsdb[i].joint.empty()?"":msg->tmsdb[i].joint.c_str(),
-          msg->tmsdb[i].weight,
-          msg->tmsdb[i].rfid.empty()?"":msg->tmsdb[i].rfid.c_str(),
-          msg->tmsdb[i].etcdata.empty()?"":msg->tmsdb[i].etcdata.c_str(),
-          msg->tmsdb[i].place,
-          msg->tmsdb[i].extfile.empty()?"":msg->tmsdb[i].extfile.c_str(),
-          msg->tmsdb[i].sensor,
-          atof(temp_probability.c_str()),
-          msg->tmsdb[i].state,
-          msg->tmsdb[i].task.empty()?"":msg->tmsdb[i].task.c_str(),
-          msg->tmsdb[i].note.empty()?"":msg->tmsdb[i].note.c_str());
+        "INSERT INTO rostmsdb.data_%s VALUES ('%s','%s',%d,'%s',%f,%f,%f,%f,%f,%f,%f,%f,%f,'%s',%f,'%s','%s',%d,'%s',%d,%f,%d,'%s','%s','%s');",
+        temp_type.c_str(),
+        msg->tmsdb[i].time.c_str(),
+        msg->tmsdb[i].type.empty()?temp_type.c_str():msg->tmsdb[i].type.c_str(),
+        msg->tmsdb[i].id,
+        msg->tmsdb[i].name.empty()?temp_name.c_str():msg->tmsdb[i].name.c_str(),
+        msg->tmsdb[i].x,
+        msg->tmsdb[i].y,
+        msg->tmsdb[i].z,
+        msg->tmsdb[i].rr,
+        msg->tmsdb[i].rp,
+        msg->tmsdb[i].ry,
+        msg->tmsdb[i].offset_x,
+        msg->tmsdb[i].offset_y,
+        msg->tmsdb[i].offset_z,
+        msg->tmsdb[i].joint.empty()?"":msg->tmsdb[i].joint.c_str(),
+        msg->tmsdb[i].weight,
+        msg->tmsdb[i].rfid.empty()?"":msg->tmsdb[i].rfid.c_str(),
+        msg->tmsdb[i].etcdata.empty()?"":msg->tmsdb[i].etcdata.c_str(),
+        msg->tmsdb[i].place,
+        msg->tmsdb[i].extfile.empty()?"":msg->tmsdb[i].extfile.c_str(),
+        msg->tmsdb[i].sensor,
+        atof(temp_probability.c_str()),
+        msg->tmsdb[i].state,
+        msg->tmsdb[i].task.empty()?"":msg->tmsdb[i].task.c_str(),
+        msg->tmsdb[i].note.empty()?"":msg->tmsdb[i].note.c_str(),
+        msg->tmsdb[i].tag.empty()?"":msg->tmsdb[i].tag.c_str());
 
-      if(is_debug) printf("%s\n",insert_query);
+      if(is_debug) ROS_INFO("%s\n",insert_query);
 
-      if (mysql_query(connector, insert_query)) {
+      if (mysql_query(connector, insert_query))
+      {
         fprintf(stderr, "%s\n", mysql_error(connector));
-        printf("Write error!\n");
+        ROS_INFO("Write error!\n");
       } 
     }
   }
 };
 
 //------------------------------------------------------------------------------
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   //Init ROS node
   ros::init(argc, argv, "tms_db_writer");
   DbWriter dw;
