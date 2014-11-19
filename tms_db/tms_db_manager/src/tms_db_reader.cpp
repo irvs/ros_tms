@@ -1,9 +1,9 @@
-﻿//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // @file   : tms_db_reader.cpp
 // @brief  : read the ros-tms database
 // @author : Yoonseok Pyo
-// @version: Ver0.2.1 (since 2014.05.09)
-// @date   : 2014.06.02
+// @version: Ver0.2.2 (since 2014.05.09)
+// @date   : 2014.11.19
 //------------------------------------------------------------------------------
 //include for ROS
 #include <ros/ros.h>
@@ -39,6 +39,7 @@
 #define MODE_PLACE         11
 #define MODE_PLACE_TYPE    12
 #define MODE_HIERARCHY     13
+#define MODE_TAG_IDTABLE   14
 #define MODE_ERROR        999
 
 //------------------------------------------------------------------------------
@@ -97,22 +98,22 @@ public:
     Target[5] = "furniture";
     Target[6] = "object";
     //Init Vicon Stream
-    ROS_ASSERT(InitDbreader());
+    ROS_ASSERT(initDbReader());
     //Service Server
-    dr_srv = nh_priv.advertiseService("dbreader",&DbReader::DrSrvCallback, this);
+    dr_srv = nh_priv.advertiseService("dbreader",&DbReader::dbSrvCallback, this);
   }  
 
   //----------------------------------------------------------------------------
   ~DbReader()
   {
-    ROS_ASSERT(ShutdownDbreader());
+    ROS_ASSERT(shutdownDbReader());
   } 
 
 //------------------------------------------------------------------------------
 private:
-  bool InitDbreader()
+  bool initDbReader()
   {
-    printf("tms_db_reader : Init OK!\n");
+    ROS_INFO("tms_db_reader : Init OK!\n");
 
     //Connection to a MySQL database 
     connector = mysql_init(NULL);
@@ -122,21 +123,21 @@ private:
       return false;
     }
 
-    printf("MySQL(rostmsdb) opened.\n");
+    ROS_INFO("MySQL(rostmsdb) opened.\n");
     return true;
   }
 
   //----------------------------------------------------------------------------
-  bool ShutdownDbreader()
+  bool shutdownDbReader()
   {
     //Close connection
     mysql_close(connector);
-    printf("MySQL(rostmsdb) closed.\n");
+    ROS_INFO("MySQL(rostmsdb) closed.\n");
     return true;
   }
 
   //----------------------------------------------------------------------------
-  bool DrSrvCallback(tms_msg_db::TmsdbGetData::Request& req, tms_msg_db::TmsdbGetData::Response& res)
+  bool dbSrvCallback(tms_msg_db::TmsdbGetData::Request& req, tms_msg_db::TmsdbGetData::Response& res)
   {
     nh_priv.getParam("is_debug", is_debug);
 
@@ -149,59 +150,96 @@ private:
     uint32_t    temp_place;
 
     //--------------------------------------------------------------------------
-    if (req.tmsdb.id == 0 && req.tmsdb.type.empty()==true && req.tmsdb.sensor == 0 && req.tmsdb.place == 0 && req.tmsdb.name.empty()==true) {
+    if(req.tmsdb.tag.empty()==false)
+    {
+      mode = MODE_TAG_IDTABLE;
+    }
+    else if (req.tmsdb.id == 0 && req.tmsdb.type.empty()==true && req.tmsdb.sensor == 0 && req.tmsdb.place == 0 && req.tmsdb.name.empty()==true)
+    {
       mode = MODE_ALL;
-    } else if(req.tmsdb.id == sid && req.tmsdb.name.empty()==false) {
+    }
+    else if(req.tmsdb.id == sid && req.tmsdb.name.empty()==false)
+    {
       mode = MODE_NAME_IDTABLE;
-    } else if (req.tmsdb.id == 0 && req.tmsdb.name.empty()==false && req.tmsdb.id != sid && req.tmsdb.type.empty()==true && req.tmsdb.sensor == 0 && req.tmsdb.place == 0) {
+    }
+    else if (req.tmsdb.id == 0 && req.tmsdb.name.empty()==false && req.tmsdb.id != sid && req.tmsdb.type.empty()==true && req.tmsdb.sensor == 0 && req.tmsdb.place == 0)
+    {
       mode = MODE_NAME; 
-    } else if (req.tmsdb.id == 0 && req.tmsdb.name.empty()==false && req.tmsdb.id != sid && req.tmsdb.type.empty()==true && req.tmsdb.sensor != 0 && req.tmsdb.place == 0) {
+    }
+    else if (req.tmsdb.id == 0 && req.tmsdb.name.empty()==false && req.tmsdb.id != sid && req.tmsdb.type.empty()==true && req.tmsdb.sensor != 0 && req.tmsdb.place == 0)
+    {
       mode = MODE_NAME_SENSOR;       
-    } else if(req.tmsdb.id > sid && req.tmsdb.type.empty()==true) {
+    }
+    else if(req.tmsdb.id > sid && req.tmsdb.type.empty()==true)
+    {
       req.tmsdb.id -= sid;
       mode = MODE_ID_IDTABLE; 
-    } else if (req.tmsdb.id != 0 && req.tmsdb.id != sid && req.tmsdb.type.empty()==true && req.tmsdb.sensor == 0 && req.tmsdb.place == 0) {
+    }
+    else if (req.tmsdb.id != 0 && req.tmsdb.id != sid && req.tmsdb.type.empty()==true && req.tmsdb.sensor == 0 && req.tmsdb.place == 0)
+    {
       mode = MODE_ID; 
-    } else if (req.tmsdb.id != 0 && req.tmsdb.id != sid && req.tmsdb.type.empty()==true && req.tmsdb.sensor != 0 && req.tmsdb.place == 0) {
+    }
+    else if (req.tmsdb.id != 0 && req.tmsdb.id != sid && req.tmsdb.type.empty()==true && req.tmsdb.sensor != 0 && req.tmsdb.place == 0)
+    {
       mode = MODE_ID_SENSOR; 
-    } else if (req.tmsdb.id == sid && req.tmsdb.type.empty()==false) {
+    }
+    else if (req.tmsdb.id == sid && req.tmsdb.type.empty()==false)
+    {
       mode = MODE_TYPE_IDTABLE; 
-    } else if (req.tmsdb.id == 0 && req.tmsdb.type.empty()==false && req.tmsdb.sensor == 0 && req.tmsdb.place ==0) {
+    }
+    else if (req.tmsdb.id == 0 && req.tmsdb.type.empty()==false && req.tmsdb.sensor == 0 && req.tmsdb.place ==0)
+    {
       mode = MODE_TYPE; 
-    } else if (req.tmsdb.id == 0 && req.tmsdb.type.empty()==false && req.tmsdb.sensor != 0 && req.tmsdb.place ==0) {
+    }
+    else if (req.tmsdb.id == 0 && req.tmsdb.type.empty()==false && req.tmsdb.sensor != 0 && req.tmsdb.place ==0)
+    {
       mode = MODE_TYPE_SENSOR; 
-    } else if (req.tmsdb.id == sid && req.tmsdb.type.empty()==true && req.tmsdb.place !=0) {
+    }
+    else if (req.tmsdb.id == sid && req.tmsdb.type.empty()==true && req.tmsdb.place !=0)
+    {
       mode = MODE_PLACE_IDTABLE; 
-    } else if (req.tmsdb.id == 0 && req.tmsdb.type.empty()==true  && req.tmsdb.place !=0) {
+    }
+    else if (req.tmsdb.id == 0 && req.tmsdb.type.empty()==true  && req.tmsdb.place !=0)
+    {
       mode = MODE_PLACE; 
-    } else if (req.tmsdb.id == 0 && req.tmsdb.type.empty()==false && req.tmsdb.place !=0) {
+    }
+    else if (req.tmsdb.id == 0 && req.tmsdb.type.empty()==false && req.tmsdb.place !=0)
+    {
       mode = MODE_PLACE_TYPE; 
-    } else if (req.tmsdb.id != 0 && req.tmsdb.type.empty()==true && req.tmsdb.place == sid) {
+    }
+    else if (req.tmsdb.id != 0 && req.tmsdb.type.empty()==true && req.tmsdb.place == sid)
+    {
       mode = MODE_HIERARCHY; 
-    } else if (req.tmsdb.id > 0 && req.tmsdb.id < 1000 || req.tmsdb.id > 20002) {
+    }
+    else if (req.tmsdb.id > 0 && req.tmsdb.id < 1000 || req.tmsdb.id > 20002)
+    {
       mode = MODE_ERROR;
-    } else {
+    }
+    else
+    {
       mode = MODE_ERROR;
     }
 
     //--------------------------------------------------------------------------
     if(is_debug) ROS_INFO("Request mode: %d\n", mode);
 
-    if(mode == MODE_ERROR) {
+    if(mode == MODE_ERROR)
+    {
       temp_dbdata.note = "Wrong request! Try to check the command!";
       res.tmsdb.push_back(temp_dbdata);
       return true; 
     }
 
     //--------------------------------------------------------------------------
-    if(mode == MODE_NAME || mode == MODE_NAME_SENSOR) {
+    if(mode == MODE_NAME || mode == MODE_NAME_SENSOR)
+    {
       // Search the ID, type, etc infomation in ID table
       sprintf(select_query, "SELECT type,id,place FROM rostmsdb.id WHERE name=\"%s\";", req.tmsdb.name.c_str());
-      if(is_debug) printf("%s\n", select_query);
+      if(is_debug) ROS_INFO("%s\n", select_query);
       mysql_query(connector, select_query);
       result  = mysql_use_result(connector);
       row     = mysql_fetch_row(result);
-      if(is_debug) printf("%s,%s\n",row[0],row[1]);
+      if(is_debug) ROS_INFO("%s,%s\n",row[0],row[1]);
       temp_type  = row[0];
       temp_id    = atoi(row[1]);
       temp_place = atoi(row[2]);
@@ -209,14 +247,15 @@ private:
     }
 
     //--------------------------------------------------------------------------
-    if(mode == MODE_ID || mode == MODE_ID_SENSOR || mode == MODE_HIERARCHY) {
+    if(mode == MODE_ID || mode == MODE_ID_SENSOR || mode == MODE_HIERARCHY)
+    {
       // Search the type, name, etc infomation in ID table
       sprintf(select_query, "SELECT type,name,place FROM rostmsdb.id WHERE id=%d", req.tmsdb.id);
-      if(is_debug) printf("%s\n", select_query);
+      if(is_debug) ROS_INFO("%s\n", select_query);
       mysql_query(connector, select_query);
       result  = mysql_use_result(connector);
       row     = mysql_fetch_row(result);
-      if(is_debug) printf("%s,%s\n",row[0],row[1]);
+      if(is_debug) ROS_INFO("%s,%s\n",row[0],row[1]);
       temp_type  = row[0];
       temp_name  = row[1];
       temp_place = atoi(row[2]);
@@ -224,22 +263,26 @@ private:
     }
 
     //--------------------------------------------------------------------------
-    if (mode == MODE_PLACE) {
-      for (uint32_t i = 0; i < 7; i++) {
+    if (mode == MODE_PLACE)
+    {
+      for (uint32_t i = 0; i < 7; i++)
+      {
         sprintf(select_query, "SELECT * FROM rostmsdb.data_%s WHERE place=%d;", Target[i].c_str(), req.tmsdb.place);
-        if(is_debug) printf("%s\n", select_query);
+        if(is_debug) ROS_INFO("%s\n", select_query);
 
         mysql_query(connector, select_query);
         result = mysql_use_result(connector);
 
-        if (result == NULL) {
+        if (result == NULL)
+        {
           temp_dbdata.note = "Wrong request! Try to check the target ID or type";
           res.tmsdb.push_back(temp_dbdata);
           return true; 
         }
 
-        while ((row = mysql_fetch_row(result)) != NULL) {
-          for(int32_t j=0;j<24;j++) if(is_debug) ROS_INFO("%s, ",row[j]);
+        while ((row = mysql_fetch_row(result)) != NULL)
+        {
+          for(int32_t j=0;j<25;j++) if(is_debug) ROS_INFO("%s, ",row[j]);
           temp_dbdata.time        = row[0];
           temp_dbdata.type        = row[1];
           temp_dbdata.id          = atoi(row[2]);
@@ -264,6 +307,7 @@ private:
           temp_dbdata.state       = atoi(row[21]);
           temp_dbdata.task        = row[22];
           temp_dbdata.note        = row[23];
+          temp_dbdata.tag         = row[24];
           res.tmsdb.push_back(temp_dbdata);
         }
 
@@ -275,29 +319,32 @@ private:
     }
 
     //--------------------------------------------------------------------------
-    if(mode == MODE_HIERARCHY) {
-
+    if(mode == MODE_HIERARCHY)
+    {
       bool loop_end_tag = false;
       temp_place = req.tmsdb.id;
 
-      while(temp_place != 0) {     
+      while(temp_place != 0)
+      {
         sprintf(select_query, "SELECT * FROM rostmsdb.data_%s WHERE id=%d ORDER BY time DESC LIMIT 1;",
           temp_type.c_str(), 
           temp_place);
 
-        if(is_debug) printf("%s\n", select_query);
+        if(is_debug) ROS_INFO("%s\n", select_query);
 
         mysql_query(connector, select_query);
         result = mysql_use_result(connector);
 
-        if (result == NULL) {
+        if (result == NULL)
+        {
           temp_dbdata.note = "Wrong request! Try to check the target ID, place info";
           res.tmsdb.push_back(temp_dbdata);
           return true; 
         }
 
-        while ((row = mysql_fetch_row(result)) != NULL) {
-          for(int32_t j=0;j<24;j++) if(is_debug) ROS_INFO("%s, ",row[j]);
+        while ((row = mysql_fetch_row(result)) != NULL)
+        {
+          for(int32_t j=0;j<25;j++) if(is_debug) ROS_INFO("%s, ",row[j]);
           temp_dbdata.time        = row[0];
           temp_dbdata.type        = row[1];
           temp_dbdata.id          = atoi(row[2]);
@@ -322,6 +369,7 @@ private:
           temp_dbdata.state       = atoi(row[21]);
           temp_dbdata.task        = row[22];
           temp_dbdata.note        = row[23];
+          temp_dbdata.tag         = row[24];
           res.tmsdb.push_back(temp_dbdata);
         }
 
@@ -331,19 +379,22 @@ private:
 
         temp_id = temp_dbdata.place; 
         sprintf(select_query, "SELECT type,name,place FROM rostmsdb.id WHERE id=%d", temp_id);
-        if(is_debug) printf("%s\n", select_query);
+        if(is_debug) ROS_INFO("%s\n", select_query);
         mysql_query(connector, select_query);
         result  = mysql_use_result(connector);
         row     = mysql_fetch_row(result);
-        if(is_debug) printf("%s,%s,%s\n",row[0],row[1],row[2]);
+        if(is_debug) ROS_INFO("%s,%s,%s\n",row[0],row[1],row[2]);
         temp_type  = row[0];
         temp_name  = row[1];
         temp_place = atoi(row[2]);
         mysql_free_result(result);
 
-        if(temp_id == temp_place) {
+        if(temp_id == temp_place)
+        {
           loop_end_tag = true;
-        } else {
+        }
+        else
+        {
           loop_end_tag = false;
         }
         temp_place = temp_id;
@@ -352,45 +403,74 @@ private:
     }
 
     //--------------------------------------------------------------------------
-    if(mode == MODE_ALL) {
+    if(mode == MODE_ALL)
+    {
       sprintf(select_query, "SELECT * FROM rostmsdb.id;");
-    } else if (mode == MODE_NAME_IDTABLE) {
+    }
+    if(mode == MODE_TAG_IDTABLE)
+    {
+      sprintf(select_query, "SELECT * FROM rostmsdb.id WHERE tag LIKE \"%%%s%%\";", req.tmsdb.tag.c_str());
+    }
+    else if (mode == MODE_NAME_IDTABLE)
+    {
       sprintf(select_query, "SELECT * FROM rostmsdb.id WHERE name=\"%s\";", req.tmsdb.name.c_str());
-    } else if (mode == MODE_NAME) {
+    }
+    else if (mode == MODE_NAME)
+    {
       sprintf(select_query, "SELECT * FROM rostmsdb.data_%s WHERE name=\"%s\";", temp_type.c_str(), req.tmsdb.name.c_str());
-    } else if (mode == MODE_NAME_SENSOR) {
+    }
+    else if (mode == MODE_NAME_SENSOR)
+    {
       sprintf(select_query, "SELECT * FROM rostmsdb.data_%s WHERE name=\"%s\" AND sensor=%d;", temp_type.c_str(), req.tmsdb.name.c_str(), req.tmsdb.sensor);  
-    } else if (mode == MODE_ID_IDTABLE) {
+    }
+    else if (mode == MODE_ID_IDTABLE)
+    {
       sprintf(select_query, "SELECT * FROM rostmsdb.id WHERE id=%d;", req.tmsdb.id);
-    } else if (mode == MODE_ID) {
+    }
+    else if (mode == MODE_ID)
+    {
       sprintf(select_query, "SELECT * FROM rostmsdb.data_%s WHERE id=%d;", temp_type.c_str(), req.tmsdb.id);
-    } else if (mode == MODE_ID_SENSOR) {
+    }
+    else if (mode == MODE_ID_SENSOR)
+    {
       sprintf(select_query, "SELECT * FROM rostmsdb.data_%s WHERE id=%d AND sensor=%d;", temp_type.c_str(), req.tmsdb.id, req.tmsdb.sensor);  
-    } else if (mode == MODE_TYPE_IDTABLE) {
+    }
+    else if (mode == MODE_TYPE_IDTABLE)
+    {
       sprintf(select_query, "SELECT * FROM rostmsdb.id WHERE type=\"%s\";", req.tmsdb.type.c_str());
-    } else if (mode == MODE_TYPE) {
+    }
+    else if (mode == MODE_TYPE)
+    {
       sprintf(select_query, "SELECT * FROM rostmsdb.data_%s;", req.tmsdb.type.c_str());        
-    } else if (mode == MODE_TYPE_SENSOR) {
+    }
+    else if (mode == MODE_TYPE_SENSOR)
+    {
       sprintf(select_query, "SELECT * FROM rostmsdb.data_%s WHERE sensor=%d;", req.tmsdb.type.c_str(),req.tmsdb.sensor);        
-    } else if (mode == MODE_PLACE_IDTABLE) {
+    }
+    else if (mode == MODE_PLACE_IDTABLE)
+    {
       sprintf(select_query, "SELECT * FROM rostmsdb.id WHERE place=%d;", req.tmsdb.place);        
-    } else if (mode == MODE_PLACE_TYPE) {
+    }
+    else if (mode == MODE_PLACE_TYPE)
+    {
       sprintf(select_query, "SELECT * FROM rostmsdb.data_%s WHERE place=%d;", req.tmsdb.type.c_str(), req.tmsdb.place);        
     }
 
-    if(is_debug) printf("%s\n", select_query);
+    if(is_debug) ROS_INFO("%s\n", select_query);
 
     mysql_query(connector, select_query);
     result = mysql_use_result(connector);
 
-    if (result == NULL) {
+    if (result == NULL)
+    {
       temp_dbdata.note = "Wrong request! Try to check the target ID, type, name";
       res.tmsdb.push_back(temp_dbdata);
       return true; 
     }
 
-    while ((row = mysql_fetch_row(result)) != NULL) {
-      for(int32_t j=0;j<24;j++) if(is_debug) ROS_INFO("%s, ",row[j]);
+    while ((row = mysql_fetch_row(result)) != NULL)
+    {
+      for(int32_t j=0;j<25;j++) if(is_debug) ROS_INFO("%s, ",row[j]);
       temp_dbdata.time        = row[0];
       temp_dbdata.type        = row[1];
       temp_dbdata.id          = atoi(row[2]);
@@ -415,6 +495,7 @@ private:
       temp_dbdata.state       = atoi(row[21]);
       temp_dbdata.task        = row[22];
       temp_dbdata.note        = row[23];
+      temp_dbdata.tag         = row[24];
       res.tmsdb.push_back(temp_dbdata);
     }
 
@@ -426,7 +507,8 @@ private:
 };
 
 //------------------------------------------------------------------------------
-int main(int argc, char **argv){
+int main(int argc, char **argv)
+{
   //Init ROS node
   ros::init(argc, argv, "tms_db_reader");
   DbReader dr;
