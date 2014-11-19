@@ -25,8 +25,8 @@ pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 #include <fstream>
 #include <string>
 
-signed int d_counter_r = 0;
-signed int d_counter_l = 0;
+signed int counter_r = 0;
+signed int counter_l = 0;
 int lrf_counter0_r = 0;
 int lrf_counter0_l = 0;
 int lrf_counter1_r = 0;
@@ -43,7 +43,7 @@ int lrf_counter5_l = 0;
 void *Management( void *ptr )
 {
     while (ros::ok())
-    {
+    {/*
         // double . toutyoutenn hasamu onajimuki
         counter_r = lrf_counter0_r - lrf_counter1_r;
         counter_l = lrf_counter0_l - lrf_counter1_l;
@@ -57,7 +57,7 @@ void *Management( void *ptr )
         }
         
         //triple . toutyoutenn hasamu
-
+     */
     }
 }
 
