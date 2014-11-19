@@ -23,7 +23,7 @@ extern pthread_mutex_t mutex_target;
 CMultipleParticleFilter::CMultipleParticleFilter()
 {
     m_max_ID = 100;
-    m_min_distance = 1200;//1000.0;  // 1000mm
+    m_min_distance = 1000;//1000.0;  // 1000mm
     //m_min_distance = 560.0;   // 400mm
     m_ID = 0;
 }
@@ -75,8 +75,6 @@ void CMultipleParticleFilter::update(CLaser *Laser)
                     label[j] = pn++;
                 }
             }
-
-            //////////////////////////atode printf siteemiru
 
             std::vector<int> flg(pn, -1);       //
             for (int j = 0; j < m_pLaser->m_LRFClsPoints[n].size(); j++)

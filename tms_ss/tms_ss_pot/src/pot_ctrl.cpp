@@ -9,7 +9,6 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <string>
 #include <iostream>
-#include <fstream>
 #include <ctime>
 #include <time.h>
 #include <vector>
@@ -37,34 +36,6 @@ int i;
 int main()
 {
 #if 0
-    //
-    // std::ifstream ifs("plot.txt");
-    // std::string str;
-    // while (std::getline(ifs, str))
-    // {
-    //     unsigned int pos = str.find("\n");
-    //     while (pos = string::npos )
-    //         std::cout << line << std::endl;
-    // }
-    //
-    std::ofstream ofs;
-    ofs.open("txt/tot.txt", std::ofstream::out | std::ofstream::app);
-    ofs << "ham" << std::endl;
-    // std::ifstream ifs("123tt.txt");
-    // if (!ifs)
-    // {
-    //     std::cout << "ERRRRRRRRRRRROR" << std::endl;
-    // }
-    // else
-    // {
-    //     std::ofstream ofs;
-    //     ofs.open("123tt.txt", std::ofstream::out | std::ofstream::app);
-    //     ofs << "ham" << std::endl;
-
-    // }
-#endif
-
-#if 0
     std::vector<pos_inf> posinf;
     std::vector<pos_inf>::iterator v;
     pos_inf tmp_inf;
@@ -87,8 +58,7 @@ int main()
 
 #endif
 
-
-#if 0
+#if 1
 
     v_list.push_back(100);
     v_list.push_back(200);
@@ -191,30 +161,9 @@ int main()
         std::cout << "x y" << before_x[i] << before_y[i] << std::endl;
     }
 #endif
-
-#if 0
-    //
-    std::ifstream ifs("test.txt");
-    std::string line;
-    while (std::getline(ifs, line))
-    {
-        //
-        std::cout << line << std::endl;
-    }
-
-    //
-    std::ofstream ofs("test.txt");
-
-    //
-    ofs << "ham" << std::endl;
-    ofs << "egg" << std::endl;
-    ofs << "spam" << std::endl;
-    ofs << "spam1" << std::endl;
-#endif
-
 #if 0
     // ファイル入力ストリームの初期化
-    std::ifstream ifs("test.txt");
+    std::ifstream ifs("test3.txt");
     std::string line;
     while (std::getline(ifs, line))
     {
@@ -223,7 +172,7 @@ int main()
     }
 
     // ファイル出力ストリームの初期化
-    std::ofstream ofs("test.txt");
+    std::ofstream ofs("test3.txt");
 
     // ファイルに1行ずつ書き込み
     ofs << "ham" << std::endl;

@@ -41,7 +41,6 @@ void LaserSensingCallback(const sensor_msgs::LaserScan::ConstPtr &scan)
     Laser.range_min       = scan->range_min;
     Laser.range_max       = scan->range_max;
 
-std::cout <<  "scan->ranges0 " << scan->ranges.size() << std::endl;
     if (Laser.ranges.size() == 0 ) Laser.ranges.resize(scan->ranges.size());
     for (int i = 0; i < scan->ranges.size(); i++)
     {
@@ -76,7 +75,6 @@ void LaserSensingCallback1(const sensor_msgs::LaserScan::ConstPtr &scan)
     Laser.range_min       = scan->range_min;
     Laser.range_max       = scan->range_max;
 
-std::cout <<  "scan->ranges1 " << scan->ranges.size() << std::endl;
     if (Laser.ranges.size() == 0 ) Laser.ranges.resize(scan->ranges.size());
     for (int i = 0; i < scan->ranges.size(); i++)
     {

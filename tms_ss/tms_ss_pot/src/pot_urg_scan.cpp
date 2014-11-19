@@ -25,7 +25,7 @@ ros::Subscriber sub;
 void LaserSensingCallback(const sensor_msgs::LaserScan::ConstPtr &scan)
 {
     pthread_mutex_lock(&mutex_laser);
-    //std::cout << "\ESC[2J" ;
+    std::cout << "\ESC[2J" ;
     ROS_INFO("start pot_urg_pot");
 
     sensor_msgs::LaserScan Laser;
