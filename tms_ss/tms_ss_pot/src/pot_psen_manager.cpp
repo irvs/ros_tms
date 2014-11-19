@@ -25,8 +25,8 @@ pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 #include <fstream>
 #include <string>
 
-signed int d_counter_r = 0;
-signed int d_counter_l = 0;
+signed int counter_r = 0;
+signed int counter_l = 0;
 int lrf_counter0_r = 0;
 int lrf_counter0_l = 0;
 int lrf_counter1_r = 0;
