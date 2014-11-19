@@ -155,7 +155,7 @@ void *Visualization( void *ptr )
                 marker.scale.z = 1.0;
 
                 int color = laser.m_pTarget[i]->id % 14;
-                std::cout << "laser.m_pTarget->id " << laser.m_pTarget[i]->id << std::endl;
+                std::cout << "laser.m_pTarget->id " << laser.m_pTarget[i]->id << "daaaaaaaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
                 marker.color.r = colorset[color][0];
                 marker.color.g = colorset[color][1];
                 marker.color.b = colorset[color][2];
@@ -349,6 +349,7 @@ void LaserSensingCallback(const sensor_msgs::LaserScan::ConstPtr &scan)
 {
     pthread_mutex_lock(&mutex_laser);
     int num = floor((scan->angle_max - scan->angle_min) / scan->angle_increment);
+
     if ( scanData.size() == 0 ) scanData.resize(num);
 
     for (int i = 0; i < num ; i++)
