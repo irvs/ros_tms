@@ -247,8 +247,13 @@ private:
 
   //----------------------------------------------------------------------------
   // dbWriteCallback function
-  void dbWriteCallback(const tms_msg_db::TmsdbStamped::ConstPtr& msg)
+  void dbWriteCallback(const ros::MessageEvent<tms_msg_db::TmsdbStamped const>& event)
   {
+    const std::string& publisher_name   = event.getPublisherName();
+    const tms_msg_db::TmsdbStamped::ConstPtr& msg = event.getMessage();
+
+    if(is_debug) ROS_INFO("publisher name = %s", publisher_name.c_str());
+
     int32_t msg_size;
     char select_query[1024];
     char insert_query[1024];
@@ -259,7 +264,8 @@ private:
     std::string temp_probability;
 
     msg_size = msg->tmsdb.size();
-    if(is_debug) ROS_INFO("msg_size = %d\n", msg_size);
+    if(is_debug) ROS_INFO("msg_size = %d", msg_size);
+
     for(int32_t i=0; i<msg_size; i++)
     {
       // Search the type, name, etc infomation in ID table
@@ -323,8 +329,9 @@ private:
 
       if (mysql_query(connector, insert_query))
       {
-        fprintf(stderr, "%s\n", mysql_error(connector));
-        ROS_INFO("Write error!\n");
+        ROS_INFO("Publisher name = %s", publisher_name.c_str());
+        ROS_INFO("DB write error!");
+        ROS_INFO("%s", mysql_error(connector));
       }
 
       //------------------------------------------------------------------------
@@ -340,8 +347,9 @@ private:
 
       if (mysql_query(connector, delete_query))
       {
-        ROS_ERROR("%s", mysql_error(connector));
-        ROS_ERROR("DB write error!");
+        ROS_INFO("Publisher name = %s", publisher_name.c_str());
+        ROS_INFO("DB write error!");
+        ROS_INFO("%s", mysql_error(connector));
       } 
 
       //------------------------------------------------------------------------
@@ -379,8 +387,9 @@ private:
 
       if (mysql_query(connector, insert_query))
       {
-        fprintf(stderr, "%s\n", mysql_error(connector));
-        ROS_INFO("Write error!\n");
+        ROS_INFO("Publisher name = %s", publisher_name.c_str());
+        ROS_INFO("DB write error!");
+        ROS_INFO("%s", mysql_error(connector));
       } 
     }
   }
