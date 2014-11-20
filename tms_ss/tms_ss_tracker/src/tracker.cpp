@@ -1,5 +1,5 @@
 //----------------------------------------------------------
-// @file   : tracker.cpp
+// @file   : tracker_double.cpp
 // @adder : Watanabe Yuuta 
 // @version: Ver0.0.1 (since 2014.05.02)
 // @date   : 2016.11.06
@@ -68,12 +68,12 @@ void *Visualization( void *ptr )
         {
             if (laser.m_pTarget[i] != NULL)
             {
-                if (laser.m_pTarget[i]->cnt < 10)
+                if (laser.m_pTarget[i]->cnt < 200)
                 {
                     //cout << laser.m_pTarget[i]->cnt << endl;
                     continue;
                 }
-                std::cout << "laser.m_pTarget " << laser.m_pTarget[i]->cnt << std::endl;
+                //std::cout << "laser.m_pTarget " << laser.m_pTarget[i]->cnt << std::endl;
                 ID =  (laser.m_pTarget[i]->id) % 20;
                 X  = -(laser.m_pTarget[i]->py) + 5200;
                 Y  =  (laser.m_pTarget[i]->px) + 100;
@@ -90,7 +90,7 @@ void *Visualization( void *ptr )
 
             }
         }
-        if (id - 3 > 0) std::cout << "Number of Markers " << id - 3 << std::endl;
+        //if (id - 3 > 0) std::cout << "Number of Markers " << id - 3 << std::endl;
 
         pthread_mutex_unlock(&mutex_target);
 
@@ -244,112 +244,33 @@ void *Processing( void *ptr )
 
                         laser.m_LRFClsPoints[n][i].x = cvmGet(laser.m_LRFClsPos[n][i], 0, 0) * 1000.0;
                         laser.m_LRFClsPoints[n][i].y = cvmGet(laser.m_LRFClsPos[n][i], 1, 0) * 1000.0;
-                        std::cout << n << " " << laser.m_LRFClsPoints[n][i].x << " " << laser.m_LRFClsPoints[n][i].y << std::endl;
+                        //std::cout << n << " " << laser.m_LRFClsPoints[n][i].x << " " << laser.m_LRFClsPoints[n][i].y << std::endl;
 
                         if (n == 0)
                         {
-                            std::cout << "itigou_push start！" << std::endl;
                             itigou_x.push_back(laser.m_LRFClsPoints[0][i].x);
                             itigou_y.push_back(laser.m_LRFClsPoints[0][i].y);
-                            std::cout << "itigou_push end！" << std::endl;
                         }
                         if (n == 1)
                         {
-                            std::cout << "nigou_push start！" << std::endl;
                             nigou_x.push_back(laser.m_LRFClsPoints[1][i].x);
                             nigou_y.push_back(laser.m_LRFClsPoints[1][i].y);
-                            std::cout << "nigou_push end！" << std::endl;
                         }
                     }
                 }
 
                 if (n == 1)
-                {
-                    std::cout << "OH！" << std::endl;
-                    it_x = itigou_x.end();
-                    it_y = itigou_y.end();
-                    if (nigou_x.size() > 3)
-                    {
-                        std::cout << "OK" << std::endl;
-                        for (int i = 0; i < nigou_x.size() ; i++)
-                        {
-                            std::cout << "Ok!" << std::endl;
-                            if (itigou_x.size() > 3)
-                            {
-                                std::cout << "OK!!" << std::endl;
-                                for (it_x = itigou_x.end(), it_y = itigou_y.end(); it_x != itigou_x.begin() - 1 ; --it_x, --it_y)
-                                {
-                                    double r = 10000;
-                                    r = sqrt(pow(*it_x - nigou_x[i], 2) + pow(*it_y - nigou_y[i], 2));
-
-                                    if (r < 450.0)
-                                    {
-                                        if (it_x == itigou_x.end())
-                                        {
-                                            std::cout << "1-1-1 start" << std::endl;
-                                            itigou_x.insert(it_x, nigou_x[i]);
-                                            itigou_y.insert(it_y, nigou_y[i]);
-                                            std::cout << "1-1-1 end" << std::endl;
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            std::cout << "1-1-2 start" << std::endl;
-                                            itigou_x.insert(it_x + 1, nigou_x[i]);
-                                            itigou_y.insert(it_y + 1, nigou_y[i]);
-                                            std::cout << "1-1-2 end" << std::endl;
-                                            break;
-                                        }
-                                    }
-
-                                    if (it_x == itigou_x.begin())
-                                    {
-                                        std::cout << "1-2 start" << std::endl;
-                                        itigou_x.insert(itigou_x.end(), nigou_x[i]);
-                                        itigou_y.insert(itigou_y.end(), nigou_y[i]);
-                                        std::cout << "1-2 end" << std::endl;
-                                        break;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                //nigou ari itigou nasi
-                                for (int i = 0; i < nigou_x.size() ; i++)
-                                {
-                                    std::cout << "1-3 start" << std::endl;
-                                    itigou_x.push_back(nigou_x[i]);
-                                    itigou_y.push_back(nigou_y[i]);
-                                    std::cout << "1-3 end" << std::endl;
-                                }
-                                break;
-                            }
-                        }
-                        //dainyuu
-
+                {   
+                    itigou_x.insert(itigou_x.begin(), nigou_x.begin(), nigou_x.end());
+                    itigou_y.insert(itigou_y.begin(), nigou_y.begin(), nigou_y.end());
                         laser.m_LRFClsPoints[0].clear();
                         laser.m_LRFClsPoints[0].resize(itigou_x.size());
                         for (int i = 0; i < itigou_x.size() ; i++)
                         {
-                            std::cout << "1-4-1 start" << std::endl;
                             laser.m_LRFClsPoints[0][i].x = itigou_x[i];
                             laser.m_LRFClsPoints[0][i].y = itigou_y[i];
-                            std::cout << "1-4-1 end" << std::endl;
                         }
-                    }
-                    else
-                    {
-                        // nigou nasi
-                        laser.m_LRFClsPoints[0].clear();
-                        laser.m_LRFClsPoints[0].resize(itigou_x.size());
-                        for (int i = 0; i < itigou_x.size() ; i++)
-                        {
-                            std::cout << "1-4-2 start" << std::endl;
-                            laser.m_LRFClsPoints[0][i].x = itigou_x[i];
-                            laser.m_LRFClsPoints[0][i].y = itigou_y[i];
-                            std::cout << "1-4-2 end" << std::endl;
-                        }
-                    }
+
 
                     itigou_x.clear();
                     itigou_y.clear();
@@ -360,18 +281,18 @@ void *Processing( void *ptr )
             }
 
         }
-        std::cout << "m_PF start！" << std::endl;
+
         pthread_mutex_lock(&mutex_target);
         m_PF.update(&laser);
         pthread_mutex_unlock(&mutex_target);
-        std::cout << "m_PF end！" << std::endl;
+
         ros::Time begin = ros::Time::now();
         if (m_PF.m_ParticleFilter.size() > 0) std::cout << "Time " << begin << " Number of PFs " << m_PF.m_ParticleFilter.size() << std::endl;
 
-        //if (!(iteration % 100)) laser.GetBackLRFDataGaussian();
+        if (!(iteration % 100000)) laser.GetBackLRFDataGaussian();
 
         r.sleep();
-        //iteration ++;
+        iteration ++;
     }
 
     cvReleaseMat(&Temp);
@@ -412,7 +333,7 @@ int main( int argc, char **argv )
     pthread_t thread_v;
     ros::MultiThreadedSpinner spinner(4);
 
-    ros::init(argc, argv, "tracker");
+    ros::init(argc, argv, "tracker_double");
     ros::NodeHandle n;
     ros::Publisher  pub  = n.advertise<tms_msg_ss::tracking_points>("tracking_points", 10);
     ros::Subscriber sub  = n.subscribe("/urg2/most_intense" , 10, LaserSensingCallback);
