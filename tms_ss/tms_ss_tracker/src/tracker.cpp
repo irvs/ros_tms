@@ -16,15 +16,14 @@
 pthread_mutex_t mutex_laser = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 
-//#include "opencv2/opencv.hpp"
 #include "opencv/cv.h"
 
 #include "define.h"
-#include "Target.h"
-#include "Laser.h"
+#include "target.h"
+#include "laser.h"
 
-#include "PF.h"
-#include "MultipleParticleFilter.h"
+#include "particle_filter.h"
+#include "multiple_particle_filter.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <string>

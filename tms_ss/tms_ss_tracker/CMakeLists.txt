@@ -29,14 +29,14 @@ include_directories(
 )
 
 add_library(tms_ss_tracker
-   src/Target.cpp
-   src/Laser.cpp
-   src/MultipleParticleFilter.cpp
-   src/PF.cpp
+   src/target.cpp
+   src/laser.cpp
+   src/multiple_particle_filter.cpp
+   src/particle_filter.cpp
  )
 
-add_executable(tracker src/tracker.cpp src/Target.cpp src/Laser.cpp src/MultipleParticleFilter.cpp src/PF.cpp)
-add_executable(tracker_d src/tracker_double.cpp src/Target.cpp src/Laser.cpp src/MultipleParticleFilter.cpp src/PF.cpp)
+add_executable(tracker src/tracker.cpp src/target.cpp src/laser.cpp src/multiple_particle_filter.cpp src/particle_filter.cpp)
+add_executable(tracker_d src/tracker_double.cpp src/target.cpp src/laser.cpp src/multiple_particle_filter.cpp src/particle_filter.cpp)
 
 add_dependencies(tracker DEPENDS tms_msg_ss_gencpp)
 add_dependencies(tracker_d DEPENDS tms_msg_ss_gencpp)
