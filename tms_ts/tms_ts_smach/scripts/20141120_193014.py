@@ -27,7 +27,7 @@ def main():
         smach.StateMachine.add('control0',
                            ServiceState('ts_state_control',
                                         ts_state_control,
-                                        request = ts_state_controlRequest(0, 0, 0, 0)),
+                                        request = ts_state_controlRequest(0, 0, 0, 0, "")),
                            transitions={'succeeded':'grasp1', 'aborted':'aborted', 'preempted':'preempted'})
 
         smach.StateMachine.add('grasp1',
@@ -39,7 +39,7 @@ def main():
         smach.StateMachine.add('control1',
                            ServiceState('ts_state_control',
                                         ts_state_control,
-                                        request = ts_state_controlRequest(0, 0, 0, 0)),
+                                        request = ts_state_controlRequest(0, 0, 0, 0, "")),
                            transitions={'succeeded':'give2', 'aborted':'aborted', 'preempted':'preempted'})
 
         smach.StateMachine.add('give2',
@@ -51,19 +51,19 @@ def main():
         smach.StateMachine.add('control2',
                            ServiceState('ts_state_control',
                                         ts_state_control,
-                                        request = ts_state_controlRequest(0, 0, 0, 0)),
+                                        request = ts_state_controlRequest(0, 0, 0, 0, "")),
                            transitions={'succeeded':'move3', 'aborted':'aborted', 'preempted':'preempted'})
 
         smach.StateMachine.add('move3',
                            ServiceState('rp_cmd',
                                         rp_cmd,
-                                        request = rp_cmdRequest(9001, True, 2003, [6011])),
+                                        request = rp_cmdRequest(9001, True, 2003, [0])),
                            transitions={'succeeded':'control3'})
 
         smach.StateMachine.add('control3',
                            ServiceState('ts_state_control',
                                         ts_state_control,
-                                        request = ts_state_controlRequest(0, 0, 0, 0)),
+                                        request = ts_state_controlRequest(0, 0, 0, 0, "")),
                            transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
 
     sis = smach_ros.IntrospectionServer('tms_ts_smach_test', sm_root, '/ROS_TMS')
