@@ -520,7 +520,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    	}
 			    default:
 			    	{
-						s_srv.request.error_msg = "No such robot in TMS_DB";
+						s_srv.request.error_msg = "Unsupported robot in move function";
 						state_client.call(s_srv);
 						return false;
 			    	}
@@ -566,6 +566,9 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 
 bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 	tms_msg_db::TmsdbGetData srv;
+	tms_msg_ts::ts_state_control s_srv;
+	s_srv.request.type = 1; // for subtask state update;
+	s_srv.request.state = 0;
 
 	grasp::TmsRpBar::planning_mode_ = 1;
 	if ((sd.robot_id == 2002 || sd.robot_id == 2003) && sd.type == true) {
@@ -600,19 +603,20 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 			grasp::PlanBase::instance()->SetGraspedObject(item);
 			ROS_INFO("%s is grasping_ object.\n", grasp::PlanBase::instance()->targetObject->bodyItemObject->name().c_str());
 			// set environment
-//						int furniture_id = srv.response.tmsdb[ref_i].place;
-//						cout << furniture_id << endl;
-//						if (furniture_id > 6000 && furniture_id < 7000) {
-//							srv.request.tmsdb.id = furniture_id;
-//							if(get_data_client_.call(srv)) {
-//								std::string furniture_name = srv.response.tmsdb[0].name;
-//								cnoid::BodyItemPtr item2 = trc.objTag2Item()[furniture_name];
-//								grasp::PlanBase::instance()->SetEnvironment(item2);
-//								ROS_INFO("%s is sorrounding environment.\n", furniture_name.c_str());
-//							}
-//						}
+			int furniture_id = srv.response.tmsdb[ref_i].place;
+			cout << furniture_id << endl;
+			if (furniture_id > 6000 && furniture_id < 7000) {
+				srv.request.tmsdb.id = furniture_id;
+				if(get_data_client_.call(srv)) {
+					std::string furniture_name = srv.response.tmsdb[0].name;
+					cnoid::BodyItemPtr item2 = trc.objTag2Item()[furniture_name];
+					grasp::PlanBase::instance()->SetEnvironment(item2);
+					ROS_INFO("%s is sorrounding environment.\n", furniture_name.c_str());
+				}
+			}
 		} else {
-			ROS_ERROR("Cannot get object's position\n");
+			s_srv.request.error_msg = "Cannot get object's position";
+			state_client.call(s_srv);
 			return false;
 		}
 	} else {
@@ -620,7 +624,8 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 	}
 
 	if( !pb->targetObject || !pb->robTag2Arm.size()) {
-		os_ <<  "set object and robot" << endl;
+		s_srv.request.error_msg = "Object and robot is not set now";
+		state_client.call(s_srv);
 		return false;
 	}
 	for(int i=0;i<pb->bodyItemRobot()->body()->numJoints();i++){ // If initial position is not collided, it is stored as
@@ -686,13 +691,24 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 		break;
 	}
 	default:
-		break;
+		s_srv.request.error_msg = "Unsupported robot in grasp function";
+		state_client.call(s_srv);
+		return false;
 	}
 	grasp::TmsRpBar::planning_mode_ = 0;
+
+	//	apprise TS_control of succeeding subtask execution
+	s_srv.request.state = 1;
+	state_client.call(s_srv);
+	return true;
 }
 
 bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 	tms_msg_rp::rps_voronoi_path_planning rp_srv;
+	tms_msg_ts::ts_state_control s_srv;
+	s_srv.request.type = 1; // for subtask state update;
+	s_srv.request.state = 0;
+
 	grasp::TmsRpBar::planning_mode_ = 1;
 	grasp::TmsRpBar::grasping_ = 1; // switching model
 
@@ -720,7 +736,8 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 			goal_joint[j] = gop_srv.response.joint_angle_array.at(0).joint_angle.at(j);
 		for (int j=0; j<9; j++) goal_arg[j+9] = goal_joint[j];
 	} else {
-		ROS_INFO("Cannot call give_object_service!\n");
+		s_srv.request.error_msg = "Failed to call give_object_service";
+		state_client.call(s_srv);
 		return false;
 	}
 
@@ -879,7 +896,8 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 	}
 	default:
 	{
-		ROS_ERROR("No such robot in TMS_DB!\n");
+		s_srv.request.error_msg = "Unsupported robot in give function";
+		state_client.call(s_srv);
 		return false;
 	}
 	}
@@ -890,56 +908,96 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 	}
 	//grasp::TmsRpBar::grasping_ = 0;
 	grasp::TmsRpBar::planning_mode_ = 0;
+
+	//	apprise TS_control of succeeding subtask execution
+	s_srv.request.state = 1;
+	state_client.call(s_srv);
+	return true;
 }
 
 bool tms_rp::TmsRpSubtask::open_ref(void) {
 	tms_msg_rs::rs_home_appliances ref_srv;
+	tms_msg_ts::ts_state_control s_srv;
+	s_srv.request.type = 1; // for subtask state update;
+	s_srv.request.state = 0;
+
 	ref_srv.request.id = 2009;
 	ref_srv.request.service = 1;
 	if (refrigerator_client.call(ref_srv)) {}
 	else {
-	    ROS_ERROR("Failed to call service control_refrigerator");
+		s_srv.request.error_msg = "Failed to call service control_refrigerator";
+		state_client.call(s_srv);
 	    return false;
 	}
+	//	apprise TS_control of succeeding subtask execution
+	s_srv.request.state = 1;
+	state_client.call(s_srv);
+	return true;
 }
 
 bool tms_rp::TmsRpSubtask::close_ref(void) {
 	tms_msg_rs::rs_home_appliances ref_srv;
+	tms_msg_ts::ts_state_control s_srv;
+	s_srv.request.type = 1; // for subtask state update;
+	s_srv.request.state = 0;
+
 	ref_srv.request.id = 2009;
 	ref_srv.request.service = 0;
 	if (refrigerator_client.call(ref_srv)) {}
 	else {
-	    ROS_ERROR("Failed to call service control_refrigerator");
+		s_srv.request.error_msg = "Failed to call service control_refrigerator";
+		state_client.call(s_srv);
 	    return false;
 	}
+	//	apprise TS_control of succeeding subtask execution
+	s_srv.request.state = 1;
+	state_client.call(s_srv);
+	return true;
 }
 //------------------------------------------------------------------------------
 bool tms_rp::TmsRpSubtask::random_move(void) {
+	tms_msg_ts::ts_state_control s_srv;
+	s_srv.request.type = 1; // for subtask state update;
+	s_srv.request.state = 0;
+
 	int ret;
 	const char buf[] = "roslaunch kobuki_random_walker safe_random_walker_app.launch\n";
 	ROS_INFO("%s\n", buf);
 
 	ret = std::system(buf);
 	if(ret != 0){
-		ROS_ERROR("Command Error\n");
+		s_srv.request.error_msg = "Excute command error";
+		state_client.call(s_srv);
 		return false;
 	  }
-	// end determination
+	// ======= add end determination? =======
+	//	apprise TS_control of succeeding subtask execution
+	s_srv.request.state = 1;
+	state_client.call(s_srv);
 	return true;
 }
 
 //------------------------------------------------------------------------------
 bool tms_rp::TmsRpSubtask::sensing(void) {
+	tms_msg_ts::ts_state_control s_srv;
+	s_srv.request.type = 1; // for subtask state update;
+	s_srv.request.state = 0;
+
 	int ret;
 	const char buf[] = "rosrun tms_ss_ods_person_detection ods_realtime_persondt\n";
 	ROS_INFO("%s\n", buf);
 
 	ret = std::system(buf);
 	if(ret != 0){
-		ROS_ERROR("Command Error\n");
+		s_srv.request.error_msg = "Excute command error";
+		state_client.call(s_srv);
 		return false;
 	}
-	// end determination
+	// ======= add end determination? =======
+	return true;
+	//	apprise TS_control of succeeding subtask execution
+	s_srv.request.state = 1;
+	state_client.call(s_srv);
 	return true;
 }
 
