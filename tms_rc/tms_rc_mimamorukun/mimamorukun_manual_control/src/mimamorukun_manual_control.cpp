@@ -25,7 +25,7 @@
 
 using namespace std;
 
-ClientSocket  client_socket ("192.168.11.99", 54300 );
+ClientSocket  client_socket (/*""*/"192.168.11.99", 54300 );
 const int     ENC_MAX  = 3932159;
 const int     SPEED_MAX = 32767;
 const float   DIST_PER_PULSE = 0.552486;  //mm par pulse
@@ -93,12 +93,14 @@ void MachinePose_s::updateVicon(){
     // printf("line:%s\n",__LINE__);
     tms_msg_db::TmsdbGetData srv;
     srv.request.tmsdb.id = 2007;
-    if(db_client.call(srv)){
+    if(! db_client.call(srv)){
+        ROS_ERROR("Failed to get vicon data from DB via tms_db_reader");
+    }else if(srv.response.tmsdb.empty()){
+    	ROS_ERROR("DB response empty");
+    }else{
         this->pos_vicon.x = srv.response.tmsdb[0].x;
         this->pos_vicon.y = srv.response.tmsdb[0].y;
-        this->pos_vicon.theta = srv.response.tmsdb[0].ry;//Deg2Rad((double)srv.response.tmsdb[0].ry);
-    }else{
-        ROS_ERROR("Failed to get vicon data from DB via tms_db_reader");
+        this->pos_vicon.theta = Deg2Rad(srv.response.tmsdb[0].ry);//Deg2Rad((double)srv.response.tmsdb[0].ry);        
     }
     return ;
 }
@@ -262,27 +264,31 @@ void MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/){
     const double KDang  = 0;
     const double KPdist = 2.0;
     const double KDdist = 0;
-    
+
     double errorX = this->tgtPose.x - this->pos_vicon.x;
     double errorY = this->tgtPose.y - this->pos_vicon.y;
     double targetT = atan2(errorY,errorX);
-
+ 
     double theta = this->pos_vicon.theta;
     double errorNX = errorX * cos(-theta) -  errorY * sin(-theta);
-    // double errorNY = errorX * sin(-theta) +  errorY * cos(-theta); 
-    double errorNT = nomalizeAng(targetT - Deg2Rad(theta));
+    //double errorNY = errorX * sin(-theta) +  errorY * cos(-theta); 
+    double errorNT = nomalizeAng(targetT - theta);
 
-    double tmp_spd  = KPdist * errorX;
+
+   if(this->tgtPose.x==0.0 && this->tgtPose.y==0.0){ //mokutekiti
+    	errorNX /*= errorNY */= errorNT =  0.0;
+    }
+    double tmp_spd  = KPdist * errorNX;
     double tmp_turn = KPang * Rad2Deg(errorNT);
-    tmp_spd =  Limit(tmp_spd,2000,-2000);
-    tmp_turn = Limit(tmp_turn,90,-90);
+    tmp_spd =  Limit(tmp_spd,100,-100);
+    tmp_turn = Limit(tmp_turn,30,-30);
     double distance = sqrt(sqr(errorX)+sqr(errorY));
     if (distance <= 200){
         tmp_spd = 0.0;
     }
-    printf("spd:%6.2lf turn:%4.1lf",tmp_spd,tmp_turn);
+    printf("spd:%+8.2lf turn:%+4.1lf",tmp_spd,tmp_turn);
     this->tgtTwist.linear.x = tmp_spd;
-    this->tgtTwist.angular.y= Deg2Rad(tmp_turn);
+    this->tgtTwist.angular.z= Deg2Rad(tmp_turn);
 }
 
 
@@ -297,7 +303,7 @@ int main(int argc, char **argv){
     string s_Kp_,s_Ki_,s_Kd_;
     ros::NodeHandle nh_param("~");
     nh_param.param<int>("Kp",Kp_,4800);
-    nh_param.param<int>("Ki",Ki_,30/*100*/);
+    nh_param.param<int>("Ki",Ki_,/*30*/100);
     nh_param.param<int>("Kd",Kd_,40000);
     s_Kp_ = boost::lexical_cast<string>(Kp_);
     s_Ki_ = boost::lexical_cast<string>(Ki_);
@@ -329,7 +335,7 @@ int main(int argc, char **argv){
     ros::Rate   r(ROS_RATE);
     while(n.ok()){
         // ROS_INFO("");
-        //spinWheel(/*joy_cmd_spd,joy_cmd_turn*/);
+        spinWheel(/*joy_cmd_spd,joy_cmd_turn*/);
         mchn_pose.updateVicon();
         mchn_pose.goPose();
         //mchn_pose.updateOdom();
