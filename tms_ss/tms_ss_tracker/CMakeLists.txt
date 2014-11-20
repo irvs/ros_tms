@@ -36,11 +36,8 @@ add_library(tms_ss_tracker
  )
 
 add_executable(tracker src/tracker.cpp src/target.cpp src/laser.cpp src/multiple_particle_filter.cpp src/particle_filter.cpp)
-add_executable(tracker_d src/tracker_double.cpp src/target.cpp src/laser.cpp src/multiple_particle_filter.cpp src/particle_filter.cpp)
 
 add_dependencies(tracker DEPENDS tms_msg_ss_gencpp)
-add_dependencies(tracker_d DEPENDS tms_msg_ss_gencpp)
 
 target_link_libraries(tracker ${catkin_LIBRARIES})
-target_link_libraries(tracker_d ${catkin_LIBRARIES})
 
