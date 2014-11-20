@@ -30,7 +30,7 @@
 
 class TmsTsMaster {
 public:
-	// コマンド生成用
+	// for generating commands
 	static std::string run_nodelet_manager;
 	static std::string rosrun;
 	static std::string node_name;
@@ -52,34 +52,32 @@ public:
 		int user_id;
 		int place_id;
 //		// 条件
-		int priority; // 優先度,緊急性を表す
-//		long long int time; // 定時タスク用
-//		int dependence;  // タスク依存関係
+		int priority;
+//		long long int time; // for punctual task
+//		int dependence;  // task dependency
 	};
 
 	struct TaskManager {
-//		static string num;
 		std::string num;
 		bool flag;
 	};
-//	list<Task> task_list_;
 	TaskManager task_manager[MAX_TASK_NUM*2];
+
 private:
-	// ファンクタを作ってソート
+	// sort
 	struct pred {
 	    bool operator()(const Task& l, const Task& r) const {
 	    	return l.priority == r.priority ? l.rostime < r.rostime : l.priority < r.priority;
 	    }
 	};
 
-	//std::string IntToString(int number);
 	bool ts_master_callback(tms_msg_ts::ts_req::Request &req,
 			tms_msg_ts::ts_req::Response &res);
 	bool stsCallback(tms_msg_ts::ts_state_control::Request &req,
 				tms_msg_ts::ts_state_control::Response &res);
 
-	boost::mutex mtx; // スレッドの排他制御用
-	static int state_condition;
+	boost::mutex mtx;
+	static int state_condition, loop_counter;
 	ros::ServiceServer service, state_control_srv;
 };
 

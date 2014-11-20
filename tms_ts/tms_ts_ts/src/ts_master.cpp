@@ -3,6 +3,7 @@
 #include <tms_ts/ts_master.hpp>
 
 int TmsTsMaster::state_condition = -1;
+int TmsTsMaster::loop_counter = 0;
 
 std::list<TmsTsMaster::Task> task_list_;
 // return first data of the list
@@ -162,28 +163,53 @@ bool TmsTsMaster::stsCallback(tms_msg_ts::ts_state_control::Request &req,
 	if (req.type == 0) {
 		// judge segment(from TS)
 		if (req.cc_subtasks == 0) {
-			while (state_condition == -1) {} // TIMEOUT
+			while (loop_counter < 1) {} // TIMEOUT
 			if (state_condition == 0) {
 				state_condition = -1;
+				loop_counter = 0;
 				res.result = 1;
 				return true;
+			} else {
+				ROS_ERROR("Sequential task stopped due to subtask return false");
+				state_condition = -1;
+				loop_counter = 0;
+				res.result = 0;
+				return false;
 			}
 		} else if (req.cc_subtasks >= 2) {
-			while (state_condition < (req.cc_subtasks-1)) {} // TIMEOUT
+			while (loop_counter < req.cc_subtasks) {} // TIMEOUT
 			if (state_condition == (req.cc_subtasks-1)) {
 				state_condition = -1;
+				loop_counter = 0;
 				res.result = 1;
 				return true;
+			} else {
+				ROS_ERROR("Concurrence task stopped due to subtask return false");
+				state_condition = -1;
+				loop_counter = 0;
+				res.result = 0;
+				return false;
 			}
-		} else
+		} else {
+			ROS_ERROR("Illegal subtasks number.");
+			state_condition = -1;
+			loop_counter = 0;
 			return false;
+		}
 	} else if (req.type == 1) {
 		// update segment(from RP)
-		if (req.state == 0)
+		if (req.state == 0) {
+			ROS_ERROR("Error %d: %s", req.state, req.error_msg.c_str());
+			state_condition = -1;
+			loop_counter++;
 			return false;
+		}
 		state_condition += req.state;
-	} else
+		loop_counter++;
+	} else {
+		ROS_ERROR("Illegal type number.");
 		return false;
+	}
 }
 
 int main(int argc, char **argv)
