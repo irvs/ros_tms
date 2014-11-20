@@ -1810,6 +1810,12 @@ void TmsRpBar::simulation()
   os_ << "production_version_ = " << production_version_ << endl;
   tms_rp::TmsRpVoronoiMap static_and_dynamic_map;
 
+  callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal4"));
+  callSynchronously(bind(&TmsRpController::disappear,trc_,"kobuki"));
+  callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp"));
+  callSynchronously(bind(&TmsRpController::disappear,trc_,"wheelchair"));
+  callSynchronously(bind(&TmsRpController::disappear,trc_,"ardrone"));
+
   static ros::Rate loop_rate(20); // 0.05sec
   while (ros::ok())
   {

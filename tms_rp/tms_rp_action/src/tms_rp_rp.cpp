@@ -110,411 +110,77 @@ bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string& r
 bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
                       tms_msg_rp::rp_cmd::Response &res)
 {
-	bool type = grasp::TmsRpBar::production_version_/*req.type*/;
-	int command = req.command;
-	int robot_id = req.robot_id;
-	int arg_type = (int)req.arg.at(0);
-	double argument[req.arg.size()];
-	for (int i=0; i<req.arg.size(); i++) {
-		argument[i] = req.arg.at(i);
-	}
+	SubtaskData sd;
+	sd.type = grasp::TmsRpBar::production_version_/*req.type*/;
+	sd.robot_id = req.robot_id;
+	sd.arg_type = (int)req.arg.at(0);
+	sd.v_arg.clear();
+	for (int i=0; i<req.arg.size(); i++)
+		sd.v_arg.push_back(req.arg.at(i));
+
 	grasp::TmsRpBar::grasping_ = 0;
 
-	tms_msg_db::TmsdbGetData srv;
-	tms_msg_rp::rps_voronoi_path_planning rp_srv;
-
-	double arg[1] = {0.0};
-	if ((robot_id==2002 || robot_id==2003) && type==true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg);
-
-	switch (command) {
+	switch (req.command) {
 		case 9001:
-		{// move
-			boost::thread th(boost::bind(&TmsRpSubtask::move, this, type, robot_id, arg_type, argument));
+		{   // move
+			ROS_INFO("[tms_rp]move command\n");
+			boost::thread mo_th(boost::bind(&TmsRpSubtask::move, this, sd));
 			break;
 		}
 		case 9002:
 		{   // grasp
 			ROS_INFO("[tms_rp]grasp command\n");
-
-			grasp::TmsRpBar::planning_mode_ = 1;
-			if ((robot_id == 2002 || robot_id == 2003) && type == true) {
-				sp5_control(type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4);
-				sp5_control(type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg);
-				sp5_control(type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12);
-			}
-
-			grasp::PlanBase *pb = grasp::PlanBase::instance();
-			std::vector<pathInfo> trajectory;
-			int state;
-			std::vector<double> begin;
-			std::vector<double> end;
-			// object's position
-			std::vector<double> obj_pos;
-			std::vector<double> obj_rot;
-//			cnoid::Vector3 obj_pos;
-//			cnoid::Matrix3 obj_rot;
-
-			grasp::TmsRpController trc;
-
-			// SET OBJECT objectID : 7001~7999
-			if(arg_type > 7000 && arg_type < 8000) {
-				srv.request.tmsdb.id = arg_type;
-				if (get_data_client_.call(srv)) {
-					int ref_i=0;
-					for (int j=0; j<srv.response.tmsdb.size()-1; j++) {
-						if (srv.response.tmsdb[j].time < srv.response.tmsdb[j+1].time) ref_i = j+1;
-					}
-					std::string obj_name = srv.response.tmsdb[ref_i].name;
-					cnoid::BodyItemPtr item = trc.objTag2Item()[obj_name];
-					grasp::PlanBase::instance()->SetGraspedObject(item);
-					ROS_INFO("%s is grasping_ object.\n", grasp::PlanBase::instance()->targetObject->bodyItemObject->name().c_str());
-					// set environment
-//						int furniture_id = srv.response.tmsdb[ref_i].place;
-//						cout << furniture_id << endl;
-//						if (furniture_id > 6000 && furniture_id < 7000) {
-//							srv.request.tmsdb.id = furniture_id;
-//							if(get_data_client_.call(srv)) {
-//								std::string furniture_name = srv.response.tmsdb[0].name;
-//								cnoid::BodyItemPtr item2 = trc.objTag2Item()[furniture_name];
-//								grasp::PlanBase::instance()->SetEnvironment(item2);
-//								ROS_INFO("%s is sorrounding environment.\n", furniture_name.c_str());
-//							}
-//						}
-				} else {
-					ROS_ERROR("Cannot get object's position\n");
-					return false;
-				}
-			} else {
-				ROS_INFO("Robot cannot grasp this object! Wrong id:%d\n", arg_type);
-			}
-
-			if( !pb->targetObject || !pb->robTag2Arm.size()) {
-				os_ <<  "set object and robot" << endl;
-				return false;
-			}
-			for(int i=0;i<pb->bodyItemRobot()->body()->numJoints();i++){ // If initial position is not collided, it is stored as
-				double q = pb->bodyItemRobot()->body()->joint(i)->q(); // present position
-				begin.push_back(q);
-				end.push_back(q);
-			}
-			cout << "set begin and end posture." << endl;
-
-			grasp::TmsRpController::instance()->setTolerance(0.05);
-			cout << "set tolerance." << endl;
-			grasp::TmsRpController::instance()->graspPathPlanStart_(0, begin, end, pb->targetArmFinger->name,
-					pb->targetObject->name(), 1, &trajectory, &state, &obj_pos, &obj_rot);
-
-			double arg[13];
-			cnoid::Vector3 rotation, r_rotation;
-
-			arg[0] = trajectory.back().robotPos(0)*1000; // m -> mm
-			arg[1] = trajectory.back().robotPos(1)*1000;
-			r_rotation = grasp::rpyFromRot(trajectory.back().robotOri);
-			arg[2] = rad2deg(r_rotation(2));
-			arg[3] = 2;
-
-			pb->calcForwardKinematics();
-			pb->targetObject->objVisPos = pb->object()->p();
-			pb->targetObject->objVisRot = pb->object()->R();
-
-			rotation = grasp::rpyFromRot(pb->targetObject->objVisRot);
-			ROS_INFO("object_x=%fm,y=%fm, z=%f\n", pb->targetObject->objVisPos(0), pb->targetObject->objVisPos(1), pb->targetObject->objVisPos(2));
-			ROS_INFO("object_rr=%f,rp=%f, ry=%f\n", rotation(0), rotation(1), rotation(2));
-
-			arg[4] = 7001; // DBに，object_nameに一致するIDを返す命令を追加してもらう.
-			arg[5] = pb->targetObject->objVisPos(0)*1000; // m -> mm;
-			arg[6] = pb->targetObject->objVisPos(1)*1000;
-			arg[7] = pb->targetObject->objVisPos(2)*1000;
-			arg[8] = rad2deg(rotation(0));
-			arg[9] = rad2deg(rotation(1));
-			arg[10] = rad2deg(rotation(2));
-
-			arg[11] = robot_id;// place
-			arg[12] = 1;// state
-
-			switch (robot_id) {
-			case 2002:
-			{
-				callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
-
-				if (type == true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg);
-				else {
-					callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
-					sleep(1);
-				}
-				break;
-			}
-			case 2006:
-			{
-				callSynchronously(bind(&TmsRpSubtask::kxp_control,this, type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
-
-				if (type == false) {
-					callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
-					sleep(1);
-				}
-				break;
-			}
-			default:
-				break;
-			}
-			grasp::TmsRpBar::planning_mode_ = 0;
-
+			boost::thread gr_th(boost::bind(&TmsRpSubtask::grasp, this, sd));
 			break;
 		}
 		case 9003:
 		{   // give
 			ROS_INFO("[tms_rp]give command\n");
-			grasp::TmsRpBar::planning_mode_ = 1;
-			grasp::TmsRpBar::grasping_ = 1; // switching model
-
-			// call service for give_obj_planning
-			tms_msg_rp::rps_goal_planning gop_srv;
-			gop_srv.request.robot_id = robot_id;
-			gop_srv.request.target_id = arg_type; // person's ID
-			ROS_INFO("robot_id:%d, person_id:%d\n",gop_srv.request.robot_id, gop_srv.request.target_id);
-
-			double goal_arg[19] = {-1,-1,-1,-1,-1,-1,0,0,90,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
-			double goal_joint[18];
-
-			if (give_obj_client.call(gop_srv)) {
-				if (gop_srv.response.goal_pos.size() != 0) {
-					goal_arg[0] = gop_srv.response.goal_pos[0].x;
-					goal_arg[1] = gop_srv.response.goal_pos[0].y;
-					goal_arg[2] = gop_srv.response.goal_pos[0].th;
-					ROS_INFO("goal_x:%fmm,goal_y:%fmm,goal_th:%fdeg\n", goal_arg[0], goal_arg[1], goal_arg[2]);
-					goal_arg[3] = gop_srv.response.target_pos.x;
-					goal_arg[4] = gop_srv.response.target_pos.y;
-					goal_arg[5] = gop_srv.response.target_pos.z;
-				}
-				// robot's joint angles(j0~j17)
-				for (int j=0; j<gop_srv.response.joint_angle_array.at(0).joint_angle.size(); j++)
-					goal_joint[j] = gop_srv.response.joint_angle_array.at(0).joint_angle.at(j);
-				for (int j=0; j<9; j++) goal_arg[j+9] = goal_joint[j];
-			} else {
-				ROS_INFO("Cannot call give_object_service!\n");
-				return false;
-			}
-
-			// move base
-			rp_srv.request.robot_id = robot_id;
-			std::string robot_name("");
-			get_robot_pos(type, robot_id, robot_name, rp_srv);
-
-			rp_srv.request.goal_pos.x = goal_arg[0];
-			rp_srv.request.goal_pos.y = goal_arg[1];
-			rp_srv.request.goal_pos.th = goal_arg[2];
-
-			switch (robot_id) {
-			case 2002: // smartpal5_1
-			{
-				if (voronoi_path_planning_client_.call(rp_srv)) {
-					os_ << "result: " << rp_srv.response.success << " message: " << rp_srv.response.message << endl;
-					if (rp_srv.response.VoronoiPath.size()!=0) {
-						double arg[13];
-						grasp::PlanBase *pb = grasp::PlanBase::instance();
-
-						pb->setGraspingState(grasp::PlanBase::GRASPING);
-						for (int i=0; i< rp_srv.response.VoronoiPath.size(); i++) {
-							arg[0] = rp_srv.response.VoronoiPath[i].x;
-							arg[1] = rp_srv.response.VoronoiPath[i].y;
-							arg[2] = rp_srv.response.VoronoiPath[i].th;
-
-							callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
-				    		if (type == true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg);
-				    		else {
-				    			double rPosX = arg[0]/1000;
-				    			double rPosY = arg[1]/1000;
-				    			double rPosZ = 0;
-				    			cnoid::Vector3 rpy (0, 0, deg2rad(arg[2]));
-				    			cnoid::Matrix3 rot = grasp::rotFromRpy(rpy);
-
-							callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"smartpal5_1"));
-							callSynchronously(bind(&grasp::TmsRpController::setPos,trc_,"smartpal5_1",cnoid::Vector3(rPosX,rPosY,rPosZ), rot));
-				    		}
-
-				    		pb->bodyItemRobot()->body()->calcForwardKinematics();
-
-				    		cnoid::Vector3 position;
-							cnoid::Vector3 rotation;
-				    		rotation = grasp::rpyFromRot(pb->fingers(0)->tip->R()*(pb->targetArmFinger->objectPalmRot));
-				    		position = pb->fingers(0)->tip->p()+pb->fingers(0)->tip->R()*pb->targetArmFinger->objectPalmPos;
-				    		//callSynchronously(bind(&grasp::PlanBase::flush,pb));
-
-							ROS_INFO("robot_x=%f,y=%f,z=%f", arg[0], arg[1], arg[2]);
-							ROS_INFO("object_x=%f,y=%f,z=%f,rr=%f,rp=%f,ry=%f\n", position(0), position(1), position(2), rad2deg(rotation(0)), rad2deg(rotation(1)), rad2deg(rotation(2)));
-
-							tms_msg_db::TmsdbGetData name_srv;
-							name_srv.request.tmsdb.name = pb->targetObject->bodyItemObject->name();
-							if(get_data_client_.call(name_srv))
-							arg[3] = 2; // robot_state
-							arg[4] = (double)name_srv.response.tmsdb[0].id; // obj_id
-							arg[5] = position(0)*1000; // m -> mm;
-							arg[6] = position(1)*1000;
-							arg[7] = position(2)*1000;
-							arg[8] = rad2deg(rotation(0));
-							arg[9] = rad2deg(rotation(1));
-							arg[10] = rad2deg(rotation(2));
-							arg[11] = robot_id;
-							arg[12] = 2; // obj_state
-							callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
-
-				    		if (type == true) sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg);
-				    		else {
-				    			sleep(1);
-							callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
-				    			sleep(1);
-				    		}
-						}
-					}
-				}
-				// move joint
-				callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_ALL, CMD_CALC_BACKGROUND, 19, goal_arg));
-
-				break;
-			}
-			case 2006:
-			{
-				if (voronoi_path_planning_client_.call(rp_srv)) {
-					os_ << "result: " << rp_srv.response.success << " message: " << rp_srv.response.message << endl;
-					if (rp_srv.response.VoronoiPath.size()!=0) {
-						double arg[13];
-						grasp::PlanBase *pb = grasp::PlanBase::instance();
-
-						pb->setGraspingState(grasp::PlanBase::GRASPING);
-						for (int i=0; i< rp_srv.response.VoronoiPath.size(); i++) {
-							arg[0] = rp_srv.response.VoronoiPath[i].x;
-							arg[1] = rp_srv.response.VoronoiPath[i].y;
-							arg[2] = rp_srv.response.VoronoiPath[i].th;
-							tms_msg_rc::tms_rc_pmove kxp_srv;
-							kxp_srv.request.w_x = arg[0];
-							kxp_srv.request.w_y = arg[1];
-							kxp_srv.request.w_th = arg[2];
-							if (kxp_mbase_client.call(kxp_srv)) ROS_INFO("result: %d", kxp_srv.response.success);
-							else                  ROS_ERROR("Failed to call service kxp_mbase");
-
-							if (type == false) {
-								double rPosX = arg[0]/1000;
-				    			double rPosY = arg[1]/1000;
-				    			double rPosZ = 0;
-				    			cnoid::Vector3 rpy (0, 0, deg2rad(arg[2]));
-				    			cnoid::Matrix3 rot = grasp::rotFromRpy(rpy);
-
-							callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"kxp"));
-							callSynchronously(bind(&grasp::TmsRpController::setPos,trc_,"kxp",cnoid::Vector3(rPosX,rPosY,rPosZ), rot));
-							}
-
-				    		pb->bodyItemRobot()->body()->calcForwardKinematics();
-
-				    		cnoid::Vector3 position;
-							cnoid::Vector3 rotation;
-				    		rotation = grasp::rpyFromRot(pb->fingers(0)->tip->R()*(pb->targetArmFinger->objectPalmRot));
-				    		position = pb->fingers(0)->tip->p()+pb->fingers(0)->tip->R()*pb->targetArmFinger->objectPalmPos;
-				    		//callSynchronously(bind(&grasp::PlanBase::flush,pb));
-
-							ROS_INFO("robot_x=%f,y=%f,z=%f", arg[0], arg[1], arg[2]);
-							ROS_INFO("object_x=%f,y=%f,z=%f,rr=%f,rp=%f,ry=%f\n", position(0), position(1), position(2), rad2deg(rotation(0)), rad2deg(rotation(1)), rad2deg(rotation(2)));
-
-							tms_msg_db::TmsdbGetData name_srv;
-							name_srv.request.tmsdb.name = pb->targetObject->bodyItemObject->name();
-							if(get_data_client_.call(name_srv))
-							arg[3] = 2; // robot_state
-							arg[4] = (double)name_srv.response.tmsdb[0].id; // obj_id
-							arg[5] = position(0)*1000; // m -> mm;
-							arg[6] = position(1)*1000;
-//							arg[7] = position(2)*1000;
-							arg[7] = -1;
-							arg[8] = rad2deg(rotation(0));
-							arg[9] = rad2deg(rotation(1));
-							arg[10] = rad2deg(rotation(2));
-							arg[11] = robot_id;
-							arg[12] = 2; // obj_state
-							callSynchronously(bind(&TmsRpSubtask::kxp_control,this, type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
-
-				    		if (type == false) {
-				    			sleep(1);
-							callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
-				    			sleep(1);
-				    		}
-						}
-					}
-				}
-
-//				goal_arg[11] = 0.0;
-//				goal_arg[12] = 0.0;
-//				goal_arg[13] = 0.0;
-//				goal_arg[14] = 37.0; // deg
-//				goal_arg[15] = 0.0;
-				// 関節角遷移
-//				callSynchronously(bind(&TmsRpBar::kxp_control,this, type, UNIT_ALL, CMD_CALC_BACKGROUND, 19, goal_arg));
-				break;
-			}
-			default:
-	    	{
-	    		ROS_ERROR("No such robot in TMS_DB!\n");
-	    		return false;
-	    	}
-			}
-			if (type == false) {
-				sleep(1);
-				callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
-				sleep(1);
-			}
-			//grasp::TmsRpBar::grasping_ = 0;
-			grasp::TmsRpBar::planning_mode_ = 0;
+			boost::thread gi_th(boost::bind(&TmsRpSubtask::give, this, sd));
 		    break;
 		}
-		case 9004: // open the refrigerator
-		{
-			if (robot_id != 2009) {
+		case 9004:
+		{   // open the refrigerator
+			ROS_INFO("[tms_rp]open command\n");
+			if (sd.robot_id != 2009) {
 				ROS_ERROR("It is an illegal robot_id.\n");
 				res.result = 0;
 				return false;
 			}
-			tms_msg_rs::rs_home_appliances ref_srv;
-			ref_srv.request.id = robot_id;
-			ref_srv.request.service = 1;
-			if (refrigerator_client.call(ref_srv)) {}
-			else {
-			    ROS_ERROR("Failed to call service control_refrigerator");
-			    return false;
-			}
+			boost::thread or_th(boost::bind(&TmsRpSubtask::open_ref, this));
 			break;
 		}
-		case 9005: // close the refrigerator
-		{
-			if (robot_id != 2009) {
+		case 9005:
+		{   // close the refrigerator
+			ROS_INFO("[tms_rp]close command\n");
+			if (sd.robot_id != 2009) {
 				ROS_ERROR("It is an illegal robot_id.\n");
 				res.result = 0;
 				return false;
 			}
-			tms_msg_rs::rs_home_appliances ref_srv;
-			ref_srv.request.id = robot_id;
-			ref_srv.request.service = 0;
-			if (refrigerator_client.call(ref_srv)) {}
-			else {
-			    ROS_ERROR("Failed to call service control_refrigerator");
-			    return false;
-			}
+			boost::thread cr_th(boost::bind(&TmsRpSubtask::close_ref, this));
 			break;
 		}
 		case 9006: // kobuki_random_walker
 		{
-			if (robot_id != 2005) {
+			ROS_INFO("[tms_rp]random_move command\n");
+			if (sd.robot_id != 2005) {
 				ROS_ERROR("It is an illegal robot_id.\n");
 				res.result = 0;
 				return false;
 			}
-			boost::thread th(boost::bind(&TmsRpSubtask::random_move, this));
+			boost::thread kw_th(boost::bind(&TmsRpSubtask::random_move, this));
 			break;
 		}
 		case 9007: // sensing using kinect
 		{
-			if (robot_id != 2005) {
+			ROS_INFO("[tms_rp]sensing command\n");
+			if (sd.robot_id != 2005) {
 				ROS_ERROR("It is an illegal robot_id.\n");
 				res.result = 0;
 				return false;
 			}
-			boost::thread th(boost::bind(&TmsRpSubtask::sensing, this));
+			boost::thread se_th(boost::bind(&TmsRpSubtask::sensing, this));
 			break;
 		}
 		default:
@@ -523,6 +189,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 			return false;
 		}
 	}
+	ROS_INFO("Exit from subtask function.");
 	res.result = 1;
 	return true;
 }
@@ -592,37 +259,35 @@ void tms_rp::TmsRpSubtask::sensingCallback(const tms_msg_ss::ods_person_dt::Cons
 
 //------------------------------------------------------------------------------
 // Subtask functions that is started in a thread
-bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *argument) {
-	ROS_INFO("[tms_rp]move command\n");
-
-	double error_x, error_y, error_th;
+bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 	tms_msg_db::TmsdbGetData srv;
 	tms_msg_rp::rps_voronoi_path_planning rp_srv;
+	tms_msg_ts::ts_state_control s_srv;
 
-	rp_srv.request.robot_id = robot_id;
+	rp_srv.request.robot_id = sd.robot_id;
 	std::string robot_name("");
-	get_robot_pos(type, robot_id, robot_name, rp_srv);
+	get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv);
+	srv.request.tmsdb.id = sd.arg_type;
 
-	srv.request.tmsdb.id = arg_type;
-	if (arg_type == -1) { // move (x,y,th)
-		rp_srv.request.goal_pos.x = argument[1];
-		rp_srv.request.goal_pos.y = argument[2];
+	if (sd.arg_type == -1) { // move (x,y,th)
+		rp_srv.request.goal_pos.x = sd.v_arg.at(1);
+		rp_srv.request.goal_pos.y = sd.v_arg.at(2);
 		rp_srv.request.goal_pos.z = 0.0;
-		rp_srv.request.goal_pos.th = argument[3];
+		rp_srv.request.goal_pos.th = sd.v_arg.at(3);
 		rp_srv.request.goal_pos.roll = 0.0;
 		rp_srv.request.goal_pos.pitch = 0.0;
-		rp_srv.request.goal_pos.yaw = argument[3];
-	} else if (arg_type > 1000 && arg_type < 2000) {
+		rp_srv.request.goal_pos.yaw = sd.v_arg.at(3);
+	} else if (sd.arg_type > 1000 && sd.arg_type < 2000) {
 		ROS_INFO("Argument's IDtype is Person.\n");
-	} else if (arg_type > 2000 && arg_type < 3000) { // RobotID
+	} else if (sd.arg_type > 2000 && sd.arg_type < 3000) { // RobotID
 		ROS_INFO("Argument's IDtype is Robot. Please retry.\n");
 		return false;
-	} else if (arg_type > 3000 && arg_type < 4000) { // SensorID
+	} else if (sd.arg_type > 3000 && sd.arg_type < 4000) { // SensorID
 		ROS_INFO("Argument's IDtype is Sensor. Please retry.\n");
 		return false;
-	} else if (arg_type > 6000 && arg_type < 7000) { // FurnitureID
+	} else if (sd.arg_type > 6000 && sd.arg_type < 7000) { // FurnitureID
 		ROS_INFO("Argument's IDtype is Furniture.\n");
-		srv.request.tmsdb.id = arg_type + sid_;
+		srv.request.tmsdb.id = sd.arg_type + sid_;
 		if(get_data_client_.call(srv)) {
 			// analyze etcdata and get goal position
 			std::string etcdata = srv.response.tmsdb[0].etcdata;
@@ -684,8 +349,8 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
     		//res.result = 0; // false
     		return false;
     	}
-	} else if (arg_type > 7000 && arg_type < 8000) { // ObjectID
-		ROS_INFO("Argument IDtype is Object%d!\n", arg_type);
+	} else if (sd.arg_type > 7000 && sd.arg_type < 8000) { // ObjectID
+		ROS_INFO("Argument IDtype is Object%d!\n", sd.arg_type);
 		if(get_data_client_.call(srv)) {
 			int index=0;
 			for (int c=0; c<srv.response.tmsdb.size()-1; c++) {
@@ -770,28 +435,27 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 
 	ROS_INFO("start[%f,%f,%f], goal[%f,%f,%f]\n", rp_srv.request.start_pos.x, rp_srv.request.start_pos.y,
 			rp_srv.request.start_pos.th, rp_srv.request.goal_pos.x, rp_srv.request.goal_pos.y, rp_srv.request.goal_pos.th);
+
 	// =====call service "voronoi_path_planning"=====
 	int i = 1;
 	if (voronoi_path_planning_client_.call(rp_srv)) {
 		if (rp_srv.response.VoronoiPath.size() > 1) {
 			while(1) {
 				ROS_INFO("result:%d, message:%s", rp_srv.response.success, rp_srv.response.message.c_str());
-//				os_ << "result: " << rp_srv.response.success << " message: " << rp_srv.response.message << endl;
 
 				// call virtual_controller
-				switch (robot_id) {
+				switch (sd.robot_id) {
 				case 2002: // smartpal5_1
 					{
 						double arg[3];
 						arg[0] = rp_srv.response.VoronoiPath[i].x;
 						arg[1] = rp_srv.response.VoronoiPath[i].y;
 						arg[2] = rp_srv.response.VoronoiPath[i].th;
-						callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
-			    		if (type == true) {
-			    			sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg);
+						callSynchronously(bind(&TmsRpSubtask::sp5_control,this, sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
+			    		if (sd.type == true) {
+			    			sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
 			    			}
 			    		else {
-			    			ROS_INFO("test");
 			    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
 			    			}
@@ -803,9 +467,9 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 						arg[0] = rp_srv.response.VoronoiPath[i].x;
 						arg[1] = rp_srv.response.VoronoiPath[i].y;
 						arg[2] = rp_srv.response.VoronoiPath[i].th;
-						callSynchronously(bind(&TmsRpSubtask::sp5_control,this, type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
-			    		if (type == true)
-			    			sp5_control(type, UNIT_ALL, SET_ODOM, 1, arg);
+						callSynchronously(bind(&TmsRpSubtask::sp5_control,this, sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
+			    		if (sd.type == true)
+			    			sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
 			    		else {
 			    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
@@ -824,7 +488,7 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 			    		if (kobuki_virtual_control_client.call(kobuki_srv)) ROS_INFO("result: %d", kobuki_srv.response.result);
 			    		else                  ROS_ERROR("Failed to call service kobuki_move");
 
-			    		if (type == true) {} // set odom
+			    		if (sd.type == true) {} // set odom
 			    		else {
 						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
@@ -840,7 +504,7 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 			    		if (kxp_mbase_client.call(kxp_srv)) ROS_INFO("result: %d", kxp_srv.response.success);
 			    		else                  ROS_ERROR("Failed to call service kxp_mbase");
 
-			    		if (type == true) {} // set odom
+			    		if (sd.type == true) {} // set odom
 			    		else {
 						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
@@ -857,9 +521,10 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 				if (i==2 && rp_srv.response.VoronoiPath.size()==2) i++;
 				// Update Robot Path Planning
 				if (i == 3) {
-					get_robot_pos(type, robot_id, robot_name, rp_srv);
+					get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv);
 
 					// end determination
+					double error_x, error_y, error_th;
 					error_x = fabs(rp_srv.request.start_pos.x - rp_srv.request.goal_pos.x);
 					error_y = fabs(rp_srv.request.start_pos.y - rp_srv.request.goal_pos.y);
 					error_th = fabs(rp_srv.request.start_pos.th - rp_srv.request.goal_pos.th);
@@ -882,8 +547,9 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 		ROS_ERROR("Failed to call service rps_path_planning\n");
 		return false;
 	}
-//	apprise TS_control of finishing subtask execution
-	tms_msg_ts::ts_state_control s_srv;
+
+	//	apprise TS_control of finishing subtask execution
+
 	s_srv.request.type = 1;
 	s_srv.request.state = 1;
 	if (state_client.call(s_srv)) ROS_INFO("succeed to call state_client srv");
@@ -892,6 +558,355 @@ bool tms_rp::TmsRpSubtask::move(bool type, int robot_id, int arg_type, double *a
 	return true;
 }
 
+bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
+	tms_msg_db::TmsdbGetData srv;
+
+	grasp::TmsRpBar::planning_mode_ = 1;
+	if ((sd.robot_id == 2002 || sd.robot_id == 2003) && sd.type == true) {
+		sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4);
+		sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg);
+		sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12);
+	}
+
+	grasp::PlanBase *pb = grasp::PlanBase::instance();
+	std::vector<pathInfo> trajectory;
+	int state;
+	std::vector<double> begin;
+	std::vector<double> end;
+	// object's position
+	std::vector<double> obj_pos;
+	std::vector<double> obj_rot;
+//			cnoid::Vector3 obj_pos;
+//			cnoid::Matrix3 obj_rot;
+
+	grasp::TmsRpController trc;
+
+	// SET OBJECT objectID : 7001~7999
+	if(sd.arg_type > 7000 && sd.arg_type < 8000) {
+		srv.request.tmsdb.id = sd.arg_type;
+		if (get_data_client_.call(srv)) {
+			int ref_i=0;
+			for (int j=0; j<srv.response.tmsdb.size()-1; j++) {
+				if (srv.response.tmsdb[j].time < srv.response.tmsdb[j+1].time) ref_i = j+1;
+			}
+			std::string obj_name = srv.response.tmsdb[ref_i].name;
+			cnoid::BodyItemPtr item = trc.objTag2Item()[obj_name];
+			grasp::PlanBase::instance()->SetGraspedObject(item);
+			ROS_INFO("%s is grasping_ object.\n", grasp::PlanBase::instance()->targetObject->bodyItemObject->name().c_str());
+			// set environment
+//						int furniture_id = srv.response.tmsdb[ref_i].place;
+//						cout << furniture_id << endl;
+//						if (furniture_id > 6000 && furniture_id < 7000) {
+//							srv.request.tmsdb.id = furniture_id;
+//							if(get_data_client_.call(srv)) {
+//								std::string furniture_name = srv.response.tmsdb[0].name;
+//								cnoid::BodyItemPtr item2 = trc.objTag2Item()[furniture_name];
+//								grasp::PlanBase::instance()->SetEnvironment(item2);
+//								ROS_INFO("%s is sorrounding environment.\n", furniture_name.c_str());
+//							}
+//						}
+		} else {
+			ROS_ERROR("Cannot get object's position\n");
+			return false;
+		}
+	} else {
+		ROS_INFO("Robot cannot grasp this object! Wrong id:%d\n", sd.arg_type);
+	}
+
+	if( !pb->targetObject || !pb->robTag2Arm.size()) {
+		os_ <<  "set object and robot" << endl;
+		return false;
+	}
+	for(int i=0;i<pb->bodyItemRobot()->body()->numJoints();i++){ // If initial position is not collided, it is stored as
+		double q = pb->bodyItemRobot()->body()->joint(i)->q(); // present position
+		begin.push_back(q);
+		end.push_back(q);
+	}
+	cout << "set begin and end posture." << endl;
+
+	grasp::TmsRpController::instance()->setTolerance(0.05);
+	cout << "set tolerance." << endl;
+	grasp::TmsRpController::instance()->graspPathPlanStart_(0, begin, end, pb->targetArmFinger->name,
+			pb->targetObject->name(), 1, &trajectory, &state, &obj_pos, &obj_rot);
+
+	double arg[13];
+	cnoid::Vector3 rotation, r_rotation;
+
+	arg[0] = trajectory.back().robotPos(0)*1000; // m -> mm
+	arg[1] = trajectory.back().robotPos(1)*1000;
+	r_rotation = grasp::rpyFromRot(trajectory.back().robotOri);
+	arg[2] = rad2deg(r_rotation(2));
+	arg[3] = 2;
+
+	pb->calcForwardKinematics();
+	pb->targetObject->objVisPos = pb->object()->p();
+	pb->targetObject->objVisRot = pb->object()->R();
+
+	rotation = grasp::rpyFromRot(pb->targetObject->objVisRot);
+	ROS_INFO("object_x=%fm,y=%fm, z=%f\n", pb->targetObject->objVisPos(0), pb->targetObject->objVisPos(1), pb->targetObject->objVisPos(2));
+	ROS_INFO("object_rr=%f,rp=%f, ry=%f\n", rotation(0), rotation(1), rotation(2));
+
+	arg[4] = 7001; // DBに，object_nameに一致するIDを返す命令を追加してもらう.
+	arg[5] = pb->targetObject->objVisPos(0)*1000; // m -> mm;
+	arg[6] = pb->targetObject->objVisPos(1)*1000;
+	arg[7] = pb->targetObject->objVisPos(2)*1000;
+	arg[8] = rad2deg(rotation(0));
+	arg[9] = rad2deg(rotation(1));
+	arg[10] = rad2deg(rotation(2));
+
+	arg[11] = sd.robot_id;// place
+	arg[12] = 1;// state
+
+	switch (sd.robot_id) {
+	case 2002:
+	{
+		callSynchronously(bind(&TmsRpSubtask::sp5_control,this, sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
+
+		if (sd.type == true) sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
+		else {
+			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
+			sleep(1);
+		}
+		break;
+	}
+	case 2006:
+	{
+		callSynchronously(bind(&TmsRpSubtask::kxp_control,this, sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
+
+		if (sd.type == false) {
+			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
+			sleep(1);
+		}
+		break;
+	}
+	default:
+		break;
+	}
+	grasp::TmsRpBar::planning_mode_ = 0;
+}
+
+bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
+	tms_msg_rp::rps_voronoi_path_planning rp_srv;
+	grasp::TmsRpBar::planning_mode_ = 1;
+	grasp::TmsRpBar::grasping_ = 1; // switching model
+
+	// call service for give_obj_planning
+	tms_msg_rp::rps_goal_planning gop_srv;
+	gop_srv.request.robot_id = sd.robot_id;
+	gop_srv.request.target_id = sd.arg_type; // person's ID
+	ROS_INFO("robot_id:%d, person_id:%d\n",gop_srv.request.robot_id, gop_srv.request.target_id);
+
+	double goal_arg[19] = {-1,-1,-1,-1,-1,-1,0,0,90,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+	double goal_joint[18];
+
+	if (give_obj_client.call(gop_srv)) {
+		if (gop_srv.response.goal_pos.size() != 0) {
+			goal_arg[0] = gop_srv.response.goal_pos[0].x;
+			goal_arg[1] = gop_srv.response.goal_pos[0].y;
+			goal_arg[2] = gop_srv.response.goal_pos[0].th;
+			ROS_INFO("goal_x:%fmm,goal_y:%fmm,goal_th:%fdeg\n", goal_arg[0], goal_arg[1], goal_arg[2]);
+			goal_arg[3] = gop_srv.response.target_pos.x;
+			goal_arg[4] = gop_srv.response.target_pos.y;
+			goal_arg[5] = gop_srv.response.target_pos.z;
+		}
+		// robot's joint angles(j0~j17)
+		for (int j=0; j<gop_srv.response.joint_angle_array.at(0).joint_angle.size(); j++)
+			goal_joint[j] = gop_srv.response.joint_angle_array.at(0).joint_angle.at(j);
+		for (int j=0; j<9; j++) goal_arg[j+9] = goal_joint[j];
+	} else {
+		ROS_INFO("Cannot call give_object_service!\n");
+		return false;
+	}
+
+	// move base
+	rp_srv.request.robot_id = sd.robot_id;
+	std::string robot_name("");
+	get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv);
+
+	rp_srv.request.goal_pos.x = goal_arg[0];
+	rp_srv.request.goal_pos.y = goal_arg[1];
+	rp_srv.request.goal_pos.th = goal_arg[2];
+
+	switch (sd.robot_id) {
+	case 2002: // smartpal5_1
+	{
+		if (voronoi_path_planning_client_.call(rp_srv)) {
+			os_ << "result: " << rp_srv.response.success << " message: " << rp_srv.response.message << endl;
+			if (rp_srv.response.VoronoiPath.size()!=0) {
+				double arg[13];
+				grasp::PlanBase *pb = grasp::PlanBase::instance();
+
+				pb->setGraspingState(grasp::PlanBase::GRASPING);
+				for (int i=0; i< rp_srv.response.VoronoiPath.size(); i++) {
+					arg[0] = rp_srv.response.VoronoiPath[i].x;
+					arg[1] = rp_srv.response.VoronoiPath[i].y;
+					arg[2] = rp_srv.response.VoronoiPath[i].th;
+
+					callSynchronously(bind(&TmsRpSubtask::sp5_control,this, sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
+		    		if (sd.type == true) sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
+		    		else {
+		    			double rPosX = arg[0]/1000;
+		    			double rPosY = arg[1]/1000;
+		    			double rPosZ = 0;
+		    			cnoid::Vector3 rpy (0, 0, deg2rad(arg[2]));
+		    			cnoid::Matrix3 rot = grasp::rotFromRpy(rpy);
+
+					callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"smartpal5_1"));
+					callSynchronously(bind(&grasp::TmsRpController::setPos,trc_,"smartpal5_1",cnoid::Vector3(rPosX,rPosY,rPosZ), rot));
+		    		}
+
+		    		pb->bodyItemRobot()->body()->calcForwardKinematics();
+
+		    		cnoid::Vector3 position;
+					cnoid::Vector3 rotation;
+		    		rotation = grasp::rpyFromRot(pb->fingers(0)->tip->R()*(pb->targetArmFinger->objectPalmRot));
+		    		position = pb->fingers(0)->tip->p()+pb->fingers(0)->tip->R()*pb->targetArmFinger->objectPalmPos;
+		    		//callSynchronously(bind(&grasp::PlanBase::flush,pb));
+
+					ROS_INFO("robot_x=%f,y=%f,z=%f", arg[0], arg[1], arg[2]);
+					ROS_INFO("object_x=%f,y=%f,z=%f,rr=%f,rp=%f,ry=%f\n", position(0), position(1), position(2), rad2deg(rotation(0)), rad2deg(rotation(1)), rad2deg(rotation(2)));
+
+					tms_msg_db::TmsdbGetData name_srv;
+					name_srv.request.tmsdb.name = pb->targetObject->bodyItemObject->name();
+					if(get_data_client_.call(name_srv))
+					arg[3] = 2; // robot_state
+					arg[4] = (double)name_srv.response.tmsdb[0].id; // obj_id
+					arg[5] = position(0)*1000; // m -> mm;
+					arg[6] = position(1)*1000;
+					arg[7] = position(2)*1000;
+					arg[8] = rad2deg(rotation(0));
+					arg[9] = rad2deg(rotation(1));
+					arg[10] = rad2deg(rotation(2));
+					arg[11] = sd.robot_id;
+					arg[12] = 2; // obj_state
+					callSynchronously(bind(&TmsRpSubtask::sp5_control,this, sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
+
+		    		if (sd.type == true) sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
+		    		else {
+		    			sleep(1);
+					callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
+		    			sleep(1);
+		    		}
+				}
+			}
+		}
+		// move joint
+		callSynchronously(bind(&TmsRpSubtask::sp5_control,this, sd.type, UNIT_ALL, CMD_CALC_BACKGROUND, 19, goal_arg));
+
+		break;
+	}
+	case 2006:
+	{
+		if (voronoi_path_planning_client_.call(rp_srv)) {
+			os_ << "result: " << rp_srv.response.success << " message: " << rp_srv.response.message << endl;
+			if (rp_srv.response.VoronoiPath.size()!=0) {
+				double arg[13];
+				grasp::PlanBase *pb = grasp::PlanBase::instance();
+
+				pb->setGraspingState(grasp::PlanBase::GRASPING);
+				for (int i=0; i< rp_srv.response.VoronoiPath.size(); i++) {
+					arg[0] = rp_srv.response.VoronoiPath[i].x;
+					arg[1] = rp_srv.response.VoronoiPath[i].y;
+					arg[2] = rp_srv.response.VoronoiPath[i].th;
+					tms_msg_rc::tms_rc_pmove kxp_srv;
+					kxp_srv.request.w_x = arg[0];
+					kxp_srv.request.w_y = arg[1];
+					kxp_srv.request.w_th = arg[2];
+					if (kxp_mbase_client.call(kxp_srv)) ROS_INFO("result: %d", kxp_srv.response.success);
+					else                  ROS_ERROR("Failed to call service kxp_mbase");
+
+					if (sd.type == false) {
+						double rPosX = arg[0]/1000;
+		    			double rPosY = arg[1]/1000;
+		    			double rPosZ = 0;
+		    			cnoid::Vector3 rpy (0, 0, deg2rad(arg[2]));
+		    			cnoid::Matrix3 rot = grasp::rotFromRpy(rpy);
+
+					callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"kxp"));
+					callSynchronously(bind(&grasp::TmsRpController::setPos,trc_,"kxp",cnoid::Vector3(rPosX,rPosY,rPosZ), rot));
+					}
+
+		    		pb->bodyItemRobot()->body()->calcForwardKinematics();
+
+		    		cnoid::Vector3 position;
+					cnoid::Vector3 rotation;
+		    		rotation = grasp::rpyFromRot(pb->fingers(0)->tip->R()*(pb->targetArmFinger->objectPalmRot));
+		    		position = pb->fingers(0)->tip->p()+pb->fingers(0)->tip->R()*pb->targetArmFinger->objectPalmPos;
+		    		//callSynchronously(bind(&grasp::PlanBase::flush,pb));
+
+					ROS_INFO("robot_x=%f,y=%f,z=%f", arg[0], arg[1], arg[2]);
+					ROS_INFO("object_x=%f,y=%f,z=%f,rr=%f,rp=%f,ry=%f\n", position(0), position(1), position(2), rad2deg(rotation(0)), rad2deg(rotation(1)), rad2deg(rotation(2)));
+
+					tms_msg_db::TmsdbGetData name_srv;
+					name_srv.request.tmsdb.name = pb->targetObject->bodyItemObject->name();
+					if(get_data_client_.call(name_srv))
+					arg[3] = 2; // robot_state
+					arg[4] = (double)name_srv.response.tmsdb[0].id; // obj_id
+					arg[5] = position(0)*1000; // m -> mm;
+					arg[6] = position(1)*1000;
+//							arg[7] = position(2)*1000;
+					arg[7] = -1;
+					arg[8] = rad2deg(rotation(0));
+					arg[9] = rad2deg(rotation(1));
+					arg[10] = rad2deg(rotation(2));
+					arg[11] = sd.robot_id;
+					arg[12] = 2; // obj_state
+					callSynchronously(bind(&TmsRpSubtask::kxp_control,this, sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
+
+		    		if (sd.type == false) {
+		    			sleep(1);
+					callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
+		    			sleep(1);
+		    		}
+				}
+			}
+		}
+
+//				goal_arg[11] = 0.0;
+//				goal_arg[12] = 0.0;
+//				goal_arg[13] = 0.0;
+//				goal_arg[14] = 37.0; // deg
+//				goal_arg[15] = 0.0;
+		// 関節角遷移
+//				callSynchronously(bind(&TmsRpBar::kxp_control,this, sd.type, UNIT_ALL, CMD_CALC_BACKGROUND, 19, goal_arg));
+		break;
+	}
+	default:
+	{
+		ROS_ERROR("No such robot in TMS_DB!\n");
+		return false;
+	}
+	}
+	if (sd.type == false) {
+		sleep(1);
+		callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
+		sleep(1);
+	}
+	//grasp::TmsRpBar::grasping_ = 0;
+	grasp::TmsRpBar::planning_mode_ = 0;
+}
+
+bool tms_rp::TmsRpSubtask::open_ref(void) {
+	tms_msg_rs::rs_home_appliances ref_srv;
+	ref_srv.request.id = 2009;
+	ref_srv.request.service = 1;
+	if (refrigerator_client.call(ref_srv)) {}
+	else {
+	    ROS_ERROR("Failed to call service control_refrigerator");
+	    return false;
+	}
+}
+
+bool tms_rp::TmsRpSubtask::close_ref(void) {
+	tms_msg_rs::rs_home_appliances ref_srv;
+	ref_srv.request.id = 2009;
+	ref_srv.request.service = 0;
+	if (refrigerator_client.call(ref_srv)) {}
+	else {
+	    ROS_ERROR("Failed to call service control_refrigerator");
+	    return false;
+	}
+}
 //------------------------------------------------------------------------------
 bool tms_rp::TmsRpSubtask::random_move(void) {
 	int ret;
