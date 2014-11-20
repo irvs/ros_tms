@@ -12,11 +12,11 @@
 #include <opencv/highgui.h>
 
 #include "define.h"
-#include "Target.h"
-#include "Laser.h"
-#include "PF.h"
+#include "target.h"
+#include "laser.h"
+#include "particle_filter.h"
 
-#include "MultipleParticleFilter.h"
+#include "multiple_particle_filter.h"
 
   extern pthread_mutex_t mutex_laser;
   extern pthread_mutex_t mutex_target;

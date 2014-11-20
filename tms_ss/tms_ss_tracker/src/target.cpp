@@ -12,7 +12,7 @@
 #include "opencv/cv.h"
 
 #include "define.h"
-#include "Target.h"
+#include "target.h"
 
 // CTarget
 
