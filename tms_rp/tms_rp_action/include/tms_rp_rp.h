@@ -41,11 +41,21 @@ class TmsRpSubtask : public cnoid::ToolBar, public boost::signals::trackable
 
  private:
 	uint32_t sid_;
+	struct SubtaskData {
+		bool type;
+		int robot_id;
+		int arg_type;
+		std::vector<double> v_arg;
+	};
 
 	// for thread
-	bool move(bool type, int robot_id, int arg_type, double *argument);
-	bool random_move(void);
-	bool sensing(void);
+	bool move(SubtaskData sd); // 9001
+	bool grasp(SubtaskData sd); // 9002
+	bool give(SubtaskData sd); // 9003
+	bool open_ref(void);  // 9004
+	bool close_ref(void); // 9005
+	bool random_move(void); // 9006
+	bool sensing(void); // 9007
 
 	ros::ServiceServer rp_subtask_server;
 	ros::ServiceClient get_data_client_;
