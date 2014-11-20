@@ -40,7 +40,7 @@ def main():
         smach.StateMachine.add('control0',
                            ServiceState('ts_state_control',
                                         ts_state_control,
-                                        request = ts_state_controlRequest(0, 0, 0, 2)),
+                                        request = ts_state_controlRequest(0, 0, 0, 2, "")),
                            transitions={'succeeded':'move1', 'aborted':'aborted', 'preempted':'preempted'})
 
         smach.StateMachine.add('move1',
@@ -52,7 +52,7 @@ def main():
         smach.StateMachine.add('control1',
                            ServiceState('ts_state_control',
                                         ts_state_control,
-                                        request = ts_state_controlRequest(0, 0, 0, 0)),
+                                        request = ts_state_controlRequest(0, 0, 0, 0, "")),
                            transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
 
     sis = smach_ros.IntrospectionServer('tms_ts_smach_test', sm_root, '/ROS_TMS')

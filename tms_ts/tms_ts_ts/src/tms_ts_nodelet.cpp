@@ -357,7 +357,7 @@ void tms_ts_nodelet::ROS_TMS_TS::GenerateScript() {
     						"                           ServiceState('ts_state_control',\n"
     						"                                        ts_state_control,\n"
     						"                                        request = ts_state_controlRequest(0, 0, 0, "
-    						+ IntToString(state_data.at(j).cc_subtasks) + ")),\n";
+    						+ IntToString(state_data.at(j).cc_subtasks) + ", \"\")),\n";
     		generated_main += "                           transitions={'succeeded':'";
 	    	if (j == state_data.size() - 1) {
 	    		generated_main += "succeeded', 'aborted':'aborted', 'preempted':'preempted'})\n\n";
@@ -389,7 +389,7 @@ void tms_ts_nodelet::ROS_TMS_TS::GenerateScript() {
     				"        smach.StateMachine.add('control" + IntToString(j) + "',\n"
     						"                           ServiceState('ts_state_control',\n"
     						"                                        ts_state_control,\n"
-    						"                                        request = ts_state_controlRequest(0, 0, 0, 0)),\n";
+    						"                                        request = ts_state_controlRequest(0, 0, 0, 0, \"\")),\n";
 	    	// final state
 	    	if (j == state_data.size() - 1) {
 	    		generated_main += "                           transitions={'succeeded':'succeeded', "

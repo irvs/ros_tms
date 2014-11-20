@@ -63,21 +63,25 @@ bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string& r
 
 	int ref_i=0;
 	if(get_data_client_.call(srv)) {
-		for (int j=0; j<srv.response.tmsdb.size()-1; j++) {
-			if (srv.response.tmsdb[j].time < srv.response.tmsdb[j+1].time) ref_i = j+1;
-		}
-		robot_name = srv.response.tmsdb[ref_i].name;
-		rp_srv.request.start_pos.x = srv.response.tmsdb[ref_i].x;
-		rp_srv.request.start_pos.y = srv.response.tmsdb[ref_i].y;
-		rp_srv.request.start_pos.z = 0.0;
-		rp_srv.request.start_pos.th = srv.response.tmsdb[ref_i].ry; // =yaw
-		rp_srv.request.start_pos.roll = 0.0; // srv.response.tmsdb[ref_i].rr
-		rp_srv.request.start_pos.pitch = 0.0; // srv.response.tmsdb[ref_i].rp
-		rp_srv.request.start_pos.yaw = srv.response.tmsdb[ref_i].ry; // srv.response.tmsdb[ref_i].ry
-		// set odom for production version
-		if (type == true && (robot_id == 2002 || robot_id == 2003)) {
-			double arg[1] = {0.0};
-			sp5_control(true, UNIT_ALL, SET_ODOM, 1, arg);
+		if (!srv.response.tmsdb.empty()) {
+			for (int j=0; j<srv.response.tmsdb.size()-1; j++) {
+				if (srv.response.tmsdb[j].time < srv.response.tmsdb[j+1].time) ref_i = j+1;
+			}
+			robot_name = srv.response.tmsdb[ref_i].name;
+			rp_srv.request.start_pos.x = srv.response.tmsdb[ref_i].x;
+			rp_srv.request.start_pos.y = srv.response.tmsdb[ref_i].y;
+			rp_srv.request.start_pos.z = 0.0;
+			rp_srv.request.start_pos.th = srv.response.tmsdb[ref_i].ry; // =yaw
+			rp_srv.request.start_pos.roll = 0.0; // srv.response.tmsdb[ref_i].rr
+			rp_srv.request.start_pos.pitch = 0.0; // srv.response.tmsdb[ref_i].rp
+			rp_srv.request.start_pos.yaw = srv.response.tmsdb[ref_i].ry; // srv.response.tmsdb[ref_i].ry
+			// set odom for production version
+			if (type == true && (robot_id == 2002 || robot_id == 2003)) {
+				double arg[1] = {0.0};
+				sp5_control(true, UNIT_ALL, SET_ODOM, 1, arg);
+			}
+		} else {
+			return false;
 		}
 	} else {
 		ROS_INFO("Failed to call service tms_db_get_current_robot_data.\n");
@@ -104,6 +108,7 @@ bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string& r
 		}
 		return false;
 	}
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -263,10 +268,16 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 	tms_msg_db::TmsdbGetData srv;
 	tms_msg_rp::rps_voronoi_path_planning rp_srv;
 	tms_msg_ts::ts_state_control s_srv;
+	s_srv.request.type = 1; // for subtask state update;
+	s_srv.request.state = 0;
 
 	rp_srv.request.robot_id = sd.robot_id;
 	std::string robot_name("");
-	get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv);
+	if(!get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv)) {
+		s_srv.request.error_msg = "Cannot get robot position";
+		state_client.call(s_srv);
+		return false;
+	}
 	srv.request.tmsdb.id = sd.arg_type;
 
 	if (sd.arg_type == -1) { // move (x,y,th)
@@ -277,14 +288,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 		rp_srv.request.goal_pos.roll = 0.0;
 		rp_srv.request.goal_pos.pitch = 0.0;
 		rp_srv.request.goal_pos.yaw = sd.v_arg.at(3);
-	} else if (sd.arg_type > 1000 && sd.arg_type < 2000) {
-		ROS_INFO("Argument's IDtype is Person.\n");
-	} else if (sd.arg_type > 2000 && sd.arg_type < 3000) { // RobotID
-		ROS_INFO("Argument's IDtype is Robot. Please retry.\n");
-		return false;
-	} else if (sd.arg_type > 3000 && sd.arg_type < 4000) { // SensorID
-		ROS_INFO("Argument's IDtype is Sensor. Please retry.\n");
-		return false;
 	} else if (sd.arg_type > 6000 && sd.arg_type < 7000) { // FurnitureID
 		ROS_INFO("Argument's IDtype is Furniture.\n");
 		srv.request.tmsdb.id = sd.arg_type + sid_;
@@ -297,9 +300,10 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 
 			int i = 0;
 			while (robot_name != v_etcdata.at(i)) {
-				i = i + 2;
+				i += 2;
 				if (i >= v_etcdata.size()) {
-					ROS_ERROR("This robot cannot move to the slate point!\n");
+					s_srv.request.error_msg = "This robot cannot move to the slate point";
+					state_client.call(s_srv);
 					return false;
 				}
 			}
@@ -340,13 +344,13 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 				rp_srv.request.goal_pos.pitch = 0.0;
 				rp_srv.request.goal_pos.yaw = 0.0;
 			} else {
-				ROS_ERROR("There are incorrect data in DB! Check furniture's etcdata!!\n");
+				s_srv.request.error_msg = "There are incorrect data in DB. Check furniture's etcdata";
+				state_client.call(s_srv);
 				return false;
 			}
-
 		} else {
-    		ROS_INFO("Failed to call service tms_db_get_current_furniture_data.\n");
-    		//res.result = 0; // false
+			s_srv.request.error_msg = "Failed to call service tms_db_get_current_furniture_data";
+			state_client.call(s_srv);
     		return false;
     	}
 	} else if (sd.arg_type > 7000 && sd.arg_type < 8000) { // ObjectID
@@ -371,9 +375,10 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 
 					int i = 0;
 					while (robot_name != v_etcdata.at(i)) {
-						i = i + 2;
+						i += 2;
 						if (i >= v_etcdata.size()) {
-							ROS_ERROR("This robot cannot move to the slate point!\n");
+							s_srv.request.error_msg = "This robot cannot move to the slate point";
+							state_client.call(s_srv);
 							return false;
 						}
 					}
@@ -414,22 +419,24 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 						rp_srv.request.goal_pos.pitch = 0.0;
 						rp_srv.request.goal_pos.yaw = 0.0;
 					} else {
-						ROS_ERROR("There are incorrect data in DB! Check furniture's etcdata!!\n");
+						s_srv.request.error_msg = "There are incorrect data in DB! Check furniture's etcdata";
+						state_client.call(s_srv);
 						return false;
 					}
-
 				} else {
-		    		ROS_INFO("Failed to call service tms_db_get_current_furniture_data.\n");
-		    		//res.result = 0; // false
-		    		return true;
+					s_srv.request.error_msg = "Failed to call service tms_db_get_current_furniture_data";
+					state_client.call(s_srv);
+		    		return false;
 		    	}
 			} else {
-				ROS_ERROR("Object is in unexpected place!\n");
+				s_srv.request.error_msg = "Object is in unexpected place";
+				state_client.call(s_srv);
 				return false;
 			}
 		}
 	} else {
-		ROS_INFO("Cannot get goal candidate!\n");
+		s_srv.request.error_msg = "An Illegal arg_type number";
+		state_client.call(s_srv);
 		return false;
 	}
 
@@ -439,7 +446,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 	// =====call service "voronoi_path_planning"=====
 	int i = 1;
 	if (voronoi_path_planning_client_.call(rp_srv)) {
-		if (rp_srv.response.VoronoiPath.size() > 1) {
+		if (!rp_srv.response.VoronoiPath.empty()) {
 			while(1) {
 				ROS_INFO("result:%d, message:%s", rp_srv.response.success, rp_srv.response.message.c_str());
 
@@ -513,8 +520,9 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    	}
 			    default:
 			    	{
-			    		ROS_ERROR("No such robot in TMS_DB!\n");
-			    		return false;
+						s_srv.request.error_msg = "No such robot in TMS_DB";
+						state_client.call(s_srv);
+						return false;
 			    	}
 				}
 				i++;
@@ -532,29 +540,27 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 
 					rp_srv.response.VoronoiPath.clear();
 					voronoi_path_planning_client_.call(rp_srv);
-					if (rp_srv.response.VoronoiPath.size() <= 1) {
-						os_ << "Noting rps_path_planning data" << endl;
+					if (rp_srv.response.VoronoiPath.empty()) {
+						s_srv.request.error_msg = "Planned path is empty";
+						state_client.call(s_srv);
 						return false;
 					}
 					i = 1;
 				}
 			}
 		} else {
-			os_ << "Noting rps_path_planning data" << endl;
+			s_srv.request.error_msg = "Planned path is empty";
+			state_client.call(s_srv);
 			return false;
 		}
 	} else {
-		ROS_ERROR("Failed to call service rps_path_planning\n");
+		s_srv.request.error_msg = "Failed to call service /rps_voronoi_path_planning";
+		state_client.call(s_srv);
 		return false;
 	}
-
-	//	apprise TS_control of finishing subtask execution
-
-	s_srv.request.type = 1;
+	//	apprise TS_control of succeeding subtask execution
 	s_srv.request.state = 1;
-	if (state_client.call(s_srv)) ROS_INFO("succeed to call state_client srv");
-	else return false;
-
+	state_client.call(s_srv);
 	return true;
 }
 
