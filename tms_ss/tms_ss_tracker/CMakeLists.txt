@@ -23,14 +23,10 @@ include_directories(
   ${BOOST_INCLUDE_DIRS}
 )
 
-add_library(tms_ss_tracker
-  src/target.cpp
-  src/laser.cpp
-  src/multiple_particle_filter.cpp
-  src/particle_filter.cpp
- )
-
 add_executable(tracker src/tracker.cpp src/target.cpp src/laser.cpp src/multiple_particle_filter.cpp src/particle_filter.cpp)
 add_dependencies(tracker DEPENDS tms_msg_ss_gencpp)
 target_link_libraries(tracker ${catkin_LIBRARIES})
 
+add_executable(umo_tracker src/umo_tracker.cpp)
+add_dependencies(umo_tracker DEPENDS tms_msg_ss_gencpp)
+target_link_libraries(umo_tracker ${catkin_LIBRARIES})
