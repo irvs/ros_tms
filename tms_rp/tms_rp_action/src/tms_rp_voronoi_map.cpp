@@ -359,7 +359,7 @@ void TmsRpVoronoiMap::dynamicMapPublish()
 }
 
 //------------------------------------------------------------------------------
-void TmsRpVoronoiMap::dynamicMapPublish(tms_msg_ss::tracking_points person_pos)
+void TmsRpVoronoiMap::dynamicMapPublish(tms_msg_ss::tracking_points unknown_moving_object_pos)
 {
   int map_x = 0, map_y = 0;
   int obstacle_pos_x = 0, obstacle_pos_y = 0;
@@ -401,47 +401,12 @@ void TmsRpVoronoiMap::dynamicMapPublish(tms_msg_ss::tracking_points person_pos)
     }
   }
 
-  tms_msg_db::TmsdbGetData getRobotData;
-  bool isRobot=false;
-  float robot_x, robot_y,distance_robot_and_object;
-
-  getRobotData.request.tmsdb.id = 2003; //sp5_2
-  getRobotData.request.tmsdb.sensor = 3001; // ID of Vicon sensor
-
-  if (!get_data_client_.call(getRobotData))
-  {
-    isRobot = false;
-  }
-  else if (getRobotData.response.tmsdb.empty()==true)
-  {
-    isRobot = false;
-  }
-  else
-  {
-    isRobot = true;
-  }
-
-  if (isRobot == true && getRobotData.response.tmsdb[0].state==1)
-  {
-    robot_x = getRobotData.response.tmsdb[0].x/1000;
-    robot_y = getRobotData.response.tmsdb[0].y/1000;
-  }
-
-  // add current position of obstacle (person)
-  for(unsigned int i=0;i<person_pos.tracking_grid.size();i++)
+  // add current position of unknown moving object (umo)
+  for(unsigned int i=0;i<unknown_moving_object_pos.tracking_grid.size();i++)
   {
 
-    obstacle_pos_x = person_pos.tracking_grid[i].x/1000;
-    obstacle_pos_y = person_pos.tracking_grid[i].y/1000;
-
-    if(isRobot==true)
-    {
-      distance_robot_and_object = sqrt((obstacle_pos_x-robot_x)*(obstacle_pos_x-robot_x)+(obstacle_pos_y-robot_y)*(obstacle_pos_y-robot_y));
-      if(distance_robot_and_object < 1.0)
-      {
-        continue;
-      }
-    }
+    obstacle_pos_x = unknown_moving_object_pos.tracking_grid[i].x/1000;
+    obstacle_pos_y = unknown_moving_object_pos.tracking_grid[i].y/1000;
 
     map_x = (int)round( ( obstacle_pos_x - x_llimit_ ) / cell_size_ );
     map_y = (int)round( ( obstacle_pos_y - y_llimit_ ) / cell_size_ );

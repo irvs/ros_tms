@@ -216,7 +216,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   subscribe_path_map_    = nh.subscribe("rps_robot_path", 10,  &TmsRpBar::receivePathMapData, this);
   subscribe_lrf_raw_data1_  = nh.subscribe("/urg1/most_intense", 10,  &TmsRpBar::receiveLrfRawData1, this);
   subscribe_lrf_raw_data2_  = nh.subscribe("/urg2/most_intense", 10,  &TmsRpBar::receiveLrfRawData2, this);
-  subscribe_person_tracker_ = nh.subscribe("/tracking_points", 10,  &TmsRpBar::receivePersonTrackerInfo, this);
+  subscribe_person_tracker_ = nh.subscribe("/tracking_points", 10,  &TmsRpBar::receiveUnknownMovingObjectTrackerInfo, this);
 
   //----------------------------------------------------------------------------
   group_lrf_raw_data_ = new SgInvariantGroup();
@@ -672,14 +672,14 @@ void TmsRpBar::receiveLrfRawData2(const sensor_msgs::LaserScan::ConstPtr& msg)
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::receivePersonTrackerInfo(const tms_msg_ss::tracking_points::ConstPtr& msg)
+void TmsRpBar::receiveUnknownMovingObjectTrackerInfo(const tms_msg_ss::tracking_points::ConstPtr& msg)
 {
-  person_position_ = *msg;
+  unknown_moving_object_position_ = *msg;
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::getPcdData(){
-
+void TmsRpBar::getPcdData()
+{
 }
 
 //------------------------------------------------------------------------------
@@ -1022,7 +1022,7 @@ void TmsRpBar::viewPersonPostion()
     return;
   }
 
-  if(person_position_.tracking_grid.size()==0)
+  if(unknown_moving_object_position_.tracking_grid.size()==0)
   {
     ROS_INFO("nothing the person");
     return;
@@ -1040,7 +1040,7 @@ void TmsRpBar::viewPersonPostion()
   }
 
   SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
-  cr = new SgPointsDrawing(&person_position_);
+  cr = new SgPointsDrawing(&unknown_moving_object_position_);
   visit.shape[0]->mesh()->triangles().clear();
   node->addChild(cr);
 
@@ -1850,7 +1850,7 @@ void TmsRpBar::connectROS()
     updateEnvironmentInfomation(false);
 
     static_and_dynamic_map.staticMapPublish();
-    static_and_dynamic_map.dynamicMapPublish(person_position_);
+    static_and_dynamic_map.dynamicMapPublish(unknown_moving_object_position_);
 
     viewStaticMap();
     viewDynamicMap();

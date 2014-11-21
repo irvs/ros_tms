@@ -129,7 +129,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   tms_msg_rp::rps_route          path_map_data_;
   sensor_msgs::LaserScan         lrf_raw_data1_;
   sensor_msgs::LaserScan         lrf_raw_data2_;
-  tms_msg_ss::tracking_points    person_position_;
+  tms_msg_ss::tracking_points    unknown_moving_object_position_;
 
   boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)>& sigBodyItemSelectionChanged() {return sigBodyItemSelectionChanged_;}
 
@@ -200,7 +200,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void receivePathMapData(const tms_msg_rp::rps_route::ConstPtr& msg);
   void receiveLrfRawData1(const sensor_msgs::LaserScan::ConstPtr& msg);
   void receiveLrfRawData2(const sensor_msgs::LaserScan::ConstPtr& msg);
-  void receivePersonTrackerInfo(const tms_msg_ss::tracking_points::ConstPtr& msg);
+  void receiveUnknownMovingObjectTrackerInfo(const tms_msg_ss::tracking_points::ConstPtr& msg);
 
   void moveToGoal();
   void getPcdData();
