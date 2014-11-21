@@ -121,7 +121,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   ros::Subscriber    subscribe_path_map_;
   ros::Subscriber    subscribe_lrf_raw_data1_;
   ros::Subscriber    subscribe_lrf_raw_data2_;
-  ros::Subscriber    subscribe_person_tracker_;
+  ros::Subscriber    subscribe_umo_tracker_;
 
   pcl::PointCloud<pcl::PointXYZ> point_cloud_data_;
   tms_msg_rp::rps_map_full       static_map_data_;
