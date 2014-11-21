@@ -64,17 +64,25 @@ private:
 
     for(uint32_t i=0; i<object_num; i++)
     {
+      bool isMatching = false;
+
       umo_pos_x = msg->tracking_grid[i].x/1000;
       umo_pos_y = msg->tracking_grid[i].y/1000;
 
       for(uint32_t j=0; j<known_object_num; j++)
       {
+
         distance_known_object_and_umo = sqrt((umo_pos_x-known_object_x[j])*(umo_pos_x-known_object_x[j])+(umo_pos_y-known_object_y[j])*(umo_pos_y-known_object_y[j]));
 
-        if(distance_known_object_and_umo > 1.0) // 1 Meter
+        if(distance_known_object_and_umo < 1.0) // 1 Meter
         {
-          umo_tracker_points.tracking_grid.push_back(msg->tracking_grid[i]);
+          isMatching = true;
         }
+      }
+
+      if(isMatching==false)
+      {
+        umo_tracker_points.tracking_grid.push_back(msg->tracking_grid[i]);
       }
     }
     umo_tracker_pub_.publish(umo_tracker_points);
