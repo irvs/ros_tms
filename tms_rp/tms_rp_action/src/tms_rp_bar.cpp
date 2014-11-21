@@ -216,7 +216,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   subscribe_path_map_    = nh.subscribe("rps_robot_path", 10,  &TmsRpBar::receivePathMapData, this);
   subscribe_lrf_raw_data1_  = nh.subscribe("/urg1/most_intense", 10,  &TmsRpBar::receiveLrfRawData1, this);
   subscribe_lrf_raw_data2_  = nh.subscribe("/urg2/most_intense", 10,  &TmsRpBar::receiveLrfRawData2, this);
-  subscribe_person_tracker_ = nh.subscribe("/tracking_points", 10,  &TmsRpBar::receiveUnknownMovingObjectTrackerInfo, this);
+  subscribe_umo_tracker_    = nh.subscribe("/umo_tracking_points", 10,  &TmsRpBar::receiveUnknownMovingObjectTrackerInfo, this);
 
   //----------------------------------------------------------------------------
   group_lrf_raw_data_ = new SgInvariantGroup();
