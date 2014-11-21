@@ -1,11 +1,12 @@
-#pragma once
+#ifndef LASER_H
+#define LASER_H
 
 #ifndef M_PI
 #define M_PI  3.14159265358979323846
 #endif
 
-#define MAX_LRF_RANGE  55.0
-#define MIN_DIFF_DIST   0.5
+#define MAX_LRF_RANGE  55.00
+#define MIN_DIFF_DIST   0.50
 #define MIN_OBJ_PROB    0.01
 #define	N_RING        100
 
@@ -96,4 +97,4 @@ public:
   int m_ring;
 };
 
-
+#endif // LASER_H
