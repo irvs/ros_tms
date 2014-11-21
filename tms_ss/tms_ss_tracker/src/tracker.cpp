@@ -341,7 +341,7 @@ int main( int argc, char **argv )
   pthread_t thread_v;
   ros::MultiThreadedSpinner spinner(4);
 
-  ros::init(argc, argv, "tracker_double");
+  ros::init(argc, argv, "moving_object_tracker");
   ros::NodeHandle n;
   ros::Publisher  pub  = n.advertise<tms_msg_ss::tracking_points>("tracking_points", 10);
   ros::Subscriber sub  = n.subscribe("/urg2/most_intense" , 10, LaserSensingCallback);
