@@ -95,7 +95,7 @@ public:
 //------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "umo_tracker");
+  ros::init(argc, argv, "unidentified_moving_object_tracker");
   UmoTracker ut;
   ros::spin();
   return 0;
