@@ -123,10 +123,12 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
         ROS_INFO("Failed to call service getRobotData ID: %d\n", getRobotData.request.tmsdb.id);
         break;
       }
-      if(getRobotData.response.tmsdb[0].x != 0 && getRobotData.response.tmsdb[0].y != 0) {
-        res.result = smartpal->vehicleSetPos( getRobotData.response.tmsdb[0].x,
-                                              getRobotData.response.tmsdb[0].y,
-                                              getRobotData.response.tmsdb[0].ry);
+      if(!getRobotData.response.tmsdb.empty()) {
+          if(getRobotData.response.tmsdb[0].x != 0 && getRobotData.response.tmsdb[0].y != 0) {
+            res.result = smartpal->vehicleSetPos( getRobotData.response.tmsdb[0].x,
+                                                  getRobotData.response.tmsdb[0].y,
+                                                  getRobotData.response.tmsdb[0].ry);
+          }
       }
       break;
     default:
