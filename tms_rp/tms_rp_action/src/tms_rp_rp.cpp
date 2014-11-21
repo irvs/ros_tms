@@ -474,7 +474,8 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 						arg[0] = rp_srv.response.VoronoiPath[i].x;
 						arg[1] = rp_srv.response.VoronoiPath[i].y;
 						arg[2] = rp_srv.response.VoronoiPath[i].th;
-						callSynchronously(bind(&TmsRpSubtask::sp5_control,this, sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
+//						callSynchronously(bind(&TmsRpSubtask::sp5_control,this, sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
+						sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg);
 			    		if (sd.type == true)
 			    			sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
 			    		else {
