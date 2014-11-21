@@ -474,6 +474,7 @@ bool tms_ts_nodelet::ROS_TMS_TS::ExeScript() {
 }
 
 bool tms_ts_nodelet::ROS_TMS_TS::tsCallback(tms_msg_ts::ts_req::Request &req, tms_msg_ts::ts_req::Response &res) {
+	count_callback++;
 	robot_id = req.robot_id;
 	object_id = req.object_id;
 	user_id = req.user_id;
@@ -534,7 +535,6 @@ bool tms_ts_nodelet::ROS_TMS_TS::tsCallback(tms_msg_ts::ts_req::Request &req, tm
 	ROS_TMS_TS::GenerateScript();
 	ROS_TMS_TS::ExeScript();
 
-	count_callback++;
 	res.result = 1; // success
 	return true;
 }
