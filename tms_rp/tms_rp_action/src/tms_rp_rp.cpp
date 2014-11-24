@@ -463,7 +463,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    			sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
 			    			}
 			    		else {
-			    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
+			    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
 			    			}
 			    		break;
@@ -479,7 +479,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    		if (sd.type == true)
 			    			sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
 			    		else {
-			    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
+			    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
 			    			}
 			    		break;
@@ -498,7 +498,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 
 			    		if (sd.type == true) {} // set odom
 			    		else {
-						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
+						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
 			    			}
 			    		break;
@@ -514,7 +514,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 
 			    		if (sd.type == true) {} // set odom
 			    		else {
-						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
+						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
 			    			}
 			    		break;
@@ -676,7 +676,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 
 		if (sd.type == true) sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
 		else {
-			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
+			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 			sleep(1);
 		}
 		break;
@@ -686,7 +686,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 		callSynchronously(bind(&TmsRpSubtask::kxp_control,this, sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
 
 		if (sd.type == false) {
-			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
+			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 			sleep(1);
 		}
 		break;
@@ -808,7 +808,7 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 		    		if (sd.type == true) sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
 		    		else {
 		    			sleep(1);
-					callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
+					callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 		    			sleep(1);
 		    		}
 				}
@@ -879,7 +879,7 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 
 		    		if (sd.type == false) {
 		    			sleep(1);
-					callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
+					callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 		    			sleep(1);
 		    		}
 				}
@@ -904,7 +904,7 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 	}
 	if (sd.type == false) {
 		sleep(1);
-		callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInfomation,grasp::TmsRpBar::instance(),true));
+		callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 		sleep(1);
 	}
 	//grasp::TmsRpBar::grasping_ = 0;
