@@ -10,8 +10,7 @@
   <url type="website">http://robotics.ait.kyushu-u.ac.jp/index-e.html</url>
   <url type="git">https://github.com/irvs/ros_tms</url>
 
-  <author >Akio Shigekane</author>
-  <author email="shigekane@irvs.ait.kyushu-u.ac.jp">Akio Shigekane/author>
+  <author email="shigekane@irvs.ait.kyushu-u.ac.jp">Akio Shigekane</author>
   <author email="passionvirus@gmail.com">Yoonseok Pyo</author>
 
   <buildtool_depend>catkin</buildtool_depend>
