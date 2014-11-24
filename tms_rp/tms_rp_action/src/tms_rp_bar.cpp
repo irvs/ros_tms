@@ -1049,7 +1049,7 @@ void TmsRpBar::viewPersonPostion()
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::updateEnvironmentInfomation(bool is_simulation)
+void TmsRpBar::updateEnvironmentInformation(bool is_simulation)
 {
   PlanBase *pb = PlanBase::instance();
   double rPosX,rPosY,rPosZ;
@@ -1694,7 +1694,7 @@ void TmsRpBar::moveToGoal()
       } else {
         os_ << "Failed to call service sp5_control" << endl;
       }
-      updateEnvironmentInfomation(true);
+      updateEnvironmentInformation(true);
       ros::spinOnce();
       sleep(1); //temp
     }
@@ -1828,7 +1828,7 @@ void TmsRpBar::simulation()
     viewMarkerOfRobot();
 
     if (planning_mode_ == 0)
-      updateEnvironmentInfomation(true);
+      updateEnvironmentInformation(true);
 
     ros::spinOnce();
     loop_rate.sleep();
@@ -1847,7 +1847,7 @@ void TmsRpBar::connectROS()
   static ros::Rate loop_rate(20); // 0.05sec
   while (ros::ok())
   {
-    updateEnvironmentInfomation(false);
+    updateEnvironmentInformation(false);
 
     static_and_dynamic_map.staticMapPublish();
     static_and_dynamic_map.dynamicMapPublish(unknown_moving_object_position_);
