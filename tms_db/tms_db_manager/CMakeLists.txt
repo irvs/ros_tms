@@ -33,3 +33,7 @@ target_link_libraries(tms_db_reader ${catkin_LIBRARIES} mysqlclient)
 add_executable(tms_db_manager src/tms_db_manager.cpp)
 add_dependencies(tms_db_manager tms_msg_db_generate_messages_cpp)
 target_link_libraries(tms_db_manager ${catkin_LIBRARIES} mysqlclient)
+
+add_executable(tms_db_publisher src/tms_db_publisher.cpp)
+add_dependencies(tms_db_publisher tms_msg_db_generate_messages_cpp)
+target_link_libraries(tms_db_publisher ${catkin_LIBRARIES} mysqlclient)

@@ -152,7 +152,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   cnoid::ItemList<cnoid::BodyItem> selectedBodyItems_;
   cnoid::ItemList<cnoid::BodyItem> target_body_items_;
 
-  void updateEnvironmentInfomation(bool is_simulation);
+  void updateEnvironmentInformation(bool is_simulation);
 
  private:
   MessageView& mes_;
