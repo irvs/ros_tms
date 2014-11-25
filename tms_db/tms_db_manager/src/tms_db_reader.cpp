@@ -97,10 +97,8 @@ public:
     Target[4] = "space";
     Target[5] = "furniture";
     Target[6] = "object";
-
-
+    //Init Vicon Stream
     ROS_ASSERT(initDbReader());
-
     //Service Server
     dr_srv = nh_priv.advertiseService("dbreader",&DbReader::dbSrvCallback, this);
   }  
