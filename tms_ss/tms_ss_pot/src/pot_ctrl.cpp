@@ -19,6 +19,13 @@
 #include <tms_ss_pot/Target.h>
 #include <tms_ss_pot/Laser.h>
 #include <tms_ss_pot/Multiple_particle_filter.h>
+#include <iostream>
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/fstream.hpp>
+#include <boost/foreach.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 typedef struct
 {
@@ -32,36 +39,107 @@ typedef struct
     pos_cv vector;
 } pos_inf;
 
+namespace fs = boost::filesystem;
 vector<long> v_list;
 int i;
+
 int main()
 {
+#if 1
+
+    std::ifstream ifs("txt_box/e.txt");
+    std::string str;
+    std::string ckr;
+    std::getline(ifs, str);
+    std::cout << str << " ";
+    std::cout << "aaaa";
+    while (std::getline(ifs, str))
+    { 
+        ckr = str;
+        std::cout << str << " ";
+        //int i;
+        //i = strlen(str.c_str());
+        //std::cout << "size " << i << std::endl ;
+        //std::cout << " " << str.substr(5, i-5) << std::endl;
+        //int pos = str.find("sf");
+
+        //            while (pos != string::npos )
+        //                std::cout << str << " " << pos << std::endl;
+    }
+    std::cout << ckr << std::endl;
+
+
+#endif
+
 #if 0
-    //
-    // std::ifstream ifs("plot.txt");
-    // std::string str;
-    // while (std::getline(ifs, str))
-    // {
-    //     unsigned int pos = str.find("\n");
-    //     while (pos = string::npos )
-    //         std::cout << line << std::endl;
-    // }
-    //
+    int i = -5;
+    printf("%d no zettaiti %d", i, abs(i));
+
+
+#endif
+
+#if 0
+    while (1)
+    {
+        const fs::path path("/home/kurt/catkin_ws/position");
+        BOOST_FOREACH(const fs::path & p, std::make_pair(fs::directory_iterator(path), fs::directory_iterator()))
+        {
+            if (!fs::is_directory(p) && boost::algorithm::iends_with(p.string(), ".txt"))
+            {
+                //std::cout << p.filename().string() << std::endl;
+                //std::string str = p.filename().string();
+                std::ifstream ifs(p.c_str());
+                std::string line;
+                std::string line_8;
+                //char stt[7];
+                int i;
+                i = 0;
+                while (getline(ifs, line))
+                {
+                    i++;
+                    // ファイルの中身を一行づつ表示
+                    //std::cout << " size " << line.size() << std::endl;
+                    line_8 = line.substr(0, 5);
+                    //std::cout << line_8 << std::endl;
+                    if (line_8 == "mode:")
+                    {
+                        std::cout << line.substr(5, 5) << std::endl;
+                        //stt = line.substr(8).c_str();
+                    }
+                }
+            }
+        }
+    }
+
+#endif
+
+
+#if 0
+
+    std::ifstream ifs("plot.txt");
+    std::string str;
+    while (std::getline(ifs, str))
+    {
+        unsigned int pos = str.find("\n");
+        while (pos = string::npos )
+            std::cout << line << std::endl;
+    }
+
     std::ofstream ofs;
     ofs.open("txt/tot.txt", std::ofstream::out | std::ofstream::app);
     ofs << "ham" << std::endl;
-    // std::ifstream ifs("123tt.txt");
-    // if (!ifs)
-    // {
-    //     std::cout << "ERRRRRRRRRRRROR" << std::endl;
-    // }
-    // else
-    // {
-    //     std::ofstream ofs;
-    //     ofs.open("123tt.txt", std::ofstream::out | std::ofstream::app);
-    //     ofs << "ham" << std::endl;
+    std::ifstream ifs("123tt.txt");
+    if (!ifs)
+    {
+        std::cout << "ERRRRRRRRRRRROR" << std::endl;
+    }
+    else
+    {
+        std::ofstream ofs;
+        ofs.open("123tt.txt", std::ofstream::out | std::ofstream::app);
+        ofs << "ham" << std::endl;
 
-    // }
+    }
 #endif
 
 #if 0
