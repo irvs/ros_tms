@@ -35,9 +35,10 @@ std::vector<float> scanData;
 CLaser laser;
 bool CallbackCalled = false;
 Psenparam tmp_param;
+std::vector< int > endid;
+std::vector< int >::iterator p;
 std::vector< Psenparam > psenparam;
 std::vector< Psenparam >::iterator v;
-
 
 void *Visualization( void *ptr )
 {
@@ -123,10 +124,11 @@ void *Visualization( void *ptr )
         }
         if (psenparam.size() > 0 )
         {
-            std::cout << "<<id  " ;
+            //std::cout << "<<id  " ;
             for (v = psenparam.begin(); v != psenparam.end(); ++v)
             {
                 psen.id = v -> id;
+                psen.flag = v -> flag;
                 psen.x = v -> x;
                 psen.y = v -> y;
                 psen.righter = right_count;
@@ -134,7 +136,7 @@ void *Visualization( void *ptr )
                 psens.pot_tracking_psen.push_back(psen);
                 std::cout << v -> id << "." << v->flag << " ";
             }
-            std::cout << " >>" << std::endl;
+            //std::cout << " >>" << std::endl;
             psenparam.resize(psenparam.size());
 L:
             int n_flag = 0;
@@ -142,6 +144,7 @@ L:
             {
                 if (v -> flag == 0)
                 {
+                    endid.push_back(v -> id);
                     //std::cout << "v " << v -> id << " erase start " << std::endl;
                     psenparam.erase (v);
                     //std::cout << "erase complete" << std::endl;
@@ -310,9 +313,9 @@ void LaserSensingCallback(const sensor_msgs::LaserScan::ConstPtr &scan)
         int steps = 683;
         if ( scanData.size() == 0 ) scanData.resize(steps);
 
-        for (int i = 0, j = scan->ranges.size() - steps; i < steps ; i++, j++)
+        for (int i = 0; i < steps ; i++)
         {
-            scanData[i] = scan->ranges[j];
+            scanData[i] = scan->ranges[i];
         }
         pthread_mutex_unlock(&mutex_laser);
         CallbackCalled = true;
@@ -324,12 +327,14 @@ int main( int argc, char **argv )
     std::cout << "tracker_start" << std::endl;
     pthread_t thread_p;
     pthread_t thread_v;
+    pthread_t thread_s;
     ros::MultiThreadedSpinner spinner(0);
 
     ros::init(argc, argv, "pot_tracker_psen");
     ros::NodeHandle n;
     ros::Publisher  pub = n.advertise<tms_msg_ss::pot_tracking_psens>("tracking_psen0", 10);
     ros::Subscriber sub = n.subscribe("/LaserTracker0", 1000, LaserSensingCallback);
+
     if ( pthread_create( &thread_v, NULL, Visualization, (void *)&pub) )
     {
         printf("error creating thread.");

@@ -43,6 +43,7 @@ add_message_files(
   pot_tracking_grid.msg
   pot_tracking_psen.msg
   pot_tracking_psens.msg
+  pot_manager.msg
   pot_clustering.msg
 
   Sensor.msg
