@@ -34,7 +34,7 @@
 // #define PORT_TR		"/dev/ttyUSB0"
 // #define PORT_LC0	"/dev/ttyACM0"
 //#define PORT_LC1	"/dev/ttyACM0"
-std::string PORT_TR,ORT_LC0
+std::string PORT_TR,PORT_LC0;
 
 
 #define LC_MAX_SENSOR_NUM  4
@@ -212,7 +212,7 @@ bool CLoadCell::Setup()
 	mSensorNum = LC_MAX_SENSOR_NUM;
 
 	//通信関連初期化
-	if( (fd = open(PORT_LC0, (O_RDWR | O_NOCTTY) )) < 0 ){
+	if( (fd = open(PORT_LC0.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ){
 		printf("FAILED: LoadCell->OpenComPort:PORT_LC0 \n");
 		exit(-1);
 	}
@@ -227,7 +227,7 @@ bool CLoadCell::Setup()
 	tcflush(fd, TCIFLUSH);
 	tcsetattr(fd, TCSANOW, &newtio);
 
-	std::cout << "OPENED: LoadCell(port:" << PORT_LC0 << ")" << std::endl;
+	std::cout << "OPENED: LoadCell(port:" << PORT_LC0.c_str() << ")" << std::endl;
 
 	tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
 	close(fd);
@@ -271,7 +271,7 @@ int CLoadCell::GetWeight(int sensor_id)
 		signal=sensor_id-10+'A';	// 10->'A', 11->'B', ... , 35->'Z'
 
 	//通信関連初期化
-	if( (fd = open(PORT_LC0, (O_RDWR | O_NOCTTY) )) < 0 ){
+	if( (fd = open(PORT_LC0.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ){
 		printf("FAILED: LoadCell->OpenComPort:PORT_LC0 \n");
 		exit(-1);
 	}
@@ -398,7 +398,7 @@ bool CTR3::Setup()
 	mCommand[0] = TR3_STX;	//
 	mCommand[1] = 0x00;		//アドレス
 	
-	if( (fd = open(PORT_TR, (O_RDWR | O_NOCTTY) )) < 0 ){
+	if( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ){
 		printf("ERROR!!\n");
 		exit(-1);
 	}
@@ -415,7 +415,7 @@ bool CTR3::Setup()
 	tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
 	close(fd);
 
-	std::cout << "OPENED: TR3(port:" << PORT_TR << ")" << std::endl;
+	std::cout << "OPENED: TR3(port:" << PORT_TR.c_str() << ")" << std::endl;
 	
 	return true;
 }
@@ -444,7 +444,7 @@ int CTR3::SetAntenna(unsigned char AN)
 	
 	memset(&buf, 0, sizeof(buf));
 	//通信関連初期化
-	if( (fd = open(PORT_TR, (O_RDWR | O_NOCTTY) )) < 0 ){
+	if( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ){
 		printf("FAILED:TR3->OpenComPort: PORT_TR \n");
 	}
 
@@ -491,7 +491,7 @@ bool CTR3::AntennaPowerON()
 	memset(&buf, 0, sizeof(buf));
 
 	//通信関連初期化
-	if( (fd = open(PORT_TR, (O_RDWR | O_NOCTTY) )) < 0 ){
+	if( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ){
 		printf("FAILED:TR3->OpenComPort: PORT_TR \n");
 		exit(-1);
 	}
@@ -536,7 +536,7 @@ bool CTR3::AntennaPowerOFF()
 	memset(&buf, 0, sizeof(buf));
 
 	//通信関連初期化
-	if( (fd = open(PORT_TR, (O_RDWR | O_NOCTTY) )) < 0 ){
+	if( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ){
 		printf("FAILED:TR3->OpenComPort: PORT_TR \n");
 		exit(-1);
 	}
@@ -596,7 +596,7 @@ int CTR3::Inventory2()
 	mCommand[6] = 0x01; //出力指定->取得データ数＋UIDデータ
 
 	//通信関連初期化
-	if( (fd = open(PORT_TR, (O_RDWR | O_NOCTTY) )) < 0 ){
+	if( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ){
 		printf("FAILED:TR3->OpenComPort: PORT_TR \n");
 		exit(-1);
 	}
@@ -783,7 +783,7 @@ bool CTR3::SetMode(unsigned char mode)
 	mCommand[3] = 0x01; //データ長
 	mCommand[4] = 0x00; //コマンド詳細
 	//通信関連初期化
-	if( (fd = open(PORT_TR, (O_RDWR | O_NOCTTY) )) < 0 ){
+	if( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ){
 		printf("FAILED:TR3->OpenComPort: PORT_TR \n");
 		exit(-1);
 	}
@@ -1117,8 +1117,16 @@ int main(int argc, char** argv)
     ros::NodeHandle nh_param("~");
     nh_param.param<std::string>("PORT_TR",PORT_TR,"/dev/ttyUSB0");
     nh_param.param<std::string>("PORT_LC0",PORT_LC0,"/dev/ttyACM0");
-    nh_param.param<int32_t>("idSensor",idSensor,NULL);
-    nh_param.param<int32_t>("idPlace",idPlace,NULL);
+    // nh_param.param<int32_t>("idSensor",idSensor,NULL);
+    // nh_param.param<int32_t>("idPlace",idPlace,NULL);
+	if(! nh_param.getParam("idSensor",idSensor)){
+		ROS_ERROR("ros param idSensor isn't exist");
+		return 0;
+	}
+	if(! nh_param.getParam("idPlace",idPlace)){
+		ROS_ERROR("ros param idPlace isn't exist");
+		return 0;
+	}
 
 	//iniファイルから値を読み込んで各デバイスに接続
 	//RFIDリーダ接続
@@ -1152,7 +1160,11 @@ int main(int argc, char** argv)
 		// 毎回初期化し，庫内にある物品だけ値を更新して送信する 
 	  ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 	  // icsmsg.header.frame_id  = "/ics";
-	  nh_param.param<std::string>("frame_id",frame_id,NULL);
+	  // nh_param.param<std::string>("frame_id",icsmsg.header.frame_id,NULL);
+	  if(! nh_param.getParam("frame_id",icsmsg.header.frame_id)){
+	  	ROS_ERROR("ros param frame_id isn't exist");
+	  	return 0;
+	  }
 	  icsmsg.header.stamp     = now;
 
     icsmsg.tmsdb.clear();
@@ -1215,7 +1227,11 @@ int main(int argc, char** argv)
 			    icsmsg.tmsdb[vi].x			= cObj.mX;
 			    icsmsg.tmsdb[vi].y			= cObj.mY;
 			    icsmsg.tmsdb[vi].weight = cObj.mWeight;
-			    nh_param.param<float>("z",icsmsg.tmsdb[vi].z,NULL);
+			    // nh_param.param<float>("z",icsmsg.tmsdb[vi].z,NULL);
+			    if(! nh_param.getParam("z",icsmsg.tmsdb[vi].z)){
+			   		ROS_ERROR("ros param z isn't exist");
+			   		return 0;
+			    }
 			   //  if(i == 0)	icsmsg.tmsdb[vi].z  = 620.0;		//棚上段の場合
 				  // else 				icsmsg.tmsdb[vi].z	= 330.0;		//棚中段の場合
 			  }

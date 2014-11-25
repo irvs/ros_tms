@@ -1,10 +1,10 @@
 <launch>
-	<node pkg="tms_ss" type="ibs" name="ibs_rfrg">
+	<node pkg="tms_ss_ibs" type="ibs" name="ibs_rfrg" output="screen">
 		<param name="PORT_TR"  value="/dev/ttyUSB0" />
 		<param name="PORT_LC0" value="/dev/ttyACM6" />
 		<param name="frame_id" value="/irs" />
-		<param name="idSensor" value=3018 />
-		<param name="idPlace"  value=2009 />
-		<param name="z"		   value=800 />
+		<param name="idSensor" value="3018" />
+		<param name="idPlace"  value="2009" />
+		<param name="z"		   value="800.0" />
 	</node>
 </launch>
