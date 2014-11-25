@@ -35,7 +35,7 @@ set(rostmsPluginPath ${ChoreonoidPath}/extplugin/rostmsPlugin)
 set(prmPath ${ChoreonoidPath}/extplugin/graspPlugin/PRM)
 set(ChoreonoidLibPath ${ChoreonoidPath}/lib/choreonoid-1.4)
 
-set(libname CnoidRosTmsTmsRpPlugin)
+set(libname CnoidRosTmsRpActionPlugin)
 
 
 ###############################

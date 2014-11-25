@@ -191,7 +191,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   // initialize ros connect
   try{
     if (!is_ros_Init_) {
-      ros::init(argc_, argv_, "tms_rp");
+      ros::init(argc_, argv_, "tms_rp_action");
       is_ros_Init_=true;
       cout << "Success: connecting roscore.." << endl;
     }

@@ -3,6 +3,7 @@
 
 #include <ros/ros.h>
 #include <std_msgs/String.h>
+#include <tms_rp_controller.h>
 
 #include <cnoid/ItemTreeView>
 #include <cnoid/MessageView>
@@ -57,6 +58,7 @@ class ExampleBar : public cnoid::ToolBar, public boost::signals::trackable
 
   MessageView& mes;
   std::ostream& os;
+  TmsRpController& trc_;
 
   void onTestButtonClicked();
   void rosOn();
