@@ -458,10 +458,8 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 						arg[0] = rp_srv.response.VoronoiPath[i].x;
 						arg[1] = rp_srv.response.VoronoiPath[i].y;
 						arg[2] = rp_srv.response.VoronoiPath[i].th;
-						callSynchronously(bind(&TmsRpSubtask::sp5_control,this, sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
-			    		if (sd.type == true) {
-			    			sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
-			    			}
+						sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg);
+			    		if (sd.type == true) sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
 			    		else {
 			    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
@@ -474,10 +472,8 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 						arg[0] = rp_srv.response.VoronoiPath[i].x;
 						arg[1] = rp_srv.response.VoronoiPath[i].y;
 						arg[2] = rp_srv.response.VoronoiPath[i].th;
-//						callSynchronously(bind(&TmsRpSubtask::sp5_control,this, sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
 						sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg);
-			    		if (sd.type == true)
-			    			sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
+			    		if (sd.type == true) sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
 			    		else {
 			    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
@@ -672,8 +668,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 	switch (sd.robot_id) {
 	case 2002:
 	{
-		callSynchronously(bind(&TmsRpSubtask::sp5_control,this, sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
-
+		sp5_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg);
 		if (sd.type == true) sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
 		else {
 			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
@@ -683,8 +678,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 	}
 	case 2006:
 	{
-		callSynchronously(bind(&TmsRpSubtask::kxp_control,this, sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
-
+		kxp_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg);
 		if (sd.type == false) {
 			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 			sleep(1);
@@ -766,7 +760,7 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 					arg[1] = rp_srv.response.VoronoiPath[i].y;
 					arg[2] = rp_srv.response.VoronoiPath[i].th;
 
-					callSynchronously(bind(&TmsRpSubtask::sp5_control,this, sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg));
+					sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg);
 		    		if (sd.type == true) sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
 		    		else {
 		    			double rPosX = arg[0]/1000;
@@ -803,8 +797,7 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 					arg[10] = rad2deg(rotation(2));
 					arg[11] = sd.robot_id;
 					arg[12] = 2; // obj_state
-					callSynchronously(bind(&TmsRpSubtask::sp5_control,this, sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
-
+					sp5_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg);
 		    		if (sd.type == true) sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
 		    		else {
 		    			sleep(1);
@@ -815,8 +808,7 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 			}
 		}
 		// move joint
-		callSynchronously(bind(&TmsRpSubtask::sp5_control,this, sd.type, UNIT_ALL, CMD_CALC_BACKGROUND, 19, goal_arg));
-
+		sp5_control(sd.type, UNIT_ALL, CMD_CALC_BACKGROUND, 19, goal_arg);
 		break;
 	}
 	case 2006:
@@ -875,24 +867,22 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 					arg[10] = rad2deg(rotation(2));
 					arg[11] = sd.robot_id;
 					arg[12] = 2; // obj_state
-					callSynchronously(bind(&TmsRpSubtask::kxp_control,this, sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg));
-
+					kxp_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg);
 		    		if (sd.type == false) {
 		    			sleep(1);
-					callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
+		    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 		    			sleep(1);
 		    		}
 				}
 			}
 		}
 
-//				goal_arg[11] = 0.0;
-//				goal_arg[12] = 0.0;
-//				goal_arg[13] = 0.0;
-//				goal_arg[14] = 37.0; // deg
-//				goal_arg[15] = 0.0;
-		// 関節角遷移
-//				callSynchronously(bind(&TmsRpBar::kxp_control,this, sd.type, UNIT_ALL, CMD_CALC_BACKGROUND, 19, goal_arg));
+//		goal_arg[11] = 0.0;
+//		goal_arg[12] = 0.0;
+//		goal_arg[13] = 0.0;
+//		goal_arg[14] = 37.0; // deg
+//		goal_arg[15] = 0.0;
+//		kxp_control(sd.type, UNIT_ALL, CMD_CALC_BACKGROUND, 19, goal_arg);
 		break;
 	}
 	default:
