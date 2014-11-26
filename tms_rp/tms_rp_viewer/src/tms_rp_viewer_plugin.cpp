@@ -18,7 +18,7 @@ class RpViewerPlugin : public Plugin
 {
   public:
 
-  RpViewerPlugin() : Plugin("Example")
+  RpViewerPlugin() : Plugin("RpViewer")
   {
   }
 

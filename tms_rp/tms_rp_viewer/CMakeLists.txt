@@ -6,13 +6,14 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs 
   sensor_msgs
+  pcl_ros
 )
 
 ## catkin specific configuration
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES tms_rp_viewer
-  CATKIN_DEPENDS roscpp std_msgs sensor_msgs message_runtime
+  CATKIN_DEPENDS roscpp std_msgs sensor_msgs message_runtime pcl_ros
   DEPENDS eigen
 )
 

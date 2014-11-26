@@ -72,6 +72,9 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl_conversions/pcl_conversions.h>
 
+#define MAX_ICS_OBJECT_NUM    25
+#define MAX_FURNITURE_NUM     20
+
 #define PERSON 1
 //#define PERSON 0
 
@@ -110,6 +113,8 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   int argc_;
   char **argv_;
   uint32_t sid_;
+  Matrix3d mat0_, mat_ccw90_, mat_ccw180_, mat_cw90_;
+
   ros::ServiceClient get_data_client_;
   ros::ServiceClient sp5_control_client_;
   ros::ServiceClient path_planning_client_;
@@ -158,7 +163,6 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   MessageView& mes_;
   std::ostream& os_;
   TmsRpController& trc_;
-  Matrix3d mat0_, mat_ccw90_, mat_ccw180_, mat_cw90_;
 
   ToolButton* static_map_toggle_;
   ToolButton* dynamic_map_toggle_;

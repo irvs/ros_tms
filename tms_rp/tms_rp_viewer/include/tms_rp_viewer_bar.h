@@ -1,9 +1,13 @@
 #ifndef  TMS_RP_VIEWER_BAR_H
 #define  TMS_RP_VIEWER_BAR_H
 
+#include <tms_rp_controller.h>
+//#include <tms_rp_bar.h>
+
 #include <ros/ros.h>
 #include <std_msgs/String.h>
-#include <tms_rp_controller.h>
+
+#include <tms_msg_db/TmsdbStamped.h>
 
 #include <cnoid/ItemTreeView>
 #include <cnoid/MessageView>
@@ -44,23 +48,27 @@ namespace tms_rp
 
 class RpViewerBar : public cnoid::ToolBar, public boost::signals::trackable 
 {
- public:
-  int argc;
-  char **argv;
-
+public:
   RpViewerBar();
   static RpViewerBar* instance();
   virtual ~RpViewerBar();
 
- private:
+  int argc;
+  char **argv;
+  tms_msg_db::TmsdbStamped environment_information_;
+  ros::Subscriber subscribe_environment_information_;
 
+private:
   static bool isRosInit;
 
   MessageView& mes;
   std::ostream& os;
   grasp::TmsRpController& trc_;
+//  grasp::TmsRpBar& trb_;
 
-  void onTestButtonClicked();
+  void updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::ConstPtr& msg);
+
+  void onViewerClicked();
   void rosOn();
 };
 

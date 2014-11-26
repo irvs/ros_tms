@@ -7,10 +7,6 @@
 #include <tms_rp_pp.h>
 
 //------------------------------------------------------------------------------
-#define MAX_ICS_OBJECT_NUM    25
-#define MAX_FURNITURE_NUM     20
-
-//------------------------------------------------------------------------------
 using namespace std;
 using namespace boost;
 using namespace cnoid;
@@ -1847,7 +1843,7 @@ void TmsRpBar::connectROS()
   static ros::Rate loop_rate(20); // 0.05sec
   while (ros::ok())
   {
-    updateEnvironmentInformation(false);
+//    updateEnvironmentInformation(false);
 
     static_and_dynamic_map.staticMapPublish();
     static_and_dynamic_map.dynamicMapPublish(unknown_moving_object_position_);
