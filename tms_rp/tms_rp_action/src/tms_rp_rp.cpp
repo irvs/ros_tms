@@ -57,7 +57,7 @@ void tms_rp::TmsRpSubtask::send_rc_exception(int error_type) {
 	switch (error_type) {
 	case 0:
 		rc_s_srv.request.error_msg = "RC exception. Cannot set odometry";
-		break;
+		return;
 	case 1:
 		rc_s_srv.request.error_msg = "RC exception. Cannot move vehicle";
 		break;
@@ -109,14 +109,10 @@ bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string& r
 			// set odom for production version
 			if (type == true && (robot_id == 2002 || robot_id == 2003)) {
 				double arg[1] = {0.0};
-				if (!sp5_control(true, UNIT_ALL, SET_ODOM, 1, arg)) {
-					send_rc_exception(0);
-					return false;
-				}
+				if (!sp5_control(true, UNIT_ALL, SET_ODOM, 1, arg)) 	send_rc_exception(0);
 			}
-		} else {
+		} else
 			return false;
-		}
 	} else {
 		ROS_INFO("Failed to call service tms_db_get_current_robot_data.\n");
 		// use odometry when the robot cannot get data from vicon system
@@ -515,12 +511,8 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 							send_rc_exception(1);
 							return false;
 						}
-			    		if (sd.type == true) {
-							if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) {
-								send_rc_exception(0);
-								return false;
-							}
-			    		}
+			    		if (sd.type == true)
+			    			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
 			    		else {
 			    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
@@ -537,12 +529,8 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 							send_rc_exception(1);
 							return false;
 						}
-			    		if (sd.type == true) {
-			    			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) {
-			    				send_rc_exception(0);
-			    				return false;
-			    			}
-			    		}
+			    		if (sd.type == true)
+			    			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
 			    		else {
 			    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
@@ -750,12 +738,8 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 			send_rc_exception(5);
 			return false;
 		}
-		if (sd.type == true) {
-			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) {
-				send_rc_exception(0);
-				return false;
-			}
-		}
+		if (sd.type == true)
+			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
 		else {
 			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 			sleep(1);
@@ -850,12 +834,8 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 						send_rc_exception(1);
 						return false;
 					}
-		    		if (sd.type == true) {
-		    			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) {
-		    				send_rc_exception(0);
-		    				return false;
-		    			}
-		    		}
+		    		if (sd.type == true)
+		    			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
 		    		else {
 		    			double rPosX = arg[0]/1000;
 		    			double rPosY = arg[1]/1000;
@@ -895,12 +875,8 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 						send_rc_exception(5);
 						return false;
 					}
-		    		if (sd.type == true) {
-		    			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) {
-		    				send_rc_exception(0);
-		    				return false;
-		    			}
-		    		}
+		    		if (sd.type == true)
+		    			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
 		    		else {
 		    			sleep(1);
 		    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
