@@ -55,8 +55,8 @@ add_library(
   SHARED
   #${RCS}
   ${rpActionPluginPath}/src/tms_rp_controller.cpp
-  src/example_bar.cpp
-  src/example_plugin.cpp
+  src/tms_rp_viewer_bar.cpp
+  src/tms_rp_viewer_plugin.cpp
 )
 
 add_dependencies(${libname} tms_msg_db_gencpp)

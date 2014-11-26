@@ -1,21 +1,22 @@
-#include <example_bar.h>
+#include <tms_rp_viewer_bar.h>
 
 //------------------------------------------------------------------------------
 using namespace std;
 using namespace boost;
 using namespace cnoid;
 using namespace grasp;
+using namespace tms_rp;
 
-bool ExampleBar::isRosInit = false;
+bool RpViewerBar::isRosInit = false;
 
 //------------------------------------------------------------------------------
-ExampleBar* ExampleBar::instance(){
-  static ExampleBar* instance = new ExampleBar();
+RpViewerBar* RpViewerBar::instance(){
+  static RpViewerBar* instance = new RpViewerBar();
   return instance;
 }
 
 //------------------------------------------------------------------------------
-ExampleBar::ExampleBar(): ToolBar("ExampleBar"),
+RpViewerBar::RpViewerBar(): ToolBar("RpViewerBar"),
                             mes(*MessageView::mainInstance()),
                             os(MessageView::mainInstance()->cout()),
                             trc_(*TmsRpController::instance()),
@@ -41,25 +42,25 @@ ExampleBar::ExampleBar(): ToolBar("ExampleBar"),
   //------------------------------------------------------------------------------
   addSeparator();
 
-  addLabel(("[ExamplePlugin]"));
+  addLabel(("[RpViewerPlugin]"));
 
   addButton(("Test"), ("Test Button"))->
-    sigClicked().connect(bind(&ExampleBar::onTestButtonClicked, this));
+    sigClicked().connect(bind(&RpViewerBar::onTestButtonClicked, this));
 }
 
 //------------------------------------------------------------------------------
-ExampleBar::~ExampleBar()
+RpViewerBar::~RpViewerBar()
 {
 }
 
 //------------------------------------------------------------------------------
-void ExampleBar::onTestButtonClicked()
+void RpViewerBar::onTestButtonClicked()
 {
-  static boost::thread t(boost::bind(&ExampleBar::rosOn, this));
+  static boost::thread t(boost::bind(&RpViewerBar::rosOn, this));
 }
 
 //------------------------------------------------------------------------------
-void ExampleBar::rosOn()
+void RpViewerBar::rosOn()
 {
   static ros::Rate loop_rate(30); // 0.1sec
   bool isTest=false;

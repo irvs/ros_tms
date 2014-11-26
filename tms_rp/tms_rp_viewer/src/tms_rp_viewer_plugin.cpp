@@ -1,4 +1,4 @@
-#include <example_bar.h>
+#include <tms_rp_viewer_bar.h>
 
 #include <cnoid/Plugin>
 #include <cnoid/ItemManager>
@@ -14,21 +14,21 @@ using namespace grasp;
 namespace 
 {
 
-class ExamplePlugin : public Plugin
+class RpViewerPlugin : public Plugin
 {
   public:
 
-  ExamplePlugin() : Plugin("Example")
+  RpViewerPlugin() : Plugin("Example")
   {
   }
 
   bool initialize()
   {
-    addToolBar(grasp::ExampleBar::instance());
+    addToolBar(tms_rp::RpViewerBar::instance());
     return true;
   }
 };
 
 }
 
-CNOID_IMPLEMENT_PLUGIN_ENTRY(ExamplePlugin);
+CNOID_IMPLEMENT_PLUGIN_ENTRY(RpViewerPlugin);

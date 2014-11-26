@@ -72,22 +72,22 @@ link_directories(
 #   src/libCnoidPlannerROSInterface/cnoid_planner_controller.cpp
 # )
 
-add_library(
-  ${libVoronoiPathPlanner}
-  SHARED
-  src/libVoronoiPathPlanner/VoronoiPathPlannerPlugin.cpp
-  src/libVoronoiPathPlanner/VoronoiPathPlanner.cpp
-  src/libVoronoiPathPlanner/VoronoiPathPlannerBar.cpp
-)
+#add_library(
+#  ${libVoronoiPathPlanner}
+#  SHARED
+#  src/libVoronoiPathPlanner/VoronoiPathPlannerPlugin.cpp
+#  src/libVoronoiPathPlanner/VoronoiPathPlanner.cpp
+#  src/libVoronoiPathPlanner/VoronoiPathPlannerBar.cpp
+#)
 
-add_library(
-  ${libGiveObjToHumanPlanner}
-  SHARED
-  src/libGiveObjToHumanPlanner/HumanPlugin.cpp
-  src/libGiveObjToHumanPlanner/HumanPlanner.cpp
-  src/libGiveObjToHumanPlanner/GiveObjToHumanPlannerBar.cpp
-  src/libGiveObjToHumanPlanner/GiveObjToHumanPlanner.cpp
-)
+#add_library(
+#  ${libGiveObjToHumanPlanner}
+#  SHARED
+#  src/libGiveObjToHumanPlanner/HumanPlugin.cpp
+#  src/libGiveObjToHumanPlanner/HumanPlanner.cpp
+#  src/libGiveObjToHumanPlanner/GiveObjToHumanPlannerBar.cpp
+#  src/libGiveObjToHumanPlanner/GiveObjToHumanPlanner.cpp
+#)
 
 # add_library(
 #   ${libWagonPlanner}
@@ -101,8 +101,8 @@ add_library(
 # )
 
 #add_dependencies(${libCnoidPlannerROSInterface} tms_msg_db_gencpp tms_msg_rp_gencpp)
-add_dependencies(${libVoronoiPathPlanner}       tms_msg_db_gencpp tms_msg_rp_gencpp)
-add_dependencies(${libGiveObjToHumanPlanner}    tms_msg_db_gencpp tms_msg_rp_gencpp)
+#add_dependencies(${libVoronoiPathPlanner}       tms_msg_db_gencpp tms_msg_rp_gencpp)
+#add_dependencies(${libGiveObjToHumanPlanner}    tms_msg_db_gencpp tms_msg_rp_gencpp)
 #add_dependencies(${libWagonPlanner}             tms_msg_db_gencpp tms_msg_rp_gencpp)
 
 # target_link_libraries(
@@ -123,35 +123,35 @@ add_dependencies(${libGiveObjToHumanPlanner}    tms_msg_db_gencpp tms_msg_rp_gen
 #   ${catkin_LIBRARIES}
 # )
 
-target_link_libraries(
-  ${libVoronoiPathPlanner}
-  CnoidBodyPlugin
-  CnoidPoseSeqPlugin
-  CnoidGraspPlugin
-  CnoidPRMPlugin
-  uuid
-  dl
-  pthread
-  omniORB4
-  omnithread
-  omniDynamic4
-  ${catkin_LIBRARIES}
-)
+#target_link_libraries(
+#  ${libVoronoiPathPlanner}
+#  CnoidBodyPlugin
+#  CnoidPoseSeqPlugin
+#  CnoidGraspPlugin
+#  CnoidPRMPlugin
+#  uuid
+#  dl
+#  pthread
+#  omniORB4
+#  omnithread
+#  omniDynamic4
+#  ${catkin_LIBRARIES}
+#)
 
-target_link_libraries(
-  ${libGiveObjToHumanPlanner}
-  CnoidBodyPlugin
-  CnoidPoseSeqPlugin
-  CnoidGraspPlugin
-  CnoidPRMPlugin
-  uuid
-  dl
-  pthread
-  omniORB4
-  omnithread
-  omniDynamic4
-  ${catkin_LIBRARIES}
-)
+#target_link_libraries(
+#  ${libGiveObjToHumanPlanner}
+#  CnoidBodyPlugin
+#  CnoidPoseSeqPlugin
+#  CnoidGraspPlugin
+#  CnoidPRMPlugin
+#  uuid
+#  dl
+#  pthread
+#  omniORB4
+#  omnithread
+#  omniDynamic4
+#  ${catkin_LIBRARIES}
+#)
 
 # target_link_libraries(
 #   ${libWagonPlanner}
@@ -174,17 +174,17 @@ target_link_libraries(
 #   ${choreonoidLibPath}
 # )
 
-set_target_properties(
-  ${libVoronoiPathPlanner}
-  PROPERTIES LIBRARY_OUTPUT_DIRECTORY 
-  ${choreonoidLibPath}
-)
+#set_target_properties(
+#  ${libVoronoiPathPlanner}
+#  PROPERTIES LIBRARY_OUTPUT_DIRECTORY
+#  ${choreonoidLibPath}
+#)
 
-set_target_properties(
-  ${libGiveObjToHumanPlanner}
-  PROPERTIES LIBRARY_OUTPUT_DIRECTORY 
-  ${choreonoidLibPath}
-)
+#set_target_properties(
+#  ${libGiveObjToHumanPlanner}
+#  PROPERTIES LIBRARY_OUTPUT_DIRECTORY
+#  ${choreonoidLibPath}
+#)
 
 # set_target_properties(
 #   ${libWagonPlanner}

@@ -1,5 +1,5 @@
-#ifndef  EXAMPLE_BAR_H
-#define  EXAMPLE_BAR_H
+#ifndef  TMS_RP_VIEWER_BAR_H
+#define  TMS_RP_VIEWER_BAR_H
 
 #include <ros/ros.h>
 #include <std_msgs/String.h>
@@ -39,18 +39,18 @@
 using namespace std;
 using namespace cnoid;
 
-namespace grasp 
+namespace tms_rp
 {
 
-class ExampleBar : public cnoid::ToolBar, public boost::signals::trackable 
+class RpViewerBar : public cnoid::ToolBar, public boost::signals::trackable 
 {
  public:
   int argc;
   char **argv;
 
-  ExampleBar();
-  static ExampleBar* instance();
-  virtual ~ExampleBar();
+  RpViewerBar();
+  static RpViewerBar* instance();
+  virtual ~RpViewerBar();
 
  private:
 
@@ -58,7 +58,7 @@ class ExampleBar : public cnoid::ToolBar, public boost::signals::trackable
 
   MessageView& mes;
   std::ostream& os;
-  TmsRpController& trc_;
+  grasp::TmsRpController& trc_;
 
   void onTestButtonClicked();
   void rosOn();
@@ -66,4 +66,4 @@ class ExampleBar : public cnoid::ToolBar, public boost::signals::trackable
 
 }
 
-#endif //EXAMPLE_PLUGIN_BAR_H
+#endif //TMS_RP_VIEWER_BAR_H
