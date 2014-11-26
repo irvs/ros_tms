@@ -78,6 +78,7 @@ private:
 
 	boost::mutex mtx;
 	static int state_condition, loop_counter;
+	static bool abort;
 	ros::ServiceServer service, state_control_srv;
 };
 

@@ -4,6 +4,7 @@
 
 int TmsTsMaster::state_condition = -1;
 int TmsTsMaster::loop_counter = 0;
+bool TmsTsMaster::abort = false;
 
 std::list<TmsTsMaster::Task> task_list_;
 // return first data of the list
@@ -163,7 +164,12 @@ bool TmsTsMaster::stsCallback(tms_msg_ts::ts_state_control::Request &req,
 	if (req.type == 0) {
 		// judge segment(from TS)
 		if (req.cc_subtasks == 0) {
-			while (loop_counter < 1) {} // TIMEOUT
+			while (loop_counter < 1) {
+				if (abort == true) {
+					abort = false;
+					break;
+				}
+			} // TIMEOUT
 			if (state_condition == 0) {
 				state_condition = -1;
 				loop_counter = 0;
@@ -177,7 +183,12 @@ bool TmsTsMaster::stsCallback(tms_msg_ts::ts_state_control::Request &req,
 				return false;
 			}
 		} else if (req.cc_subtasks >= 2) {
-			while (loop_counter < req.cc_subtasks) {} // TIMEOUT
+			while (loop_counter < req.cc_subtasks) {
+				if (abort == true) {
+					abort = false;
+					break;
+				}
+			} // TIMEOUT
 			if (state_condition == (req.cc_subtasks-1)) {
 				state_condition = -1;
 				loop_counter = 0;
@@ -200,12 +211,17 @@ bool TmsTsMaster::stsCallback(tms_msg_ts::ts_state_control::Request &req,
 		// update segment(from RP)
 		if (req.state == 0) {
 			ROS_ERROR("Error %d: %s", req.state, req.error_msg.c_str());
-			state_condition = -1;
 			loop_counter++;
 			return false;
 		}
 		state_condition += req.state;
 		loop_counter++;
+		return true;
+	} else if (req.type == 2) {
+		// abort instruction
+		ROS_ERROR("Error %d: %s", req.state, req.error_msg.c_str());
+		abort = true;
+		return false;
 	} else {
 		ROS_ERROR("Illegal type number.");
 		return false;

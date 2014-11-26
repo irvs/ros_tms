@@ -33,6 +33,7 @@ class TmsRpSubtask : public cnoid::ToolBar, public boost::signals::trackable
 	static TmsRpSubtask* instance();
 	virtual ~TmsRpSubtask();
 
+	void send_rc_exception(int error_type);
 	bool get_robot_pos(bool type, int robot_id, std::string& robot_name, tms_msg_rp::rps_voronoi_path_planning& rp_srv);
 	bool subtask(tms_msg_rp::rp_cmd::Request &req,tms_msg_rp::rp_cmd::Response &res);
 	bool sp5_control(bool type, int unit, int cmd, int arg_size, double* arg);

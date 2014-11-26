@@ -50,6 +50,37 @@ tms_rp::TmsRpSubtask::~TmsRpSubtask()
 }
 
 //------------------------------------------------------------------------------
+void tms_rp::TmsRpSubtask::send_rc_exception(int error_type) {
+	tms_msg_ts::ts_state_control rc_s_srv;
+	rc_s_srv.request.type = 2; // for subtask state update;
+	rc_s_srv.request.state = -1;
+	switch (error_type) {
+	case 0:
+		rc_s_srv.request.error_msg = "RC exception. Cannot set odometry";
+		break;
+	case 1:
+		rc_s_srv.request.error_msg = "RC exception. Cannot move vehicle";
+		break;
+	case 2:
+		rc_s_srv.request.error_msg = "RC exception. Cannot move right arm";
+		break;
+	case 3:
+		rc_s_srv.request.error_msg = "RC exception. Cannot move lumba";
+		break;
+	case 4:
+		rc_s_srv.request.error_msg = "RC exception. Cannot move right gripper";
+		break;
+	case 5:
+		rc_s_srv.request.error_msg = "RC exception. Cannot run command sync obj";
+		break;
+	case 6:
+		rc_s_srv.request.error_msg = "RC exception. Cannot run command calc background";
+		break;
+	}
+	state_client.call(rc_s_srv);
+}
+
+//------------------------------------------------------------------------------
 bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string& robot_name, tms_msg_rp::rps_voronoi_path_planning& rp_srv) {
 	tms_msg_db::TmsdbGetData srv;
 
@@ -78,7 +109,10 @@ bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string& r
 			// set odom for production version
 			if (type == true && (robot_id == 2002 || robot_id == 2003)) {
 				double arg[1] = {0.0};
-				sp5_control(true, UNIT_ALL, SET_ODOM, 1, arg);
+				if (!sp5_control(true, UNIT_ALL, SET_ODOM, 1, arg)) {
+					send_rc_exception(0);
+					return false;
+				}
 			}
 		} else {
 			return false;
@@ -213,13 +247,23 @@ bool tms_rp::TmsRpSubtask::sp5_control(bool type, int unit, int cmd, int arg_siz
 	}
 
 	if (type == true) {
-		if (sp5_control_client_.call(sp_control_srv)) ROS_INFO("result: %d", sp_control_srv.response.result);
-		else                  ROS_ERROR("Failed to call service sp5_control");
+		if (sp5_control_client_.call(sp_control_srv)) {
+			ROS_INFO("result: %d", sp_control_srv.response.result);
+			if (sp_control_srv.response.result == 1) return true;
+			else return false;
+		} else {
+			ROS_ERROR("Failed to call service sp5_control");
+			return false;
+		}
 	} else {
-		if (sp5_virtual_control_client.call(sp_control_srv)) ROS_INFO("result: %d", sp_control_srv.response.result);
-		else                  ROS_ERROR("Failed to call service sp5_control");
+		if (sp5_virtual_control_client.call(sp_control_srv)) {
+			ROS_INFO("result: %d", sp_control_srv.response.result);
+			return true;
+		} else {
+			ROS_ERROR("Failed to call service sp5_control");
+			return false;
+		}
 	}
-	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -236,14 +280,23 @@ bool tms_rp::TmsRpSubtask::kxp_control(bool type, int unit, int cmd, int arg_siz
 	}
 
 	if (type == true) {
-//		kxp_control_client.call(kxp_control_srv);
-//		if (kxp5_control_client.call(kxp_control_srv)) ROS_INFO("result: %d", kxp_control_srv.response.result);
-//		else                  ROS_ERROR("Failed to call service kxp_control");
+//		if (kxp5_control_client.call(kxp_control_srv)) {
+//			ROS_INFO("result: %d", kxp_control_srv.response.result);
+//			if (kxp_control_srv.response.result == 1) return true;
+//			else return false;
+//		} else {
+//			ROS_ERROR("Failed to call service kxp_control");
+//			return false;
+//		}
 	} else {
-		if (kxp_virtual_control_client.call(kxp_control_srv)) ROS_INFO("result: %d", kxp_control_srv.response.result);
-		else                  ROS_ERROR("Failed to call service kxp_control");
+		if (kxp_virtual_control_client.call(kxp_control_srv)) {
+			ROS_INFO("result: %d", kxp_control_srv.response.result);
+			return true;
+		} else {
+			ROS_ERROR("Failed to call service kxp_control");
+			return false;
+		}
 	}
-	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -458,8 +511,16 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 						arg[0] = rp_srv.response.VoronoiPath[i].x;
 						arg[1] = rp_srv.response.VoronoiPath[i].y;
 						arg[2] = rp_srv.response.VoronoiPath[i].th;
-						sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg);
-			    		if (sd.type == true) sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
+						if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg)) {
+							send_rc_exception(1);
+							return false;
+						}
+			    		if (sd.type == true) {
+							if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) {
+								send_rc_exception(0);
+								return false;
+							}
+			    		}
 			    		else {
 			    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
@@ -472,8 +533,16 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 						arg[0] = rp_srv.response.VoronoiPath[i].x;
 						arg[1] = rp_srv.response.VoronoiPath[i].y;
 						arg[2] = rp_srv.response.VoronoiPath[i].th;
-						sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg);
-			    		if (sd.type == true) sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
+						if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg)) {
+							send_rc_exception(1);
+							return false;
+						}
+			    		if (sd.type == true) {
+			    			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) {
+			    				send_rc_exception(0);
+			    				return false;
+			    			}
+			    		}
 			    		else {
 			    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
@@ -569,9 +638,18 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 
 	grasp::TmsRpBar::planning_mode_ = 1;
 	if ((sd.robot_id == 2002 || sd.robot_id == 2003) && sd.type == true) {
-		sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4);
-		sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg);
-		sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12);
+		if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4)) {
+			send_rc_exception(2);
+			return false;
+		}
+		if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg)) {
+			send_rc_exception(3);
+			return false;
+		}
+		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12)) {
+			send_rc_exception(4);
+			return false;
+		}
 	}
 
 	grasp::PlanBase *pb = grasp::PlanBase::instance();
@@ -668,8 +746,16 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 	switch (sd.robot_id) {
 	case 2002:
 	{
-		sp5_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg);
-		if (sd.type == true) sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
+		if (!sp5_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg)) {
+			send_rc_exception(5);
+			return false;
+		}
+		if (sd.type == true) {
+			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) {
+				send_rc_exception(0);
+				return false;
+			}
+		}
 		else {
 			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 			sleep(1);
@@ -760,8 +846,16 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 					arg[1] = rp_srv.response.VoronoiPath[i].y;
 					arg[2] = rp_srv.response.VoronoiPath[i].th;
 
-					sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg);
-		    		if (sd.type == true) sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
+					if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg)) {
+						send_rc_exception(1);
+						return false;
+					}
+		    		if (sd.type == true) {
+		    			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) {
+		    				send_rc_exception(0);
+		    				return false;
+		    			}
+		    		}
 		    		else {
 		    			double rPosX = arg[0]/1000;
 		    			double rPosY = arg[1]/1000;
@@ -797,18 +891,29 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 					arg[10] = rad2deg(rotation(2));
 					arg[11] = sd.robot_id;
 					arg[12] = 2; // obj_state
-					sp5_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg);
-		    		if (sd.type == true) sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg);
+					if (!sp5_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg)) {
+						send_rc_exception(5);
+						return false;
+					}
+		    		if (sd.type == true) {
+		    			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) {
+		    				send_rc_exception(0);
+		    				return false;
+		    			}
+		    		}
 		    		else {
 		    			sleep(1);
-					callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
+		    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 		    			sleep(1);
 		    		}
 				}
 			}
 		}
 		// move joint
-		sp5_control(sd.type, UNIT_ALL, CMD_CALC_BACKGROUND, 19, goal_arg);
+		if (!sp5_control(sd.type, UNIT_ALL, CMD_CALC_BACKGROUND, 19, goal_arg)) {
+			send_rc_exception(6);
+			return false;
+		}
 		break;
 	}
 	case 2006:
