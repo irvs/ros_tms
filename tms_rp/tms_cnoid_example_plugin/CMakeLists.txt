@@ -48,29 +48,29 @@ link_directories(
   ${ChoreonoidLibPath}
 )
 
-add_library(
-  ${libname}
-  SHARED
-  #${RCS}
-  src/example_bar.cpp
-  src/example_plugin.cpp
-)
+#add_library(
+#  ${libname}
+#  SHARED
+#  #${RCS}
+#  src/example_bar.cpp
+#  src/example_plugin.cpp
+#)
 
-add_dependencies(${libname} tms_msg_db_gencpp)
+#add_dependencies(${libname} tms_msg_db_gencpp)
 
-target_link_libraries(
-  ${libname}
-  CnoidBodyPlugin
-  CnoidPoseSeqPlugin
-  CnoidGraspPlugin
-  CnoidPRMPlugin
-  ${catkin_LIBRARIES}
-)
+#target_link_libraries(
+#  ${libname}
+#  CnoidBodyPlugin
+#  CnoidPoseSeqPlugin
+#  CnoidGraspPlugin
+#  CnoidPRMPlugin
+#  ${catkin_LIBRARIES}
+#)
 
-set_target_properties(
-  ${libname}
-  PROPERTIES LIBRARY_OUTPUT_DIRECTORY 
-  ${ChoreonoidLibPath}
-)
+#set_target_properties(
+#  ${libname}
+#  PROPERTIES LIBRARY_OUTPUT_DIRECTORY
+#  ${ChoreonoidLibPath}
+#)
 
 add_definitions(-DCNOID_BACKWARD_COMPATIBILITY)

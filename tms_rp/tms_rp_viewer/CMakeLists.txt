@@ -11,7 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## catkin specific configuration
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES example_plugin
+  LIBRARIES tms_rp_viewer
   CATKIN_DEPENDS roscpp std_msgs sensor_msgs message_runtime
   DEPENDS eigen
 )
