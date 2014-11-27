@@ -40,6 +40,9 @@
 #include <QCheckBox>
 #include <QPushButton>
 
+#define MAX_ICS_OBJECT_NUM    25
+#define MAX_FURNITURE_NUM     20
+
 using namespace std;
 using namespace cnoid;
 
@@ -60,6 +63,9 @@ public:
 
 private:
   static bool isRosInit;
+  static std::string object_name_[25];
+  static std::string furniture_name_[20];
+  Matrix3d mat0_, mat_ccw90_, mat_ccw180_, mat_cw90_;
 
   MessageView& mes;
   std::ostream& os;

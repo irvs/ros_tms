@@ -185,15 +185,18 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
                       trc_(*TmsRpController::instance()),
                       argc_(), argv_() {
   // initialize ros connect
-  try{
-    if (!is_ros_Init_) {
+  try
+  {
+    if (!is_ros_Init_)
+    {
       ros::init(argc_, argv_, "tms_rp_action");
       is_ros_Init_=true;
-      cout << "Success: connecting roscore.." << endl;
+      ROS_INFO("[tms_rp_action] Success: connecting roscore.");
     }
   }
-  catch(...) {
-    cout << "Error: ros init" << endl;
+  catch(...)
+  {
+    ROS_INFO("[tms_rp_action] Error: ros init");
   }
 
   sid_ = 100000;

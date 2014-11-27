@@ -7,7 +7,24 @@ using namespace cnoid;
 using namespace grasp;
 using namespace tms_rp;
 
+//------------------------------------------------------------------------------
 bool RpViewerBar::isRosInit = false;
+
+std::string RpViewerBar::object_name_[25] = {"chipstar_red","chipstar_orange",
+                                             "chipstar_green","greentea_bottle",
+                                             "soukentea_bottle","cancoffee",
+                                             "seasoner_bottle","dispenser",
+                                             "soysauce_bottle_black","soysauce_bottle_blue",
+                                             "soysauce_bottle_white","pepper_bottle_black",
+                                             "pepper_bottle_red","sake_bottle",
+                                             "teapot","chawan","teacup1","teacup2","cup1",
+                                             "cup2","mugcup","remote","book_red","book_blue","dish"};
+
+std::string RpViewerBar::furniture_name_[20] = {"big_sofa","mini_sofa","small_table","tv_table","tv",
+                                                "partition1","partition2","partition3","bed","shelf",
+                                                "big_shelf","desk","chair_desk","table","chair_table1","chair_table2",
+                                                "shelfdoor","shelf2","wagon","sidetable"};
+
 
 //------------------------------------------------------------------------------
 RpViewerBar* RpViewerBar::instance(){
@@ -29,17 +46,23 @@ RpViewerBar::RpViewerBar(): ToolBar("RpViewerBar"),
     {
       ros::init(argc, argv, "tms_rp_viewer");
       isRosInit=true;
-      cout << "Success: connecting roscore.." << endl;
+      ROS_INFO("[tms_rp_viewer] Success: connecting roscore.");
     }
   }
   catch(...)
   {
-    cout << "Error: ros init" << endl;
+    ROS_INFO("[tms_rp_viewer] Error: ros init");
   }
 
   // ros nodehandle, topic, service init
   static ros::NodeHandle nh;
   subscribe_environment_information_  = nh.subscribe("/tms_db_publisher/db_publisher", 1,  &RpViewerBar::updateEnvironmentInformation, this);
+
+  // arrange model
+  mat0_       <<  1, 0, 0, 0, 1, 0, 0, 0, 1;  //   0
+  mat_ccw90_  <<  0,-1, 0, 1, 0, 0, 0, 0, 1;  //  90
+  mat_ccw180_ << -1, 0, 0, 0,-1, 0, 0, 0, 1;  // 180
+  mat_cw90_   <<  0, 1, 0,-1, 0, 0, 0, 0, 1;  // -90
 
   //------------------------------------------------------------------------------
   addSeparator();
@@ -70,7 +93,11 @@ void RpViewerBar::updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::C
   PlanBase *pb = PlanBase::instance();
   double rPosX,rPosY,rPosZ;
   Matrix3 rot;
-  uint32_t id,sensor,state;
+  uint32_t id,oID,sensor,state, place;
+  bool object_state[MAX_ICS_OBJECT_NUM];
+
+  for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++)
+    object_state[i] = false;
 
   if (!pb->robTag2Arm.size())
   {
@@ -100,6 +127,7 @@ void RpViewerBar::updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::C
     id      = environment_information_.tmsdb[i].id;
     sensor  = environment_information_.tmsdb[i].sensor;
     state   = environment_information_.tmsdb[i].state;
+    place   = environment_information_.tmsdb[i].place;
 
     if (is_simulation)  // simulation mode
     {
@@ -112,14 +140,31 @@ void RpViewerBar::updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::C
       if (id==2004 || id==2005 || id==2006 || id==2009 || id==2010 || id==2011) continue;
     }
 
+
+
+    if (id == 2009 && sensor == 2009) // update information of refrigerator
+    {
+      if (state==0)
+      {
+        callSynchronously(bind(&TmsRpController::disappear,trc_,"refrigerator"));
+        callSynchronously(bind(&TmsRpController::disappear,trc_,"refrigerator_open"));
+      }
+      else if (state==1)
+      {
+        callSynchronously(bind(&TmsRpController::appear,trc_,"refrigerator"));
+        callSynchronously(bind(&TmsRpController::disappear,trc_,"refrigerator_open"));
+      }
+      else if (state==2)
+      {
+        callSynchronously(bind(&TmsRpController::disappear,trc_,"refrigerator"));
+        callSynchronously(bind(&TmsRpController::appear,trc_,"refrigerator_open"));
+      }
+      continue;
+    }
+
     if (is_simulation)
     {
       if (sensor != 3005) // ID of fake sensor for simulation
-        continue;
-    }
-    else
-    {
-      if (sensor != 3001) // ID of Vicon sensor
         continue;
     }
 
@@ -214,7 +259,7 @@ void RpViewerBar::updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::C
         }
       }
       else if (id == 2003)
-      {ROS_INFO("Run1...");
+      {
         if (rPosX == 0.0 && rPosY == 0.0)
         {
           callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_2"));
@@ -222,8 +267,7 @@ void RpViewerBar::updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::C
         else
         {
           if (!is_simulation)
-          {ROS_INFO("Run2...");
-          ROS_INFO("x=%f, y=%f",rPosX, rPosY);
+          {
             callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_2"));
             callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot));
           }
@@ -342,25 +386,22 @@ void RpViewerBar::updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::C
       }
       else if (id ==1001)
       {
-        if (state==1)
-        {
-          rPosX = environment_information_.tmsdb[i].x/1000;
-          rPosY = environment_information_.tmsdb[i].y/1000;
-          rPosZ = 0.9;
-          rot = grasp::rotFromRpy(0,0,deg2rad(environment_information_.tmsdb[i].ry));
+        rPosX = environment_information_.tmsdb[i].x/1000;
+        rPosY = environment_information_.tmsdb[i].y/1000;
+        rPosZ = 0.9;
+        rot = grasp::rotFromRpy(0,0,deg2rad(environment_information_.tmsdb[i].ry));
 
-          if(rPosX == 0.0 && rPosY == 0.0)
-          {
-            callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1"));
-          }
-          else
-          {
-            callSynchronously(bind(&TmsRpController::appear,trc_,"person_1"));
-            callSynchronously(bind(&TmsRpController::setPos,trc_,"person_1",Vector3(rPosX,rPosY,rPosZ),rot));
-          }
+        if(rPosX == 0.0 && rPosY == 0.0)
+        {
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1"));
+        }
+        else
+        {
+          callSynchronously(bind(&TmsRpController::appear,trc_,"person_1"));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,"person_1",Vector3(rPosX,rPosY,rPosZ),rot));
         }
       }
-      else if (id ==6019)
+      else if (id ==6019) // wagon
       {
         if (state==1)
         {
@@ -382,220 +423,58 @@ void RpViewerBar::updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::C
           }
         }
       }
+      else if (id > 7000 && id < 7000 + MAX_ICS_OBJECT_NUM && sensor == 3018 && place==2009) //refrigerator, irs
+      {
+        oID   = id - 7001;
+        rPosX = 4.5 - environment_information_.tmsdb[i].y/1000;
+        rPosY = 2.3 + environment_information_.tmsdb[i].x/1000;
+        rPosZ = 0.0 + environment_information_.tmsdb[i].z/1000;
+        callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+        callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(rPosX,rPosY,rPosZ), mat_cw90_));
+        object_state[oID] = true;
+      }
+      else if (id > 7000 && id < 7000 + MAX_ICS_OBJECT_NUM && sensor == 3002 && place==6010) //shelf, ics
+      {
+        oID   = id - 7001;
+        rPosX = 4.3  - environment_information_.tmsdb[i].y/1000;
+        rPosY = 1.7  + environment_information_.tmsdb[i].x/1000;
+        rPosZ = 0.08 + environment_information_.tmsdb[i].z/1000;
+        callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+        callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(rPosX,rPosY,rPosZ), mat_cw90_));
+        object_state[oID] = true;
+      }
     }
   }
 
-//  //----------------------------------------------------------------------------
-//  // update information of refrigerator
-//  id = 2009;
-//  getRobotData.request.tmsdb.sensor = 2009;
+  for (uint32_t i=0; i<environment_information_.tmsdb.size(); i++)
+  {
+    id      = environment_information_.tmsdb[i].id;
+    oID     = id - 7001;
+    sensor  = environment_information_.tmsdb[i].sensor;
+    state   = environment_information_.tmsdb[i].state;
+    place   = environment_information_.tmsdb[i].place;
 
-//  if (!get_data_client_.call(getRobotData))
-//  {
-//    ROS_INFO("Failed to call service get information of ID: %d",id);
-//  }
-//  else if (getRobotData.response.tmsdb.empty()==true)
-//  {
-//    ROS_INFO("No information of ID #%d in DB",id);
+    if(object_state[oID] == false)
+    {
+      if (id > 7000 && id < 7000 + MAX_ICS_OBJECT_NUM && sensor == 3005 && place==6011 && state==1) //fake
+      {
+        rPosX = 4.3  - environment_information_.tmsdb[i].y/1000;
+        rPosY = 1.7  + environment_information_.tmsdb[i].x/1000;
+        rPosZ = 0.08 + environment_information_.tmsdb[i].z/1000;
+        callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+        callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(rPosX,rPosY,rPosZ), mat_cw90_));
+        object_state[oID] = true;
+      }
+    }
+  }
 
-//  }
-//  else if (environment_information_.tmsdb[i].state==0)
-//  {
-//    callSynchronously(bind(&TmsRpController::disappear,trc_,"refrigerator"));
-//    callSynchronously(bind(&TmsRpController::disappear,trc_,"refrigerator_open"));
-//  }
-//  else if (environment_information_.tmsdb[i].state==1)
-//  {
-//    callSynchronously(bind(&TmsRpController::appear,trc_,"refrigerator"));
-//    callSynchronously(bind(&TmsRpController::disappear,trc_,"refrigerator_open"));
-//  }
-//  else if (environment_information_.tmsdb[i].state==2)
-//  {
-//    callSynchronously(bind(&TmsRpController::disappear,trc_,"refrigerator"));
-//    callSynchronously(bind(&TmsRpController::appear,trc_,"refrigerator_open"));
-//  }
-
-//  //----------------------------------------------------------------------------
-//  // update information of wagon
-//  id = 6019;
-
-//  if (is_simulation)
-//    getRobotData.request.tmsdb.sensor = 3005; // ID of fake sensor for simulation
-//  else
-//    getRobotData.request.tmsdb.sensor = 3001; // ID of Vicon sensor
-
-
-//  if (!get_data_client_.call(getRobotData))
-//  {
-//    ROS_INFO("Failed to call service get information of ID: %d",id);
-//  }
-//  else if (getRobotData.response.tmsdb.empty()==true)
-//  {
-//    ROS_INFO("No information of ID #%d in DB",id);
-//    callLater(bind(&TmsRpController::disappear,trc_,"wagon"));
-//  }
-//  else if (environment_information_.tmsdb[i].state==1)
-//  {
-//    rPosX = environment_information_.tmsdb[i].x/1000;
-//    rPosY = environment_information_.tmsdb[i].y/1000;
-//    rPosZ = 0.35;
-//    rot = grasp::rotFromRpy(deg2rad(environment_information_.tmsdb[i].rr),
-//                            deg2rad(environment_information_.tmsdb[i].rp),
-//                            deg2rad(environment_information_.tmsdb[i].ry));
-
-//    if(rPosX == 0.0 && rPosY == 0.0)
-//    {
-//      callSynchronously(bind(&TmsRpController::disappear,trc_,"wagon"));
-//    }
-//    else
-//    {
-//      callSynchronously(bind(&TmsRpController::appear,trc_,"wagon"));
-//      callSynchronously(bind(&TmsRpController::setPos,trc_,"wagon",Vector3(rPosX,rPosY,rPosZ), rot));
-//    }
-//  }
-
-//  //----------------------------------------------------------------------------
-//  // update information of objects in shelf
-//  tms_msg_db::TmsdbGetData getObjectData;
-//  int    oID;;
-//  double oPosX, oPosY, oPosZ;
-
-//  for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++) trb_.object_state_[i]=false;
-
-//  for(int32_t i=0; i < MAX_ICS_OBJECT_NUM; i++)
-//  {
-//    getObjectData.request.tmsdb.id =7001 + i;
-//    getObjectData.request.tmsdb.sensor = 3018; //refrigerator, irs
-
-//    if (!get_data_client_.call(getObjectData))
-//    {
-//      ROS_INFO("Failed to call service get information of ID: %d",getObjectData.request.tmsdb.id);
-//      continue;
-//    }
-
-//    if (getObjectData.response.tmsdb.empty()==true)
-//    {
-//      ROS_INFO("Nothing in refrigerator");
-//      continue;
-//    }
-//    else
-//    {
-//      if (getObjectData.response.tmsdb[0].state==1 && getObjectData.response.tmsdb[0].place==2009)
-//      {
-//        oID   = getObjectData.response.tmsdb[0].id - 7001;
-//        oPosX = 4.5 - getObjectData.response.tmsdb[0].y/1000;
-//        oPosY = 2.3 + getObjectData.response.tmsdb[0].x/1000;
-//        oPosZ = 0.0 + getObjectData.response.tmsdb[0].z/1000;
-//        callSynchronously(bind(&TmsRpController::appear,trc_,trb_.object_name_[oID]));
-//        callSynchronously(bind(&TmsRpController::setPos,trc_,trb_.object_name_[oID],Vector3(oPosX,oPosY,oPosZ), trb_.mat_cw90_));
-//        trb_.object_state_[oID] = true;
-//      }
-//    }
-
-//    //----------------------------------------------------------------------------
-//    getObjectData.request.tmsdb.id =7001 + i;
-//    getObjectData.request.tmsdb.sensor = 3002; // shelf, ics
-
-//    if (!get_data_client_.call(getObjectData))
-//    {
-//      ROS_INFO("Failed to call service get information of ID: %d",getObjectData.request.tmsdb.id);
-//      continue;
-//    }
-
-//    if (getObjectData.response.tmsdb.empty()==true)
-//    {
-//      ROS_INFO("Nothing in shelf");
-//      continue;
-//    }
-//    else
-//    {
-//      if (getObjectData.response.tmsdb[0].state==1 && getObjectData.response.tmsdb[0].place==6010)
-//      {
-//        oID   = getObjectData.response.tmsdb[0].id - 7001;
-//        oPosX = 4.3  - getObjectData.response.tmsdb[0].y/1000;
-//        oPosY = 1.7 + getObjectData.response.tmsdb[0].x/1000;
-//        oPosZ = 0.08 + getObjectData.response.tmsdb[0].z/1000;
-//        callSynchronously(bind(&TmsRpController::appear,trc_,trb_.object_name_[oID]));
-//        callSynchronously(bind(&TmsRpController::setPos,trc_,trb_.object_name_[oID],Vector3(oPosX,oPosY,oPosZ), trb_.mat_cw90_));
-//        trb_.object_state_[oID] = true;
-//      }
-//    }
-
-//    if(trb_.object_state_[i] == false)
-//    {
-//      getObjectData.request.tmsdb.id =7001 + i;
-//      getObjectData.request.tmsdb.sensor = 3005; // fake
-
-//      if (!get_data_client_.call(getObjectData))
-//      {
-//        ROS_INFO("Failed to call service get information of ID: %d",getObjectData.request.tmsdb.id);
-//        continue;
-//      }
-
-//      if (getObjectData.response.tmsdb.empty()==true)
-//      {
-//        ROS_INFO("Nothing in big shelf");
-//        continue;
-//      }
-//      else
-//      {
-//        if (getObjectData.response.tmsdb[0].state==1 && getObjectData.response.tmsdb[0].place==6011)
-//        {
-//          oID   = getObjectData.response.tmsdb[0].id - 7001;
-//          oPosX = getObjectData.response.tmsdb[0].x/1000;
-//          oPosY = getObjectData.response.tmsdb[0].y/1000;
-//          oPosZ = getObjectData.response.tmsdb[0].z/1000;
-//          callSynchronously(bind(&TmsRpController::appear,trc_,trb_.object_name_[oID]));
-//          callSynchronously(bind(&TmsRpController::setPos,trc_,trb_.object_name_[oID],Vector3(oPosX,oPosY,oPosZ), trb_.mat_cw90_));
-//          trb_.object_state_[oID] = true;
-//        }
-//      }
-//    }
-//  }
-
-//  for(int i=0; i < MAX_ICS_OBJECT_NUM; i++)
-//  {
-//    if (trb_.object_state_[i]==false)
-//    {
-//      callSynchronously(bind(&TmsRpController::disappear,trc_,trb_.object_name_[i]));
-//    }
-//  }
-
-//  // update information of person
-//  #if PERSON==1
-//  tms_msg_db::TmsdbGetData getPersonData;
-
-//  getPersonData.request.tmsdb.id     = 1001;
-//  getPersonData.request.tmsdb.sensor = 3001;
-
-//  if (!get_data_client_.call(getPersonData))
-//  {
-//    ROS_INFO("Failed to call service get information of ID: %d",getPersonData.request.tmsdb.id);
-//  }
-//  else if (getPersonData.response.tmsdb.empty()==true)
-//  {
-//    ROS_INFO("no # %d person on floor", getPersonData.request.tmsdb.id);
-//  }
-//  else if (environment_information_.tmsdb[i].state==1)
-//  {
-//    oPosX = environment_information_.tmsdb[i].x/1000;
-//    oPosY = environment_information_.tmsdb[i].y/1000;
-//    oPosZ = 0.9;
-//    rot = grasp::rotFromRpy(0,0,deg2rad(environment_information_.tmsdb[i].ry));
-
-//    if(oPosX == 0.0 && oPosY == 0.0)
-//    {
-//      callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1"));
-//    }
-//    else
-//    {
-//      callSynchronously(bind(&TmsRpController::appear,trc_,"person_1"));
-//      callSynchronously(bind(&TmsRpController::setPos,trc_,"person_1",Vector3(oPosX,oPosY,oPosZ),rot));
-//    }
-//  }
-//  #else
-//    callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1"));
-//  #endif
+  for(int i=0; i < MAX_ICS_OBJECT_NUM; i++)
+  {
+    if (object_state[i]==false)
+    {
+      callSynchronously(bind(&TmsRpController::disappear,trc_,object_name_[i]));
+    }
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -607,6 +486,17 @@ void RpViewerBar::rosOn()
   while (ros::ok())
   {
 //    updateEnvironmentInformation(false);
+    if (isTest==false)
+    {
+      callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"tv"));
+      isTest=true;
+    }
+    else
+    {
+      callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"tv"));
+      isTest=false;
+    }
+
     ros::spinOnce();
     loop_rate.sleep();
   }
