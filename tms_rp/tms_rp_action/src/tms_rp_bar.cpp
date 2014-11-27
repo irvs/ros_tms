@@ -206,10 +206,9 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
 
   get_data_client_       = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
   sp5_control_client_    = nh.serviceClient<tms_msg_rc::rc_robot_control>("sp5_control");
-  path_planning_client_  = nh.serviceClient<tms_msg_rp::rps_path_planning>("rps_path_planning");
   ardrone_client_        = nh.serviceClient<tms_msg_rc::robot_control>("robot_control");
   request_robot_path_    = nh.serviceClient<tms_msg_rp::rps_voronoi_path_planning>("/rps_voronoi_path_planning");
-  subscribe_umo_tracker_ = nh.subscribe("/umo_tracking_points", 10,  &TmsRpBar::receiveUnknownMovingObjectTrackerInfo, this);
+  subscribe_umo_tracker_ = nh.subscribe("/umo_tracking_points", 1,  &TmsRpBar::receiveUnknownMovingObjectTrackerInfo, this);
 
   //----------------------------------------------------------------------------
   group_lrf_raw_data_ = new SgInvariantGroup();
@@ -1274,113 +1273,6 @@ void TmsRpBar::initPoseButtonClicked()
   } else {
     os_ << "Failed to call service sp5_control" << endl;
   }
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::moveToGoal()
-{
-  os_ << endl;
-  os_ << "[TmsAction] Move to goal point" << endl;
-
-  tms_msg_rp::rps_path_planning rplsrv;
-
-  rplsrv.request.robot_id = 2002;
-  rplsrv.request.rps_goal_candidate.rps_route.resize(1);
-  rplsrv.request.rps_goal_candidate.rps_route[0].x  = goal_position_x_;
-  rplsrv.request.rps_goal_candidate.rps_route[0].y  = goal_position_y_;
-  rplsrv.request.rps_goal_candidate.rps_route[0].th = goal_position_ry_;
-
-  if (path_planning_client_.call(rplsrv)) {
-    os_ << "result: " << rplsrv.response.success << " message: " << rplsrv.response.message << endl;
-  }
-  else {
-    os_ << "Failed to call service rps_path_planning" << endl;
-    return;
-  }
-
-  if (rplsrv.response.rps_path.size()!=0) {
-    for (int i=0; i< rplsrv.response.rps_path[0].rps_route.size(); i++) {
-      os_ << "[" << i << "]: x="  << rplsrv.response.rps_path[0].rps_route[i].x <<
-                          " y="  << rplsrv.response.rps_path[0].rps_route[i].y <<
-                          " th=" << rplsrv.response.rps_path[0].rps_route[i].th << endl;
-    }
-  } else {
-      os_ << "Noting rps_path_planning data" << endl;
-      return;
-  }
-
-  tms_msg_rc::rc_robot_control sp_control_srv;
-
-  if (rplsrv.response.rps_path.size()!=0) {
-    for (int i=0; i< rplsrv.response.rps_path[0].rps_route.size(); i++) {
-      sp_control_srv.request.unit = UNIT_VEHICLE;
-      sp_control_srv.request.cmd  = CMD_MOVE_ABS;
-      sp_control_srv.request.arg.resize(3);
-      sp_control_srv.request.arg[0] = rplsrv.response.rps_path[0].rps_route[i].x;
-      sp_control_srv.request.arg[1] = rplsrv.response.rps_path[0].rps_route[i].y;
-      sp_control_srv.request.arg[2] = rplsrv.response.rps_path[0].rps_route[i].th;
-
-      if (sp5_control_client_.call(sp_control_srv)) {
-        int8_t result = sp_control_srv.response.result;
-        os_ << "[TmsAction] action vehicle result = " << (int)result << endl;
-      } else {
-        os_ << "Failed to call service sp5_control" << endl;
-      }
-      updateEnvironmentInformation(true);
-      ros::spinOnce();
-      sleep(1); //temp
-    }
-  }
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::startButtonClicked()
-{
-
-  clock_t start_ = clock();
-
-  PlanBase *pb = PlanBase::instance();
-  std::vector<pathInfo> trajectory;
-  int state;
-  std::vector<double> begin;
-  std::vector<double> end;
-
-  if( !pb->targetObject || !pb->robTag2Arm.size()) {
-    os_ <<  "set object_ and robot" << endl;
-    return;
-  }
-
-  for(int i=0;i<pb->bodyItemRobot()->body()->numJoints();i++){ // If initial position is not collided, it is stored as
-    double q = pb->bodyItemRobot()->body()->joint(i)->q();
-    begin.push_back(q);
-    end.push_back(q);
-  }
-  TmsRpController::instance()->graspPathPlanStart(0, begin, end, pb->targetArmFinger->name, pb->targetObject->name(), 50, &trajectory, &state);
-  os_ << pb->targetArmFinger->name << " " << pb->targetObject->name() << endl;
-  clock_t end_ = clock();
-  cout << "It took "<< (double)(end_-start_)/CLOCKS_PER_SEC << "(s)" << endl;
-
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::startButtonClicked2()
-{
-  PlanBase *pb = PlanBase::instance();
-  std::vector<pathInfo> trajectory;
-  int state;
-  std::vector<double> begin;
-  std::vector<double> end;
-
-  if( !pb->targetObject || !pb->robTag2Arm.size()) {
-    os_ <<  "set object_ and robot" << endl;
-    return;
-  }
-  for(int i=0;i<pb->bodyItemRobot()->body()->numJoints();i++){ // If initial position is not collided, it is stored as
-    double q = pb->bodyItemRobot()->body()->joint(i)->q();
-    begin.push_back(q);
-    end.push_back(q);
-  }
-  TmsRpController::instance()->releasePathPlanStart(0, begin, end,  pb->targetArmFinger->name, pb->targetObject->name(), 50, &trajectory, &state);
 }
 
 //------------------------------------------------------------------------------

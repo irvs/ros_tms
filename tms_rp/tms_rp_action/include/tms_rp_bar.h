@@ -185,11 +185,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void receiveLrfRawData2(const sensor_msgs::LaserScan::ConstPtr& msg);
   void receiveUnknownMovingObjectTrackerInfo(const tms_msg_ss::tracking_points::ConstPtr& msg);
 
-  void moveToGoal();
-
   void initPoseButtonClicked();
-  void startButtonClicked();
-  void startButtonClicked2();
   void changePlanningMode();
 };
 }

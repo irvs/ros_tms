@@ -101,6 +101,8 @@ RpViewerBar::RpViewerBar(): ToolBar("RpViewerBar"),
 
   person_toggle_ = addToggleButton(QIcon(":/action/icons/person.png"), ("option of person marker"));
   person_toggle_->setChecked(false);
+
+  static boost::thread t(boost::bind(&RpViewerBar::rosOn, this));
 }
 
 //------------------------------------------------------------------------------
