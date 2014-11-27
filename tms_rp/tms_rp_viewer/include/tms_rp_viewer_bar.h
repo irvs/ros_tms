@@ -109,6 +109,7 @@ private:
   std::ostream& os;
   grasp::TmsRpController& trc_;
 
+  void receiveEnvironmentInformation(const tms_msg_db::TmsdbStamped::ConstPtr& msg);
   void receiveStaticMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg);
   void receiveDynamicMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg);
   void receivePathMapData(const tms_msg_rp::rps_route::ConstPtr& msg);
@@ -117,7 +118,7 @@ private:
   void receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& msg);
   void receiveUnknownMovingObjectTrackerInfo(const tms_msg_ss::tracking_points::ConstPtr& msg);
 
-  void updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::ConstPtr& msg);
+  void updateEnvironmentInformation(bool is_simulation);
 
   void viewStaticMap();
   void viewDynamicMap();

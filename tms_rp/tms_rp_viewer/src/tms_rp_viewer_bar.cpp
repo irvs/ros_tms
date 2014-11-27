@@ -59,7 +59,7 @@ RpViewerBar::RpViewerBar(): ToolBar("RpViewerBar"),
   // ros nodehandle, topic, service init
   static ros::NodeHandle nh;
 
-  subscribe_environment_information_  = nh.subscribe("/tms_db_publisher/db_publisher", 1,  &RpViewerBar::updateEnvironmentInformation, this);
+  subscribe_environment_information_  = nh.subscribe("/tms_db_publisher/db_publisher", 1,  &RpViewerBar::receiveEnvironmentInformation, this);
 
   subscribe_static_map_  = nh.subscribe("rps_map_data", 1,    &RpViewerBar::receiveStaticMapData, this);
   subscribe_dynamic_map_ = nh.subscribe("rps_dynamic_map", 1, &RpViewerBar::receiveDynamicMapData, this);
@@ -102,6 +102,11 @@ RpViewerBar::RpViewerBar(): ToolBar("RpViewerBar"),
   person_toggle_ = addToggleButton(QIcon(":/action/icons/person.png"), ("option of person marker"));
   person_toggle_->setChecked(false);
 
+  addButton(("Viewer"), ("Viewer On"))->sigClicked().connect(bind(&RpViewerBar::onViewerClicked, this));
+}
+
+void RpViewerBar::onViewerClicked()
+{
   static boost::thread t(boost::bind(&RpViewerBar::rosOn, this));
 }
 
@@ -155,17 +160,14 @@ void RpViewerBar::receiveUnknownMovingObjectTrackerInfo(const tms_msg_ss::tracki
 }
 
 //------------------------------------------------------------------------------
-void RpViewerBar::onViewerClicked()
+void RpViewerBar::receiveEnvironmentInformation(const tms_msg_db::TmsdbStamped::ConstPtr& msg)
 {
-  static boost::thread t(boost::bind(&RpViewerBar::rosOn, this));
+  environment_information_ = *msg;
 }
 
 //------------------------------------------------------------------------------
-void RpViewerBar::updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::ConstPtr& msg)
+void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
 {
-  bool is_simulation = false;
-  environment_information_ = *msg;
-
   PlanBase *pb = PlanBase::instance();
   double rPosX,rPosY,rPosZ;
   Matrix3 rot;
@@ -784,17 +786,7 @@ void RpViewerBar::rosOn()
 
   while (ros::ok())
   {
-//    updateEnvironmentInformation(false);
-    if (isTest==false)
-    {
-      callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"tv"));
-      isTest=true;
-    }
-    else
-    {
-      callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"tv"));
-      isTest=false;
-    }
+    updateEnvironmentInformation(false);
 
     viewStaticMap();
     viewDynamicMap();
