@@ -128,12 +128,6 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   ros::Subscriber    subscribe_lrf_raw_data2_;
   ros::Subscriber    subscribe_umo_tracker_;
 
-  pcl::PointCloud<pcl::PointXYZ> point_cloud_data_;
-  tms_msg_rp::rps_map_full       static_map_data_;
-  tms_msg_rp::rps_map_full       dynamic_map_data_;
-  tms_msg_rp::rps_route          path_map_data_;
-  sensor_msgs::LaserScan         lrf_raw_data1_;
-  sensor_msgs::LaserScan         lrf_raw_data2_;
   tms_msg_ss::tracking_points    unknown_moving_object_position_;
 
   boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)>& sigBodyItemSelectionChanged() {return sigBodyItemSelectionChanged_;}
@@ -178,20 +172,11 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
 
   void simulation();
   void connectROS();
-  void viewEvironmentData();
   void simulationButtonClicked();
   void connectRosButtonClicked();
 
   void setCollisionTargetButtonClicked();
   void makeCollisionMapButtonClicked();
-
-  void viewStaticMap();
-  void viewDynamicMap();
-  void viewPathOfRobot();
-  void viewMarkerOfRobot();
-  void viewLrfRawData();
-  void viewLrfRawDataOld();
-  void viewPersonPostion();
 
   void pathPlanButtonClicked();
   void ardroneButtonClicked();

@@ -2,12 +2,20 @@
 #define  TMS_RP_VIEWER_BAR_H
 
 #include <tms_rp_controller.h>
-//#include <tms_rp_bar.h>
 
 #include <ros/ros.h>
 #include <std_msgs/String.h>
+#include <sensor_msgs/PointCloud2.h>
+#include <sensor_msgs/LaserScan.h>
 
 #include <tms_msg_db/TmsdbStamped.h>
+#include <tms_msg_rp/rps_path_planning.h>
+#include <tms_msg_rp/rps_position.h>
+#include <tms_msg_rp/rps_route.h>
+#include <tms_msg_rp/rps_map_data.h>
+#include <tms_msg_rp/rps_map_y.h>
+#include <tms_msg_rp/rps_map_full.h>
+#include <tms_msg_ss/tracking_points.h>
 
 #include <cnoid/ItemTreeView>
 #include <cnoid/MessageView>
@@ -40,6 +48,12 @@
 #include <QCheckBox>
 #include <QPushButton>
 
+#include <pcl/conversions.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl_conversions/pcl_conversions.h>
+
 #define MAX_ICS_OBJECT_NUM    25
 #define MAX_FURNITURE_NUM     20
 
@@ -61,18 +75,40 @@ public:
   tms_msg_db::TmsdbStamped environment_information_;
   ros::Subscriber subscribe_environment_information_;
 
+  pcl::PointCloud<pcl::PointXYZ> point_cloud_data_;
+  tms_msg_rp::rps_map_full       static_map_data_;
+  tms_msg_rp::rps_map_full       dynamic_map_data_;
+  tms_msg_rp::rps_route          path_map_data_;
+  sensor_msgs::LaserScan         lrf_raw_data1_;
+  sensor_msgs::LaserScan         lrf_raw_data2_;
+  tms_msg_ss::tracking_points    unknown_moving_object_position_;
+
 private:
   static bool isRosInit;
   static std::string object_name_[25];
   static std::string furniture_name_[20];
   Matrix3d mat0_, mat_ccw90_, mat_ccw180_, mat_cw90_;
 
+  ToolButton* static_map_toggle_;
+  ToolButton* dynamic_map_toggle_;
+  ToolButton* local_map_toggle_;
+  ToolButton* path_map_toggle_;
+  ToolButton* robot_map_toggle_;
+  ToolButton* point2d_toggle_;
+  ToolButton* person_toggle_;
+
   MessageView& mes;
   std::ostream& os;
   grasp::TmsRpController& trc_;
-//  grasp::TmsRpBar& trb_;
 
   void updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::ConstPtr& msg);
+
+  void viewStaticMap();
+  void viewDynamicMap();
+  void viewPathOfRobot();
+  void viewMarkerOfRobot();
+  void viewLrfRawData();
+  void viewPersonPostion();
 
   void onViewerClicked();
   void rosOn();

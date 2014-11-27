@@ -1,4 +1,7 @@
 #include <tms_rp_viewer_bar.h>
+#include <sg_points_get.h>
+#include <draw_points.h>
+
 
 //------------------------------------------------------------------------------
 using namespace std;
@@ -37,7 +40,6 @@ RpViewerBar::RpViewerBar(): ToolBar("RpViewerBar"),
                             mes(*MessageView::mainInstance()),
                             os(MessageView::mainInstance()->cout()),
                             trc_(*TmsRpController::instance()),
-//                            trb_(*TmsRpBar::instance()),
                             argc(), argv() 
 {
   try
@@ -65,12 +67,31 @@ RpViewerBar::RpViewerBar(): ToolBar("RpViewerBar"),
   mat_cw90_   <<  0, 1, 0,-1, 0, 0, 0, 0, 1;  // -90
 
   //------------------------------------------------------------------------------
+//  addButton(("Viewer"), ("Viewer On"))->
+//    sigClicked().connect(bind(&RpViewerBar::onViewerClicked, this));
+
+  static_map_toggle_ = addToggleButton(QIcon(":/action/icons/static_map.png"), ("staic map"));
+  static_map_toggle_->setChecked(false);
+
+  dynamic_map_toggle_= addToggleButton(QIcon(":/action/icons/dynamic_map.png"), ("dynamic map"));
+  dynamic_map_toggle_->setChecked(false);
+
+  local_map_toggle_ = addToggleButton(QIcon(":/action/icons/local_map.png"), ("local map"));
+  local_map_toggle_->setChecked(false);
+
+  path_map_toggle_ = addToggleButton(QIcon(":/action/icons/path_map.png"), ("option of path view"));
+  path_map_toggle_->setChecked(false);
+
+  robot_map_toggle_ = addToggleButton(QIcon(":/action/icons/robot_map.png"), ("option of robot marker"));
+  robot_map_toggle_->setChecked(false);
+
   addSeparator();
 
-  addLabel(("[RpViewerPlugin]"));
+  point2d_toggle_ = addToggleButton(QIcon(":/action/icons/lrf_raw_data.png"), ("option of lrf raw data"));
+  point2d_toggle_->setChecked(false);
 
-  addButton(("Viewer"), ("Viewer On"))->
-    sigClicked().connect(bind(&RpViewerBar::onViewerClicked, this));
+  person_toggle_ = addToggleButton(QIcon(":/action/icons/person.png"), ("option of person marker"));
+  person_toggle_->setChecked(false);
 }
 
 //------------------------------------------------------------------------------
@@ -486,6 +507,221 @@ void RpViewerBar::updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::C
 }
 
 //------------------------------------------------------------------------------
+void RpViewerBar::viewStaticMap()
+{
+  if(!static_map_toggle_->isChecked())
+  {
+    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"static_map"));
+    return;
+  }
+
+  if(static_map_data_.rps_map_x.size()==0)
+  {
+    ROS_INFO("nothing the static map data");
+    return;
+  }
+
+  SgPointsDrawing::SgLastRenderer(0,true);
+  SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["static_map"]->body()->link(0)->shape();
+
+  SgPointsGet visit;
+  node->accept(visit);
+  if(visit.shape.size()==0)
+  {
+    ROS_INFO("no shape node, %ld", visit.shape.size());
+    return;
+  }
+
+  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
+  cr = new SgPointsDrawing(&static_map_data_);
+  visit.shape[0]->mesh()->triangles().clear();
+  node->addChild(cr);
+
+  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"static_map"));
+  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"static_map"));
+}
+
+//------------------------------------------------------------------------------
+void RpViewerBar::viewDynamicMap()
+{
+  if(!dynamic_map_toggle_->isChecked())
+  {
+    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"dynamic_map"));
+    return;
+  }
+
+  if(dynamic_map_data_.rps_map_x.size()==0)
+  {
+    ROS_INFO("nothing the dynamic map data");
+    return;
+  }
+
+  SgPointsDrawing::SgLastRenderer(0,true);
+  SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["dynamic_map"]->body()->link(0)->shape();
+
+  SgPointsGet visit;
+  node->accept(visit);
+  if(visit.shape.size()==0)
+  {
+    ROS_INFO("no shape node, %ld", visit.shape.size());
+    return;
+  }
+
+  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
+  cr = new SgPointsDrawing(&dynamic_map_data_);
+  visit.shape[0]->mesh()->triangles().clear();
+  node->addChild(cr);
+
+  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"dynamic_map"));
+  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"dynamic_map"));
+}
+
+//------------------------------------------------------------------------------
+void RpViewerBar::viewPathOfRobot()
+{
+  if(!path_map_toggle_->isChecked())
+  {
+    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"path_map"));
+    return;
+  }
+
+  if(path_map_data_.rps_route.size()==0)
+  {
+    ROS_INFO("nothing the path map data for viewPathOfRobot");
+    return;
+  }
+
+  SgPointsDrawing::SgLastRenderer(0,true);
+  SgGroupPtr node  = (SgGroup*)trc_.objTag2Item()["path_map"]->body()->link(0)->shape();
+
+  SgPointsGet visit;
+  node->accept(visit);
+  if(visit.shape.size()==0){
+    ROS_INFO("no shape node, %ld", visit.shape.size());
+    return;
+  }
+
+  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
+  cr = new SgPointsDrawing(&path_map_data_);
+  visit.shape[0]->mesh()->triangles().clear();
+  node->addChild(cr);
+
+  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"path_map"));
+  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"path_map"));
+}
+
+//------------------------------------------------------------------------------
+void RpViewerBar::viewMarkerOfRobot()
+{
+  if(!robot_map_toggle_->isChecked())
+  {
+    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"robot_marker"));
+    return;
+  }
+    if(path_map_data_.rps_route.size()==0)
+    {
+    ROS_INFO("nothing the path map data for robot_marker");
+    return;
+  }
+
+  SgPointsDrawing::SgLastRenderer(0,true);
+  SgGroupPtr node  = (SgGroup*)trc_.objTag2Item()["robot_marker"]->body()->link(0)->shape();
+
+  SgPointsGet visit;
+  node->accept(visit);
+  if(visit.shape.size()==0){
+    ROS_INFO("no shape node, %ld", visit.shape.size());
+    return;
+  }
+
+  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
+  cr = new SgPointsDrawing(&path_map_data_,true);
+  visit.shape[0]->mesh()->triangles().clear();
+  node->addChild(cr);
+
+  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"robot_marker"));
+  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"robot_marker"));
+}
+
+//------------------------------------------------------------------------------
+void RpViewerBar::viewLrfRawData()
+{
+  if(!point2d_toggle_->isChecked())
+  {
+    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"lrf_raw_data"));
+    return;
+  }
+
+  if(lrf_raw_data1_.ranges.size()==0)
+  {
+    ROS_INFO("nothing the LRF raw data 1");
+    return;
+  }
+
+  if(lrf_raw_data2_.ranges.size()==0)
+  {
+    ROS_INFO("nothing the LRF raw data 2");
+    return;
+  }
+
+
+  //ROS_INFO("on view option for LRF raw data");
+
+  SgPointsDrawing::SgLastRenderer(0,true);
+  SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["lrf_raw_data"]->body()->link(0)->shape();
+
+  SgPointsGet visit;
+  node->accept(visit);
+  if(visit.shape.size()==0)
+  {
+    ROS_INFO("no shape node, %ld", visit.shape.size());
+    return;
+  }
+
+  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
+  cr = new SgPointsDrawing(&lrf_raw_data1_,&lrf_raw_data2_);
+  visit.shape[0]->mesh()->triangles().clear();
+  node->addChild(cr);
+
+  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"lrf_raw_data"));
+  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"lrf_raw_data"));
+}
+
+//------------------------------------------------------------------------------
+void RpViewerBar::viewPersonPostion()
+{
+  if(!person_toggle_->isChecked())
+  {
+    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"person_tracker"));
+    return;
+  }
+
+  if(unknown_moving_object_position_.tracking_grid.size()==0)
+  {
+    ROS_INFO("nothing the person");
+    return;
+  }
+
+  SgPointsDrawing::SgLastRenderer(0,true);
+  SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["person_tracker"]->body()->link(0)->shape();
+
+  SgPointsGet visit;
+  node->accept(visit);
+  if(visit.shape.size()==0)
+  {
+    ROS_INFO("no shape node, %ld", visit.shape.size());
+    return;
+  }
+
+  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
+  cr = new SgPointsDrawing(&unknown_moving_object_position_);
+  visit.shape[0]->mesh()->triangles().clear();
+  node->addChild(cr);
+
+  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"person_tracker"));
+  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"person_tracker"));
+}
+//------------------------------------------------------------------------------
 void RpViewerBar::rosOn()
 {
   static ros::Rate loop_rate(30); // 0.1sec
@@ -504,6 +740,13 @@ void RpViewerBar::rosOn()
       callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"tv"));
       isTest=false;
     }
+
+    viewStaticMap();
+    viewDynamicMap();
+    viewPathOfRobot();
+    viewMarkerOfRobot();
+    viewLrfRawData();
+    viewPersonPostion();
 
     ros::spinOnce();
     loop_rate.sleep();
