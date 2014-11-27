@@ -47,7 +47,7 @@ void *Visualization( void *ptr )
   int   ID;
   float X;
   float Y;
-  ros::Rate r(10);
+  ros::Rate r(20);
   ros::Publisher *pub = (ros::Publisher *)ptr;
   int latest_id = 0;
 
