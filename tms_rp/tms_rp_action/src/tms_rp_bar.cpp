@@ -189,7 +189,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   {
     if (!is_ros_Init_)
     {
-      ros::init(argc_, argv_, "tms_rp_action");
+      ros::init(argc_, argv_, "tms_rp_action", ros::init_options::AnonymousName);
       is_ros_Init_=true;
       ROS_INFO("[tms_rp_action] Success: connecting roscore.");
     }

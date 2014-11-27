@@ -44,7 +44,7 @@ RpViewerBar::RpViewerBar(): ToolBar("RpViewerBar"),
   {
     if (!isRosInit) 
     {
-      ros::init(argc, argv, "tms_rp_viewer");
+      ros::init(argc, argv, "tms_rp_viewer", ros::init_options::AnonymousName);
       isRosInit=true;
       ROS_INFO("[tms_rp_viewer] Success: connecting roscore.");
     }
