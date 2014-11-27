@@ -7,10 +7,6 @@
 #include <tms_rp_pp.h>
 
 //------------------------------------------------------------------------------
-#define MAX_ICS_OBJECT_NUM    25
-#define MAX_FURNITURE_NUM     20
-
-//------------------------------------------------------------------------------
 using namespace std;
 using namespace boost;
 using namespace cnoid;
@@ -189,15 +185,18 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
                       trc_(*TmsRpController::instance()),
                       argc_(), argv_() {
   // initialize ros connect
-  try{
-    if (!is_ros_Init_) {
-      ros::init(argc_, argv_, "tms_rp");
+  try
+  {
+    if (!is_ros_Init_)
+    {
+      ros::init(argc_, argv_, "tms_rp_action", ros::init_options::AnonymousName);
       is_ros_Init_=true;
-      cout << "Success: connecting roscore.." << endl;
+      ROS_INFO("[tms_rp_action] Success: connecting roscore.");
     }
   }
-  catch(...) {
-    cout << "Error: ros init" << endl;
+  catch(...)
+  {
+    ROS_INFO("[tms_rp_action] Error: ros init");
   }
 
   sid_ = 100000;
@@ -1847,7 +1846,7 @@ void TmsRpBar::connectROS()
   static ros::Rate loop_rate(20); // 0.05sec
   while (ros::ok())
   {
-    updateEnvironmentInformation(false);
+//    updateEnvironmentInformation(false);
 
     static_and_dynamic_map.staticMapPublish();
     static_and_dynamic_map.dynamicMapPublish(unknown_moving_object_position_);

@@ -1,8 +1,13 @@
-#ifndef  EXAMPLE_BAR_H
-#define  EXAMPLE_BAR_H
+#ifndef  TMS_RP_VIEWER_BAR_H
+#define  TMS_RP_VIEWER_BAR_H
+
+#include <tms_rp_controller.h>
+//#include <tms_rp_bar.h>
 
 #include <ros/ros.h>
 #include <std_msgs/String.h>
+
+#include <tms_msg_db/TmsdbStamped.h>
 
 #include <cnoid/ItemTreeView>
 #include <cnoid/MessageView>
@@ -35,33 +40,44 @@
 #include <QCheckBox>
 #include <QPushButton>
 
+#define MAX_ICS_OBJECT_NUM    25
+#define MAX_FURNITURE_NUM     20
+
 using namespace std;
 using namespace cnoid;
 
-namespace grasp 
+namespace tms_rp
 {
 
-class ExampleBar : public cnoid::ToolBar, public boost::signals::trackable 
+class RpViewerBar : public cnoid::ToolBar, public boost::signals::trackable 
 {
- public:
+public:
+  RpViewerBar();
+  static RpViewerBar* instance();
+  virtual ~RpViewerBar();
+
   int argc;
   char **argv;
+  tms_msg_db::TmsdbStamped environment_information_;
+  ros::Subscriber subscribe_environment_information_;
 
-  ExampleBar();
-  static ExampleBar* instance();
-  virtual ~ExampleBar();
-
- private:
-
+private:
   static bool isRosInit;
+  static std::string object_name_[25];
+  static std::string furniture_name_[20];
+  Matrix3d mat0_, mat_ccw90_, mat_ccw180_, mat_cw90_;
 
   MessageView& mes;
   std::ostream& os;
+  grasp::TmsRpController& trc_;
+//  grasp::TmsRpBar& trb_;
 
-  void onTestButtonClicked();
+  void updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::ConstPtr& msg);
+
+  void onViewerClicked();
   void rosOn();
 };
 
 }
 
-#endif //EXAMPLE_PLUGIN_BAR_H
+#endif //TMS_RP_VIEWER_BAR_H
