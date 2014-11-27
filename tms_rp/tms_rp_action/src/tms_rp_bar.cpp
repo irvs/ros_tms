@@ -206,16 +206,9 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
 
   get_data_client_       = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
   sp5_control_client_    = nh.serviceClient<tms_msg_rc::rc_robot_control>("sp5_control");
-  path_planning_client_  = nh.serviceClient<tms_msg_rp::rps_path_planning>("rps_path_planning");
   ardrone_client_        = nh.serviceClient<tms_msg_rc::robot_control>("robot_control");
   request_robot_path_    = nh.serviceClient<tms_msg_rp::rps_voronoi_path_planning>("/rps_voronoi_path_planning");
-  subscribe_pcd_         = nh.subscribe("velodyne_points", 10, &TmsRpBar::receivePointCloudData, this);
-  subscribe_static_map_  = nh.subscribe("rps_map_data", 10,    &TmsRpBar::receiveStaticMapData, this);
-  subscribe_dynamic_map_ = nh.subscribe("rps_dynamic_map", 10, &TmsRpBar::receiveDynamicMapData, this);
-  subscribe_path_map_    = nh.subscribe("rps_robot_path", 10,  &TmsRpBar::receivePathMapData, this);
-  subscribe_lrf_raw_data1_  = nh.subscribe("/urg1/most_intense", 10,  &TmsRpBar::receiveLrfRawData1, this);
-  subscribe_lrf_raw_data2_  = nh.subscribe("/urg2/most_intense", 10,  &TmsRpBar::receiveLrfRawData2, this);
-  subscribe_umo_tracker_    = nh.subscribe("/umo_tracking_points", 10,  &TmsRpBar::receiveUnknownMovingObjectTrackerInfo, this);
+  subscribe_umo_tracker_ = nh.subscribe("/umo_tracking_points", 1,  &TmsRpBar::receiveUnknownMovingObjectTrackerInfo, this);
 
   //----------------------------------------------------------------------------
   group_lrf_raw_data_ = new SgInvariantGroup();
@@ -563,8 +556,6 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   //trc_.createRobotRecord(2006,"kxp");
 
   //------------------------------------------------------------------------------
-  addLabel(("[ROS-TMS]"));
-
   addButton(QIcon(":/action/icons/simulation.png"), ("simulation mode"))
     ->sigClicked().connect(bind(&TmsRpBar::simulationButtonClicked, this));
 
@@ -578,31 +569,6 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
 
   addButton(QIcon(":/action/icons/collision_map.png"), ("make collision map"))->
     sigClicked().connect(bind(&TmsRpBar::makeCollisionMapButtonClicked, this));
-
-  addSeparator();
-
-  static_map_toggle_ = addToggleButton(QIcon(":/action/icons/static_map.png"), ("staic map"));
-  static_map_toggle_->setChecked(false);
-
-  dynamic_map_toggle_= addToggleButton(QIcon(":/action/icons/dynamic_map.png"), ("dynamic map"));
-  dynamic_map_toggle_->setChecked(false);
-
-  local_map_toggle_ = addToggleButton(QIcon(":/action/icons/local_map.png"), ("local map"));
-  local_map_toggle_->setChecked(false);
-
-  path_map_toggle_ = addToggleButton(QIcon(":/action/icons/path_map.png"), ("option of path view"));
-  path_map_toggle_->setChecked(false);
-
-  robot_map_toggle_ = addToggleButton(QIcon(":/action/icons/robot_map.png"), ("option of robot marker"));
-  robot_map_toggle_->setChecked(false);
-
-  addSeparator();
-
-  point2d_toggle_ = addToggleButton(QIcon(":/action/icons/lrf_raw_data.png"), ("option of lrf raw data"));
-  point2d_toggle_->setChecked(false);
-
-  person_toggle_ = addToggleButton(QIcon(":/action/icons/person.png"), ("option of person marker"));
-  person_toggle_->setChecked(false);
 
   addSeparator();
 
@@ -633,52 +599,9 @@ void TmsRpBar::itemSelectionChanged(const ItemList<BodyItem>& bodyItems)
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& msg)
-{
-  pcl::PointCloud<pcl::PointXYZ> cloud;
-  pcl::fromROSMsg (*msg, cloud);
-  point_cloud_data_ = cloud;
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::receiveStaticMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg)
-{
-  static_map_data_ = *msg;
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::receiveDynamicMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg)
-{
-  dynamic_map_data_ = *msg;
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::receivePathMapData(const tms_msg_rp::rps_route::ConstPtr& msg)
-{
-  path_map_data_ = *msg;
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::receiveLrfRawData1(const sensor_msgs::LaserScan::ConstPtr& msg)
-{
-  lrf_raw_data1_ = *msg;
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::receiveLrfRawData2(const sensor_msgs::LaserScan::ConstPtr& msg)
-{
-  lrf_raw_data2_ = *msg;
-}
-
-//------------------------------------------------------------------------------
 void TmsRpBar::receiveUnknownMovingObjectTrackerInfo(const tms_msg_ss::tracking_points::ConstPtr& msg)
 {
   unknown_moving_object_position_ = *msg;
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::getPcdData()
-{
 }
 
 //------------------------------------------------------------------------------
@@ -754,297 +677,6 @@ void TmsRpBar::makeCollisionMapButtonClicked()
     }
     file.close();
   }
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::viewStaticMap()
-{
-  if(!static_map_toggle_->isChecked())
-  {
-    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"static_map"));
-    return;
-  }
-
-  if(static_map_data_.rps_map_x.size()==0)
-  {
-    ROS_INFO("nothing the static map data");
-    return;
-  }
-
-  SgPointsDrawing::SgLastRenderer(0,true);
-  SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["static_map"]->body()->link(0)->shape();
-
-  SgPointsGet visit;
-  node->accept(visit);
-  if(visit.shape.size()==0)
-  {
-    ROS_INFO("no shape node, %ld", visit.shape.size());
-    return;
-  }
-
-  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
-  cr = new SgPointsDrawing(&static_map_data_);
-  visit.shape[0]->mesh()->triangles().clear();
-  node->addChild(cr);
-
-  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"static_map"));
-  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"static_map"));
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::viewDynamicMap()
-{
-  if(!dynamic_map_toggle_->isChecked())
-  {
-    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"dynamic_map"));
-    return;
-  }
-
-  if(dynamic_map_data_.rps_map_x.size()==0)
-  {
-    ROS_INFO("nothing the dynamic map data");
-    return;
-  }
-
-  SgPointsDrawing::SgLastRenderer(0,true);
-  SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["dynamic_map"]->body()->link(0)->shape();
-
-  SgPointsGet visit;
-  node->accept(visit);
-  if(visit.shape.size()==0)
-  {
-    ROS_INFO("no shape node, %ld", visit.shape.size());
-    return;
-  }
-
-  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
-  cr = new SgPointsDrawing(&dynamic_map_data_);
-  visit.shape[0]->mesh()->triangles().clear();
-  node->addChild(cr);
-
-  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"dynamic_map"));
-  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"dynamic_map"));
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::viewPathOfRobot()
-{
-  if(!path_map_toggle_->isChecked())
-  {
-    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"path_map"));
-    return;
-  }
-
-  if(path_map_data_.rps_route.size()==0)
-  {
-    ROS_INFO("nothing the path map data for viewPathOfRobot");
-    return;
-  }
-
-  SgPointsDrawing::SgLastRenderer(0,true);
-  SgGroupPtr node  = (SgGroup*)trc_.objTag2Item()["path_map"]->body()->link(0)->shape();
-
-  SgPointsGet visit;
-  node->accept(visit);
-  if(visit.shape.size()==0){
-    ROS_INFO("no shape node, %ld", visit.shape.size());
-    return;
-  }
-
-  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
-  cr = new SgPointsDrawing(&path_map_data_);
-  visit.shape[0]->mesh()->triangles().clear();
-  node->addChild(cr);
-
-  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"path_map"));
-  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"path_map"));
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::viewMarkerOfRobot()
-{
-  if(!robot_map_toggle_->isChecked())
-  {
-    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"robot_marker"));
-    return;
-  }
-    if(path_map_data_.rps_route.size()==0)
-    {
-    ROS_INFO("nothing the path map data for robot_marker");
-    return;
-  }
-
-  SgPointsDrawing::SgLastRenderer(0,true);
-  SgGroupPtr node  = (SgGroup*)trc_.objTag2Item()["robot_marker"]->body()->link(0)->shape();
-
-  SgPointsGet visit;
-  node->accept(visit);
-  if(visit.shape.size()==0){
-    ROS_INFO("no shape node, %ld", visit.shape.size());
-    return;
-  }
-
-  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
-  cr = new SgPointsDrawing(&path_map_data_,true);
-  visit.shape[0]->mesh()->triangles().clear();
-  node->addChild(cr);
-
-  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"robot_marker"));
-  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"robot_marker"));
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::viewLrfRawData()
-{
-  sensor_msgs::LaserScan lrf_data1, lrf_data2;
-  unsigned int num_points;
-
-  lrf_data1 = lrf_raw_data1_;
-  lrf_data2 = lrf_raw_data2_;
-
-  SceneView::instance()->removeEntity(group_lrf_raw_data_);
-
-  if(!point2d_toggle_->isChecked())
-  {
-    return;
-  }
-
-  num_points= lrf_data1.ranges.size();
-
-  if(num_points==0)
-  {
-    ROS_INFO("nothing the LRF raw data 1");
-    return;
-  }
-
-  SgVertexArrayPtr vertices = new SgVertexArray();
-  SgColorArrayPtr  colors   = new SgColorArray();
-
-  vertices->reserve(num_points);
-  float angle, distance, lrf_x, lrf_y;
-  float lrf_set_x;
-  float lrf_set_y;
-  float lrf_set_z;
-  lrf_set_x = 2.5;
-  lrf_set_y = 0.15;
-  lrf_set_z = 0.875;
-
-  SgVector3 vertex;
-  SgVector3 color;
-
-  for(unsigned int i=0; i<num_points; i++)
-  {
-    angle = (i * 0.25 - 45)* M_PI/180.;
-    distance = lrf_data1.ranges[i];
-    lrf_x  = distance * cos(angle) + lrf_set_x;
-    lrf_y  = distance * sin(angle) + lrf_set_y;
-
-    if(angle>=0 && angle<=M_PI)
-    {
-      vertex = SgVector3(lrf_x,lrf_y,lrf_set_z);
-      color  = SgVector3(1.0,0.0,0.0);
-      vertices->push_back(vertex);
-      colors->push_back(color);
-    }
-    else
-    {
-      vertex = SgVector3(0,0,0);
-      color  = SgVector3(0.0,0.0,1.0);
-      vertices->push_back(vertex);
-      colors->push_back(color);
-    }
-  }
-
-  SgPointSetPtr lrf_point_set = new SgPointSet();
-  lrf_point_set->setPointSize(3.0);
-  lrf_point_set->setColors(colors);
-  lrf_point_set->setVertices(vertices);
-
-  if(lrf_point_set)
-  {
-    group_lrf_raw_data_->clearChildren();
-    group_lrf_raw_data_->addChild(lrf_point_set);
-    SceneView::instance()->addEntity(group_lrf_raw_data_);
-  }
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::viewLrfRawDataOld()
-{
-  if(!point2d_toggle_->isChecked())
-  {
-    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"lrf_raw_data"));
-    return;
-  }
-
-  if(lrf_raw_data1_.ranges.size()==0)
-  {
-    ROS_INFO("nothing the LRF raw data 1");
-    return;
-  }
-
-  if(lrf_raw_data2_.ranges.size()==0)
-  {
-    ROS_INFO("nothing the LRF raw data 2");
-    return;
-  }
-
-
-  //ROS_INFO("on view option for LRF raw data");
-
-  SgPointsDrawing::SgLastRenderer(0,true);
-  SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["lrf_raw_data"]->body()->link(0)->shape();
-
-  SgPointsGet visit;
-  node->accept(visit);
-  if(visit.shape.size()==0)
-  {
-    ROS_INFO("no shape node, %ld", visit.shape.size());
-    return;
-  }
-
-  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
-  cr = new SgPointsDrawing(&lrf_raw_data1_,&lrf_raw_data2_);
-  visit.shape[0]->mesh()->triangles().clear();
-  node->addChild(cr);
-
-  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"lrf_raw_data"));
-  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"lrf_raw_data"));
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::viewPersonPostion()
-{
-  if(!person_toggle_->isChecked())
-  {
-    callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"person_tracker"));
-    return;
-  }
-
-  if(unknown_moving_object_position_.tracking_grid.size()==0)
-  {
-    ROS_INFO("nothing the person");
-    return;
-  }
-
-  SgPointsDrawing::SgLastRenderer(0,true);
-  SgGroupPtr node = (SgGroup*)trc_.objTag2Item()["person_tracker"]->body()->link(0)->shape();
-
-  SgPointsGet visit;
-  node->accept(visit);
-  if(visit.shape.size()==0)
-  {
-    ROS_INFO("no shape node, %ld", visit.shape.size());
-    return;
-  }
-
-  SgPointsDrawing* cr = SgPointsDrawing::SgLastRenderer(0,false);
-  cr = new SgPointsDrawing(&unknown_moving_object_position_);
-  visit.shape[0]->mesh()->triangles().clear();
-  node->addChild(cr);
-
-  callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"person_tracker"));
-  callSynchronously(bind(&grasp::TmsRpController::appear,trc_,"person_tracker"));
 }
 
 //------------------------------------------------------------------------------
@@ -1644,113 +1276,6 @@ void TmsRpBar::initPoseButtonClicked()
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::moveToGoal()
-{
-  os_ << endl;
-  os_ << "[TmsAction] Move to goal point" << endl;
-
-  tms_msg_rp::rps_path_planning rplsrv;
-
-  rplsrv.request.robot_id = 2002;
-  rplsrv.request.rps_goal_candidate.rps_route.resize(1);
-  rplsrv.request.rps_goal_candidate.rps_route[0].x  = goal_position_x_;
-  rplsrv.request.rps_goal_candidate.rps_route[0].y  = goal_position_y_;
-  rplsrv.request.rps_goal_candidate.rps_route[0].th = goal_position_ry_;
-
-  if (path_planning_client_.call(rplsrv)) {
-    os_ << "result: " << rplsrv.response.success << " message: " << rplsrv.response.message << endl;
-  }
-  else {
-    os_ << "Failed to call service rps_path_planning" << endl;
-    return;
-  }
-
-  if (rplsrv.response.rps_path.size()!=0) {
-    for (int i=0; i< rplsrv.response.rps_path[0].rps_route.size(); i++) {
-      os_ << "[" << i << "]: x="  << rplsrv.response.rps_path[0].rps_route[i].x <<
-                          " y="  << rplsrv.response.rps_path[0].rps_route[i].y <<
-                          " th=" << rplsrv.response.rps_path[0].rps_route[i].th << endl;
-    }
-  } else {
-      os_ << "Noting rps_path_planning data" << endl;
-      return;
-  }
-
-  tms_msg_rc::rc_robot_control sp_control_srv;
-
-  if (rplsrv.response.rps_path.size()!=0) {
-    for (int i=0; i< rplsrv.response.rps_path[0].rps_route.size(); i++) {
-      sp_control_srv.request.unit = UNIT_VEHICLE;
-      sp_control_srv.request.cmd  = CMD_MOVE_ABS;
-      sp_control_srv.request.arg.resize(3);
-      sp_control_srv.request.arg[0] = rplsrv.response.rps_path[0].rps_route[i].x;
-      sp_control_srv.request.arg[1] = rplsrv.response.rps_path[0].rps_route[i].y;
-      sp_control_srv.request.arg[2] = rplsrv.response.rps_path[0].rps_route[i].th;
-
-      if (sp5_control_client_.call(sp_control_srv)) {
-        int8_t result = sp_control_srv.response.result;
-        os_ << "[TmsAction] action vehicle result = " << (int)result << endl;
-      } else {
-        os_ << "Failed to call service sp5_control" << endl;
-      }
-      updateEnvironmentInformation(true);
-      ros::spinOnce();
-      sleep(1); //temp
-    }
-  }
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::startButtonClicked()
-{
-
-  clock_t start_ = clock();
-
-  PlanBase *pb = PlanBase::instance();
-  std::vector<pathInfo> trajectory;
-  int state;
-  std::vector<double> begin;
-  std::vector<double> end;
-
-  if( !pb->targetObject || !pb->robTag2Arm.size()) {
-    os_ <<  "set object_ and robot" << endl;
-    return;
-  }
-
-  for(int i=0;i<pb->bodyItemRobot()->body()->numJoints();i++){ // If initial position is not collided, it is stored as
-    double q = pb->bodyItemRobot()->body()->joint(i)->q();
-    begin.push_back(q);
-    end.push_back(q);
-  }
-  TmsRpController::instance()->graspPathPlanStart(0, begin, end, pb->targetArmFinger->name, pb->targetObject->name(), 50, &trajectory, &state);
-  os_ << pb->targetArmFinger->name << " " << pb->targetObject->name() << endl;
-  clock_t end_ = clock();
-  cout << "It took "<< (double)(end_-start_)/CLOCKS_PER_SEC << "(s)" << endl;
-
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::startButtonClicked2()
-{
-  PlanBase *pb = PlanBase::instance();
-  std::vector<pathInfo> trajectory;
-  int state;
-  std::vector<double> begin;
-  std::vector<double> end;
-
-  if( !pb->targetObject || !pb->robTag2Arm.size()) {
-    os_ <<  "set object_ and robot" << endl;
-    return;
-  }
-  for(int i=0;i<pb->bodyItemRobot()->body()->numJoints();i++){ // If initial position is not collided, it is stored as
-    double q = pb->bodyItemRobot()->body()->joint(i)->q();
-    begin.push_back(q);
-    end.push_back(q);
-  }
-  TmsRpController::instance()->releasePathPlanStart(0, begin, end,  pb->targetArmFinger->name, pb->targetObject->name(), 50, &trajectory, &state);
-}
-
-//------------------------------------------------------------------------------
 void TmsRpBar::pathPlanButtonClicked()
 {
   clock_t start_ = clock();
@@ -1821,11 +1346,6 @@ void TmsRpBar::simulation()
     static_and_dynamic_map.staticMapPublish();
     static_and_dynamic_map.dynamicMapPublish();
 
-    viewStaticMap();
-    viewDynamicMap();
-    viewPathOfRobot();
-    viewMarkerOfRobot();
-
     if (planning_mode_ == 0)
       updateEnvironmentInformation(true);
 
@@ -1846,18 +1366,8 @@ void TmsRpBar::connectROS()
   static ros::Rate loop_rate(20); // 0.05sec
   while (ros::ok())
   {
-//    updateEnvironmentInformation(false);
-
     static_and_dynamic_map.staticMapPublish();
     static_and_dynamic_map.dynamicMapPublish(unknown_moving_object_position_);
-
-    viewStaticMap();
-    viewDynamicMap();
-    viewPathOfRobot();
-    viewMarkerOfRobot();
-    viewLrfRawDataOld();
-    //viewLrfRawData();
-    viewPersonPostion();
 
     ros::spinOnce();
     loop_rate.sleep();
@@ -1865,18 +1375,6 @@ void TmsRpBar::connectROS()
   ROS_INFO("Disconnect to the ROS\n");
 }
 
-//------------------------------------------------------------------------------
-void TmsRpBar::viewEvironmentData()
-{
-  static ros::Rate loop_rate(20); // 0.05sec
-  while (ros::ok())
-  {
-    ROS_INFO("rate test2");
-    //viewLrfRawData(lrf_raw_data1_);
-    loop_rate.sleep();
-  }
-  ROS_INFO("Disconnect to the ROS\n");
-}
 //------------------------------------------------------------------------------
 void TmsRpBar::ardroneButtonClicked()
 {
