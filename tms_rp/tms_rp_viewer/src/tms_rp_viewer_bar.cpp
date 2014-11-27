@@ -164,7 +164,12 @@ void RpViewerBar::updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::C
 
     if (is_simulation)
     {
-      if (sensor != 3005) // ID of fake sensor for simulation
+      if (sensor == 3001) // ID of vicon
+        continue;
+    }
+    else
+    {
+      if (sensor == 3003 || sensor == 3005) // ID of fake sensor for simulation
         continue;
     }
 
@@ -184,7 +189,7 @@ void RpViewerBar::updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::C
     }
 
 
-    if (state==1 || state==2)
+    if (state==1 || state==2) // ID of Vicon sensor
     {
       rPosX = environment_information_.tmsdb[i].x/1000;
       rPosY = environment_information_.tmsdb[i].y/1000;
@@ -423,7 +428,7 @@ void RpViewerBar::updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::C
           }
         }
       }
-      else if (id > 7000 && id < 7000 + MAX_ICS_OBJECT_NUM && sensor == 3018 && place==2009) //refrigerator, irs
+      else if (id > 7000 && id < (7000 + MAX_ICS_OBJECT_NUM) && sensor == 3018 && place==2009) //refrigerator, irs
       {
         oID   = id - 7001;
         rPosX = 4.5 - environment_information_.tmsdb[i].y/1000;
@@ -433,7 +438,7 @@ void RpViewerBar::updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::C
         callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(rPosX,rPosY,rPosZ), mat_cw90_));
         object_state[oID] = true;
       }
-      else if (id > 7000 && id < 7000 + MAX_ICS_OBJECT_NUM && sensor == 3002 && place==6010) //shelf, ics
+      else if (id > 7000 && id < (7000 + MAX_ICS_OBJECT_NUM) && sensor == 3002 && place==6010) //shelf, ics
       {
         oID   = id - 7001;
         rPosX = 4.3  - environment_information_.tmsdb[i].y/1000;
@@ -449,28 +454,31 @@ void RpViewerBar::updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::C
   for (uint32_t i=0; i<environment_information_.tmsdb.size(); i++)
   {
     id      = environment_information_.tmsdb[i].id;
-    oID     = id - 7001;
-    sensor  = environment_information_.tmsdb[i].sensor;
-    state   = environment_information_.tmsdb[i].state;
-    place   = environment_information_.tmsdb[i].place;
-
-    if(object_state[oID] == false)
+    if (id > 7000 && id < (7000 + MAX_ICS_OBJECT_NUM)) //fake
     {
-      if (id > 7000 && id < 7000 + MAX_ICS_OBJECT_NUM && sensor == 3005 && place==6011 && state==1) //fake
+      oID     = id - 7001;
+      sensor  = environment_information_.tmsdb[i].sensor;
+      state   = environment_information_.tmsdb[i].state;
+      place   = environment_information_.tmsdb[i].place;
+
+      if (object_state[oID] == false)
       {
-        rPosX = 4.3  - environment_information_.tmsdb[i].y/1000;
-        rPosY = 1.7  + environment_information_.tmsdb[i].x/1000;
-        rPosZ = 0.08 + environment_information_.tmsdb[i].z/1000;
-        callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
-        callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(rPosX,rPosY,rPosZ), mat_cw90_));
-        object_state[oID] = true;
+        if (sensor == 3005 && place==6011 && state==1) //fake
+        {
+          rPosX = environment_information_.tmsdb[i].x/1000;
+          rPosY = environment_information_.tmsdb[i].y/1000;
+          rPosZ = environment_information_.tmsdb[i].z/1000;
+          callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(rPosX,rPosY,rPosZ), mat_cw90_));
+          object_state[oID] = true;
+        }
       }
     }
   }
 
-  for(int i=0; i < MAX_ICS_OBJECT_NUM; i++)
+  for (uint32_t i=0; i < MAX_ICS_OBJECT_NUM; i++)
   {
-    if (object_state[i]==false)
+    if (object_state[i] == false)
     {
       callSynchronously(bind(&TmsRpController::disappear,trc_,object_name_[i]));
     }
