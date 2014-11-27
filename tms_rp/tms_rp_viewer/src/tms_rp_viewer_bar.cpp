@@ -58,7 +58,16 @@ RpViewerBar::RpViewerBar(): ToolBar("RpViewerBar"),
 
   // ros nodehandle, topic, service init
   static ros::NodeHandle nh;
+
   subscribe_environment_information_  = nh.subscribe("/tms_db_publisher/db_publisher", 1,  &RpViewerBar::updateEnvironmentInformation, this);
+
+  subscribe_static_map_  = nh.subscribe("rps_map_data", 1,    &RpViewerBar::receiveStaticMapData, this);
+  subscribe_dynamic_map_ = nh.subscribe("rps_dynamic_map", 1, &RpViewerBar::receiveDynamicMapData, this);
+  subscribe_path_map_    = nh.subscribe("rps_robot_path", 1,  &RpViewerBar::receivePathMapData, this);
+  subscribe_lrf_raw_data1_  = nh.subscribe("/urg1/most_intense", 1,  &RpViewerBar::receiveLrfRawData1, this);
+  subscribe_lrf_raw_data2_  = nh.subscribe("/urg2/most_intense", 1,  &RpViewerBar::receiveLrfRawData2, this);
+  subscribe_pcd_            = nh.subscribe("velodyne_points", 1, &RpViewerBar::receivePointCloudData, this);
+  subscribe_umo_tracker_    = nh.subscribe("/umo_tracking_points", 1,  &RpViewerBar::receiveUnknownMovingObjectTrackerInfo, this);
 
   // arrange model
   mat0_       <<  1, 0, 0, 0, 1, 0, 0, 0, 1;  //   0
@@ -97,6 +106,50 @@ RpViewerBar::RpViewerBar(): ToolBar("RpViewerBar"),
 //------------------------------------------------------------------------------
 RpViewerBar::~RpViewerBar()
 {
+}
+
+//------------------------------------------------------------------------------
+void RpViewerBar::receiveStaticMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg)
+{
+  static_map_data_ = *msg;
+}
+
+//------------------------------------------------------------------------------
+void RpViewerBar::receiveDynamicMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg)
+{
+  dynamic_map_data_ = *msg;
+}
+
+//------------------------------------------------------------------------------
+void RpViewerBar::receivePathMapData(const tms_msg_rp::rps_route::ConstPtr& msg)
+{
+  path_map_data_ = *msg;
+}
+
+//------------------------------------------------------------------------------
+void RpViewerBar::receiveLrfRawData1(const sensor_msgs::LaserScan::ConstPtr& msg)
+{
+  lrf_raw_data1_ = *msg;
+}
+
+//------------------------------------------------------------------------------
+void RpViewerBar::receiveLrfRawData2(const sensor_msgs::LaserScan::ConstPtr& msg)
+{
+  lrf_raw_data2_ = *msg;
+}
+
+//------------------------------------------------------------------------------
+void RpViewerBar::receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& msg)
+{
+  pcl::PointCloud<pcl::PointXYZ> cloud;
+  pcl::fromROSMsg (*msg, cloud);
+  point_cloud_data_ = cloud;
+}
+
+//------------------------------------------------------------------------------
+void RpViewerBar::receiveUnknownMovingObjectTrackerInfo(const tms_msg_ss::tracking_points::ConstPtr& msg)
+{
+  unknown_moving_object_position_ = *msg;
 }
 
 //------------------------------------------------------------------------------

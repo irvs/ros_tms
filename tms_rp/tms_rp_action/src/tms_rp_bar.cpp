@@ -209,13 +209,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   path_planning_client_  = nh.serviceClient<tms_msg_rp::rps_path_planning>("rps_path_planning");
   ardrone_client_        = nh.serviceClient<tms_msg_rc::robot_control>("robot_control");
   request_robot_path_    = nh.serviceClient<tms_msg_rp::rps_voronoi_path_planning>("/rps_voronoi_path_planning");
-  subscribe_pcd_         = nh.subscribe("velodyne_points", 10, &TmsRpBar::receivePointCloudData, this);
-  subscribe_static_map_  = nh.subscribe("rps_map_data", 10,    &TmsRpBar::receiveStaticMapData, this);
-  subscribe_dynamic_map_ = nh.subscribe("rps_dynamic_map", 10, &TmsRpBar::receiveDynamicMapData, this);
-  subscribe_path_map_    = nh.subscribe("rps_robot_path", 10,  &TmsRpBar::receivePathMapData, this);
-  subscribe_lrf_raw_data1_  = nh.subscribe("/urg1/most_intense", 10,  &TmsRpBar::receiveLrfRawData1, this);
-  subscribe_lrf_raw_data2_  = nh.subscribe("/urg2/most_intense", 10,  &TmsRpBar::receiveLrfRawData2, this);
-  subscribe_umo_tracker_    = nh.subscribe("/umo_tracking_points", 10,  &TmsRpBar::receiveUnknownMovingObjectTrackerInfo, this);
+  subscribe_umo_tracker_ = nh.subscribe("/umo_tracking_points", 10,  &TmsRpBar::receiveUnknownMovingObjectTrackerInfo, this);
 
   //----------------------------------------------------------------------------
   group_lrf_raw_data_ = new SgInvariantGroup();
@@ -606,52 +600,9 @@ void TmsRpBar::itemSelectionChanged(const ItemList<BodyItem>& bodyItems)
 }
 
 //------------------------------------------------------------------------------
-void TmsRpBar::receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& msg)
-{
-  pcl::PointCloud<pcl::PointXYZ> cloud;
-  pcl::fromROSMsg (*msg, cloud);
-  point_cloud_data_ = cloud;
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::receiveStaticMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg)
-{
-  static_map_data_ = *msg;
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::receiveDynamicMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg)
-{
-  dynamic_map_data_ = *msg;
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::receivePathMapData(const tms_msg_rp::rps_route::ConstPtr& msg)
-{
-  path_map_data_ = *msg;
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::receiveLrfRawData1(const sensor_msgs::LaserScan::ConstPtr& msg)
-{
-  lrf_raw_data1_ = *msg;
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::receiveLrfRawData2(const sensor_msgs::LaserScan::ConstPtr& msg)
-{
-  lrf_raw_data2_ = *msg;
-}
-
-//------------------------------------------------------------------------------
 void TmsRpBar::receiveUnknownMovingObjectTrackerInfo(const tms_msg_ss::tracking_points::ConstPtr& msg)
 {
   unknown_moving_object_position_ = *msg;
-}
-
-//------------------------------------------------------------------------------
-void TmsRpBar::getPcdData()
-{
 }
 
 //------------------------------------------------------------------------------

@@ -72,15 +72,23 @@ public:
 
   int argc;
   char **argv;
-  tms_msg_db::TmsdbStamped environment_information_;
-  ros::Subscriber subscribe_environment_information_;
 
-  pcl::PointCloud<pcl::PointXYZ> point_cloud_data_;
+  ros::Subscriber subscribe_environment_information_;
+  ros::Subscriber subscribe_static_map_;
+  ros::Subscriber subscribe_dynamic_map_;
+  ros::Subscriber subscribe_path_map_;
+  ros::Subscriber subscribe_lrf_raw_data1_;
+  ros::Subscriber subscribe_lrf_raw_data2_;
+  ros::Subscriber subscribe_pcd_;
+  ros::Subscriber subscribe_umo_tracker_;
+
+  tms_msg_db::TmsdbStamped       environment_information_;
   tms_msg_rp::rps_map_full       static_map_data_;
   tms_msg_rp::rps_map_full       dynamic_map_data_;
   tms_msg_rp::rps_route          path_map_data_;
   sensor_msgs::LaserScan         lrf_raw_data1_;
   sensor_msgs::LaserScan         lrf_raw_data2_;
+  pcl::PointCloud<pcl::PointXYZ> point_cloud_data_;
   tms_msg_ss::tracking_points    unknown_moving_object_position_;
 
 private:
@@ -100,6 +108,14 @@ private:
   MessageView& mes;
   std::ostream& os;
   grasp::TmsRpController& trc_;
+
+  void receiveStaticMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg);
+  void receiveDynamicMapData(const tms_msg_rp::rps_map_full::ConstPtr& msg);
+  void receivePathMapData(const tms_msg_rp::rps_route::ConstPtr& msg);
+  void receiveLrfRawData1(const sensor_msgs::LaserScan::ConstPtr& msg);
+  void receiveLrfRawData2(const sensor_msgs::LaserScan::ConstPtr& msg);
+  void receivePointCloudData(const sensor_msgs::PointCloud2::ConstPtr& msg);
+  void receiveUnknownMovingObjectTrackerInfo(const tms_msg_ss::tracking_points::ConstPtr& msg);
 
   void updateEnvironmentInformation(const tms_msg_db::TmsdbStamped::ConstPtr& msg);
 

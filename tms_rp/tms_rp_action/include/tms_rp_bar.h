@@ -120,12 +120,6 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   ros::ServiceClient path_planning_client_;
   ros::ServiceClient ardrone_client_;
   ros::ServiceClient request_robot_path_;
-  ros::Subscriber    subscribe_pcd_;
-  ros::Subscriber    subscribe_static_map_;
-  ros::Subscriber    subscribe_dynamic_map_;
-  ros::Subscriber    subscribe_path_map_;
-  ros::Subscriber    subscribe_lrf_raw_data1_;
-  ros::Subscriber    subscribe_lrf_raw_data2_;
   ros::Subscriber    subscribe_umo_tracker_;
 
   tms_msg_ss::tracking_points    unknown_moving_object_position_;
@@ -192,7 +186,6 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void receiveUnknownMovingObjectTrackerInfo(const tms_msg_ss::tracking_points::ConstPtr& msg);
 
   void moveToGoal();
-  void getPcdData();
 
   void initPoseButtonClicked();
   void startButtonClicked();
