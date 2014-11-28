@@ -246,6 +246,36 @@ int8_t Client::armStop(int8_t RL)
     return ret;
 }
 
+int8_t Client::armGetActiveAlarm(int8_t RL)
+{
+    int8_t ret;
+
+    if(!bInitialize) return CORBA_ERR;
+
+    CORBA::ULong  num_request_alarm = 1;
+    CORBA::ULong  num_response_alarm;
+    AlarmSeq_var  alarms;
+
+    if(RL==ArmR)
+    {
+        ret = CommandObj_ArmR->getActiveAlarm(num_request_alarm, num_response_alarm, alarms);
+        printf("armGetActiveAlarm R result: "); armReturnValue(ret);
+    }
+    else if(RL==ArmL)
+    {
+        ret = CommandObj_ArmL->getActiveAlarm(num_request_alarm, num_response_alarm, alarms);
+        printf("armGetActiveAlarm L result: "); armReturnValue(ret);
+    }
+    else
+    {
+        printf("armGetActiveAlarm RL error\n");
+        return RL_ERR;
+    }
+    //printf("armGetActiveAlarm description: %s\n", alarms[0].description.c_str());
+    cout << "armGetActiveAlarm description: " << alarms[0].description << endl;
+    return ret;
+}
+
 //------------------------------------------------------------------------------
 int8_t Client::armGetState(int8_t RL)
 {
