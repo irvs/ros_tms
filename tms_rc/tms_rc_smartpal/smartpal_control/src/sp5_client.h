@@ -113,6 +113,7 @@ public:
     //--------------------------------------------------------------------------
     // SmartPal Arm
     int8_t armReturnValue(int8_t msg);
+    int8_t armReturnAlarm(int8_t msg);
     int8_t armClearAlarm(int8_t RL);
     int8_t armSetPower(int8_t RL, double OnOff);
     int8_t armSetServo(int8_t RL, double OnOff);
