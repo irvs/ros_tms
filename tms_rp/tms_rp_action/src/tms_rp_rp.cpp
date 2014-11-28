@@ -7,7 +7,7 @@ using namespace cnoid;
 using namespace grasp;
 
 //------------------------------------------------------------------------------
-double sp5arm_init_arg[26] = {	0.0,   0.0, 1.0, 1.0,	/*waist*/
+double sp5arm_init_arg[26] = {	0.0,   0.0, 10.0, 10.0,	/*waist*/
 				0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0,/*right arm*/
 				0.0,  10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0 /*left arm */}; //degree
 
@@ -648,8 +648,6 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 	// object's position
 	std::vector<double> obj_pos;
 	std::vector<double> obj_rot;
-//			cnoid::Vector3 obj_pos;
-//			cnoid::Matrix3 obj_rot;
 
 	grasp::TmsRpController trc;
 
@@ -674,7 +672,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 					std::string furniture_name = srv.response.tmsdb[0].name;
 					cnoid::BodyItemPtr item2 = trc.objTag2Item()[furniture_name];
 					grasp::PlanBase::instance()->SetEnvironment(item2);
-					ROS_INFO("%s is sorrounding environment.\n", furniture_name.c_str());
+					ROS_INFO("%s is surrounding environment.\n", furniture_name.c_str());
 				}
 			}
 		} else {
@@ -703,6 +701,8 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 	grasp::TmsRpController::instance()->graspPathPlanStart_(0, begin, end, pb->targetArmFinger->name,
 			pb->targetObject->name(), 1, &trajectory, &state, &obj_pos, &obj_rot);
 
+	ROS_INFO("trajectory=%d", trajectory.size());
+
 	double arg[13];
 	cnoid::Vector3 rotation, r_rotation;
 
@@ -720,7 +720,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 	ROS_INFO("object_x=%fm,y=%fm, z=%f\n", pb->targetObject->objVisPos(0), pb->targetObject->objVisPos(1), pb->targetObject->objVisPos(2));
 	ROS_INFO("object_rr=%f,rp=%f, ry=%f\n", rotation(0), rotation(1), rotation(2));
 
-	arg[4] = 7001; // DBに，object_nameに一致するIDを返す命令を追加してもらう.
+	arg[4] = sd.arg_type;
 	arg[5] = pb->targetObject->objVisPos(0)*1000; // m -> mm;
 	arg[6] = pb->targetObject->objVisPos(1)*1000;
 	arg[7] = pb->targetObject->objVisPos(2)*1000;
@@ -732,17 +732,49 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 	arg[12] = 1;// state
 
 	switch (sd.robot_id) {
-	case 2002:
+	case 2002: // for smartpal simulation
 	{
-		if (!sp5_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg)) {
-			send_rc_exception(5);
-			return false;
-		}
-		if (sd.type == true)
-			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
-		else {
+		if (sd.type == false) {
+			if (!sp5_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg)) {
+				send_rc_exception(5);
+				return false;
+			}
 			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 			sleep(1);
+		}
+		break;
+	}
+	case 2003:
+	{
+		double sp5arm_arg[26] = {	0.0,   0.0, 10.0, 10.0,	/*waist*/
+						0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0,/*right arm*/
+						0.0,  10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0 /*left arm */}; //degree
+		if (sd.type == true) {
+			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
+			for (int t=0; t<trajectory.size(); t++) {
+				for (int u=0; u<trajectory.at(t).joints.size(); u++) {
+					ROS_INFO("joint[%d][%d]=%f", t, u, rad2deg(trajectory.at(t).joints[u]));
+					if (u==0 || u==1)
+						sp5arm_arg[u] = rad2deg(trajectory.at(t).joints[u]);
+					else if (u>=2 && u<=8)
+						sp5arm_arg[u+2] = rad2deg(trajectory.at(t).joints[u]);
+					else if (u==9)
+						sp5arm_arg[u+3] = rad2deg(trajectory.at(t).joints[u]);
+				}
+				// send command to RC
+				if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_arg+4)) {
+					send_rc_exception(2);
+					return false;
+				}
+				if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_arg)) {
+					send_rc_exception(3);
+					return false;
+				}
+				if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_arg+12)) {
+					send_rc_exception(4);
+					return false;
+				}
+			}
 		}
 		break;
 	}
