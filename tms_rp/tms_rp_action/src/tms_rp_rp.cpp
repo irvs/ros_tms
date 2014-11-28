@@ -706,91 +706,93 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 	double arg[13];
 	cnoid::Vector3 rotation, r_rotation;
 
-	arg[0] = trajectory.back().robotPos(0)*1000; // m -> mm
-	arg[1] = trajectory.back().robotPos(1)*1000;
-	r_rotation = grasp::rpyFromRot(trajectory.back().robotOri);
-	arg[2] = rad2deg(r_rotation(2));
-	arg[3] = 2;
+	if (!trajectory.empty()) {
+		arg[0] = trajectory.back().robotPos(0)*1000; // m -> mm
+		arg[1] = trajectory.back().robotPos(1)*1000;
+		r_rotation = grasp::rpyFromRot(trajectory.back().robotOri);
+		arg[2] = rad2deg(r_rotation(2));
+		arg[3] = 2;
 
-	pb->calcForwardKinematics();
-	pb->targetObject->objVisPos = pb->object()->p();
-	pb->targetObject->objVisRot = pb->object()->R();
+		pb->calcForwardKinematics();
+		pb->targetObject->objVisPos = pb->object()->p();
+		pb->targetObject->objVisRot = pb->object()->R();
 
-	rotation = grasp::rpyFromRot(pb->targetObject->objVisRot);
-	ROS_INFO("object_x=%fm,y=%fm, z=%f\n", pb->targetObject->objVisPos(0), pb->targetObject->objVisPos(1), pb->targetObject->objVisPos(2));
-	ROS_INFO("object_rr=%f,rp=%f, ry=%f\n", rotation(0), rotation(1), rotation(2));
+		rotation = grasp::rpyFromRot(pb->targetObject->objVisRot);
+		ROS_INFO("object_x=%fm,y=%fm, z=%f\n", pb->targetObject->objVisPos(0), pb->targetObject->objVisPos(1), pb->targetObject->objVisPos(2));
+		ROS_INFO("object_rr=%f,rp=%f, ry=%f\n", rotation(0), rotation(1), rotation(2));
 
-	arg[4] = sd.arg_type;
-	arg[5] = pb->targetObject->objVisPos(0)*1000; // m -> mm;
-	arg[6] = pb->targetObject->objVisPos(1)*1000;
-	arg[7] = pb->targetObject->objVisPos(2)*1000;
-	arg[8] = rad2deg(rotation(0));
-	arg[9] = rad2deg(rotation(1));
-	arg[10] = rad2deg(rotation(2));
+		arg[4] = sd.arg_type;
+		arg[5] = pb->targetObject->objVisPos(0)*1000; // m -> mm;
+		arg[6] = pb->targetObject->objVisPos(1)*1000;
+		arg[7] = pb->targetObject->objVisPos(2)*1000;
+		arg[8] = rad2deg(rotation(0));
+		arg[9] = rad2deg(rotation(1));
+		arg[10] = rad2deg(rotation(2));
 
-	arg[11] = sd.robot_id;// place
-	arg[12] = 1;// state
+		arg[11] = sd.robot_id;// place
+		arg[12] = 1;// state
 
-	switch (sd.robot_id) {
-	case 2002: // for smartpal simulation
-	{
-		if (sd.type == false) {
-			if (!sp5_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg)) {
-				send_rc_exception(5);
-				return false;
+		switch (sd.robot_id) {
+		case 2002: // for smartpal simulation
+		{
+			if (sd.type == false) {
+				if (!sp5_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg)) {
+					send_rc_exception(5);
+					return false;
+				}
+				callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
+				sleep(1);
 			}
-			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
-			sleep(1);
+			break;
 		}
-		break;
-	}
-	case 2003:
-	{
-		double sp5arm_arg[26] = {	0.0,   0.0, 10.0, 10.0,	/*waist*/
-						0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0,/*right arm*/
-						0.0,  10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0 /*left arm */}; //degree
-		if (sd.type == true) {
-			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
-			for (int t=0; t<trajectory.size(); t++) {
-				for (int u=0; u<trajectory.at(t).joints.size(); u++) {
-					ROS_INFO("joint[%d][%d]=%f", t, u, rad2deg(trajectory.at(t).joints[u]));
-					if (u==0 || u==1)
-						sp5arm_arg[u] = rad2deg(trajectory.at(t).joints[u]);
-					else if (u>=2 && u<=8)
-						sp5arm_arg[u+2] = rad2deg(trajectory.at(t).joints[u]);
-					else if (u==9)
-						sp5arm_arg[u+3] = rad2deg(trajectory.at(t).joints[u]);
-				}
-				// send command to RC
-				if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_arg+4)) {
-					send_rc_exception(2);
-					return false;
-				}
-				if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_arg)) {
-					send_rc_exception(3);
-					return false;
-				}
-				if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_arg+12)) {
-					send_rc_exception(4);
-					return false;
+		case 2003:
+		{
+			double sp5arm_arg[26] = {	0.0,   0.0, 10.0, 10.0,	/*waist*/
+							0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0,/*right arm*/
+							0.0,  10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0 /*left arm */}; //degree
+			if (sd.type == true) {
+				if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
+				for (int t=0; t<trajectory.size(); t++) {
+					for (int u=0; u<trajectory.at(t).joints.size(); u++) {
+						ROS_INFO("joint[%d][%d]=%f", t, u, rad2deg(trajectory.at(t).joints[u]));
+						if (u==0 || u==1)
+							sp5arm_arg[u] = rad2deg(trajectory.at(t).joints[u]);
+						else if (u>=2 && u<=8)
+							sp5arm_arg[u+2] = rad2deg(trajectory.at(t).joints[u]);
+						else if (u==9)
+							sp5arm_arg[u+3] = rad2deg(trajectory.at(t).joints[u]);
+					}
+					// send command to RC
+					if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_arg+4)) {
+						send_rc_exception(2);
+						return false;
+					}
+					if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_arg)) {
+						send_rc_exception(3);
+						return false;
+					}
+					if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_arg+12)) {
+						send_rc_exception(4);
+						return false;
+					}
 				}
 			}
+			break;
 		}
-		break;
-	}
-	case 2006:
-	{
-		kxp_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg);
-		if (sd.type == false) {
-			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
-			sleep(1);
+		case 2006:
+		{
+			kxp_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg);
+			if (sd.type == false) {
+				callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
+				sleep(1);
+			}
+			break;
 		}
-		break;
-	}
-	default:
-		s_srv.request.error_msg = "Unsupported robot in grasp function";
-		state_client.call(s_srv);
-		return false;
+		default:
+			s_srv.request.error_msg = "Unsupported robot in grasp function";
+			state_client.call(s_srv);
+			return false;
+		}
 	}
 	grasp::TmsRpBar::planning_mode_ = 0;
 

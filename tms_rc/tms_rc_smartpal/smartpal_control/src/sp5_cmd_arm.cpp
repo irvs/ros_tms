@@ -29,6 +29,19 @@ int8_t Client::armReturnValue(int8_t msg)
 }
 
 //------------------------------------------------------------------------------
+int8_t Client::armReturnAlarm(int8_t msg)
+{
+    switch(msg)
+    {
+    case(0):	printf("AlarmType : Fault\n");                  break;
+    case(1):	printf("AlarmType : Warning\n");                break;
+    case(2):	printf("AlarmType : Unknown\n");                break;
+    default:    break;
+    }
+
+    return msg;
+}
+//------------------------------------------------------------------------------
 int8_t Client::armClearAlarm(int8_t RL)
 {
     int8_t ret;
@@ -244,6 +257,38 @@ int8_t Client::armStop(int8_t RL)
     }
 
     return ret;
+}
+
+int8_t Client::armGetActiveAlarm(int8_t RL)
+{
+    int8_t ret;
+
+    if(!bInitialize) return CORBA_ERR;
+
+    CORBA::ULong  num_request_alarm = 1;
+    CORBA::ULong  num_response_alarm;
+    AlarmSeq_var  alarms;
+
+    if(RL==ArmR)
+    {
+        ret = CommandObj_ArmR->getActiveAlarm(num_request_alarm, num_response_alarm, alarms);
+        printf("armGetActiveAlarm R result: "); armReturnValue(ret);
+    }
+    else if(RL==ArmL)
+    {
+        ret = CommandObj_ArmL->getActiveAlarm(num_request_alarm, num_response_alarm, alarms);
+        printf("armGetActiveAlarm L result: "); armReturnValue(ret);
+    }
+    else
+    {
+        printf("armGetActiveAlarm RL error\n");
+        return RL_ERR;
+    }
+    //printf("armGetActiveAlarm description: %s\n", alarms[0].description.c_str());
+    cout << "armGetActiveAlarm description: " << alarms[0].description << endl;
+    armReturnAlarm(alarms[0].type);
+
+    return alarms[0].type;
 }
 
 //------------------------------------------------------------------------------

@@ -113,6 +113,7 @@ public:
     //--------------------------------------------------------------------------
     // SmartPal Arm
     int8_t armReturnValue(int8_t msg);
+    int8_t armReturnAlarm(int8_t msg);
     int8_t armClearAlarm(int8_t RL);
     int8_t armSetPower(int8_t RL, double OnOff);
     int8_t armSetServo(int8_t RL, double OnOff);
@@ -120,6 +121,7 @@ public:
     int8_t armResume(int8_t RL);
     int8_t armAbort(int8_t RL);
     int8_t armStop(int8_t RL);
+    int8_t armGetActiveAlarm(int8_t RL);
     int8_t armGetState(int8_t RL);
     int8_t armGetPos(int8_t RL, double frameID, double *posdata);
     int8_t armSetJointAcc(int8_t RL, double acc_ms);
