@@ -29,6 +29,19 @@ int8_t Client::armReturnValue(int8_t msg)
 }
 
 //------------------------------------------------------------------------------
+int8_t Client::armReturnAlarm(int8_t msg)
+{
+    switch(msg)
+    {
+    case(0):	printf("Fault\n");                  break;
+    case(1):	printf("Warning\n");                break;
+    case(2):	printf("Unknown\n");                break;
+    default:    break;
+    }
+
+    return msg;
+}
+//------------------------------------------------------------------------------
 int8_t Client::armClearAlarm(int8_t RL)
 {
     int8_t ret;
@@ -273,7 +286,9 @@ int8_t Client::armGetActiveAlarm(int8_t RL)
     }
     //printf("armGetActiveAlarm description: %s\n", alarms[0].description.c_str());
     cout << "armGetActiveAlarm description: " << alarms[0].description << endl;
-    return ret;
+    armReturnValue(alarms[0].type);
+
+    return alarms[0].type;
 }
 
 //------------------------------------------------------------------------------
