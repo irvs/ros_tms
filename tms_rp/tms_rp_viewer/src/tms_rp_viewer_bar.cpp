@@ -76,33 +76,34 @@ RpViewerBar::RpViewerBar(): ToolBar("RpViewerBar"),
   mat_cw90_   <<  0, 1, 0,-1, 0, 0, 0, 0, 1;  // -90
 
   //------------------------------------------------------------------------------
-//  addButton(("Viewer"), ("Viewer On"))->
-//    sigClicked().connect(bind(&RpViewerBar::onViewerClicked, this));
+  visibility_toggle_ = addToggleButton(QIcon(":/viewer/icons/visibility.png"), ("option of visibility"));
+  //visibility_toggle_->setChecked(false);
+  visibility_toggle_->sigClicked().connect(bind(&RpViewerBar::onViewerClicked, this));;
 
-  static_map_toggle_ = addToggleButton(QIcon(":/action/icons/static_map.png"), ("staic map"));
+  addSeparator();
+
+  static_map_toggle_ = addToggleButton(QIcon(":/viewer/icons/static_map.png"), ("staic map"));
   static_map_toggle_->setChecked(false);
 
-  dynamic_map_toggle_= addToggleButton(QIcon(":/action/icons/dynamic_map.png"), ("dynamic map"));
+  dynamic_map_toggle_= addToggleButton(QIcon(":/viewer/icons/dynamic_map.png"), ("dynamic map"));
   dynamic_map_toggle_->setChecked(false);
 
-  local_map_toggle_ = addToggleButton(QIcon(":/action/icons/local_map.png"), ("local map"));
+  local_map_toggle_ = addToggleButton(QIcon(":/viewer/icons/local_map.png"), ("local map"));
   local_map_toggle_->setChecked(false);
 
-  path_map_toggle_ = addToggleButton(QIcon(":/action/icons/path_map.png"), ("option of path view"));
+  path_map_toggle_ = addToggleButton(QIcon(":/viewer/icons/path_map.png"), ("option of path view"));
   path_map_toggle_->setChecked(false);
 
-  robot_map_toggle_ = addToggleButton(QIcon(":/action/icons/robot_map.png"), ("option of robot marker"));
+  robot_map_toggle_ = addToggleButton(QIcon(":/viewer/icons/robot_map.png"), ("option of robot marker"));
   robot_map_toggle_->setChecked(false);
 
   addSeparator();
 
-  point2d_toggle_ = addToggleButton(QIcon(":/action/icons/lrf_raw_data.png"), ("option of lrf raw data"));
+  point2d_toggle_ = addToggleButton(QIcon(":/viewer/icons/lrf_raw_data.png"), ("option of lrf raw data"));
   point2d_toggle_->setChecked(false);
 
-  person_toggle_ = addToggleButton(QIcon(":/action/icons/person.png"), ("option of person marker"));
+  person_toggle_ = addToggleButton(QIcon(":/viewer/icons/person.png"), ("option of person marker"));
   person_toggle_->setChecked(false);
-
-  addButton(("Viewer"), ("Viewer On"))->sigClicked().connect(bind(&RpViewerBar::onViewerClicked, this));
 }
 
 void RpViewerBar::onViewerClicked()

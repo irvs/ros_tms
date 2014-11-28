@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/action">
+    <qresource prefix="/viewer">
         <file>icons/simulation.png</file>
         <file>icons/drone.png</file>
         <file>icons/ros.png</file>
@@ -14,5 +14,6 @@
         <file>icons/collision_target.png</file>
         <file>icons/lrf_raw_data.png</file>
         <file>icons/person.png</file>
+        <file>icons/visibility.png</file>
     </qresource>
 </RCC>
