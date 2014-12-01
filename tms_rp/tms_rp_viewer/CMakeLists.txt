@@ -32,7 +32,7 @@ set(QT_USE_QTOPENGL TRUE)
 include(${QT_USE_FILE})
 include_directories(${QT_INCLUDE_DIR} ${QT_OPENGL_INCLUDE_DIR})
 add_definitions(-DQT_NO_KEYWORDS)
-QT4_ADD_RESOURCES(RCS src/tms_rp_icons.qrc)
+QT4_ADD_RESOURCES(RCS src/tms_rp_viewer_icons.qrc)
 
 ## Build option
 include_directories(
