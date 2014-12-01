@@ -24,10 +24,10 @@ std::string TmsRpBar::object_name_[25] = {"chipstar_red","chipstar_orange",
                                           "teapot","chawan","teacup1","teacup2","cup1",
                                           "cup2","mugcup","remote","book_red","book_blue","dish"};
 
-std::string TmsRpBar::furniture_name_[20] = {"big_sofa","mini_sofa","small_table","tv_table","tv",
+std::string TmsRpBar::furniture_name_[21] = {"big_sofa","mini_sofa","small_table","tv_table","tv",
                                              "partition1","partition2","partition3","bed","shelf",
                                              "big_shelf","desk","chair_desk","table","chair_table1","chair_table2",
-                                             "shelfdoor","shelf2","wagon","sidetable"};
+                                             "shelfdoor","shelf2","wagon","sidetable","tree1"};
 
 // initialize static variables
 bool TmsRpBar::is_ros_Init_ = false;
