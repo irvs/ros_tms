@@ -54,7 +54,7 @@ link_directories(
 add_library(
   ${libname}
   SHARED
-  #${RCS}
+  ${RCS}
   ${rpActionPluginPath}/src/tms_rp_controller.cpp
   src/tms_rp_viewer_bar.cpp
   src/tms_rp_viewer_plugin.cpp
