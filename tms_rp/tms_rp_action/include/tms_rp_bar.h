@@ -73,7 +73,7 @@
 #include <pcl_conversions/pcl_conversions.h>
 
 #define MAX_ICS_OBJECT_NUM    25
-#define MAX_FURNITURE_NUM     20
+#define MAX_FURNITURE_NUM     21
 
 #define PERSON 1
 //#define PERSON 0

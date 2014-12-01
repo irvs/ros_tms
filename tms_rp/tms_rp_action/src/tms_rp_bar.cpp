@@ -263,6 +263,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   trc_.createRecord(6018,"shelf2");
   trc_.createRecord(6019,"wagon");
   trc_.createRecord(6020,"sidetable");
+  trc_.createRecord(6021,"tree1");
 
   // create etc model
   trc_.createRecord(20001,"blink_arrow");
