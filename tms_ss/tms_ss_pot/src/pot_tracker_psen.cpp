@@ -330,10 +330,10 @@ int main( int argc, char **argv )
     pthread_t thread_s;
     ros::MultiThreadedSpinner spinner(0);
 
-    ros::init(argc, argv, "pot_tracker_psen");
+    ros::init(argc, argv, "pot_tracker_psen1");
     ros::NodeHandle n;
-    ros::Publisher  pub = n.advertise<tms_msg_ss::pot_tracking_psens>("tracking_psen0", 10);
-    ros::Subscriber sub = n.subscribe("/LaserTracker0", 1000, LaserSensingCallback);
+    ros::Publisher  pub = n.advertise<tms_msg_ss::pot_tracking_psens>("tracking_psen1", 10);
+    ros::Subscriber sub = n.subscribe("/LaserTracker1", 1000, LaserSensingCallback);
 
     if ( pthread_create( &thread_v, NULL, Visualization, (void *)&pub) )
     {
