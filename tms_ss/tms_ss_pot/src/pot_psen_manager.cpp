@@ -241,7 +241,7 @@ void *Management( void *ptr )
                 if (all_cmp[clsn].mode == 1)
                 {
                     calc = (f_lefter + s_righter - (f_lefter_dose + s_righter_dose)) - (f_righter + s_lefter - (f_righter_dose +  s_lefter_dose));
-                    //std::cout <<  "calc " << calc  << std::endl;
+                    std::cout <<  "calc " << calc  << std::endl;
                     if (abs(calc) > 100 )
                     {
                         std::cout << "put on the area " << all_cmp[clsn].feature << std::endl;
@@ -484,7 +484,6 @@ void PsenCallback2(const tms_msg_ss::pot_tracking_psens::ConstPtr &psens)
     }
 
     pthread_mutex_unlock(&mutex_target);
-
 }
 
 int main( int argc, char **argv )
@@ -498,7 +497,7 @@ int main( int argc, char **argv )
     ros::NodeHandle n;
     ros::Subscriber sub0 = n.subscribe("tracking_psen0" , 1000, PsenCallback0);
     ros::Subscriber sub1 = n.subscribe("tracking_psen1" , 1000, PsenCallback1);
-    ros::Subscriber sub2 = n.subscribe("tracking_psen2" , 1000, PsenCallback1);
+    //ros::Subscriber sub2 = n.subscribe("tracking_psen2" , 1000, PsenCallback1);
 
     if ( pthread_create( &thread_p, NULL, Management, NULL) )
     {
