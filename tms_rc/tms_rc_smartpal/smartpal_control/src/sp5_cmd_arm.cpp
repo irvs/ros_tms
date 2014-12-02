@@ -292,6 +292,57 @@ int8_t Client::armGetActiveAlarm(int8_t RL)
 }
 
 //------------------------------------------------------------------------------
+bool Client::armIsPowerOn(int8_t RL)
+{
+    bool ret;
+
+    if(!bInitialize) return CORBA_ERR;
+
+    if(RL==ArmR)
+    {
+        ret = CommandObj_ArmR->isPowerOn();
+        printf("armIsPowerOn R result: %d", ret);
+    }
+    else if(RL==ArmL)
+    {
+        ret = CommandObj_ArmL->isPowerOn();
+        printf("armIsPowerOn L result: %d", ret);
+    }
+    else
+    {
+        printf("armIsPowerOn RL error\n");
+        return RL_ERR;
+    }
+
+    return ret;
+}
+
+//------------------------------------------------------------------------------
+bool Client::armIsServoOn(int8_t RL)
+{
+    bool ret;
+
+    if(!bInitialize) return CORBA_ERR;
+
+    if(RL==ArmR)
+    {
+        ret = CommandObj_ArmR->isServoOn();
+        printf("armIsServoOn R result: %d", ret);
+    }
+    else if(RL==ArmL)
+    {
+        ret = CommandObj_ArmL->isServoOn();
+        printf("armIsServoOn L result: %d", ret);
+    }
+    else
+    {
+        printf("armIsServoOn RL error\n");
+        return RL_ERR;
+    }
+
+    return ret;
+}
+//------------------------------------------------------------------------------
 int8_t Client::armGetState(int8_t RL)
 {
     int8_t ret;

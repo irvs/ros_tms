@@ -126,6 +126,8 @@ public:
     int8_t armGetPos(int8_t RL, double frameID, double *posdata);
     int8_t armSetJointAcc(int8_t RL, double acc_ms);
     int8_t armSetLinearAcc(int8_t RL, double accT_ms, double accR_ms);
+    bool   armIsPowerOn(int8_t RL);
+    bool   armIsServoOn(int8_t RL);
     int8_t armMoveJointAbs(int8_t RL, double *joint_deg, double vel_degps);
     int8_t armMoveJointRel(int8_t RL, double *joint_deg, double vel_degps);
     int8_t armMoveLinearAbs(int8_t RL, double cpType, double *cartesianPos, double elbow_deg, double vt_mmps, double vr_degps);

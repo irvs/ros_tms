@@ -205,6 +205,8 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
       case 9: res.result = smartpal->armGetActiveAlarm(ArmR); break;
       case 10:res.result = smartpal->armSetJointAcc(ArmR,req.arg[0]); break;
       case 11:res.result = smartpal->armSetLinearAcc(ArmR,req.arg[0],req.arg[1]); break;
+      case 12:res.result = smartpal->armIsPowerOn(ArmR); break;
+      case 13:res.result = smartpal->armIsServoOn(ArmR); break;
       case 15:
         {
           res.result = smartpal->armMoveJointAbs(ArmR,&req.arg[0],req.arg[7]);
@@ -254,6 +256,8 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
       case 9: res.result = smartpal->armGetActiveAlarm(ArmL); break;
       case 10:res.result = smartpal->armSetJointAcc(ArmL,req.arg[0]); break;
       case 11:res.result = smartpal->armSetLinearAcc(ArmL,req.arg[0],req.arg[1]); break;
+      case 12:res.result = smartpal->armIsPowerOn(ArmL); break;
+      case 13:res.result = smartpal->armIsServoOn(ArmL); break;
       case 15:
         {
           res.result = smartpal->armMoveJointAbs(ArmL,&req.arg[0],req.arg[7]);
