@@ -265,30 +265,38 @@ int8_t Client::armGetActiveAlarm(int8_t RL)
 
     if(!bInitialize) return CORBA_ERR;
 
-    CORBA::ULong  num_request_alarm = 1;
+    CORBA::ULong  num_request_alarm = 7;
     CORBA::ULong  num_response_alarm;
     AlarmSeq_var  alarms;
 
     if(RL==ArmR)
     {
         ret = CommandObj_ArmR->getActiveAlarm(num_request_alarm, num_response_alarm, alarms);
-        printf("armGetActiveAlarm R result: "); armReturnValue(ret);
+        printf("armGetActiveAlarm R result: ");
+        armReturnValue(ret);
     }
     else if(RL==ArmL)
     {
         ret = CommandObj_ArmL->getActiveAlarm(num_request_alarm, num_response_alarm, alarms);
-        printf("armGetActiveAlarm L result: "); armReturnValue(ret);
+        printf("armGetActiveAlarm L result: ");
+        armReturnValue(ret);
     }
     else
     {
         printf("armGetActiveAlarm RL error\n");
         return RL_ERR;
     }
-    //printf("armGetActiveAlarm description: %s\n", alarms[0].description.c_str());
-    cout << "armGetActiveAlarm description: " << alarms[0].description << endl;
-    armReturnAlarm(alarms[0].type);
 
-    return alarms[0].type;
+    for (u_int32_t i=0; i<num_response_alarm; i++)
+    {
+      cout.setf(ios::hex, ios::basefield);
+      cout << "armGetActiveAlarm["<< i <<"] code(hex): "<< alarms[i].code << endl;
+      cout.unsetf(ios::hex);
+      armReturnAlarm(alarms[i].type);
+      cout << "armGetActiveAlarm["<< i <<"] description: "<< alarms[i].description << endl;
+    }
+
+    return ret;
 }
 
 //------------------------------------------------------------------------------
