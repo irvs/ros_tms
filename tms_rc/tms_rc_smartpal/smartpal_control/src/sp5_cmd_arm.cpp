@@ -272,12 +272,14 @@ int8_t Client::armGetActiveAlarm(int8_t RL, u_int32_t num_request, double *retur
     if(RL==ArmR)
     {
         ret = CommandObj_ArmR->getActiveAlarm(num_request_alarm, num_response_alarm, alarms);
+        printf("armGetActiveAlarm R: num_request_alarm = %lu, num_response_alarm=%lu",num_request_alarm,num_response_alarm);
         printf("armGetActiveAlarm R result: ");
         armReturnValue(ret);
     }
     else if(RL==ArmL)
     {
         ret = CommandObj_ArmL->getActiveAlarm(num_request_alarm, num_response_alarm, alarms);
+        printf("armGetActiveAlarm L: num_request_alarm = %lu, num_response_alarm=%lu",num_request_alarm,num_response_alarm);
         printf("armGetActiveAlarm L result: ");
         armReturnValue(ret);
     }
