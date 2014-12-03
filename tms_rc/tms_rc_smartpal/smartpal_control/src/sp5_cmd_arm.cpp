@@ -272,14 +272,14 @@ int8_t Client::armGetActiveAlarm(int8_t RL, u_int32_t num_request, double *retur
     if(RL==ArmR)
     {
         ret = CommandObj_ArmR->getActiveAlarm(num_request_alarm, num_response_alarm, alarms);
-        printf("armGetActiveAlarm R: num_request_alarm = %lu, num_response_alarm=%lu",num_request_alarm,num_response_alarm);
+        printf("armGetActiveAlarm R: num_request_alarm = %d, num_response_alarm=%d/n",num_request_alarm,num_response_alarm);
         printf("armGetActiveAlarm R result: ");
         armReturnValue(ret);
     }
     else if(RL==ArmL)
     {
         ret = CommandObj_ArmL->getActiveAlarm(num_request_alarm, num_response_alarm, alarms);
-        printf("armGetActiveAlarm L: num_request_alarm = %lu, num_response_alarm=%lu",num_request_alarm,num_response_alarm);
+        printf("armGetActiveAlarm L: num_request_alarm = %d, num_response_alarm=%d/n",num_request_alarm,num_response_alarm);
         printf("armGetActiveAlarm L result: ");
         armReturnValue(ret);
     }
@@ -293,7 +293,7 @@ int8_t Client::armGetActiveAlarm(int8_t RL, u_int32_t num_request, double *retur
     {
       cout.setf(ios::hex, ios::basefield);
       cout << "armGetActiveAlarm["<< i <<"] code(hex): "<< alarms[i].code << endl;
-      return_code[i] = (double)alarms[i].code;
+      //return_code[i] = (double)alarms[i].code;
       cout.unsetf(ios::hex);
       armReturnAlarm(alarms[i].type);
       cout << "armGetActiveAlarm["<< i <<"] description: "<< alarms[i].description << endl;
