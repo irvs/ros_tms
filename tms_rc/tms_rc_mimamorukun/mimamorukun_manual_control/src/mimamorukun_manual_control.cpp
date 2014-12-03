@@ -1,9 +1,9 @@
 //------------------------------------------------------------------------------
 // FileName : mimamorukun_manual_control.cpp
-// Date		: 2014.11.07
-// author 	: Akio Shigekane
+// Date     : 2014.11.07
+// author   : Akio Shigekane
 //------------------------------------------------------------------------------
-//2014. 9.23     	adjust scale of speed
+//2014. 9.23        adjust scale of speed
 //2014.11.01        adjust wheel spin PID constants
 //2014.11.07        included to ROT_TMS project
 
@@ -31,12 +31,12 @@ const int     SPEED_MAX = 32767;
 const float   DIST_PER_PULSE = 0.552486;  //mm par pulse
 const int     WHEEL_DIST = 533;
 
-long int 	ENC_L = 0;
-long int 	ENC_R = 0;
-int 	POS_X = 0;
-int 	POS_Y = 0;
-// double 	POS_SIGMA = 0;
-// double 	POS_ANG = 0;
+long int    ENC_L = 0;
+long int    ENC_R = 0;
+int         POS_X = 0;
+int         POS_Y = 0;
+// double   POS_SIGMA = 0;
+// double   POS_ANG = 0;
 
 /*double joy_cmd_spd = 0.0;
 double joy_cmd_turn = 0.0;*/
@@ -96,7 +96,7 @@ void MachinePose_s::updateVicon(){
     if(! db_client.call(srv)){
         ROS_ERROR("Failed to get vicon data from DB via tms_db_reader");
     }else if(srv.response.tmsdb.empty()){
-    	ROS_ERROR("DB response empty");
+        ROS_ERROR("DB response empty");
     }else{
         this->pos_vicon.x = srv.response.tmsdb[0].x;
         this->pos_vicon.y = srv.response.tmsdb[0].y;
@@ -119,43 +119,43 @@ void MachinePose_s::updateOdom(){
     if(tmpENC_R > ENC_MAX/2)ENC_R = tmpENC_R-(ENC_MAX+1);
     else                    ENC_R = tmpENC_R;
 
-	static long int ENC_R_old = 0;static long int ENC_L_old = 0;
-	double detLp/*,r , dX ,dY,dL*/;
+    static long int ENC_R_old = 0;static long int ENC_L_old = 0;
+    double detLp/*,r , dX ,dY,dL*/;
 
-	//エンコーダーの位置での前回からの移動距離dL_R,dL_Lを算出
-	double dL_L = (double)(ENC_L-ENC_L_old)*(-DIST_PER_PULSE);
+    //エンコーダーの位置での前回からの移動距離dL_R,dL_Lを算出
+    double dL_L = (double)(ENC_L-ENC_L_old)*(-DIST_PER_PULSE);
     double dL_R = (double)(ENC_R-ENC_R_old)*  DIST_PER_PULSE;
 
-	//角速度SIGMAを算出
-	double POS_SIGMA = (dL_R - dL_L)/WHEEL_DIST;
-	double dL = (dL_R + dL_L)*0.50000;
+    //角速度SIGMAを算出
+    double POS_SIGMA = (dL_R - dL_L)/WHEEL_DIST;
+    double dL = (dL_R + dL_L)*0.50000;
 
-	//移動距離deLpを算出
-	if(fabs(POS_SIGMA)<0.0001){//左右の速度が等しく直進するとき
-		POS_SIGMA = 0.0;
-		detLp = dL_R;
-	}else{                       //左右どちらかにマシンの向きが変わってるとき
-		// r = dL/POS_SIGMA;
-		detLp = 2.0000*(dL/POS_SIGMA)*sin(POS_SIGMA*0.50000);
-	}
+    //移動距離deLpを算出
+    if(fabs(POS_SIGMA)<0.0001){//左右の速度が等しく直進するとき
+        POS_SIGMA = 0.0;
+        detLp = dL_R;
+    }else{                       //左右どちらかにマシンの向きが変わってるとき
+        // r = dL/POS_SIGMA;
+        detLp = 2.0000*(dL/POS_SIGMA)*sin(POS_SIGMA*0.50000);
+    }
 
 /*    mchn_pose.vel_odom.x = detLp * cos(mchn_pose.pos_odom.theta + (POS_SIGMA/2.0));
     mchn_pose.vel_odom.y = detLp * sin(mchn_pose.pos_odom.theta + (POS_SIGMA/2.0));*/
-	double dX = detLp * cos(mchn_pose.pos_odom.theta + (POS_SIGMA/2.0));//X,Yの前回からの移動量計算
-	double dY = detLp * sin(mchn_pose.pos_odom.theta + (POS_SIGMA/2.0));
-	ENC_R_old = ENC_R;//前回のエンコーダーの値を記録
-	ENC_L_old = ENC_L;
-	mchn_pose.pos_odom.theta = (ENC_R_old - (-ENC_L_old))*DIST_PER_PULSE/WHEEL_DIST;//現在の角度を算出
+    double dX = detLp * cos(mchn_pose.pos_odom.theta + (POS_SIGMA/2.0));//X,Yの前回からの移動量計算
+    double dY = detLp * sin(mchn_pose.pos_odom.theta + (POS_SIGMA/2.0));
+    ENC_R_old = ENC_R;//前回のエンコーダーの値を記録
+    ENC_L_old = ENC_L;
+    mchn_pose.pos_odom.theta = (ENC_R_old - (-ENC_L_old))*DIST_PER_PULSE/WHEEL_DIST;//現在の角度を算出
 
     mchn_pose.pos_odom.theta = nomalizeAng(mchn_pose.pos_odom.theta);
-	// while(mchn_pose.pos_odom.theta > 3.14159265){  //向いている角度を-180°~180°(-π~π)の範囲に合わせる
-	// 	mchn_pose.pos_odom.theta = mchn_pose.pos_odom.theta - (2*3.14159265);
-	// }
-	// while(mchn_pose.pos_odom.theta < -3.14159265){
-	// 	mchn_pose.pos_odom.theta = mchn_pose.pos_odom.theta + (2*3.14159265);
-	// }
+    // while(mchn_pose.pos_odom.theta > 3.14159265){  //向いている角度を-180°~180°(-π~π)の範囲に合わせる
+    //  mchn_pose.pos_odom.theta = mchn_pose.pos_odom.theta - (2*3.14159265);
+    // }
+    // while(mchn_pose.pos_odom.theta < -3.14159265){
+    //  mchn_pose.pos_odom.theta = mchn_pose.pos_odom.theta + (2*3.14159265);
+    // }
 
-	mchn_pose.pos_odom.x += dX;
+    mchn_pose.pos_odom.x += dX;
     mchn_pose.pos_odom.y += dY;
     // mchn_pose.pos_odom.theta = POS_ANG;
     mchn_pose.vel_odom.x =  dX * ROS_RATE;
@@ -276,7 +276,7 @@ void MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/){
 
 
    if(this->tgtPose.x==0.0 && this->tgtPose.y==0.0){ //mokutekiti
-    	errorNX /*= errorNY */= errorNT =  0.0;
+        errorNX /*= errorNY */= errorNT =  0.0;
     }
     double tmp_spd  = KPdist * errorNX;
     double tmp_turn = KPang * Rad2Deg(errorNT);
@@ -329,8 +329,8 @@ int main(int argc, char **argv){
 //    ros::Subscriber cmd_vel_sub = n.subscribe<sensor_msgs::Joy>("/joy", 1, receiveJoy);
     ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Pose2D>("/mkun_goal_pose", 1, receiveGoalPose);
     ros::Time current_time, last_time;
-    current_time 	= ros::Time::now();
-    last_time 		= ros::Time::now();
+    current_time    = ros::Time::now();
+    last_time       = ros::Time::now();
 
     ros::Rate   r(ROS_RATE);
     while(n.ok()){
