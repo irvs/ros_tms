@@ -259,14 +259,14 @@ int8_t Client::armStop(int8_t RL)
     return ret;
 }
 
-int8_t Client::armGetActiveAlarm(int8_t RL)
+int8_t Client::armGetActiveAlarm(int8_t RL, u_int32_t num_request, double *return_code)
 {
     int8_t ret;
 
     if(!bInitialize) return CORBA_ERR;
 
-    CORBA::ULong  num_request_alarm = 7;
-    CORBA::ULong  num_response_alarm;
+    CORBA::ULong  num_request_alarm  = (CORBA::ULong)num_request;
+    CORBA::ULong  num_response_alarm = 0;
     AlarmSeq_var  alarms;
 
     if(RL==ArmR)
@@ -291,6 +291,7 @@ int8_t Client::armGetActiveAlarm(int8_t RL)
     {
       cout.setf(ios::hex, ios::basefield);
       cout << "armGetActiveAlarm["<< i <<"] code(hex): "<< alarms[i].code << endl;
+      return_code[i] = (double)alarms[i].code;
       cout.unsetf(ios::hex);
       armReturnAlarm(alarms[i].type);
       cout << "armGetActiveAlarm["<< i <<"] description: "<< alarms[i].description << endl;

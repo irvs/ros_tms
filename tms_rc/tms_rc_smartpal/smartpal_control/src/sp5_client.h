@@ -121,7 +121,7 @@ public:
     int8_t armResume(int8_t RL);
     int8_t armAbort(int8_t RL);
     int8_t armStop(int8_t RL);
-    int8_t armGetActiveAlarm(int8_t RL);
+    int8_t armGetActiveAlarm(int8_t RL, u_int32_t num_request, double *return_code);
     int8_t armGetState(int8_t RL);
     int8_t armGetPos(int8_t RL, double frameID, double *posdata);
     int8_t armSetJointAcc(int8_t RL, double acc_ms);
