@@ -26,15 +26,15 @@ ros::ServiceClient get_data_client;
 int getRobotCurrentPos(double *x, double *y, double *th, double *waistL, double *waistH,
 		double *jointR, double *gripperR, double *jointL, double *gripperL)
 {
-  int8_t a, b, c, d, e, f;
-  a = smartpal->vehicleGetPos(x,y,th);
-  b = smartpal->armGetPos(ArmR,0,jointR);
-  c = smartpal->armGetPos(ArmL,0,jointL);
-  d = smartpal->gripperGetPos(ArmR,gripperR);
-  e = smartpal->gripperGetPos(ArmL,gripperL);
-  f = smartpal->lumbaGetPos(waistL, waistH);
+  int8_t ret1, ret2, ret3, ret4, ret5, ret6;
+  ret1 = smartpal->vehicleGetPos(x,y,th);
+  ret2 = smartpal->armGetPos(ArmR,0,jointR);
+  ret3 = smartpal->armGetPos(ArmL,0,jointL);
+  ret4 = smartpal->gripperGetPos(ArmR,gripperR);
+  ret5 = smartpal->gripperGetPos(ArmL,gripperL);
+  ret6 = smartpal->lumbaGetPos(waistL, waistH);
 
-  if((a+b+c+d+e+f) <= 0) {
+  if((ret1+ret2+ret3+ret4+ret5+ret6) <= 0) {
     ROS_ERROR("Failed to get robot position.\n");
     return 0;
   }
