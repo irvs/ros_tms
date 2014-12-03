@@ -20,12 +20,13 @@
 
 #include <sensor_msgs/Joy.h>
 #include <tms_msg_db/TmsdbGetData.h>
+#include <tms_msg_rc/rc_robot_control.h>
 
 #define ROS_RATE   10
 
 using namespace std;
 
-ClientSocket  client_socket (/*""*/"192.168.11.99", 54300 );
+ClientSocket  client_socket (""/*"192.168.11.99"*/, 54300 );
 const int     ENC_MAX  = 3932159;
 const int     SPEED_MAX = 32767;
 const float   DIST_PER_PULSE = 0.552486;  //mm par pulse
@@ -51,7 +52,7 @@ public:
     void updateOdom();
     void updateVicon();
     void updateCompFilter();
-    void goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/);
+    bool goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/);
     geometry_msgs::Pose2D   tgtPose;
     geometry_msgs::Twist    tgtTwist;
     geometry_msgs::Pose2D   pos_odom;
@@ -100,7 +101,7 @@ void MachinePose_s::updateVicon(){
     }else{
         this->pos_vicon.x = srv.response.tmsdb[0].x;
         this->pos_vicon.y = srv.response.tmsdb[0].y;
-        this->pos_vicon.theta = Deg2Rad(srv.response.tmsdb[0].ry);//Deg2Rad((double)srv.response.tmsdb[0].ry);        
+        this->pos_vicon.theta = Deg2Rad(srv.response.tmsdb[0].ry);
     }
     return ;
 }
@@ -148,12 +149,6 @@ void MachinePose_s::updateOdom(){
     mchn_pose.pos_odom.theta = (ENC_R_old - (-ENC_L_old))*DIST_PER_PULSE/WHEEL_DIST;//現在の角度を算出
 
     mchn_pose.pos_odom.theta = nomalizeAng(mchn_pose.pos_odom.theta);
-    // while(mchn_pose.pos_odom.theta > 3.14159265){  //向いている角度を-180°~180°(-π~π)の範囲に合わせる
-    //  mchn_pose.pos_odom.theta = mchn_pose.pos_odom.theta - (2*3.14159265);
-    // }
-    // while(mchn_pose.pos_odom.theta < -3.14159265){
-    //  mchn_pose.pos_odom.theta = mchn_pose.pos_odom.theta + (2*3.14159265);
-    // }
 
     mchn_pose.pos_odom.x += dX;
     mchn_pose.pos_odom.y += dY;
@@ -163,12 +158,6 @@ void MachinePose_s::updateOdom(){
     mchn_pose.vel_odom.theta = (dL_R - (-dL_L))/WHEEL_DIST;
     return ;
 }
-
-void init(){
-    printf("WheelChair Bringup!\n");
-    ros::NodeHandle n_private("~");
-}
-
 
 /*------------------------------------
  * send command to mbed in wheel chair
@@ -196,8 +185,26 @@ void spinWheel(/*double arg_speed, double arg_theta*/){
     //cout << "Response:" << reply << "\n";
 }
 
-void receiveGoalPose(const geometry_msgs::Pose2D::ConstPtr& cmd_pose){
-    mchn_pose.tgtPose = *cmd_pose;
+// void receiveGoalPose(const geometry_msgs::Pose2D::ConstPtr& cmd_pose){
+//     mchn_pose.tgtPose = *cmd_pose;
+// }
+
+bool receiveGoalPose(   tms_msg_rc::rc_robot_control::Request &req,
+                        tms_msg_rc::rc_robot_control::Response &res){
+    if(1 != req.unit){      //Is not vicle unit
+        res.result = 0;//SRV_UNIT_ERR;
+        return true;
+    }
+    if(15 != req.cmd){
+        res.result = 0;//SRV_CMD_ERR;
+        return true;
+    }
+    mchn_pose.tgtPose.x = req.arg[0];
+    mchn_pose.tgtPose.y = req.arg[1];
+    mchn_pose.tgtPose.theta = Deg2Rad(req.arg[2]);
+    while(! mchn_pose.goPose()){
+        ROS_INFO("doing goPose");
+    }
 }
 
 void receiveCmdVel(const geometry_msgs::Twist::ConstPtr& cmd_vel){
@@ -207,63 +214,17 @@ void receiveCmdVel(const geometry_msgs::Twist::ConstPtr& cmd_vel){
 
 void receiveJoy(const sensor_msgs::Joy::ConstPtr& joy){
     ROS_INFO("Rrecieve joy");
-    // spinWheel(joy->axes[1]*300100,joy->axes[3]*1/*10*/);
     mchn_pose.tgtTwist.linear.x =   joy->axes[1]*300;//600;
     mchn_pose.tgtTwist.angular.z =  joy->axes[3]*0.7;//1;
-    // joy_cmd_spd = joy->axes[1]*300;//600;
-    // joy_cmd_turn = joy->axes[3]*0.7;//1;
 }
 
-// void MachinePose_s::goPose(const geometry_msgs::Pose2D::ConstPtr& cmd_pose){
-//      /* Kanayama, Y.; Kimura, Y.; Miyazaki, F.; Noguchi, T.; , 
-//      "A stable tracking control method for an autonomous mobile robot," Robotics and Automation, 1990. 
-//      Proceedings., 1990 IEEE International Conference on , vol., no., pp.384-389 vol.1, 13-18 May 1990 */
-     
-//      //MovingMotorInterface *movingMotor = (MovingMotorInterface*)((ThreadParam*)param)->caller;
-//      //Thread *thread = ((ThreadParam*)param)->thread;
-//      int targetX = cmd_pose->x; //((int*)((ThreadParam*)param)->userParam[0])[0];
-//      int targetY = cmd_pose->y; //((int*)((ThreadParam*)param)->userParam[0])[1];
-//      double startX = this->pos_vicon.x; //movingMotor->robot->getNowPositionX();
-//      double startY = this->pos_vicon.y; //movingMotor->robot->getNowPositionY();
-//      double targetT = atan2(targetY-startY,targetX-startX);
-//      double startT  = this->pos_vicon.theta; //movingMotor->robot->getNowYaw();
-     
-//      double refVel = 250.0;
-//      double refOmega = 0.0;
-//      double Kx = 0.0001;//0.01;
-//      double Ky = 1.5e-6;
-//      double Kt = 0.1;
-//      double gain = 0.1;
-//      // thread->setThreadStarted();
-//      while (true){
-//          //if (thread->getEndFlag() == true) break;
-//          double errorX = targetX - this->pos_vicon.x; //movingMotor->robot->getNowPositionX();
-//          double errorY = targetY - this->pos_vicon.y; //movingMotor->robot->getNowPositionY();
-//          double theta  = this->pos_vicon.theta; //movingMotor->robot->getNowYaw();
-//          double errorNX =  errorX * cos(theta) +  errorY * sin(theta); 
-//          double errorNY = -errorX * sin(theta) +  errorY * cos(theta); 
-//          double errorNT =  targetT - theta;
-//          double vel = sqrt(sqr(this->vel_vicon.x) + sqr(this->vel_vicon.y)); //linear.x; //sqrt(sqr(movingMotor->robot->getNowVelocityX())+sqr(movingMotor->robot->getNowVelocityY()));
-//          double omega = this->vel_vicon.theta; //this->vel_vicon.angular.z; //movingMotor->robot->getNowOmegaZ();
-//          /*double mu1 = -Kx * errorNX;
-//          double mu2 = -Ky * errorNY * refVel - Kt * sin(errorNT);
-//          double u1 = fabs(refVel * cos(errorNT)) - mu1;
-//          double u2 = refOmega - mu2;*/
-//          this->tgtTwist.linear.x =  fabs(refVel*cos(errorNT)) + Kx*errorNX;
-//          this->tgtTwist.angular.z = refOmega + Ky*errorNY*refVel + Kt*sin(errorNT);
-//          double distance = sqrt(sqr(targetX-this->pos_vicon.x)+sqr(targetY-this->pos_vicon.y));
-//          if (distance <= 200) break; // threshold about 200 mm
-         
-//          //movingMotor->moveCurve(int(u1*gain), u2*gain);
-//      }
-//  }
-
-void MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/){
+bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/){
     //original PID feedback on error of Angle and Distance
     const double KPang  = 1.0;
     const double KDang  = 0;
     const double KPdist = 2.0;
     const double KDdist = 0;
+    bool ret = false;
 
     double errorX = this->tgtPose.x - this->pos_vicon.x;
     double errorY = this->tgtPose.y - this->pos_vicon.y;
@@ -275,7 +236,7 @@ void MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/){
     double errorNT = nomalizeAng(targetT - theta);
 
 
-   if(this->tgtPose.x==0.0 && this->tgtPose.y==0.0){ //mokutekiti
+   if(this->tgtPose.x==0.0 && this->tgtPose.y==0.0){  //mokutekiti
         errorNX /*= errorNY */= errorNT =  0.0;
     }
     double tmp_spd  = KPdist * errorNX;
@@ -289,6 +250,10 @@ void MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/){
     printf("spd:%+8.2lf turn:%+4.1lf",tmp_spd,tmp_turn);
     this->tgtTwist.linear.x = tmp_spd;
     this->tgtTwist.angular.z= Deg2Rad(tmp_turn);
+    if(distance<=200 && 20>fabs(Rad2Deg(errorNT))){
+        ret = true;
+    }
+    return ret;
 }
 
 
@@ -296,8 +261,6 @@ int main(int argc, char **argv){
     ROS_INFO("wc_controller");
     ros::init(argc, argv, "wc_controller");
     ros::NodeHandle n;
-
-    db_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
 
     int Kp_,Ki_,Kd_;
     string s_Kp_,s_Ki_,s_Kd_;
@@ -325,9 +288,11 @@ int main(int argc, char **argv){
         cout << "Exception was caught:" << e.description() << "\n";
     }
 
+    db_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
 //    ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, receiveCmdVel);
 //    ros::Subscriber cmd_vel_sub = n.subscribe<sensor_msgs::Joy>("/joy", 1, receiveJoy);
-    ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Pose2D>("/mkun_goal_pose", 1, receiveGoalPose);
+//    ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Pose2D>("/mkun_goal_pose", 1, receiveGoalPose);
+    ros::ServiceServer service = n.advertiseService("mkun_goal_pose",receiveGoalPose);
     ros::Time current_time, last_time;
     current_time    = ros::Time::now();
     last_time       = ros::Time::now();
