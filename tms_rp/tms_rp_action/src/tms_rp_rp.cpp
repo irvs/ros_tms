@@ -33,6 +33,8 @@ tms_rp::TmsRpSubtask::TmsRpSubtask(): ToolBar("TmsRpSubtask"),
   kxp_virtual_control_client    = nh1.serviceClient<tms_msg_rc::rc_robot_control>("kxp_virtual_control");
   kxp_mbase_client              = nh1.serviceClient<tms_msg_rc::tms_rc_pmove>("pmove");
   kobuki_virtual_control_client = nh1.serviceClient<tms_msg_rc::rc_robot_control>("kobuki_virtual_control");
+  mkun_virtual_control_client   = nh1.serviceClient<tms_msg_rc::rc_robot_control>("mimamorukun_virtual_control");
+  mkun_control_client           = nh1.serviceClient<tms_msg_rc::rc_robot_control>("mkun_goal_pose");
   voronoi_path_planning_client_ = nh1.serviceClient<tms_msg_rp::rps_voronoi_path_planning>("rps_voronoi_path_planning");
   give_obj_client               = nh1.serviceClient<tms_msg_rp::rps_goal_planning>("rps_give_obj_pos_planning");
   refrigerator_client           = nh1.serviceClient<tms_msg_rs::rs_home_appliances>("refrigerator_controller");
@@ -564,6 +566,25 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    		kxp_srv.request.w_th = rp_srv.response.VoronoiPath[i].th;
 			    		if (kxp_mbase_client.call(kxp_srv)) ROS_INFO("result: %d", kxp_srv.response.success);
 			    		else                  ROS_ERROR("Failed to call service kxp_mbase");
+
+			    		if (sd.type == true) {} // set odom
+			    		else {
+						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
+			    			sleep(1); //temp
+			    			}
+			    		break;
+			    	}
+		    	case 2007: //mimamorukun
+			    	{
+			    		tms_msg_rc::rc_robot_control mkun_srv;
+			    		mkun_srv.request.unit = 1;
+			    		mkun_srv.request.cmd = 15;
+			    		mkun_srv.request.arg.resize(3);
+			    		mkun_srv.request.arg[0] = rp_srv.response.VoronoiPath[i].x;
+			    		mkun_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
+			    		mkun_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
+			    		if (mkun_virtual_control_client.call(mkun_srv)) ROS_INFO("result: %d", mkun_srv.response.result);
+			    		else                  ROS_ERROR("Failed to call service mimamorukun_virtual_move");
 
 			    		if (sd.type == true) {} // set odom
 			    		else {
