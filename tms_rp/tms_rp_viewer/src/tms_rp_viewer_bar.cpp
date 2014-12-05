@@ -783,11 +783,19 @@ void RpViewerBar::viewPersonPostion()
 void RpViewerBar::rosOn()
 {
   static ros::Rate loop_rate(30); // 0.1sec
-  bool isTest=false;
+  std::string tms_rp_state;
 
   while (ros::ok())
   {
-    updateEnvironmentInformation(false);
+    if (ros::param::has("/tms_rp_state"))
+    {
+      ros::param::get("/tms_rp_state",tms_rp_state);
+    }
+
+    if(tms_rp_state.compare("real")==0)
+    {
+      updateEnvironmentInformation(false);
+    }
 
     viewStaticMap();
     viewDynamicMap();

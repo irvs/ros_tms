@@ -19,11 +19,6 @@ using namespace cnoid;
 #include <sys/resource.h>
 #include <stdlib.h>
 
-#ifdef WIN32
-double getrusage_sec() {
-	return clock();
-}
-#else
 double getrusage_sec() {
 	struct rusage t;
 	struct timeval tv;
@@ -31,15 +26,12 @@ double getrusage_sec() {
 	tv = t.ru_utime;
 	return tv.tv_sec + (double)tv.tv_usec*1e-6;
 }
-#endif
-
 
 TmsRpController* TmsRpController::instance()
 {
   static TmsRpController* instance = new TmsRpController();
 	return instance;
 }
-
 
 TmsRpController::TmsRpController() : os_ (MessageView::mainInstance()->cout() )
 {
