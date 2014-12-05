@@ -96,7 +96,6 @@ private:
   static std::string object_name_[25];
   static std::string furniture_name_[21];
   Matrix3d mat0_, mat_ccw90_, mat_ccw180_, mat_cw90_;
-
   ToolButton* visibility_toggle_;
   ToolButton* static_map_toggle_;
   ToolButton* dynamic_map_toggle_;

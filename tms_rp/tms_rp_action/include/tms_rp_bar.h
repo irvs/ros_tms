@@ -151,7 +151,7 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   MessageView& mes_;
   std::ostream& os_;
   TmsRpController& trc_;
-
+  ros::NodeHandle nh;
   ToolButton* static_map_toggle_;
   ToolButton* dynamic_map_toggle_;
   ToolButton* local_map_toggle_;

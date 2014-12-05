@@ -201,15 +201,14 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
 
   sid_ = 100000;
 
-  // ros nodehandle, topic, service init
-  static ros::NodeHandle nh;
-
+  // topic, service init
   get_data_client_       = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
   sp5_control_client_    = nh.serviceClient<tms_msg_rc::rc_robot_control>("sp5_control");
   ardrone_client_        = nh.serviceClient<tms_msg_rc::robot_control>("robot_control");
   request_robot_path_    = nh.serviceClient<tms_msg_rp::rps_voronoi_path_planning>("/rps_voronoi_path_planning");
   subscribe_umo_tracker_ = nh.subscribe("/umo_tracking_points", 1,  &TmsRpBar::receiveUnknownMovingObjectTrackerInfo, this);
 
+  nh.setParam("tms_rp_state", "none");
   //----------------------------------------------------------------------------
   group_lrf_raw_data_ = new SgInvariantGroup();
 
@@ -1317,6 +1316,7 @@ void TmsRpBar::changePlanningMode()
 void TmsRpBar::simulationButtonClicked()
 {
   os_ <<  "virtual button clicked" << endl;
+  nh.setParam("tms_rp_state", "simulation");
   static boost::thread t(boost::bind(&TmsRpBar::simulation, this));
 }
 
@@ -1324,6 +1324,7 @@ void TmsRpBar::simulationButtonClicked()
 void TmsRpBar::connectRosButtonClicked()
 {
   os_ <<  "connectROS button clicked" << endl;
+  nh.setParam("tms_rp_state", "real");
   static boost::thread thread_connectROS(boost::bind(&TmsRpBar::connectROS, this));
 }
 
