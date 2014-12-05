@@ -513,12 +513,10 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 							send_rc_exception(1);
 							return false;
 						}
-			    		if (sd.type == true)
+			    		if (sd.type == true) {
 			    			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
-			    		else {
-			    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
-			    			sleep(1); //temp
-			    			}
+			    		}
+			    		else sleep(1.5); //temp
 			    		break;
 			    	}
 				case 2003: // smartpal5_2
@@ -531,11 +529,12 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 							send_rc_exception(1);
 							return false;
 						}
-			    		if (sd.type == true)
+			    		if (sd.type == true) {
 			    			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
+			    		}
 			    		else {
-			    			callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
-			    			sleep(1); //temp
+			    			ROS_INFO("Please use ID 2002 when smartpal5's simulation");
+			    			return false;
 			    			}
 			    		break;
 			    	}
@@ -552,10 +551,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    		else                  ROS_ERROR("Failed to call service kobuki_move");
 
 			    		if (sd.type == true) {} // set odom
-			    		else {
-						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
-			    			sleep(1); //temp
-			    			}
+			    		else sleep(1.5); //temp
 			    		break;
 			    	}
 			    case 2006: // kxp
@@ -568,10 +564,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    		else                  ROS_ERROR("Failed to call service kxp_mbase");
 
 			    		if (sd.type == true) {} // set odom
-			    		else {
-						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
-			    			sleep(1); //temp
-			    			}
+			    		else sleep(1.5); //temp
 			    		break;
 			    	}
 		    	case 2007: //mimamorukun
@@ -760,6 +753,10 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 		switch (sd.robot_id) {
 		case 2002: // for smartpal simulation
 		{
+			double sp5arm_arg[26] = {	0.0,   0.0, 10.0, 10.0,	/*waist*/
+													0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0,/*right arm*/
+													0.0,  10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0 /*left arm */}; //degree
+
 			if (sd.type == false) {
 				if (!sp5_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg)) {
 					send_rc_exception(5);
@@ -767,6 +764,32 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 				}
 				callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 				sleep(1);
+			} else {
+				if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
+				for (int t=0; t<trajectory.size(); t++) {
+					for (int u=0; u<trajectory.at(t).joints.size(); u++) {
+						ROS_INFO("joint[%d][%d]=%f", t, u, rad2deg(trajectory.at(t).joints[u]));
+						if (u==0 || u==1)
+							sp5arm_arg[u] = rad2deg(trajectory.at(t).joints[u]);
+						else if (u>=2 && u<=8)
+							sp5arm_arg[u+2] = rad2deg(trajectory.at(t).joints[u]);
+						else if (u==9)
+							sp5arm_arg[u+3] = rad2deg(trajectory.at(t).joints[u]);
+					}
+					// send command to RC
+					if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_arg+4)) {
+						send_rc_exception(2);
+						return false;
+					}
+					if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_arg)) {
+						send_rc_exception(3);
+						return false;
+					}
+					if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_arg+12)) {
+						send_rc_exception(4);
+						return false;
+					}
+				}
 			}
 			break;
 		}
