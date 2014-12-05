@@ -583,8 +583,12 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    		mkun_srv.request.arg[0] = rp_srv.response.VoronoiPath[i].x;
 			    		mkun_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
 			    		mkun_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
+			    		//call srv for simulator
 			    		if (mkun_virtual_control_client.call(mkun_srv)) ROS_INFO("result: %d", mkun_srv.response.result);
 			    		else                  ROS_ERROR("Failed to call service mimamorukun_virtual_move");
+			    		//call srv for real robot
+			    		if (mkun_control_client.call(mkun_srv)) ROS_INFO("result: %d", mkun_srv.response.result);
+			    		else                  ROS_ERROR("Failed to call service mimamorukun_move");
 
 			    		if (sd.type == true) {} // set odom
 			    		else {
