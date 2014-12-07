@@ -74,8 +74,6 @@ int main()
 #if 0
     int i = -5;
     printf("%d no zettaiti %d", i, abs(i));
-
-
 #endif
 
 #if 0

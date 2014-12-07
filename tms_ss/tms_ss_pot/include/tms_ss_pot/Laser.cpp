@@ -374,19 +374,21 @@ int CLaser::GetDiffLRFCluster(int n)
                     }
                     else
                     {
-                        //                  if (IsFrontFData(m_LRFData[n][i], m_BackLRFData[n][i], m_diff_dist)) {
-                        if (IsFrontFData(m_LRFData[n][i], m_BackLRFDataAve[n][i], m_BackLRFDataVar[n][i], m_obj_prob))
-                        {
-                            c.n = sp + sflg / 2;
-                            c.range = m_LRFData[n][c.n];
-                            c.length = sflg;
-                            m_LRFClsData[n].push_back(c);
-                            sflg = 0;
-                        }
-                        else  //sflg only == 0 or 1;
-                        {
-                            sflg++;
-                        }
+                        sflg++;
+                        /*
+                            //                  if (IsFrontFData(m_LRFData[n][i], m_BackLRFData[n][i], m_diff_dist)) {
+                            if (IsFrontFData(m_LRFData[n][i], m_BackLRFDataAve[n][i], m_BackLRFDataVar[n][i], m_obj_prob))
+                            {
+                                c.n = sp + sflg / 2;
+                                c.range = m_LRFData[n][c.n];
+                                c.length = sflg;
+                                m_LRFClsData[n].push_back(c);
+                                sflg = 0;
+                            }
+                            else  //sflg only == 0 or 1;
+                            {
+                                sflg++;
+                            }*/
                     }
                 }
                 else
