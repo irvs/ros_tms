@@ -11,6 +11,8 @@
 #include <sensor_msgs/MultiEchoLaserScan.h>
 #include <tms_msg_ss/tracking_points.h>
 #include <tms_msg_ss/tracking_grid.h>
+#include <tms_msg_ss/tracking_clusters_data.h>
+#include <tms_msg_ss/tracking_cluster.h>
 
 pthread_mutex_t mutex_laser = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
@@ -36,13 +38,15 @@ pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 std::vector<float> scanData;
 std::vector<float> scanData1;
 CLaser laser;
-bool CallbackCalled = false;
+bool CallbackCalled  = false;
+bool CallbackCalled1 = false;
 
 ros::Publisher  pub ;
+ros::Publisher  pub1;
 ros::Subscriber sub ;
 ros::Subscriber sub1;
 
-void *Visualization( void *ptr )
+void *Object_points_show( void *ptr )
 {
   int   ID;
   float X;
@@ -55,29 +59,21 @@ void *Visualization( void *ptr )
   {
     tms_msg_ss::tracking_grid grid;
     tms_msg_ss::tracking_points points;
-    int id = 0;
-    int flag = 0;
-    for (int i = 0; i < 3; i++)
-    {
-      id ++;
-    }
+
     pthread_mutex_lock(&mutex_target);
 
     for (int i = 0; i < MAX_TRACKING_OBJECT; i++)
     {
       if (laser.m_pTarget[i] != NULL)
       {
-        if (laser.m_pTarget[i]->cnt < 200)
+        if (laser.m_pTarget[i]->cnt < 20)
         {
-          //cout << laser.m_pTarget[i]->cnt << endl;
           continue;
         }
 
-        //std::cout << "laser.m_pTarget " << laser.m_pTarget[i]->cnt << std::endl;
         ID =  (laser.m_pTarget[i]->id) % 20;
         X  = -(laser.m_pTarget[i]->py) + 5200;
         Y  =  (laser.m_pTarget[i]->px) + 100;
-        //std::cout << "FX FY"<< FX << " "<< FY <<std::endl;
 
         if (0.0 < X && X < 8000.0 && 0.0 < Y && Y < 4500.0)
         {
@@ -87,17 +83,12 @@ void *Visualization( void *ptr )
 
           points.tracking_grid.push_back(grid);
         }
-        id ++;
       }
     }
-    //if (id - 3 > 0) std::cout << "Number of Markers " << id - 3 << std::endl;
 
     pthread_mutex_unlock(&mutex_target);
 
-    latest_id = id;
-
     pub->publish(points);
-    //std::cout << "pub"<<std::endl;
     r.sleep();
   }
   return 0;
@@ -108,10 +99,14 @@ void *Processing( void *ptr )
 {
   CMultipleParticleFilter m_PF;
 
-  std::vector<double> itigou_x;
-  std::vector<double> itigou_y;
-  std::vector<double> nigou_x;
-  std::vector<double> nigou_y;
+  std::vector<int>    lrf_number;
+  std::vector<double> lrf_cls_x;
+  std::vector<double> lrf_cls_y;
+  std::vector<int>    length;
+
+  tms_msg_ss::tracking_cluster cluster;
+  tms_msg_ss::tracking_clusters_data clusters;
+  ros::Publisher *pub = (ros::Publisher *)ptr;
 
   ros::Rate r(30);
 
@@ -216,23 +211,6 @@ void *Processing( void *ptr )
           cvmSet(m_Translate, 0, 0, laser.m_LRFParam[n].tx);
           cvmSet(m_Translate, 1, 0, laser.m_LRFParam[n].ty);
 
-          laser.m_LRFPoints[n].clear();
-          laser.m_LRFPoints[n].resize(laser.m_DiffLRFData[n].size());
-
-          for ( int i = 0; i < laser.m_DiffLRFData[n].size(); i++)
-          {
-            count = laser.m_DiffLRFData[n][i].n;
-            range = laser.m_DiffLRFData[n][i].range;
-            theta = laser.m_DivAngle[0] * count + laser.m_StartAngle[0];
-
-            cvmSet(laser.m_LRFPos[n][i], 0, 0, range * cos(deg2rad(theta)));
-            cvmSet(laser.m_LRFPos[n][i], 1, 0, range * sin(deg2rad(theta)));
-            cvmMul(m_Rotate, laser.m_LRFPos[n][i], Temp);
-            cvmAdd(m_Translate, Temp, laser.m_LRFPos[n][i]);
-            laser.m_LRFPoints[n][i].x = cvmGet(laser.m_LRFPos[n][i], 0, 0) * 1000.0;
-            laser.m_LRFPoints[n][i].y = cvmGet(laser.m_LRFPos[n][i], 1, 0) * 1000.0;
-          }
-
           laser.m_LRFClsPoints[n].clear();
           laser.m_LRFClsPoints[n].resize(laser.m_LRFClsData[n].size());
           for (int i = 0; i < laser.m_LRFClsData[n].size(); i++)
@@ -250,36 +228,41 @@ void *Processing( void *ptr )
             laser.m_LRFClsPoints[n][i].x = cvmGet(laser.m_LRFClsPos[n][i], 0, 0) * 1000.0;
             laser.m_LRFClsPoints[n][i].y = cvmGet(laser.m_LRFClsPos[n][i], 1, 0) * 1000.0;
 
-            if (n == 0)
-            {
-              itigou_x.push_back(laser.m_LRFClsPoints[0][i].x);
-              itigou_y.push_back(laser.m_LRFClsPoints[0][i].y);
-            }
-            else if (n == 1)
-            {
-              nigou_x.push_back(laser.m_LRFClsPoints[1][i].x);
-              nigou_y.push_back(laser.m_LRFClsPoints[1][i].y);
-            }
+            lrf_number.push_back(laser.m_LRFClsData[n][i].n);
+            lrf_cls_x.push_back(laser.m_LRFClsPoints[n][i].x);
+            lrf_cls_y.push_back(laser.m_LRFClsPoints[n][i].y);
+            length.push_back(laser.m_LRFClsData[n][i].length);
           }
         }
 
         if (n == 1)
         {
-          itigou_x.insert(itigou_x.begin(), nigou_x.begin(), nigou_x.end());
-          itigou_y.insert(itigou_y.begin(), nigou_y.begin(), nigou_y.end());
           laser.m_LRFClsPoints[0].clear();
-          laser.m_LRFClsPoints[0].resize(itigou_x.size());
+          laser.m_LRFClsPoints[0].resize(lrf_cls_x.size());
 
-          for (int i = 0; i < itigou_x.size(); i++)
+          for (int i = 0; i < lrf_cls_x.size(); i++)
           {
-            laser.m_LRFClsPoints[0][i].x = itigou_x[i];
-            laser.m_LRFClsPoints[0][i].y = itigou_y[i];
-          }
+            laser.m_LRFClsPoints[0][i].x = lrf_cls_x[i];
+            laser.m_LRFClsPoints[0][i].y = lrf_cls_y[i];
+            //std::cout << "x " << lrf_cls_x[i] << "y " << lrf_cls_y[i] << std::endl;
+            cluster.point_number = lrf_number[i];
+            cluster.x = -(lrf_cls_y[i]) + 5200;
+            cluster.y =   lrf_cls_x[i]  + 100;
+            cluster.cluster_points = length[i];
 
-          itigou_x.clear();
-          itigou_y.clear();
-          nigou_x.clear();
-          nigou_y.clear();
+            if(0.0 < cluster.x && cluster.x < 8000.0 && 0.0 < cluster.y && cluster.y < 4500.0)
+            {
+            clusters.tracking_clster.push_back(cluster);
+            }
+          }
+          pthread_mutex_lock(&mutex_target);
+          pub->publish(clusters);
+          pthread_mutex_unlock(&mutex_target);
+
+          lrf_number.clear();
+          lrf_cls_x.clear();
+          lrf_cls_y.clear();
+          length.clear();
         }
       }
     }
@@ -318,7 +301,7 @@ void LaserSensingCallback(const sensor_msgs::LaserScan::ConstPtr &scan)
   scanData = scan->ranges;
 
   pthread_mutex_unlock(&mutex_laser);
-  CallbackCalled = true;
+  CallbackCalled  = true;
 }
 
 void LaserSensingCallback1(const sensor_msgs::LaserScan::ConstPtr &scan)
@@ -332,7 +315,7 @@ void LaserSensingCallback1(const sensor_msgs::LaserScan::ConstPtr &scan)
   scanData1 = scan->ranges;
 
   pthread_mutex_unlock(&mutex_laser);
-  CallbackCalled = true;
+  CallbackCalled1 = true;
 }
 
 int main( int argc, char **argv )
@@ -344,16 +327,17 @@ int main( int argc, char **argv )
   ros::init(argc, argv, "moving_object_tracker");
   ros::NodeHandle n;
   ros::Publisher  pub  = n.advertise<tms_msg_ss::tracking_points>("tracking_points", 10);
+  ros::Publisher  pub1 = n.advertise<tms_msg_ss::tracking_clusters_data>("clusters_data", 10);
   ros::Subscriber sub  = n.subscribe("/urg2/most_intense" , 10, LaserSensingCallback);
   ros::Subscriber sub1 = n.subscribe("/urg1/most_intense" , 10, LaserSensingCallback1);
 
-  if ( pthread_create( &thread_v, NULL, Visualization, (void *)&pub) )
+  if ( pthread_create( &thread_v, NULL, Object_points_show, (void *)&pub) )
   {
     printf("error creating thread.");
     abort();
   }
 
-  if ( pthread_create( &thread_p, NULL, Processing, NULL) )
+  if ( pthread_create( &thread_p, NULL, Processing, (void *)&pub1) )
   {
     printf("error creating thread.");
     abort();
