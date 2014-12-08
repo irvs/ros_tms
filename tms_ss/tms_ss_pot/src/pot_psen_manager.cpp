@@ -2,7 +2,7 @@
 // @file   : pot_psen_manager.cpp
 // @author : Watanabe Yuuta
 // @version: Ver0.1.4 (since 2014.05.02)
-// @date   : 2016.11.18
+// @date   : 2014.11.18
 //----------------------------------------------------------
 
 #include <ros/ros.h>
@@ -52,13 +52,20 @@ typedef struct
     std::vector<int>  LRF_number;
     std::vector<int>  init_value;
     int feature;
+    int calc;
+    int calc_righter;
+    int calc_lefter;
+    double time;
 } composition;
 
 
+double g_StartTime;
 std::vector<counter> all_cnt;
 std::vector<composition> all_cmp;
 composition tmp_comp;
 namespace fs = boost::filesystem;
+
+void  lrf_display();
 
 void *Management( void *ptr )
 {
@@ -184,6 +191,14 @@ void *Management( void *ptr )
                         }
 
                     }
+                    else if (line.substr(0, 11) == "start_time:")
+                    {
+                        int fp = 11;
+                        int fn;
+                        fn = line.find("," , fp);
+                        fn = fn - fp;
+                        tmp_comp.time = atof(line.substr(fp, fn).c_str());
+                    }
                     else if (line.substr(feature_s, feature_e) == "feature:")
                     {
                         int fp = feature_e;
@@ -197,34 +212,13 @@ void *Management( void *ptr )
                         tmp_comp.init_value.clear();
                         tmp_comp.feature == 0;
                     }
-                    if (line_number == 4)break;
+
+
+                    if (line_number == 5)break;
                 }
             }
         }
         int clsn = 0;
-        // std::cout << " ///////////////////////////////////////////////// " << std::endl;
-        // //std::cout << "all_cmp.size " << all_cmp.size() << std::endl;
-        // for (clsn = 0 ; clsn < all_cmp.size() ; clsn++)
-        // {
-        //     std::cout << " << " << std::endl;
-        //     std::cout << "mode " << all_cmp[clsn].mode << std::endl;
-        //     std::cout << "nakami " ;
-        //     for (int i = 0; i < all_cmp[clsn].LRF_number.size(); i++)
-        //     {
-        //         std::cout <<  all_cmp[clsn].LRF_number[i] << " ";
-        //     }
-        //     std::cout << std::endl;
-        //     std::cout << "nakami_2 " ;
-        //     for (int i = 0; i < all_cmp[clsn].init_value.size(); i++)
-        //     {
-        //         std::cout <<  all_cmp[clsn].init_value[i] << " ";
-        //     }
-        //     std::cout << std::endl;
-        //     std::cout << "feature " << all_cmp[clsn].feature << std::endl;
-        //     std::cout << " >> " << std::endl;
-        // }
-        // std::cout << " ///////////////////////////////////////////////// " << std::endl;
-
         for (clsn = 0 ; clsn < all_cmp.size() ; clsn++)
         {
             if (all_cmp[clsn].mode == 1 || all_cmp[clsn].mode == 2)
@@ -238,24 +232,26 @@ void *Management( void *ptr )
                 int s_righter_dose = all_cmp[clsn].init_value[2];
                 int s_lefter_dose  = all_cmp[clsn].init_value[3];
                 int calc;
+                int calc_righter;
+                int calc_lefter;
                 if (all_cmp[clsn].mode == 1)
                 {
                     calc = (f_lefter + s_righter - (f_lefter_dose + s_righter_dose)) - (f_righter + s_lefter - (f_righter_dose +  s_lefter_dose));
-                    std::cout <<  "calc " << calc  << std::endl;
-                    if (abs(calc) > 100 )
-                    {
-                        std::cout << "put on the area " << all_cmp[clsn].feature << std::endl;
-                    }
+                    calc_righter = (f_righter - f_righter_dose) - (s_righter - s_righter_dose);
+                    calc_lefter  = (f_lefter - f_lefter_dose) - (s_lefter - s_lefter_dose);
+                    all_cmp[clsn].calc = calc;
+                    all_cmp[clsn].calc_righter = calc_righter;
+                    all_cmp[clsn].calc_lefter =  calc_lefter;
                 }
 
                 else if (all_cmp[clsn].mode == 2)
                 {
                     calc = (f_lefter + s_lefter - (f_lefter_dose + s_lefter_dose)) - (f_righter + s_righter - (f_righter_dose +  s_righter_dose));
-                    //std::cout <<  "calc " << calc  << std::endl;
-                    if (abs(calc) > 100 )
-                    {
-                        std::cout << "put on the area " << all_cmp[clsn].feature << std::endl;
-                    }
+                    calc_righter = (f_righter - f_righter_dose) - (f_lefter - f_lefter_dose);
+                    calc_lefter  = (s_righter - s_righter_dose) - (s_lefter - s_lefter_dose);
+                    all_cmp[clsn].calc = calc;
+                    all_cmp[clsn].calc_righter = calc_righter;
+                    all_cmp[clsn].calc_lefter =  calc_lefter;
                 }
             }
             else if (all_cmp[clsn].mode == 3 || all_cmp[clsn].mode == 4 || all_cmp[clsn].mode == 5 || all_cmp[clsn].mode == 6)
@@ -276,38 +272,30 @@ void *Management( void *ptr )
                 if (all_cmp[clsn].mode == 3)
                 {
                     calc = (f_lefter + s_lefter + t_righter - (f_lefter_dose + s_lefter_dose + t_righter_dose)) - (f_righter + s_righter + t_lefter - (f_righter_dose + s_righter_dose + t_lefter_dose));
-                    //std::cout <<  "calc " << calc  << std::endl;
-                    if (abs(calc) > 100 )
-                    {
-                        std::cout << "put on the area " << all_cmp[clsn].feature << std::endl;
-                    }
+                    all_cmp[clsn].calc = calc;
+                    all_cmp[clsn].calc_righter = 10000;
+                    all_cmp[clsn].calc_lefter =  10000;
                 }
                 else if (all_cmp[clsn].mode == 4)
                 {
                     calc = (f_lefter + s_lefter + t_lefter - (f_lefter_dose + s_lefter_dose + t_lefter_dose)) - (f_righter + s_righter + t_righter - (f_righter_dose + s_righter_dose + t_righter_dose));
-                    //std::cout <<  "calc " << calc  << std::endl;
-                    if (abs(calc) > 100 )
-                    {
-                        std::cout << "put on the area " << all_cmp[clsn].feature << std::endl;
-                    }
+                    all_cmp[clsn].calc = calc;
+                    all_cmp[clsn].calc_righter = 10000;
+                    all_cmp[clsn].calc_lefter =  10000;
                 }
                 else if (all_cmp[clsn].mode == 5)
                 {
                     calc = (f_lefter + s_righter + t_righter - (f_lefter_dose + s_righter_dose + t_righter_dose)) - (f_righter + s_lefter + t_lefter - (f_righter_dose + s_lefter_dose + t_lefter_dose));
-                    //std::cout <<  "calc " << calc  << std::endl;
-                    if (abs(calc) > 100 )
-                    {
-                        std::cout << "put on the area " << all_cmp[clsn].feature << std::endl;
-                    }
+                    all_cmp[clsn].calc = calc;
+                    all_cmp[clsn].calc_righter = 10000;
+                    all_cmp[clsn].calc_lefter =  10000;
                 }
                 else if (all_cmp[clsn].mode == 6)
                 {
                     calc = (f_lefter + s_righter + t_lefter - (f_lefter_dose + s_righter_dose + t_lefter_dose)) - (f_righter + s_lefter + t_righter - (f_righter_dose + s_lefter_dose + t_righter_dose));
-                    //std::cout <<  "calc " << calc  << std::endl;
-                    if (abs(calc) > 100 )
-                    {
-                        std::cout << "put on the area " << all_cmp[clsn].feature << std::endl;
-                    }
+                    all_cmp[clsn].calc = calc;
+                    all_cmp[clsn].calc_righter = 10000;
+                    all_cmp[clsn].calc_lefter =  10000;
                 }
 
             }
@@ -327,91 +315,198 @@ void *Management( void *ptr )
                 int s_lefter_dose  = all_cmp[clsn].init_value[3];
                 int t_righter_dose = all_cmp[clsn].init_value[4];
                 int t_lefter_dose  = all_cmp[clsn].init_value[5];
-                int tf_righter_dose= all_cmp[clsn].init_value[6];
+                int tf_righter_dose = all_cmp[clsn].init_value[6];
                 int tf_lefter_dose = all_cmp[clsn].init_value[7];
                 int calc;
                 if (all_cmp[clsn].mode == 7)
                 {
-                    calc = (f_lefter + s_lefter + t_righter + tf_righter - (f_lefter_dose + s_lefter_dose + t_righter_dose + tf_righter_dose)) - (f_righter + s_righter + t_lefter + tf_lefter- (f_righter_dose + s_righter_dose + t_lefter_dose + tf_lefter_dose));
-                    //std::cout <<  "calc " << calc  << std::endl;
-                    if (abs(calc) > 100 )
-                    {
-                        std::cout << "put on the area " << all_cmp[clsn].feature << std::endl;
-                    }
+                    calc = (f_lefter + s_lefter + t_righter + tf_righter - (f_lefter_dose + s_lefter_dose + t_righter_dose + tf_righter_dose)) - (f_righter + s_righter + t_lefter + tf_lefter - (f_righter_dose + s_righter_dose + t_lefter_dose + tf_lefter_dose));
+                    all_cmp[clsn].calc = calc;
+                    all_cmp[clsn].calc_righter = 10000;
+                    all_cmp[clsn].calc_lefter =  10000;
                 }
                 else if (all_cmp[clsn].mode == 8)
                 {
-                    calc = (f_lefter + s_lefter + t_righter + tf_lefter - (f_lefter_dose + s_lefter_dose + t_righter_dose + tf_lefter_dose)) - (f_righter + s_righter + t_lefter + tf_righter- (f_righter_dose + s_righter_dose + t_lefter_dose + tf_righter_dose));
-                    //std::cout <<  "calc " << calc  << std::endl;
-                    if (abs(calc) > 100 )
-                    {
-                        std::cout << "put on the area " << all_cmp[clsn].feature << std::endl;
-                    }
+                    calc = (f_lefter + s_lefter + t_righter + tf_lefter - (f_lefter_dose + s_lefter_dose + t_righter_dose + tf_lefter_dose)) - (f_righter + s_righter + t_lefter + tf_righter - (f_righter_dose + s_righter_dose + t_lefter_dose + tf_righter_dose));
+                    all_cmp[clsn].calc = calc;
+                    all_cmp[clsn].calc_righter = 10000;
+                    all_cmp[clsn].calc_lefter =  10000;
                 }
                 else if (all_cmp[clsn].mode == 9)
                 {
-                    calc = (f_lefter + s_lefter + t_lefter + tf_righter - (f_lefter_dose + s_lefter_dose + t_lefter_dose + tf_righter_dose)) - (f_righter + s_righter + t_righter + tf_lefter- (f_righter_dose + s_righter_dose + t_righter_dose + tf_lefter_dose));
-                    //std::cout <<  "calc " << calc  << std::endl;
-                    if (abs(calc) > 100 )
-                    {
-                        std::cout << "put on the area " << all_cmp[clsn].feature << std::endl;
-                    }
+                    calc = (f_lefter + s_lefter + t_lefter + tf_righter - (f_lefter_dose + s_lefter_dose + t_lefter_dose + tf_righter_dose)) - (f_righter + s_righter + t_righter + tf_lefter - (f_righter_dose + s_righter_dose + t_righter_dose + tf_lefter_dose));
+                    all_cmp[clsn].calc = calc;
+                    all_cmp[clsn].calc_righter = 10000;
+                    all_cmp[clsn].calc_lefter =  10000;
                 }
                 else if (all_cmp[clsn].mode == 10)
                 {
-                    calc = (f_lefter + s_lefter + t_lefter + tf_lefter - (f_lefter_dose + s_lefter_dose + t_lefter_dose + tf_lefter_dose)) - (f_righter + s_righter + t_righter + tf_righter- (f_righter_dose + s_righter_dose + t_righter_dose + tf_righter_dose));
-                    //std::cout <<  "calc " << calc  << std::endl;
-                    if (abs(calc) > 100 )
-                    {
-                        std::cout << "put on the area " << all_cmp[clsn].feature << std::endl;
-                    }
+                    calc = (f_lefter + s_lefter + t_lefter + tf_lefter - (f_lefter_dose + s_lefter_dose + t_lefter_dose + tf_lefter_dose)) - (f_righter + s_righter + t_righter + tf_righter - (f_righter_dose + s_righter_dose + t_righter_dose + tf_righter_dose));
+                    all_cmp[clsn].calc = calc;
+                    all_cmp[clsn].calc_righter = 10000;
+                    all_cmp[clsn].calc_lefter =  10000;
                 }
                 else if (all_cmp[clsn].mode == 11)
                 {
-                    calc = (f_lefter + s_righter + t_righter + tf_righter - (f_lefter_dose + s_righter_dose + t_righter_dose + tf_righter_dose)) - (f_righter + s_lefter + t_lefter + tf_lefter- (f_righter_dose + s_lefter_dose + t_lefter_dose + tf_lefter_dose));
-                    //std::cout <<  "calc " << calc  << std::endl;
-                    if (abs(calc) > 100 )
-                    {
-                        std::cout << "put on the area " << all_cmp[clsn].feature << std::endl;
-                    }
+                    calc = (f_lefter + s_righter + t_righter + tf_righter - (f_lefter_dose + s_righter_dose + t_righter_dose + tf_righter_dose)) - (f_righter + s_lefter + t_lefter + tf_lefter - (f_righter_dose + s_lefter_dose + t_lefter_dose + tf_lefter_dose));
+                    all_cmp[clsn].calc = calc;
+                    all_cmp[clsn].calc_righter = 10000;
+                    all_cmp[clsn].calc_lefter =  10000;
                 }
                 else if (all_cmp[clsn].mode == 12)
                 {
-                    calc = (f_lefter + s_righter + t_righter + tf_lefter - (f_lefter_dose + s_righter_dose + t_righter_dose + tf_lefter_dose)) - (f_righter + s_lefter + t_lefter + tf_righter- (f_righter_dose + s_lefter_dose + t_lefter_dose + tf_righter_dose));
-                    //std::cout <<  "calc " << calc  << std::endl;
-                    if (abs(calc) > 100 )
-                    {
-                        std::cout << "put on the area " << all_cmp[clsn].feature << std::endl;
-                    }
+                    calc = (f_lefter + s_righter + t_righter + tf_lefter - (f_lefter_dose + s_righter_dose + t_righter_dose + tf_lefter_dose)) - (f_righter + s_lefter + t_lefter + tf_righter - (f_righter_dose + s_lefter_dose + t_lefter_dose + tf_righter_dose));
+                    all_cmp[clsn].calc = calc;
+                    all_cmp[clsn].calc_righter = 10000;
+                    all_cmp[clsn].calc_lefter =  10000;
                 }
                 else if (all_cmp[clsn].mode == 13)
                 {
-                    calc = (f_lefter + s_righter + t_lefter + tf_righter - (f_lefter_dose + s_righter_dose + t_lefter_dose + tf_righter_dose)) - (f_righter + s_lefter + t_righter + tf_lefter- (f_righter_dose + s_lefter_dose + t_righter_dose + tf_lefter_dose));
-                    //std::cout <<  "calc " << calc  << std::endl;
-                    if (abs(calc) > 100 )
-                    {
-                        std::cout << "put on the area " << all_cmp[clsn].feature << std::endl;
-                    }
+                    calc = (f_lefter + s_righter + t_lefter + tf_righter - (f_lefter_dose + s_righter_dose + t_lefter_dose + tf_righter_dose)) - (f_righter + s_lefter + t_righter + tf_lefter - (f_righter_dose + s_lefter_dose + t_righter_dose + tf_lefter_dose));
+                    all_cmp[clsn].calc = calc;
+                    all_cmp[clsn].calc_righter = 10000;
+                    all_cmp[clsn].calc_lefter =  10000;
                 }
                 else if (all_cmp[clsn].mode == 14)
                 {
-                    calc = (f_lefter + s_righter + t_lefter + tf_lefter - (f_lefter_dose + s_righter_dose + t_lefter_dose + tf_lefter_dose)) - (f_righter + s_lefter + t_righter + tf_righter- (f_righter_dose + s_lefter_dose + t_righter_dose + tf_righter_dose));
-                    //std::cout <<  "calc " << calc  << std::endl;
-                    if (abs(calc) > 100 )
-                    {
-                        std::cout << "put on the area " << all_cmp[clsn].feature << std::endl;
-                    }
+                    calc = (f_lefter + s_righter + t_lefter + tf_lefter - (f_lefter_dose + s_righter_dose + t_lefter_dose + tf_lefter_dose)) - (f_righter + s_lefter + t_righter + tf_righter - (f_righter_dose + s_lefter_dose + t_righter_dose + tf_righter_dose));
+                    all_cmp[clsn].calc = calc;
+                    all_cmp[clsn].calc_righter = 10000;
+                    all_cmp[clsn].calc_lefter =  10000;
                 }
-
             }
-
         }
-
+        lrf_display();
         all_cmp.clear();
         r.sleep();
 
     }
 }
+
+
+void  lrf_display()
+{
+    int new_put_lrf_number;
+    int replace_lrf_number;
+    std::vector<int> predominance;
+    predominance.resize(6);
+    //predominance.clear();
+    int cnt = 0;
+    char str[20];
+    for (int clsn = 0 ; clsn < all_cmp.size() ; clsn++)
+    {
+        for (int i = 0; i < all_cmp[clsn].LRF_number.size(); i++)
+        {
+            if (all_cmp[clsn].mode == 1 || all_cmp[clsn].mode == 2)
+            {
+                predominance[all_cmp[clsn].LRF_number[i] - 1] = predominance[all_cmp[clsn].LRF_number[i] - 1] + 1;
+            }
+            else if (all_cmp[clsn].mode == 3 || all_cmp[clsn].mode == 4 || all_cmp[clsn].mode == 5 || all_cmp[clsn].mode == 6 )
+            {
+                predominance[all_cmp[clsn].LRF_number[i] - 1] = predominance[all_cmp[clsn].LRF_number[i] - 1] + 2;
+            }
+            else if (all_cmp[clsn].mode == 7 || all_cmp[clsn].mode == 8 || all_cmp[clsn].mode == 9 || all_cmp[clsn].mode == 10 || all_cmp[clsn].mode == 11 || all_cmp[clsn].mode == 12 || all_cmp[clsn].mode == 13 )
+            {
+                predominance[all_cmp[clsn].LRF_number[i] - 1] = predominance[all_cmp[clsn].LRF_number[i] - 1] + 3;
+            }
+        }
+    }
+    for (int clsn = 0; clsn < all_cnt.size(); clsn++)
+    {
+        if (predominance[clsn] == 0)
+        {
+            new_put_lrf_number = clsn + 1;
+            break;
+        }
+        else if (clsn == predominance.size() - 1 )
+        {
+            new_put_lrf_number = 100;
+        }
+    }
+    std::cout << "\033[2J" << "\033[10A";
+    std::cout << "---LRF status---" << new_put_lrf_number << std::endl;
+    std::cout << "LRF    :";
+    cnt = 16;
+    for (int clsn = 0 ; clsn < all_cnt.size() ; clsn++)
+    {
+        std::cout << clsn + 1 << "[" << predominance[clsn] << "]" << "\r";
+        sprintf(str, "\033[%dC", cnt);
+        std::cout << str;
+        cnt = cnt + 8;
+    }
+    pthread_mutex_lock(&mutex_target);
+    std::cout << std::endl;
+    std::cout << "righter:";
+    cnt = 16;
+    for (int clsn = 0 ; clsn < all_cnt.size() ; clsn++)
+    {
+        std::cout << all_cnt[clsn].righter << "\r";
+        sprintf(str, "\033[%dC", cnt);
+        std::cout << str;
+        cnt = cnt + 8;
+    }
+    std::cout << std::endl;
+    std::cout << "lefter :";
+    cnt = 16;
+    for (int clsn = 0 ; clsn < all_cnt.size() ; clsn++)
+    {
+        std::cout << all_cnt[clsn].lefter << "\r";
+        sprintf(str, "\033[%dC", cnt);
+        std::cout << str;
+        cnt = cnt + 8;
+    }
+    std::cout << std::endl;
+    double ExeTime = ros::Time::now().toSec() - g_StartTime;
+    std::cout << "---mode setting--- Time " << ExeTime << std::endl;
+
+    for (int clsn = 0 ; clsn < all_cmp.size() ; clsn++)
+    {
+        std::cout << clsn << ". mode " << all_cmp[clsn].mode << " LRF_number ";
+        replace_lrf_number = all_cmp[clsn].LRF_number[0];
+        for (int i = 0; i < all_cmp[clsn].LRF_number.size(); i++)
+        {
+            std::cout <<  all_cmp[clsn].LRF_number[i];
+            if (i !=  all_cmp[clsn].LRF_number.size() - 1)
+            {
+                std::cout << ",";
+            }
+            if (predominance[all_cmp[clsn].LRF_number[i] - 1] < predominance[replace_lrf_number - 1])
+            {
+                replace_lrf_number = all_cmp[clsn].LRF_number[i];
+            }
+        }
+        std::cout << "\r" << "\033[30C";
+        std::cout << "calc " << abs(all_cmp[clsn].calc) << "\r" << "\033[39C";
+        if (all_cmp[clsn].mode == 1 || all_cmp[clsn].mode == 2)
+        {
+            std::cout << "calc_r " << abs(all_cmp[clsn].calc_righter) << " " <<  "calc_l " << abs(all_cmp[clsn].calc_lefter);
+        }
+        std::cout <<  "\r" << "\033[60C";
+        if (abs(all_cmp[clsn].calc) > 5 && new_put_lrf_number != 100)
+        {
+            std::cout << "[put a new portable" << new_put_lrf_number << " at f" << all_cmp[clsn].feature << "]" << std::endl;
+        }
+        else if (abs(all_cmp[clsn].calc) > 5 && new_put_lrf_number == 100)
+        {
+            std::cout << "[please wait]" << std::endl;
+        }
+        else if (abs(all_cmp[clsn].calc_righter) < 5 && ExeTime - all_cmp[clsn].time > 15.0 * 60.0)
+        {
+            std::cout << "[remove a portable" << replace_lrf_number << " at f" << all_cmp[clsn].feature << "]"  << std::endl;
+        }
+        else if (abs(all_cmp[clsn].calc_lefter) < 5 && ExeTime - all_cmp[clsn].time > 15.0 * 60.0)
+        {
+            std::cout << "[remove a portable" << replace_lrf_number << " at f" << all_cmp[clsn].feature << "]"  << std::endl;
+        }
+        else
+        {
+            std::cout << "[no comment]" << ExeTime - all_cmp[clsn].time << std::endl;
+        }
+    }
+    pthread_mutex_unlock(&mutex_target);
+    predominance.clear();
+}
+
 
 void PsenCallback0(const tms_msg_ss::pot_tracking_psens::ConstPtr &psens)
 {
@@ -429,14 +524,13 @@ void PsenCallback0(const tms_msg_ss::pot_tracking_psens::ConstPtr &psens)
         output_y = psens->pot_tracking_psen[i].y;
         all_cnt[0].righter = psens->pot_tracking_psen[i].righter;
         all_cnt[0].lefter = psens->pot_tracking_psen[i].lefter;
-        sprintf(str, "psen_txt0/ID%d.txt", ID);
+        sprintf(str, "psen/psen_txt0/ID%d.txt", ID);
         std::ofstream strw;
         strw.open(str, std::ofstream::out | std::ofstream::app);
         strw << output_x << " " << output_y  << " " << flag << std::endl;
     }
 
     pthread_mutex_unlock(&mutex_target);
-
 }
 
 void PsenCallback1(const tms_msg_ss::pot_tracking_psens::ConstPtr &psens)
@@ -453,14 +547,13 @@ void PsenCallback1(const tms_msg_ss::pot_tracking_psens::ConstPtr &psens)
         output_y = psens->pot_tracking_psen[i].y;
         all_cnt[1].righter = psens->pot_tracking_psen[i].righter;
         all_cnt[1].lefter  = psens->pot_tracking_psen[i].lefter;
-        sprintf(str, "psen_txt1/ID%d.txt", ID);
+        sprintf(str, "psen/psen_txt1/ID%d.txt", ID);
         std::ofstream strw;
         strw.open(str, std::ofstream::out | std::ofstream::app);
         strw << output_x << " " << output_y << std::endl;
     }
 
     pthread_mutex_unlock(&mutex_target);
-
 }
 
 void PsenCallback2(const tms_msg_ss::pot_tracking_psens::ConstPtr &psens)
@@ -477,7 +570,76 @@ void PsenCallback2(const tms_msg_ss::pot_tracking_psens::ConstPtr &psens)
         output_y = psens->pot_tracking_psen[i].y;
         all_cnt[2].righter = psens->pot_tracking_psen[i].righter;
         all_cnt[2].lefter  = psens->pot_tracking_psen[i].lefter;
-        sprintf(str, "psen_txt2/ID%d.txt", ID);
+        sprintf(str, "psen/psen_txt2/ID%d.txt", ID);
+        std::ofstream strw;
+        strw.open(str, std::ofstream::out | std::ofstream::app);
+        strw << output_x << " " << output_y << std::endl;
+    }
+
+    pthread_mutex_unlock(&mutex_target);
+}
+
+void PsenCallback3(const tms_msg_ss::pot_tracking_psens::ConstPtr &psens)
+{
+    int ID;
+    float output_x;
+    float output_y;
+    pthread_mutex_lock(&mutex_target);
+    for (int i = 0; i < psens->pot_tracking_psen.size(); i++)
+    {
+        char str[20];
+        ID = psens->pot_tracking_psen[i].id;
+        output_x = psens->pot_tracking_psen[i].x;
+        output_y = psens->pot_tracking_psen[i].y;
+        all_cnt[3].righter = psens->pot_tracking_psen[i].righter;
+        all_cnt[3].lefter  = psens->pot_tracking_psen[i].lefter;
+        sprintf(str, "psen/psen_txt3/ID%d.txt", ID);
+        std::ofstream strw;
+        strw.open(str, std::ofstream::out | std::ofstream::app);
+        strw << output_x << " " << output_y << std::endl;
+    }
+
+    pthread_mutex_unlock(&mutex_target);
+}
+
+void PsenCallback4(const tms_msg_ss::pot_tracking_psens::ConstPtr &psens)
+{
+    int ID;
+    float output_x;
+    float output_y;
+    pthread_mutex_lock(&mutex_target);
+    for (int i = 0; i < psens->pot_tracking_psen.size(); i++)
+    {
+        char str[20];
+        ID = psens->pot_tracking_psen[i].id;
+        output_x = psens->pot_tracking_psen[i].x;
+        output_y = psens->pot_tracking_psen[i].y;
+        all_cnt[4].righter = psens->pot_tracking_psen[i].righter;
+        all_cnt[4].lefter  = psens->pot_tracking_psen[i].lefter;
+        sprintf(str, "psen/psen_txt4/ID%d.txt", ID);
+        std::ofstream strw;
+        strw.open(str, std::ofstream::out | std::ofstream::app);
+        strw << output_x << " " << output_y << std::endl;
+    }
+
+    pthread_mutex_unlock(&mutex_target);
+}
+
+void PsenCallback5(const tms_msg_ss::pot_tracking_psens::ConstPtr &psens)
+{
+    int ID;
+    float output_x;
+    float output_y;
+    pthread_mutex_lock(&mutex_target);
+    for (int i = 0; i < psens->pot_tracking_psen.size(); i++)
+    {
+        char str[20];
+        ID = psens->pot_tracking_psen[i].id;
+        output_x = psens->pot_tracking_psen[i].x;
+        output_y = psens->pot_tracking_psen[i].y;
+        all_cnt[5].righter = psens->pot_tracking_psen[i].righter;
+        all_cnt[5].lefter  = psens->pot_tracking_psen[i].lefter;
+        sprintf(str, "psen/psen_txt/ID%d.txt", ID);
         std::ofstream strw;
         strw.open(str, std::ofstream::out | std::ofstream::app);
         strw << output_x << " " << output_y << std::endl;
@@ -489,22 +651,25 @@ void PsenCallback2(const tms_msg_ss::pot_tracking_psens::ConstPtr &psens)
 int main( int argc, char **argv )
 {
     std::cout << "---pot_psen_manager start---" << std::endl;
-    all_cnt.resize(10);
+    all_cnt.resize(6);
     pthread_t thread_p;
     ros::MultiThreadedSpinner spinner(4);
 
     ros::init(argc, argv, "pot_psen_manager");
     ros::NodeHandle n;
-    ros::Subscriber sub0 = n.subscribe("tracking_psen0" , 1000, PsenCallback0);
-    ros::Subscriber sub1 = n.subscribe("tracking_psen1" , 1000, PsenCallback1);
-    //ros::Subscriber sub2 = n.subscribe("tracking_psen2" , 1000, PsenCallback1);
+    ros::Subscriber sub0 = n.subscribe("tracking_psen0" , 100, PsenCallback0);
+    ros::Subscriber sub1 = n.subscribe("tracking_psen1" , 100, PsenCallback1);
+    ros::Subscriber sub2 = n.subscribe("tracking_psen2" , 100, PsenCallback2);
+    ros::Subscriber sub3 = n.subscribe("tracking_psen3" , 100, PsenCallback3);
+    ros::Subscriber sub4 = n.subscribe("tracking_psen4" , 100, PsenCallback4);
+    ros::Subscriber sub5 = n.subscribe("tracking_psen5" , 100, PsenCallback5);
 
     if ( pthread_create( &thread_p, NULL, Management, NULL) )
     {
         printf("error creating thread.");
         abort();
     }
-
+    g_StartTime = ros::Time::now().toSec();
     spinner.spin(); // spin() will not return until the node has been shutdown
 
     ros::waitForShutdown();

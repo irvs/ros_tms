@@ -39,14 +39,32 @@ std::vector< int > endid;
 std::vector< int >::iterator p;
 std::vector< Psenparam > psenparam;
 std::vector< Psenparam >::iterator v;
+////
+int right_count = 0;
+int left_count  = 0;
+
+///
+void *Getcharactor(void *ptr)
+{
+    int reset_button;
+    ros::Rate r(1);
+    while (ros::ok())
+    {
+        std::cin >> reset_button;
+        if (reset_button == 0)
+        {
+            right_count = 0;
+            left_count  = 0;
+        }
+        r.sleep();
+    }
+}
 
 void *Visualization( void *ptr )
 {
     int   ID;
     float X;
     float Y;
-    int right_count = 0;
-    int left_count  = 0;
     ros::Rate r(10);
     ros::Publisher *pub = (ros::Publisher *)ptr;
 
@@ -65,7 +83,7 @@ void *Visualization( void *ptr )
         {
             if (laser.m_pTarget[i] != NULL)
             {
-                if (laser.m_pTarget[i]->cnt < 200)
+                if (laser.m_pTarget[i]->cnt < 50)
                 {
                     //cout << laser.m_pTarget[i]->cnt << endl;
                     continue;
@@ -134,7 +152,7 @@ void *Visualization( void *ptr )
                 psen.righter = right_count;
                 psen.lefter  = left_count;
                 psens.pot_tracking_psen.push_back(psen);
-                std::cout << v -> id << "." << v->flag << " ";
+                //std::cout << v -> id << "." << v->flag << " ";
             }
             //std::cout << " >>" << std::endl;
             psenparam.resize(psenparam.size());
@@ -327,6 +345,7 @@ int main( int argc, char **argv )
     std::cout << "tracker_start" << std::endl;
     pthread_t thread_p;
     pthread_t thread_v;
+    ////
     pthread_t thread_s;
     ros::MultiThreadedSpinner spinner(0);
 
@@ -334,7 +353,12 @@ int main( int argc, char **argv )
     ros::NodeHandle n;
     ros::Publisher  pub = n.advertise<tms_msg_ss::pot_tracking_psens>("tracking_psen1", 10);
     ros::Subscriber sub = n.subscribe("/LaserTracker1", 1000, LaserSensingCallback);
-
+    //////
+    if ( pthread_create( &thread_s, NULL, Getcharactor, NULL) )
+    {
+        printf("error creating thread.");
+        abort();
+    }
     if ( pthread_create( &thread_v, NULL, Visualization, (void *)&pub) )
     {
         printf("error creating thread.");
@@ -355,6 +379,12 @@ int main( int argc, char **argv )
         printf("error joining thread.");
         abort();
     }
+    if ( pthread_join( thread_v, NULL) )
+    {
+        printf("error joining thread.");
+        abort();
+    }
+    //////
     if ( pthread_join( thread_v, NULL) )
     {
         printf("error joining thread.");
