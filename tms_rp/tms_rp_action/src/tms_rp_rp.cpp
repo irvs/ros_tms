@@ -642,7 +642,21 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 	std::vector<double> obj_pos;
 	std::vector<double> obj_rot;
 
-	grasp::TmsRpController trc;
+	// SET ROBOT
+	switch(sd.robot_id) {
+	case 2002:
+		trc_.createRobotRecord(2002,"smartpal5_1");
+		break;
+	case 2003:
+		trc_.createRobotRecord(2003,"smartpal5_2");
+		break;
+	case 2006:
+		trc_.createRobotRecord(2006,"kxp");
+		break;
+	default:
+		ROS_ERROR("An illegal robot id");
+		return false;
+	}
 
 	// SET OBJECT objectID : 7001~7999
 	if(sd.arg_type > 7000 && sd.arg_type < 8000) {
@@ -653,18 +667,18 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 				if (srv.response.tmsdb[j].time < srv.response.tmsdb[j+1].time) ref_i = j+1;
 			}
 			std::string obj_name = srv.response.tmsdb[ref_i].name;
-			cnoid::BodyItemPtr item = trc.objTag2Item()[obj_name];
-			grasp::PlanBase::instance()->SetGraspedObject(item);
-			ROS_INFO("%s is grasping_ object.\n", grasp::PlanBase::instance()->targetObject->bodyItemObject->name().c_str());
-			// set environment
+			cnoid::BodyItemPtr item = trc_.objTag2Item()[obj_name];
+			pb->SetGraspedObject(item);
+			ROS_INFO("%s is grasped_object.\n", pb->targetObject->bodyItemObject->name().c_str());
+			// SET ENVIRONMENT envID : 6001~6999
 			int furniture_id = srv.response.tmsdb[ref_i].place;
 			cout << furniture_id << endl;
 			if (furniture_id > 6000 && furniture_id < 7000) {
 				srv.request.tmsdb.id = furniture_id;
 				if(get_data_client_.call(srv)) {
 					std::string furniture_name = srv.response.tmsdb[0].name;
-					cnoid::BodyItemPtr item2 = trc.objTag2Item()[furniture_name];
-					grasp::PlanBase::instance()->SetEnvironment(item2);
+					cnoid::BodyItemPtr item2 = trc_.objTag2Item()[furniture_name];
+					pb->SetEnvironment(item2);
 					ROS_INFO("%s is surrounding environment.\n", furniture_name.c_str());
 				}
 			}
