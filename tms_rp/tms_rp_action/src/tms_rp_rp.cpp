@@ -639,20 +639,20 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 	s_srv.request.state = 0;
 
 	grasp::TmsRpBar::planning_mode_ = 1;
-//	if ((sd.robot_id == 2002 || sd.robot_id == 2003) && sd.type == true) {
-//		if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4)) {
-//			send_rc_exception(2);
-//			return false;
-//		}
-//		if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg)) {
-//			send_rc_exception(3);
-//			return false;
-//		}
-//		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12)) {
-//			send_rc_exception(4);
-//			return false;
-//		}
-//	}
+	if ((sd.robot_id == 2002 || sd.robot_id == 2003) && sd.type == true) {
+		if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4)) {
+			send_rc_exception(2);
+			return false;
+		}
+		if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg)) {
+			send_rc_exception(3);
+			return false;
+		}
+		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12)) {
+			send_rc_exception(4);
+			return false;
+		}
+	}
 
 	grasp::PlanBase *pb = grasp::PlanBase::instance();
 	std::vector<pathInfo> trajectory;
