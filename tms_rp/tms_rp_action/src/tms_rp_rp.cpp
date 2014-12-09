@@ -639,29 +639,26 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 	s_srv.request.state = 0;
 
 	grasp::TmsRpBar::planning_mode_ = 1;
-	if ((sd.robot_id == 2002 || sd.robot_id == 2003) && sd.type == true) {
-		if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4)) {
-			send_rc_exception(2);
-			return false;
-		}
-		if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg)) {
-			send_rc_exception(3);
-			return false;
-		}
-		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12)) {
-			send_rc_exception(4);
-			return false;
-		}
-	}
+//	if ((sd.robot_id == 2002 || sd.robot_id == 2003) && sd.type == true) {
+//		if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4)) {
+//			send_rc_exception(2);
+//			return false;
+//		}
+//		if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg)) {
+//			send_rc_exception(3);
+//			return false;
+//		}
+//		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12)) {
+//			send_rc_exception(4);
+//			return false;
+//		}
+//	}
 
 	grasp::PlanBase *pb = grasp::PlanBase::instance();
 	std::vector<pathInfo> trajectory;
 	int state;
 	std::vector<double> begin;
 	std::vector<double> end;
-	// object's position
-	std::vector<double> obj_pos;
-	std::vector<double> obj_rot;
 
 	// SET ROBOT
 	switch(sd.robot_id) {
@@ -699,8 +696,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 				if(get_data_client_.call(srv)) {
 					std::string furniture_name = srv.response.tmsdb[0].name;
 					cnoid::BodyItemPtr item2 = trc_.objTag2Item()[furniture_name];
-					pb->SetEnvironment(item2);
-					ROS_INFO("%s is surrounding environment.\n", furniture_name.c_str());
+					pb->RemoveEnvironment(item2); // ->SetEnvironment(item2);
 				}
 			}
 		} else {
@@ -726,8 +722,8 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 
 	grasp::TmsRpController::instance()->setTolerance(0.05);
 	cout << "set tolerance." << endl;
-	grasp::TmsRpController::instance()->graspPathPlanStart_(0, begin, end, pb->targetArmFinger->name,
-			pb->targetObject->name(), 1, &trajectory, &state, &obj_pos, &obj_rot);
+	callSynchronously(bind(&grasp::TmsRpController::graspPathPlanStart,trc_,
+			0, begin, end, pb->targetArmFinger->name, pb->targetObject->name(), 1, &trajectory, &state));
 
 	ROS_INFO("trajectory=%d", trajectory.size());
 
@@ -772,8 +768,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 					send_rc_exception(5);
 					return false;
 				}
-				callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
-				sleep(1);
+				sleep(1.5);
 			} else {
 				if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
 				for (int t=0; t<trajectory.size(); t++) {
@@ -841,8 +836,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 		{
 			kxp_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg);
 			if (sd.type == false) {
-				callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
-				sleep(1);
+				sleep(1.5);
 			}
 			break;
 		}

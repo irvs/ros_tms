@@ -1113,16 +1113,37 @@ void TmsRpBar::updateEnvironmentInformation(bool is_simulation)
       }
       else
       {
-        if (getObjectData.response.tmsdb[0].state==1 && getObjectData.response.tmsdb[0].place==6011)
-        {
-          oID   = getObjectData.response.tmsdb[0].id - 7001;
-          oPosX = getObjectData.response.tmsdb[0].x/1000;
-          oPosY = getObjectData.response.tmsdb[0].y/1000;
-          oPosZ = getObjectData.response.tmsdb[0].z/1000;
-          callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
-          callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
-          object_state_[oID] = true;
-        }
+    	  if (getObjectData.response.tmsdb[0].state==1 && getObjectData.response.tmsdb[0].place==6010)
+          {
+            oID   = getObjectData.response.tmsdb[0].id - 7001;
+            oPosX = 4.3  - getObjectData.response.tmsdb[0].y/1000;
+            oPosY = 1.7 + getObjectData.response.tmsdb[0].x/1000;
+            oPosZ = 0.08 + getObjectData.response.tmsdb[0].z/1000;
+            callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+            callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
+            object_state_[oID] = true;
+          } else if (getObjectData.response.tmsdb[0].state==1 && getObjectData.response.tmsdb[0].place==6011)
+          {
+        	  oID   = getObjectData.response.tmsdb[0].id - 7001;
+        	  oPosX = getObjectData.response.tmsdb[0].x/1000;
+        	  oPosY = getObjectData.response.tmsdb[0].y/1000;
+        	  oPosZ = getObjectData.response.tmsdb[0].z/1000;
+        	  callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+        	  callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), mat_cw90_));
+        	  object_state_[oID] = true;
+          } else if (getObjectData.response.tmsdb[0].state==2 && getObjectData.response.tmsdb[0].place==2002)
+          {
+        	  oID   = getObjectData.response.tmsdb[0].id - 7001;
+        	  oPosX = getObjectData.response.tmsdb[0].x/1000;
+        	  oPosY = getObjectData.response.tmsdb[0].y/1000;
+        	  oPosZ = getObjectData.response.tmsdb[0].z/1000;
+        	  rot = rotFromRpy(deg2rad(getObjectData.response.tmsdb[0].rr),
+        			  deg2rad(getObjectData.response.tmsdb[0].rp),
+        			  deg2rad(getObjectData.response.tmsdb[0].ry));
+        	  callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+        	  callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(oPosX,oPosY,oPosZ), rot));
+        	  object_state_[oID] = true;
+          }
       }
     }
   }
