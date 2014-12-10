@@ -813,19 +813,14 @@ void TmsRpBar::updateEnvironmentInformation(bool is_simulation)
             callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_1"));
             callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot));
           }
-          else if (grasping_ == 0)
+          else if (grasping_ == 1)
           {
-            callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_1"));
-            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
-          }
-          else if (grasping_ == 2)
-          {
-            callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_1"));
+            callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_1"));
             callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           }
           else
           {
-            callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_1"));
+        	callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_1"));
             callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           }
         }
@@ -843,19 +838,14 @@ void TmsRpBar::updateEnvironmentInformation(bool is_simulation)
             callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_2"));
             callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot));
           }
-          else if (grasping_ == 0)
-          {
-            callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_2"));
-            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
-          }
-          else if (grasping_ == 2)
+          else if (grasping_ == 1)
           {
             callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_2"));
             callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           }
           else
           {
-            callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_2"));
+        	callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_2"));
             callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           }
         }
@@ -885,19 +875,14 @@ void TmsRpBar::updateEnvironmentInformation(bool is_simulation)
             callSynchronously(bind(&TmsRpController::appear,trc_,"kxp"));
             callSynchronously(bind(&TmsRpController::setPos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot));
           }
-          else if (grasping_ == 0)
+          else if (grasping_ == 1)
           {
-            callSynchronously(bind(&TmsRpController::appear,trc_,"kxp"));
-            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
-          }
-          else if (grasping_ == 2)
-          {
-            callSynchronously(bind(&TmsRpController::appear,trc_,"kxp"));
+        	callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp"));
             callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           }
           else
           {
-            callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp"));
+        	callSynchronously(bind(&TmsRpController::appear,trc_,"kxp"));
             callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           }
         }
@@ -939,19 +924,14 @@ void TmsRpBar::updateEnvironmentInformation(bool is_simulation)
             callSynchronously(bind(&TmsRpController::appear,trc_,"kxp2"));
             callSynchronously(bind(&TmsRpController::setPos,trc_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot));
           }
-          else if (grasping_ == 0)
+          else if (grasping_ == 1)
           {
-            callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp2"));
-            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
-          }
-          else if (grasping_ == 2)
-          {
-            callSynchronously(bind(&TmsRpController::appear,trc_,"kxp2"));
+        	callSynchronously(bind(&TmsRpController::appear,trc_,"kxp2"));
             callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           }
           else
           {
-            callSynchronously(bind(&TmsRpController::appear,trc_,"kxp2"));
+        	callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp2"));
             callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
           }
         }
