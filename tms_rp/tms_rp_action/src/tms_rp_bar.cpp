@@ -1142,6 +1142,7 @@ void TmsRpBar::updateEnvironmentInformation(bool is_simulation)
 
   getPersonData.request.tmsdb.id     = 1001;
   getPersonData.request.tmsdb.sensor = 3001;
+  int p_ref_i = 0;
 
   if (!get_data_client_.call(getPersonData))
   {
@@ -1151,22 +1152,29 @@ void TmsRpBar::updateEnvironmentInformation(bool is_simulation)
   {
     ROS_INFO("no # %d person on floor", getPersonData.request.tmsdb.id);
   }
-  else if (getPersonData.response.tmsdb[0].state==1)
+  else
   {
-    oPosX = getPersonData.response.tmsdb[0].x/1000;
-    oPosY = getPersonData.response.tmsdb[0].y/1000;
-    oPosZ = 0.9;
-    rot = rotFromRpy(0,0,deg2rad(getPersonData.response.tmsdb[0].ry));
+	  for (int j=0; j<getPersonData.response.tmsdb.size()-1; j++)
+	  {
+		  if (getPersonData.response.tmsdb[j].time < getPersonData.response.tmsdb[j+1].time)
+			  p_ref_i = j+1;
+      }
+      if (getPersonData.response.tmsdb[p_ref_i].state==1) {
+    	  oPosX = getPersonData.response.tmsdb[p_ref_i].x/1000;
+    	  oPosY = getPersonData.response.tmsdb[p_ref_i].y/1000;
+    	  oPosZ = 0.9;
+    	  rot = rotFromRpy(0,0,deg2rad(getPersonData.response.tmsdb[p_ref_i].ry));
 
-    if(oPosX == 0.0 && oPosY == 0.0)
-    {
-      callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1"));
-    }
-    else
-    {
-      callSynchronously(bind(&TmsRpController::appear,trc_,"person_1"));
-      callSynchronously(bind(&TmsRpController::setPos,trc_,"person_1",Vector3(oPosX,oPosY,oPosZ),rot));
-    }
+    	  if(oPosX == 0.0 && oPosY == 0.0)
+    	  {
+    		  callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1"));
+    	  }
+    	  else
+    	  {
+    		  callSynchronously(bind(&TmsRpController::appear,trc_,"person_1"));
+    		  callSynchronously(bind(&TmsRpController::setPos,trc_,"person_1",Vector3(oPosX,oPosY,oPosZ),rot));
+    	  }
+      }
   }
   #else
     callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1"));
