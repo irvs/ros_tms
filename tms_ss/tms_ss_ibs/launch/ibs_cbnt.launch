@@ -1,7 +1,7 @@
 <launch>
 	<node pkg="tms_ss_ibs" type="ibs" name="ibs_cbnt" output="screen">
-		<param name="PORT_TR"  value="/dev/ttyUSB0" />
-		<param name="PORT_LC0" value="/dev/ttyACM0" />
+		<param name="PORT_TR"  value="/dev/ttyUSB1" />
+		<param name="PORT_LC0" value="/dev/ttyACM1" />
 		<param name="frame_id" value="/ics" />
 		<param name="idSensor" value="3002" />
 		<param name="idPlace"  value="6010" />
