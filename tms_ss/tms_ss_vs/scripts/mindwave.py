@@ -1,20 +1,66 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import rospy,roslib
-import serial
-from time import sleep
 
-DEV_PORT = "/dev/rfcomm1"
+import serial
+import json
+from time import sleep
+import datetime
+import rospy, roslib
+from tms_msg_rs.srv import *
+from tms_msg_db.msg import TmsdbStamped
+from tms_msg_db.msg import Tmsdb
+import subprocess
+
+BT_ADDR = "20:68:9D:91:D3:05"
+RFCOMM_NUM = "1"
+DEV_PORT = "/dev/rfcomm"+RFCOMM_NUM
+
 SYNC_BYTE = 0xaa
 
 
 def main():
     print "Hello World"
-    while True:
-        dev.update()
+
+    ###init mind wave mobile
+    cmd_release =   "sudo rfcomm release "+RFCOMM_NUM
+    cmd_bind =      "sudo rfcomm bind "+RFCOMM_NUM+" "+BT_ADDR
+    cmd_chmod =     "sudo chmod a+rw /dev/rfcomm"+RFCOMM_NUM
+    print cmd_release+"\n", subprocess.check_output(cmd_release.split(" "))
+    print cmd_bind+"\n",    subprocess.check_output(cmd_bind.split(" "))
+    print cmd_chmod+"\n",   subprocess.check_output(cmd_chmod.split(" "))
+    dev = MindWaveMobile(DEV_PORT)
+
+    ###init ROS
+    rospy.init_node('tms_ss_vs_mindwave')
+    db_pub = rospy.Publisher('tms_db_data', TmsdbStamped, queue_size=10)
+    r = rospy.Rate(1)
+    while not rospy.is_shutdown():
+        dev.update()        # must update() many times in a loop because most of buffer data is stuff data
         if dev.is_updated:
+            r.sleep()
             dev.is_updated = False
+
+            ###make json text
+            note_d = {"meditation": str(dev.meditation),
+                      "attention": str(dev.attention),
+                      "poor_signal": str(dev.poor_signal)}
+            note_j = json.dumps(note_d)
+
+            ###regist to DB
+            msg = TmsdbStamped()
+            db = Tmsdb()
+            db.time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
+            db.name = "mindwavemobile"
+            db.id = 3017
+            db.sensor = 3017
+            db.place = 1001
+            db.note = note_j
+            msg.tmsdb.append(db)
+            msg.header.stamp = rospy.get_rostime()+rospy.Duration(9*60*60)
+            db_pub.publish(msg)
+
+            ###show messege
             print "Med:",
             print dev.meditation,
             print "    Att:",
@@ -25,7 +71,6 @@ def main():
 
 class MindWaveMobile(object):
     def __init__(self, port='/dev/rfcomm1'):
-        print "initializing"
         self.meditation = 0
         self.attention = 0
         self.poor_signal = 0
@@ -48,7 +93,7 @@ class MindWaveMobile(object):
             # print "      ",
             # print hex(code),
             if code >= 0x80:    # multi-bytes value
-                vlength = payload.pop(0)
+                vlength = payload.pop(0)  #dont use because vlength can assumed by [code] variable
                 if code == 0x80:
                     high_word = payload.pop(0)
                     low_word = payload.pop(0)
@@ -57,15 +102,12 @@ class MindWaveMobile(object):
                         self.raw_values.pop(0)
                 elif code == 0x83:
                     # ASIC_EEG_POWER_INT
-                    # delta, theta, low-alpha, high-alpha, low-beta, high-beta,
-                    # low-gamma, high-gamma
+                    # delta, theta, low-alpha, high-alpha, low-beta, high-beta, low-gamma, high-gamma
                     self.asic_eeg_power_int = []
                     for i in range(8):
                         self.asic_eeg_power_int.append(
                             gen_uint24_t(payload.pop(0), payload.pop(0), payload.pop(0)))
-                else:   # ERROR
-                    pass
-            else:               # single-byte value
+            else:  # single-byte value
                 val = payload.pop(0)
                 self.is_updated = True
                 if code == 0x02:
@@ -74,8 +116,6 @@ class MindWaveMobile(object):
                     self.attention = val
                 elif code == 0x05:
                     self.meditation = val
-                else:
-                    pass
 
     def update(self):
         while 1:
@@ -112,7 +152,7 @@ class MindWaveMobile(object):
                 return
 
     def wait_sync(self):
-        while self.in_buffer[:2] != [SYNC_BYTE,SYNC_BYTE]:
+        while self.in_buffer[:2] != [SYNC_BYTE, SYNC_BYTE]:
             retry = 0
             while len(self.in_buffer) <= 3:
                 retry += 1
@@ -127,6 +167,5 @@ def gen_uint24_t(b1, b2, b3):
     return 255 * 255 * b1 + 255 * b2 + b3
 
 
-dev = MindWaveMobile(DEV_PORT)
 if __name__ == '__main__':
     main()
