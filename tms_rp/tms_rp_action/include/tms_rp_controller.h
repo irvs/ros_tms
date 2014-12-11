@@ -64,12 +64,6 @@ class TmsRpController{
 
     bool setTolerance(double setTolerance);
 
-    bool graspPathPlanStart_(
-    		int mode, std::vector<double> begin, std::vector<double> end,
-    		std::string robotId, std::string objectTagId, double resolution,
-    		std::vector<pathInfo>* trajectory, int* state,
-    		std::vector<double>* obj_pos, std::vector<double>* obj_rot);
-
     bool graspPathPlanStart(
     		int mode, std::vector<double> begin, std::vector<double> end,
     		std::string robotId, std::string objectTagId, double resolution,
