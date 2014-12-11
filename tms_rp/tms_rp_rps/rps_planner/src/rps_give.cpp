@@ -468,41 +468,47 @@ bool set_person_view_id(vector<vector<CollisionMapData> >& Map, int person_id, v
 	srv.request.tmsdb.id = person_id;
 
 //#ifdef USE_TMS_DB
+	int ref_i = 0;
 	if (get_data_client.call(srv)) {
-		ROS_INFO("Success person_id:%u, behavior = %u", srv.response.tmsdb[0].id, srv.response.tmsdb[0].state);
+		for (int j=0; j<srv.response.tmsdb.size()-1; j++)
+		{
+			if (srv.response.tmsdb[j].time < srv.response.tmsdb[j+1].time)
+				ref_i = j+1;
+		}
+		ROS_INFO("Success person_id:%u, behavior = %u", srv.response.tmsdb[ref_i].id, srv.response.tmsdb[ref_i].state);
 
 		// person_state: 0 消失, 1 歩行, 2 立位静止, 3 椅子付近 静止, 4 椅子着座, 5 ベッド着座, 6 ベッド上 (休息)
-		if ((srv.response.tmsdb[0].state==1)||(srv.response.tmsdb[0].state==2)||(srv.response.tmsdb[0].state==3)) {
-			ROS_INFO("Success person_id:%u, x = %f, y = %f, th = %f", srv.response.tmsdb[0].id, srv.response.tmsdb[0].x, srv.response.tmsdb[0].y, srv.response.tmsdb[0].ry);
-			if (!set_person_view(Map, srv.response.tmsdb[0].x, srv.response.tmsdb[0].y, deg2rad(srv.response.tmsdb[0].ry))) {
+		if ((srv.response.tmsdb[ref_i].state==1)||(srv.response.tmsdb[ref_i].state==2)||(srv.response.tmsdb[ref_i].state==3)) {
+			ROS_INFO("Success person_id:%u, x = %f, y = %f, th = %f", srv.response.tmsdb[ref_i].id, srv.response.tmsdb[ref_i].x, srv.response.tmsdb[ref_i].y, srv.response.tmsdb[ref_i].ry);
+			if (!set_person_view(Map, srv.response.tmsdb[ref_i].x, srv.response.tmsdb[ref_i].y, deg2rad(srv.response.tmsdb[ref_i].ry))) {
 				message = "person position is out of Map";
 				ROS_ERROR(message.c_str());
 			}
-			person_pos[0] = srv.response.tmsdb[0].x / 1000.0; // mm to m
-			person_pos[1] = srv.response.tmsdb[0].y / 1000.0;
-//			person_pos[2] = srv.response.tmsdb[0].z / 1000.0;
+			person_pos[0] = srv.response.tmsdb[ref_i].x / 1000.0; // mm to m
+			person_pos[1] = srv.response.tmsdb[ref_i].y / 1000.0;
+//			person_pos[2] = srv.response.tmsdb[ref_i].z / 1000.0;
 			person_pos[2] = 1.5; // 人の目の高さ，150cm
-			person_th = deg2rad(srv.response.tmsdb[0].ry);
+			person_th = deg2rad(srv.response.tmsdb[ref_i].ry);
 		}
 
-		if (srv.response.tmsdb[0].state==4) {
-			if (srv.response.tmsdb[0].place < 6000 || srv.response.tmsdb[0].place > 7000) {
+		if (srv.response.tmsdb[ref_i].state==4) {
+			if (srv.response.tmsdb[ref_i].place < 6000 || srv.response.tmsdb[ref_i].place > 7000) {
 				message = "Person sit on unknown furniture.";
 				ROS_ERROR(message.c_str());
 				return false;
 			}
-			srv.request.tmsdb.id = srv.response.tmsdb[0].place; // 人が着座している椅子のID
+			srv.request.tmsdb.id = srv.response.tmsdb[ref_i].place; // 人が着座している椅子のID
 			if (get_data_client.call(srv)) {
-				ROS_INFO("Success chair_x = %f, y = %f, th = %f", srv.response.tmsdb[0].x, srv.response.tmsdb[0].y, srv.response.tmsdb[0].ry);
-				if (!set_person_view(Map, srv.response.tmsdb[0].x, srv.response.tmsdb[0].y, deg2rad(srv.response.tmsdb[0].ry))) {
+				ROS_INFO("Success chair_x = %f, y = %f, th = %f", srv.response.tmsdb[ref_i].x, srv.response.tmsdb[ref_i].y, srv.response.tmsdb[ref_i].ry);
+				if (!set_person_view(Map, srv.response.tmsdb[ref_i].x, srv.response.tmsdb[ref_i].y, deg2rad(srv.response.tmsdb[ref_i].ry))) {
 					message = "person position is out of Map";
 					ROS_ERROR(message.c_str());
 				}
-				person_pos[0] = srv.response.tmsdb[0].x / 1000.0;
-				person_pos[1] = srv.response.tmsdb[0].y / 1000.0;
-				//~ person_pos[2] = srv.response.tmsdb[0].z / 1000.0;
+				person_pos[0] = srv.response.tmsdb[ref_i].x / 1000.0;
+				person_pos[1] = srv.response.tmsdb[ref_i].y / 1000.0;
+				//~ person_pos[2] = srv.response.tmsdb[ref_i].z / 1000.0;
 				person_pos[2] = 1182.9 / 1000.0; // ?
-				person_th = deg2rad(srv.response.tmsdb[0].ry);
+				person_th = deg2rad(srv.response.tmsdb[ref_i].ry);
 			} else {
 				message = "Failed to call service to get chair_info";
 				ROS_ERROR(message.c_str());
