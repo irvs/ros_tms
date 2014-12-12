@@ -93,7 +93,8 @@ double nomalizeAng(double rad){
 void MachinePose_s::updateVicon(){
     // printf("line:%s\n",__LINE__);
     tms_msg_db::TmsdbGetData srv;
-    srv.request.tmsdb.id = 2007;
+    srv.request.tmsdb.id = 2007;        //wheelchair
+    srv.request.tmsdb.sensor = 3001;    //vicon
     if(! db_client.call(srv)){
         ROS_ERROR("Failed to get vicon data from DB via tms_db_reader");
     }else if(srv.response.tmsdb.empty()){
@@ -168,7 +169,7 @@ void MachinePose_s::updateOdom(){
 void spinWheel(/*double arg_speed, double arg_theta*/){
     double arg_speed = mchn_pose.tgtTwist.linear.x;
     double arg_theta = mchn_pose.tgtTwist.angular.z;
-    ROS_INFO("X:%4.2f   Theta:%4.2f",arg_speed,arg_theta);
+    // ROS_INFO("X:%4.2f   Theta:%4.2f",arg_speed,arg_theta);
     double val_L = -Dist2Pulse(arg_speed) + Dist2Pulse((WHEEL_DIST/2)*arg_theta);
     double val_R =  Dist2Pulse(arg_speed) + Dist2Pulse((WHEEL_DIST/2)*arg_theta);
     val_L = (int)Limit(val_L,(double)SPEED_MAX,(double)-SPEED_MAX);
@@ -247,7 +248,7 @@ bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/){
     if (distance <= 200){
         tmp_spd = 0.0;
     }
-    printf("spd:%+8.2lf turn:%+4.1lf",tmp_spd,tmp_turn);
+    // printf("spd:%+8.2lf turn:%+4.1lf",tmp_spd,tmp_turn);
     this->tgtTwist.linear.x = tmp_spd;
     this->tgtTwist.angular.z= Deg2Rad(tmp_turn);
     if(distance<=200 && 20>fabs(Rad2Deg(errorNT))){
@@ -304,10 +305,14 @@ int main(int argc, char **argv){
         mchn_pose.updateVicon();
         mchn_pose.goPose();
         //mchn_pose.updateOdom();
-        ROS_INFO("x:%4.2lf y:%4.2lf th:%4.2lf",
+        ROS_INFO("pos x:%4.2lf y:%4.2lf th:%4.2lf     ",
             mchn_pose.pos_vicon.x,
             mchn_pose.pos_vicon.y,
             mchn_pose.pos_vicon.theta);
+        printf("tgt x:%4.2lf y:%4.2lf th:%4.2lf     ",
+            mchn_pose.tgtPose.x,
+            mchn_pose.tgtPose.y,
+            mchn_pose.tgtPose.theta);
 /*        ROS_INFO("x:%4.2lf y:%4.2lf th:%4.2lf",
             mchn_pose.pos_odom.x,
             mchn_pose.pos_odom.y,
