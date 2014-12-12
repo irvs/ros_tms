@@ -124,7 +124,7 @@ public:
     //--------------------------------------------------------------------------
     for (uint32_t i = 0; i < 7; i++)
     {
-      sprintf(select_query, "SELECT * FROM rostmsdb.data_%s WHERE state=\"1\";", target[i].c_str());
+      sprintf(select_query, "SELECT * FROM rostmsdb.data_%s WHERE state!=\"0\";", target[i].c_str());
       if(is_debug) ROS_INFO("%s\n", select_query);
 
       mysql_query(connector, select_query);
