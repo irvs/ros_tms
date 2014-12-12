@@ -23,8 +23,6 @@ tms_rp::TmsRpSubtask::TmsRpSubtask(): ToolBar("TmsRpSubtask"),
                 os_(MessageView::mainInstance()->cout()), trc_(*TmsRpController::instance()) {
   sid_ = 100000;
 
-  static ros::NodeHandle nh1;
-
   rp_subtask_server             = nh1.advertiseService("rp_cmd", &TmsRpSubtask::subtask, this);
 
   get_data_client_              = nh1.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
@@ -148,7 +146,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
                       tms_msg_rp::rp_cmd::Response &res)
 {
 	SubtaskData sd;
-	sd.type = grasp::TmsRpBar::production_version_/*req.type*/;
+    sd.type = grasp::TmsRpBar::production_version_;
 	sd.robot_id = req.robot_id;
 	sd.arg_type = (int)req.arg.at(0);
 	sd.v_arg.clear();
@@ -567,7 +565,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 
 			    		if (sd.type == true) {} // set odom
 			    		else {
-						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
+//						callSynchronously(bind(&grasp::TmsRpBar::updateEnvironmentInformation,grasp::TmsRpBar::instance(),true));
 			    			sleep(1); //temp
 			    			}
 			    		break;
@@ -580,17 +578,23 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    	}
 				}
 				i++;
-				if (i==2 && rp_srv.response.VoronoiPath.size()==2) i++;
+				if (i==2 && rp_srv.response.VoronoiPath.size()==2) {
+					i++;
+				}
 				// Update Robot Path Planning
 				if (i == 3) {
-					get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv);
+					sleep(1);
+					while(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv));
 
 					// end determination
 					double error_x, error_y, error_th;
+					if (sd.robot_id == 2005 && !sd.type) rp_srv.request.start_pos.th+=90;
 					error_x = fabs(rp_srv.request.start_pos.x - rp_srv.request.goal_pos.x);
 					error_y = fabs(rp_srv.request.start_pos.y - rp_srv.request.goal_pos.y);
 					error_th = fabs(rp_srv.request.start_pos.th - rp_srv.request.goal_pos.th);
-					if (error_x<5 && error_y<5 && error_th<2) break; // dis_error:5mm, ang_error:2deg
+					if (error_x<5 && error_y<5 && error_th<2) {
+						break; // dis_error:5mm, ang_error:2deg
+					}
 
 					rp_srv.response.VoronoiPath.clear();
 					voronoi_path_planning_client_.call(rp_srv);
@@ -624,7 +628,8 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 	s_srv.request.type = 1; // for subtask state update;
 	s_srv.request.state = 0;
 
-	grasp::TmsRpBar::planning_mode_ = 1; // stop ROS-TMS viewer
+	nh1.setParam("planning_mode", 1);
+//	grasp::TmsRpBar::planning_mode_ = 1; // stop ROS-TMS viewer
 	if ((sd.robot_id == 2002 || sd.robot_id == 2003) && sd.type == true) {
 		if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4)) {
 			send_rc_exception(2);
@@ -801,7 +806,8 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 			return false;
 		}
 	}
-	grasp::TmsRpBar::planning_mode_ = 0;
+	nh1.setParam("planning_mode", 0);
+//	grasp::TmsRpBar::planning_mode_ = 0;
 
 	//	apprise TS_control of succeeding subtask execution
 	s_srv.request.state = 1;
@@ -815,7 +821,8 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 	s_srv.request.type = 1; // for subtask state update;
 	s_srv.request.state = 0;
 
-	grasp::TmsRpBar::grasping_ = 1; // switching model
+	nh1.setParam("grasping", 1);
+//	grasp::TmsRpBar::grasping_ = 1; // switching model
 
 	// call service for give_obj_planning
 	tms_msg_rp::rps_goal_planning gop_srv;
@@ -1028,7 +1035,8 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 		return false;
 	}
 	}
-	grasp::TmsRpBar::grasping_ = 0;
+	nh1.setParam("grasping", 0);
+//	grasp::TmsRpBar::grasping_ = 0;
 
 	//	apprise TS_control of succeeding subtask execution
 	s_srv.request.state = 1;

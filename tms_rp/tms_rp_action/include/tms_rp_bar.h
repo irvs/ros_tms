@@ -136,16 +136,12 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   double goal_position_ry_;
 
   static bool production_version_;
-  static int planning_mode_; // 0:view mode / 1:planning mode
-  static int grasping_;
 
   SgInvariantGroupPtr group_lrf_raw_data_;
 
   cnoid::BodyItemPtr currentBodyItem_;
   cnoid::ItemList<cnoid::BodyItem> selectedBodyItems_;
   cnoid::ItemList<cnoid::BodyItem> target_body_items_;
-
-  void updateEnvironmentInformation(bool is_simulation);
 
  private:
   MessageView& mes_;

@@ -41,6 +41,8 @@ class TmsRpSubtask : public cnoid::ToolBar, public boost::signals::trackable
 	void sensingCallback(const tms_msg_ss::ods_person_dt::ConstPtr& msg);
 
  private:
+	ros::NodeHandle nh1;
+
 	uint32_t sid_;
 	struct SubtaskData {
 		bool type;
