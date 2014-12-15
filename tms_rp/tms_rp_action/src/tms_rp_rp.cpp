@@ -687,7 +687,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 				if(get_data_client_.call(srv)) {
 					std::string furniture_name = srv.response.tmsdb[0].name;
 					cnoid::BodyItemPtr item2 = trc_.objTag2Item()[furniture_name];
-					pb->RemoveEnvironment(item2); // ->SetEnvironment(item2);
+					pb->SetEnvironment(item2); // ->RemoveEnvironment(item2);
 				}
 			}
 		} else {
@@ -787,6 +787,12 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 					if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_arg+12)) {
 						send_rc_exception(4);
 						return false;
+					}
+				}
+			} else {
+				for (int t=0; t<trajectory.size(); t++) {
+					for (int u=0; u<trajectory.at(t).joints.size(); u++) {
+						ROS_INFO("joint[%d][%d]=%f", t, u, rad2deg(trajectory.at(t).joints[u]));
 					}
 				}
 			}
