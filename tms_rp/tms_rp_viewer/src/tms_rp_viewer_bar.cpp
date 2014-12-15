@@ -474,6 +474,19 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
     		callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(rPosX,rPosY,rPosZ), mat_cw90_));
     		object_state[oID] = true;
     	}
+    	else if (state == 2)
+    	{
+    		oID   = id - 7001;
+    		rPosX = environment_information_.tmsdb[i].x/1000;
+    		rPosY = environment_information_.tmsdb[i].y/1000;
+    		rPosZ = environment_information_.tmsdb[i].z/1000;
+    		rot = grasp::rotFromRpy(deg2rad(environment_information_.tmsdb[i].rr),
+    				deg2rad(environment_information_.tmsdb[i].rp),
+    				deg2rad(environment_information_.tmsdb[i].ry));
+    		callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+    		callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(rPosX,rPosY,rPosZ), rot));
+    		object_state[oID] = true;
+    	}
     	else
     	{
     		oID   = id - 7001;
