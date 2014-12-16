@@ -628,8 +628,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 	s_srv.request.type = 1; // for subtask state update;
 	s_srv.request.state = 0;
 
-	nh1.setParam("planning_mode", 1);
-//	grasp::TmsRpBar::planning_mode_ = 1; // stop ROS-TMS viewer
+	nh1.setParam("planning_mode", 1); // stop ROS-TMS viewer
 	if ((sd.robot_id == 2002 || sd.robot_id == 2003) && sd.type == true) {
 		if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4)) {
 			send_rc_exception(2);
@@ -776,16 +775,16 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 							sp5arm_arg[u+3] = rad2deg(trajectory.at(t).joints[u]);
 					}
 					// send command to RC
-					if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_arg+4)) {
-						send_rc_exception(2);
-						return false;
-					}
 					if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_arg)) {
 						send_rc_exception(3);
 						return false;
 					}
 					if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_arg+12)) {
 						send_rc_exception(4);
+						return false;
+					}
+					if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_arg+4)) {
+						send_rc_exception(2);
 						return false;
 					}
 				}
@@ -813,7 +812,6 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 		}
 	}
 	nh1.setParam("planning_mode", 0);
-//	grasp::TmsRpBar::planning_mode_ = 0;
 
 	//	apprise TS_control of succeeding subtask execution
 	s_srv.request.state = 1;
