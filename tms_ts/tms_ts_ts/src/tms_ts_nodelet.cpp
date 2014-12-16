@@ -93,7 +93,7 @@ int tms_ts_nodelet::ROS_TMS_TS::JudgeArgType(std::string state1, std::string sta
 
 void tms_ts_nodelet::ROS_TMS_TS::GenerateContainer(std::string f_name, std::string state_name1, std::string state_name2) {
 	generated_container += "def " + f_name + "():\n    " + f_name + " = smach.Concurrence"
-			"( outcomes=['succeeded', 'aborted', 'preempted'],\n"
+			"( outcomes=['succeeded', 'aborted'],\n"
 			"                            default_outcome = 'aborted',\n"
 			"                            outcome_map = {'succeeded': {'" + state_name1 +
 			"':'succeeded', '" + state_name2 + "':'succeeded'}},\n"
@@ -360,13 +360,13 @@ void tms_ts_nodelet::ROS_TMS_TS::GenerateScript() {
     						+ IntToString(state_data.at(j).cc_subtasks) + ", \"\")),\n";
     		generated_main += "                           transitions={'succeeded':'";
 	    	if (j == state_data.size() - 1) {
-	    		generated_main += "succeeded', 'aborted':'aborted', 'preempted':'preempted'})\n\n";
+	    		generated_main += "succeeded', 'aborted':'aborted'})\n\n";
 	    	} else {
 	    		if (state_data.at(j+1).arg.at(0) == -10000)
-	    			generated_main += state_data.at(j+1).state_name + "', 'aborted':'aborted', 'preempted':'preempted'})\n\n";
+	    			generated_main += state_data.at(j+1).state_name + "', 'aborted':'aborted'})\n\n";
 	    		else {
 	    			generated_main += state_data.at(j+1).state_name + IntToString(j+1) +
-	    			"', 'aborted':'aborted', 'preempted':'preempted'})\n\n";
+	    			"', 'aborted':'aborted'})\n\n";
 	    		}
 	    	}
 		} else { // SQ
@@ -393,14 +393,14 @@ void tms_ts_nodelet::ROS_TMS_TS::GenerateScript() {
 	    	// final state
 	    	if (j == state_data.size() - 1) {
 	    		generated_main += "                           transitions={'succeeded':'succeeded', "
-	    				"'aborted':'aborted', 'preempted':'preempted'})\n\n";
+	    				"'aborted':'aborted'})\n\n";
 	    	} else {
 	    		if (state_data.at(j+1).arg.at(0) == -10000)
 	    			generated_main += "                           transitions={'succeeded':'" +
-	    			state_data.at(j+1).state_name + "', 'aborted':'aborted', 'preempted':'preempted'})\n\n";
+	    			state_data.at(j+1).state_name + "', 'aborted':'aborted'})\n\n";
 	    		else
 	    			generated_main += "                           transitions={'succeeded':'" +
-	    			state_data.at(j+1).state_name + IntToString(j+1) + "', 'aborted':'aborted', 'preempted':'preempted'})\n\n";
+	    			state_data.at(j+1).state_name + IntToString(j+1) + "', 'aborted':'aborted'})\n\n";
 	    	}
 		}
 	}
