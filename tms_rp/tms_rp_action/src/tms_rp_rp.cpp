@@ -763,7 +763,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 		}
 		case 2003:
 		{
-			double sp5arm_arg[26] = {	0.0,   0.0, 10.0, 10.0,	/*waist*/
+			double sp5arm_arg[26] = {0.0, 0.0, 10.0, 10.0,	/*waist*/
 					0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0,/*right arm*/
 					0.0,  10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0 /*left arm */}; //degree
 			if (sd.type == true) {
@@ -803,8 +803,8 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 		}
 		case 2006:
 		{
-			kxp_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg);
 			if (sd.type == false) {
+				kxp_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg);
 				sleep(1.5);
 			}
 			break;
@@ -829,8 +829,7 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 	s_srv.request.type = 1; // for subtask state update;
 	s_srv.request.state = 0;
 
-	nh1.setParam("grasping", 1);
-//	grasp::TmsRpBar::grasping_ = 1; // switching model
+	nh1.setParam("grasping", 1); // switching model for display
 
 	// call service for give_obj_planning
 	tms_msg_rp::rps_goal_planning gop_srv;
@@ -910,8 +909,8 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 
 					tms_msg_db::TmsdbGetData name_srv;
 					name_srv.request.tmsdb.name = pb->targetObject->bodyItemObject->name();
-					if(get_data_client_.call(name_srv))
-						arg[3] = 2; // robot_state
+					get_data_client_.call(name_srv);
+					arg[3] = 2; // robot_state
 					arg[4] = (double)name_srv.response.tmsdb[0].id; // obj_id
 					arg[5] = position(0)*1000; // m -> mm;
 					arg[6] = position(1)*1000;
@@ -921,22 +920,19 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 					arg[10] = rad2deg(rotation(2));
 					arg[11] = sd.robot_id;
 					arg[12] = 2; // obj_state
-					if (!sp5_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg)) {
-						send_rc_exception(5);
-						return false;
-					}
-					if (sd.type == true) {
-						if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) {
-							send_rc_exception(0);
+					if (sd.type == false) {
+						if (!sp5_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg)) {
+							send_rc_exception(5);
+							return false;
 						}
-					} else {
 						sleep(1.5);
 					}
 					i++;
 					if (i==2 && rp_srv.response.VoronoiPath.size()==2) i++;
 					// Update Robot Path Planning
 					if (i == 3) {
-						get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv);
+						sleep(1);
+						while(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv));
 
 						// end determination
 						double error_x, error_y, error_th;
@@ -955,12 +951,39 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 						i = 1;
 					}
 				}
+			} else {
+				s_srv.request.error_msg = "Update planned path is empty";
+				state_client.call(s_srv);
+				return false;
 			}
-			// move joint
+		} else {
+			s_srv.request.error_msg = "Failed to call service /rps_voronoi_path_planning";
+			state_client.call(s_srv);
+			return false;
+		}
+		// move joint
+		if (sd.type == true) {
+			double sp5give_arg[12] = {0.0, 0.0, 10.0, 10.0,	/*waist*/
+					0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0 /*right arm*/}; //degree
+			for (int u=0; u<9; u++) {
+				if (u==0 || u==1)
+					sp5give_arg[u] = goal_joint[u];
+				else if (u>=2 && u<=8)
+					sp5give_arg[u+2] = goal_joint[u];
+			}
+			// send command to RC
+			if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5give_arg)) {
+				send_rc_exception(3);
+				return false;
+			}
+			if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5give_arg+4)) {
+				send_rc_exception(2);
+				return false;
+			}
+		} else {
 			if (!sp5_control(sd.type, UNIT_ALL, CMD_CALC_BACKGROUND, 19, goal_arg)) {
 				send_rc_exception(6);
 			}
-			return false;
 		}
 		break;
 	}
@@ -968,7 +991,7 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 	{
 		if (voronoi_path_planning_client_.call(rp_srv)) {
 			os_ << "result: " << rp_srv.response.success << " message: " << rp_srv.response.message << endl;
-			if (rp_srv.response.VoronoiPath.size()!=0) {
+			if (!rp_srv.response.VoronoiPath.empty()) {
 				double arg[13];
 				grasp::PlanBase *pb = grasp::PlanBase::instance();
 
@@ -994,14 +1017,12 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 					callSynchronously(bind(&grasp::TmsRpController::disappear,trc_,"kxp"));
 					callSynchronously(bind(&grasp::TmsRpController::setPos,trc_,"kxp",cnoid::Vector3(rPosX,rPosY,rPosZ), rot));
 					}
-
 		    		pb->bodyItemRobot()->body()->calcForwardKinematics();
 
 		    		cnoid::Vector3 position;
 					cnoid::Vector3 rotation;
 		    		rotation = grasp::rpyFromRot(pb->fingers(0)->tip->R()*(pb->targetArmFinger->objectPalmRot));
 		    		position = pb->fingers(0)->tip->p()+pb->fingers(0)->tip->R()*pb->targetArmFinger->objectPalmPos;
-		    		//callSynchronously(bind(&grasp::PlanBase::flush,pb));
 
 					ROS_INFO("robot_x=%f,y=%f,z=%f", arg[0], arg[1], arg[2]);
 					ROS_INFO("object_x=%f,y=%f,z=%f,rr=%f,rp=%f,ry=%f\n", position(0), position(1), position(2), rad2deg(rotation(0)), rad2deg(rotation(1)), rad2deg(rotation(2)));
@@ -1013,27 +1034,28 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 					arg[4] = (double)name_srv.response.tmsdb[0].id; // obj_id
 					arg[5] = position(0)*1000; // m -> mm;
 					arg[6] = position(1)*1000;
-//							arg[7] = position(2)*1000;
+//					arg[7] = position(2)*1000;
 					arg[7] = -1;
 					arg[8] = rad2deg(rotation(0));
 					arg[9] = rad2deg(rotation(1));
 					arg[10] = rad2deg(rotation(2));
 					arg[11] = sd.robot_id;
 					arg[12] = 2; // obj_state
-					kxp_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg);
-		    		if (sd.type == false) {
+					if (sd.type == false) {
+						kxp_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg);
 		    			sleep(1.5);
 		    		}
 				}
+			} else {
+				s_srv.request.error_msg = "Planned path is empty";
+				state_client.call(s_srv);
+				return false;
 			}
+		} else {
+			s_srv.request.error_msg = "Failed to call service /rps_voronoi_path_planning";
+			state_client.call(s_srv);
+			return false;
 		}
-
-//		goal_arg[11] = 0.0;
-//		goal_arg[12] = 0.0;
-//		goal_arg[13] = 0.0;
-//		goal_arg[14] = 37.0; // deg
-//		goal_arg[15] = 0.0;
-//		kxp_control(sd.type, UNIT_ALL, CMD_CALC_BACKGROUND, 19, goal_arg);
 		break;
 	}
 	default:
@@ -1044,7 +1066,6 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 	}
 	}
 	nh1.setParam("grasping", 0);
-//	grasp::TmsRpBar::grasping_ = 0;
 
 	//	apprise TS_control of succeeding subtask execution
 	s_srv.request.state = 1;
