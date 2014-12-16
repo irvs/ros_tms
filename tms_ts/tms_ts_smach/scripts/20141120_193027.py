@@ -12,7 +12,7 @@ from tms_msg_rp.srv import *
 from tms_msg_ts.srv import *
 
 def smc0():
-    smc0 = smach.Concurrence( outcomes=['succeeded', 'aborted', 'preempted'],
+    smc0 = smach.Concurrence( outcomes=['succeeded', 'aborted'],
                             default_outcome = 'aborted',
                             outcome_map = {'succeeded': {'0random_move':'succeeded', '1sensing':'succeeded'}},
                             child_termination_cb = lambda arg: True )
@@ -41,7 +41,7 @@ def main():
                            ServiceState('ts_state_control',
                                         ts_state_control,
                                         request = ts_state_controlRequest(0, 0, 0, 2, "")),
-                           transitions={'succeeded':'move1', 'aborted':'aborted', 'preempted':'preempted'})
+                           transitions={'succeeded':'move1', 'aborted':'aborted'})
 
         smach.StateMachine.add('move1',
                            ServiceState('rp_cmd',
@@ -53,7 +53,7 @@ def main():
                            ServiceState('ts_state_control',
                                         ts_state_control,
                                         request = ts_state_controlRequest(0, 0, 0, 0, "")),
-                           transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
+                           transitions={'succeeded':'succeeded', 'aborted':'aborted'})
 
     sis = smach_ros.IntrospectionServer('tms_ts_smach_test', sm_root, '/ROS_TMS')
     sis.start()

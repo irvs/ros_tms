@@ -28,7 +28,7 @@ def main():
                            ServiceState('ts_state_control',
                                         ts_state_control,
                                         request = ts_state_controlRequest(0, 0, 0, 0, "")),
-                           transitions={'succeeded':'grasp1', 'aborted':'aborted', 'preempted':'preempted'})
+                           transitions={'succeeded':'grasp1', 'aborted':'aborted'})
 
         smach.StateMachine.add('grasp1',
                            ServiceState('rp_cmd',
@@ -40,7 +40,7 @@ def main():
                            ServiceState('ts_state_control',
                                         ts_state_control,
                                         request = ts_state_controlRequest(0, 0, 0, 0, "")),
-                           transitions={'succeeded':'give2', 'aborted':'aborted', 'preempted':'preempted'})
+                           transitions={'succeeded':'give2', 'aborted':'aborted'})
 
         smach.StateMachine.add('give2',
                            ServiceState('rp_cmd',
@@ -52,7 +52,7 @@ def main():
                            ServiceState('ts_state_control',
                                         ts_state_control,
                                         request = ts_state_controlRequest(0, 0, 0, 0, "")),
-                           transitions={'succeeded':'move3', 'aborted':'aborted', 'preempted':'preempted'})
+                           transitions={'succeeded':'move3', 'aborted':'aborted'})
 
         smach.StateMachine.add('move3',
                            ServiceState('rp_cmd',
@@ -64,7 +64,7 @@ def main():
                            ServiceState('ts_state_control',
                                         ts_state_control,
                                         request = ts_state_controlRequest(0, 0, 0, 0, "")),
-                           transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
+                           transitions={'succeeded':'succeeded', 'aborted':'aborted'})
 
     sis = smach_ros.IntrospectionServer('tms_ts_smach_test', sm_root, '/ROS_TMS')
     sis.start()
