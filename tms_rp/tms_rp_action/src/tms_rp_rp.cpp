@@ -593,7 +593,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    			i+=2;
 			    			if (i > rp_srv.response.VoronoiPath.size()) {
 			    				ROS_ERROR("i > rp_srv.response.VoronoiPath.size()");
-			    				return false;
+			    				break;
 			    			}
 			    			dis = distance(rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
 			    					rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
