@@ -35,6 +35,7 @@ class TmsRpPathPlanning : public cnoid::ToolBar, public boost::signals::trackabl
   const double kSmartPal4CollisionThreshold_; //mm
   const double kKobukiCollisionThreshold_;    //mm
   const double kKKPCollisionThreshold_;       //mm
+  const double kMimamorukunCollisionThreshold_;    //mm
   const double kRobotControlWagonDist_;       //mm
   const double kSmoothVoronoiPathThreshold_;  //mm
   const double kPushWagonPathThreshold_;      //mm
