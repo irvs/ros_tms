@@ -70,6 +70,8 @@ RpViewerBar::RpViewerBar(): ToolBar("RpViewerBar"),
   subscribe_pcd_            = nh.subscribe("velodyne_points", 1, &RpViewerBar::receivePointCloudData, this);
   subscribe_umo_tracker_    = nh.subscribe("/umo_tracking_points", 1,  &RpViewerBar::receiveUnknownMovingObjectTrackerInfo, this);
 
+  get_data_client_              = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
+
   // arrange model
   mat0_       <<  1, 0, 0, 0, 1, 0, 0, 0, 1;  //   0
   mat_ccw90_  <<  0,-1, 0, 1, 0, 0, 0, 0, 1;  //  90
@@ -292,7 +294,7 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
           else if (grasping == 1)
           {
     	    callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_1"));
-    	    callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+    	    callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot));
           }
           else
           {
@@ -317,7 +319,7 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
           else if (grasping == 1)
           {
             callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_2"));
-            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+            callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot));
           }
           else
           {
@@ -474,7 +476,7 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
     		callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(rPosX,rPosY,rPosZ), mat_cw90_));
     		object_state[oID] = true;
     	}
-    	else if (state == 2)
+    	else if (state == 2) // sync
     	{
     		oID   = id - 7001;
     		rPosX = environment_information_.tmsdb[i].x/1000;
@@ -483,6 +485,23 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
     		rot = grasp::rotFromRpy(deg2rad(environment_information_.tmsdb[i].rr),
     				deg2rad(environment_information_.tmsdb[i].rp),
     				deg2rad(environment_information_.tmsdb[i].ry));
+
+//    		tms_msg_db::TmsdbGetData srv;
+//    		srv.request.tmsdb.id = place;
+//    		srv.request.tmsdb.sensor = sensor;
+//    		if(get_data_client_.call(srv)) {
+//    			if (!srv.response.tmsdb.empty()) {
+//    				double r_PosX, r_PosY, r_PosZ;
+//    				Matrix3 r_rot;
+//    				r_PosX = srv.response.tmsdb[0].x;
+//    				r_PosY = srv.response.tmsdb[0].y;
+//    				r_PosZ = srv.response.tmsdb[0].offset_z;
+//    			    r_rot = grasp::rotFromRpy(deg2rad(srv.response.tmsdb[0].rr),
+//    			    		deg2rad(srv.response.tmsdb[0].rp), deg2rad(srv.response.tmsdb[0].ry));
+//    	            callSynchronously(bind(&TmsRpController::appear,trc_,srv.response.tmsdb[0].name));
+//    	            callSynchronously(bind(&TmsRpController::setPos,trc_,srv.response.tmsdb[0].name,Vector3(r_PosX,r_PosY,r_PosZ), r_rot));
+//    			}
+//    		}
     		callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
     		callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(rPosX,rPosY,rPosZ), rot));
     		object_state[oID] = true;

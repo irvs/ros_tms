@@ -312,6 +312,22 @@ int8_t VehicleMoveLinearAbs(double x_mm, double y_mm, double theta_deg)
 }
 
 //------------------------------------------------------------------------------
+int8_t VehicleMoveLinearAbs2(double x_mm, double y_mm, double theta_deg)
+{
+  bool ret = true;
+
+  g_x2 = x_mm;
+  g_y2 = y_mm;
+  g_t2 = theta_deg;
+
+  printf("vehicleMoveLinearAbs(%0.1fmm, %0.1fmm, %0.1fdeg) result:",g_x2, g_y2, g_t2);
+  ret ? printf("Success\n") : printf("Failure\n");
+
+  if(ret) return  SUCCESS;
+  else    return  FAILURE;
+}
+
+//------------------------------------------------------------------------------
 int8_t ArmGetPos(int8_t RL, double frameID, double *posdata)
 {
   int8_t ret = SUCCESS;
@@ -548,7 +564,7 @@ bool robotControl(tms_msg_rc::rc_robot_control::Request  &req,
             case 10:res.result = VehicleSetVel(req.arg[0],req.arg[1]); break;
             case 11:res.result = SUCCESS; break;
             case 15:res.result = VehicleMoveLinearAbs(req.arg[0],req.arg[1],req.arg[2]); break;
-            case 16:res.result = SUCCESS; break;
+            case 16:res.result = VehicleMoveLinearAbs2(req.arg[0],req.arg[1],req.arg[2]); break;
             case 17:res.result = SUCCESS; break;
             case 18:res.result = SUCCESS; break;
             case 19:res.result = SUCCESS; break;
