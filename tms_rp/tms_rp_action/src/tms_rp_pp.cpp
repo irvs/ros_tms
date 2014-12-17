@@ -19,6 +19,7 @@ TmsRpPathPlanning::TmsRpPathPlanning(): kSmartPal5CollisionThreshold_(400.0),
                                         kSmartPal4CollisionThreshold_(400.0),
                                         kKobukiCollisionThreshold_(200.0),
                                         kKKPCollisionThreshold_(400.0),
+                                        kMimamorukunCollisionThreshold_(400.0),
                                         kRobotControlWagonDist_(400.0),
                                         kSmoothVoronoiPathThreshold_(100.0),
                                         kPushWagonPathThreshold_(200.0),
@@ -215,6 +216,9 @@ double TmsRpPathPlanning::getRobotCollisionThreshold(int robot_id)
       break;
     case 2006:  //KKP
       collision_threshold = kKKPCollisionThreshold_ / 1000.0;
+      break;
+    case 2007:
+      collision_threshold = kMimamorukunCollisionThreshold_ / 1000.0;
       break;
     default:
       collision_threshold = 0.1;

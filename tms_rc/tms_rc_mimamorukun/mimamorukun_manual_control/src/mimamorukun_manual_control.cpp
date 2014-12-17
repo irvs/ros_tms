@@ -26,7 +26,7 @@
 
 using namespace std;
 
-ClientSocket  client_socket (""/*"192.168.11.99"*/, 54300 );
+ClientSocket  client_socket ("192.168.11.99", 54300 );
 const int     ENC_MAX  = 3932159;
 const int     SPEED_MAX = 32767;
 const float   DIST_PER_PULSE = 0.552486;  //mm par pulse
@@ -93,8 +93,8 @@ double nomalizeAng(double rad){
 void MachinePose_s::updateVicon(){
     // printf("line:%s\n",__LINE__);
     tms_msg_db::TmsdbGetData srv;
-    srv.request.tmsdb.id = 2007;        //wheelchair
-    srv.request.tmsdb.sensor = 3001;    //vicon
+    srv.request.tmsdb.id = 2007;
+    srv.request.tmsdb.sensor = 3001;
     if(! db_client.call(srv)){
         ROS_ERROR("Failed to get vicon data from DB via tms_db_reader");
     }else if(srv.response.tmsdb.empty()){
@@ -169,7 +169,7 @@ void MachinePose_s::updateOdom(){
 void spinWheel(/*double arg_speed, double arg_theta*/){
     double arg_speed = mchn_pose.tgtTwist.linear.x;
     double arg_theta = mchn_pose.tgtTwist.angular.z;
-    // ROS_INFO("X:%4.2f   Theta:%4.2f",arg_speed,arg_theta);
+    printf("spin:   X:%4.2f   Theta:%4.2f",arg_speed,arg_theta);
     double val_L = -Dist2Pulse(arg_speed) + Dist2Pulse((WHEEL_DIST/2)*arg_theta);
     double val_R =  Dist2Pulse(arg_speed) + Dist2Pulse((WHEEL_DIST/2)*arg_theta);
     val_L = (int)Limit(val_L,(double)SPEED_MAX,(double)-SPEED_MAX);
@@ -203,9 +203,24 @@ bool receiveGoalPose(   tms_msg_rc::rc_robot_control::Request &req,
     mchn_pose.tgtPose.x = req.arg[0];
     mchn_pose.tgtPose.y = req.arg[1];
     mchn_pose.tgtPose.theta = Deg2Rad(req.arg[2]);
-    while(! mchn_pose.goPose()){
-        ROS_INFO("doing goPose");
+    while(1){
+        printf("in moving loop");
+        ros::Duration(0.1).sleep();
+        printf("doing goPose");
+        ROS_INFO("pos x:%4.2lf y:%4.2lf th:%4.2lf     ",
+            mchn_pose.pos_vicon.x,
+            mchn_pose.pos_vicon.y,
+            Rad2Deg(mchn_pose.pos_vicon.theta));
+        printf("tgt x:%4.2lf y:%4.2lf th:%4.2lf     ",
+            mchn_pose.tgtPose.x,
+            mchn_pose.tgtPose.y,
+            Rad2Deg(mchn_pose.tgtPose.theta));
+        bool isArrived = mchn_pose.goPose();
+        mchn_pose.updateVicon();
+        spinWheel();
+        if(isArrived) break;
     }
+    return true;
 }
 
 void receiveCmdVel(const geometry_msgs::Twist::ConstPtr& cmd_vel){
@@ -225,7 +240,6 @@ bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/){
     const double KDang  = 0;
     const double KPdist = 2.0;
     const double KDdist = 0;
-    bool ret = false;
 
     double errorX = this->tgtPose.x - this->pos_vicon.x;
     double errorY = this->tgtPose.y - this->pos_vicon.y;
@@ -245,16 +259,18 @@ bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/){
     tmp_spd =  Limit(tmp_spd,100,-100);
     tmp_turn = Limit(tmp_turn,30,-30);
     double distance = sqrt(sqr(errorX)+sqr(errorY));
-    if (distance <= 200){
+/*    if (distance <= 200){
         tmp_spd = 0.0;
+    }*/
+    printf("spd:%+8.2lf turn:%+4.1lf",tmp_spd,tmp_turn);
+    if(distance<=200/* && 60>fabs(Rad2Deg(errorNT))*/){
+        this->tgtTwist.angular.z= 0;
+        this->tgtTwist.linear.x = 0;      return true;
+    }else{
+        this->tgtTwist.angular.z= Deg2Rad(tmp_turn);
+        this->tgtTwist.linear.x = tmp_spd;
+        return false;
     }
-    // printf("spd:%+8.2lf turn:%+4.1lf",tmp_spd,tmp_turn);
-    this->tgtTwist.linear.x = tmp_spd;
-    this->tgtTwist.angular.z= Deg2Rad(tmp_turn);
-    if(distance<=200 && 20>fabs(Rad2Deg(errorNT))){
-        ret = true;
-    }
-    return ret;
 }
 
 
@@ -301,18 +317,19 @@ int main(int argc, char **argv){
     ros::Rate   r(ROS_RATE);
     while(n.ok()){
         // ROS_INFO("");
+        printf("in main loop");
         spinWheel(/*joy_cmd_spd,joy_cmd_turn*/);
         mchn_pose.updateVicon();
         mchn_pose.goPose();
         //mchn_pose.updateOdom();
-        ROS_INFO("pos x:%4.2lf y:%4.2lf th:%4.2lf     ",
+        ROS_INFO("pos x:%4.2lf y:%4.2lf th:%4.2lf     ",  //    korekesutonazeka DB nodata gayomenakunaru
             mchn_pose.pos_vicon.x,
             mchn_pose.pos_vicon.y,
-            mchn_pose.pos_vicon.theta);
-        printf("tgt x:%4.2lf y:%4.2lf th:%4.2lf     ",
-            mchn_pose.tgtPose.x,
-            mchn_pose.tgtPose.y,
-            mchn_pose.tgtPose.theta);
+            Rad2Deg(mchn_pose.pos_vicon.theta));
+        // printf("tgt x:%4.2lf y:%4.2lf th:%4.2lf     ",
+        //     mchn_pose.tgtPose.x,
+        //     mchn_pose.tgtPose.y,
+        //     mchn_pose.tgtPose.theta);
 /*        ROS_INFO("x:%4.2lf y:%4.2lf th:%4.2lf",
             mchn_pose.pos_odom.x,
             mchn_pose.pos_odom.y,
@@ -325,3 +342,17 @@ int main(int argc, char **argv){
     return(0);
 }
 
+    // while(1){
+    //     ros::Duration(0.1).sleep();
+    //     ROS_INFO("doing goPose");
+    //     ROS_INFO("pos x:%4.2lf y:%4.2lf th:%4.2lf     ",
+    //         mchn_pose.pos_vicon.x,
+    //         mchn_pose.pos_vicon.y,
+    //         mchn_pose.pos_vicon.theta);
+    //     printf("tgt x:%4.2lf y:%4.2lf th:%4.2lf     ",
+    //         mchn_pose.tgtPose.x,
+    //         mchn_pose.tgtPose.y,
+    //         mchn_pose.tgtPose.theta);
+    //     if(mchn_pose.goPose()) break;
+    //     mchn_pose.updateVicon();
+    // }
