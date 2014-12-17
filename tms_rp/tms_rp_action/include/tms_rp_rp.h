@@ -15,6 +15,8 @@
 #include <tms_msg_rc/rc_robot_control.h>
 #include <tms_msg_rs/rs_home_appliances.h>
 #include <tms_msg_ss/ods_person_dt.h>
+#include <tms_msg_db/TmsdbStamped.h>
+#include <tms_msg_db/Tmsdb.h>
 #include <kobuki_msgs/Sound.h>
 #include <kobuki_msgs/MotorPower.h>
 #include <sensor_msgs/PointCloud2.h>
@@ -33,6 +35,7 @@ class TmsRpSubtask : public cnoid::ToolBar, public boost::signals::trackable
 	static TmsRpSubtask* instance();
 	virtual ~TmsRpSubtask();
 
+	double distance(double x1, double y1, double x2, double y2);
 	void send_rc_exception(int error_type);
 	bool get_robot_pos(bool type, int robot_id, std::string& robot_name, tms_msg_rp::rps_voronoi_path_planning& rp_srv);
 	bool subtask(tms_msg_rp::rp_cmd::Request &req,tms_msg_rp::rp_cmd::Response &res);
@@ -50,6 +53,9 @@ class TmsRpSubtask : public cnoid::ToolBar, public boost::signals::trackable
 		int arg_type;
 		std::vector<double> v_arg;
 	};
+
+	bool update_obj(int id, double x, double y, double z, double rr, double rp,
+			double ry, std::string joint, int place, int sensor, int state);
 
 	// for thread
 	bool move(SubtaskData sd); // 9001
@@ -74,6 +80,7 @@ class TmsRpSubtask : public cnoid::ToolBar, public boost::signals::trackable
 	ros::ServiceClient refrigerator_client;
 	ros::ServiceClient state_client;
 
+	ros::Publisher db_pub;
 	ros::Publisher kobuki_sound;
 	ros::Publisher kobuki_motorpower;
 	ros::Subscriber sensing_sub;

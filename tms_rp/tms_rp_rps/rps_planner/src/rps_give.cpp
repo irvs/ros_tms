@@ -22,6 +22,7 @@
 using namespace std;
 
 ros::ServiceClient get_data_client;
+bool is_sim;
 
 vector<vector<CollisionMapData> > sub_Map;
 vector<ManipulabilityMapData> manip_Map;
@@ -466,6 +467,10 @@ bool set_person_view_id(vector<vector<CollisionMapData> >& Map, int person_id, v
 	person_pos.resize(3);
 	tms_msg_db::TmsdbGetData srv;
 	srv.request.tmsdb.id = person_id;
+	if (is_sim)
+		srv.request.tmsdb.sensor = 3005;
+	else
+		srv.request.tmsdb.sensor = 3001;
 
 //#ifdef USE_TMS_DB
 	int ref_i = 0;
@@ -723,10 +728,27 @@ int main(int argc, char **argv) {
 	ros::init(argc, argv, "rps_give");
 	ros::NodeHandle n;
 
+	is_sim = false;
+	std::string tms_rp_state;
+    if (ros::param::has("/tms_rp_state"))
+    {
+      ros::param::get("/tms_rp_state",tms_rp_state);
+    }
+
+    if(tms_rp_state.compare("real")==0)
+    {
+      is_sim = false;
+    }
+    else if (tms_rp_state.compare("simulation")==0)
+    {
+      is_sim  =true;
+    }
+
 	ros::Subscriber	rps_map_subscriber = n.subscribe("rps_map_data", 1, set_RPS_MAP);
 	ros::ServiceServer service_give_obj_pos = n.advertiseService("rps_give_obj_pos_planning", start_give_obj_pos_planner);
 
 	get_data_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
+
 
 	ros::spin();
 	return 0;

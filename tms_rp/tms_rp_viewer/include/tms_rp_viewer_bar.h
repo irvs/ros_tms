@@ -9,6 +9,7 @@
 #include <sensor_msgs/LaserScan.h>
 
 #include <tms_msg_db/TmsdbStamped.h>
+#include <tms_msg_db/TmsdbGetData.h>
 #include <tms_msg_rp/rps_path_planning.h>
 #include <tms_msg_rp/rps_position.h>
 #include <tms_msg_rp/rps_route.h>
@@ -81,6 +82,8 @@ public:
   ros::Subscriber subscribe_lrf_raw_data2_;
   ros::Subscriber subscribe_pcd_;
   ros::Subscriber subscribe_umo_tracker_;
+
+  ros::ServiceClient get_data_client_;
 
   tms_msg_db::TmsdbStamped       environment_information_;
   tms_msg_rp::rps_map_full       static_map_data_;

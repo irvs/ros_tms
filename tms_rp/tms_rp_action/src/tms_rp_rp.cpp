@@ -38,6 +38,7 @@ tms_rp::TmsRpSubtask::TmsRpSubtask(): ToolBar("TmsRpSubtask"),
   refrigerator_client           = nh1.serviceClient<tms_msg_rs::rs_home_appliances>("refrigerator_controller");
   state_client                  = nh1.serviceClient<tms_msg_ts::ts_state_control>("ts_state_control");
 
+  db_pub                        = nh1.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
   kobuki_sound                  = nh1.advertise<kobuki_msgs::Sound>("/mobile_base/commands/sound", 1);
   kobuki_motorpower             = nh1.advertise<kobuki_msgs::MotorPower>("/mobile_base/commands/motor_power", 1);
 
@@ -47,6 +48,13 @@ tms_rp::TmsRpSubtask::TmsRpSubtask(): ToolBar("TmsRpSubtask"),
 //------------------------------------------------------------------------------
 tms_rp::TmsRpSubtask::~TmsRpSubtask()
 {
+}
+
+//------------------------------------------------------------------------------
+double tms_rp::TmsRpSubtask::distance(double x1, double y1, double x2, double y2) {
+	double dis;
+	dis = sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
+	return dis;
 }
 
 //------------------------------------------------------------------------------
@@ -237,7 +245,7 @@ bool tms_rp::TmsRpSubtask::sp5_control(bool type, int unit, int cmd, int arg_siz
 	sp_control_srv.request.arg.resize(arg_size);
 	for (int i=0; i<sp_control_srv.request.arg.size(); i++) {
 		sp_control_srv.request.arg[i] = arg[i];
-		ROS_INFO("arg[%d]=%f", i, sp_control_srv.request.arg[i]);
+//		ROS_INFO("arg[%d]=%f", i, sp_control_srv.request.arg[i]);
 	}
 
 	if (type == true) {
@@ -270,7 +278,7 @@ bool tms_rp::TmsRpSubtask::kxp_control(bool type, int unit, int cmd, int arg_siz
 	kxp_control_srv.request.arg.resize(arg_size);
 	for (int i=0; i<kxp_control_srv.request.arg.size(); i++) {
 		kxp_control_srv.request.arg[i] = arg[i];
-		ROS_INFO("arg[%d]=%f", i, kxp_control_srv.request.arg[i]);
+//		ROS_INFO("arg[%d]=%f", i, kxp_control_srv.request.arg[i]);
 	}
 
 	if (type == true) {
@@ -295,8 +303,7 @@ bool tms_rp::TmsRpSubtask::kxp_control(bool type, int unit, int cmd, int arg_siz
 
 //------------------------------------------------------------------------------
 void tms_rp::TmsRpSubtask::sensingCallback(const tms_msg_ss::ods_person_dt::ConstPtr& msg) {
-	double dis = sqrt(((msg->p2_x - msg->p1_x)*(msg->p2_x - msg->p1_x))+
-			((msg->p2_y - msg->p1_y)*(msg->p2_y - msg->p1_y)));
+	double dis = distance(msg->p1_x, msg->p1_y, msg->p2_x, msg->p2_y);
 	if (1.5 <= dis && dis <= 1.7) {
 		ROS_INFO("Person Detection System returns True!!!");
 		kobuki_msgs::Sound sound_msg;
@@ -307,6 +314,31 @@ void tms_rp::TmsRpSubtask::sensingCallback(const tms_msg_ss::ods_person_dt::Cons
 		motor_msg.state = 0;
 		kobuki_motorpower.publish(motor_msg);
 	}
+}
+
+//------------------------------------------------------------------------------
+bool tms_rp::TmsRpSubtask::update_obj(int id, double x, double y, double z,
+		double rr, double rp, double ry, std::string joint, int place, int sensor, int state) {
+	tms_msg_db::Tmsdb assign_data;
+	ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+	assign_data.time = boost::posix_time::to_iso_extended_string(now.toBoost());
+	assign_data.id = id;
+	if (x != -1.0) assign_data.x = x;
+	if (y != -1.0) assign_data.y = y;
+	if (z != -1.0) assign_data.z = z;
+	if (rr != -1.0) assign_data.rr = rr;
+	if (rp != -1.0) assign_data.rp = rp;
+	if (ry != -1.0) assign_data.ry = ry;
+	if (joint != "") assign_data.joint = joint;
+	if (place != -1) assign_data.place = place;
+	if (sensor != -1) assign_data.sensor = sensor;
+	if (state != -1) assign_data.state = state;
+
+	tms_msg_db::TmsdbStamped db_msg;
+	db_msg.header.frame_id  = "/world";
+	db_msg.header.stamp = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+	db_msg.tmsdb.push_back(assign_data);
+	db_pub.publish(db_msg);
 }
 
 //------------------------------------------------------------------------------
@@ -553,6 +585,20 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    	}
 		    	case 2007: //mimamorukun
 			    	{
+			    		i++;
+		    			double dis = distance(rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
+		    					rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
+
+			    		while (dis <= 250) {
+			    			i+=2;
+			    			if (i > rp_srv.response.VoronoiPath.size()) {
+			    				ROS_ERROR("i > rp_srv.response.VoronoiPath.size()");
+			    				return false;
+			    			}
+			    			dis = distance(rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
+			    					rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
+			    		}
+
 			    		tms_msg_rc::rc_robot_control mkun_srv;
 			    		mkun_srv.request.unit = 1;
 			    		mkun_srv.request.cmd = 15;
@@ -561,6 +607,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    		mkun_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
 			    		mkun_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
 			    		if (sd.type == true) {	//real world robot
+			    			ROS_INFO("[i=%d] goal x=%f, y=%f, yaw=%f", i, mkun_srv.request.arg[0], mkun_srv.request.arg[1], mkun_srv.request.arg[2]);
 				    		if(mkun_control_client.call(mkun_srv))
 				    			ROS_INFO("result: %d", mkun_srv.response.result);
 				    		else
@@ -572,6 +619,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 				    			ROS_ERROR("Failed to call service mimamorukun_virtual_move");
 			    			sleep(1); //temp
 			    			}
+			    		i = 2;
 			    		break;
 			    	}
 			    default:
@@ -748,17 +796,14 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 		arg[10] = rad2deg(rotation(2));
 
 		arg[11] = sd.robot_id;// place
-		arg[12] = 1;// state
+		arg[12] = 2;// state
 
 		switch (sd.robot_id) {
 		case 2002: // for smartpal simulation
 		{
 			if (sd.type == false) {
-				if (!sp5_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg)) {
-					send_rc_exception(5);
-					return false;
-				}
-				sleep(1.5);
+				sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_REL, 3, arg);
+				update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], "", arg[11], 3005, arg[12]);
 			}
 		}
 		case 2003:
@@ -883,6 +928,8 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 
 				pb->setGraspingState(grasp::PlanBase::GRASPING);
 
+				cnoid::Vector3 position;
+				cnoid::Vector3 rotation;
 				while(1) {
 					arg[0] = rp_srv.response.VoronoiPath[i].x;
 					arg[1] = rp_srv.response.VoronoiPath[i].y;
@@ -898,9 +945,6 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 						sleep(1.5);
 					}
 					pb->bodyItemRobot()->body()->calcForwardKinematics();
-
-					cnoid::Vector3 position;
-					cnoid::Vector3 rotation;
 					rotation = grasp::rpyFromRot(pb->fingers(0)->tip->R()*(pb->targetArmFinger->objectPalmRot));
 					position = pb->fingers(0)->tip->p()+pb->fingers(0)->tip->R()*pb->targetArmFinger->objectPalmPos;
 
@@ -921,11 +965,9 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 					arg[11] = sd.robot_id;
 					arg[12] = 2; // obj_state
 					if (sd.type == false) {
-						if (!sp5_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg)) {
-							send_rc_exception(5);
-							return false;
-						}
-						sleep(1.5);
+						// update object and robot position
+						sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_REL, 3, arg);
+						update_obj(arg[4], arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], "", arg[11], 3005, arg[12]);
 					}
 					i++;
 					if (i==2 && rp_srv.response.VoronoiPath.size()==2) i++;
@@ -980,11 +1022,12 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 				send_rc_exception(2);
 				return false;
 			}
-		} else {
-			if (!sp5_control(sd.type, UNIT_ALL, CMD_CALC_BACKGROUND, 19, goal_arg)) {
-				send_rc_exception(6);
-			}
 		}
+//		else {
+//			if (!sp5_control(sd.type, UNIT_ALL, CMD_CALC_BACKGROUND, 19, goal_arg)) {
+//				send_rc_exception(6);
+//			}
+//		}
 		break;
 	}
 	case 2006:
