@@ -586,6 +586,10 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 		    	case 2007: //mimamorukun
 			    	{
 			    		i++;
+			    		tms_msg_rc::rc_robot_control mkun_srv;
+			    		mkun_srv.request.unit = 1;
+			    		mkun_srv.request.cmd = 15;
+
 		    			double dis = distance(rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
 		    					rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
 
@@ -593,15 +597,28 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    			i+=2;
 			    			if (i > rp_srv.response.VoronoiPath.size()) {
 			    				ROS_ERROR("i > rp_srv.response.VoronoiPath.size()");
+			    				// final destination
+					    		mkun_srv.request.arg.resize(3);
+					    		mkun_srv.request.arg[0] = rp_srv.response.VoronoiPath[rp_srv.response.VoronoiPath.size()-1].x;
+					    		mkun_srv.request.arg[1] = rp_srv.response.VoronoiPath[rp_srv.response.VoronoiPath.size()-1].y;
+					    		mkun_srv.request.arg[2] = rp_srv.response.VoronoiPath[rp_srv.response.VoronoiPath.size()-1].th;
+					    		if (sd.type == true) {	//real world robot
+						    		if(mkun_control_client.call(mkun_srv))
+						    			ROS_INFO("result: %d", mkun_srv.response.result);
+						    		else
+						    			ROS_ERROR("Failed to call service mimamorukun_move");
+					    		}else{					//call srv for simulator
+						    		if(mkun_virtual_control_client.call(mkun_srv))
+						    			ROS_INFO("result: %d", mkun_srv.response.result);
+						    		else
+						    			ROS_ERROR("Failed to call service mimamorukun_virtual_move");
+					    			sleep(1); //temp
+					    		}
 			    				break;
 			    			}
 			    			dis = distance(rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
 			    					rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
 			    		}
-
-			    		tms_msg_rc::rc_robot_control mkun_srv;
-			    		mkun_srv.request.unit = 1;
-			    		mkun_srv.request.cmd = 15;
 			    		mkun_srv.request.arg.resize(3);
 			    		mkun_srv.request.arg[0] = rp_srv.response.VoronoiPath[i].x;
 			    		mkun_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
@@ -873,6 +890,8 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 	tms_msg_ts::ts_state_control s_srv;
 	s_srv.request.type = 1; // for subtask state update;
 	s_srv.request.state = 0;
+	int sensor_id = 3001;
+	if (sd.type == false) sensor_id = 3005;
 
 	nh1.setParam("grasping", 1); // switching model for display
 
@@ -890,16 +909,20 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 			goal_arg[0] = gop_srv.response.goal_pos[0].x;
 			goal_arg[1] = gop_srv.response.goal_pos[0].y;
 			goal_arg[2] = gop_srv.response.goal_pos[0].th;
-			ROS_INFO("goal_x:%fmm,goal_y:%fmm,goal_th:%fdeg\n", goal_arg[0], goal_arg[1], goal_arg[2]);
+			ROS_INFO("goal_rx:%fmm,goal_ry:%fmm,goal_rth:%fdeg", goal_arg[0], goal_arg[1], goal_arg[2]);
 			goal_arg[3] = gop_srv.response.target_pos.x;
 			goal_arg[4] = gop_srv.response.target_pos.y;
 			goal_arg[5] = gop_srv.response.target_pos.z;
+			ROS_INFO("goal_ox:%fmm,goal_oy:%fmm,goal_oth:%fdeg", goal_arg[3], goal_arg[4], goal_arg[5]);
 		}
 		// robot's joint angles(j0~j17)
 		if (!gop_srv.response.joint_angle_array.empty()) {
 			for (int j=0; j<gop_srv.response.joint_angle_array.at(0).joint_angle.size(); j++)
 				goal_joint[j] = gop_srv.response.joint_angle_array.at(0).joint_angle.at(j);
-			for (int j=0; j<9; j++) goal_arg[j+9] = goal_joint[j];
+			for (int j=0; j<9; j++) {
+				goal_arg[j+9] = goal_joint[j];
+				ROS_INFO("goal_joint[%d]=%f", j+9, goal_arg[j+9]);
+			}
 		}
 	} else {
 		s_srv.request.error_msg = "Failed to call give_object_service";
@@ -921,9 +944,9 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 	case 2003: // smartpal5_2
 	{
 		int i = 1;
+		double arg[13];
 		if (voronoi_path_planning_client_.call(rp_srv)) {
 			if (!rp_srv.response.VoronoiPath.empty()) {
-				double arg[13];
 				grasp::PlanBase *pb = grasp::PlanBase::instance();
 
 				pb->setGraspingState(grasp::PlanBase::GRASPING);
@@ -964,11 +987,11 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 					arg[10] = rad2deg(rotation(2));
 					arg[11] = sd.robot_id;
 					arg[12] = 2; // obj_state
-					if (sd.type == false) {
-						// update object and robot position
+
+					if (sd.type == false)
 						sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_REL, 3, arg);
-						update_obj(arg[4], arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], "", arg[11], 3005, arg[12]);
-					}
+					update_obj(arg[4], arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], "", arg[11], sensor_id, arg[12]);
+
 					i++;
 					if (i==2 && rp_srv.response.VoronoiPath.size()==2) i++;
 					// Update Robot Path Planning
@@ -1004,30 +1027,19 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 			return false;
 		}
 		// move joint
-		if (sd.type == true) {
-			double sp5give_arg[12] = {0.0, 0.0, 10.0, 10.0,	/*waist*/
-					0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0 /*right arm*/}; //degree
-			for (int u=0; u<9; u++) {
-				if (u==0 || u==1)
-					sp5give_arg[u] = goal_joint[u];
-				else if (u>=2 && u<=8)
-					sp5give_arg[u+2] = goal_joint[u];
-			}
-			// send command to RC
-			if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5give_arg)) {
-				send_rc_exception(3);
-				return false;
-			}
-			if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5give_arg+4)) {
-				send_rc_exception(2);
-				return false;
-			}
+		double sp5give_arg[12] = {goal_arg[10], goal_arg[9], 10.0, 10.0,
+				goal_arg[11], goal_arg[12], goal_arg[13], goal_arg[14], goal_arg[15], goal_arg[16], goal_arg[17], 10.0}; //degree
+		// send command to RC
+		if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5give_arg)) {
+			send_rc_exception(3);
+			return false;
 		}
-//		else {
-//			if (!sp5_control(sd.type, UNIT_ALL, CMD_CALC_BACKGROUND, 19, goal_arg)) {
-//				send_rc_exception(6);
-//			}
-//		}
+		if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5give_arg+4)) {
+			send_rc_exception(2);
+			return false;
+		}
+		// update object pos
+		update_obj(arg[4], goal_arg[3], goal_arg[4], goal_arg[5], 0, 0, 90, "", arg[11], sensor_id, arg[12]);
 		break;
 	}
 	case 2006:
