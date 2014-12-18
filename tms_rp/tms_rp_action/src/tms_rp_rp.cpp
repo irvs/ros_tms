@@ -352,10 +352,9 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 
 	rp_srv.request.robot_id = sd.robot_id;
 	std::string robot_name("");
-	if(!get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv)) {
-		s_srv.request.error_msg = "Cannot get robot position";
-		state_client.call(s_srv);
-		return false;
+	for (int cnt=0; cnt<5; cnt++) {
+		if(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv))
+			break;
 	}
 	srv.request.tmsdb.id = sd.arg_type;
 
@@ -367,8 +366,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 		rp_srv.request.goal_pos.roll = 0.0;
 		rp_srv.request.goal_pos.pitch = 0.0;
 		rp_srv.request.goal_pos.yaw = sd.v_arg.at(3);
-	} else if (sd.arg_type > 6000 && sd.arg_type < 7000) { // FurnitureID
-		ROS_INFO("Argument's IDtype is Furniture.\n");
+	} else if ((sd.arg_type > 2000 && sd.arg_type < 3000) || (sd.arg_type > 6000 && sd.arg_type < 7000)) { // RobotID or FurnitureID
 		srv.request.tmsdb.id = sd.arg_type + sid_;
 		if(get_data_client_.call(srv)) {
 			// analyze etcdata and get goal position
@@ -653,7 +651,10 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 				// Update Robot Path Planning
 				if (i == 3) {
 					sleep(1);
-					while(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv));
+					for (int cnt=0; cnt<5; cnt++) {
+							if(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv))
+								break;
+						}
 
 					// end determination
 					double error_x, error_y, error_th;
@@ -933,7 +934,10 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 	// move base
 	rp_srv.request.robot_id = sd.robot_id;
 	std::string robot_name("");
-	get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv);
+	for (int cnt=0; cnt<5; cnt++) {
+			if(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv))
+				break;
+		}
 
 	rp_srv.request.goal_pos.x = goal_arg[0];
 	rp_srv.request.goal_pos.y = goal_arg[1];
@@ -997,7 +1001,10 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 					// Update Robot Path Planning
 					if (i == 3) {
 						sleep(1);
-						while(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv));
+						for (int cnt=0; cnt<5; cnt++) {
+								if(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv))
+									break;
+							}
 
 						// end determination
 						double error_x, error_y, error_th;
