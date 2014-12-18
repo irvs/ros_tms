@@ -357,6 +357,9 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			break;
 	}
 	srv.request.tmsdb.id = sd.arg_type;
+	srv.request.tmsdb.sensor = 3001;
+	if (sd.type == false)
+		srv.request.tmsdb.sensor = 3005;
 
 	if (sd.arg_type == -1) { // move (x,y,th)
 		rp_srv.request.goal_pos.x = sd.v_arg.at(1);
@@ -433,13 +436,8 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 	} else if (sd.arg_type > 7000 && sd.arg_type < 8000) { // ObjectID
 		ROS_INFO("Argument IDtype is Object%d!\n", sd.arg_type);
 		if(get_data_client_.call(srv)) {
-			int index=0;
-			for (int c=0; c<srv.response.tmsdb.size()-1; c++) {
-				if (srv.response.tmsdb[c].time < srv.response.tmsdb[c+1].time)
-					index =c+1;
-			}
-			if (srv.response.tmsdb[index].place > 6000 && srv.response.tmsdb[index].place < 7000) {
-				srv.request.tmsdb.id = srv.response.tmsdb[index].place + sid_;
+			if (srv.response.tmsdb[0].place > 6000 && srv.response.tmsdb[0].place < 7000) {
+				srv.request.tmsdb.id = srv.response.tmsdb[0].place + sid_;
 				if(get_data_client_.call(srv)) {
 					std::string etcdata = srv.response.tmsdb[0].etcdata;
 					ROS_INFO("etc_data = %s", etcdata.c_str());
