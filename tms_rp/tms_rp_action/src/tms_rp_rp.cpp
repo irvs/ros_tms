@@ -8,7 +8,7 @@ using namespace grasp;
 
 //------------------------------------------------------------------------------
 double sp5arm_init_arg[26] = {	0.0,   0.0, 10.0, 10.0,	/*waist*/
-				0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0,/*right arm*/
+				0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, -5.0, 10.0, 10.0,/*right arm*/
 				0.0,  10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0 /*left arm */}; //degree
 
 //------------------------------------------------------------------------------
@@ -352,10 +352,9 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 
 	rp_srv.request.robot_id = sd.robot_id;
 	std::string robot_name("");
-	if(!get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv)) {
-		s_srv.request.error_msg = "Cannot get robot position";
-		state_client.call(s_srv);
-		return false;
+	for (int cnt=0; cnt<5; cnt++) {
+		if(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv))
+			break;
 	}
 	srv.request.tmsdb.id = sd.arg_type;
 
@@ -367,8 +366,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 		rp_srv.request.goal_pos.roll = 0.0;
 		rp_srv.request.goal_pos.pitch = 0.0;
 		rp_srv.request.goal_pos.yaw = sd.v_arg.at(3);
-	} else if (sd.arg_type > 6000 && sd.arg_type < 7000) { // FurnitureID
-		ROS_INFO("Argument's IDtype is Furniture.\n");
+	} else if ((sd.arg_type > 2000 && sd.arg_type < 3000) || (sd.arg_type > 6000 && sd.arg_type < 7000)) { // RobotID or FurnitureID
 		srv.request.tmsdb.id = sd.arg_type + sid_;
 		if(get_data_client_.call(srv)) {
 			// analyze etcdata and get goal position
@@ -653,7 +651,10 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 				// Update Robot Path Planning
 				if (i == 3) {
 					sleep(1);
-					while(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv));
+					for (int cnt=0; cnt<5; cnt++) {
+							if(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv))
+								break;
+						}
 
 					// end determination
 					double error_x, error_y, error_th;
@@ -854,6 +855,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 						return false;
 					}
 				}
+				update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], "", arg[11], 3001, arg[12]);
 			} else {
 				for (int t=0; t<trajectory.size(); t++) {
 					for (int u=0; u<trajectory.at(t).joints.size(); u++) {
@@ -933,7 +935,10 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 	// move base
 	rp_srv.request.robot_id = sd.robot_id;
 	std::string robot_name("");
-	get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv);
+	for (int cnt=0; cnt<5; cnt++) {
+			if(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv))
+				break;
+		}
 
 	rp_srv.request.goal_pos.x = goal_arg[0];
 	rp_srv.request.goal_pos.y = goal_arg[1];
@@ -988,16 +993,19 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 					arg[11] = sd.robot_id;
 					arg[12] = 2; // obj_state
 
-					if (sd.type == false)
+					if (sd.type == false) {
 						sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_REL, 3, arg);
+					}
 					update_obj(arg[4], arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], "", arg[11], sensor_id, arg[12]);
-
 					i++;
 					if (i==2 && rp_srv.response.VoronoiPath.size()==2) i++;
 					// Update Robot Path Planning
 					if (i == 3) {
 						sleep(1);
-						while(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv));
+						for (int cnt=0; cnt<5; cnt++) {
+								if(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv))
+									break;
+							}
 
 						// end determination
 						double error_x, error_y, error_th;
@@ -1040,6 +1048,26 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 		}
 		// update object pos
 		update_obj(arg[4], goal_arg[3], goal_arg[4], goal_arg[5], 0, 0, 90, "", arg[11], sensor_id, arg[12]);
+
+		// give object
+		double openG_arg[3] = {-40,7,7};
+		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, openG_arg)) {
+			send_rc_exception(4);
+			return false;
+		}
+		// transition initial posture
+		if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg)) {
+			send_rc_exception(3);
+			return false;
+		}
+		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12)) {
+			send_rc_exception(4);
+			return false;
+		}
+		if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4)) {
+			send_rc_exception(2);
+			return false;
+		}
 		break;
 	}
 	case 2006:

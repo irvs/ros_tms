@@ -171,7 +171,7 @@ void RpViewerBar::receiveEnvironmentInformation(const tms_msg_db::TmsdbStamped::
 void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
 {
   PlanBase *pb = PlanBase::instance();
-  double rPosX,rPosY,rPosZ;
+  double PosX,PosY,PosZ;
   Matrix3 rot;
   uint32_t id,oID,sensor,state, place;
   bool object_state[MAX_ICS_OBJECT_NUM];
@@ -234,9 +234,9 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
         continue;
     }
 
-    rPosX = environment_information_.tmsdb[i].x/1000;
-    rPosY = environment_information_.tmsdb[i].y/1000;
-    rPosZ = environment_information_.tmsdb[i].offset_z/1000;
+    PosX = environment_information_.tmsdb[i].x/1000;
+    PosY = environment_information_.tmsdb[i].y/1000;
+    PosZ = environment_information_.tmsdb[i].offset_z/1000;
     rot = grasp::rotFromRpy(deg2rad(environment_information_.tmsdb[i].rr),
     		deg2rad(environment_information_.tmsdb[i].rp),
     		deg2rad(environment_information_.tmsdb[i].ry));
@@ -266,19 +266,19 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
     // set position of robot and decide the appear
     if (id == 2001)
     {
-    	if (rPosX == 0.0 && rPosY == 0.0)
+    	if (PosX == 0.0 && PosY == 0.0)
         {
           callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal4"));
         }
         else
         {
           callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal4"));
-          callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal4",Vector3(rPosX,rPosY,rPosZ), rot));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal4",Vector3(PosX,PosY,PosZ), rot));
         }
     }
     else if (id == 2002)
     {
-    	if(rPosX == 0.0 && rPosY == 0.0)
+    	if(PosX == 0.0 && PosY == 0.0)
         {
           callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_1"));
         }
@@ -287,23 +287,23 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
           if (!is_simulation)
           {
             callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_1"));
-            callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot));
+            callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal5_1",Vector3(PosX,PosY,PosZ), rot));
           }
           else if (grasping == 1)
           {
     	    callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_1"));
-    	    callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot));
+    	    callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal5_1",Vector3(PosX,PosY,PosZ), rot));
           }
           else
           {
         	callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_1"));
-        	callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_1",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+        	callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_1",Vector3(PosX,PosY,PosZ), rot, seq_of_joint));
           }
         }
     }
     else if (id == 2003)
     {
-    	if (rPosX == 0.0 && rPosY == 0.0)
+    	if (PosX == 0.0 && PosY == 0.0)
         {
           callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_2"));
         }
@@ -312,35 +312,35 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
           if (!is_simulation)
           {
             callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_2"));
-            callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot));
+            callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal5_2",Vector3(PosX,PosY,PosZ), rot));
           }
           else if (grasping == 1)
           {
             callSynchronously(bind(&TmsRpController::appear,trc_,"smartpal5_2"));
-            callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot));
+            callSynchronously(bind(&TmsRpController::setPos,trc_,"smartpal5_2",Vector3(PosX,PosY,PosZ), rot));
           }
           else
           {
             callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_2"));
-            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"smartpal5_2",Vector3(PosX,PosY,PosZ), rot, seq_of_joint));
           }
         }
     }
     else if (id == 2005)
     {
-    	if (rPosX == 0.0 && rPosY == 0.0)
+    	if (PosX == 0.0 && PosY == 0.0)
         {
           callSynchronously(bind(&TmsRpController::disappear,trc_,"kobuki"));
         }
         else
         {
           callSynchronously(bind(&TmsRpController::appear,trc_,"kobuki"));
-          callSynchronously(bind(&TmsRpController::setPos,trc_,"kobuki",Vector3(rPosX,rPosY,rPosZ), rot));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,"kobuki",Vector3(PosX,PosY,PosZ), rot));
         }
     }
     else if (id == 2006)
     {
-    	if (rPosX == 0.0 && rPosY == 0.0)
+    	if (PosX == 0.0 && PosY == 0.0)
         {
           callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp"));
         }
@@ -349,47 +349,47 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
           if (!is_simulation)
           {
             callSynchronously(bind(&TmsRpController::appear,trc_,"kxp"));
-            callSynchronously(bind(&TmsRpController::setPos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot));
+            callSynchronously(bind(&TmsRpController::setPos,trc_,"kxp",Vector3(PosX,PosY,PosZ), rot));
           }
           else if (grasping == 1)
           {
             callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp"));
-            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp",Vector3(PosX,PosY,PosZ), rot, seq_of_joint));
           }
           else
           {
             callSynchronously(bind(&TmsRpController::appear,trc_,"kxp"));
-            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp",Vector3(PosX,PosY,PosZ), rot, seq_of_joint));
           }
         }
     }
     else if (id == 2007)
     {
-    	if (rPosX == 0.0 && rPosY == 0.0)
+    	if (PosX == 0.0 && PosY == 0.0)
         {
           callSynchronously(bind(&TmsRpController::disappear,trc_,"wheelchair"));
         }
         else
         {
           callSynchronously(bind(&TmsRpController::appear,trc_,"wheelchair"));
-          callSynchronously(bind(&TmsRpController::setPos,trc_,"wheelchair",Vector3(rPosX,rPosY,rPosZ), rot));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,"wheelchair",Vector3(PosX,PosY,PosZ), rot));
         }
     }
     else if (id == 2008)
     {
-    	if (rPosX == 0.0 && rPosY == 0.0)
+    	if (PosX == 0.0 && PosY == 0.0)
         {
           callSynchronously(bind(&TmsRpController::disappear,trc_,"ardrone"));
         }
         else
         {
           callSynchronously(bind(&TmsRpController::appear,trc_,"ardrone"));
-          callSynchronously(bind(&TmsRpController::setPos,trc_,"ardrone",Vector3(rPosX,rPosY,rPosZ), rot));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,"ardrone",Vector3(PosX,PosY,PosZ), rot));
         }
     }
     else if (id == 2011)
     {
-        if(rPosX == 0.0 && rPosY == 0.0)
+        if(PosX == 0.0 && PosY == 0.0)
         {
           callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp2"));
         }
@@ -398,56 +398,56 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
           if (!is_simulation)
           {
             callSynchronously(bind(&TmsRpController::appear,trc_,"kxp2"));
-            callSynchronously(bind(&TmsRpController::setPos,trc_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot));
+            callSynchronously(bind(&TmsRpController::setPos,trc_,"kxp2",Vector3(PosX,PosY,PosZ), rot));
           }
           else if (grasping == 1)
           {
             callSynchronously(bind(&TmsRpController::appear,trc_,"kxp2"));
-            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp2",Vector3(PosX,PosY,PosZ), rot, seq_of_joint));
           }
           else
           {
             callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp2"));
-            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp2",Vector3(rPosX,rPosY,rPosZ), rot, seq_of_joint));
+            callSynchronously(bind(&TmsRpController::set_all_Pos,trc_,"kxp2",Vector3(PosX,PosY,PosZ), rot, seq_of_joint));
           }
         }
     }
     else if (id ==1001)
     {
-        rPosX = environment_information_.tmsdb[i].x/1000;
-        rPosY = environment_information_.tmsdb[i].y/1000;
-        rPosZ = 0.9;
+        PosX = environment_information_.tmsdb[i].x/1000;
+        PosY = environment_information_.tmsdb[i].y/1000;
+        PosZ = 0.9;
         rot = grasp::rotFromRpy(0,0,deg2rad(environment_information_.tmsdb[i].ry));
 
-        if(rPosX == 0.0 && rPosY == 0.0)
+        if(PosX == 0.0 && PosY == 0.0)
         {
           callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1"));
         }
         else
         {
           callSynchronously(bind(&TmsRpController::appear,trc_,"person_1"));
-          callSynchronously(bind(&TmsRpController::setPos,trc_,"person_1",Vector3(rPosX,rPosY,rPosZ),rot));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,"person_1",Vector3(PosX,PosY,PosZ),rot));
         }
     }
     else if (id ==6019) // wagon
     {
     	if (state==1)
         {
-          rPosX = environment_information_.tmsdb[i].x/1000;
-          rPosY = environment_information_.tmsdb[i].y/1000;
-          rPosZ = 0.35;
+          PosX = environment_information_.tmsdb[i].x/1000;
+          PosY = environment_information_.tmsdb[i].y/1000;
+          PosZ = 0.35;
           rot = grasp::rotFromRpy(deg2rad(environment_information_.tmsdb[i].rr),
                                   deg2rad(environment_information_.tmsdb[i].rp),
                                   deg2rad(environment_information_.tmsdb[i].ry));
 
-          if(rPosX == 0.0 && rPosY == 0.0)
+          if(PosX == 0.0 && PosY == 0.0)
           {
             callSynchronously(bind(&TmsRpController::disappear,trc_,"wagon"));
           }
           else
           {
             callSynchronously(bind(&TmsRpController::appear,trc_,"wagon"));
-            callSynchronously(bind(&TmsRpController::setPos,trc_,"wagon",Vector3(rPosX,rPosY,rPosZ), rot));
+            callSynchronously(bind(&TmsRpController::setPos,trc_,"wagon",Vector3(PosX,PosY,PosZ), rot));
           }
         }
     }
@@ -456,45 +456,45 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
     	if (sensor == 3018 && place==2009)  //refrigerator, irs
     	{
             oID   = id - 7001;
-            rPosX = 4.5 - environment_information_.tmsdb[i].y/1000;
-            rPosY = 2.3 + environment_information_.tmsdb[i].x/1000;
-            rPosZ = 0.0 + environment_information_.tmsdb[i].z/1000;
+            PosX = 4.5 - environment_information_.tmsdb[i].y/1000;
+            PosY = 2.3 + environment_information_.tmsdb[i].x/1000;
+            PosZ = 0.0 + environment_information_.tmsdb[i].z/1000;
             callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
-            callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(rPosX,rPosY,rPosZ), mat_cw90_));
+            callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(PosX,PosY,PosZ), mat_cw90_));
             object_state[oID] = true;
 
     	}
     	else if (/*sensor == 3002 && */place==6010) //shelf, ics
     	{
     		oID   = id - 7001;
-    		rPosX = 4.3  - environment_information_.tmsdb[i].y/1000;
-    		rPosY = 1.7  + environment_information_.tmsdb[i].x/1000;
-    		rPosZ = 0.08 + environment_information_.tmsdb[i].z/1000;
+    		PosX = 4.3  - environment_information_.tmsdb[i].y/1000;
+    		PosY = 1.7  + environment_information_.tmsdb[i].x/1000;
+    		PosZ = 0.08 + environment_information_.tmsdb[i].z/1000;
     		callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
-    		callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(rPosX,rPosY,rPosZ), mat_cw90_));
+    		callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(PosX,PosY,PosZ), mat_cw90_));
     		object_state[oID] = true;
     	}
-    	else if (state == 2) // sync
+    	else if (state == 2) // grasped object
     	{
     		oID   = id - 7001;
-    		rPosX = environment_information_.tmsdb[i].x/1000;
-    		rPosY = environment_information_.tmsdb[i].y/1000;
-    		rPosZ = environment_information_.tmsdb[i].z/1000;
+    		PosX = environment_information_.tmsdb[i].x/1000;
+    		PosY = environment_information_.tmsdb[i].y/1000;
+    		PosZ = environment_information_.tmsdb[i].z/1000;
     		rot = grasp::rotFromRpy(deg2rad(environment_information_.tmsdb[i].rr),
     				deg2rad(environment_information_.tmsdb[i].rp),
     				deg2rad(environment_information_.tmsdb[i].ry));
     		callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
-    		callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(rPosX,rPosY,rPosZ), rot));
+    		callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(PosX,PosY,PosZ), rot));
     		object_state[oID] = true;
     	}
     	else
     	{
     		oID   = id - 7001;
-    		rPosX = environment_information_.tmsdb[i].x/1000;
-    		rPosY = environment_information_.tmsdb[i].y/1000;
-    		rPosZ = environment_information_.tmsdb[i].z/1000;
+    		PosX = environment_information_.tmsdb[i].x/1000;
+    		PosY = environment_information_.tmsdb[i].y/1000;
+    		PosZ = environment_information_.tmsdb[i].z/1000;
     		callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
-    		callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(rPosX,rPosY,rPosZ), mat_cw90_));
+    		callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(PosX,PosY,PosZ), mat_cw90_));
     		object_state[oID] = true;
     	}
     }
