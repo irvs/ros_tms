@@ -8,7 +8,7 @@ using namespace grasp;
 
 //------------------------------------------------------------------------------
 double sp5arm_init_arg[26] = {	0.0,   0.0, 10.0, 10.0,	/*waist*/
-				0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0,/*right arm*/
+				0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, -5.0, 10.0, 10.0,/*right arm*/
 				0.0,  10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 10.0, 10.0 /*left arm */}; //degree
 
 //------------------------------------------------------------------------------
@@ -855,6 +855,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 						return false;
 					}
 				}
+				update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], "", arg[11], 3001, arg[12]);
 			} else {
 				for (int t=0; t<trajectory.size(); t++) {
 					for (int u=0; u<trajectory.at(t).joints.size(); u++) {
@@ -992,10 +993,10 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 					arg[11] = sd.robot_id;
 					arg[12] = 2; // obj_state
 
-					if (sd.type == false)
+					if (sd.type == false) {
 						sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_REL, 3, arg);
+					}
 					update_obj(arg[4], arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], "", arg[11], sensor_id, arg[12]);
-
 					i++;
 					if (i==2 && rp_srv.response.VoronoiPath.size()==2) i++;
 					// Update Robot Path Planning
@@ -1047,6 +1048,26 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 		}
 		// update object pos
 		update_obj(arg[4], goal_arg[3], goal_arg[4], goal_arg[5], 0, 0, 90, "", arg[11], sensor_id, arg[12]);
+
+		// give object
+		double openG_arg[3] = {-40,7,7};
+		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, openG_arg)) {
+			send_rc_exception(4);
+			return false;
+		}
+		// transition initial posture
+		if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg)) {
+			send_rc_exception(3);
+			return false;
+		}
+		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12)) {
+			send_rc_exception(4);
+			return false;
+		}
+		if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4)) {
+			send_rc_exception(2);
+			return false;
+		}
 		break;
 	}
 	case 2006:
