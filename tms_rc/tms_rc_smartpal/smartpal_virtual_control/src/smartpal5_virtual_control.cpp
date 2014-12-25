@@ -320,7 +320,7 @@ int8_t VehicleMoveLinearAbs2(double x_mm, double y_mm, double theta_deg)
   g_y2 = y_mm;
   g_t2 = theta_deg;
 
-  printf("vehicleMoveLinearAbs(%0.1fmm, %0.1fmm, %0.1fdeg) result:",g_x2, g_y2, g_t2);
+  printf("vehicleMoveLinearAbs2(%0.1fmm, %0.1fmm, %0.1fdeg) result:",g_x2, g_y2, g_t2);
   ret ? printf("Success\n") : printf("Failure\n");
 
   if(ret) return  SUCCESS;
