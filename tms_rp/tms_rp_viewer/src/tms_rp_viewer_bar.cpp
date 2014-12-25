@@ -491,6 +491,16 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
     		callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(PosX,PosY,PosZ), mat_cw90_));
     		object_state[oID] = true;
     	}
+    	else if (place==6011) // big_shelf
+    	{
+    		oID   = id - 7001;
+    		PosX = 1.5  + environment_information_.tmsdb[i].x/1000;
+    		PosY = 4.1  + environment_information_.tmsdb[i].y/1000;
+    		PosZ = environment_information_.tmsdb[i].z/1000;
+    		callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
+    		callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(PosX,PosY,PosZ), mat_cw90_));
+    		object_state[oID] = true;
+    	}
     	else if (state == 2) // grasped object
     	{
     		oID   = id - 7001;
