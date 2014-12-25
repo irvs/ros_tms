@@ -127,8 +127,6 @@ private:
   void viewLrfRawData();
   void viewPersonPostion();
 
-  void viewVitalSensor();
-
   void onViewerClicked();
   void rosOn();
 };

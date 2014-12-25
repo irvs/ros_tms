@@ -94,7 +94,6 @@ target_link_libraries(
   omniORB4
   omnithread
   omniDynamic4
-  glut
   ${catkin_LIBRARIES}
 )
 

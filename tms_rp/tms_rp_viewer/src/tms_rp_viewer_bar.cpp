@@ -499,8 +499,6 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
     	}
     }
   }
-  callSynchronously(bind(&TmsRpController::setString,trc_,"wheelchair",Vector3(0,0,1),"test"));
-
 
   for (uint32_t i=0; i < MAX_ICS_OBJECT_NUM; i++)
   {
@@ -776,10 +774,5 @@ void RpViewerBar::rosOn()
     loop_rate.sleep();
   }
 }
-
-void RpViewerBar::viewVitalSensor()
-{
-}
-
 
 //------------------------------------------------------------------------------

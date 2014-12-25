@@ -1,5 +1,4 @@
 #include <tms_rp_controller.h>
-#include <tms_rp_string_renderer.h>
 
 #include <Grasp/PlanBase.h>
 #include <Grasp/GraspController.h>
@@ -762,28 +761,6 @@ bool TmsRpController::disappear(std::string tagId){
 	ItemTreeView::mainInstance()->checkItem(item,false);
 	return true;
 }
-
-bool TmsRpController::setString(std::string tagId, Vector3 pos, string str) {
-  if (objTag2Item().find(tagId) == objTag2Item().end()) {
-                os_ << "Error: the tagId is not recorded " << tagId << endl;
-		return false;	
-  }
-	BodyItemPtr item = objTag2Item()[tagId];
-
-	static SgStringRenderer * cr=NULL;
-	if(!cr){
-		SgGroupPtr node  = (SgGroup*)item->body()->link(0)->shape();
-		cr = new SgStringRenderer ("test", Vector3(0,0,0.5));
-		node->addChild(cr);
-	}
-	cr->setString(str);
-	ItemTreeView::mainInstance()->checkItem(item,false);
-	MessageView::mainInstance()->flush();
-	ItemTreeView::mainInstance()->checkItem(item,true);
-	MessageView::mainInstance()->flush();
-	return true;
-}
-
 
 bool TmsRpController::setPos(string tagId, Vector3 pos, Matrix3 ori){
 	BodyItemPtr item = NULL;
