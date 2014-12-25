@@ -958,8 +958,7 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 		if (voronoi_path_planning_client_.call(rp_srv)) {
 			if (!rp_srv.response.VoronoiPath.empty()) {
 				grasp::PlanBase *pb = grasp::PlanBase::instance();
-
-				pb->setGraspingState(grasp::PlanBase::GRASPING);
+				callSynchronously(bind(&grasp::PlanBase::setGraspingState,pb,grasp::PlanBase::GRASPING));
 
 				cnoid::Vector3 position;
 				cnoid::Vector3 rotation;
@@ -1007,6 +1006,7 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 						if (c != 2)
 						s_note += ";";
 					}
+					ROS_INFO("note=%s", s_note.c_str());
 					update_obj(arg[4], arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], arg[11], sensor_id, arg[12], s_note);
 					i++;
 					if (i==2 && rp_srv.response.VoronoiPath.size()==2) i++;
@@ -1061,24 +1061,24 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 		update_obj(arg[4], goal_arg[3], goal_arg[4], goal_arg[5], 0, 0, 90, arg[11], sensor_id, arg[12], "");
 
 		// give object
-		double openG_arg[3] = {-40,7,7};
-		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, openG_arg)) {
-			send_rc_exception(4);
-			return false;
-		}
-		// transition initial posture
-		if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg)) {
-			send_rc_exception(3);
-			return false;
-		}
-		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12)) {
-			send_rc_exception(4);
-			return false;
-		}
-		if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4)) {
-			send_rc_exception(2);
-			return false;
-		}
+//		double openG_arg[3] = {-40,7,7};
+//		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, openG_arg)) {
+//			send_rc_exception(4);
+//			return false;
+//		}
+//		// transition initial posture
+//		if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg)) {
+//			send_rc_exception(3);
+//			return false;
+//		}
+//		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12)) {
+//			send_rc_exception(4);
+//			return false;
+//		}
+//		if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4)) {
+//			send_rc_exception(2);
+//			return false;
+//		}
 		break;
 	}
 	case 2006:
