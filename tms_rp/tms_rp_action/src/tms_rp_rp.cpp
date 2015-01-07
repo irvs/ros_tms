@@ -57,6 +57,12 @@ double tms_rp::TmsRpSubtask::distance(double x1, double y1, double x2, double y2
 	return dis;
 }
 
+std::string tms_rp::TmsRpSubtask::DoubleToString(double number) {
+	std::stringstream ss;
+	ss << number;
+	return ss.str();
+}
+
 //------------------------------------------------------------------------------
 void tms_rp::TmsRpSubtask::send_rc_exception(int error_type) {
 	tms_msg_ts::ts_state_control rc_s_srv;
@@ -318,7 +324,7 @@ void tms_rp::TmsRpSubtask::sensingCallback(const tms_msg_ss::ods_person_dt::Cons
 
 //------------------------------------------------------------------------------
 bool tms_rp::TmsRpSubtask::update_obj(int id, double x, double y, double z,
-		double rr, double rp, double ry, std::string joint, int place, int sensor, int state) {
+		double rr, double rp, double ry, int place, int sensor, int state, std::string note) {
 	tms_msg_db::Tmsdb assign_data;
 	ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 	assign_data.time = boost::posix_time::to_iso_extended_string(now.toBoost());
@@ -329,10 +335,10 @@ bool tms_rp::TmsRpSubtask::update_obj(int id, double x, double y, double z,
 	if (rr != -1.0) assign_data.rr = rr;
 	if (rp != -1.0) assign_data.rp = rp;
 	if (ry != -1.0) assign_data.ry = ry;
-	if (joint != "") assign_data.joint = joint;
 	if (place != -1) assign_data.place = place;
 	if (sensor != -1) assign_data.sensor = sensor;
 	if (state != -1) assign_data.state = state;
+	if (note != "") assign_data.note = note;
 
 	tms_msg_db::TmsdbStamped db_msg;
 	db_msg.header.frame_id  = "/world";
@@ -721,13 +727,13 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 	// SET ROBOT
 	switch(sd.robot_id) {
 	case 2002:
-		trc_.createRobotRecord(2002,"smartpal5_1");
+		callSynchronously(bind(&grasp::TmsRpController::createRobotRecord,trc_,2002,"smartpal5_1"));
 		break;
 	case 2003:
-		trc_.createRobotRecord(2003,"smartpal5_2");
+		callSynchronously(bind(&grasp::TmsRpController::createRobotRecord,trc_,2003,"smartpal5_2"));
 		break;
 	case 2006:
-		trc_.createRobotRecord(2006,"kxp");
+		callSynchronously(bind(&grasp::TmsRpController::createRobotRecord,trc_,2006,"kxp"));
 		break;
 	default:
 		ROS_ERROR("An illegal robot id");
@@ -744,8 +750,9 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 			}
 			std::string obj_name = srv.response.tmsdb[ref_i].name;
 			cnoid::BodyItemPtr item = trc_.objTag2Item()[obj_name];
-			pb->SetGraspedObject(item);
+			callSynchronously(bind(&grasp::PlanBase::SetGraspedObject,pb,item));
 			ROS_INFO("%s is grasped_object.\n", pb->targetObject->bodyItemObject->name().c_str());
+
 			// SET ENVIRONMENT envID : 6001~6999
 			int furniture_id = srv.response.tmsdb[ref_i].place;
 			cout << furniture_id << endl;
@@ -754,7 +761,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 				if(get_data_client_.call(srv)) {
 					std::string furniture_name = srv.response.tmsdb[0].name;
 					cnoid::BodyItemPtr item2 = trc_.objTag2Item()[furniture_name];
-					pb->SetEnvironment(item2); // ->RemoveEnvironment(item2);
+					callSynchronously(bind(&grasp::PlanBase::SetEnvironment,pb,item2));
 				}
 			}
 		} else {
@@ -778,7 +785,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 	}
 	cout << "set begin and end posture." << endl;
 
-	grasp::TmsRpController::instance()->setTolerance(0.05);
+	callSynchronously(bind(&grasp::TmsRpController::setTolerance,trc_,0.05));
 	cout << "set tolerance." << endl;
 	callSynchronously(bind(&grasp::TmsRpController::graspPathPlanStart,trc_,
 			0, begin, end, pb->targetArmFinger->name, pb->targetObject->name(), 1, &trajectory, &state));
@@ -819,7 +826,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 		{
 			if (sd.type == false) {
 				sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_REL, 3, arg);
-				update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], "", arg[11], 3005, arg[12]);
+				update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], arg[11], 3005, arg[12], "");
 			}
 		}
 		case 2003:
@@ -853,7 +860,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 						return false;
 					}
 				}
-				update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], "", arg[11], 3001, arg[12]);
+				update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], arg[11], 3001, arg[12], "");
 			} else {
 				for (int t=0; t<trajectory.size(); t++) {
 					for (int u=0; u<trajectory.at(t).joints.size(); u++) {
@@ -951,8 +958,7 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 		if (voronoi_path_planning_client_.call(rp_srv)) {
 			if (!rp_srv.response.VoronoiPath.empty()) {
 				grasp::PlanBase *pb = grasp::PlanBase::instance();
-
-				pb->setGraspingState(grasp::PlanBase::GRASPING);
+				callSynchronously(bind(&grasp::PlanBase::setGraspingState,pb,grasp::PlanBase::GRASPING));
 
 				cnoid::Vector3 position;
 				cnoid::Vector3 rotation;
@@ -994,7 +1000,14 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 					if (sd.type == false) {
 						sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_REL, 3, arg);
 					}
-					update_obj(arg[4], arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], "", arg[11], sensor_id, arg[12]);
+					std::string s_note("");
+					for (int c=0; c<3; c++) {
+						s_note += DoubleToString(arg[c]);
+						if (c != 2)
+						s_note += ";";
+					}
+					ROS_INFO("note=%s", s_note.c_str());
+					update_obj(arg[4], arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], arg[11], sensor_id, arg[12], s_note);
 					i++;
 					if (i==2 && rp_srv.response.VoronoiPath.size()==2) i++;
 					// Update Robot Path Planning
@@ -1045,27 +1058,27 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 			return false;
 		}
 		// update object pos
-		update_obj(arg[4], goal_arg[3], goal_arg[4], goal_arg[5], 0, 0, 90, "", arg[11], sensor_id, arg[12]);
+		update_obj(arg[4], goal_arg[3], goal_arg[4], goal_arg[5], 0, 0, 90, arg[11], sensor_id, arg[12], "");
 
 		// give object
-		double openG_arg[3] = {-40,7,7};
-		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, openG_arg)) {
-			send_rc_exception(4);
-			return false;
-		}
-		// transition initial posture
-		if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg)) {
-			send_rc_exception(3);
-			return false;
-		}
-		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12)) {
-			send_rc_exception(4);
-			return false;
-		}
-		if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4)) {
-			send_rc_exception(2);
-			return false;
-		}
+//		double openG_arg[3] = {-40,7,7};
+//		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, openG_arg)) {
+//			send_rc_exception(4);
+//			return false;
+//		}
+//		// transition initial posture
+//		if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg)) {
+//			send_rc_exception(3);
+//			return false;
+//		}
+//		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12)) {
+//			send_rc_exception(4);
+//			return false;
+//		}
+//		if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4)) {
+//			send_rc_exception(2);
+//			return false;
+//		}
 		break;
 	}
 	case 2006:

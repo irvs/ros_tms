@@ -36,6 +36,7 @@ class TmsRpSubtask : public cnoid::ToolBar, public boost::signals::trackable
 	virtual ~TmsRpSubtask();
 
 	double distance(double x1, double y1, double x2, double y2);
+	std::string DoubleToString(double number);
 	void send_rc_exception(int error_type);
 	bool get_robot_pos(bool type, int robot_id, std::string& robot_name, tms_msg_rp::rps_voronoi_path_planning& rp_srv);
 	bool subtask(tms_msg_rp::rp_cmd::Request &req,tms_msg_rp::rp_cmd::Response &res);
@@ -55,7 +56,7 @@ class TmsRpSubtask : public cnoid::ToolBar, public boost::signals::trackable
 	};
 
 	bool update_obj(int id, double x, double y, double z, double rr, double rp,
-			double ry, std::string joint, int place, int sensor, int state);
+			double ry, int place, int sensor, int state, std::string note);
 
 	// for thread
 	bool move(SubtaskData sd); // 9001
