@@ -96,6 +96,7 @@ class TmsRpController{
     bool set_all_Pos(std::string tagId, cnoid::Vector3 pos, cnoid::Matrix3 ori, std::vector<double> begin);
     bool getPos(std::string tagId, cnoid::Vector3 *pos, cnoid::Matrix3 *ori);
     bool setBoolParameter(int mode,bool onoff);
+    bool setString(std::string tagId, cnoid::Vector3 pos, std::string str);
 
     std::string objectBasePath;
     std::map <int, std::string> objId2File;
