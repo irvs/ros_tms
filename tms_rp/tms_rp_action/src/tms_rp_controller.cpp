@@ -10,6 +10,9 @@
 #include <cnoid/RootItem>
 #include <cnoid/MessageView>
 
+#include <ros/ros.h>
+#include <tms_msg_db/TmsdbGetData.h>
+
 #include <fstream>
 
 using namespace grasp;
@@ -739,17 +742,65 @@ bool TmsRpController::deleteRecord(std::string tagId){
 	item->detachFromParentItem();
 
 	return true;
-}	
+}
+
+template <typename T> std::string tostr(const T& t)
+{
+    std::ostringstream os; os<<t; return os.str();
+}
 
 bool TmsRpController::appear(std::string tagId) {
   if (objTag2Item().find(tagId) == objTag2Item().end()) {
                 os_ << "Error: the tagId is not recorded " << tagId << endl;
 		return false;	
   }
-
 	BodyItemPtr item = objTag2Item()[tagId];
 	ItemTreeView::mainInstance()->checkItem(item,true);
-	setString(tagId,Vector3(0,0,1),"test");
+
+	if(tagId == "wheelchair"){
+        int heartrate = 0;
+        int mw_med = 0;
+        int mw_att = 0;
+        int mw_por = 0;
+        std::string heartrate_s;
+        std::string mw_med_s;
+        std::string mw_att_s;
+        std::string mw_por_s;
+        ros::NodeHandle n;
+        ros::ServiceClient db_client;
+        db_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
+        tms_msg_db::TmsdbGetData srv;
+        srv.request.tmsdb.id = 3018;	//heartrate sensor
+        srv.request.tmsdb.sensor = 3018;
+        if(! db_client.call(srv)){
+            os_ << "Failed to get heartrate data";
+        }else if(srv.response.tmsdb.empty()){
+            os_ << "DB response empty";
+        }else{
+        	sscanf(srv.response.tmsdb[0].note.c_str(),"{\"heartrate\": \"%d\"}",&heartrate);
+        	os_ << srv.response.tmsdb[0].note.c_str();
+        	os_ << heartrate;
+        }
+        srv.request.tmsdb.id = 3017;	//mindwave mobile
+        srv.request.tmsdb.sensor = 3017;
+        if(! db_client.call(srv)){
+            os_ << "Failed to get mindwave data";
+        }else if(srv.response.tmsdb.empty()){
+            os_ << "DB response empty";
+        }else{
+        	sscanf(srv.response.tmsdb[0].note.c_str(),"{\"meditation\": \"%d\", \"attention\": \"%d\", \"poor_signal\": \"%d\"}",&mw_med,&mw_att,&mw_por);
+        }
+        heartrate_s = tostr(heartrate);
+        mw_med_s = tostr(mw_med);
+        mw_att_s = tostr(mw_att);
+        mw_por_s = tostr(mw_por);
+        setString(tagId,Vector3(0,-0.5,1),"heartrate: "+heartrate_s+"    brainwave med: "+mw_med_s+"   att: "+mw_att_s);
+        // mw_med_s = boost::lexical_cast<string>(mw_med);
+        // mw_att_s = boost::lexical_cast<string>(mw_att);
+        // mw_por_s = boost::lexical_cast<string>(mw_por);
+        // setString(tagId,Vector3(0,0,2),"heartrate: "+heartrate_s);
+        // setString(tagId,Vector3(0,0,1),"brainwave med: "+mw_med_s+"   att: "+mw_att_s);
+	}
 	return true;
 }
 
@@ -764,11 +815,36 @@ bool TmsRpController::disappear(std::string tagId){
 	return true;
 }
 
+// class stringViewer{
+// private:
+// 	SgStringRenderer *cr_;
+// 	sting st_;
+// 	BodyItemPtr item_;
+// public:
+// 	stringViewer(std::string tagId, Vector3 pos, string str){
+// 		item_ = objTag2Item()[tagId];
+// 		SgGroupPtr node  = (SgGroup*)item->body()->link(0)->shape();
+// 		cr_ = new SgStringRenderer (str, pos);
+// 		node->addChild(cr_);
+// 		st_ = str;
+// 	}
+// 	void setString(string arg){
+// 		st_ = arg;
+// 		cr_->setString(st_);
+// 	}
+// 	void update(){
+// 		ItemTreeView::mainInstance()->checkItem(item,false);
+// 		MessageView::mainInstance()->flush();
+// 		ItemTreeView::mainInstance()->checkItem(item,true);
+// 		MessageView::mainInstance()->flush();
+// 	}
+// }
+
 bool TmsRpController::setString(std::string tagId, Vector3 pos, string str) {
-  if (objTag2Item().find(tagId) == objTag2Item().end()) {
-                os_ << "Error: the tagId is not recorded " << tagId << endl;
+    if (objTag2Item().find(tagId) == objTag2Item().end()) {
+        // os_ << "Error: the tagId is not recorded " << tagId << endl;
 		return false;	
-  }
+    }
 	BodyItemPtr item = objTag2Item()[tagId];
 
 	static SgStringRenderer * cr=NULL;
@@ -779,7 +855,7 @@ bool TmsRpController::setString(std::string tagId, Vector3 pos, string str) {
 		node->addChild(cr);
 	}
 	cr->setString(str);
-	os_  << "set string" << endl;
+	// os_  << "set string" << endl;
 	ItemTreeView::mainInstance()->checkItem(item,false);
 	MessageView::mainInstance()->flush();
 	ItemTreeView::mainInstance()->checkItem(item,true);
