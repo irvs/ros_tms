@@ -344,7 +344,8 @@ bool tms_rp::TmsRpSubtask::update_obj(int id, double x, double y, double z,
 	db_msg.header.frame_id  = "/world";
 	db_msg.header.stamp = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 	db_msg.tmsdb.push_back(assign_data);
-	db_pub.publish(db_msg);
+	for (int i=0; i<3; i++)
+		db_pub.publish(db_msg);
 }
 
 //------------------------------------------------------------------------------
@@ -548,7 +549,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
 			    		} else {
 			    			if (sd.robot_id == 2002) {
-			    				sleep(1.5);
+			    				sleep(0.7);
 			    			} else if (sd.robot_id == 2003) {
 			    				ROS_INFO("Please use ID 2002 when smartpal5's simulation");
 			    				return false;
