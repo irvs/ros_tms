@@ -357,6 +357,7 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
     }
     else if (id == 2006)
     {
+    	PosZ = 0.18;
     	if (PosX == 0.0 && PosY == 0.0)
         {
           callSynchronously(bind(&TmsRpController::disappear,trc_,"kxp"));
