@@ -68,6 +68,7 @@ target_link_libraries(
   CnoidPoseSeqPlugin
   CnoidGraspPlugin
   CnoidPRMPlugin
+  glut
   ${catkin_LIBRARIES}
 )
 
