@@ -45,6 +45,7 @@ namespace grasp{
                 glRasterPos3f(position[0], position[1], position[2]);
                 for(int i=0;i<displayString.size();i++){
                     // glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, displayString.c_str()[i]);
+                    glColor3d(0.0, 0.0, 1.0);
                     glutBitmapCharacter(GLUT_BITMAP_8_BY_13, displayString.c_str()[i]);
                 }
 
