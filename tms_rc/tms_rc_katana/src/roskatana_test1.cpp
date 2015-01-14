@@ -320,7 +320,7 @@ int main(int argc, char *argv[]) {
 
 		//init robot:
 		katana.reset(new CLMBase());
-		katana->create("./catkin_ws/src/ros_katana/KNI_4.3.0/configfiles450/katana6M180_G.cfg", protocol.get());
+		katana->create("./catkin_ws/src/ros_tms/tms_rc/tms_rc_katana/KNI_4.3.0/configfiles450/katana6M180_G.cfg", protocol.get());
 
 
 	} catch(Exception &e) {
