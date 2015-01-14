@@ -7,15 +7,19 @@
 #include <unistd.h>
 #include <boost/date_time/local_time/local_time.hpp>
 
+#include <std_srvs/Empty.h>
 //自分の位置座標を情報をメッセージとして投げる
 #include <tms_msg_db/tmsdb_data.h>
 #include <tms_msg_ss/fss_object_data.h>
+#include <tms_msg_db/TmsdbGetData.h>
 
 #include <tms_msg_rc/tms_rc_ppose.h>
 #include <tms_msg_rc/tms_rc_pmove.h>
 #include <tms_msg_rc/tms_rc_pparam.h>
 
 #define POS_ABER 135
+
+ros::ServiceClient get_data_client;
 
 //connection class
 class ConnHandler
@@ -91,6 +95,31 @@ ArPose pose;
 ///////////////////////
 
 ros::Publisher publish1;
+
+//ロボット内部のオドメトリ値をViconの値で変更
+bool Vicon_Psetodom(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res){
+	// getViconData
+	tms_msg_db::TmsdbGetData getRobotData;
+    getRobotData.request.tmsdb.id     = 2006; // KXP ID
+    getRobotData.request.tmsdb.sensor = 3001; // Vicon ID
+    if (get_data_client.call(getRobotData)) {
+      ROS_INFO("Get info of object ID: %d\n", getRobotData.request.tmsdb.id);
+    } else {
+      ROS_INFO("Failed to call service getRobotData ID: %d\n", getRobotData.request.tmsdb.id);
+      return false;
+    }
+    if(!getRobotData.response.tmsdb.empty()) {
+        if(getRobotData.response.tmsdb[0].x != 0 && getRobotData.response.tmsdb[0].y != 0) {
+        	pose.setPose(0.0,0.0,0.0);	//関数突入時に大域変数pose初期化
+        	pose.setPose(getRobotData.response.tmsdb[0].x,getRobotData.response.tmsdb[0].y,
+        			getRobotData.response.tmsdb[0].ry);	//set robot odometry
+        	robot.lock();
+        	robot.moveTo(pose,false);
+        	robot.unlock();
+        }
+    }
+    return true;
+}
 
 //ロボット内部のオドメトリ値を変更
 bool Psetodom(tms_msg_rc::tms_rc_ppose::Request &req, tms_msg_rc::tms_rc_ppose::Response &res){
@@ -321,6 +350,9 @@ int main(int argc, char **argv){
 	ros::ServiceServer service1 = n.advertiseService("psetodom", Psetodom);
 	ros::ServiceServer service2 = n.advertiseService("pmove", Pmove);
 	ros::ServiceServer service3 = n.advertiseService("pparam", Pparam);
+	ros::ServiceServer service4 = n.advertiseService("vicon_psetodom", Vicon_Psetodom);
+
+	get_data_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
 
 	//Aria init//
 	Aria::init();
