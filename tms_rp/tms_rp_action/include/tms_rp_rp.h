@@ -11,7 +11,9 @@
 #include <tms_msg_rp/rps_joint_angle.h>
 #include <tms_msg_rp/rps_cnoid_grasp_obj_planning.h>
 #include <tms_msg_rc/tms_rc_pmove.h>
+#include <tms_msg_rc/tms_rc_ppose.h>
 #include <tms_msg_rc/katana_pos_array.h>
+#include <tms_msg_rc/katana_pos.h>
 #include <tms_msg_rc/rc_robot_control.h>
 #include <tms_msg_rs/rs_home_appliances.h>
 #include <tms_msg_ss/ods_person_dt.h>
@@ -20,6 +22,7 @@
 #include <kobuki_msgs/Sound.h>
 #include <kobuki_msgs/MotorPower.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <std_srvs/Empty.h>
 
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
@@ -57,6 +60,7 @@ class TmsRpSubtask : public cnoid::ToolBar, public boost::signals::trackable
 
 	bool update_obj(int id, double x, double y, double z, double rr, double rp,
 			double ry, int place, int sensor, int state, std::string note);
+	bool kxp_set_odom(void);
 
 	// for thread
 	bool move(SubtaskData sd); // 9001
@@ -73,6 +77,10 @@ class TmsRpSubtask : public cnoid::ToolBar, public boost::signals::trackable
 	ros::ServiceClient sp5_virtual_control_client;
 	ros::ServiceClient kxp_virtual_control_client;
 	ros::ServiceClient kxp_mbase_client;
+	ros::ServiceClient v_kxp_mbase_client;
+	ros::ServiceClient kxp_setpose_client;
+	ros::ServiceClient katana_client;
+	ros::ServiceClient v_katana_client;
 	ros::ServiceClient kobuki_virtual_control_client;
 	ros::ServiceClient mkun_virtual_control_client;
 	ros::ServiceClient mkun_control_client;

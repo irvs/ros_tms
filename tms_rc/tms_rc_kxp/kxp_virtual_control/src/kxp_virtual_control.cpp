@@ -371,9 +371,9 @@ int main(int argc, char **argv)
   //--------------------------------------------------------------------------
   ros::init(argc, argv, "kxp_virtual_control");
   ros::NodeHandle nh;
-  ros::ServiceServer service1 = nh.advertiseService("psetodom", pSetOdom);
-  ros::ServiceServer service2 = nh.advertiseService("pmove", pMove);
-  ros::ServiceServer service3 = nh.advertiseService("katana_move_angle_array", kMoveAngleArray);
+  ros::ServiceServer service1 = nh.advertiseService("virtual_psetodom", pSetOdom);
+  ros::ServiceServer service2 = nh.advertiseService("virtual_pmove", pMove);
+  ros::ServiceServer service3 = nh.advertiseService("virtual_katana_move_angle_array", kMoveAngleArray);
   ros::ServiceServer service4 = nh.advertiseService("kxp_virtual_control", robotControl);
 
   pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
