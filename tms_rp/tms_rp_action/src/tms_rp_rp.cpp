@@ -893,7 +893,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 		{
 			if (sd.type == false) {
 				kxp_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg);
-				sleep(1.5);
+				update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], arg[11], 3005, arg[12], "");
 			} else {
 				kxp_set_odom();
 				tms_msg_rc::katana_pos_array katana_srv;
@@ -910,8 +910,8 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 				}
 				katana_client.call(katana_srv);
 				update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], arg[11], 3001, arg[12], "");
-				break;
 			}
+			break;
 		}
 		default:
 			s_srv.request.error_msg = "Unsupported robot in grasp function";
@@ -1033,7 +1033,7 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 						kxp_srv.request.w_x = arg[0];
 						kxp_srv.request.w_y = arg[1];
 						kxp_srv.request.w_th = arg[2];
-						if (kxp_mbase_client.call(kxp_srv)) ROS_INFO("result: %d", kxp_srv.response.success);
+						if (v_kxp_mbase_client.call(kxp_srv)) ROS_INFO("result: %d", kxp_srv.response.success);
 						else                  ROS_ERROR("Failed to call service kxp_mbase");
 						sleep(0.7);
 					}
