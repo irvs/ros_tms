@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package>
-  <name>tms_rc_kobuki_control</name>
+  <name>tms_rc_turtlebot_control</name>
   <version>2.0.2</version>
   <license>BSD</license>
-  <description>The tms_rc_kobuki_control package</description>
+  <description>The tms_rc_turtlebot_control package</description>
  
   <maintainer email="hashiguchi@irvs.ait.kyushu-u.ac.jp">Yuka Hashiguchi</maintainer>
 
