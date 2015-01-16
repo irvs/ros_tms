@@ -29,11 +29,11 @@
 
 using namespace std;
 
-ClientSocket  client_socket(""/*"192.168.11.99"*/, 54300);
+ClientSocket  client_socket(/*""*/"192.168.11.99", 54300);
 const int     ENC_MAX  = 3932159;
 const int     SPEED_MAX = 32767;
 const float   DIST_PER_PULSE = 0.552486;  //mm par pulse
-const int     WHEEL_DIST = 533;
+const int     WHEEL_DIST = 570; //533;
 
 long int    ENC_L = 0;
 long int    ENC_R = 0;
@@ -148,7 +148,7 @@ void MachinePose_s::updateVicon(){
         boost::posix_time::ptime    now = ros_now.toBoost();
         // cout << "time:" << now-set_time << "\n";
         // cout << "3sec:" << boost::posix_time::time_duration(0,0,3,0) << "\n";
-        if(boost::posix_time::time_duration(0,0,3,0) > now-set_time){   //check if data is in at last 3sec
+        if(boost::posix_time::time_duration(0,0,3,0) > now-set_time){   //check if data is fresh (in last 3sec)
             this->pos_vicon.x = srv.response.tmsdb[0].x;
             this->pos_vicon.y = srv.response.tmsdb[0].y;
             this->pos_vicon.theta = Deg2Rad(srv.response.tmsdb[0].ry);
@@ -254,7 +254,7 @@ void receiveCmdVel(const geometry_msgs::Twist::ConstPtr& cmd_vel){
 }
 
 void receiveJoy(const sensor_msgs::Joy::ConstPtr& joy){
-    ROS_INFO("Rrecieve joy");
+    // ROS_INFO("Rrecieve joy");
     mchn_pose.tgtTwist.linear.x =   joy->axes[1]*300;//600;
     mchn_pose.tgtTwist.angular.z =  joy->axes[3]*0.7;//1;
 }
@@ -372,14 +372,12 @@ int main(int argc, char **argv){
             Rad2Deg(mchn_pose.pos_vicon.theta));
     mchn_pose.setCurrentPosition(mchn_pose.pos_vicon);
 
-    if ( pthread_create( &thread_vicon, NULL, vicon_update, NULL ) )
-    {
+    if ( pthread_create( &thread_vicon, NULL, vicon_update, NULL ) ){
       cout << "error creating thread." << endl;
       abort();
     }
 
-    if ( pthread_create( &thread_odom, NULL, odom_update, NULL ) )
-    {
+    if ( pthread_create( &thread_odom, NULL, odom_update, NULL ) ){
       cout << "error creating thread." << endl;
       abort();
     }
