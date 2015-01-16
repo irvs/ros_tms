@@ -1,6 +1,7 @@
 modelFile: KKP.main.wrl
 
 graspPluginSetting: 
+  name: KXPArm
   base: BASE
   palm: J6
   fingerEnds: [ HAND_L, HAND_R ]

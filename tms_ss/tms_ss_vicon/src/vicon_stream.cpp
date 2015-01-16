@@ -293,6 +293,8 @@ private:
         else if(SubjectName.compare("sp4") == 0)        id = 2001;
         else if(SubjectName.compare("sp5_1") == 0)      id = 2002;
         else if(SubjectName.compare("sp5_2") == 0)      id = 2003;
+        else if(SubjectName.compare("kobuki") == 0)     id = 2005;
+        else if(SubjectName.compare("kxp") == 0)        id = 2006;
         else if(SubjectName.compare("wheelchair") == 0) id = 2007;
         else if(SubjectName.compare("ardrone1") == 0)   id = 2008;
         else if(SubjectName.compare("oculus") == 0)     id = 3006;
