@@ -25,7 +25,8 @@ int8_t VehicleMoveLinearAbs(double x_mm, double y_mm, double theta_deg)
   g_x = x_mm;
   g_y = y_mm;
   g_t = theta_deg - 90; // 座標変換
-  if (g_t < -180) g_t = g_t+360;
+  if (g_t > 180) g_t = g_t - 360;
+  else if (g_t < -180) g_t = g_t + 360;
 
   printf("vehicleMoveLinearAbs(%0.1fmm, %0.1fmm, %0.1fdeg) result:",g_x, g_y, g_t);
   ret ? printf("Success\n") : printf("Failure\n");
