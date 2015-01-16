@@ -301,12 +301,10 @@ void *vicon_update( void *ptr )
 {
    ros::Rate r(30);
    while (ros::ok()){
-/*      mchn_pose.updateVicon();
-
+      mchn_pose.updateVicon();
       pthread_mutex_lock(&mutex_update_kalman);
       mchn_pose.UpdatePosition(mchn_pose.pos_vicon, MachinePose_s::POSISION);
-      pthread_mutex_unlock(&mutex_update_kalman);*/
-
+      pthread_mutex_unlock(&mutex_update_kalman);
       r.sleep();
    }
 }
@@ -316,12 +314,9 @@ void *odom_update( void *ptr )
    ros::Rate r(30);
    while (ros::ok()){
       mchn_pose.updateOdom();
-
       pthread_mutex_lock(&mutex_update_kalman);
-      // printf("  %f  ",mchn_pose.vel_odom.x);
       mchn_pose.UpdatePosition(mchn_pose.vel_odom, MachinePose_s::VELOCITY);
       pthread_mutex_unlock(&mutex_update_kalman);
-
       r.sleep();
    }
 }
