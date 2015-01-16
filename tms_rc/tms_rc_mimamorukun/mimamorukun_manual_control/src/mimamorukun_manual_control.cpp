@@ -301,12 +301,14 @@ void *vicon_update( void *ptr )
 {
    ros::Rate r(30);
    while (ros::ok()){
-      mchn_pose.updateVicon();
-      pthread_mutex_lock(&mutex_update_kalman);
-      mchn_pose.UpdatePosition(mchn_pose.pos_vicon, MachinePose_s::POSISION);
-      pthread_mutex_unlock(&mutex_update_kalman);
-      r.sleep();
-   }
+        mchn_pose.updateVicon();
+        if(1000 < mchn_pose.pos_vicon.x && 1000 < mchn_pose.pos_vicon.y){
+            pthread_mutex_lock(&mutex_update_kalman);
+            mchn_pose.UpdatePosition(mchn_pose.pos_vicon, MachinePose_s::POSISION);
+            pthread_mutex_unlock(&mutex_update_kalman);
+        }
+        r.sleep();
+    }
 }
 
 void *odom_update( void *ptr )
@@ -409,6 +411,7 @@ geometry_msgs::Pose2D MachinePose_s::UpdatePosition(geometry_msgs::Pose2D tpose,
     static double posC[3][6]; // 位置の観測行列
     static double velC[3][6]; // 速度の観測行列
     // Kalman kalman(6,3,3); //状態、観測、入力変数。順にn,m,l
+
 
     if(kalman == NULL) return pos_fusioned;
 
