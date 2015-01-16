@@ -28,7 +28,7 @@
 
 using namespace std;
 
-ClientSocket  client_socket (""/*"192.168.11.99"*/, 54300 );
+ClientSocket  client_socket (/*""*/"192.168.11.99", 54300 );
 const int     ENC_MAX  = 3932159;
 const int     SPEED_MAX = 32767;
 const float   DIST_PER_PULSE = 0.552486;  //mm par pulse
@@ -53,7 +53,28 @@ pthread_mutex_t mutex_update_kalman = PTHREAD_MUTEX_INITIALIZER;
 class MachinePose_s{
 private:
 public:
-    MachinePose_s() { kalman = new Kalman(6, 3, 3);};
+    MachinePose_s() {
+        // printf("In Constructor");
+        this->pos_vicon.x = 0.0;
+        this->pos_vicon.y = 0.0;
+        this->pos_vicon.theta = 0.0;
+        this->pos_odom.x = 0.0;
+        this->pos_odom.y = 0.0;
+        this->pos_odom.theta = 0.0;
+        this->pos_fusioned.x = 0.0;
+        this->pos_fusioned.y = 0.0;
+        this->pos_fusioned.theta = 0.0; 
+        this->vel_odom.x =  0.0;
+        this->vel_odom.y =  0.0;
+        this->vel_odom.theta = 0.0;
+        this->vel_vicon.x =  0.0;
+        this->vel_vicon.y =  0.0;
+        this->vel_vicon.theta = 0.0;
+        this->vel_fusioned.x =  0.0;
+        this->vel_fusioned.y =  0.0;
+        this->vel_fusioned.theta = 0.0;
+        kalman = new Kalman(6, 3, 3);
+    };
     ~MachinePose_s() { delete kalman;};
     void updateOdom();
     void updateVicon();
@@ -115,10 +136,14 @@ void MachinePose_s::updateVicon(){
     // printf("line:%s\n",__LINE__);
     tms_msg_db::TmsdbGetData srv;
     srv.request.tmsdb.id = 2007;
+    srv.request.tmsdb.sensor = 3001;
     if(! db_client.call(srv)){
         ROS_ERROR("Failed to get vicon data from DB via tms_db_reader");
     }else if(srv.response.tmsdb.empty()){
         ROS_ERROR("DB response empty");
+    // }else if(true/*srv.response.tmsdb[0].time*/){
+    //     boost::posix_time::ptime tm = boost::posix_time::from_iso_string(srv.response.tmsdb[0].time);
+    //     // printf("%s\n", srv.response.tmsdb[0].time.c_str());
     }else{
         this->pos_vicon.x = srv.response.tmsdb[0].x;
         this->pos_vicon.y = srv.response.tmsdb[0].y;
@@ -134,8 +159,9 @@ void MachinePose_s::updateOdom(){
     string reply;
     client_socket << "@GP1@GP2";    /*use 250ms for send and get reply*/
     client_socket >> reply;          
-    cout << "Response:" << reply << "\n";
+    // cout << "Response:" << reply << "";
     sscanf(reply.c_str(),"@GP1,%ld@GP2,%ld",&tmpENC_L,&tmpENC_R);
+    // cout << "tmpENC_L:" << tmpENC_L << "    tmpENC_R:" << tmpENC_R ;
     if(tmpENC_L > ENC_MAX/2)ENC_L = tmpENC_L-(ENC_MAX+1);
     else                    ENC_L = tmpENC_L;
     if(tmpENC_R > ENC_MAX/2)ENC_R = tmpENC_R-(ENC_MAX+1);
@@ -178,7 +204,7 @@ void MachinePose_s::updateOdom(){
 void spinWheel(/*double arg_speed, double arg_theta*/){
     double arg_speed = mchn_pose.tgtTwist.linear.x;
     double arg_theta = mchn_pose.tgtTwist.angular.z;
-    ROS_INFO("X:%4.2f   Theta:%4.2f",arg_speed,arg_theta);
+    // ROS_INFO("X:%4.2f   Theta:%4.2f",arg_speed,arg_theta);
     double val_L = -Dist2Pulse(arg_speed) + Dist2Pulse((WHEEL_DIST/2)*arg_theta);
     double val_R =  Dist2Pulse(arg_speed) + Dist2Pulse((WHEEL_DIST/2)*arg_theta);
     val_L = (int)Limit(val_L,(double)SPEED_MAX,(double)-SPEED_MAX);
@@ -270,11 +296,11 @@ void *vicon_update( void *ptr )
 {
    ros::Rate r(30);
    while (ros::ok()){
-      mchn_pose.updateVicon();
+/*      mchn_pose.updateVicon();
 
       pthread_mutex_lock(&mutex_update_kalman);
       mchn_pose.UpdatePosition(mchn_pose.pos_vicon, MachinePose_s::POSISION);
-      pthread_mutex_unlock(&mutex_update_kalman);
+      pthread_mutex_unlock(&mutex_update_kalman);*/
 
       r.sleep();
    }
@@ -284,13 +310,14 @@ void *odom_update( void *ptr )
 {
    ros::Rate r(30);
    while (ros::ok()){
-      // mchn_pose.updateOdom();
+      mchn_pose.updateOdom();
 
-      // pthread_mutex_lock(&mutex_update_kalman);
-      // mchn_pose.UpdatePosition(mchn_pose.vel_odom, MachinePose_s::VELOCITY);
-      // pthread_mutex_unlock(&mutex_update_kalman);
+      pthread_mutex_lock(&mutex_update_kalman);
+      // printf("  %f  ",mchn_pose.vel_odom.x);
+      mchn_pose.UpdatePosition(mchn_pose.vel_odom, MachinePose_s::VELOCITY);
+      pthread_mutex_unlock(&mutex_update_kalman);
 
-      // r.sleep();
+      r.sleep();
    }
 }
 
@@ -334,6 +361,10 @@ int main(int argc, char **argv){
     last_time       = ros::Time::now();*/
 
     mchn_pose.updateVicon();
+        ROS_INFO("initial val  x:%4.2lf y:%4.2lf th:%4.2lf",
+            mchn_pose.pos_vicon.x,
+            mchn_pose.pos_vicon.y,
+            Rad2Deg(mchn_pose.pos_vicon.theta));
     mchn_pose.setCurrentPosition(mchn_pose.pos_vicon);
 
     if ( pthread_create( &thread_vicon, NULL, vicon_update, NULL ) )
@@ -359,10 +390,10 @@ int main(int argc, char **argv){
         ROS_INFO("x:%4.2lf y:%4.2lf th:%4.2lf",
             mchn_pose.pos_fusioned.x,
             mchn_pose.pos_fusioned.y,
-            mchn_pose.pos_fusioned.theta);
+            Rad2Deg(mchn_pose.pos_fusioned.theta));
 /*        ROS_INFO("x:%4.2lf y:%4.2lf th:%4.2lf",
             mchn_pose.pos_odom.x,
-            mchn_pose.pos_odom.y,
+              mchn_pose.pos_odom.y,
             Rad2Deg(mchn_pose.pos_odom.theta));*/
 /*        last_time = current_time;
         current_time = ros::Time::now();*/
@@ -381,14 +412,14 @@ geometry_msgs::Pose2D MachinePose_s::UpdatePosition(geometry_msgs::Pose2D tpose,
     static double velC[3][6]; // 速度の観測行列
     // Kalman kalman(6,3,3); //状態、観測、入力変数。順にn,m,l
 
-    if(kalman == NULL) return vel_fusioned;
+    if(kalman == NULL) return pos_fusioned;
 
     if (count == 0){
         // 初期化 (システム雑音，観測雑音，積分時間)
         kalman->init(0.1, 0.1, 1.0);
-        kalman->setX(0, vel_fusioned.x);
-        kalman->setX(1, vel_fusioned.y);
-        kalman->setX(2, vel_fusioned.theta);
+        kalman->setX(0, pos_fusioned.x);
+        kalman->setX(1, pos_fusioned.y);
+        kalman->setX(2, pos_fusioned.theta);
         memset(posA, 0, sizeof(posA));
         memset(velA, 0, sizeof(velA));
         memset(posC, 0, sizeof(posC));
@@ -421,13 +452,16 @@ geometry_msgs::Pose2D MachinePose_s::UpdatePosition(geometry_msgs::Pose2D tpose,
     // カルマンフィルタの計算　→　答えは　getX(i) で得られる
     kalman->update(obs, input);
 
-    vel_fusioned.x = kalman->getX(0);
-    vel_fusioned.y = kalman->getX(1);
-    vel_fusioned.theta = nomalizeAng(kalman->getX(2));
-
+    pos_fusioned.x = kalman->getX(0);
+    pos_fusioned.y = kalman->getX(1);
+    pos_fusioned.theta = nomalizeAng(kalman->getX(2));
+    vel_fusioned.x = kalman->getX(3);
+    vel_fusioned.y = kalman->getX(4);
+    vel_fusioned.theta = nomalizeAng(kalman->getX(5));
+    // printf("f_vel_x:%f \n",vel_fusioned.x );
     count++;
 
-    return vel_fusioned;
+    return pos_fusioned;
 }
 
 void MachinePose_s::setCurrentPosition(geometry_msgs::Pose2D pose){
