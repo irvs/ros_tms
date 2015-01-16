@@ -123,9 +123,11 @@ double user_angle_deg2rad(double degree){
 bool katana_move_angle_array(tms_msg_rc::katana_pos_array::Request &req, tms_msg_rc::katana_pos_array::Response &res){
 
 	//角度[6]配列(&req)→Enc値[6]配列(act_enc)→pose値[6]配列act_pose
-
-	ROS_INFO("%f, %f, %f, %f, %f, %f", req.pose_array[0].pose[0],req.pose_array[0].pose[1],req.pose_array[0].pose[2],
-			req.pose_array[0].pose[3],req.pose_array[0].pose[4],req.pose_array[0].pose[5]);
+	for (int i=0; i<req.pose_array.size(); i++) {
+		if (req.pose_array.at(i).pose.size() != 7) return false;
+	}
+	ROS_INFO("%f, %f, %f, %f, %f, %f, %f", req.pose_array[0].pose[0],req.pose_array[0].pose[1],req.pose_array[0].pose[2],
+			req.pose_array[0].pose[3],req.pose_array[0].pose[4],req.pose_array[0].pose[5],req.pose_array[0].pose[6]);
 
 	std::vector< std::vector<int> > act_enc;	//Encoder値
 	std::vector<int> temp_enc;
@@ -144,7 +146,7 @@ bool katana_move_angle_array(tms_msg_rc::katana_pos_array::Request &req, tms_msg
 		temp_enc.push_back(user_angle_rad2enc(katana.get(),2,user_angle_deg2rad((double)req.pose_array[i].pose[2])));	//motor3
 		temp_enc.push_back(user_angle_rad2enc(katana.get(),3,user_angle_deg2rad((double)req.pose_array[i].pose[3])));	//motor4
 		temp_enc.push_back(user_angle_rad2enc(katana.get(),4,user_angle_deg2rad((double)req.pose_array[i].pose[4])));	//motor5
-		temp_enc.push_back(user_angle_rad2enc(katana.get(),5,user_angle_deg2rad((double)req.pose_array[i].pose[5])));	//motor6(=Gripper)
+		temp_enc.push_back(user_angle_rad2enc(katana.get(),5,user_angle_deg2rad((double)(req.pose_array[i].pose[5]+req.pose_array[i].pose[6]))));	//motor6(=Gripper)
 
 		for(j=0;j<6;j++)
 			printf("%d ",temp_enc[j]);
@@ -318,7 +320,7 @@ int main(int argc, char *argv[]) {
 
 		//init robot:
 		katana.reset(new CLMBase());
-		katana->create("./catkin_ws/src/ros_katana/KNI_4.3.0/configfiles450/katana6M180_G.cfg", protocol.get());
+		katana->create("./catkin_ws/src/ros_tms/tms_rc/tms_rc_katana/KNI_4.3.0/configfiles450/katana6M180_G.cfg", protocol.get());
 
 
 	} catch(Exception &e) {

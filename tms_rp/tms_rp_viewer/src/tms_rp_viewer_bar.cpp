@@ -485,8 +485,8 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
     	else if (/*sensor == 3002 && */place==6010) //shelf, ics
     	{
     		oID   = id - 7001;
-    		PosX = 4.3  - environment_information_.tmsdb[i].y/1000;
-    		PosY = 1.7  + environment_information_.tmsdb[i].x/1000;
+    		PosX = 4.26  - environment_information_.tmsdb[i].y/1000;
+    		PosY = 1.683  + environment_information_.tmsdb[i].x/1000;
     		PosZ = 0.08 + environment_information_.tmsdb[i].z/1000;
     		callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
     		callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(PosX,PosY,PosZ), mat_cw90_));

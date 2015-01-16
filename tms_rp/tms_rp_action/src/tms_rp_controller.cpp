@@ -723,11 +723,15 @@ bool TmsRpController::createRobotRecord(int objId, std::string tagId){
   PlanBase::instance()->targetArmFinger = PlanBase::instance()->armsList[0];
   cout << PlanBase::instance()->targetArmFinger->name << " is target arm"<< endl;
 
-  if (robTag2Arm().find(string("SmartPalRight")) != robTag2Arm().end()) {
-    robTag2Arm()[string("SmartPalRight")]->dataFilePath = objectBasePath + "/robot/smartpal/data/";
-    cout << robTag2Arm()[string("SmartPalRight")]->dataFilePath << endl;
+  if (objId == 2002 == objId ==2003) {
+	  if (robTag2Arm().find(string("SmartPalRight")) != robTag2Arm().end()) {
+		  robTag2Arm()[string("SmartPalRight")]->dataFilePath = objectBasePath + "/robot/smartpal/data/";
+		  cout << robTag2Arm()[string("SmartPalRight")]->dataFilePath << endl;
+	  }
+  } else if (objId == 2006) {
+	  robTag2Arm()[string("KXPArm")]->dataFilePath = objectBasePath + "/robot/KXP/data/";
+	  cout << robTag2Arm()[string("KXPArm")]->dataFilePath << endl;
   }
-
   return true;
 }
 
