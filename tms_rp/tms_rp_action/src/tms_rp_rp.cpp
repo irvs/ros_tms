@@ -629,25 +629,9 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    		while (dis <= 250) {
 			    			i+=2;
 			    			if (i > rp_srv.response.VoronoiPath.size()) {
-			    				ROS_ERROR("i > rp_srv.response.VoronoiPath.size()");
-			    				// final destination
-					    		mkun_srv.request.arg.resize(3);
-					    		mkun_srv.request.arg[0] = rp_srv.response.VoronoiPath[rp_srv.response.VoronoiPath.size()-1].x;
-					    		mkun_srv.request.arg[1] = rp_srv.response.VoronoiPath[rp_srv.response.VoronoiPath.size()-1].y;
-					    		mkun_srv.request.arg[2] = rp_srv.response.VoronoiPath[rp_srv.response.VoronoiPath.size()-1].th;
-					    		if (sd.type == true) {	//real world robot
-						    		if(mkun_control_client.call(mkun_srv))
-						    			ROS_INFO("result: %d", mkun_srv.response.result);
-						    		else
-						    			ROS_ERROR("Failed to call service mimamorukun_move");
-					    		}else{					//call srv for simulator
-						    		if(mkun_virtual_control_client.call(mkun_srv))
-						    			ROS_INFO("result: %d", mkun_srv.response.result);
-						    		else
-						    			ROS_ERROR("Failed to call service mimamorukun_virtual_move");
-					    			sleep(1); //temp
-					    		}
-			    				break;
+			    				ROS_ERROR("Mimamorukun cannot move the next point. Exit");
+//			    				ROS_ERROR("i > rp_srv.response.VoronoiPath.size()");
+			    				return true;
 			    			}
 			    			dis = distance(rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
 			    					rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
