@@ -5,10 +5,10 @@ import os,sys
 # import platform
 # import PyQt4.QtCore as QtGui,QtCore
 from PyQt4 import QtGui, QtCore
-import json
-import datetime
-import time
-import subprocess
+# import json
+# import datetime
+# import time
+# import subprocess
 import rospy
 #import roslib
 from tms_msg_rs.srv import *
@@ -16,10 +16,12 @@ from tms_msg_db.msg import TmsdbStamped
 from tms_msg_db.msg import Tmsdb
 # from tms_msg_db.srv import TmsdbGetData
 import tms_msg_db.srv
+import tms_msg_rp.srv
 #include <tms_msg_db/TmsdbGetData.h>
 
 SCRIPT_PATH = os.path.abspath(os.path.dirname(__file__))
 MAP_PATH = '/images/map.png'
+TGT_PATH = '/images/tgt_pos.png'
 # WC_PATH = '/images/wc.png'
 
 MAP_ORIGN = QtCore.QPoint(10, 450)
@@ -50,17 +52,20 @@ class MainWidget(QtGui.QWidget):
         map_lbl.setPixmap(map_pmp)
         map_lbl.mousePressEvent = self.updateTgtPos
 
-        self.wc_lbl = QtGui.QLabel(self)
-        self.wc_lbl.resize(40, 40)
-        wc_pmp = QtGui.QPixmap(50, 50)
-        wc_pantr = QtGui.QPainter(wc_pmp)
-        wc_pantr.setOpacity(1.0)
+        self.tgt_lbl = QtGui.QLabel(self)
+        self.tgt_lbl.resize(50, 50)
+        tgt_pmp = QtGui.QPixmap(50, 50)
+        tgt_pmp = QtGui.QPixmap(SCRIPT_PATH+TGT_PATH).scaled(
+            self.tgt_lbl.size(),
+            aspectRatioMode=QtCore.Qt.KeepAspectRatio,
+            transformMode=QtCore.Qt.SmoothTransformation)
+        # wc_pantr = QtGui.QPainter(tgt_pmp)
+        # wc_pantr.setOpacity(1.0)
         # wc_pantr.setBackgroundMode(QtCore.Qt.OpaqueMode)
         # wc_pantr.setBrush(QtGui.QColor(123, 123, 123, 0))
-        # wc_pantr.drawRect(0, 0, 50, 50)
-        wc_pantr.setBrush(QtGui.QBrush(QtCore.Qt.black))
-        wc_pantr.drawEllipse(0, 0, 50, 50)
-        self.wc_lbl.setPixmap(wc_pmp)
+        # wc_pantr.setBrush(QtGui.QBrush(QtCore.Qt.black))
+        # wc_pantr.drawEllipse(0, 0, 50, 50)
+        self.tgt_lbl.setPixmap(tgt_pmp)
 
         bt_move = QtGui.QPushButton("MOVE", parent=self)
         bt_move.move(130, 500)
@@ -85,12 +90,12 @@ class MainWidget(QtGui.QWidget):
 
     def updateCurPos(self):
         try:
-            db_client = rospy.ServiceProxy("/tms_db_reader/dbreader",
-                                           tms_msg_db.srv.TmsdbGetData)
+            srv_client = rospy.ServiceProxy("/tms_db_reader/dbreader",
+                                            tms_msg_db.srv.TmsdbGetData)
             req = tms_msg_db.srv.TmsdbGetDataRequest()
             req.tmsdb.id = 2007
             req.tmsdb.sensor = 3001
-            res = db_client(req)
+            res = srv_client(req)
             if 0 < len(res.tmsdb):
                 self.cur_pos_x, self.cur_pos_y = res.tmsdb[0].x, res.tmsdb[0].y
                 print res.tmsdb[0].x, res.tmsdb[0].y
@@ -99,15 +104,15 @@ class MainWidget(QtGui.QWidget):
 
     def startMoving(self):
         try:
-            db_client = rospy.ServiceProxy("/rp_cmd",
-                                           tms_msg_db.srv.TmsdbGetData)
-            req = tms_msg_db.srv.TmsdbGetDataRequest()
-            req.tmsdb.id = 2007
-            req.tmsdb.sensor = 3001
-            res = db_client(req)
-            if 0 < len(res.tmsdb):
-                self.cur_pos_x, self.cur_pos_y = res.tmsdb[0].x, res.tmsdb[0].y
-                print res.tmsdb[0].x, res.tmsdb[0].y
+            srv_client = rospy.ServiceProxy("/rp_cmd",
+                                            tms_msg_db.srv.rp_cmdRequest)
+            req = tms_msg_db.srv.rp_cmdRequest()
+            req.command = 9001   # move
+            req.type = True      # not sim, in Real World.But this param isn't used yet
+            req.robot_id = 2007  # ID of mimamorukun
+            req.arg = [-1, x, y, theta]
+            res = srv_client(req)
+            print "cmd result:", res.result
         except rospy.ServiceException, e:
             print "Service call failed: %s" % e
 
@@ -117,7 +122,7 @@ class MainWidget(QtGui.QWidget):
     def updateTgtPos(self, event):
         self.tgt_pos_x, self.tgt_pos_y = (event.pos().x(), event.pos().y())
         print self.tgt_pos_x, self.tgt_pos_y,
-        self.wc_lbl.move(QtCore.QPoint(self.tgt_pos_x, self.tgt_pos_y) - self.wc_lbl.rect().center())
+        self.tgt_lbl.move(QtCore.QPoint(self.tgt_pos_x, self.tgt_pos_y) - self.tgt_lbl.rect().center())
 
 
 def main():
