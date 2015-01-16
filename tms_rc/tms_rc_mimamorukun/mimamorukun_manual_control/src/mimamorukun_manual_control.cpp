@@ -8,6 +8,7 @@
 //2014.11.07        included to ROT_TMS project
 
 #include <ros/ros.h>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Point.h>
@@ -28,7 +29,7 @@
 
 using namespace std;
 
-ClientSocket  client_socket (/*""*/"192.168.11.99", 54300 );
+ClientSocket  client_socket(""/*"192.168.11.99"*/, 54300);
 const int     ENC_MAX  = 3932159;
 const int     SPEED_MAX = 32767;
 const float   DIST_PER_PULSE = 0.552486;  //mm par pulse
@@ -141,13 +142,17 @@ void MachinePose_s::updateVicon(){
         ROS_ERROR("Failed to get vicon data from DB via tms_db_reader");
     }else if(srv.response.tmsdb.empty()){
         ROS_ERROR("DB response empty");
-    // }else if(true/*srv.response.tmsdb[0].time*/){
-    //     boost::posix_time::ptime tm = boost::posix_time::from_iso_string(srv.response.tmsdb[0].time);
-    //     // printf("%s\n", srv.response.tmsdb[0].time.c_str());
     }else{
-        this->pos_vicon.x = srv.response.tmsdb[0].x;
-        this->pos_vicon.y = srv.response.tmsdb[0].y;
-        this->pos_vicon.theta = Deg2Rad(srv.response.tmsdb[0].ry);
+        boost::posix_time::ptime    set_time = boost::posix_time::time_from_string(srv.response.tmsdb[0].time);
+        ros::Time                   ros_now = ros::Time::now() + ros::Duration(9*60*60);
+        boost::posix_time::ptime    now = ros_now.toBoost();
+        // cout << "time:" << now-set_time << "\n";
+        // cout << "3sec:" << boost::posix_time::time_duration(0,0,3,0) << "\n";
+        if(boost::posix_time::time_duration(0,0,3,0) > now-set_time){   //check if data is in at last 3sec
+            this->pos_vicon.x = srv.response.tmsdb[0].x;
+            this->pos_vicon.y = srv.response.tmsdb[0].y;
+            this->pos_vicon.theta = Deg2Rad(srv.response.tmsdb[0].ry);
+        }
     }
     return ;
 }
