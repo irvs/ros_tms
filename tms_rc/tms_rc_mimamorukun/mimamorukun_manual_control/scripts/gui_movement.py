@@ -24,9 +24,9 @@ MAP_PATH = '/images/map.png'
 TGT_PATH = '/images/tgt_pos.png'
 # WC_PATH = '/images/wc.png'
 
-MAP_ORIGN = QtCore.QPoint(10, 450)
-MAP_SIZE = QtCore.QPoint(780, 440)
-ROOM_SIZE = QtCore.QPoint(8000, 4500)
+MAP_ORIGN = QtCore.QPoint(10.0, 450.0)
+MAP_SIZE = QtCore.QPoint(780.0, 440.0)
+ROOM_SIZE = QtCore.QPoint(8000.0, 4500.0)
 
 
 class MainWidget(QtGui.QWidget):
@@ -36,10 +36,8 @@ class MainWidget(QtGui.QWidget):
         self.initUI()
 
     def initUI(self):
-        self.cur_pos_x = 0
-        self.cur_pos_y = 0
-        self.tgt_pos_x = 0
-        self.tgt_pos_y = 0
+        self.tgt_pos = QtCore.QPoint(0, 0)
+        self.wc_mark_pos = QtCore.QPoint(0, 0)
         self.updateCurPos()
 
         map_lbl = QtGui.QLabel(self)
@@ -89,6 +87,7 @@ class MainWidget(QtGui.QWidget):
         self.draw()
 
     def updateCurPos(self):
+        wc_pos = QtCore.QPoint(0, 0)
         try:
             srv_client = rospy.ServiceProxy("/tms_db_reader/dbreader",
                                             tms_msg_db.srv.TmsdbGetData)
@@ -97,20 +96,23 @@ class MainWidget(QtGui.QWidget):
             req.tmsdb.sensor = 3001
             res = srv_client(req)
             if 0 < len(res.tmsdb):
-                self.cur_pos_x, self.cur_pos_y = res.tmsdb[0].x, res.tmsdb[0].y
-                print res.tmsdb[0].x, res.tmsdb[0].y
+                wc_pos = QtCore.QPoint(res.tmsdb[0].x, res.tmsdb[0].y)
+                print wc_pos.x(), wc_pos.y()
+                self.wc_mark_pos = QtCore.QPoint(
+                    wc_pos.x()/ROOM_SIZE.x()*MAP_SIZE.x()+MAP_ORIGN.x(),
+                    -wc_pos.y()/ROOM_SIZE.y()*MAP_SIZE.y()+MAP_ORIGN.y())
         except rospy.ServiceException, e:
             print "Service call failed: %s" % e
 
     def startMoving(self):
         try:
             srv_client = rospy.ServiceProxy("/rp_cmd",
-                                            tms_msg_db.srv.rp_cmdRequest)
-            req = tms_msg_db.srv.rp_cmdRequest()
+                                            tms_msg_rp.srv.rp_cmd)
+            req = tms_msg_rp.srv.rp_cmdRequest()
             req.command = 9001   # move
             req.type = True      # not sim, in Real World.But this param isn't used yet
             req.robot_id = 2007  # ID of mimamorukun
-            req.arg = [-1, x, y, theta]
+            req.arg = [-1, self.tgt_pos.x(), self.tgt_pos.y(), 0]
             res = srv_client(req)
             print "cmd result:", res.result
         except rospy.ServiceException, e:
@@ -120,9 +122,12 @@ class MainWidget(QtGui.QWidget):
         pass
 
     def updateTgtPos(self, event):
-        self.tgt_pos_x, self.tgt_pos_y = (event.pos().x(), event.pos().y())
-        print self.tgt_pos_x, self.tgt_pos_y,
-        self.tgt_lbl.move(QtCore.QPoint(self.tgt_pos_x, self.tgt_pos_y) - self.tgt_lbl.rect().center())
+        self.tgt_pos = QtCore.QPoint(
+            (event.pos().x()*1.0-MAP_ORIGN.x())/MAP_SIZE.x() * ROOM_SIZE.x(),
+            (-event.pos().y()*1.0+MAP_ORIGN.y())/MAP_SIZE.y() * ROOM_SIZE.y())
+        tgt_mark_pos = QtCore.QPoint(event.pos().x(), event.pos().y())
+        # print self.tgt_pos,
+        self.tgt_lbl.move(tgt_mark_pos - self.tgt_lbl.rect().center())
 
 
 def main():
@@ -138,20 +143,6 @@ def main():
     print ("finding DB service server")
     rospy.wait_for_service('/tms_db_reader/dbreader')
     print ("found DB service server")
-
-    # try:
-    #     db_client = rospy.ServiceProxy("/tms_db_reader/dbreader", tms_msg_db.srv.TmsdbGetData)
-    #     req = tms_msg_db.srv.TmsdbGetDataRequest()
-    #     req.tmsdb.id = 3018
-    #     req.tmsdb.sensor = 3018
-    #     res = db_client(req)
-    #     if 0 < len(res.tmsdb):
-    #         print (res.tmsdb[0].note)
-    # except rospy.ServiceException, e:
-    #     print "Service call failed: %s" % e
-    # while True:
-    #     pass
-
 
 if __name__ == '__main__':
     main()
