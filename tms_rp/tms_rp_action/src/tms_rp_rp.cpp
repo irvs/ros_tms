@@ -304,6 +304,10 @@ bool tms_rp::TmsRpSubtask::kxp_control(bool type, int unit, int cmd, int arg_siz
 void tms_rp::TmsRpSubtask::sensingCallback(const tms_msg_ss::ods_person_dt::ConstPtr& msg) {
 	double dis = distance(msg->p1_x, msg->p1_y, msg->p2_x, msg->p2_y);
 	if (1.5 <= dis && dis <= 1.7) {
+		tms_msg_ts::ts_state_control s_srv;
+		s_srv.request.type = 1; // for subtask state update;
+		s_srv.request.state = 0;
+
 		ROS_INFO("Person Detection System returns True!!!");
 		kobuki_msgs::Sound sound_msg;
 		sound_msg.value = 4;
@@ -312,6 +316,9 @@ void tms_rp::TmsRpSubtask::sensingCallback(const tms_msg_ss::ods_person_dt::Cons
 		kobuki_msgs::MotorPower motor_msg;
 		motor_msg.state = 0;
 		kobuki_motorpower.publish(motor_msg);
+
+		s_srv.request.error_msg = "Kobuki found someone lying!!";
+		state_client.call(s_srv);
 	}
 }
 
@@ -892,6 +899,9 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 		case 2006:
 		{
 			if (sd.type == false) {
+				for (int t=0; t<trajectory.size(); t++)
+					for (int u=0; u<trajectory.at(t).joints.size(); u++)
+						ROS_INFO("joint[%d][%d]=%f", t, u, rad2deg(trajectory.at(t).joints[u]));
 				kxp_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg);
 				update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], arg[11], 3005, arg[12], "");
 			} else {
