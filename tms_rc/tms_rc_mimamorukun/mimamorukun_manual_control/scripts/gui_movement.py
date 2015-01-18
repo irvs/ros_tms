@@ -51,6 +51,15 @@ class MainWidget(QtGui.QWidget):
             transformMode=QtCore.Qt.SmoothTransformation)
         self.tgt_lbl.setPixmap(tgt_pmp)
 
+        self.wc_lbl = QtGui.QLabel(self)
+        self.wc_lbl.resize(30, 30)
+        wc_pmp = QtGui.QPixmap(30, 30)
+        wc_pmp = QtGui.QPixmap(SCRIPT_PATH+WC_PATH).scaled(
+            self.wc_lbl.size(),
+            aspectRatioMode=QtCore.Qt.KeepAspectRatio,
+            transformMode=QtCore.Qt.SmoothTransformation)
+        self.wc_lbl.setPixmap(wc_pmp)
+
         bt_move = QtGui.QPushButton("MOVE", parent=self)
         bt_move.move(130, 500)
         bt_move.clicked.connect(self.startMoving)
@@ -84,9 +93,10 @@ class MainWidget(QtGui.QWidget):
             if 0 < len(res.tmsdb):
                 wc_pos = QtCore.QPoint(res.tmsdb[0].x, res.tmsdb[0].y)
                 print (wc_pos.x(), wc_pos.y())
-                self.wc_mark_pos = QtCore.QPoint(
+                wc_mark_pos = QtCore.QPoint(
                     wc_pos.x()/ROOM_SIZE.x()*MAP_SIZE.x()+MAP_ORIGN.x(),
                     -wc_pos.y()/ROOM_SIZE.y()*MAP_SIZE.y()+MAP_ORIGN.y())
+                self.wc_lbl.move(wc_mark_pos)
         except rospy.ServiceException, e:
             print "Service call failed: %s" % e)
 
