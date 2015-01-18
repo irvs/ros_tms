@@ -1,28 +1,20 @@
-#!/usr/bin/env python
+!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
 import os,sys
-# import platform
-# import PyQt4.QtCore as QtGui,QtCore
 from PyQt4 import QtGui, QtCore
-# import json
-# import datetime
-# import time
-# import subprocess
 import rospy
 #import roslib
 from tms_msg_rs.srv import *
 from tms_msg_db.msg import TmsdbStamped
 from tms_msg_db.msg import Tmsdb
-# from tms_msg_db.srv import TmsdbGetData
 import tms_msg_db.srv
 import tms_msg_rp.srv
-#include <tms_msg_db/TmsdbGetData.h>
 
 SCRIPT_PATH = os.path.abspath(os.path.dirname(__file__))
 MAP_PATH = '/images/map.png'
 TGT_PATH = '/images/tgt_pos.png'
-# WC_PATH = '/images/wc.png'
+WC_PATH = '/images/wc.png'
 
 MAP_ORIGN = QtCore.QPoint(10.0, 450.0)
 MAP_SIZE = QtCore.QPoint(780.0, 440.0)
@@ -57,12 +49,6 @@ class MainWidget(QtGui.QWidget):
             self.tgt_lbl.size(),
             aspectRatioMode=QtCore.Qt.KeepAspectRatio,
             transformMode=QtCore.Qt.SmoothTransformation)
-        # wc_pantr = QtGui.QPainter(tgt_pmp)
-        # wc_pantr.setOpacity(1.0)
-        # wc_pantr.setBackgroundMode(QtCore.Qt.OpaqueMode)
-        # wc_pantr.setBrush(QtGui.QColor(123, 123, 123, 0))
-        # wc_pantr.setBrush(QtGui.QBrush(QtCore.Qt.black))
-        # wc_pantr.drawEllipse(0, 0, 50, 50)
         self.tgt_lbl.setPixmap(tgt_pmp)
 
         bt_move = QtGui.QPushButton("MOVE", parent=self)
@@ -97,12 +83,12 @@ class MainWidget(QtGui.QWidget):
             res = srv_client(req)
             if 0 < len(res.tmsdb):
                 wc_pos = QtCore.QPoint(res.tmsdb[0].x, res.tmsdb[0].y)
-                print wc_pos.x(), wc_pos.y()
+                print (wc_pos.x(), wc_pos.y())
                 self.wc_mark_pos = QtCore.QPoint(
                     wc_pos.x()/ROOM_SIZE.x()*MAP_SIZE.x()+MAP_ORIGN.x(),
                     -wc_pos.y()/ROOM_SIZE.y()*MAP_SIZE.y()+MAP_ORIGN.y())
         except rospy.ServiceException, e:
-            print "Service call failed: %s" % e
+            print "Service call failed: %s" % e)
 
     def startMoving(self):
         try:
@@ -114,9 +100,9 @@ class MainWidget(QtGui.QWidget):
             req.robot_id = 2007  # ID of mimamorukun
             req.arg = [-1, self.tgt_pos.x(), self.tgt_pos.y(), 0]
             res = srv_client(req)
-            print "cmd result:", res.result
+            print ("cmd result:", res.result)
         except rospy.ServiceException, e:
-            print "Service call failed: %s" % e
+            print ("Service call failed: %s" % e)
 
     def draw(self):
         pass
@@ -131,7 +117,7 @@ class MainWidget(QtGui.QWidget):
 
 
 def main():
-    print "\x1b[32mHello World\x1b[39m"
+    print ("\x1b[32mHello World\x1b[39m")
     app = QtGui.QApplication(sys.argv)
     mnw = MainWidget()
     mnw.bt_quit.clicked.connect(app.quit)
