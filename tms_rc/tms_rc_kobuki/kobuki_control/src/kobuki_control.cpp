@@ -103,8 +103,10 @@ bool control_base(double goal_dis, double goal_ang) {
 		while (1) {
 			// 180度の境界線を越えるとき
 			if (ini_ori_th+goal_ang > 180) {
-				if ((-180-ini_ori_th <= var_ori_th && var_ori_th < goal_ang-360)
-						|| (0 <= var_ori_th && var_ori_th <= 180-goal_ang)) {
+				if ((ini_ori_th <= var_ori_th && var_ori_th <= 180)
+						|| (-180 <= var_ori_th && var_ori_th < goal_ang)) {
+//				if ((-180-ini_ori_th <= var_ori_th && var_ori_th < goal_ang-360)
+//						|| (0 <= var_ori_th && var_ori_th <= 180-goal_ang)) {
 					pub_vel(0.0, 0.523596);// 30deg/s
 #ifdef ODOM
 					var_ori_th = ori_th;
@@ -150,8 +152,10 @@ bool control_base(double goal_dis, double goal_ang) {
 		while (1) {
 			// 180度の境界線を越えるとき
 			if(ini_ori_th+goal_ang < -180) {
-				if ((-180-ini_ori_th <= var_ori_th && var_ori_th <= 0)
-						|| (goal_ang+360 < var_ori_th && var_ori_th <= 180-ini_ori_th)) {
+				if ((-180 <= var_ori_th && var_ori_th <= ini_ori_th)
+						|| (goal_ang < var_ori_th && var_ori_th <= 180)) {
+//				if ((-180-ini_ori_th <= var_ori_th && var_ori_th <= 0)
+//						|| (goal_ang+360 < var_ori_th && var_ori_th <= 180-ini_ori_th)) {
 					pub_vel(0.0, -0.523596);//-(PI/2m)/s
 #ifdef ODOM
 					var_ori_th = ori_th;
@@ -275,6 +279,7 @@ bool callback(tms_msg_rc::rc_robot_control::Request  &req,
 		ROS_INFO("goal_dis=%fmm, goal_arg=%fdeg\n", goal_distance, goal_theta);
 		if(control_base(goal_distance, goal_theta)) {
 			ROS_INFO("Finish control_base");
+			sleep(2);
 		}
 		res.result = 1;
 		break;
@@ -290,6 +295,7 @@ bool callback(tms_msg_rc::rc_robot_control::Request  &req,
 		ROS_INFO("goal_dis=%fmm, goal_arg=%fdeg\n", req.arg[0], req.arg[1]);
 		if (control_base((double)req.arg[0], (double)req.arg[1])) {
 			ROS_INFO("Finish control_base");
+			sleep(2);
 		}
 		res.result = 1;
 		break;
@@ -299,6 +305,7 @@ bool callback(tms_msg_rc::rc_robot_control::Request  &req,
 		res.result = 0;
 		return true;
 	}
+	sleep(1.0);
 	return true;
 }
 
