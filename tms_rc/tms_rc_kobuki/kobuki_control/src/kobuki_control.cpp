@@ -40,7 +40,7 @@ void vicon_sysCallback(const tms_msg_ss::vicon_data::ConstPtr& msg) {
 		//大域変数を更新
 		v_pos_x = msg->translation.x;
 		v_pos_y = msg->translation.y;
-	    v_ori_th = msg->eulerXYZ[2] - 90;
+	    v_ori_th = rad2deg(msg->eulerXYZ[2] - deg2rad(90));
 	}
 }
 
@@ -323,7 +323,7 @@ int main(int argc, char **argv) {
 	spinner.start();
 
 	//現在地取得方法(vicon or odom)
-	ros::Subscriber vicon_sub = n.subscribe("output", 10, vicon_sysCallback);
+	ros::Subscriber vicon_sub = n.subscribe("vicon_stream/output", 10, vicon_sysCallback);
 	ros::Subscriber odom_sub = n.subscribe("odom", 10, odomCallback);//Odometry情報取得
 
 	vel_pub = n.advertise<geometry_msgs::Twist>("mobile_base/commands/velocity",1); //kobukiに速度を送る
