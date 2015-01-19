@@ -104,7 +104,7 @@ bool control_base(double goal_dis, double goal_ang) {
 			// 180度の境界線を越えるとき
 			if (ini_ori_th+goal_ang > 180) {
 				if ((ini_ori_th <= var_ori_th && var_ori_th <= 180)
-						|| (-180 <= var_ori_th && var_ori_th < goal_ang)) {
+						|| (-180 <= var_ori_th && var_ori_th < ini_ori_th+goal_ang-360)) {
 //				if ((-180-ini_ori_th <= var_ori_th && var_ori_th < goal_ang-360)
 //						|| (0 <= var_ori_th && var_ori_th <= 180-goal_ang)) {
 					pub_vel(0.0, 0.523596);// 30deg/s
@@ -153,7 +153,7 @@ bool control_base(double goal_dis, double goal_ang) {
 			// 180度の境界線を越えるとき
 			if(ini_ori_th+goal_ang < -180) {
 				if ((-180 <= var_ori_th && var_ori_th <= ini_ori_th)
-						|| (goal_ang < var_ori_th && var_ori_th <= 180)) {
+						|| (360+goal_ang+ini_ori_th < var_ori_th && var_ori_th <= 180)) {
 //				if ((-180-ini_ori_th <= var_ori_th && var_ori_th <= 0)
 //						|| (goal_ang+360 < var_ori_th && var_ori_th <= 180-ini_ori_th)) {
 					pub_vel(0.0, -0.523596);//-(PI/2m)/s
