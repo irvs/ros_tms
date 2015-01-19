@@ -345,6 +345,13 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
     }
     else if (id == 2005)
     {
+    	if (!is_simulation) {
+    		double th = environment_information_.tmsdb[i].ry - 90; // coordinate transformation
+    		if (th < -180) th = th + 360;
+    		rot = grasp::rotFromRpy(deg2rad(90),0,deg2rad(th));
+    		PosZ = 0.067;
+    	}
+
     	if (PosX == 0.0 && PosY == 0.0)
         {
           callSynchronously(bind(&TmsRpController::disappear,trc_,"kobuki"));

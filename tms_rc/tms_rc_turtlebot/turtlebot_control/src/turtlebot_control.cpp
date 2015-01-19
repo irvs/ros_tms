@@ -15,8 +15,8 @@
 
 #include <ros/ros.h>
 
-#include <kobuki_control/control_arm.hpp>
-#include <kobuki_control/control_base.hpp>
+#include <turtlebot_control/control_arm.hpp>
+#include <turtlebot_control/control_base.hpp>
 
 #define ODOM
 //#define VICON
@@ -418,7 +418,7 @@ bool callback(tms_msg_rc::kobuki_control_1::Request  &req,
 }
 
 int main(int argc, char **argv) {
-	ros::init(argc, argv, "kobuki_control");
+	ros::init(argc, argv, "turtlebot_control");
 	ros::NodeHandle n;
 	//--------------モータの初期化------------------------------------------------
 	struct termios newtio;
@@ -554,7 +554,7 @@ int main(int argc, char **argv) {
 	ROS_INFO("kobuki's initial pos = [%fmm, %fmm, %fdeg]\n", x, y, th);
 #endif
 
-	ros::ServiceServer service = n.advertiseService("kobuki_control", callback);
+	ros::ServiceServer service = n.advertiseService("turtlebot_control", callback);
 	//ros::ServiceServer robotInfo_srv = n.advertiseService("kobuki_info", getKobukiInfo);
 	ROS_INFO("Ready to activate kobuki_control_node\n");
 
