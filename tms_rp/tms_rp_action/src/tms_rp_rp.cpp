@@ -567,15 +567,34 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 		    	case 2005: //kobuki
 			    	{
 			    		tms_msg_rc::rc_robot_control kobuki_srv;
-			    		kobuki_srv.request.arg.resize(3);
-			    		kobuki_srv.request.arg[0] = rp_srv.response.VoronoiPath[i].x;
-			    		kobuki_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
-			    		kobuki_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
+
 			    		if (sd.type == true) {
-				    		kobuki_srv.request.cmd = 0;
+				    		if (rp_srv.response.VoronoiPath.size() == 2) {
+				    			double error_x, error_y, error_th;
+				    			error_x = fabs(rp_srv.response.VoronoiPath[0].x - rp_srv.response.VoronoiPath[1].x);
+				    			error_y = fabs(rp_srv.response.VoronoiPath[0].y - rp_srv.response.VoronoiPath[1].y);
+				    			error_th = fabs(rp_srv.response.VoronoiPath[0].th - rp_srv.response.VoronoiPath[1].th);
+				    			if (error_x<5 && error_y<5 && error_th<2)
+				    				break; // dis_error:5mm, ang_error:2deg
+				    		}
+			    			double dis = distance(rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
+			    					rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
+			    			double ang = rp_srv.response.VoronoiPath[i].th - rp_srv.response.VoronoiPath[i-1].th;
+			    			if (ang > 180.0) ang = ang - 360.0;
+			    			else if (ang < -180.0) ang = ang + 360.0;
+
+				    		kobuki_srv.request.arg.resize(2);
+				    		kobuki_srv.request.arg[0] = dis;
+				    		kobuki_srv.request.arg[1] = ang;
+				    		kobuki_srv.request.cmd = 1;
 				    		if (kobuki_actual_control_client.call(kobuki_srv)) ROS_INFO("result: %d", kobuki_srv.response.result);
 				    		else ROS_ERROR("Failed to call service kobuki_move");
 			    		} else {
+				    		tms_msg_rc::rc_robot_control kobuki_srv;
+				    		kobuki_srv.request.arg.resize(3);
+				    		kobuki_srv.request.arg[0] = rp_srv.response.VoronoiPath[i].x;
+				    		kobuki_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
+				    		kobuki_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
 				    		kobuki_srv.request.unit = 1;
 				    		kobuki_srv.request.cmd = 15;
 				    		if (kobuki_virtual_control_client.call(kobuki_srv)) ROS_INFO("result: %d", kobuki_srv.response.result);
