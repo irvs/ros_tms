@@ -1,4 +1,4 @@
-!/usr/bin/env python
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
 import os,sys
@@ -29,10 +29,15 @@ class MainWidget(QtGui.QWidget):
 
     def initUI(self):
         self.tgt_pos = QtCore.QPoint(0, 0)
-        self.wc_mark_pos = QtCore.QPoint(0, 0)
-        self.updateCurPos()
-
+        self.wc_pos = QtCore.QPoint(0, 0)
+        self.status = "Stopped"
         map_lbl = QtGui.QLabel(self)
+        self.status_lbl = QtGui.QLabel(self)
+        self.tgt_lbl = QtGui.QLabel(self)
+        self.wc_lbl = QtGui.QLabel(self)
+        bt_move = QtGui.QPushButton("MOVE", parent=self)
+        self.bt_quit = QtGui.QPushButton("QUIT", parent=self)
+
         map_lbl.setGeometry(0, 0, 800, 480)
         map_lbl.setAlignment(QtCore.Qt.AlignTop)
         map_pmp = QtGui.QPixmap(SCRIPT_PATH+MAP_PATH).scaled(
@@ -42,7 +47,12 @@ class MainWidget(QtGui.QWidget):
         map_lbl.setPixmap(map_pmp)
         map_lbl.mousePressEvent = self.updateTgtPos
 
-        self.tgt_lbl = QtGui.QLabel(self)
+        self.status_lbl.setText(self.status)
+        # self.status_lbl.setAlignment(QtCore.Qt.AlignCenter)
+        # self.status_lbl.setStyleSheet('color: red; subcontrol-position: center top; text-align: right;')
+        self.status_lbl.setStyleSheet('text-align: right; color: red; font: bold 18px;')
+        self.status_lbl.move(360, 480)
+
         self.tgt_lbl.resize(50, 50)
         tgt_pmp = QtGui.QPixmap(50, 50)
         tgt_pmp = QtGui.QPixmap(SCRIPT_PATH+TGT_PATH).scaled(
@@ -51,7 +61,6 @@ class MainWidget(QtGui.QWidget):
             transformMode=QtCore.Qt.SmoothTransformation)
         self.tgt_lbl.setPixmap(tgt_pmp)
 
-        self.wc_lbl = QtGui.QLabel(self)
         self.wc_lbl.resize(30, 30)
         wc_pmp = QtGui.QPixmap(30, 30)
         wc_pmp = QtGui.QPixmap(SCRIPT_PATH+WC_PATH).scaled(
@@ -60,17 +69,15 @@ class MainWidget(QtGui.QWidget):
             transformMode=QtCore.Qt.SmoothTransformation)
         self.wc_lbl.setPixmap(wc_pmp)
 
-        bt_move = QtGui.QPushButton("MOVE", parent=self)
         bt_move.move(130, 500)
         bt_move.clicked.connect(self.startMoving)
 
-        self.bt_quit = QtGui.QPushButton("QUIT", parent=self)
         self.bt_quit.move(530, 500)
 
-        self.timer = QtCore.QTimer(parent=self)
-        self.timer.setInterval(100)  # 100ms
-        self.timer.timeout.connect(self.timerLoop)
-        self.timer.start()
+        timer = QtCore.QTimer(parent=self)
+        timer.setInterval(100)  # 100ms
+        timer.timeout.connect(self.timerLoop)
+        timer.start()
 
         self.move(10, 10)
         self.resize(800, 550)
@@ -80,9 +87,11 @@ class MainWidget(QtGui.QWidget):
     def timerLoop(self):
         self.updateCurPos()
         self.draw()
+        if 200**2 > (self.tgt_pos.x()-self.wc_pos.x())**2 + (self.wc_pos.y()-self.wc_pos.y())**2:
+            self.status = "Arrived"
+        self.status_lbl.setText(self.status)
 
     def updateCurPos(self):
-        wc_pos = QtCore.QPoint(0, 0)
         try:
             srv_client = rospy.ServiceProxy("/tms_db_reader/dbreader",
                                             tms_msg_db.srv.TmsdbGetData)
@@ -91,14 +100,15 @@ class MainWidget(QtGui.QWidget):
             req.tmsdb.sensor = 3001
             res = srv_client(req)
             if 0 < len(res.tmsdb):
-                wc_pos = QtCore.QPoint(res.tmsdb[0].x, res.tmsdb[0].y)
-                print (wc_pos.x(), wc_pos.y())
+                self.wc_pos = QtCore.QPoint(res.tmsdb[0].x, res.tmsdb[0].y)
+                # print(wc_pos.x(), wc_pos.y()),
                 wc_mark_pos = QtCore.QPoint(
-                    wc_pos.x()/ROOM_SIZE.x()*MAP_SIZE.x()+MAP_ORIGN.x(),
-                    -wc_pos.y()/ROOM_SIZE.y()*MAP_SIZE.y()+MAP_ORIGN.y())
-                self.wc_lbl.move(wc_mark_pos)
+                    self.wc_pos.x()*1.0/ROOM_SIZE.x()*MAP_SIZE.x()+MAP_ORIGN.x(),
+                    -self.wc_pos.y()*1.0/ROOM_SIZE.y()*MAP_SIZE.y()+MAP_ORIGN.y())
+                # print(wc_mark_pos)
+                self.wc_lbl.move(wc_mark_pos - self.wc_lbl.rect().center())
         except rospy.ServiceException, e:
-            print "Service call failed: %s" % e)
+            print ("Service call failed: %s" % e)
 
     def startMoving(self):
         try:
@@ -111,6 +121,7 @@ class MainWidget(QtGui.QWidget):
             req.arg = [-1, self.tgt_pos.x(), self.tgt_pos.y(), 0]
             res = srv_client(req)
             print ("cmd result:", res.result)
+            self.status = "Moving"
         except rospy.ServiceException, e:
             print ("Service call failed: %s" % e)
 
