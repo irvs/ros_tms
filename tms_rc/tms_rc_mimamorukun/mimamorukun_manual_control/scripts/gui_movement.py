@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import os,sys
+import os, sys
 from PyQt4 import QtGui, QtCore
 import rospy
 #import roslib
@@ -16,8 +16,8 @@ MAP_PATH = '/images/map.png'
 TGT_PATH = '/images/tgt_pos.png'
 WC_PATH = '/images/wc.png'
 
-MAP_ORIGN = QtCore.QPoint(10.0, 450.0)
-MAP_SIZE = QtCore.QPoint(780.0, 440.0)
+MAP_ORIGN = QtCore.QPoint(11.0, 448.0)
+MAP_SIZE = QtCore.QPoint(780.0, 437.0)
 ROOM_SIZE = QtCore.QPoint(8000.0, 4500.0)
 
 
@@ -51,7 +51,7 @@ class MainWidget(QtGui.QWidget):
         # self.status_lbl.setAlignment(QtCore.Qt.AlignCenter)
         # self.status_lbl.setStyleSheet('color: red; subcontrol-position: center top; text-align: right;')
         self.status_lbl.setStyleSheet('text-align: right; color: red; font: bold 18px;')
-        self.status_lbl.move(360, 480)
+        self.status_lbl.move(360, 465)
 
         self.tgt_lbl.resize(50, 50)
         tgt_pmp = QtGui.QPixmap(50, 50)
@@ -87,6 +87,8 @@ class MainWidget(QtGui.QWidget):
     def timerLoop(self):
         self.updateCurPos()
         self.draw()
+        # print(self.tgt_pos.x(), self.tgt_pos.y(), "      ", self.wc_pos.x(), self.wc_pos.y())
+#        , "    ", self.wc_pos)
         if 200**2 > (self.tgt_pos.x()-self.wc_pos.x())**2 + (self.wc_pos.y()-self.wc_pos.y())**2:
             self.status = "Arrived"
         self.status_lbl.setText(self.status)
@@ -133,6 +135,7 @@ class MainWidget(QtGui.QWidget):
             (event.pos().x()*1.0-MAP_ORIGN.x())/MAP_SIZE.x() * ROOM_SIZE.x(),
             (-event.pos().y()*1.0+MAP_ORIGN.y())/MAP_SIZE.y() * ROOM_SIZE.y())
         tgt_mark_pos = QtCore.QPoint(event.pos().x(), event.pos().y())
+        # print(event.pos())
         # print self.tgt_pos,
         self.tgt_lbl.move(tgt_mark_pos - self.tgt_lbl.rect().center())
 
