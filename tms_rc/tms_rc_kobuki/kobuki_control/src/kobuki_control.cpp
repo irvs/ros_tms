@@ -16,6 +16,17 @@ double distance(double x0, double y0, double x1, double y1) {
 	return sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0));
 }
 
+// 小数第N位切り捨て
+double floor2(double input, int N)
+{
+    double output;
+
+    output = input * pow(10.0, (N-1));
+    output = (double)(int)(output);
+
+    return output * pow(10.0, 1-N);
+}
+
 // calculate z-axis rotation from Odom_Quaternion(z, w) -180~+180
 double quaternion_to_enler(double z, double w) {
     double sqw, sqz;
@@ -40,7 +51,7 @@ void vicon_sysCallback(const tms_msg_ss::vicon_data::ConstPtr& msg) {
 		//大域変数を更新
 		v_pos_x = msg->translation.x;
 		v_pos_y = msg->translation.y;
-	    v_ori_th = rad2deg(msg->eulerXYZ[2] - deg2rad(90));
+	    v_ori_th = floor2(rad2deg(msg->eulerXYZ[2]), 2);
 	}
 }
 
@@ -57,7 +68,10 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr& msg) {
     ori_th = rad2deg(temp_th) + th;
 }
 
-bool control_base(double goal_dis, double goal_ang) {
+// command 0: rotate only
+// command 1: go straight only
+// command 2: rotate and go straight
+bool control_base(int command, double goal_dis, double goal_ang) {
 	//移動前のオドメトリ情報を格納
 	double ini_pos_x, ini_pos_y, ini_ori_th;
 	double var_pos_x, var_pos_y, var_ori_th;//ini_th->quaternion to euler
@@ -99,130 +113,130 @@ bool control_base(double goal_dis, double goal_ang) {
 	}
 #endif
 
-	if (goal_ang > 0) { // rotate +
-		while (1) {
-			// 180度の境界線を越えるとき
-			if (ini_ori_th+goal_ang > 180) {
-				if ((ini_ori_th <= var_ori_th && var_ori_th <= 180)
-						|| (-180 <= var_ori_th && var_ori_th < ini_ori_th+goal_ang-360)) {
-//				if ((-180-ini_ori_th <= var_ori_th && var_ori_th < goal_ang-360)
-//						|| (0 <= var_ori_th && var_ori_th <= 180-goal_ang)) {
-					pub_vel(0.0, 0.523596);// 30deg/s
+	if (command == 0 || command == 2) {
+		if (goal_ang > 0) { // rotate +
+			while (1) {
+				// 180度の境界線を越えるとき
+				if (ini_ori_th+goal_ang > 180) {
+					if ((ini_ori_th <= var_ori_th && var_ori_th <= 180)
+							|| (-180 <= var_ori_th && var_ori_th < ini_ori_th+goal_ang-360)) {
+						pub_vel(0.0, 0.523596);// 30deg/s
 #ifdef ODOM
-					var_ori_th = ori_th;
+						var_ori_th = ori_th;
 #endif
 #ifdef VICON
-					var_ori_th = v_ori_th;
+						var_ori_th = v_ori_th;
 #endif
 #ifdef DB
-					if (db_client.call(srv)) {
-						var_ori_th = srv.response.tmsdb[0].ry;
-					} else {
-						ROS_ERROR("Failed to call service tms db get kobuki's data\n");
-					}
+						if (db_client.call(srv)) {
+							var_ori_th = srv.response.tmsdb[0].ry;
+						} else {
+							ROS_ERROR("Failed to call service tms db get kobuki's data\n");
+						}
 #endif
+					} else {
+						pub_vel(0.0, 0.0);
+						break;
+					}
 				} else {
-					pub_vel(0.0, 0.0);
-					break;
-				}
-			} else {
-				if (fabs(var_ori_th - ini_ori_th) < fabs(goal_ang)){
-					// 1.+回転
-					pub_vel(0.0, 0.523596); // 30deg/s
+					if (fabs(var_ori_th - ini_ori_th) < fabs(goal_ang)){
+						// 1.+回転
+						pub_vel(0.0, 0.523596); // 30deg/s
 #ifdef ODOM
-					var_ori_th = ori_th;
+						var_ori_th = ori_th;
 #endif
 #ifdef VICON
-					var_ori_th = v_ori_th;
+						var_ori_th = v_ori_th;
 #endif
 #ifdef DB
-					if (db_client.call(srv)) {
-						var_ori_th = srv.response.tmsdb[0].ry;
-					} else {
-						ROS_ERROR("Failed to call service tms db get kobuki's data\n");
-					}
+						if (db_client.call(srv)) {
+							var_ori_th = srv.response.tmsdb[0].ry;
+						} else {
+							ROS_ERROR("Failed to call service tms db get kobuki's data\n");
+						}
 #endif
-				} else {
-					pub_vel(0.0, 0.0);
-					break;
+					} else {
+						pub_vel(0.0, 0.0);
+						break;
+					}
 				}
 			}
-		}
-	} else if (goal_ang < 0) { // rotate -
-		while (1) {
-			// 180度の境界線を越えるとき
-			if(ini_ori_th+goal_ang < -180) {
-				if ((-180 <= var_ori_th && var_ori_th <= ini_ori_th)
-						|| (360+goal_ang+ini_ori_th < var_ori_th && var_ori_th <= 180)) {
-//				if ((-180-ini_ori_th <= var_ori_th && var_ori_th <= 0)
-//						|| (goal_ang+360 < var_ori_th && var_ori_th <= 180-ini_ori_th)) {
-					pub_vel(0.0, -0.523596);//-(PI/2m)/s
+		} else if (goal_ang < 0) { // rotate -
+			while (1) {
+				// 180度の境界線を越えるとき
+				if(ini_ori_th+goal_ang < -180) {
+					if ((-180 <= var_ori_th && var_ori_th <= ini_ori_th)
+							|| (360+goal_ang+ini_ori_th < var_ori_th && var_ori_th <= 180)) {
+						pub_vel(0.0, -0.523596);//-(PI/2m)/s
 #ifdef ODOM
-					var_ori_th = ori_th;
+						var_ori_th = ori_th;
 #endif
 #ifdef VICON
-					var_ori_th = v_ori_th;
+						var_ori_th = v_ori_th;
 #endif
 #ifdef DB
-					if (db_client.call(srv)) {
-						var_ori_th = srv.response.tmsdb[0].ry;
+						if (db_client.call(srv)) {
+							var_ori_th = srv.response.tmsdb[0].ry;
+						} else {
+							ROS_ERROR("Failed to call service tms db get kobuki's data\n");
+						}
+#endif
 					} else {
-						ROS_ERROR("Failed to call service tms db get kobuki's data\n");
+						pub_vel(0.0, 0.0);
+						break;
 					}
-#endif
 				} else {
-					pub_vel(0.0, 0.0);
-					break;
-				}
-			} else {
-				if (fabs(var_ori_th - ini_ori_th) < fabs(goal_ang)) {
-					// 1.+回転
-					pub_vel(0.0, -0.523596); // -(PI/2m)/s
-#ifdef ODOM
-					var_ori_th = ori_th;
-#endif
-#ifdef VICON
-					var_ori_th = v_ori_th;
-#endif
-#ifdef DB
-					if (db_client.call(srv)) {
-						var_ori_th = srv.response.tmsdb[0].ry;
+					if (fabs(var_ori_th - ini_ori_th) < fabs(goal_ang)) {
+						// 1.+回転
+						pub_vel(0.0, -0.523596); // -(PI/2m)/s
+	#ifdef ODOM
+						var_ori_th = ori_th;
+	#endif
+	#ifdef VICON
+						var_ori_th = v_ori_th;
+	#endif
+	#ifdef DB
+						if (db_client.call(srv)) {
+							var_ori_th = srv.response.tmsdb[0].ry;
+						} else {
+							ROS_ERROR("Failed to call service tms db get kobuki's data\n");
+						}
+	#endif
 					} else {
-						ROS_ERROR("Failed to call service tms db get kobuki's data\n");
+						pub_vel(0.0, 0.0);
+						break;
 					}
-#endif
-				} else {
-					pub_vel(0.0, 0.0);
-					break;
 				}
 			}
 		}
 	}
 
-	if (goal_dis > 0) {
-		while (1) {
-	        if (distance(ini_pos_x, ini_pos_y, var_pos_x, var_pos_y) <  goal_dis) { // 単位：mm
-	        	// 2.直進
-				pub_vel(0.15, 0.0); // 0.25m/s
+	if (command == 1 || command  == 2) {
+		if (goal_dis > 0) {
+			while (1) {
+		        if (distance(ini_pos_x, ini_pos_y, var_pos_x, var_pos_y) <  goal_dis) { // 単位：mm
+		        	// 2.直進
+					pub_vel(0.15, 0.0); // 0.25m/s
 #ifdef ODOM
-				var_pos_x = pos_x;
-				var_pos_y = pos_y;
+					var_pos_x = pos_x;
+					var_pos_y = pos_y;
 #endif
 #ifdef VICON
-				var_pos_x = v_pos_x;
-				var_pos_y = v_pos_y;
+					var_pos_x = v_pos_x;
+					var_pos_y = v_pos_y;
 #endif
 #ifdef DB
-						if (db_client.call(srv)) {
-							var_pos_x = srv.response.tmsdb[0].x;
-							var_pos_y = srv.response.tmsdb[0].y;
-						} else {
-							ROS_ERROR("Failed to call service tms db get kobuki's data\n");
-						}
+							if (db_client.call(srv)) {
+								var_pos_x = srv.response.tmsdb[0].x;
+								var_pos_y = srv.response.tmsdb[0].y;
+							} else {
+								ROS_ERROR("Failed to call service tms db get kobuki's data\n");
+							}
 #endif
-			} else {
-				pub_vel(0.0, 0.0);
-				break;
+				} else {
+					pub_vel(0.0, 0.0);
+					break;
+				}
 			}
 		}
 	}
@@ -231,6 +245,7 @@ bool control_base(double goal_dis, double goal_ang) {
 
 bool callback(tms_msg_rc::rc_robot_control::Request  &req,
 		tms_msg_rc::rc_robot_control::Response &res) {
+	int command = 0;
 	switch (req.cmd) {
 	case 0:
 		///// control robot base1(絶対座標)
@@ -276,10 +291,12 @@ bool callback(tms_msg_rc::rc_robot_control::Request  &req,
 		if (goal_theta > 180.0) goal_theta = goal_theta - 360.0;
 		else if (goal_theta < -180.0) goal_theta = goal_theta + 360.0;
 
-		ROS_INFO("goal_dis=%fmm, goal_arg=%fdeg\n", goal_distance, goal_theta);
-		if(control_base(goal_distance, goal_theta)) {
+		if (goal_distance >= 5 && goal_theta < 2) command = 1;
+		else if (goal_distance >= 5 && goal_theta >= 2) command = 2;
+
+		ROS_INFO("command:%d: goal_dis=%fmm, goal_arg=%fdeg", command, goal_distance, goal_theta);
+		if(control_base(command, goal_distance, goal_theta)) {
 			ROS_INFO("Finish control_base");
-			sleep(2);
 		}
 		res.result = 1;
 		break;
@@ -292,10 +309,13 @@ bool callback(tms_msg_rc::rc_robot_control::Request  &req,
 			ROS_ERROR("case0 : An illegal arguments' type.\n");
 			res.result = 0; //false
 			return true;}
-		ROS_INFO("goal_dis=%fmm, goal_arg=%fdeg\n", req.arg[0], req.arg[1]);
-		if (control_base((double)req.arg[0], (double)req.arg[1])) {
+
+		if (goal_distance >= 5 && goal_theta < 2) command = 1;
+		else if (goal_distance >= 5 && goal_theta >= 2) command = 2;
+
+		ROS_INFO("command:%d: goal_dis=%fmm, goal_arg=%fdeg", command, req.arg[0], req.arg[1]);
+		if (control_base(command, (double)req.arg[0], (double)req.arg[1])) {
 			ROS_INFO("Finish control_base");
-			sleep(2);
 		}
 		res.result = 1;
 		break;
