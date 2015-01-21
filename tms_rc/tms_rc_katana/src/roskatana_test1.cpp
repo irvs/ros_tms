@@ -52,6 +52,7 @@ struct Tpos{
 
 //Katana obj.
 std::auto_ptr<CLMBase> katana;
+
 //std::vector<int> Foo::vec(array, array + sizeof(array)/sizeof(*array));
 //positionen, hard-coded. Use values from file instead
 const int Tpos::xArr[] = {30206, -23393, -3066, 14454, 30000, 30000};
@@ -121,13 +122,7 @@ double user_angle_deg2rad(double degree){
 
 
 bool katana_move_angle_array(tms_msg_rc::katana_pos_array::Request &req, tms_msg_rc::katana_pos_array::Response &res){
-
 	//角度[6]配列(&req)→Enc値[6]配列(act_enc)→pose値[6]配列act_pose
-	for (int i=0; i<req.pose_array.size(); i++) {
-		if (req.pose_array.at(i).pose.size() != 7) return false;
-	}
-	ROS_INFO("%f, %f, %f, %f, %f, %f, %f", req.pose_array[0].pose[0],req.pose_array[0].pose[1],req.pose_array[0].pose[2],
-			req.pose_array[0].pose[3],req.pose_array[0].pose[4],req.pose_array[0].pose[5],req.pose_array[0].pose[6]);
 
 	std::vector< std::vector<int> > act_enc;	//Encoder値
 	std::vector<int> temp_enc;
@@ -138,46 +133,71 @@ bool katana_move_angle_array(tms_msg_rc::katana_pos_array::Request &req, tms_msg
 	unsigned int i=0;	//for用カウンタ
 	unsigned int j=0;	//std::cout用カウンタ
 
+	double actual_pose[6];
 	//関節角度から関節Encoder値に変換
 	for(i=0;i<req.pose_array.size();i++){
+		ROS_INFO("%f, %f, %f, %f, %f, %f, %f", req.pose_array[i].pose[0],req.pose_array[i].pose[1],req.pose_array[i].pose[2],
+			req.pose_array[i].pose[3],req.pose_array[i].pose[4],req.pose_array[i].pose[5],req.pose_array[i].pose[6]);
 
-		temp_enc.push_back(user_angle_rad2enc(katana.get(),0,user_angle_deg2rad((double)req.pose_array[i].pose[0])));	//motor1
-		temp_enc.push_back(user_angle_rad2enc(katana.get(),1,user_angle_deg2rad((double)req.pose_array[i].pose[1])));	//motor2
-		temp_enc.push_back(user_angle_rad2enc(katana.get(),2,user_angle_deg2rad((double)req.pose_array[i].pose[2])));	//motor3
-		temp_enc.push_back(user_angle_rad2enc(katana.get(),3,user_angle_deg2rad((double)req.pose_array[i].pose[3])));	//motor4
-		temp_enc.push_back(user_angle_rad2enc(katana.get(),4,user_angle_deg2rad((double)req.pose_array[i].pose[4])));	//motor5
-		temp_enc.push_back(user_angle_rad2enc(katana.get(),5,user_angle_deg2rad((double)(req.pose_array[i].pose[5]+req.pose_array[i].pose[6]))));	//motor6(=Gripper)
+		temp_enc.clear();
+
+		actual_pose[0] = (double)req.pose_array[i].pose[0] + 180.0;
+		actual_pose[1] = 90.0 - (double)req.pose_array[i].pose[1];
+		actual_pose[2] = 180.0 - (double)req.pose_array[i].pose[2];
+		actual_pose[3] = (double)req.pose_array[i].pose[3] + 180.0;
+		actual_pose[4] = 180.0 - (double)req.pose_array[i].pose[4];
+		actual_pose[5] = -1* (double)(req.pose_array[i].pose[5]+req.pose_array[i].pose[6]);
+
+		temp_enc.push_back(user_angle_rad2enc(katana.get(),0,user_angle_deg2rad(actual_pose[0])));	//motor1
+		temp_enc.push_back(user_angle_rad2enc(katana.get(),1,user_angle_deg2rad(actual_pose[1])));	//motor2
+		temp_enc.push_back(user_angle_rad2enc(katana.get(),2,user_angle_deg2rad(actual_pose[2])));	//motor3
+		temp_enc.push_back(user_angle_rad2enc(katana.get(),3,user_angle_deg2rad(actual_pose[3])));	//motor4
+		temp_enc.push_back(user_angle_rad2enc(katana.get(),4,user_angle_deg2rad(actual_pose[4])));	//motor5
+		temp_enc.push_back(user_angle_rad2enc(katana.get(),5,user_angle_deg2rad(actual_pose[5])));	//motor6(=Gripper)
 
 		for(j=0;j<6;j++)
-			printf("%d ",temp_enc[j]);
+//			printf("actual:%fdeg \n",actual_pose[j]);
+			printf("actual:%f, encoder:%d \n",actual_pose[j], temp_enc.at(j));
 		printf("\n");
 
-		act_enc.push_back(temp_enc);
-		temp_enc.clear();
+//		ROS_INFO("movDegrees_%d", i);
+//		katana->movDegrees(0, actual_pose[0]);
+//		katana->movDegrees(1, actual_pose[1]);
+//		katana->movDegrees(2, actual_pose[2]);
+//		katana->movDegrees(3, actual_pose[3]);
+//		katana->movDegrees(4, actual_pose[4]);
+//		katana->movDegrees(5, actual_pose[5]);
+//		ROS_INFO("movDegrees%d", i);
+//		sleep(6);
+
+		ROS_INFO("moveRobotToEnc_%d", i);
+		katana->moveRobotToEnc(temp_enc, true);
+		ROS_INFO("moveRobotToEnc%d", i);
+		sleep(3);
+//		act_enc.push_back(temp_enc);
 	}
 	printf("\n");
-
 
 	//関節Encoder値からロボット姿勢に変換
-	for(i=0;i<act_enc.size();i++){
+//	for(i=0;i<act_enc.size();i++){
+//		ROS_INFO("Debug1");
+//		katana->getCoordinatesFromEncoders(temp_pose, act_enc[i]);	//motor1~6(Encoder) -> RobotPose(x,y,z,phi,theta,psi)
 
-		katana->getCoordinatesFromEncoders(temp_pose, act_enc[i]);	//motor1~6(Encoder) -> RobotPose(x,y,z,phi,theta,psi)
+//		for(j=0;j<6;j++)
+//			printf("%lf ",temp_pose[j]);
+//		printf("\n");
 
-		for(j=0;j<6;j++)
-			printf("%lf ",temp_pose[j]);
-		printf("\n");
-
-		act_pose.push_back(temp_pose);
-		temp_pose.clear();
-	}
-	printf("\n");
+//		act_pose.push_back(temp_pose);
+//		temp_pose.clear();
+//	}
+//	printf("\n");
 
 	//ロボット動作
-	for(i=0;i<act_pose.size();i++){
+//	for(i=0;i<act_pose.size();i++){
 
-		katana->moveRobotTo(act_pose[i],true);		//姿勢のパラメータ→逆運動学→Move
+//		katana->moveRobotTo(act_pose[i],true);		//姿勢のパラメータ→逆運動学→Move
 
-	}
+//	}
 
 	return true;
 }
@@ -574,7 +594,6 @@ int main(int argc, char *argv[]) {
 	katana->moveRobotTo(pose_init);
 
 SPIN:
-
 	ros::spin();
 
 	return 0;
