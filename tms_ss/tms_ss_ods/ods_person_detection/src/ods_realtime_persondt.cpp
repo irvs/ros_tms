@@ -367,7 +367,7 @@ int main(int argc, char** argv)
     while(ros::ok()){
         tms_msg_ss::ods_person_dt msg;
 
-        pcl_sub = nh.subscribe("/camera/depth_registered/points", 1, callback);
+        pcl_sub = nh.subscribe("/camera/depth/points", 1, callback);
 
         while(1){
             if(viewer_cloud->points.size() != 0){

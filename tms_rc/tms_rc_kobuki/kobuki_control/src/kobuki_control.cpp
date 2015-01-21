@@ -51,7 +51,7 @@ void vicon_sysCallback(const tms_msg_ss::vicon_data::ConstPtr& msg) {
 		//大域変数を更新
 		v_pos_x = msg->translation.x;
 		v_pos_y = msg->translation.y;
-	    v_ori_th = floor2(rad2deg(msg->eulerXYZ[2]), 2);
+	    v_ori_th = floor2(rad2deg(msg->eulerXYZ[2]), 1);
 	}
 }
 
