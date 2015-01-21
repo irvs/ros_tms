@@ -103,7 +103,7 @@ bool Vicon_Psetodom(std_srvs::Empty::Request &req, std_srvs::Empty::Response &re
     getRobotData.request.tmsdb.id     = 2006; // KXP ID
     getRobotData.request.tmsdb.sensor = 3001; // Vicon ID
     if (get_data_client.call(getRobotData)) {
-      ROS_INFO("Get info of object ID: %d\n", getRobotData.request.tmsdb.id);
+      ROS_INFO("Get info of robot ID: %d\n", getRobotData.request.tmsdb.id);
     } else {
       ROS_INFO("Failed to call service getRobotData ID: %d\n", getRobotData.request.tmsdb.id);
       return false;
