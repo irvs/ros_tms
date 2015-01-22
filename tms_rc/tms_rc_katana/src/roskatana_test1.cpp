@@ -384,8 +384,8 @@ int main(int argc, char *argv[]) {
 
 
 	//設定変更・キャリブレーション
-	katana->setMaximumLinearVelocity(60);	//set linear velocity to 60
-	std::cout << "setMaximumLinearVelocity 60." << std::endl;
+	katana->setMaximumLinearVelocity(30);	//set linear velocity to 30
+	std::cout << "setMaximumLinearVelocity 30." << std::endl;
 	katana->calibrate();	//caliblate katana
 	std::cout << "Katana was calibrated."<< std::endl;
 
