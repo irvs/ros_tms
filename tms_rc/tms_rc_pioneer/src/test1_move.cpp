@@ -241,7 +241,7 @@ bool Pmove(tms_msg_rc::tms_rc_pmove::Request &req, tms_msg_rc::tms_rc_pmove::Res
 			break;
 	}
 
-	while(robot.isRunning()){};
+
 
 	return true;
 }
