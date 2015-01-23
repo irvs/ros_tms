@@ -93,53 +93,68 @@ bool TmsRpPathPlanning::voronoiPathPlanner(tms_msg_rp::rps_voronoi_path_planning
   goal[2] = deg2rad(req.goal_pos.th); //(rad)
 
   ROS_INFO("Init map ...");
+  vector<vector<CollisionMapData> > using_map;
+  vector<CollisionMapData> temp_map_line;
+
+  while (1) {
+	if (!dynamic_map_.empty()) {
+	  using_map.clear();
+      for (int i=0; i<dynamic_map_.size(); i++) {
+    	temp_map_line.clear();
+    	copy(dynamic_map_.at(i).begin(), dynamic_map_.at(i).end(), back_inserter(temp_map_line));
+    	using_map.push_back(temp_map_line);
+      }
+      break;
+	}
+  }
 
   ROS_INFO("Calculate voronoi_ path...");
 
-  res.success = setCollisionArea(dynamic_map_, collision_threshold, res.message);
+  res.success = setCollisionArea(using_map, collision_threshold, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = setVoronoiLine(dynamic_map_, res.message);
+  res.success = setVoronoiLine(using_map, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = calcDistFromVoronoi(dynamic_map_, res.message);
+  res.success = calcDistFromVoronoi(using_map, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = connectToVoronoi(dynamic_map_, start, res.message);
+  res.success = connectToVoronoi(using_map, start, res.message);
   if(!res.success){
     ROS_ERROR("Error : Start Point");
     ROS_ERROR((res.message).c_str());
     return false;
   }
-  res.success = calcDistFromVoronoi(dynamic_map_, res.message);
+
+  res.success = calcDistFromVoronoi(using_map, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = connectToVoronoi(dynamic_map_, goal, res.message);
+  res.success = connectToVoronoi(using_map, goal, res.message);
   if(!res.success){
     ROS_ERROR("Error : Goal Point");
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = calcDistFromVoronoi(dynamic_map_, res.message);
+  res.success = calcDistFromVoronoi(using_map, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  res.success = calcDistFromGoal(dynamic_map_, goal, res.message);
+  res.success = calcDistFromGoal(using_map, goal, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
@@ -147,13 +162,13 @@ bool TmsRpPathPlanning::voronoiPathPlanner(tms_msg_rp::rps_voronoi_path_planning
 
   vector<vector<double> > voronoi_path, smooth_path, comp_path;
 
-  res.success = calcVoronoiPath(dynamic_map_, start, goal, voronoi_path, res.message);
+  res.success = calcVoronoiPath(using_map, start, goal, voronoi_path, res.message);
   if(!res.success){
     ROS_ERROR((res.message).c_str());
     return false;
   }
 
-  smoothVoronoiPath(dynamic_map_, start, goal, voronoi_path, smooth_path, kSmoothVoronoiPathThreshold_/1000.0);
+  smoothVoronoiPath(using_map, start, goal, voronoi_path, smooth_path, kSmoothVoronoiPathThreshold_/1000.0);
   //~ compVoronoiPath(smooth_path, comp_path);
 
   //~ t_end = clock();
@@ -408,6 +423,7 @@ bool TmsRpPathPlanning::connectToVoronoi(vector<vector<CollisionMapData> >& map,
   int target_x, target_y, temp_x, temp_y, dx=0, dy=0;
   target_x = (int)round( (connect_point[0] - x_llimit_) / cell_size_ );
   target_y = (int)round( (connect_point[1] - y_llimit_) / cell_size_ );
+
   temp_x = target_x;
   temp_y = target_y;
 
@@ -420,10 +436,12 @@ bool TmsRpPathPlanning::connectToVoronoi(vector<vector<CollisionMapData> >& map,
     return false;
   }
 
-  if(temp_dist==0.0)
-  return true;
+  if(temp_dist >=0 && temp_dist<=0.01) {
+	  return true;
+  }
 
-  while(temp_dist!=0.0){
+  while(temp_dist<0 || temp_dist>0.01){
+
     if( map[temp_x-1][temp_y].dist_from_voronoi_ < temp_dist ){
       dx = -1;
       dy = 0;
@@ -622,11 +640,12 @@ bool TmsRpPathPlanning::calcVoronoiPath(vector<vector<CollisionMapData> >& map, 
   double temp_dist = map[i_temp_x][i_temp_y].dist_from_goal_;
   vector<double> temp_pos;
   temp_pos.resize(2);
-
-  if(temp_dist==0)
-  return true;
+  if(temp_dist>=0 && temp_dist<=0.01) {
+	  return true;
+  }
 
   while(1){
+
     if(temp_dist > map[i_temp_x-1][i_temp_y].dist_from_goal_){
       dx = -1;
       dy = 0;
@@ -679,8 +698,9 @@ bool TmsRpPathPlanning::calcVoronoiPath(vector<vector<CollisionMapData> >& map, 
     i_temp_y += dy;
     map[i_temp_x][i_temp_y].path_ = true;
 
-    if(temp_dist==0.0)
-    break;
+    if(temp_dist>=0 && temp_dist<=0.01) {
+        break;
+    }
 
     temp_pos[0] = (i_temp_x * cell_size_) + x_llimit_;
     temp_pos[1] = (i_temp_y * cell_size_) + y_llimit_;
