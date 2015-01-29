@@ -214,7 +214,7 @@ void spinWheel(/*double arg_speed, double arg_theta*/){
     double val_R =  Dist2Pulse(arg_speed) + Dist2Pulse((WHEEL_DIST/2)*arg_theta);
     val_L = (int)Limit(val_L,(double)SPEED_MAX,(double)-SPEED_MAX);
     val_R = (int)Limit(val_R,(double)SPEED_MAX,(double)-SPEED_MAX);
-    //ROS_INFO("val_L:%2.f   val_R:%2.f",val_L,val_R);
+    ROS_INFO("val_L:%2.f   val_R:%2.f",val_L,val_R);
 
     string cmd_L = boost::lexical_cast<string>(val_L);
     string cmd_R = boost::lexical_cast<string>(val_R);
@@ -243,9 +243,27 @@ bool receiveGoalPose(   tms_msg_rc::rc_robot_control::Request &req,
     mchn_pose.tgtPose.x = req.arg[0];
     mchn_pose.tgtPose.y = req.arg[1];
     mchn_pose.tgtPose.theta = Deg2Rad(req.arg[2]);
-    while(! mchn_pose.goPose()){
-        ROS_INFO("doing goPose");
-    }
+    // while(! mchn_pose.goPose()){
+    //     ROS_INFO("doing goPose");
+    // }
+    while(1){
+        // printf("in moving loop");
+        ros::Duration(0.1).sleep();
+        printf("doing goPose");
+        ROS_INFO("pos x:%4.2lf y:%4.2lf th:%4.2lf     ",
+            mchn_pose.pos_vicon.x,
+            mchn_pose.pos_vicon.y,
+            Rad2Deg(mchn_pose.pos_vicon.theta));
+        printf("tgt x:%4.2lf y:%4.2lf th:%4.2lf     ",
+            mchn_pose.tgtPose.x,
+            mchn_pose.tgtPose.y,
+            Rad2Deg(mchn_pose.tgtPose.theta));
+        bool isArrived = mchn_pose.goPose();
+        mchn_pose.updateVicon();
+        spinWheel();
+        if(isArrived) break;
+     }
+     return true;
 }
 
 void receiveCmdVel(const geometry_msgs::Twist::ConstPtr& cmd_vel){
@@ -285,16 +303,15 @@ bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/){
     tmp_spd =  Limit(tmp_spd,100,-100);
     tmp_turn = Limit(tmp_turn,30,-30);
     double distance = sqrt(sqr(errorX)+sqr(errorY));
-    if (distance <= 200){
-        tmp_spd = 0.0;
-    }
     printf("spd:%+8.2lf turn:%+4.1lf",tmp_spd,tmp_turn);
-    this->tgtTwist.linear.x = tmp_spd;
-    this->tgtTwist.angular.z= Deg2Rad(tmp_turn);
-    if(distance<=200 && 20>fabs(Rad2Deg(errorNT))){
-        ret = true;
-    }
-    return ret;
+    if(distance<=200/* && 60>fabs(Rad2Deg(errorNT))*/){
+        this->tgtTwist.angular.z= 0;
+        this->tgtTwist.linear.x = 0;      return true;
+    }else{
+        this->tgtTwist.angular.z= Deg2Rad(tmp_turn);
+        this->tgtTwist.linear.x = tmp_spd;
+        return false;
+     }
 }
 
 void *vicon_update( void *ptr )
@@ -355,9 +372,9 @@ int main(int argc, char **argv){
 
     db_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
 //    ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, receiveCmdVel);
-   ros::Subscriber cmd_vel_sub = n.subscribe<sensor_msgs::Joy>("/joy", 1, receiveJoy);
+   // ros::Subscriber cmd_vel_sub = n.subscribe<sensor_msgs::Joy>("/joy", 1, receiveJoy);
 //    ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Pose2D>("/mkun_goal_pose", 1, receiveGoalPose);
-    // ros::ServiceServer service = n.advertiseService("mkun_goal_pose",receiveGoalPose);
+    ros::ServiceServer service = n.advertiseService("mkun_goal_pose",receiveGoalPose);
 /*    ros::Time current_time, last_time;
     current_time    = ros::Time::now();
     last_time       = ros::Time::now();*/
@@ -509,7 +526,7 @@ bool MachinePose_s::goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/)
     double Ky = 1.5e-6;
     double Kt = 0.1;
 
-    double gain = 0.1;
+    double gain = 3.0;//0.1;
 
     double targetX = this->tgtPose.x;
     double targetY = this->tgtPose.y;
@@ -544,11 +561,14 @@ bool MachinePose_s::goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/)
         tmp_spd = 0.0;
     }
     printf("spd:%+8.2lf turn:%+4.1lf", tmp_spd, tmp_turn);
-    this->tgtTwist.linear.x = tmp_spd;
-    this->tgtTwist.angular.z = Deg2Rad(tmp_turn);
-    if (distance <= 200 && 20>fabs(Rad2Deg(errorNT))){
-        ret = true;
-    }
-    return ret;
+    printf("spd:%+8.2lf turn:%+4.1lf",tmp_spd,tmp_turn);
+    if(distance<=200/* && 60>fabs(Rad2Deg(errorNT))*/){
+        this->tgtTwist.angular.z= 0;
+        this->tgtTwist.linear.x = 0;      return true;
+    }else{
+        this->tgtTwist.angular.z= Deg2Rad(tmp_turn);
+        this->tgtTwist.linear.x = tmp_spd;
+        return false;
+     }
 }
 
