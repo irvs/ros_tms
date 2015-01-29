@@ -218,7 +218,7 @@ void spinWheel(/*double arg_speed, double arg_theta*/){
     double val_R =  Dist2Pulse(arg_speed) + Dist2Pulse((WHEEL_DIST/2)*arg_theta);
     val_L = (int)Limit(val_L,(double)SPEED_MAX,(double)-SPEED_MAX);
     val_R = (int)Limit(val_R,(double)SPEED_MAX,(double)-SPEED_MAX);
-    ROS_INFO("val_L:%2.f   val_R:%2.f",val_L,val_R);
+    printf("val_L:%2.f   val_R:%2.f",val_L,val_R);
 
     string cmd_L = boost::lexical_cast<string>(val_L);
     string cmd_R = boost::lexical_cast<string>(val_R);
@@ -226,8 +226,8 @@ void spinWheel(/*double arg_speed, double arg_theta*/){
     string message = "@SS1," + cmd_L + "@SS2," + cmd_R;
     string reply;
     client_socket << message;
-    //client_socket >> reply;
-    //cout << "Response:" << reply << "\n";
+    client_socket >> reply;
+    cout << "Response:" << reply << "\n";
 }
 
 // void receiveGoalPose(const geometry_msgs::Pose2D::ConstPtr& cmd_pose){
@@ -250,11 +250,10 @@ bool receiveGoalPose(   tms_msg_rc::rc_robot_control::Request &req,
     // while(! mchn_pose.goPose()){
     //     ROS_INFO("doing goPose");
     // }
-    while(1){
-        // printf("in moving loop");
-        ros::Duration(0.1).sleep();
+    ros::Rate r(4);
+    while (ros::ok()){
         printf("doing goPose");
-        ROS_INFO("pos x:%4.2lf y:%4.2lf th:%4.2lf     ",
+        printf("pos x:%4.2lf y:%4.2lf th:%4.2lf     \n",
             mchn_pose.pos_vicon.x,
             mchn_pose.pos_vicon.y,
             Rad2Deg(mchn_pose.pos_vicon.theta));
@@ -266,7 +265,25 @@ bool receiveGoalPose(   tms_msg_rc::rc_robot_control::Request &req,
         mchn_pose.updateVicon();
         spinWheel();
         if(isArrived) break;
-     }
+        r.sleep();
+    }
+    // while(1){
+    //     // printf("in moving loop");
+    //     ros::Duration(0.1).sleep();
+    //     printf("doing goPose");
+    //     ROS_INFO("pos x:%4.2lf y:%4.2lf th:%4.2lf     ",
+    //         mchn_pose.pos_vicon.x,
+    //         mchn_pose.pos_vicon.y,
+    //         Rad2Deg(mchn_pose.pos_vicon.theta));
+    //     printf("tgt x:%4.2lf y:%4.2lf th:%4.2lf     ",
+    //         mchn_pose.tgtPose.x,
+    //         mchn_pose.tgtPose.y,
+    //         Rad2Deg(mchn_pose.tgtPose.theta));
+    //     bool isArrived = mchn_pose.goPose();
+    //     mchn_pose.updateVicon();
+    //     spinWheel();
+    //     if(isArrived) break;
+    //  }
      return true;
 }
 
@@ -356,8 +373,9 @@ int main(int argc, char **argv){
     nh_param.param<int>("spin_Ki",Ki_,/*30*/100);
     nh_param.param<int>("spin_Kd",Kd_,40000);
     nh_param.param<double>("spd_Kp",SPD_KP,2.0);
-    nh_param.param<double>("turn_Ki",TURN_KP,1.0);
+    nh_param.param<double>("turn_Kp",TURN_KP,1.0);
     nh_param.param<int>("arv_dist",ARV_DIST,200);
+    //acces like "mimamorukun_controller/spd_Kp"
     s_Kp_ = boost::lexical_cast<string>(Kp_);
     s_Ki_ = boost::lexical_cast<string>(Ki_);
     s_Kd_ = boost::lexical_cast<string>(Kd_);
@@ -378,16 +396,16 @@ int main(int argc, char **argv){
     }
 
     db_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
-//    ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, receiveCmdVel);
+   // ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, receiveCmdVel);
    // ros::Subscriber cmd_vel_sub = n.subscribe<sensor_msgs::Joy>("/joy", 1, receiveJoy);
-//    ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Pose2D>("/mkun_goal_pose", 1, receiveGoalPose);
+   // ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Pose2D>("/mkun_goal_pose", 1, receiveGoalPose);
     ros::ServiceServer service = n.advertiseService("mkun_goal_pose",receiveGoalPose);
 /*    ros::Time current_time, last_time;
     current_time    = ros::Time::now();
     last_time       = ros::Time::now();*/
 
     mchn_pose.updateVicon();
-        ROS_INFO("initial val  x:%4.2lf y:%4.2lf th:%4.2lf",
+        printf("initial val  x:%4.2lf y:%4.2lf th:%4.2lf\n\r",
             mchn_pose.pos_vicon.x,
             mchn_pose.pos_vicon.y,
             Rad2Deg(mchn_pose.pos_vicon.theta));
