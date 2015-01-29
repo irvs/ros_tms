@@ -10,6 +10,9 @@
 #include <tms_msg_db/tmsdb_get_movable_furnitures_info.h>
 #include <tms_msg_rp/rps_map_full.h>
 
+#include <algorithm>
+#include <iterator>
+
 namespace tms_rp {
 
 class TmsRpPathPlanning : public cnoid::ToolBar, public boost::signals::trackable

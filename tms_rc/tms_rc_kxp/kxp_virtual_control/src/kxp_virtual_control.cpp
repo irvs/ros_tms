@@ -30,8 +30,8 @@ double g_x = 2000.0;
 double g_y = 500.0;
 double g_t = 0.0;
 double g_joint[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
-double g_hL = 10.0; // hand
-double g_hR = 10.0;
+double g_hL = 20.0; // hand
+double g_hR = 20.0;
 double g_r_state = 1;
 
 //robot model 2
@@ -39,8 +39,8 @@ double g_x2 = 2000.0;
 double g_y2 = 500.0;
 double g_t2 = 0.0;
 double g_joint2[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
-double g_hL2 = 10.0; // hand
-double g_hR2 = 10.0;
+double g_hL2 = 20.0; // hand
+double g_hR2 = 20.0;
 double g_r_state2 = 1;
 //------------------------------------------------------------------------------
 int g_oid;
