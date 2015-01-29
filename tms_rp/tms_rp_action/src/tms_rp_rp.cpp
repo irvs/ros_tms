@@ -35,6 +35,7 @@ tms_rp::TmsRpSubtask::TmsRpSubtask(): ToolBar("TmsRpSubtask"),
   katana_client                 = nh1.serviceClient<tms_msg_rc::katana_pos_array>("katana_move_angle_array");
   v_katana_client               = nh1.serviceClient<tms_msg_rc::katana_pos_array>("virtual_katana_move_angle_array");
   kobuki_virtual_control_client = nh1.serviceClient<tms_msg_rc::rc_robot_control>("kobuki_virtual_control");
+  kobuki_actual_control_client  = nh1.serviceClient<tms_msg_rc::rc_robot_control>("kobuki_control");
   mkun_virtual_control_client   = nh1.serviceClient<tms_msg_rc::rc_robot_control>("mimamorukun_virtual_control");
   mkun_control_client           = nh1.serviceClient<tms_msg_rc::rc_robot_control>("mkun_goal_pose");
   voronoi_path_planning_client_ = nh1.serviceClient<tms_msg_rp::rps_voronoi_path_planning>("rps_voronoi_path_planning");
@@ -566,17 +567,22 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 		    	case 2005: //kobuki
 			    	{
 			    		tms_msg_rc::rc_robot_control kobuki_srv;
-			    		kobuki_srv.request.unit = 1;
-			    		kobuki_srv.request.cmd = 15;
 			    		kobuki_srv.request.arg.resize(3);
 			    		kobuki_srv.request.arg[0] = rp_srv.response.VoronoiPath[i].x;
 			    		kobuki_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
 			    		kobuki_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
-			    		if (kobuki_virtual_control_client.call(kobuki_srv)) ROS_INFO("result: %d", kobuki_srv.response.result);
-			    		else                  ROS_ERROR("Failed to call service kobuki_move");
 
-			    		if (sd.type == true) {} // set odom
-			    		else sleep(0.7); //temp
+			    		if (sd.type == true) {
+				    		kobuki_srv.request.cmd = 0;
+				    		if (kobuki_actual_control_client.call(kobuki_srv)) ROS_INFO("result: %d", kobuki_srv.response.result);
+				    		else ROS_ERROR("Failed to call service kobuki_move");
+			    		} else {
+				    		kobuki_srv.request.unit = 1;
+				    		kobuki_srv.request.cmd = 15;
+				    		if (kobuki_virtual_control_client.call(kobuki_srv)) ROS_INFO("result: %d", kobuki_srv.response.result);
+				    		else ROS_ERROR("Failed to call service virtual_kobuki_move");
+				    		sleep(0.7);
+			    		}
 			    		break;
 			    	}
 			    case 2006: // kxp
@@ -586,15 +592,12 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    			double dis = distance(rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
 			    					    					rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
 			    			double ang = rp_srv.response.VoronoiPath[i].th - rp_srv.response.VoronoiPath[i-1].th;
-			    			if (ang == 0) {
+			    			if (ang <= 3 && dis >= 30) {
 				    			move_srv.request.command = 1;
 				    			move_srv.request.pdist = dis;
 			    			} else {
-			    				if (ang > 180.0) {
-			    					ang = -1 * (360.0 - ang);
-			    				} else if (ang < -180.0) {
-			    					ang = ang + 360.0;
-			    				}
+			    				if (ang > 180.0) ang = ang - 360.0;
+			    				else if (ang < -180.0) ang = ang + 360.0;
 				    			move_srv.request.command = 2;
 				    			move_srv.request.pangle = ang;
 			    			}
@@ -624,25 +627,9 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    		while (dis <= 250) {
 			    			i+=2;
 			    			if (i > rp_srv.response.VoronoiPath.size()) {
-			    				ROS_ERROR("i > rp_srv.response.VoronoiPath.size()");
-			    				// final destination
-					    		mkun_srv.request.arg.resize(3);
-					    		mkun_srv.request.arg[0] = rp_srv.response.VoronoiPath[rp_srv.response.VoronoiPath.size()-1].x;
-					    		mkun_srv.request.arg[1] = rp_srv.response.VoronoiPath[rp_srv.response.VoronoiPath.size()-1].y;
-					    		mkun_srv.request.arg[2] = rp_srv.response.VoronoiPath[rp_srv.response.VoronoiPath.size()-1].th;
-					    		if (sd.type == true) {	//real world robot
-						    		if(mkun_control_client.call(mkun_srv))
-						    			ROS_INFO("result: %d", mkun_srv.response.result);
-						    		else
-						    			ROS_ERROR("Failed to call service mimamorukun_move");
-					    		}else{					//call srv for simulator
-						    		if(mkun_virtual_control_client.call(mkun_srv))
-						    			ROS_INFO("result: %d", mkun_srv.response.result);
-						    		else
-						    			ROS_ERROR("Failed to call service mimamorukun_virtual_move");
-					    			sleep(1); //temp
-					    		}
-			    				break;
+			    				ROS_ERROR("Mimamorukun cannot move the next point. Exit");
+//			    				ROS_ERROR("i > rp_srv.response.VoronoiPath.size()");
+			    				return true;
 			    			}
 			    			dis = distance(rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
 			    					rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
@@ -675,12 +662,12 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    	}
 				}
 				i++;
-				if (i==2 && rp_srv.response.VoronoiPath.size()==2) {
+				if (i==2 && rp_srv.response.VoronoiPath.size()<=2) {
 					i++;
 				}
 				// Update Robot Path Planning
 				if (i == 3) {
-					sleep(1);
+					sleep(2);
 					for (int cnt=0; cnt<5; cnt++) {
 							if(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv))
 								break;
@@ -692,9 +679,15 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 					error_x = fabs(rp_srv.request.start_pos.x - rp_srv.request.goal_pos.x);
 					error_y = fabs(rp_srv.request.start_pos.y - rp_srv.request.goal_pos.y);
 					error_th = fabs(rp_srv.request.start_pos.th - rp_srv.request.goal_pos.th);
-					if (error_x<5 && error_y<5 && error_th<2) {
+					if (error_th > 180.0) error_th = -1*(error_th - 360.0);
+					ROS_INFO("error_x:%f,error_y:%f,error_th:%f", error_x, error_y, error_th);
+					if (error_x<35 && error_y<35 && error_th<3) {
+						ROS_INFO("finish");
 						break; // dis_error:5mm, ang_error:2deg
-					}
+						}
+//					if (error_x<5 && error_y<5 && error_th<2) {
+//						break; // dis_error:5mm, ang_error:2deg
+//					}
 
 					rp_srv.response.VoronoiPath.clear();
 					voronoi_path_planning_client_.call(rp_srv);
@@ -909,10 +902,10 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 				tms_msg_rc::katana_pos_array katana_srv;
 				tms_msg_rc::katana_pos argument;
 				katana_srv.request.pose_array.clear();
-				argument.pose.clear();
 
 				for (int t=0; t<trajectory.size(); t++) {
 					for (int u=0; u<trajectory.at(t).joints.size(); u++) {
+						argument.pose.clear();
 						ROS_INFO("joint[%d][%d]=%f", t, u, rad2deg(trajectory.at(t).joints[u]));
 						argument.pose.push_back(rad2deg(trajectory.at(t).joints[u]));
 					}
@@ -1028,11 +1021,8 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 			    			move_srv.request.command = 1;
 			    			move_srv.request.pdist = dis;
 		    			} else {
-		    				if (ang > 180.0) {
-		    					ang = -1 * (360.0 - ang);
-		    				} else if (ang < -180.0) {
-		    					ang = ang + 360.0;
-		    				}
+		    				if (ang > 180.0) ang = ang - 360.0;
+		    				else if (ang < -180.0) ang = ang + 360.0;
 			    			move_srv.request.command = 2;
 			    			move_srv.request.pangle = ang;
 		    			}
@@ -1237,7 +1227,6 @@ bool tms_rp::TmsRpSubtask::random_move(void) {
 		state_client.call(s_srv);
 		return false;
 	  }
-	// ======= add end determination? =======
 	//	apprise TS_control of succeeding subtask execution
 	s_srv.request.state = 1;
 	state_client.call(s_srv);

@@ -82,6 +82,7 @@ class TmsRpSubtask : public cnoid::ToolBar, public boost::signals::trackable
 	ros::ServiceClient katana_client;
 	ros::ServiceClient v_katana_client;
 	ros::ServiceClient kobuki_virtual_control_client;
+	ros::ServiceClient kobuki_actual_control_client;
 	ros::ServiceClient mkun_virtual_control_client;
 	ros::ServiceClient mkun_control_client;
 	ros::ServiceClient voronoi_path_planning_client_;

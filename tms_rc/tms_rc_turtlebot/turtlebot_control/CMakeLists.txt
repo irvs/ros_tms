@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(tms_rc_kobuki_control)
+project(tms_rc_turtlebot_control)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -20,6 +20,6 @@ include_directories(include
 )
 
 ## Declare a cpp executable
-add_executable(kobuki_control src/kobuki_control.cpp)
-add_dependencies(kobuki_control tms_msg_rc_generate_messages_cpp tms_msg_ss_generate_messages_cpp tms_msg_db_generate_messages_cpp)
-target_link_libraries(kobuki_control ${catkin_LIBRARIES} )
+add_executable(turtlebot_control src/turtlebot_control.cpp)
+add_dependencies(turtlebot_control tms_msg_rc_generate_messages_cpp tms_msg_ss_generate_messages_cpp tms_msg_db_generate_messages_cpp)
+target_link_libraries(turtlebot_control ${catkin_LIBRARIES} )
