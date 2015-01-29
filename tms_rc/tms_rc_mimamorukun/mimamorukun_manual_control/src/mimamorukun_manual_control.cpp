@@ -39,6 +39,10 @@ long int    ENC_L = 0;
 long int    ENC_R = 0;
 int         POS_X = 0;
 int         POS_Y = 0;
+
+double       TURN_KP;
+double       SPD_KP;
+int       ARV_DIST;
 // double   POS_SIGMA = 0;
 // double   POS_ANG = 0;
 
@@ -279,9 +283,9 @@ void receiveJoy(const sensor_msgs::Joy::ConstPtr& joy){
 
 bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/){
     //original PID feedback on error of Angle and Distance
-    const double KPang  = 1.0;
+    const double KPang  = TURN_KP;//1.0;
     const double KDang  = 0;
-    const double KPdist = 2.0;
+    const double KPdist = SPD_KP;//2.0;
     const double KDdist = 0;
     bool ret = false;
 
@@ -304,7 +308,7 @@ bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/){
     tmp_turn = Limit(tmp_turn,30,-30);
     double distance = sqrt(sqr(errorX)+sqr(errorY));
     printf("spd:%+8.2lf turn:%+4.1lf",tmp_spd,tmp_turn);
-    if(distance<=200/* && 60>fabs(Rad2Deg(errorNT))*/){
+    if(distance<=ARV_DIST/* && 60>fabs(Rad2Deg(errorNT))*/){
         this->tgtTwist.angular.z= 0;
         this->tgtTwist.linear.x = 0;      return true;
     }else{
@@ -348,9 +352,12 @@ int main(int argc, char **argv){
     int Kp_,Ki_,Kd_;
     string s_Kp_,s_Ki_,s_Kd_;
     ros::NodeHandle nh_param("~");
-    nh_param.param<int>("Kp",Kp_,4800);
-    nh_param.param<int>("Ki",Ki_,/*30*/100);
-    nh_param.param<int>("Kd",Kd_,40000);
+    nh_param.param<int>("spin_Kp",Kp_,4800);
+    nh_param.param<int>("spin_Ki",Ki_,/*30*/100);
+    nh_param.param<int>("spin_Kd",Kd_,40000);
+    nh_param.param<double>("spd_Kp",SPD_KP,2.0);
+    nh_param.param<double>("turn_Ki",TURN_KP,1.0);
+    nh_param.param<int>("arv_dist",ARV_DIST,200);
     s_Kp_ = boost::lexical_cast<string>(Kp_);
     s_Ki_ = boost::lexical_cast<string>(Ki_);
     s_Kd_ = boost::lexical_cast<string>(Kd_);
