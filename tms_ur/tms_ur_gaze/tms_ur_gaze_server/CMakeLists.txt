@@ -28,8 +28,8 @@ generate_messages(
 
 catkin_package(
    INCLUDE_DIRS include
-   LIBRARIES ${PLUGIN_MAME}
-   CATKIN_DEPENDS pluginlib nodelet roscpp rospy std_msgs
+   LIBRARIES tmd_ur_gaze_server ${PLUGIN_MAME}
+   CATKIN_DEPENDS message_runtime pluginlib nodelet roscpp rospy std_msgs
 )
 
 ## setup the include dirs
@@ -44,7 +44,10 @@ add_library(${PLUGIN_NAME}
   src/evaluator.cpp
   src/voice_receiver.cpp
 )
-target_link_libraries(${PLUGIN_NAME} ${catkin_LIBRARIES})
+add_dependencies(${PLUGIN_NAME} tms_ur_gaze_server_generate_messages_cpp)
+target_link_libraries(${PLUGIN_NAME}
+  ${catkin_LIBRARIES}
+)
 
 ## nodelet loader
 add_executable(tms_ur_gaze_server
