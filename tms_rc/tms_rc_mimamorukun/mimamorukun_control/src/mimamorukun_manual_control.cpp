@@ -226,8 +226,8 @@ void spinWheel(/*double arg_speed, double arg_theta*/){
     string message = "@SS1," + cmd_L + "@SS2," + cmd_R;
     string reply;
     client_socket << message;
-    client_socket >> reply;
-    cout << "Response:" << reply << "\n";
+    // client_socket >> reply;
+    // cout << "Response:" << reply << "\n";
 }
 
 // void receiveGoalPose(const geometry_msgs::Pose2D::ConstPtr& cmd_pose){
@@ -390,16 +390,16 @@ int main(int argc, char **argv){
             client_socket >> reply;
         }
         catch ( SocketException& ) {}
-        cout << "Response:" << reply << "\n";;
+        cout << "Response:" << reply << "\n";
     }catch ( SocketException& e ){
         cout << "Exception was caught:" << e.description() << "\n";
     }
 
     db_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
    // ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, receiveCmdVel);
-   // ros::Subscriber cmd_vel_sub = n.subscribe<sensor_msgs::Joy>("/joy", 1, receiveJoy);
+   ros::Subscriber cmd_vel_sub = n.subscribe<sensor_msgs::Joy>("/joy", 1, receiveJoy);
    // ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Pose2D>("/mkun_goal_pose", 1, receiveGoalPose);
-    ros::ServiceServer service = n.advertiseService("mkun_goal_pose",receiveGoalPose);
+    // ros::ServiceServer service = n.advertiseService("mkun_goal_pose",receiveGoalPose);
 /*    ros::Time current_time, last_time;
     current_time    = ros::Time::now();
     last_time       = ros::Time::now();*/
