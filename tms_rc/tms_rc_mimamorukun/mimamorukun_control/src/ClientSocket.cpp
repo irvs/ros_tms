@@ -5,19 +5,21 @@
 #include <ros/ros.h>
 
 
-ClientSocket::ClientSocket ( std::string host, int port )
-{
-  if ( ! Socket::create() )
-    {
+ClientSocket::ClientSocket ( std::string host, int port ){
+  this->init(host,port);
+}
+
+void ClientSocket::init ( std::string host,int port){
+  this->hostIP_s = host;
+  this->port = port;
+  if ( ! Socket::create() ){
       throw SocketException ( "Could not create client socket." );
-    }
-    this->hostIP_s = host;
+  }
   if (this->hostIP_s.empty()){
     ROS_ERROR( "host IP enmpty" );
     return;
   }
-  if ( ! Socket::connect ( host, port ) )
-    {
+  if(! Socket::connect (host, port)){
       throw SocketException ( "Could not bind to port." );
     }
 

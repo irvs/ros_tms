@@ -29,7 +29,7 @@
 
 using namespace std;
 
-ClientSocket  client_socket(/*""*/"192.168.11.99", 54300);
+ClientSocket  client_socket("", 54300);
 const int     ENC_MAX  = 3932159;
 const int     SPEED_MAX = 32767;
 const float   DIST_PER_PULSE = 0.552486;  //mm par pulse
@@ -369,13 +369,17 @@ int main(int argc, char **argv){
     int Kp_,Ki_,Kd_;
     string s_Kp_,s_Ki_,s_Kd_;
     ros::NodeHandle nh_param("~");
+    string tmp_ip;
+    nh_param.param<string>("IP_ADDR",tmp_ip,"192.168.11.99");
     nh_param.param<int>("spin_Kp",Kp_,4800);
     nh_param.param<int>("spin_Ki",Ki_,/*30*/100);
     nh_param.param<int>("spin_Kd",Kd_,40000);
     nh_param.param<double>("spd_Kp",SPD_KP,2.0);
     nh_param.param<double>("turn_Kp",TURN_KP,1.0);
     nh_param.param<int>("arv_dist",ARV_DIST,200);
+    nh_param.setParam("test_param","teststring");
     //acces like "mimamorukun_controller/spd_Kp"
+    client_socket.init(tmp_ip,54300);
     s_Kp_ = boost::lexical_cast<string>(Kp_);
     s_Ki_ = boost::lexical_cast<string>(Ki_);
     s_Kd_ = boost::lexical_cast<string>(Kd_);
