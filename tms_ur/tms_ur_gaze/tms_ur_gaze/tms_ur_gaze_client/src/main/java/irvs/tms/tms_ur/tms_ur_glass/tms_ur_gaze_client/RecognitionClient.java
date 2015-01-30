@@ -34,15 +34,7 @@ public class RecognitionClient extends AbstractNodeMain {
         try {
             serviceClient = connectedNode.newServiceClient("recognition_test", tms_ur_gaze_server.recognized_text._TYPE);
         } catch (ServiceNotFoundException e) {
-            try {
-                serviceClient = connectedNode.newServiceClient("recognition_test", tms_ur_gaze_server.recognized_text._TYPE);
-            } catch (ServiceNotFoundException e2) {
-                try {
-                    serviceClient = connectedNode.newServiceClient("recognition_test", tms_ur_gaze_server.recognized_text._TYPE);
-                } catch (ServiceNotFoundException e3) {
-                    throw new RosRuntimeException(e3);
-                }
-            }
+            throw new RosRuntimeException(e);
         }
     }
 

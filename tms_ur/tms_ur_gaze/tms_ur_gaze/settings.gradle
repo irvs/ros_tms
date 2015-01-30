@@ -15,4 +15,3 @@
  */
 
 include 'tms_ur_gaze_client'
-include ':openCVLibrary249'

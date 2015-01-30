@@ -9,7 +9,6 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/openCVLibrary249" />
             <option value="$PROJECT_DIR$/tms_ur_gaze_client" />
           </set>
         </option>

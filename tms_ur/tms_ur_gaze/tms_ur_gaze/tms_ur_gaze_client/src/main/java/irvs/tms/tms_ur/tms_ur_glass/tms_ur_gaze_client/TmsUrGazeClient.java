@@ -11,12 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.opencv.android.BaseLoaderCallback;
-import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.LoaderCallbackInterface;
-import org.opencv.android.OpenCVLoader;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
 import org.ros.address.InetAddressFactory;
 import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
@@ -35,14 +29,11 @@ import java.util.ArrayList;
  *     - For each frame, captured images are set as background image after processing
  */
 
-public class TmsUrGazeClient extends RosActivity implements View.OnClickListener,RecognitionListener,CameraBridgeViewBase.CvCameraViewListener2
+public class TmsUrGazeClient extends RosActivity implements View.OnClickListener,RecognitionListener
 {
     private java.lang.Object mSpeechRecognizer;
 
     private RecognitionClient recognitionClient;
-
-    private CameraBridgeViewBase mCameraView;
-    private Mat mOutputFrame;
 
     private Intent intent;
     private TextView guiMessage;
@@ -57,28 +48,11 @@ public class TmsUrGazeClient extends RosActivity implements View.OnClickListener
         super("Speech Recognition Test","Speech Recognition Test");
     }
 
-    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
-        @Override
-        public void onManagerConnected(int status) {
-            switch(status) {
-                case LoaderCallbackInterface.SUCCESS:
-                    mCameraView.enableView();
-                    break;
-                default:
-                    super.onManagerConnected(status);
-                    break;
-            }
-        }
-    };
-
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
-        mCameraView = (CameraBridgeViewBase)findViewById(R.id.camera_view);
-        mCameraView.setCvCameraViewListener(this);
 
         Button button1 = (Button)findViewById(R.id.button);
         button1.setOnClickListener(this);
@@ -211,47 +185,4 @@ public class TmsUrGazeClient extends RosActivity implements View.OnClickListener
         Log.i("ROS:TmsUrGazeClient","Send recognized result to server");
         recognitionClient.sendText(str_items[0]);
     }
-
-    //---------------------------------------------------------------------------------------------------------------
-    /**
-     * Overridden functions for OpenCV
-     */
-
-    @Override
-    public void onPause() {
-        if (mCameraView != null) {
-            mCameraView.disableView();
-        }
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_4, this, mLoaderCallback);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mCameraView != null) {
-            mCameraView.disableView();
-        }
-    }
-
-    @Override
-    public void onCameraViewStarted(int width, int height) {
-        mOutputFrame = new Mat(height, width, CvType.CV_8UC1);
-    }
-
-    @Override
-    public void onCameraViewStopped() {
-        mOutputFrame.release();
-    }
-
-    @Override
-    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        return inputFrame.rgba();
-    }
-
 }

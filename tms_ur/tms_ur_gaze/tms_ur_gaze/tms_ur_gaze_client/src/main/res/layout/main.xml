@@ -13,18 +13,6 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical" >
-            <org.opencv.android.JavaCameraView
-                android:id="@+id/camera_view"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:visibility="visible"
-                opencv:camera_id="any"
-                opencv:show_fps="true" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical" >
             <Button
                 android:id="@+id/button"
                 android:text="Start button"
