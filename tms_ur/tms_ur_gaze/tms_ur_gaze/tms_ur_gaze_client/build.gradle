@@ -32,7 +32,6 @@ dependencies {
     compile 'org.ros.rosjava_messages:sensor_msgs:[0.1,)'
     /* Binary archives for ROS service */
     compile files('libs/tms_ur_gaze_server-0.0.0.jar')
-    compile project(':openCVLibrary249')
 }
 
 android {
@@ -48,7 +47,7 @@ android {
     }
     buildTypes {
         release {
-            runProguard false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
