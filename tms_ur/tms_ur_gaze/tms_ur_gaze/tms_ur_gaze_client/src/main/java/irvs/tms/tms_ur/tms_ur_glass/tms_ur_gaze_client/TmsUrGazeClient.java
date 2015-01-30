@@ -1,12 +1,16 @@
 package irvs.tms.tms_ur.tms_ur_glass.tms_ur_gaze_client;
 
 import android.content.Intent;
+import android.media.MediaRecorder;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.Environment;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.text.format.Time;
 import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -24,28 +28,25 @@ import java.util.ArrayList;
  *  - Speech recognition
  *     - Executes recognition services on worker threads, using SpeechRecognizer intent
  *     - Publishes to the topic, /recognition_text; another c++ nodes subscribes it.
- *
- *  - Updating CameraView
- *     - For each frame, captured images are set as background image after processing
  */
 
-public class TmsUrGazeClient extends RosActivity implements View.OnClickListener,RecognitionListener
+public class TmsUrGazeClient extends RosActivity implements View.OnClickListener,RecognitionListener,SurfaceHolder.Callback
 {
-    private java.lang.Object mSpeechRecognizer;
+    private final String TAG = "tms_ur_gaze_client/tms_ur_gaze_client";
 
+    private SurfaceHolder v_holder;
+    private MediaRecorder mediaRecorder;
+    private boolean isRecording;
+
+    private java.lang.Object mSpeechRecognizer;
     private RecognitionClient recognitionClient;
 
     private Intent intent;
     private TextView guiMessage;
     public static TextView guiResult;
 
-    Handler guiThreadHandler;
-
-    /**
-     * Default constructor
-     */
     public TmsUrGazeClient() {
-        super("Speech Recognition Test","Speech Recognition Test");
+        super("tms_ur_gaze_client","tms_ur_gaze_client");
     }
 
     @Override
@@ -54,12 +55,25 @@ public class TmsUrGazeClient extends RosActivity implements View.OnClickListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        // SurfaceHolder
+        SurfaceView surfaceView = (SurfaceView) findViewById(R.id.surface_view);
+        SurfaceHolder holder = surfaceView.getHolder();
+        holder.addCallback(this);
+        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+
         Button button1 = (Button)findViewById(R.id.button);
         button1.setOnClickListener(this);
+
+        Button button2 = (Button)findViewById(R.id.start_recoding);
+        button2.setOnClickListener(this);
+
+        Button button3 = (Button)findViewById(R.id.stop_recoding);
+        button3.setOnClickListener(this);
+
         guiMessage = (TextView)findViewById(R.id.message);
         guiResult = (TextView) findViewById(R.id.result);
 
-        guiThreadHandler = new Handler();
+        mediaRecorder = new MediaRecorder();
 
         mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         ((SpeechRecognizer) mSpeechRecognizer).setRecognitionListener(this);
@@ -88,8 +102,80 @@ public class TmsUrGazeClient extends RosActivity implements View.OnClickListener
                 intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
                 ((SpeechRecognizer) mSpeechRecognizer).startListening(intent);
                 break;
+            case R.id.start_recoding:
+                if (!isRecording) {
+                    isRecording = true;
+                    Log.d(TAG, "start recording");
+                    initVideo();
+                    mediaRecorder.start();
+                }
+                break;
+            case R.id.stop_recoding:
+                if (isRecording) {
+                    isRecording = false;
+                    Log.d(TAG, "stop recording");
+                    mediaRecorder.stop();
+                    mediaRecorder.reset();
+                }
+                break;
             default:
                 break;
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        //
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        v_holder = holder;
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        //
+    }
+
+    //----------------------------------------------------------------------------------------------
+    public void initVideo() {
+        Time time = new Time("Asia/Tokyo");
+        time.setToNow();
+        String directory
+            = String.valueOf(time.year)
+            + String.valueOf(time.month + 1)
+            + String.valueOf(time.monthDay)
+            + String.valueOf(time.hour)
+            + String.valueOf(time.minute)
+            + String.valueOf(time.second);
+
+        /**
+         * Video source;  camera
+         * Video format;  MPEG 4
+         * Video Encoder; MPEG 4 SP
+         */
+        mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
+
+        /**
+         * Prefix;     .mp4
+         * Frame rate; 30FPS
+         * Frame size; 640 x 480
+         */
+        mediaRecorder.setVideoFrameRate(60);
+        mediaRecorder.setVideoSize(640,480);
+        mediaRecorder.setPreviewDisplay(v_holder.getSurface());
+
+        mediaRecorder.setOutputFile(Environment.getExternalStorageDirectory()
+            + "/tms_ur_gaze_client/" + directory + ".mp4");
+
+        try {
+            mediaRecorder.prepare(); // preparation
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
         }
     }
 
@@ -143,15 +229,21 @@ public class TmsUrGazeClient extends RosActivity implements View.OnClickListener
                 break;
             case SpeechRecognizer.ERROR_NO_MATCH:
                 guiMessage.setText("ERROR_NO_MATCH");
+                ((SpeechRecognizer) mSpeechRecognizer).cancel();
+                ((SpeechRecognizer) mSpeechRecognizer).startListening(intent);
                 break;
             case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
                 guiMessage.setText("ERROR_RECOGNIZER_BUSY");
+                ((SpeechRecognizer) mSpeechRecognizer).cancel();
+                ((SpeechRecognizer) mSpeechRecognizer).startListening(intent);
                 break;
             case SpeechRecognizer.ERROR_SERVER:
                 guiMessage.setText("ERROR_SERVER");
                 break;
             case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
                 guiMessage.setText("ERROR_SPEECH_TIMEOUT(No input)");
+                ((SpeechRecognizer) mSpeechRecognizer).cancel();
+                ((SpeechRecognizer) mSpeechRecognizer).startListening(intent);
                 break;
             default:
         }
@@ -166,23 +258,22 @@ public class TmsUrGazeClient extends RosActivity implements View.OnClickListener
     public void onPartialResults(Bundle partialResults) {
         /**
          * For Vuzix M100 smart glass.
-         * M100 has Nuance's voice recognition engine.
-         * never calls onResults()
          */
+        Log.v(TAG, "onPartialResults");
         guiMessage.setText("onPartialResults");
-        Log.v("DEBUG", "onPartialResults");
 
         ArrayList<String> recData = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
         final String[] str_items = recData.toArray(new String[recData.size()]);
         recognitionClient.sendText(str_items[0]);
+        ((SpeechRecognizer) mSpeechRecognizer).startListening(intent);
     }
 
     @Override
     public void onResults(Bundle results) {
+        Log.i(TAG,"Send recognized result to server");
         ArrayList<String> recData = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
         final String[] str_items = recData.toArray(new String[recData.size()]);
-
-        Log.i("ROS:TmsUrGazeClient","Send recognized result to server");
         recognitionClient.sendText(str_items[0]);
+        ((SpeechRecognizer) mSpeechRecognizer).startListening(intent);
     }
 }

@@ -20,21 +20,22 @@ import tms_ur_gaze_server.recognized_textResponse;
  *
  */
 public class RecognitionClient extends AbstractNodeMain {
-    ServiceClient<recognized_textRequest, recognized_textResponse> serviceClient;
+    private final String TAG = "tms_ur_gaze_client/recognition_client";
+    private ServiceClient<recognized_textRequest, recognized_textResponse> serviceClient;
 
     @Override
     public GraphName getDefaultNodeName() {
-        return GraphName.of("RecognitionClient");
+        return GraphName.of("tms_ur_gaze_client/recognition_client");
     }
 
     @Override
     public void onStart(final ConnectedNode connectedNode) {
-        Log.i("ROS:Recognition Client", "onStart()");
+        Log.i(TAG, "onStart()");
         /* try to connect some times just to be sure */
         try {
-            serviceClient = connectedNode.newServiceClient("recognition_test", tms_ur_gaze_server.recognized_text._TYPE);
+            serviceClient = connectedNode.newServiceClient("voice_command", tms_ur_gaze_server.recognized_text._TYPE);
         } catch (ServiceNotFoundException e) {
-            throw new RosRuntimeException(e);
+            //throw new RosRuntimeException(e);
         }
     }
 
@@ -47,26 +48,26 @@ public class RecognitionClient extends AbstractNodeMain {
         final tms_ur_gaze_server.recognized_textRequest request = serviceClient.newMessage();
         request.setRequest(string);
 
-        Log.i("ROS:Recognition Client","Call service with " + string);
+        Log.i(TAG,"Call service with " + string);
         serviceClient.call(request, new ServiceResponseListener<recognized_textResponse>() {
             @Override
             public void onSuccess(final tms_ur_gaze_server.recognized_textResponse srvResponse) {
-                Log.i("ROS:Recognition Client", "Succeeded to call service");
+                Log.i(TAG, "Succeeded to call service");
                 handler.post(new Runnable(){
                     @Override
                     public void run() {
                         //TmsUrGazeClient.guiResult.setText(srvResponse.getResponse());
                         TmsUrGazeClient.guiResult.setText(string);
-                        Log.i("ROS:Recognition Client", srvResponse.getResponse());
+
+                        Log.i(TAG, srvResponse.getResponse());
                     }
                 });
             }
             @Override
             public void onFailure(RemoteException e) {
-                Log.i("ROS:Recognition Client", "Failed to call service");
+                Log.i(TAG, "Failed to call service");
                 throw new RosRuntimeException(e);
             }
         });
     }
-
 }

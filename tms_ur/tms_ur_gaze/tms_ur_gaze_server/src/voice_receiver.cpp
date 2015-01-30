@@ -59,7 +59,7 @@ VoiceReceiver::VoiceReceiver(ros::NodeHandle* nh) :
   hash_.insert(std::make_pair("ロボット",&(*itr)));
 #endif
 
-  server_ = nh_->advertiseService("recognition_test", &VoiceReceiver::Callback, this);
+  server_ = nh_->advertiseService("voice_command", &VoiceReceiver::Callback, this);
   client_ = nh_->serviceClient<tms_ur_gaze_server::object_list>("object_sorting");
   arrow_client_ = nh_->serviceClient<tms_msg_rp::rp_arrow>("rp_arrow");
 
