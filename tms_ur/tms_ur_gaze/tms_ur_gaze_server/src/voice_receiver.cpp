@@ -156,6 +156,5 @@ bool VoiceReceiver::Callback(tms_ur_gaze_server::recognized_text::Request  &req,
     res.response = "Failed to call service object_selector";
   }
 
-  ROS_INFO("check");
   return true;
 }
