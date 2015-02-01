@@ -33,7 +33,7 @@ if __name__ == '__main__':
         time.sleep(0.5)
         ret = dev.read(dev.inWaiting())
         rate = ret.split(" ")[2]
-        print "rate:"+rate+"     raw:"+ret
+        print "heartrate:"+rate+"     raw:"+ret
         if int(rate) == 0:
             print "    failed to get heartrate value"
             continue
