@@ -270,6 +270,7 @@ bool receiveGoalPose(   tms_msg_rc::rc_robot_control::Request &req,
         bool isArrived = mchn_pose.goPose();
         mchn_pose.updateVicon();
         spinWheel();
+        mchn_pose.postPose();
         if(isArrived) break;
         r.sleep();
     }
@@ -360,6 +361,7 @@ bool MachinePose_s::postPose(){
 
     db_msg.tmsdb.push_back(tmpData);
     db_pub.publish(db_msg);
+    return true;
 }
 
 void *vicon_update( void *ptr )
@@ -471,6 +473,7 @@ int main(int argc, char **argv){
 /*        last_time = current_time;
         current_time = ros::Time::now();*/
         ros::spinOnce();
+        mchn_pose.postPose();
         r.sleep();
     }
     return(0);
