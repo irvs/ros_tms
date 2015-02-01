@@ -798,7 +798,7 @@ bool TmsRpController::appear(std::string tagId) {
         mw_med_s = tostr(mw_med);
         mw_att_s = tostr(mw_att);
         mw_por_s = tostr(mw_por);
-        setString(tagId,Vector3(0,-0.5,1),"heartrate: "+heartrate_s+"    brainwave med: "+mw_med_s+"   att: "+mw_att_s);
+        setString(tagId,Vector3(0,0,1),"hr:"+heartrate_s+"  med:"+mw_med_s+"  att:"+mw_att_s);
         // mw_med_s = boost::lexical_cast<string>(mw_med);
         // mw_att_s = boost::lexical_cast<string>(mw_att);
         // mw_por_s = boost::lexical_cast<string>(mw_por);
