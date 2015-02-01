@@ -7,7 +7,7 @@
 //2014.11.01        adjust wheel spin PID constants
 //2014.11.07        included to ROT_TMS project
 //2015.01.30        fork from mimamorukun_manual_control
-
+//2015.02.01        fork from mimamorukun_automatic_control
 #include <ros/ros.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <nav_msgs/Odometry.h>
@@ -22,7 +22,10 @@
 
 #include <sensor_msgs/Joy.h>
 #include <tms_msg_db/TmsdbGetData.h>
+#include <tms_msg_db/TmsdbStamped.h>
+#include <tms_msg_db/Tmsdb.h>
 #include <tms_msg_rc/rc_robot_control.h>
+
 
 #include "kalman-Ndof.hpp"
 
@@ -51,6 +54,7 @@ int       ARV_DIST;
 double joy_cmd_turn = 0.0;*/
 
 ros::ServiceClient db_client;
+ros::Publisher db_pub;
 
 pthread_t thread_vicon;
 pthread_t thread_odom;
@@ -86,6 +90,7 @@ public:
     void updateVicon();
     void updateCompFilter();
     bool goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/);
+    bool postPose();
     geometry_msgs::Pose2D   tgtPose;
     geometry_msgs::Twist    tgtTwist;
     geometry_msgs::Pose2D   pos_odom;
@@ -336,6 +341,27 @@ bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/){
      }
 }
 
+bool MachinePose_s::postPose(){
+    tms_msg_db::TmsdbStamped db_msg;
+    tms_msg_db::Tmsdb tmpData;
+    ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+    db_msg.header.stamp     = now;
+    tmpData.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
+    tmpData.id      = 2007;                     //mimamorukun ID
+    tmpData.x       = this->getCurrentPositionX();
+    tmpData.y       = this->getCurrentPositionY();
+    tmpData.z       = 0;
+    tmpData.rr      = Rad2Deg(0.0);
+    tmpData.rp      = Rad2Deg(0.0);
+    tmpData.ry      = Rad2Deg(this->getCurrentTheta());
+    tmpData.place   = 5001;
+    tmpData.sensor  = 3501;     //kalman_filter
+    tmpData.state   = 1;
+
+    db_msg.tmsdb.push_back(tmpData);
+    db_pub.publish(db_msg);
+}
+
 void *vicon_update( void *ptr )
 {
    ros::Rate r(30);
@@ -400,6 +426,7 @@ int main(int argc, char **argv){
     }
 
     db_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
+    db_pub    = n.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data", 10);
    // ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, receiveCmdVel);
    ros::Subscriber cmd_vel_sub = n.subscribe<sensor_msgs::Joy>("/joy", 1, receiveJoy);
    // ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Pose2D>("/mkun_goal_pose", 1, receiveGoalPose);
