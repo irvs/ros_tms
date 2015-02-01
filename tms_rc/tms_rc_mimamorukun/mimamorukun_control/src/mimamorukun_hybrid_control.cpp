@@ -229,9 +229,12 @@ void spinWheel(/*double arg_speed, double arg_theta*/){
     string cmd_L = boost::lexical_cast<string>(val_L);
     string cmd_R = boost::lexical_cast<string>(val_R);
 
-    string message = "@SS1," + cmd_L + "@SS2," + cmd_R;
-    string reply;
+    string message;
+    message = "@SS1," + cmd_L;
     client_socket << message;
+    message = "@SS2," + cmd_R;
+    client_socket << message;
+    string reply;
     // client_socket >> reply;
     // cout << "Response:" << reply << "   ";
 }
@@ -343,9 +346,10 @@ bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/){
 }
 
 bool MachinePose_s::postPose(){
-    tms_msg_db::TmsdbStamped db_msg;
+/*    tms_msg_db::TmsdbStamped db_msg;
     tms_msg_db::Tmsdb tmpData;
     ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+    db_msg.header.frame_id  = "/world";
     db_msg.header.stamp     = now;
     tmpData.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
     tmpData.id      = 2007;                     //mimamorukun ID
@@ -361,6 +365,7 @@ bool MachinePose_s::postPose(){
 
     db_msg.tmsdb.push_back(tmpData);
     db_pub.publish(db_msg);
+    printf("@postPose x:%lf y:%lf",this->getCurrentPositionX(),this->getCurrentPositionY());*/
     return true;
 }
 
@@ -394,6 +399,8 @@ int main(int argc, char **argv){
     ROS_INFO("wc_controller");
     ros::init(argc, argv, "wc_controller");
     ros::NodeHandle n;
+    // ros::NodeHandle nh2;
+    
 
     int Kp_,Ki_,Kd_;
     string s_Kp_,s_Ki_,s_Kd_;
@@ -428,7 +435,7 @@ int main(int argc, char **argv){
     }
 
     db_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
-    db_pub    = n.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data", 10);
+    // db_pub    = nh2.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data", 10);
    // ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, receiveCmdVel);
    ros::Subscriber cmd_vel_sub = n.subscribe<sensor_msgs::Joy>("/joy", 1, receiveJoy);
    // ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Pose2D>("/mkun_goal_pose", 1, receiveGoalPose);
