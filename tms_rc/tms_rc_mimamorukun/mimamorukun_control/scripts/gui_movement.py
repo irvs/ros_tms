@@ -99,7 +99,7 @@ class MainWidget(QtGui.QWidget):
                                             tms_msg_db.srv.TmsdbGetData)
             req = tms_msg_db.srv.TmsdbGetDataRequest()
             req.tmsdb.id = 2007
-            req.tmsdb.sensor = 3001
+            req.tmsdb.sensor = 3501  #kalman filtered data # 3001
             res = srv_client(req)
             if 0 < len(res.tmsdb):
                 self.wc_pos = QtCore.QPoint(res.tmsdb[0].x, res.tmsdb[0].y)
