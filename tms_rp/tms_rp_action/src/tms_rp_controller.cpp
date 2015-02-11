@@ -855,10 +855,11 @@ bool TmsRpController::setString(std::string tagId, Vector3 pos, string str) {
 	if(!cr){
 		SgGroupPtr node  = (SgGroup*)item->body()->link(0)->shape();
 		// cr = new SgStringRenderer ("test", Vector3(0,0,0.5));
-		cr = new SgStringRenderer (str, pos);
+		cr = new SgStringRenderer ("", pos);
 		node->addChild(cr);
+	}else{
+		cr->setString(str);
 	}
-	cr->setString(str);
 	// os_  << "set string" << endl;
 	ItemTreeView::mainInstance()->checkItem(item,false);
 	MessageView::mainInstance()->flush();
