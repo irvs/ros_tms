@@ -30,7 +30,7 @@ class MainWidget(QtGui.QWidget):
     def initUI(self):
         self.tgt_pos = QtCore.QPoint(0, 0)
         self.wc_pos = QtCore.QPoint(0, 0)
-        self.status = "Stopped"
+        self.status = "" #"Stopped"
         map_lbl = QtGui.QLabel(self)
         self.status_lbl = QtGui.QLabel(self)
         self.tgt_lbl = QtGui.QLabel(self)
@@ -81,7 +81,7 @@ class MainWidget(QtGui.QWidget):
 
         self.move(10, 10)
         self.resize(800, 550)
-        self.setWindowTitle("testTittle")
+        self.setWindowTitle("mimamorukun_gui")
         self.show()
 
     def timerLoop(self):
@@ -90,7 +90,7 @@ class MainWidget(QtGui.QWidget):
         # print(self.tgt_pos.x(), self.tgt_pos.y(), "      ", self.wc_pos.x(), self.wc_pos.y())
 #        , "    ", self.wc_pos)
         if 200**2 > (self.tgt_pos.x()-self.wc_pos.x())**2 + (self.wc_pos.y()-self.wc_pos.y())**2:
-            self.status = "Arrived"
+            self.status = ""  #"Arrived"
         self.status_lbl.setText(self.status)
 
     def updateCurPos(self):
@@ -123,7 +123,7 @@ class MainWidget(QtGui.QWidget):
             req.arg = [-1, self.tgt_pos.x(), self.tgt_pos.y(), 0]
             res = srv_client(req)
             print ("cmd result:", res.result)
-            self.status = "Moving"
+            self.status = ""  #"Moving"
         except rospy.ServiceException, e:
             print ("Service call failed: %s" % e)
 
