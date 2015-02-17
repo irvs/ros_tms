@@ -29,7 +29,7 @@
 
 using namespace std;
 
-ClientSocket  client_socket(/*""*/"192.168.11.99", 54300);
+ClientSocket  client_socket("", 54300);
 const int     ENC_MAX  = 3932159;
 const int     SPEED_MAX = 32767;
 const float   DIST_PER_PULSE = 0.552486;  //mm par pulse
@@ -39,6 +39,10 @@ long int    ENC_L = 0;
 long int    ENC_R = 0;
 int         POS_X = 0;
 int         POS_Y = 0;
+
+double       TURN_KP;
+double       SPD_KP;
+int       ARV_DIST;
 // double   POS_SIGMA = 0;
 // double   POS_ANG = 0;
 
@@ -214,7 +218,7 @@ void spinWheel(/*double arg_speed, double arg_theta*/){
     double val_R =  Dist2Pulse(arg_speed) + Dist2Pulse((WHEEL_DIST/2)*arg_theta);
     val_L = (int)Limit(val_L,(double)SPEED_MAX,(double)-SPEED_MAX);
     val_R = (int)Limit(val_R,(double)SPEED_MAX,(double)-SPEED_MAX);
-    //ROS_INFO("val_L:%2.f   val_R:%2.f",val_L,val_R);
+    printf("val_L:%2.f   val_R:%2.f",val_L,val_R);
 
     string cmd_L = boost::lexical_cast<string>(val_L);
     string cmd_R = boost::lexical_cast<string>(val_R);
@@ -222,8 +226,8 @@ void spinWheel(/*double arg_speed, double arg_theta*/){
     string message = "@SS1," + cmd_L + "@SS2," + cmd_R;
     string reply;
     client_socket << message;
-    //client_socket >> reply;
-    //cout << "Response:" << reply << "\n";
+    // client_socket >> reply;
+    // cout << "Response:" << reply << "\n";
 }
 
 // void receiveGoalPose(const geometry_msgs::Pose2D::ConstPtr& cmd_pose){
@@ -243,9 +247,44 @@ bool receiveGoalPose(   tms_msg_rc::rc_robot_control::Request &req,
     mchn_pose.tgtPose.x = req.arg[0];
     mchn_pose.tgtPose.y = req.arg[1];
     mchn_pose.tgtPose.theta = Deg2Rad(req.arg[2]);
-    while(! mchn_pose.goPose()){
-        ROS_INFO("doing goPose");
+    // while(! mchn_pose.goPose()){
+    //     ROS_INFO("doing goPose");
+    // }
+    ros::Rate r(4);
+    while (ros::ok()){
+        printf("doing goPose");
+        printf("pos x:%4.2lf y:%4.2lf th:%4.2lf     \n",
+            mchn_pose.pos_vicon.x,
+            mchn_pose.pos_vicon.y,
+            Rad2Deg(mchn_pose.pos_vicon.theta));
+        printf("tgt x:%4.2lf y:%4.2lf th:%4.2lf     ",
+            mchn_pose.tgtPose.x,
+            mchn_pose.tgtPose.y,
+            Rad2Deg(mchn_pose.tgtPose.theta));
+        bool isArrived = mchn_pose.goPose();
+        mchn_pose.updateVicon();
+        spinWheel();
+        if(isArrived) break;
+        r.sleep();
     }
+    // while(1){
+    //     // printf("in moving loop");
+    //     ros::Duration(0.1).sleep();
+    //     printf("doing goPose");
+    //     ROS_INFO("pos x:%4.2lf y:%4.2lf th:%4.2lf     ",
+    //         mchn_pose.pos_vicon.x,
+    //         mchn_pose.pos_vicon.y,
+    //         Rad2Deg(mchn_pose.pos_vicon.theta));
+    //     printf("tgt x:%4.2lf y:%4.2lf th:%4.2lf     ",
+    //         mchn_pose.tgtPose.x,
+    //         mchn_pose.tgtPose.y,
+    //         Rad2Deg(mchn_pose.tgtPose.theta));
+    //     bool isArrived = mchn_pose.goPose();
+    //     mchn_pose.updateVicon();
+    //     spinWheel();
+    //     if(isArrived) break;
+    //  }
+     return true;
 }
 
 void receiveCmdVel(const geometry_msgs::Twist::ConstPtr& cmd_vel){
@@ -261,9 +300,9 @@ void receiveJoy(const sensor_msgs::Joy::ConstPtr& joy){
 
 bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/){
     //original PID feedback on error of Angle and Distance
-    const double KPang  = 1.0;
+    const double KPang  = TURN_KP;//1.0;
     const double KDang  = 0;
-    const double KPdist = 2.0;
+    const double KPdist = SPD_KP;//2.0;
     const double KDdist = 0;
     bool ret = false;
 
@@ -285,16 +324,15 @@ bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/){
     tmp_spd =  Limit(tmp_spd,100,-100);
     tmp_turn = Limit(tmp_turn,30,-30);
     double distance = sqrt(sqr(errorX)+sqr(errorY));
-    if (distance <= 200){
-        tmp_spd = 0.0;
-    }
     printf("spd:%+8.2lf turn:%+4.1lf",tmp_spd,tmp_turn);
-    this->tgtTwist.linear.x = tmp_spd;
-    this->tgtTwist.angular.z= Deg2Rad(tmp_turn);
-    if(distance<=200 && 20>fabs(Rad2Deg(errorNT))){
-        ret = true;
-    }
-    return ret;
+    if(distance<=ARV_DIST/* && 60>fabs(Rad2Deg(errorNT))*/){
+        this->tgtTwist.angular.z= 0;
+        this->tgtTwist.linear.x = 0;      return true;
+    }else{
+        this->tgtTwist.angular.z= Deg2Rad(tmp_turn);
+        this->tgtTwist.linear.x = tmp_spd;
+        return false;
+     }
 }
 
 void *vicon_update( void *ptr )
@@ -331,9 +369,17 @@ int main(int argc, char **argv){
     int Kp_,Ki_,Kd_;
     string s_Kp_,s_Ki_,s_Kd_;
     ros::NodeHandle nh_param("~");
-    nh_param.param<int>("Kp",Kp_,4800);
-    nh_param.param<int>("Ki",Ki_,/*30*/100);
-    nh_param.param<int>("Kd",Kd_,40000);
+    string tmp_ip;
+    nh_param.param<string>("IP_ADDR",tmp_ip,"192.168.11.99");
+    nh_param.param<int>("spin_Kp",Kp_,4800);
+    nh_param.param<int>("spin_Ki",Ki_,/*30*/100);
+    nh_param.param<int>("spin_Kd",Kd_,40000);
+    nh_param.param<double>("spd_Kp",SPD_KP,2.0);
+    nh_param.param<double>("turn_Kp",TURN_KP,1.0);
+    nh_param.param<int>("arv_dist",ARV_DIST,200);
+    nh_param.setParam("test_param","teststring");
+    //acces like "mimamorukun_controller/spd_Kp"
+    client_socket.init(tmp_ip,54300);
     s_Kp_ = boost::lexical_cast<string>(Kp_);
     s_Ki_ = boost::lexical_cast<string>(Ki_);
     s_Kd_ = boost::lexical_cast<string>(Kd_);
@@ -348,22 +394,22 @@ int main(int argc, char **argv){
             client_socket >> reply;
         }
         catch ( SocketException& ) {}
-        cout << "Response:" << reply << "\n";;
+        cout << "Response:" << reply << "\n";
     }catch ( SocketException& e ){
         cout << "Exception was caught:" << e.description() << "\n";
     }
 
     db_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
-//    ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, receiveCmdVel);
+   // ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, receiveCmdVel);
    ros::Subscriber cmd_vel_sub = n.subscribe<sensor_msgs::Joy>("/joy", 1, receiveJoy);
-//    ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Pose2D>("/mkun_goal_pose", 1, receiveGoalPose);
+   // ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Pose2D>("/mkun_goal_pose", 1, receiveGoalPose);
     // ros::ServiceServer service = n.advertiseService("mkun_goal_pose",receiveGoalPose);
 /*    ros::Time current_time, last_time;
     current_time    = ros::Time::now();
     last_time       = ros::Time::now();*/
 
     mchn_pose.updateVicon();
-        ROS_INFO("initial val  x:%4.2lf y:%4.2lf th:%4.2lf",
+        printf("initial val  x:%4.2lf y:%4.2lf th:%4.2lf\n\r",
             mchn_pose.pos_vicon.x,
             mchn_pose.pos_vicon.y,
             Rad2Deg(mchn_pose.pos_vicon.theta));
@@ -509,7 +555,7 @@ bool MachinePose_s::goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/)
     double Ky = 1.5e-6;
     double Kt = 0.1;
 
-    double gain = 0.1;
+    double gain = 3.0;//0.1;
 
     double targetX = this->tgtPose.x;
     double targetY = this->tgtPose.y;
@@ -544,11 +590,14 @@ bool MachinePose_s::goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/)
         tmp_spd = 0.0;
     }
     printf("spd:%+8.2lf turn:%+4.1lf", tmp_spd, tmp_turn);
-    this->tgtTwist.linear.x = tmp_spd;
-    this->tgtTwist.angular.z = Deg2Rad(tmp_turn);
-    if (distance <= 200 && 20>fabs(Rad2Deg(errorNT))){
-        ret = true;
-    }
-    return ret;
+    printf("spd:%+8.2lf turn:%+4.1lf",tmp_spd,tmp_turn);
+    if(distance<=200/* && 60>fabs(Rad2Deg(errorNT))*/){
+        this->tgtTwist.angular.z= 0;
+        this->tgtTwist.linear.x = 0;      return true;
+    }else{
+        this->tgtTwist.angular.z= Deg2Rad(tmp_turn);
+        this->tgtTwist.linear.x = tmp_spd;
+        return false;
+     }
 }
 

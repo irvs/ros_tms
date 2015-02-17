@@ -1,6 +1,0 @@
-<launch>
-	<node pkg="joy" type="joy_node" name="joy_node" output="screen" launch-prefix="xterm -e">
-		<param name="dev" value="/dev/input/js1" />
-	</node>
-	<node pkg="tms_rc_mimamorukun_manual_control" type="mimamorukun_manual_control" name="mimamorukun_manual_control" output="screen" />
-</launch>

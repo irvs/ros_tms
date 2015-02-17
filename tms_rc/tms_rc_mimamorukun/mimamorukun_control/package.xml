@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package>
-  <name>tms_rc_mimamorukun_manual_control</name>
+  <name>tms_rc_mimamorukun_control</name>
   <version>0.0.1</version>
   <license>BSD</license>
-  <description>The tms_rc_mimamorukun_manual_control package</description>
+  <description>The tms_rc_mimamorukun_control package</description>
 
   <maintainer email="shigekane@irvs.ait.kyushu-u.ac.jp">shigekane</maintainer>
 
