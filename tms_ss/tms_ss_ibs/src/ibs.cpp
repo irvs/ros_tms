@@ -127,7 +127,7 @@ class CTR3
 		std::vector<std::string> mUIDs[TR3_USED_ANT_NUM];
 
 		bool Setup();
-		bool SetMode(unsigned char mode = TR3_ModeCommand);
+		// bool SetMode(unsigned char mode = TR3_ModeCommand);
 		int  SetAntenna(unsigned char AN = TR3_ANT1);
 		bool AntennaPowerON();
 		bool AntennaPowerOFF();
@@ -325,7 +325,7 @@ void CLoadCell::ResetWeight(int initial[], int num)
 int  CLoadCell::GetWeightDiff(float *x, float *y, int diffs[], int threshold)
 {
 	static int i,j,cnt,weight;
-	static int now, pre[LC_MAX_SENSOR_NUM], buf[LC_GET_WEIGHT_CNT][LC_MAX_SENSOR_NUM], latest[LC_MAX_SENSOR_NUM];
+	static int now, pre[LC_MAX_SENSOR_NUM], buf[LC_GET_WEIGHT_CNT][LC_MAX_SENSOR_NUM];//, latest[LC_MAX_SENSOR_NUM];
 	
 
 	//出力が安定するまで待つ
@@ -434,7 +434,7 @@ bool CTR3::Close()
 //アンテナの指定
 int CTR3::SetAntenna(unsigned char AN)
 {
-	unsigned long num;
+	// unsigned long num;
 	unsigned char buf[100];
 
 	mCommand[2] = 0x4E; //コマンド
@@ -479,9 +479,9 @@ int CTR3::SetAntenna(unsigned char AN)
 bool CTR3::AntennaPowerON()
 {
 	////DWORD num;
-	unsigned long num;
+	// unsigned long num;
 	unsigned char buf[100];
-	unsigned char cmd[9] = {0x02, 0x00, 0x4e, 0x02, 0x9e, 0x01, 0x03, 0xf4, 0x0d};
+	// unsigned char cmd[9] = {0x02, 0x00, 0x4e, 0x02, 0x9e, 0x01, 0x03, 0xf4, 0x0d};
 
 	mCommand[2] = 0x4E; //コマンド
 	mCommand[3] = 0x02; //データ長
@@ -525,7 +525,7 @@ bool CTR3::AntennaPowerON()
 //アンテナの電源OFF
 bool CTR3::AntennaPowerOFF()
 {
-	unsigned long num;
+	// unsigned long num;
 	unsigned char buf[100];
 
 	mCommand[2] = 0x4E; //コマンド
@@ -585,7 +585,7 @@ void CTR3::PrintTagUIDs()
 int CTR3::Inventory2()
 {	
 //アンテナを変更しないと既読込のUIDは返さず，新規UIDのみ返す
-	unsigned long num;
+	// unsigned long num;
 	int i,j;
 	static unsigned char buf[TR3_TAG_SIZE*TR3_TAG_MAX];
 
@@ -771,74 +771,74 @@ int CTR3::AddChecksum()
 	return num+2;
 }
 
-//------------------------------------------------------------------------------
-//38.4kbps対応のためのEEPROMの書き換えに使用
-bool CTR3::SetMode(unsigned char mode)
-{
-	unsigned long num;
-	unsigned char buf[100];
+// //------------------------------------------------------------------------------
+// //38.4kbps対応のためのEEPROMの書き換えに使用
+// bool CTR3::SetMode(unsigned char mode)
+// {
+// 	unsigned long num;
+// 	unsigned char buf[100];
 
 
-	mCommand[2] = 0x4F; //コマンド
-	mCommand[3] = 0x01; //データ長
-	mCommand[4] = 0x00; //コマンド詳細
-	//通信関連初期化
-	if( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ){
-		printf("FAILED:TR3->OpenComPort: PORT_TR \n");
-		exit(-1);
-	}
-	tcgetattr(fd, &oldtio);         /* 現在のシリアルポートの設定を待避させる*/
-	memset(&newtio, 0, sizeof(newtio));
-	newtio.c_cflag = B38400 | CS8 | CLOCAL | CREAD;
-	newtio.c_iflag = IGNPAR | ICRNL;
-	newtio.c_oflag = 0;
-	newtio.c_lflag = ICANON;
-	tcflush(fd, TCIFLUSH);
-	tcsetattr(fd, TCSANOW, &newtio);
+// 	mCommand[2] = 0x4F; //コマンド
+// 	mCommand[3] = 0x01; //データ長
+// 	mCommand[4] = 0x00; //コマンド詳細
+// 	//通信関連初期化
+// 	if( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ){
+// 		printf("FAILED:TR3->OpenComPort: PORT_TR \n");
+// 		exit(-1);
+// 	}
+// 	tcgetattr(fd, &oldtio);         /* 現在のシリアルポートの設定を待避させる*/
+// 	memset(&newtio, 0, sizeof(newtio));
+// 	newtio.c_cflag = B38400 | CS8 | CLOCAL | CREAD;
+// 	newtio.c_iflag = IGNPAR | ICRNL;
+// 	newtio.c_oflag = 0;
+// 	newtio.c_lflag = ICANON;
+// 	tcflush(fd, TCIFLUSH);
+// 	tcsetattr(fd, TCSANOW, &newtio);
 
-	AddChecksum();
-	write(fd, mCommand, sizeof(mCommand));
-	printf("NOW Mode: ");
-	read(fd, buf, 100);
-	for(int i= 0; i<(int)num; i++)
-		printf("%02x ",buf[i]);
-	printf("\n");
+// 	AddChecksum();
+// 	write(fd, mCommand, sizeof(mCommand));
+// 	printf("NOW Mode: ");
+// 	read(fd, buf, 100);
+// 	for(int i= 0; i<(int)num; i++)
+// 		printf("%02x ",buf[i]);
+// 	printf("\n");
 
-	mCommand[2] = 0x4E; //コマンド
-	mCommand[3] = 0x07; //データ長
-	mCommand[4] = 0x10; //コマンド詳細   EEPROMへ書込
-	mCommand[5] = mode; //モード指定 
-	mCommand[6] = 0x00; // 0固定
-	mCommand[7] = 0x98; // default->0x18 から 38.4Kbps対応へ変更
-	mCommand[8] = 0x00; // 予約
-	mCommand[9] = 0x00; // 予約 
-	mCommand[10]= 0x00; // 予約
+// 	mCommand[2] = 0x4E; //コマンド
+// 	mCommand[3] = 0x07; //データ長
+// 	mCommand[4] = 0x10; //コマンド詳細   EEPROMへ書込
+// 	mCommand[5] = mode; //モード指定 
+// 	mCommand[6] = 0x00; // 0固定
+// 	mCommand[7] = 0x98; // default->0x18 から 38.4Kbps対応へ変更
+// 	mCommand[8] = 0x00; // 予約
+// 	mCommand[9] = 0x00; // 予約 
+// 	mCommand[10]= 0x00; // 予約
 	
-	AddChecksum();
-	write(fd, mCommand, sizeof(mCommand));
-	read(fd, buf, 100);
-	for(int i= 0; i<(int)num; i++)
-		printf("%02x ",buf[i]);
-	printf("\n");
+// 	AddChecksum();
+// 	write(fd, mCommand, sizeof(mCommand));
+// 	read(fd, buf, 100);
+// 	for(int i= 0; i<(int)num; i++)
+// 		printf("%02x ",buf[i]);
+// 	printf("\n");
 
-	mCommand[2] = 0x4F; //コマンド
-	mCommand[3] = 0x01; //データ長
-	mCommand[4] = 0x00; //コマンド詳細
-	AddChecksum();
-	write(fd, mCommand, sizeof(mCommand));
-	printf("Revised Mode: ");
-	read(fd, buf, 100);
-	for(int i= 0; i<(int)num; i++)
-		printf("%02x ",buf[i]);
-	printf("\n");
+// 	mCommand[2] = 0x4F; //コマンド
+// 	mCommand[3] = 0x01; //データ長
+// 	mCommand[4] = 0x00; //コマンド詳細
+// 	AddChecksum();
+// 	write(fd, mCommand, sizeof(mCommand));
+// 	printf("Revised Mode: ");
+// 	read(fd, buf, 100);
+// 	for(int i= 0; i<(int)num; i++)
+// 		printf("%02x ",buf[i]);
+// 	printf("\n");
 
-	tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
-	close(fd);
+// 	tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
+// 	close(fd);
 
-	exit(0);
+// 	exit(0);
 
-	return false;
-}
+// 	return false;
+// }
 
 //------------------------------------------------------------------------------
 bool CTagOBJ::Setup()
@@ -1096,12 +1096,12 @@ int main(int argc, char** argv)
 
 	CIntelCab cIntelCab(1);
 	float xpos0[] = {16, 407, 16, 407}, ypos0[] = {16, 16, 244, 244}; // colorbox
-	float xpos1[] = {16, 407, 16, 407}, ypos1[] = {16, 16, 244, 244}; // table
+	// float xpos1[] = {16, 407, 16, 407}, ypos1[] = {16, 16, 244, 244}; // table
 	CTagOBJ  cObj;
-	char uid[100];
+	// char uid[100];
 
-	char mes[30];
-	int imageno = 0;
+	// char mes[30];
+	// int imageno = 0;
 
   tms_msg_db::TmsdbStamped 	icsmsg;
   tms_msg_db::Tmsdb 				tmpdata;
@@ -1130,14 +1130,14 @@ int main(int argc, char** argv)
 
 	//iniファイルから値を読み込んで各デバイスに接続
 	//RFIDリーダ接続
-	char ComPort[32];
+	// char ComPort[32];
 	cIntelCab.cTR3.Setup();
 	cIntelCab.cTR3.AntennaPowerOFF();
 	cIntelCab.cStage[0].SetAntenna(TR3_ANT1);
 	cIntelCab.cStage[1].SetAntenna(TR3_ANT2);
 
 	//ロードセル接続
-	char StageName[32];
+	// char StageName[32];
 	cIntelCab.cStage[0].Setup();
 	cIntelCab.cStage[0].SetSensorPos(4, xpos0, ypos0);
 	cIntelCab.cStage[0].mStagePos[0] = 0;
