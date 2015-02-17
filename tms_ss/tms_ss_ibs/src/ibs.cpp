@@ -398,7 +398,6 @@ bool CTR3::Close() {
 //------------------------------------------------------------------------------
 //アンテナの指定
 int CTR3::SetAntenna(unsigned char AN) {
-    // unsigned long num;
     unsigned char buf[100];
 
     mCommand[2] = 0x4E; //コマンド
@@ -973,17 +972,10 @@ int main(int argc, char **argv) {
 
     CIntelCab cIntelCab(1);
     float xpos0[] = {16, 407, 16, 407 }, ypos0[] = {16, 16, 244, 244 }; // colorbox
-    // float xpos1[] = {16, 407, 16, 407}, ypos1[] = {16, 16, 244, 244}; // table
     CTagOBJ  cObj;
-    // char uid[100];
-
-    // char mes[30];
-    // int imageno = 0;
 
     tms_msg_db::TmsdbStamped  icsmsg;
     tms_msg_db::Tmsdb                 tmpdata;
-    // int32_t idSensor = 3002; // ics
-    // int32_t idPlace  = 6010; // shelf (ics) >> 928_foor >> 928_room
     int32_t idSensor, idPlace; // shelf (ics) >> 928_foor >> 928_room
 
     ros::init(argc, argv, "ics", ros::init_options::AnonymousName);
@@ -1005,14 +997,12 @@ int main(int argc, char **argv) {
 
     //iniファイルから値を読み込んで各デバイスに接続
     //RFIDリーダ接続
-    // char ComPort[32];
     cIntelCab.cTR3.Setup();
     cIntelCab.cTR3.AntennaPowerOFF();
     cIntelCab.cStage[0].SetAntenna(TR3_ANT1);
     cIntelCab.cStage[1].SetAntenna(TR3_ANT2);
 
     //ロードセル接続
-    // char StageName[32];
     cIntelCab.cStage[0].Setup();
     cIntelCab.cStage[0].SetSensorPos(4, xpos0, ypos0);
     cIntelCab.cStage[0].mStagePos[0] = 0;
@@ -1101,8 +1091,6 @@ int main(int argc, char **argv) {
                     if (! nh_param.getParam("z", icsmsg.tmsdb[vi].z)) {
                         ROS_ERROR("ros param z isn't exist");
                         return 0; }
-                    //  if(i == 0)   icsmsg.tmsdb[vi].z  = 620.0;        //棚上段の場合
-                    // else               icsmsg.tmsdb[vi].z  = 330.0;        //棚中段の場合
                 }
                 cIntelCab.PrintObjInfo();
                 ics_pub.publish(icsmsg); } } }
