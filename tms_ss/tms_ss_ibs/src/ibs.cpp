@@ -87,6 +87,10 @@ std::string PORT_TR, PORT_LC0;
 #define NONE  0
 #define EXIST 1
 
+
+#define vec_str std::vector<std::string>
+
+
 //------------------------------------------------------------------------------
 class CLoadCell {
 private:
@@ -123,7 +127,7 @@ public:
         Close(); };
     int  mTagNum[TR3_USED_ANT_NUM];
     unsigned char mTagUIDs[TR3_USED_ANT_NUM][TR3_TAG_MAX][TR3_UID_SIZE];
-    std::vector<std::string> mUIDs[TR3_USED_ANT_NUM];
+    vec_str mUIDs[TR3_USED_ANT_NUM];
 
     bool Setup();
     // bool SetMode(unsigned char mode = TR3_ModeCommand);
@@ -133,7 +137,7 @@ public:
     void PrintTagUIDs();
 
     int  GetTagDiff(std::string &diffUID, unsigned char AN);
-    int  GetTagDiff2(std::vector<std::string> &inctag, std::vector<std::string> &dectag, unsigned char AN);
+    int  GetTagDiff2(vec_str &inctag, vec_str &dectag, unsigned char AN);
     int fd; };
 
 //------------------------------------------------------------------------------
@@ -193,7 +197,7 @@ public:
 
     void PrintObjInfo();
     int UpdateObj(int stageNo, CTagOBJ *cInOut);
-    int UpdateObj2(int No, std::vector<std::string> &inctag, std::vector<std::string> &dectag);
+    int UpdateObj2(int No, vec_str &inctag, vec_str &dectag);
     int fd; };
 
 //------------------------------------------------------------------------------
@@ -286,7 +290,7 @@ int CLoadCell::GetWeight(int sensor_id) {
 //------------------------------------------------------------------------------
 void CLoadCell::ResetWeight(int initial[], int num) {
     int i, j;
-
+    
     if (initial != NULL) {
         for (i = 0; i < mSensorNum; i++)
             mPreSensorsWeight[i] = initial[i];
@@ -587,7 +591,7 @@ int CTR3::GetTagDiff(std::string &diffUID, unsigned char AN) {
     if (Inventory2() == -1) {
         return 0; }
 
-    std::vector<std::string> preUIDs = mUIDs[mActiveAntenna];
+    vec_str preUIDs = mUIDs[mActiveAntenna];
     mUIDs[mActiveAntenna].clear();
 
     for (int i = 0; i < mTagNum[mActiveAntenna]; i++) {
@@ -601,12 +605,12 @@ int CTR3::GetTagDiff(std::string &diffUID, unsigned char AN) {
     //タグの増減の確認
     std::sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end());
     // IDにあってpreIDにない => 追加された物品ID
-    std::vector<std::string> increase;
+    vec_str increase;
     std::set_difference(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(), preUIDs.begin(), preUIDs.end(),
                         std::inserter(increase, increase.begin()));
 
     // preIDにあってIDにない => 取り除かれた物品ID
-    std::vector<std::string> decrease;
+    vec_str decrease;
     std::set_difference(preUIDs.begin(), preUIDs.end(), mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(),
                         std::inserter(decrease, decrease.begin()));
 
@@ -641,12 +645,12 @@ int CTR3::GetTagDiff(std::string &diffUID, unsigned char AN) {
 
 //------------------------------------------------------------------------------
 //タグの入出のチェック
-int CTR3::GetTagDiff2(std::vector<std::string> &inctag, std::vector<std::string> &dectag, unsigned char AN) {
+int CTR3::GetTagDiff2(vec_str &inctag, vec_str &dectag, unsigned char AN) {
     SetAntenna(AN);
     if (Inventory2() == -1) {
         return 0; }
 
-    std::vector<std::string> preUIDs = mUIDs[mActiveAntenna];
+    vec_str preUIDs = mUIDs[mActiveAntenna];
     mUIDs[mActiveAntenna].clear();
 
     for (int i = 0; i < mTagNum[mActiveAntenna]; i++) {
@@ -660,12 +664,12 @@ int CTR3::GetTagDiff2(std::vector<std::string> &inctag, std::vector<std::string>
     //タグの増減の確認
     std::sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end());
     // IDにあってpreIDにない => 追加された物品ID
-    std::vector<std::string> increase;
+    vec_str increase;
     std::set_difference(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(), preUIDs.begin(), preUIDs.end(),
                         std::inserter(increase, increase.begin()));
 
     // preIDにあってIDにない => 取り除かれた物品ID
-    std::vector<std::string> decrease;
+    vec_str decrease;
     std::set_difference(preUIDs.begin(), preUIDs.end(), mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(),
                         std::inserter(decrease, decrease.begin()));
 
@@ -909,8 +913,8 @@ int CIntelCab::UpdateObj(int No, CTagOBJ  *cInOut) {
     return value; }
 
 //------------------------------------------------------------------------------
-int CIntelCab::UpdateObj2(int No, std::vector<std::string> &inctag, std::vector<std::string> &dectag) {
-    std::vector<std::string> increase, decrease;
+int CIntelCab::UpdateObj2(int No, vec_str &inctag, vec_str &dectag) {
+    vec_str increase, decrease;
 
     if (No >= mStageNum)
         return 0;
