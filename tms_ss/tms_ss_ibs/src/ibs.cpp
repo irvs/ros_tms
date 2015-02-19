@@ -5,6 +5,12 @@
 // @version: Ver1.1.1 (since 2012.00.00)
 // @date   : 2014.11.24
 //------------------------------------------------------------------------------
+
+/*! @todo remove repeating of opening and close COM port.
+    @todo unite CStage class and CLoadCell class
+    @todo readujust threshold of GetWeightDiff
+*/
+
 #include <vector>
 #include <algorithm>
 #include <functional>
@@ -119,15 +125,15 @@ private:
     bool Close();
     unsigned char mCommand[TR3_MAX_COMMAND_SIZE];
     int  AddChecksum();
-    int  mActiveAntenna;
+    int  mActiveAntenna;  //!< true active antenna returned by serial
     int  Inventory2();
 public:
     CTR3() {};
     ~CTR3() {
         Close(); };
-    int  mTagNum[TR3_USED_ANT_NUM];
-    unsigned char mTagUIDs[TR3_USED_ANT_NUM][TR3_TAG_MAX][TR3_UID_SIZE];
-    vec_str mUIDs[TR3_USED_ANT_NUM];
+    int  mTagNum[TR3_USED_ANT_NUM];     //!< number of enxisting tags by the antenna
+    unsigned char mTagUIDs[TR3_USED_ANT_NUM][TR3_TAG_MAX][TR3_UID_SIZE];  //!< same as mUIDs. should be replaced.
+    vec_str mUIDs[TR3_USED_ANT_NUM];    //!< UIDs of existing tags
 
     bool Setup();
     // bool SetMode(unsigned char mode = TR3_ModeCommand);
@@ -587,6 +593,7 @@ int CTR3::Inventory2() {
 //------------------------------------------------------------------------------
 //タグの入出のチェック
 int CTR3::GetTagDiff(std::string &diffUID, unsigned char AN) {
+    //! @todo insert "vec_str preUIDs" here and remove "mTagUIDs[][][]"
     SetAntenna(AN);
     if (Inventory2() == -1) {
         return 0; }
