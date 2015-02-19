@@ -137,7 +137,7 @@ public:
     void PrintTagUIDs();
 
     int  GetTagDiff(std::string &diffUID, unsigned char AN);
-    int  GetTagDiff2(vec_str &inctag, vec_str &dectag, unsigned char AN);
+    // int  GetTagDiff2(vec_str &inctag, vec_str &dectag, unsigned char AN);
     int fd; };
 
 //------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ public:
 
     void PrintObjInfo();
     int UpdateObj(int stageNo, CTagOBJ *cInOut);
-    int UpdateObj2(int No, vec_str &inctag, vec_str &dectag);
+    // int UpdateObj2(int No, vec_str &inctag, vec_str &dectag);
     int fd; };
 
 //------------------------------------------------------------------------------
@@ -643,47 +643,6 @@ int CTR3::GetTagDiff(std::string &diffUID, unsigned char AN) {
 
     return 0; }
 
-//------------------------------------------------------------------------------
-//タグの入出のチェック
-int CTR3::GetTagDiff2(vec_str &inctag, vec_str &dectag, unsigned char AN) {
-    SetAntenna(AN);
-    if (Inventory2() == -1) {
-        return 0; }
-
-    vec_str preUIDs = mUIDs[mActiveAntenna];
-    mUIDs[mActiveAntenna].clear();
-
-    for (int i = 0; i < mTagNum[mActiveAntenna]; i++) {
-        char hex[17];
-        sprintf(hex, "%02X%02X%02X%02X%02X%02X%02X%02X",
-                mTagUIDs[mActiveAntenna][i][0], mTagUIDs[mActiveAntenna][i][1], mTagUIDs[mActiveAntenna][i][2], mTagUIDs[mActiveAntenna][i][3],
-                mTagUIDs[mActiveAntenna][i][4], mTagUIDs[mActiveAntenna][i][5], mTagUIDs[mActiveAntenna][i][6], mTagUIDs[mActiveAntenna][i][7]);
-        mUIDs[mActiveAntenna].push_back(std::string(hex)); }
-    mTagNum[mActiveAntenna] = (int)mUIDs[mActiveAntenna].size();
-
-    //タグの増減の確認
-    std::sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end());
-    // IDにあってpreIDにない => 追加された物品ID
-    vec_str increase;
-    std::set_difference(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(), preUIDs.begin(), preUIDs.end(),
-                        std::inserter(increase, increase.begin()));
-
-    // preIDにあってIDにない => 取り除かれた物品ID
-    vec_str decrease;
-    std::set_difference(preUIDs.begin(), preUIDs.end(), mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(),
-                        std::inserter(decrease, decrease.begin()));
-
-    // 物品の入出庫
-    std::sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end());
-    mTagNum[mActiveAntenna] = (int)mUIDs[mActiveAntenna].size();
-    if (increase.size() >= 1) {
-        std::sort(increase.begin(), increase.end());
-        inctag = increase; }
-    if (decrease.size() >= 1) {
-        std::sort(decrease.begin(), decrease.end());
-        dectag = decrease; }
-
-    return mTagNum[mActiveAntenna]; }
 
 //------------------------------------------------------------------------------
 //通信用サブ関数
@@ -698,75 +657,6 @@ int CTR3::AddChecksum() {
         mCommand[num] += mCommand[i]; }
 
     return num + 2; }
-
-// //------------------------------------------------------------------------------
-// //38.4kbps対応のためのEEPROMの書き換えに使用
-// bool CTR3::SetMode(unsigned char mode)
-// {
-//  unsigned long num;
-//  unsigned char buf[100];
-
-
-//  mCommand[2] = 0x4F; //コマンド
-//  mCommand[3] = 0x01; //データ長
-//  mCommand[4] = 0x00; //コマンド詳細
-//  //通信関連初期化
-//  if( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ){
-//      printf("FAILED:TR3->OpenComPort: PORT_TR \n");
-//      exit(-1);
-//  }
-//  tcgetattr(fd, &oldtio);         /* 現在のシリアルポートの設定を待避させる*/
-//  memset(&newtio, 0, sizeof(newtio));
-//  newtio.c_cflag = B38400 | CS8 | CLOCAL | CREAD;
-//  newtio.c_iflag = IGNPAR | ICRNL;
-//  newtio.c_oflag = 0;
-//  newtio.c_lflag = ICANON;
-//  tcflush(fd, TCIFLUSH);
-//  tcsetattr(fd, TCSANOW, &newtio);
-
-//  AddChecksum();
-//  write(fd, mCommand, sizeof(mCommand));
-//  printf("NOW Mode: ");
-//  read(fd, buf, 100);
-//  for(int i= 0; i<(int)num; i++)
-//      printf("%02x ",buf[i]);
-//  printf("\n");
-
-//  mCommand[2] = 0x4E; //コマンド
-//  mCommand[3] = 0x07; //データ長
-//  mCommand[4] = 0x10; //コマンド詳細   EEPROMへ書込
-//  mCommand[5] = mode; //モード指定
-//  mCommand[6] = 0x00; // 0固定
-//  mCommand[7] = 0x98; // default->0x18 から 38.4Kbps対応へ変更
-//  mCommand[8] = 0x00; // 予約
-//  mCommand[9] = 0x00; // 予約
-//  mCommand[10]= 0x00; // 予約
-
-//  AddChecksum();
-//  write(fd, mCommand, sizeof(mCommand));
-//  read(fd, buf, 100);
-//  for(int i= 0; i<(int)num; i++)
-//      printf("%02x ",buf[i]);
-//  printf("\n");
-
-//  mCommand[2] = 0x4F; //コマンド
-//  mCommand[3] = 0x01; //データ長
-//  mCommand[4] = 0x00; //コマンド詳細
-//  AddChecksum();
-//  write(fd, mCommand, sizeof(mCommand));
-//  printf("Revised Mode: ");
-//  read(fd, buf, 100);
-//  for(int i= 0; i<(int)num; i++)
-//      printf("%02x ",buf[i]);
-//  printf("\n");
-
-//  tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
-//  close(fd);
-
-//  exit(0);
-
-//  return false;
-// }
 
 //------------------------------------------------------------------------------
 bool CTagOBJ::Setup() {
@@ -911,39 +801,6 @@ int CIntelCab::UpdateObj(int No, CTagOBJ  *cInOut) {
             cObjOut[No] = cStage[No].cTagObj.at(cnt);
             InOutLC[No] = -1; } }
     return value; }
-
-//------------------------------------------------------------------------------
-int CIntelCab::UpdateObj2(int No, vec_str &inctag, vec_str &dectag) {
-    vec_str increase, decrease;
-
-    if (No >= mStageNum)
-        return 0;
-
-    //タグの増減チェック
-    cTR3.AntennaPowerON();
-    if (mStageNum == 1) {
-        cTR3.SetAntenna(cStage[No].mAntenna + 1); }
-    cTR3.GetTagDiff2(increase, decrease, cStage[No].mAntenna);
-    cTR3.AntennaPowerOFF();
-
-    //出庫
-    for (unsigned int i = 0; i < decrease.size(); i++) {
-        for (unsigned int j = 0; j < cStage[No].cTagObj.size(); j++) {
-            if (cStage[No].cTagObj.at(j).mUID.compare( decrease.at(i) ) == 0) {
-                cStage[No].cTagObj.erase(cStage[No].cTagObj.begin() + j);
-                break; } } }
-    //入庫
-    for (unsigned int i = 0; i < increase.size(); i++) {
-        CTagOBJ  cObj;
-        cObj.mUID = increase.at(i);
-        cStage[No].cTagObj.push_back(cObj); }
-    //出入庫有
-    if ( (decrease.size() != 0) || (increase.size() != 0) ) {
-        cStage[No].mObjNum = (int)cStage[No].cTagObj.size(); }
-    inctag = increase;
-    dectag = decrease;
-
-    return cStage[No].mObjNum; }
 
 //------------------------------------------------------------------------------
 int main(int argc, char **argv) {
