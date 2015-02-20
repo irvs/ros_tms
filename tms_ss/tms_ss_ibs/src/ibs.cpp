@@ -102,8 +102,8 @@ class CLoadCell {
 private:
     struct termios oldtio, newtio;  /* 通信ポートを制御するためのインターフェイス */
     bool Close();
-    void Connect();
-    void Disconnect();
+    void OpenPort();
+    void ClosePost();
     int mPreSensorsWeight[LC_MAX_SENSOR_NUM];
     float mSensorPosX[LC_MAX_SENSOR_NUM];
     float mSensorPosY[LC_MAX_SENSOR_NUM];
@@ -126,8 +126,8 @@ class CTR3 {
 private:
     struct termios oldtio, newtio;  /* 通信ポートを制御するためのインターフェイス */
     bool Close();
-    void Connect();
-    void Disconnect();
+    void OpenPort();
+    void ClosePost();
     unsigned char mCommand[TR3_MAX_COMMAND_SIZE];
     int  AddChecksum();
     int  mActiveAntenna;  //!< 真にアクティブなアンテナ．シリアル通信での返り値が代入される．
@@ -211,15 +211,12 @@ bool CLoadCell::Setup() {
         mSensorPosX[i] = 0;
         mSensorPosY[i] = 0; }
     mSensorNum = LC_MAX_SENSOR_NUM;
-
-    Connect();
-
+    OpenPort();
+    std::cout << "OPENING: LoadCell(port:" << PORT_LC0.c_str() << ")" << std::endl;
+    ClosePost();
     std::cout << "OPENED: LoadCell(port:" << PORT_LC0.c_str() << ")" << std::endl;
-
-    Disconnect();
-
     ResetWeight();
-
+    std::cout << "CLOSED: LoadCell(port:" << PORT_LC0.c_str() << ")" << std::endl;
     return true; }
 
 //------------------------------------------------------------------------------
@@ -229,7 +226,7 @@ bool CLoadCell::Close() {
     std::cout << "CLOSED: LoadCell" << std::endl;
     return true; }
 
-void CLoadCell::Connect(){	
+void CLoadCell::OpenPort(){	
 	//通信関連初期化
     if ( (fd = open(PORT_LC0.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ) {
         printf("FAILED: LoadCell->OpenComPort:PORT_LC0 \n");
@@ -245,7 +242,7 @@ void CLoadCell::Connect(){
     tcflush(fd, TCIFLUSH);
     tcsetattr(fd, TCSANOW, &newtio);}
 
-void CLoadCell::Disconnect(){
+void CLoadCell::ClosePost(){
 	tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
     close(fd);
 }
@@ -270,12 +267,12 @@ int CLoadCell::GetWeight(int sensor_id) {
     else
         signal = sensor_id - 10 + 'A'; // 10->'A', 11->'B', ... , 35->'Z'
 
-    Connect();
+    OpenPort();
 
     write(fd, &signal, 1);
     read(fd, buf, 15);
 
-    Disconnect();
+    ClosePost();
 
     int output_value = atoi(buf);
 
@@ -362,10 +359,12 @@ bool CTR3::Setup() {
     mActiveAntenna = TR3_ANT1;
     mCommand[0] = TR3_STX;  //
     mCommand[1] = 0x00;     //アドレス
-
-    Connect();
-    Disconnect();
+    std::cout << "OPENING: TR3(port:" << PORT_TR.c_str() << ")" << std::endl;
+    OpenPort();
     std::cout << "OPENED: TR3(port:" << PORT_TR.c_str() << ")" << std::endl;
+    ClosePost();
+    std::cout << "CLOSED: TR3(port:" << PORT_TR.c_str() << ")" << std::endl;
+    
     return true; }
 
 //------------------------------------------------------------------------------
@@ -376,7 +375,7 @@ bool CTR3::Close() {
     std::cout << "CLOSED: TR3" << std::endl;
     return true; }
 
-void CTR3::Connect(){
+void CTR3::OpenPort(){
     if ( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ) {
        printf("ERROR!!\n");
        exit(-1); }
@@ -389,7 +388,7 @@ void CTR3::Connect(){
     tcflush(fd, TCIFLUSH);
     tcsetattr(fd, TCSANOW, &newtio);}
 
-void CTR3::Disconnect(){
+void CTR3::ClosePost(){
     tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
     close(fd);}
 
@@ -404,9 +403,7 @@ int CTR3::SetAntenna(unsigned char AN) {
     mCommand[5] = AN; //アンテナ指定
 
     memset(&buf, 0, sizeof(buf));
-
-    Connect();
-
+    OpenPort();
     AddChecksum();
     write(fd, mCommand, sizeof(mCommand));
     read(fd, buf, 9);
@@ -415,9 +412,7 @@ int CTR3::SetAntenna(unsigned char AN) {
         std::cerr << "TR3: SendCommandError -> SetAntenna" << std::endl;
         return -1; }
     mActiveAntenna = (int)buf[5];
-
-    Disconnect();
-
+    ClosePost();
     return (int)buf[5]; }
 
 //------------------------------------------------------------------------------
@@ -434,9 +429,7 @@ bool CTR3::AntennaPowerON() {
     mCommand[5] = 0x01; //パワーON
 
     memset(&buf, 0, sizeof(buf));
-
-    Connect();
-
+    OpenPort();
     AddChecksum();
     write(fd, mCommand, sizeof(mCommand));
     read(fd, buf, 9);
@@ -448,7 +441,7 @@ bool CTR3::AntennaPowerON() {
 
     // tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
     // close(fd);
-    Disconnect();
+    ClosePost();
 
     return true; }
 
@@ -465,7 +458,7 @@ bool CTR3::AntennaPowerOFF() {
 
     memset(&buf, 0, sizeof(buf));
 
-    Connect();
+    OpenPort();
 
     AddChecksum();
     write(fd, mCommand, sizeof(mCommand));
@@ -478,7 +471,7 @@ bool CTR3::AntennaPowerOFF() {
 
     // tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
     // close(fd);
-    Disconnect();
+    ClosePost();
 
     return true; }
 
@@ -506,8 +499,7 @@ int CTR3::Inventory2() {
     mCommand[5] = 0x00; //アンチコリジョン有
     mCommand[6] = 0x01; //出力指定->取得データ数＋UIDデータ
 
-    Connect();
-
+    OpenPort();
     AddChecksum();
     write(fd, mCommand, sizeof(mCommand));
     read(fd, buf, 9);
@@ -528,8 +520,7 @@ int CTR3::Inventory2() {
                 buf[12],	buf[11],	buf[10],	buf[9],
                 buf[8],		buf[7],		buf[6],		buf[5]);
         mUIDs[mActiveAntenna].push_back(std::string(hex));}
-    Disconnect();
-
+    ClosePost();
     return tag_num; }
 
 //------------------------------------------------------------------------------
@@ -580,7 +571,6 @@ int CTR3::GetTagDiff(std::string &diffUID, unsigned char AN) {
         std::sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end());
         diffUID = decrease[0];
         return -1; }
-
     return 0; }
 
 
@@ -604,16 +594,12 @@ bool CTagOBJ::Setup() {
     for (int i = 0; i < TR3_UID_SIZE * 2; i++)
         id[i] = 0x00;
     mUID.assign(id);
-
     for (int i = 0; i < LC_MAX_SENSOR_NUM; i++)
         mDiffs[i] = 0;
-
     mX = mY = 0;
     mWeight = 0;
-
     mName = '\0';
     mComment = '\0';
-
     return true; }
 
 //------------------------------------------------------------------------------
@@ -817,7 +803,7 @@ int main(int argc, char **argv) {
     int index = 0;
     std::cout << "\nSTART" << std::endl;
 
-    while (1) {
+    while (ros::ok()) {
         // vector 初期化
         // 毎回初期化し，庫内にある物品だけ値を更新して送信する
         ros::Time now = ros::Time::now() + ros::Duration(9 * 60 * 60); // GMT +9
@@ -871,9 +857,7 @@ int main(int argc, char **argv) {
                 break; }
 
             if (change_flag) {
-
                 change_flag = false;
-
                 int32_t vi = 255;
                 for (int j = 0; j < cIntelCab.cStage[i].cTagObj.size(); j++) {
                     cObj = cIntelCab.cStage[i].cTagObj[j];
