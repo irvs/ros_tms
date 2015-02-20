@@ -125,25 +125,22 @@ private:
     bool Close();
     unsigned char mCommand[TR3_MAX_COMMAND_SIZE];
     int  AddChecksum();
-    int  mActiveAntenna;  //!< true active antenna returned by serial
+    int  mActiveAntenna;  //!< 真にアクティブなアンテナ．シリアル通信での返り値が代入される．
     int  Inventory2();
 public:
     CTR3() {};
     ~CTR3() {
         Close(); };
-    int  mTagNum[TR3_USED_ANT_NUM];     //!< number of enxisting tags by the antenna
-    unsigned char mTagUIDs[TR3_USED_ANT_NUM][TR3_TAG_MAX][TR3_UID_SIZE];  //!< same as mUIDs. should be replaced.
-    vec_str mUIDs[TR3_USED_ANT_NUM];    //!< UIDs of existing tags
+    int  mTagNum[TR3_USED_ANT_NUM];     //!< 指定されたアンテナから見えているタグの数
+    vec_str mUIDs[TR3_USED_ANT_NUM];    //!< 見えているタグのUIDのリスト
 
     bool Setup();
-    // bool SetMode(unsigned char mode = TR3_ModeCommand);
     int  SetAntenna(unsigned char AN = TR3_ANT1);
     bool AntennaPowerON();
     bool AntennaPowerOFF();
     void PrintTagUIDs();
 
     int  GetTagDiff(std::string &diffUID, unsigned char AN);
-    // int  GetTagDiff2(vec_str &inctag, vec_str &dectag, unsigned char AN);
     int fd; };
 
 //------------------------------------------------------------------------------
@@ -164,8 +161,7 @@ public:
     float mX;
     float mY;
     std::string  mName;
-    std::string  mComment;
-    int fd; };
+    std::string  mComment;};
 
 //------------------------------------------------------------------------------
 class CStage {
@@ -183,8 +179,7 @@ public:
 
     bool Setup();
     void SetSensorPos(int sensor_num, float x[], float y[]);
-    void SetAntenna(unsigned char AN);
-    int fd; };
+    void SetAntenna(unsigned char AN);};
 
 //------------------------------------------------------------------------------
 class CIntelCab {
@@ -203,7 +198,6 @@ public:
 
     void PrintObjInfo();
     int UpdateObj(int stageNo, CTagOBJ *cInOut);
-    // int UpdateObj2(int No, vec_str &inctag, vec_str &dectag);
     int fd; };
 
 //------------------------------------------------------------------------------
@@ -296,7 +290,7 @@ int CLoadCell::GetWeight(int sensor_id) {
 //------------------------------------------------------------------------------
 void CLoadCell::ResetWeight(int initial[], int num) {
     int i, j;
-    
+
     if (initial != NULL) {
         for (i = 0; i < mSensorNum; i++)
             mPreSensorsWeight[i] = initial[i];
@@ -369,7 +363,6 @@ int  CLoadCell::GetWeightDiff(float *x, float *y, int diffs[], int threshold) {
 //------------------------------------------------------------------------------
 bool CTR3::Setup() {
     //数値初期化関連
-    memset(mTagUIDs, 0, sizeof(unsigned char)*TR3_USED_ANT_NUM * TR3_TAG_MAX * TR3_UID_SIZE);
     mActiveAntenna = TR3_ANT1;
     for (int i = 0; i < TR3_USED_ANT_NUM; i++)
         mTagNum[i] = 0;
@@ -580,11 +573,14 @@ int CTR3::Inventory2() {
     //-------------
     //タグ情報の読込
     for (i = 0; i < tag_num; i++) {
-        read(fd, buf, TR3_TAG_SIZE);        ////****
-        for (j = 0; j < TR3_UID_SIZE; j++) {
-            mTagUIDs[mActiveAntenna][i][TR3_UID_SIZE - 1 - j] = buf[j + 5]; } }
+        char hex[17];
+        read(fd, buf, TR3_TAG_SIZE);
+        sprintf(hex, "%02X%02X%02X%02X%02X%02X%02X%02X",
+                buf[12],	buf[11],	buf[10],	buf[9],
+                buf[8],		buf[7],		buf[6],		buf[5]);
+        mUIDs[mActiveAntenna].push_back(std::string(hex));}
     mTagNum[mActiveAntenna] = tag_num;
-
+    // std::cout << "     tag_num:" <<tag_num << "      size:" << (int)mUIDs[mActiveAntenna].size();
     tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
     close(fd);
 
@@ -593,21 +589,14 @@ int CTR3::Inventory2() {
 //------------------------------------------------------------------------------
 //タグの入出のチェック
 int CTR3::GetTagDiff(std::string &diffUID, unsigned char AN) {
-    //! @todo insert "vec_str preUIDs" here and remove "mTagUIDs[][][]"
     SetAntenna(AN);
-    if (Inventory2() == -1) {
-        return 0; }
-
+    // std::cout << "AN:"<< (int)AN << "     mActiveAnt:" << mActiveAntenna;
     vec_str preUIDs = mUIDs[mActiveAntenna];
     mUIDs[mActiveAntenna].clear();
-
-    for (int i = 0; i < mTagNum[mActiveAntenna]; i++) {
-        char hex[17];
-        sprintf(hex, "%02X%02X%02X%02X%02X%02X%02X%02X",
-                mTagUIDs[mActiveAntenna][i][0], mTagUIDs[mActiveAntenna][i][1], mTagUIDs[mActiveAntenna][i][2], mTagUIDs[mActiveAntenna][i][3],
-                mTagUIDs[mActiveAntenna][i][4], mTagUIDs[mActiveAntenna][i][5], mTagUIDs[mActiveAntenna][i][6], mTagUIDs[mActiveAntenna][i][7]);
-        mUIDs[mActiveAntenna].push_back(std::string(hex)); }
-    mTagNum[mActiveAntenna] = (int)mUIDs[mActiveAntenna].size();
+    // PrintTagUIDs();    
+    if (Inventory2() == -1) {
+        return 0; }
+    // PrintTagUIDs();
 
     //タグの増減の確認
     std::sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end());
@@ -742,6 +731,7 @@ int CIntelCab::UpdateObj(int No, CTagOBJ  *cInOut) {
 
     //タグの増減チェック
     cTR3.AntennaPowerON();
+    //! @todo 理解不能なif分岐．実際はアンテナ0しか使ってない（通信の返り値て強制的に0になってる）のにこれのせいでアンテナ1を使用しようとしてる．
     if (mStageNum == 1) {
         cTR3.SetAntenna(cStage[No].mAntenna + 1); }
     int inout = cTR3.GetTagDiff(cObj.mUID, cStage[No].mAntenna);
@@ -958,8 +948,7 @@ int main(int argc, char **argv) {
                     // nh_param.param<float>("z",icsmsg.tmsdb[vi].z,NULL);
                     if (! nh_param.getParam("z", icsmsg.tmsdb[vi].z)) {
                         ROS_ERROR("ros param z isn't exist");
-                        return 0; }
-                }
+                        return 0; } }
                 cIntelCab.PrintObjInfo();
                 ics_pub.publish(icsmsg); } } }
     return 0; }
