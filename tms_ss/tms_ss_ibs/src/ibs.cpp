@@ -102,6 +102,8 @@ class CLoadCell {
 private:
     struct termios oldtio, newtio;  /* 通信ポートを制御するためのインターフェイス */
     bool Close();
+    void Connect();
+    void Disconnect();
     int mPreSensorsWeight[LC_MAX_SENSOR_NUM];
     float mSensorPosX[LC_MAX_SENSOR_NUM];
     float mSensorPosY[LC_MAX_SENSOR_NUM];
@@ -111,6 +113,7 @@ public:
     ~CLoadCell() {
         Close(); };
     bool Setup();
+
     int mSensorNum;
     void ResetWeight(int initial[] = NULL, int num = 10);
     void SetSensorPos(int sensor_num, float x[], float y[]);
@@ -123,6 +126,8 @@ class CTR3 {
 private:
     struct termios oldtio, newtio;  /* 通信ポートを制御するためのインターフェイス */
     bool Close();
+    void Connect();
+    void Disconnect();
     unsigned char mCommand[TR3_MAX_COMMAND_SIZE];
     int  AddChecksum();
     int  mActiveAntenna;  //!< 真にアクティブなアンテナ．シリアル通信での返り値が代入される．
@@ -196,8 +201,7 @@ public:
     int mStageNum;
 
     void PrintObjInfo();
-    int UpdateObj(int stageNo, CTagOBJ *cInOut);
-    int fd; };
+    int UpdateObj(int stageNo, CTagOBJ *cInOut);};
 
 //------------------------------------------------------------------------------
 bool CLoadCell::Setup() {
@@ -208,7 +212,25 @@ bool CLoadCell::Setup() {
         mSensorPosY[i] = 0; }
     mSensorNum = LC_MAX_SENSOR_NUM;
 
-    //通信関連初期化
+    Connect();
+
+    std::cout << "OPENED: LoadCell(port:" << PORT_LC0.c_str() << ")" << std::endl;
+
+    Disconnect();
+
+    ResetWeight();
+
+    return true; }
+
+//------------------------------------------------------------------------------
+bool CLoadCell::Close() {
+    close(fd);
+
+    std::cout << "CLOSED: LoadCell" << std::endl;
+    return true; }
+
+void CLoadCell::Connect(){	
+	//通信関連初期化
     if ( (fd = open(PORT_LC0.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ) {
         printf("FAILED: LoadCell->OpenComPort:PORT_LC0 \n");
         exit(-1); }
@@ -221,23 +243,12 @@ bool CLoadCell::Setup() {
     newtio.c_cc[VTIME] = 0;
     newtio.c_cc[VMIN] = 15;            /* 15文字受け取るまでブロックする */
     tcflush(fd, TCIFLUSH);
-    tcsetattr(fd, TCSANOW, &newtio);
+    tcsetattr(fd, TCSANOW, &newtio);}
 
-    std::cout << "OPENED: LoadCell(port:" << PORT_LC0.c_str() << ")" << std::endl;
-
-    tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
+void CLoadCell::Disconnect(){
+	tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
     close(fd);
-
-    ResetWeight();
-
-    return true; }
-
-//------------------------------------------------------------------------------
-bool CLoadCell::Close() {
-    close(fd);
-
-    std::cout << "CLOSED: LoadCell" << std::endl;
-    return true; }
+}
 
 //------------------------------------------------------------------------------
 void CLoadCell::SetSensorPos(int sensor_num, float x[], float y[]) {
@@ -259,26 +270,12 @@ int CLoadCell::GetWeight(int sensor_id) {
     else
         signal = sensor_id - 10 + 'A'; // 10->'A', 11->'B', ... , 35->'Z'
 
-    //通信関連初期化
-    if ( (fd = open(PORT_LC0.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ) {
-        printf("FAILED: LoadCell->OpenComPort:PORT_LC0 \n");
-        exit(-1); }
+    Connect();
 
-    tcgetattr(fd, &oldtio);         /* 現在のシリアルポートの設定を待避させる*/
-    memset(&newtio, 0, sizeof(newtio));
-    newtio.c_cflag = B115200 | CS8 | CLOCAL | CREAD;
-    newtio.c_iflag = IGNPAR;
-    newtio.c_oflag = 0;
-    newtio.c_lflag = 0;
-    newtio.c_cc[VTIME] = 0;
-    newtio.c_cc[VMIN] = 15;            /* 15文字受け取るまでブロックする */
-    tcflush(fd, TCIFLUSH);
-    tcsetattr(fd, TCSANOW, &newtio);
     write(fd, &signal, 1);
     read(fd, buf, 15);
 
-    tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
-    close(fd);
+    Disconnect();
 
     int output_value = atoi(buf);
 
@@ -363,28 +360,12 @@ int  CLoadCell::GetWeightDiff(float *x, float *y, int diffs[], int threshold) {
 bool CTR3::Setup() {
     //数値初期化関連
     mActiveAntenna = TR3_ANT1;
-
     mCommand[0] = TR3_STX;  //
     mCommand[1] = 0x00;     //アドレス
 
-    if ( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ) {
-        printf("ERROR!!\n");
-        exit(-1); }
-
-    tcgetattr(fd, &oldtio);         /* 現在のシリアルポートの設定を待避させる*/
-    memset(&newtio, 0, sizeof(newtio));
-    newtio.c_cflag = B38400 | CS8 | CLOCAL | CREAD;
-    newtio.c_iflag = IGNPAR | ICRNL;
-    newtio.c_oflag = 0;
-    newtio.c_lflag = ICANON;
-    tcflush(fd, TCIFLUSH);
-    tcsetattr(fd, TCSANOW, &newtio);
-
-    tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
-    close(fd);
-
+    Connect();
+    Disconnect();
     std::cout << "OPENED: TR3(port:" << PORT_TR.c_str() << ")" << std::endl;
-
     return true; }
 
 //------------------------------------------------------------------------------
@@ -394,6 +375,23 @@ bool CTR3::Close() {
 
     std::cout << "CLOSED: TR3" << std::endl;
     return true; }
+
+void CTR3::Connect(){
+    if ( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ) {
+       printf("ERROR!!\n");
+       exit(-1); }
+    tcgetattr(fd, &oldtio);         /* 現在のシリアルポートの設定を待避させる*/
+    memset(&newtio, 0, sizeof(newtio));
+    newtio.c_cflag = B38400 | CS8 | CLOCAL | CREAD;
+    newtio.c_iflag = IGNPAR | ICRNL;
+    newtio.c_oflag = 0;
+    newtio.c_lflag = ICANON;
+    tcflush(fd, TCIFLUSH);
+    tcsetattr(fd, TCSANOW, &newtio);}
+
+void CTR3::Disconnect(){
+    tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
+    close(fd);}
 
 //------------------------------------------------------------------------------
 //アンテナの指定
@@ -406,18 +404,8 @@ int CTR3::SetAntenna(unsigned char AN) {
     mCommand[5] = AN; //アンテナ指定
 
     memset(&buf, 0, sizeof(buf));
-    //通信関連初期化
-    if ( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ) {
-        printf("FAILED:TR3->OpenComPort: PORT_TR \n"); }
 
-    tcgetattr(fd, &oldtio);         /* 現在のシリアルポートの設定を待避させる*/
-    memset(&newtio, 0, sizeof(newtio));
-    newtio.c_cflag = B38400 | CS8 | CLOCAL | CREAD;
-    newtio.c_iflag = IGNPAR | ICRNL;
-    newtio.c_oflag = 0;
-    newtio.c_lflag = ICANON;
-    tcflush(fd, TCIFLUSH);
-    tcsetattr(fd, TCSANOW, &newtio);
+    Connect();
 
     AddChecksum();
     write(fd, mCommand, sizeof(mCommand));
@@ -425,12 +413,10 @@ int CTR3::SetAntenna(unsigned char AN) {
     if (buf[2] != TR3_ACK) {
         read(fd, buf, 100);
         std::cerr << "TR3: SendCommandError -> SetAntenna" << std::endl;
-
         return -1; }
     mActiveAntenna = (int)buf[5];
 
-    tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
-    close(fd);
+    Disconnect();
 
     return (int)buf[5]; }
 
@@ -449,19 +435,7 @@ bool CTR3::AntennaPowerON() {
 
     memset(&buf, 0, sizeof(buf));
 
-    //通信関連初期化
-    if ( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ) {
-        printf("FAILED:TR3->OpenComPort: PORT_TR \n");
-        exit(-1); }
-
-    tcgetattr(fd, &oldtio);         /* 現在のシリアルポートの設定を待避させる*/
-    memset(&newtio, 0, sizeof(newtio));
-    newtio.c_cflag = B38400 | CS8 | CLOCAL | CREAD;
-    newtio.c_iflag = IGNPAR | ICRNL;
-    newtio.c_oflag = 0;
-    newtio.c_lflag = ICANON;
-    tcflush(fd, TCIFLUSH);
-    tcsetattr(fd, TCSANOW, &newtio);
+    Connect();
 
     AddChecksum();
     write(fd, mCommand, sizeof(mCommand));
@@ -472,8 +446,9 @@ bool CTR3::AntennaPowerON() {
         std::cerr << "TR3: SendCommandError -> AntennaPowerON" << std::endl;
         return false; }
 
-    tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
-    close(fd);
+    // tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
+    // close(fd);
+    Disconnect();
 
     return true; }
 
@@ -490,19 +465,7 @@ bool CTR3::AntennaPowerOFF() {
 
     memset(&buf, 0, sizeof(buf));
 
-    //通信関連初期化
-    if ( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ) {
-        printf("FAILED:TR3->OpenComPort: PORT_TR \n");
-        exit(-1); }
-
-    tcgetattr(fd, &oldtio);         /* 現在のシリアルポートの設定を待避させる*/
-    memset(&newtio, 0, sizeof(newtio));
-    newtio.c_cflag = B38400 | CS8 | CLOCAL | CREAD;
-    newtio.c_iflag = IGNPAR | ICRNL;
-    newtio.c_oflag = 0;
-    newtio.c_lflag = ICANON;
-    tcflush(fd, TCIFLUSH);
-    tcsetattr(fd, TCSANOW, &newtio);
+    Connect();
 
     AddChecksum();
     write(fd, mCommand, sizeof(mCommand));
@@ -513,8 +476,9 @@ bool CTR3::AntennaPowerOFF() {
         std::cerr << "TR3: SendCommandError -> AntennaPowerOFF" << std::endl;
         return false; }
 
-    tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
-    close(fd);
+    // tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
+    // close(fd);
+    Disconnect();
 
     return true; }
 
@@ -542,19 +506,7 @@ int CTR3::Inventory2() {
     mCommand[5] = 0x00; //アンチコリジョン有
     mCommand[6] = 0x01; //出力指定->取得データ数＋UIDデータ
 
-    //通信関連初期化
-    if ( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ) {
-        printf("FAILED:TR3->OpenComPort: PORT_TR \n");
-        exit(-1); }
-
-    tcgetattr(fd, &oldtio);         /* 現在のシリアルポートの設定を待避させる*/
-    memset(&newtio, 0, sizeof(newtio));
-    newtio.c_cflag = B38400 | CS8 | CLOCAL | CREAD;
-    newtio.c_iflag = IGNPAR | ICRNL;
-    newtio.c_oflag = 0;
-    newtio.c_lflag = ICANON;
-    tcflush(fd, TCIFLUSH);
-    tcsetattr(fd, TCSANOW, &newtio);
+    Connect();
 
     AddChecksum();
     write(fd, mCommand, sizeof(mCommand));
@@ -576,9 +528,7 @@ int CTR3::Inventory2() {
                 buf[12],	buf[11],	buf[10],	buf[9],
                 buf[8],		buf[7],		buf[6],		buf[5]);
         mUIDs[mActiveAntenna].push_back(std::string(hex));}
-    // std::cout << "     tag_num:" <<tag_num << "      size:" << (int)mUIDs[mActiveAntenna].size();
-    tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
-    close(fd);
+    Disconnect();
 
     return tag_num; }
 
