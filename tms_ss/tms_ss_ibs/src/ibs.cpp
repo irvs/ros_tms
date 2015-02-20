@@ -131,7 +131,7 @@ public:
     CTR3() {};
     ~CTR3() {
         Close(); };
-    int  mTagNum[TR3_USED_ANT_NUM];     //!< 指定されたアンテナから見えているタグの数
+    // int  mTagNum[TR3_USED_ANT_NUM];     //!< 指定されたアンテナから見えているタグの数
     vec_str mUIDs[TR3_USED_ANT_NUM];    //!< 見えているタグのUIDのリスト
 
     bool Setup();
@@ -363,8 +363,6 @@ int  CLoadCell::GetWeightDiff(float *x, float *y, int diffs[], int threshold) {
 bool CTR3::Setup() {
     //数値初期化関連
     mActiveAntenna = TR3_ANT1;
-    for (int i = 0; i < TR3_USED_ANT_NUM; i++)
-        mTagNum[i] = 0;
 
     mCommand[0] = TR3_STX;  //
     mCommand[1] = 0x00;     //アドレス
@@ -527,7 +525,7 @@ void CTR3::PrintTagUIDs() {
 
     for (i = 0; i < TR3_USED_ANT_NUM; i++) {
         std::cout << "\n:::: ANTENNA " << i + 1 << " ::::" << std::endl;
-        for (j = 0; j < mTagNum[i]; j++) {
+        for (j = 0; j < (int)mUIDs[i].size(); j++) {
             std::cout << std::setw(3) << j + 1 << "-> " << mUIDs[i][j] << std::endl; } } }
 
 //------------------------------------------------------------------------------
@@ -578,7 +576,6 @@ int CTR3::Inventory2() {
                 buf[12],	buf[11],	buf[10],	buf[9],
                 buf[8],		buf[7],		buf[6],		buf[5]);
         mUIDs[mActiveAntenna].push_back(std::string(hex));}
-    mTagNum[mActiveAntenna] = tag_num;
     // std::cout << "     tag_num:" <<tag_num << "      size:" << (int)mUIDs[mActiveAntenna].size();
     tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
     close(fd);
@@ -625,14 +622,12 @@ int CTR3::GetTagDiff(std::string &diffUID, unsigned char AN) {
         preUIDs.push_back(increase[0]);
         mUIDs[mActiveAntenna] = preUIDs;
         std::sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end());
-        mTagNum[mActiveAntenna] = (int)mUIDs[mActiveAntenna].size();
         diffUID = increase[0];
         return 1; }
     if (decrease.size() >= 1) {
         preUIDs.erase(remove(preUIDs.begin(), preUIDs.end(), decrease[0]),  preUIDs.end());
         mUIDs[mActiveAntenna] = preUIDs;
         std::sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end());
-        mTagNum[mActiveAntenna] = (int)mUIDs[mActiveAntenna].size();
         diffUID = decrease[0];
         return -1; }
 
