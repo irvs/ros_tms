@@ -1,5 +1,7 @@
 <map id="CTR3::GetTagDiff" name="CTR3::GetTagDiff">
-<area shape="rect" id="node2" href="$class_c_t_r3.html#adbd50e4143b3e344d3d5502043bf2a10" title="CTR3::Inventory2" alt="" coords="187,5,314,32"/>
-<area shape="rect" id="node4" href="$class_c_t_r3.html#ad76ae24fee078e665d6b4762b21d9098" title="CTR3::SetAntenna" alt="" coords="184,56,317,83"/>
-<area shape="rect" id="node3" href="$class_c_t_r3.html#aac759784c783b44b374c9d9a3884e11b" title="CTR3::AddChecksum" alt="" coords="366,31,517,57"/>
+<area shape="rect" id="node2" href="$class_c_t_r3.html#adbd50e4143b3e344d3d5502043bf2a10" title="CTR3::Inventory2" alt="" coords="187,31,314,57"/>
+<area shape="rect" id="node6" href="$class_c_t_r3.html#ad76ae24fee078e665d6b4762b21d9098" title="CTR3::SetAntenna" alt="" coords="184,81,317,108"/>
+<area shape="rect" id="node3" href="$class_c_t_r3.html#af8cad3d03c19a9ef74159be963ffbe0a" title="CTR3::OpenPort" alt="" coords="381,5,501,32"/>
+<area shape="rect" id="node4" href="$class_c_t_r3.html#aac759784c783b44b374c9d9a3884e11b" title="CTR3::AddChecksum" alt="" coords="366,56,517,83"/>
+<area shape="rect" id="node5" href="$class_c_t_r3.html#aa7cc0e24c5797f5d78802f5cd1042f89" title="CTR3::ClosePost" alt="" coords="378,107,505,133"/>
 </map>

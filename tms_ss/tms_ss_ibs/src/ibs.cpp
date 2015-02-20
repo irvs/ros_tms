@@ -258,24 +258,17 @@ void CLoadCell::SetSensorPos(int sensor_num, float x[], float y[]) {
 // 指定されたセンサから重さを取得する
 int CLoadCell::GetWeight(int sensor_id) {
     char signal, buf[20];
-
     memset(&buf, 0, sizeof(buf));
-
     // センサ番号からセンサのアドレスを求める
     if (0 <= sensor_id && sensor_id <= 9)
         signal = sensor_id + '0'; // 0->'0', 1->'1', ..., 9->'9'
     else
         signal = sensor_id - 10 + 'A'; // 10->'A', 11->'B', ... , 35->'Z'
-
     OpenPort();
-
     write(fd, &signal, 1);
     read(fd, buf, 15);
-
     ClosePost();
-
     int output_value = atoi(buf);
-
     // センサ出力を校正して返す
     return (int)(output_value * 5); //0.28は経験的な値
 }
