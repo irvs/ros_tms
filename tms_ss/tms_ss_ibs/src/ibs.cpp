@@ -174,7 +174,6 @@ public:
     unsigned char mAntenna;
     int mStagePos[3];
     char mName[IC_STAGE_NAME_SIZE];
-    int  mObjNum;
     std::vector<CTagOBJ> cTagObj;
 
     bool Setup();
@@ -680,7 +679,6 @@ bool CTagOBJ::Close() {
 bool CStage::Setup() {
     cLoadCell.Setup();
 
-    mObjNum = 0;
     for (int i = 0; i < 3; i++) {
         mStagePos[i] = 0; }
 
@@ -713,7 +711,7 @@ void CIntelCab::PrintObjInfo() {
 
     for (int i = 0; i < mStageNum; i++) {
         std::cout << "\n" << std::setw(20) << std::setfill(':') << cStage[i].mName << "::::::::::" << std::endl;
-        for (int j = 0; j < cStage[i].mObjNum; j++) {
+        for (int j = 0; j < cStage[i].cTagObj.size(); j++) {
             cObj = &(cStage[i].cTagObj[j]);
             printf("%3d:  UID->", j + 1);
             std::cout << cObj->mUID;
@@ -737,16 +735,15 @@ int CIntelCab::UpdateObj(int No, CTagOBJ  *cInOut) {
     int inout = cTR3.GetTagDiff(cObj.mUID, cStage[No].mAntenna);
     cTR3.AntennaPowerOFF();
 
-    //タグ検出
+    //タグ数増加
     if (inout > 0) {
         InOutTag[No] = 1;
         cObjIn[No] = cObj; }
-    //出庫
+    //タグ数減少，出庫
     else if ( inout < 0 ) {
-        for (int i = 0; i < cStage[No].mObjNum; i++) {
+        for (int i = 0; i < cStage[No].cTagObj.size(); i++) {		//cStage[No].cTagObjを更新
             if (cStage[No].cTagObj.at(i).mUID.compare(cObj.mUID) == 0) {
                 cStage[No].cTagObj.erase(cStage[No].cTagObj.begin() + i);
-                cStage[No].mObjNum = (int)cStage[No].cTagObj.size();
                 InOutLC[No] = 0;
                 break; } }
         InOutTag[No] = 0;
@@ -760,7 +757,6 @@ int CIntelCab::UpdateObj(int No, CTagOBJ  *cInOut) {
         //入庫
         cObj.mUID = cObjIn[No].mUID;
         cStage[No].cTagObj.push_back(cObj);
-        cStage[No].mObjNum = (int)cStage[No].cTagObj.size();
         InOutTag[No] = 0;
         InOutLC[No]  = 0;
         *cInOut = cObj;
@@ -768,7 +764,7 @@ int CIntelCab::UpdateObj(int No, CTagOBJ  *cInOut) {
     else if ( (cObj.mWeight > 0) && (InOutLC[No] < 0) ) {
         //庫内移動
         int cnt = TR3_TAG_MAX;
-        for (int i = 0; i < cStage[No].mObjNum; i++) {
+        for (int i = 0; i < cStage[No].cTagObj.size(); i++) {
             if (cStage[No].cTagObj.at(i).mUID.compare(cObjOut[No].mUID) == 0) {
                 cnt = i;
                 break; } }
@@ -787,7 +783,7 @@ int CIntelCab::UpdateObj(int No, CTagOBJ  *cInOut) {
     if (cObj.mWeight < 0) {
         int comp = 5000;
         int cnt = TR3_TAG_MAX;
-        for (int i = 0; i < cStage[No].mObjNum; i++) {
+        for (int i = 0; i < cStage[No].cTagObj.size(); i++) {
             int sum = 0;
             for (int j = 0; j < LC_MAX_SENSOR_NUM; j++) {
                 sum += abs(abs(cStage[No].cTagObj.at(i).mDiffs[j]) - abs(cObj.mDiffs[j])); }
@@ -934,7 +930,7 @@ int main(int argc, char **argv) {
                 change_flag = false;
 
                 int32_t vi = 255;
-                for (int j = 0; j < cIntelCab.cStage[i].mObjNum; j++) {
+                for (int j = 0; j < cIntelCab.cStage[i].cTagObj.size(); j++) {
                     cObj = cIntelCab.cStage[i].cTagObj[j];
                     vi = rfidValue[cObj.mUID] - 7001;
                     usleep(1000); //1ms
