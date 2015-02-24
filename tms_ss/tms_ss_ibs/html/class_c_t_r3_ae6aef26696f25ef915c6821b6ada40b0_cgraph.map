@@ -1,0 +1,5 @@
+<map id="CTR3::AntennaPowerON" name="CTR3::AntennaPowerON">
+<area shape="rect" id="node2" href="$class_c_t_r3.html#aac759784c783b44b374c9d9a3884e11b" title="CTR3::AddChecksum" alt="" coords="225,5,375,32"/>
+<area shape="rect" id="node3" href="$class_c_t_r3.html#aa7cc0e24c5797f5d78802f5cd1042f89" title="CTR3::ClosePost" alt="" coords="237,56,363,83"/>
+<area shape="rect" id="node4" href="$class_c_t_r3.html#af8cad3d03c19a9ef74159be963ffbe0a" title="CTR3::OpenPort" alt="" coords="240,107,360,133"/>
+</map>
