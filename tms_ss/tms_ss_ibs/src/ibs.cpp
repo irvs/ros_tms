@@ -37,9 +37,6 @@
 #include <cstdlib>
 
 //------------------------------------------------------------------------------
-// #define PORT_TR      "/dev/ttyUSB0"
-// #define PORT_LC0 "/dev/ttyACM0"
-//#define PORT_LC1  "/dev/ttyACM0"
 std::string PORT_TR, PORT_LC0;
 
 
@@ -96,6 +93,14 @@ std::string PORT_TR, PORT_LC0;
 
 #define vec_str std::vector<std::string>
 
+#define DEBUG_IBS 0
+#if     1 == DEBUG_IBS
+#define D_COUT(x) do { std::cout << x; } while (0)
+#else 
+#define D_COUT(x)
+#endif
+
+
 
 //------------------------------------------------------------------------------
 class CLoadCell {
@@ -136,7 +141,6 @@ public:
     CTR3() {};
     ~CTR3() {
         Close(); };
-    // int  mTagNum[TR3_USED_ANT_NUM];     //!< 指定されたアンテナから見えているタグの数
     vec_str mUIDs[TR3_USED_ANT_NUM];    //!< 見えているタグのUIDのリスト
 
     bool Setup();
@@ -178,7 +182,7 @@ public:
     CLoadCell cLoadCell;
     unsigned char mAntenna;
     int mStagePos[3];
-    char mName[IC_STAGE_NAME_SIZE];
+    std::string mName;
     std::vector<CTagOBJ> cTagObj;
 
     bool Setup();
@@ -211,12 +215,12 @@ bool CLoadCell::Setup() {
         mSensorPosX[i] = 0;
         mSensorPosY[i] = 0; }
     mSensorNum = LC_MAX_SENSOR_NUM;
-    OpenPort();
     std::cout << "OPENING: LoadCell(port:" << PORT_LC0.c_str() << ")" << std::endl;
-    ClosePost();
+    OpenPort();
     std::cout << "OPENED: LoadCell(port:" << PORT_LC0.c_str() << ")" << std::endl;
-    ResetWeight();
+    ClosePost();
     std::cout << "CLOSED: LoadCell(port:" << PORT_LC0.c_str() << ")" << std::endl;
+    ResetWeight();
     return true; }
 
 //------------------------------------------------------------------------------
@@ -228,9 +232,11 @@ bool CLoadCell::Close() {
 
 void CLoadCell::OpenPort(){	
 	//通信関連初期化
+    D_COUT("opening port : " << PORT_LC0 << "   ");
     if ( (fd = open(PORT_LC0.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ) {
         printf("FAILED: LoadCell->OpenComPort:PORT_LC0 \n");
         exit(-1); }
+    D_COUT("\033[1K\r"); 
     tcgetattr(fd, &oldtio);         /* 現在のシリアルポートの設定を待避させる*/
     memset(&newtio, 0, sizeof(newtio));
     newtio.c_cflag = B115200 | CS8 | CLOCAL | CREAD;
@@ -244,7 +250,9 @@ void CLoadCell::OpenPort(){
 
 void CLoadCell::ClosePost(){
 	tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
+    D_COUT("closing port : " << PORT_LC0 << "   ");
     close(fd);
+    D_COUT("\033[1K\r"); 
 }
 
 //------------------------------------------------------------------------------
@@ -369,9 +377,11 @@ bool CTR3::Close() {
     return true; }
 
 void CTR3::OpenPort(){
+    D_COUT("opening port : " << PORT_LC0 << "   ");
     if ( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ) {
        printf("ERROR!!\n");
        exit(-1); }
+    D_COUT("\033[1K\r"); 
     tcgetattr(fd, &oldtio);         /* 現在のシリアルポートの設定を待避させる*/
     memset(&newtio, 0, sizeof(newtio));
     newtio.c_cflag = B38400 | CS8 | CLOCAL | CREAD;
@@ -383,7 +393,9 @@ void CTR3::OpenPort(){
 
 void CTR3::ClosePost(){
     tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
-    close(fd);}
+    D_COUT("closing port : " << PORT_LC0);
+    close(fd);
+    D_COUT("\033[1K\r"); }
 
 //------------------------------------------------------------------------------
 //アンテナの指定
@@ -411,10 +423,7 @@ int CTR3::SetAntenna(unsigned char AN) {
 //------------------------------------------------------------------------------
 //アンテナの電源ON
 bool CTR3::AntennaPowerON() {
-    ////DWORD num;
-    // unsigned long num;
     unsigned char buf[100];
-    // unsigned char cmd[9] = {0x02, 0x00, 0x4e, 0x02, 0x9e, 0x01, 0x03, 0xf4, 0x0d};
 
     mCommand[2] = 0x4E; //コマンド
     mCommand[3] = 0x02; //データ長
@@ -431,11 +440,7 @@ bool CTR3::AntennaPowerON() {
         read(fd, buf, 100);
         std::cerr << "TR3: SendCommandError -> AntennaPowerON" << std::endl;
         return false; }
-
-    // tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
-    // close(fd);
     ClosePost();
-
     return true; }
 
 //------------------------------------------------------------------------------
@@ -450,9 +455,7 @@ bool CTR3::AntennaPowerOFF() {
     mCommand[5] = 0x00; //パワーOFF
 
     memset(&buf, 0, sizeof(buf));
-
     OpenPort();
-
     AddChecksum();
     write(fd, mCommand, sizeof(mCommand));
     read(fd, buf, 9);
@@ -461,11 +464,7 @@ bool CTR3::AntennaPowerOFF() {
         read(fd, buf, 100);
         std::cerr << "TR3: SendCommandError -> AntennaPowerOFF" << std::endl;
         return false; }
-
-    // tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
-    // close(fd);
     ClosePost();
-
     return true; }
 
 //------------------------------------------------------------------------------
@@ -482,7 +481,6 @@ void CTR3::PrintTagUIDs() {
 //タグの読み取り
 int CTR3::Inventory2() {
     //アンテナを変更しないと既読込のUIDは返さず，新規UIDのみ返す
-    // unsigned long num;
     int i, j;
     static unsigned char buf[TR3_TAG_SIZE * TR3_TAG_MAX];
 
@@ -520,13 +518,10 @@ int CTR3::Inventory2() {
 //タグの入出のチェック
 int CTR3::GetTagDiff(std::string &diffUID, unsigned char AN) {
     SetAntenna(AN);
-    // std::cout << "AN:"<< (int)AN << "     mActiveAnt:" << mActiveAntenna;
     vec_str preUIDs = mUIDs[mActiveAntenna];
     mUIDs[mActiveAntenna].clear();
-    // PrintTagUIDs();    
     if (Inventory2() == -1) {
         return 0; }
-    // PrintTagUIDs();
 
     //タグの増減の確認
     std::sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end());
@@ -605,7 +600,7 @@ bool CStage::Setup() {
 
     for (int i = 0; i < 3; i++) {
         mStagePos[i] = 0; }
-
+    mName = '\0';
     return true; }
 
 //------------------------------------------------------------------------------
@@ -764,8 +759,8 @@ int main(int argc, char **argv) {
     ros::NodeHandle nh_param("~");
     nh_param.param<std::string>("PORT_TR", PORT_TR, "/dev/ttyUSB0");
     nh_param.param<std::string>("PORT_LC0", PORT_LC0, "/dev/ttyACM0");
-    // nh_param.param<int32_t>("idSensor",idSensor,NULL);
-    // nh_param.param<int32_t>("idPlace",idPlace,NULL);
+    std::cout << ("sudo -S chmod a+rw "+PORT_TR+" "+PORT_LC0).c_str();
+    system(("sudo -S chmod a+rw "+PORT_TR+" "+PORT_LC0).c_str());
     if (! nh_param.getParam("idSensor", idSensor)) {
         ROS_ERROR("ros param idSensor isn't exist");
         return 0; }
@@ -800,8 +795,7 @@ int main(int argc, char **argv) {
         // vector 初期化
         // 毎回初期化し，庫内にある物品だけ値を更新して送信する
         ros::Time now = ros::Time::now() + ros::Duration(9 * 60 * 60); // GMT +9
-        // icsmsg.header.frame_id  = "/ics";
-        // nh_param.param<std::string>("frame_id",icsmsg.header.frame_id,NULL);
+        D_COUT( boost::posix_time::to_iso_extended_string(now.toBoost()) << std::endl);
         if (! nh_param.getParam("frame_id", icsmsg.header.frame_id)) {
             ROS_ERROR("ros param frame_id isn't exist");
             return 0; }
