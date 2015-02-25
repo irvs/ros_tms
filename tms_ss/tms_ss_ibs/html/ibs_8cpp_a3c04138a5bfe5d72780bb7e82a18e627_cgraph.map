@@ -8,11 +8,11 @@
 <area shape="rect" id="node17" href="$class_c_intel_cab.html#ac447a91375cc34f3fa40ea5868769904" title="CIntelCab::UpdateObj" alt="" coords="109,158,259,184"/>
 <area shape="rect" id="node3" href="$class_c_t_r3.html#af8cad3d03c19a9ef74159be963ffbe0a" title="CTR3::OpenPort" alt="" coords="777,107,897,134"/>
 <area shape="rect" id="node4" href="$class_c_t_r3.html#aac759784c783b44b374c9d9a3884e11b" title="CTR3::AddChecksum" alt="" coords="762,158,913,184"/>
-<area shape="rect" id="node5" href="$class_c_t_r3.html#aa7cc0e24c5797f5d78802f5cd1042f89" title="CTR3::ClosePost" alt="" coords="774,56,901,83"/>
+<area shape="rect" id="node5" href="$class_c_t_r3.html#a0c96690422fcbaa57ad0c43569023b84" title="CTR3::ClosePort" alt="" coords="776,56,899,83"/>
 <area shape="rect" id="node9" href="$class_c_load_cell.html#ab9d1d0beef3b47823788f2350ee4db52" title="CLoadCell::SetSensorPos" alt="" coords="313,360,487,387"/>
 <area shape="rect" id="node12" href="$class_c_load_cell.html#aed02b108d6edd17adc845a0d86fa0871" title="CLoadCell::Setup" alt="" coords="337,310,463,336"/>
-<area shape="rect" id="node13" href="$class_c_load_cell.html#ad6fb880bd0b8752530177b6df9d6094e" title="CLoadCell::OpenPort" alt="" coords="965,411,1112,438"/>
-<area shape="rect" id="node14" href="$class_c_load_cell.html#a2be18fc298134e68fe1103098812a918" title="CLoadCell::ClosePost" alt="" coords="963,360,1115,387"/>
+<area shape="rect" id="node13" href="$class_c_load_cell.html#ad6fb880bd0b8752530177b6df9d6094e" title="CLoadCell::OpenPort" alt="" coords="964,411,1111,438"/>
+<area shape="rect" id="node14" href="$class_c_load_cell.html#a1b3857837a0bf6fd7bfb4944c4ac8c30" title="CLoadCell::ClosePort" alt="" coords="963,360,1112,387"/>
 <area shape="rect" id="node15" href="$class_c_load_cell.html#ac7dda0d98c1af1df1062a4315c83c0d5" title="CLoadCell::ResetWeight" alt="" coords="541,360,707,387"/>
 <area shape="rect" id="node16" href="$class_c_load_cell.html#a33b28a515fc435aee4bc6b121fc479a8" title="CLoadCell::GetWeight" alt="" coords="761,360,914,387"/>
 <area shape="rect" id="node18" href="$class_c_t_r3.html#ae6aef26696f25ef915c6821b6ada40b0" title="CTR3::AntennaPowerON" alt="" coords="539,107,709,134"/>

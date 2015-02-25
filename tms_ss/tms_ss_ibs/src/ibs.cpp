@@ -3,11 +3,10 @@
 // @brief  : Intelligent Board System
 // @author : Akio Shigekane, Yoonseok Pyo
 // @version: Ver1.1.1 (since 2012.00.00)
-// @date   : 2014.11.24
+// @date   : 2015.2.25
 //------------------------------------------------------------------------------
 
-/*! @todo remove repeating of opening and close COM port.
-    @todo unite CStage class and CLoadCell class
+/*! @todo unite CStage class and CLoadCell class
     @todo readujust threshold of GetWeightDiff
 */
 
@@ -108,7 +107,7 @@ private:
     struct termios oldtio, newtio;  /* 通信ポートを制御するためのインターフェイス */
     bool Close();
     void OpenPort();
-    void ClosePost();
+    void ClosePort();
     int mPreSensorsWeight[LC_MAX_SENSOR_NUM];
     float mSensorPosX[LC_MAX_SENSOR_NUM];
     float mSensorPosY[LC_MAX_SENSOR_NUM];
@@ -132,7 +131,7 @@ private:
     struct termios oldtio, newtio;  /* 通信ポートを制御するためのインターフェイス */
     bool Close();
     void OpenPort();
-    void ClosePost();
+    void ClosePort();
     unsigned char mCommand[TR3_MAX_COMMAND_SIZE];
     int  AddChecksum();
     int  mActiveAntenna;  //!< 真にアクティブなアンテナ．シリアル通信での返り値が代入される．
@@ -218,7 +217,7 @@ bool CLoadCell::Setup() {
     std::cout << "OPENING: LoadCell(port:" << PORT_LC0.c_str() << ")" << std::endl;
     OpenPort();
     std::cout << "OPENED: LoadCell(port:" << PORT_LC0.c_str() << ")" << std::endl;
-    ClosePost();
+    ClosePort();
     std::cout << "CLOSED: LoadCell(port:" << PORT_LC0.c_str() << ")" << std::endl;
     ResetWeight();
     return true; }
@@ -248,7 +247,7 @@ void CLoadCell::OpenPort(){
     tcflush(fd, TCIFLUSH);
     tcsetattr(fd, TCSANOW, &newtio);}
 
-void CLoadCell::ClosePost(){
+void CLoadCell::ClosePort(){
 	tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
     D_COUT("closing port : " << PORT_LC0 << "   ");
     close(fd);
@@ -275,7 +274,7 @@ int CLoadCell::GetWeight(int sensor_id) {
     OpenPort();
     write(fd, &signal, 1);
     read(fd, buf, 15);
-    ClosePost();
+    ClosePort();
     int output_value = atoi(buf);
     // センサ出力を校正して返す
     return (int)(output_value * 5); //0.28は経験的な値
@@ -363,7 +362,7 @@ bool CTR3::Setup() {
     std::cout << "OPENING: TR3(port:" << PORT_TR.c_str() << ")" << std::endl;
     OpenPort();
     std::cout << "OPENED: TR3(port:" << PORT_TR.c_str() << ")" << std::endl;
-    ClosePost();
+    ClosePort();
     std::cout << "CLOSED: TR3(port:" << PORT_TR.c_str() << ")" << std::endl;
     
     return true; }
@@ -391,7 +390,7 @@ void CTR3::OpenPort(){
     tcflush(fd, TCIFLUSH);
     tcsetattr(fd, TCSANOW, &newtio);}
 
-void CTR3::ClosePost(){
+void CTR3::ClosePort(){
     tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
     D_COUT("closing port : " << PORT_LC0);
     close(fd);
@@ -417,7 +416,7 @@ int CTR3::SetAntenna(unsigned char AN) {
         std::cerr << "TR3: SendCommandError -> SetAntenna" << std::endl;
         return -1; }
     mActiveAntenna = (int)buf[5];
-    ClosePost();
+    ClosePort();
     return (int)buf[5]; }
 
 //------------------------------------------------------------------------------
@@ -440,7 +439,7 @@ bool CTR3::AntennaPowerON() {
         read(fd, buf, 100);
         std::cerr << "TR3: SendCommandError -> AntennaPowerON" << std::endl;
         return false; }
-    ClosePost();
+    ClosePort();
     return true; }
 
 //------------------------------------------------------------------------------
@@ -464,7 +463,7 @@ bool CTR3::AntennaPowerOFF() {
         read(fd, buf, 100);
         std::cerr << "TR3: SendCommandError -> AntennaPowerOFF" << std::endl;
         return false; }
-    ClosePost();
+    ClosePort();
     return true; }
 
 //------------------------------------------------------------------------------
@@ -511,7 +510,7 @@ int CTR3::Inventory2() {
                 buf[12],	buf[11],	buf[10],	buf[9],
                 buf[8],		buf[7],		buf[6],		buf[5]);
         mUIDs[mActiveAntenna].push_back(std::string(hex));}
-    ClosePost();
+    ClosePort();
     return tag_num; }
 
 //------------------------------------------------------------------------------
