@@ -5,7 +5,7 @@ var searchData=
   ['mcommand',['mCommand',['../class_c_t_r3.html#a4f8b9b680665c560eb2e285cc527fe84',1,'CTR3']]],
   ['mcomment',['mComment',['../class_c_tag_o_b_j.html#a48cb35c9dd1d47cc63a149ac18782ddb',1,'CTagOBJ']]],
   ['mdiffs',['mDiffs',['../class_c_tag_o_b_j.html#a981dc794723b7d840d7a7197cede5b60',1,'CTagOBJ']]],
-  ['mname',['mName',['../class_c_tag_o_b_j.html#a864b70701ce07ed4a9da0ba61e25f952',1,'CTagOBJ::mName()'],['../class_c_stage.html#a0b669369d6f7082554f210a8c1957966',1,'CStage::mName()']]],
+  ['mname',['mName',['../class_c_tag_o_b_j.html#a864b70701ce07ed4a9da0ba61e25f952',1,'CTagOBJ::mName()'],['../class_c_stage.html#ab58408c8c73b0c39c09990acc33c0d9a',1,'CStage::mName()']]],
   ['mpresensorsweight',['mPreSensorsWeight',['../class_c_load_cell.html#a17f056971822e54aa60a07fb2ec5a9f9',1,'CLoadCell']]],
   ['msensornum',['mSensorNum',['../class_c_load_cell.html#a53fefc315748b958c8366789985490d7',1,'CLoadCell']]],
   ['msensorposx',['mSensorPosX',['../class_c_load_cell.html#a68aad558e42bcfda8a0121b94e7b1eba',1,'CLoadCell']]],
