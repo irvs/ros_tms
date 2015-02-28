@@ -131,7 +131,7 @@ bool Evaluator::CallBack(tms_ur_gaze_server::object_list::Request  &req,
   ros::ServiceClient db_client = nh_->serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
 
   tms_msg_db::TmsdbGetData getData;
-  getData.request.tmsdb.id = USER;
+  getData.request.tmsdb.id = 1001;
 
   if (db_client.call(getData))
   {
@@ -152,18 +152,18 @@ bool Evaluator::CallBack(tms_ur_gaze_server::object_list::Request  &req,
 #if STATE
   if (getData.response.tmsdb[0].state==1) {
 #endif
-    trans_.x_ = getData.response.tmsdb[0].x/1000;
-    trans_.y_ = getData.response.tmsdb[0].y/1000;
-    trans_.z_ = getData.response.tmsdb[0].z/1000;
-    pitch_ = getData.response.tmsdb[0].rp * M_PI / 180;
-    yaw_   = getData.response.tmsdb[0].ry * M_PI / 180;
+    trans_.x_ = getData.response.tmsdb[1].x/1000;
+    trans_.y_ = getData.response.tmsdb[1].y/1000;
+    trans_.z_ = getData.response.tmsdb[1].z/1000;
+    pitch_ = getData.response.tmsdb[1].rp * M_PI / 180;
+    yaw_   = getData.response.tmsdb[1].ry * M_PI / 180;
 
     ROS_INFO("Glasses");
     ROS_INFO_STREAM("x: " << trans_.x_);
     ROS_INFO_STREAM("y: " << trans_.y_);
     ROS_INFO_STREAM("z: " << trans_.z_);
-    ROS_INFO_STREAM("pitch: " << pitch_);
-    ROS_INFO_STREAM("yaw: " << yaw_);
+    ROS_INFO_STREAM("pitch: " << getData.response.tmsdb[1].rp);
+    ROS_INFO_STREAM("yaw: " << getData.response.tmsdb[1].ry);
 
 #if STATE
   } else {
@@ -190,11 +190,11 @@ bool Evaluator::CallBack(tms_ur_gaze_server::object_list::Request  &req,
 
       // rotation
       object_tmp_.glasses_.x_
-          = cos_yaw_*cos_pitch_*diff.x_ + sin_yaw_*diff.y_ + sin_yaw_*cos_pitch_*diff.z_;
+          = cos_yaw_*cos_pitch_*diff.x_ + cos_pitch_*sin_yaw_*diff.y_ + sin_pitch_*diff.z_;
       object_tmp_.glasses_.y_
-          = -1*sin_yaw_*cos_pitch_*diff.x_ + cos_yaw_*diff.y_ - sin_yaw_*sin_pitch_*diff.z_;
+          = -1*sin_yaw_*diff.x_ + cos_yaw_*diff.y_;
       object_tmp_.glasses_.z_
-          = -1*sin_pitch_*diff.x_ + cos_pitch_*diff.z_;
+          = -1*sin_pitch_*cos_yaw_*diff.x_ - sin_pitch_*sin_yaw_*diff.y_ + cos_pitch_*diff.z_;
 
       // calculate the absolute value & the argument
       object_tmp_.glasses_.CalcAbs();
@@ -203,9 +203,9 @@ bool Evaluator::CallBack(tms_ur_gaze_server::object_list::Request  &req,
       // calculate the sort key
       object_tmp_.sort_key_ = object_tmp_.glasses_.length_*(object_tmp_.glasses_.argument_ + 0.01);
 
-      ROS_INFO_STREAM("x(global): " << object_tmp_.world_.x_);
-      ROS_INFO_STREAM("y(global): " << object_tmp_.world_.y_);
-      ROS_INFO_STREAM("z(global): " << object_tmp_.world_.z_);
+      ROS_INFO_STREAM("global_x: " << object_tmp_.world_.x_ << " >> local_x: " << object_tmp_.glasses_.x_);
+      ROS_INFO_STREAM("global_y: " << object_tmp_.world_.y_ << " >> local_y: " << object_tmp_.glasses_.y_);
+      ROS_INFO_STREAM("global_z: " << object_tmp_.world_.z_ << " >> local_z: " << object_tmp_.glasses_.z_);
       ROS_INFO_STREAM("Abs: " << object_tmp_.glasses_.length_);
       ROS_INFO_STREAM("Arg: " << object_tmp_.glasses_.argument_*180/M_PI);
       ROS_INFO_STREAM("Key: " << object_tmp_.sort_key_);
