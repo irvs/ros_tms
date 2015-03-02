@@ -160,7 +160,7 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
             int state = smartpal->vehicleGetState();
             if(state == VehicleBusy) {
               ROS_INFO("vehicle state : Busy\n");
-              ros::Duration(3.0).sleep();
+              ros::Duration(1.0).sleep();
             } else if(state == VehicleReady) {
               ROS_INFO("Succeed to move vehicle.state : Ready\n");
               res.result = SUCCESS;
@@ -179,7 +179,34 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
           }
           break;
         }
-      case 16:res.result = smartpal->vehicleMoveLinearRel(req.arg[0],req.arg[1],req.arg[2]); break;
+      case 16:
+      {
+        res.result = smartpal->vehicleMoveLinearRel(req.arg[0],req.arg[1],req.arg[2]);
+        // returnのタイミングをロボットの状態がReadyになるまで待機
+        ros::Time begin = ros::Time::now();
+        while(1) {
+          int state = smartpal->vehicleGetState();
+          if(state == VehicleBusy) {
+            ROS_INFO("vehicle state : Busy\n");
+            ros::Duration(1.0).sleep();
+          } else if(state == VehicleReady) {
+            ROS_INFO("Succeed to move vehicle.state : Ready\n");
+            res.result = SUCCESS;
+            break;
+          } else {
+            ROS_ERROR("Failed to get collect vehicle status:%d\n", state);
+          }
+
+          ros::Time now = ros::Time::now();
+          // Time out
+          if((now - begin).toSec() >= 60.0) {
+            ROS_ERROR("TIMEOUT!(vehicle)\n");
+            res.result = FAILURE;
+            break;
+          }
+        }
+        break;
+      }
       case 17:res.result = smartpal->vehicleMoveCruiseAbs(req.arg[0],req.arg[1]); break;
       case 18:res.result = smartpal->vehicleMoveCruiseRel(req.arg[0],req.arg[1]); break;
       case 19:res.result = smartpal->vehicleMoveContinuousRel(req.arg[0],req.arg[1],req.arg[2]); break;
@@ -216,7 +243,7 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
             int state = smartpal->armGetState(ArmR);
             if(state == Busy) {
               ROS_INFO("armR state : Busy\n");
-              ros::Duration(3.0).sleep();
+              ros::Duration(1.0).sleep();
             } else if(state == Ready) {
               ROS_INFO("Succeed to manipulation action(armR).state : Ready\n");
               res.result = SUCCESS;
