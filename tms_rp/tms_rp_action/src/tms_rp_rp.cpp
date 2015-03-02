@@ -117,22 +117,24 @@ bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string& r
 			for (int j=0; j<srv.response.tmsdb.size()-1; j++) {
 				if (srv.response.tmsdb[j].time < srv.response.tmsdb[j+1].time) ref_i = j+1;
 			}
-			robot_name = srv.response.tmsdb[ref_i].name;
-			rp_srv.request.start_pos.x = srv.response.tmsdb[ref_i].x;
-			rp_srv.request.start_pos.y = srv.response.tmsdb[ref_i].y;
+			robot_name = srv.response.tmsdb[0].name;
+			rp_srv.request.start_pos.x = srv.response.tmsdb[0].x;
+			rp_srv.request.start_pos.y = srv.response.tmsdb[0].y;
 			rp_srv.request.start_pos.z = 0.0;
-			rp_srv.request.start_pos.th = srv.response.tmsdb[ref_i].ry; // =yaw
-			rp_srv.request.start_pos.roll = 0.0; // srv.response.tmsdb[ref_i].rr
-			rp_srv.request.start_pos.pitch = 0.0; // srv.response.tmsdb[ref_i].rp
-			rp_srv.request.start_pos.yaw = srv.response.tmsdb[ref_i].ry; // srv.response.tmsdb[ref_i].ry
+			rp_srv.request.start_pos.th = srv.response.tmsdb[0].ry; // =yaw
+			rp_srv.request.start_pos.roll = 0.0; // srv.response.tmsdb[0].rr
+			rp_srv.request.start_pos.pitch = 0.0; // srv.response.tmsdb[0].rp
+			rp_srv.request.start_pos.yaw = srv.response.tmsdb[0].ry; // srv.response.tmsdb[0].ry
 			// set odom for production version
 			if (type == true && (robot_id == 2002 || robot_id == 2003)) {
+				ROS_INFO("setOdom");
 				double arg[1] = {0.0};
-				if (!sp5_control(true, UNIT_ALL, SET_ODOM, 1, arg)) 	send_rc_exception(0);
+				if (!sp5_control(true, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
 			}
 		} else
 			return false;
-	} else {
+	}
+	else {
 		ROS_INFO("Failed to call service tms_db_get_current_robot_data.\n");
 		// use odometry when the robot cannot get data from vicon system
 		if (type == true) {
@@ -358,6 +360,7 @@ bool tms_rp::TmsRpSubtask::kxp_set_odom(void) {
 //------------------------------------------------------------------------------
 // Subtask functions that is started in a thread
 bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
+	ROS_INFO("type:%u,robotID:%d,arg%f", sd.type, sd.robot_id, sd.v_arg.at(0));
 	tms_msg_db::TmsdbGetData srv;
 	tms_msg_rp::rps_voronoi_path_planning rp_srv;
 	tms_msg_ts::ts_state_control s_srv;
@@ -374,7 +377,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 	srv.request.tmsdb.sensor = 3001;
 	if (sd.type == false)
 		srv.request.tmsdb.sensor = 3005;
-
 	if (sd.arg_type == -1) { // move (x,y,th)
 		rp_srv.request.goal_pos.x = sd.v_arg.at(1);
 		rp_srv.request.goal_pos.y = sd.v_arg.at(2);
@@ -548,12 +550,40 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 						arg[0] = rp_srv.response.VoronoiPath[i].x;
 						arg[1] = rp_srv.response.VoronoiPath[i].y;
 						arg[2] = rp_srv.response.VoronoiPath[i].th;
-						if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg)) {
-							send_rc_exception(1);
-							return false;
+						ROS_INFO("arg0:%f,1:%f,2:%f", arg[0],arg[1],arg[2]);
+						// fix over 180 deg bug
+						if (sd.type) {
+							if (((rp_srv.response.VoronoiPath[i-1].th>90 && rp_srv.response.VoronoiPath[i-1].th<=180) &&
+									(rp_srv.response.VoronoiPath[i].th>=-180 && rp_srv.response.VoronoiPath[i].th<0)) ||
+									((rp_srv.response.VoronoiPath[i].th>0 && rp_srv.response.VoronoiPath[i].th<=180) &&
+											(rp_srv.response.VoronoiPath[i-1].th>=-180 && rp_srv.response.VoronoiPath[i-1].th<-90))) {
+								double g_ang = rp_srv.response.VoronoiPath[i].th - rp_srv.response.VoronoiPath[i-1].th;
+								if (g_ang > 180) g_ang = g_ang - 360;
+								else if (g_ang < -180) g_ang = g_ang + 360;
+								double tmp_arg[3] = {0.0, 0.0, g_ang};
+								ROS_INFO("goal_ang=%f", g_ang);
+								if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_REL, 3, tmp_arg)) {
+									return false;
+								}
+							} else {
+								if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg)) {
+									send_rc_exception(1);
+									return false;
+								}
+							}
+						} else {
+							if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg)) {
+								send_rc_exception(1);
+								return false;
+							}
+							sleep(1.0);
 						}
-			    		if (sd.type == true) {
-			    			if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
+
+			    		if (sd.type) {
+			    			for (int i=0; i<5; i++) {
+				    			if (sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) break;
+				    			else if (i==4) send_rc_exception(0);
+			    			}
 			    		} else {
 			    			if (sd.robot_id == 2002) {
 			    				sleep(0.7);
@@ -575,12 +605,18 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    		if (sd.type == true) {
 				    		kobuki_srv.request.cmd = 0;
 				    		if (kobuki_actual_control_client.call(kobuki_srv)) ROS_INFO("result: %d", kobuki_srv.response.result);
-				    		else ROS_ERROR("Failed to call service kobuki_move");
+				    		else {
+				    			ROS_ERROR("Failed to call service kobuki_move");
+				    			return false;
+				    		}
 			    		} else {
 				    		kobuki_srv.request.unit = 1;
 				    		kobuki_srv.request.cmd = 15;
 				    		if (kobuki_virtual_control_client.call(kobuki_srv)) ROS_INFO("result: %d", kobuki_srv.response.result);
-				    		else ROS_ERROR("Failed to call service virtual_kobuki_move");
+				    		else {
+				    			ROS_ERROR("Failed to call service virtual_kobuki_move");
+				    			return false;
+				    		}
 				    		sleep(0.7);
 			    		}
 			    		break;
@@ -592,25 +628,44 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			    			double dis = distance(rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
 			    					    					rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
 			    			double ang = rp_srv.response.VoronoiPath[i].th - rp_srv.response.VoronoiPath[i-1].th;
-			    			if (ang <= 3 && dis >= 30) {
+		    				if (ang > 180.0) ang = ang - 360.0;
+		    				else if (ang < -180.0) ang = ang + 360.0;
+			    			ROS_INFO("voronoi[%d]:(%f,%f,%f), voronoi[%d]:(%f,%f,%f)",i-1, rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
+			    					rp_srv.response.VoronoiPath[i-1].th, i, rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y, rp_srv.response.VoronoiPath[i].th);
+			    			if (dis != 0) {
+			    				ROS_INFO("cmd1:%f", dis);
 				    			move_srv.request.command = 1;
 				    			move_srv.request.pdist = dis;
-			    			} else {
-			    				if (ang > 180.0) ang = ang - 360.0;
-			    				else if (ang < -180.0) ang = ang + 360.0;
+				    			if(kxp_mbase_client.call(move_srv)) {
+				    				kxp_set_odom();
+				    			} else {
+				    				ROS_ERROR("Failed to call service kxp_pioneer_control");
+				    				return false;
+				    			}
+			    			}
+			    			if (ang != 0){
+			    				ROS_INFO("cmd2:%f", ang);
 				    			move_srv.request.command = 2;
 				    			move_srv.request.pangle = ang;
+				    			if (kxp_mbase_client.call(move_srv)) {
+				    				kxp_set_odom();
+				    			} else {
+				    				ROS_ERROR("Failed to call service kxp_katana_control");
+				    				return false;
+				    			}
 			    			}
-			    			kxp_mbase_client.call(move_srv);
-			    			kxp_set_odom();
 			    		} else { // simulation version
 			    			tms_msg_rc::tms_rc_pmove kxp_srv;
+			    			ROS_INFO("voronoi[%d]=%f,%f,%f", i, rp_srv.response.VoronoiPath[i].x,rp_srv.response.VoronoiPath[i].y,rp_srv.response.VoronoiPath[i].th);
 			    			kxp_srv.request.w_x = rp_srv.response.VoronoiPath[i].x;
 			    			kxp_srv.request.w_y = rp_srv.response.VoronoiPath[i].y;
 				    		kxp_srv.request.w_th = rp_srv.response.VoronoiPath[i].th;
 				    		if (v_kxp_mbase_client.call(kxp_srv)) ROS_INFO("result: %d", kxp_srv.response.success);
-				    		else                  ROS_ERROR("Failed to call service kxp_mbase");
-				    		sleep(0.7); //temp
+				    		else {
+				    			ROS_ERROR("Failed to call service kxp_mbase");
+				    			return false;
+				    		}
+				    		sleep(1); //temp
 				    	}
 			    		break;
 			    	}
@@ -643,12 +698,18 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 				    		if(mkun_control_client.call(mkun_srv))
 				    			ROS_INFO("result: %d", mkun_srv.response.result);
 				    		else
+				    		{
 				    			ROS_ERROR("Failed to call service mimamorukun_move");
+				    			return false;
+				    		}
 			    		}else{					//call srv for simulator
 				    		if(mkun_virtual_control_client.call(mkun_srv))
 				    			ROS_INFO("result: %d", mkun_srv.response.result);
 				    		else
+				    		{
 				    			ROS_ERROR("Failed to call service mimamorukun_virtual_move");
+				    			return false;
+				    		}
 			    			sleep(1); //temp
 			    			}
 			    		i = 2;
@@ -667,28 +728,29 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 				}
 				// Update Robot Path Planning
 				if (i == 3) {
-					sleep(2);
 					for (int cnt=0; cnt<5; cnt++) {
-							if(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv))
+							if(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv)) {
 								break;
-						}
+							}
+					}
 
 					// end determination
-					double error_x, error_y, error_th;
-					if (sd.robot_id == 2005 && !sd.type) rp_srv.request.start_pos.th+=90;
+					double error_x, error_y, error_th, error_dis;
+					if (sd.robot_id == 2005 && !sd.type) {
+						rp_srv.request.start_pos.th+=90;
+					}
 					error_x = fabs(rp_srv.request.start_pos.x - rp_srv.request.goal_pos.x);
 					error_y = fabs(rp_srv.request.start_pos.y - rp_srv.request.goal_pos.y);
 					error_th = fabs(rp_srv.request.start_pos.th - rp_srv.request.goal_pos.th);
-					if (error_th > 180.0) error_th = -1*(error_th - 360.0);
-					ROS_INFO("error_x:%f,error_y:%f,error_th:%f", error_x, error_y, error_th);
-					if (error_x<35 && error_y<35 && error_th<3) {
+					error_dis = distance(rp_srv.request.start_pos.x, rp_srv.request.start_pos.y,
+							rp_srv.request.goal_pos.x, rp_srv.request.goal_pos.y);
+    				if (error_th > 180.0) error_th = error_th - 360.0;
+    				else if (error_th < -180.0) error_th = error_th + 360.0;
+					ROS_INFO("error_x:%f,error_y:%f,error_th:%f, error_dis:%f", error_x, error_y, error_th, error_dis);
+					if (error_x<=10 && error_y<=10 && (error_th>=-3 && error_th<=3)) {
 						ROS_INFO("finish");
-						break; // dis_error:5mm, ang_error:2deg
-						}
-//					if (error_x<5 && error_y<5 && error_th<2) {
-//						break; // dis_error:5mm, ang_error:2deg
-//					}
-
+						break; // dis_error:10mm, ang_error:3deg
+					}
 					rp_srv.response.VoronoiPath.clear();
 					voronoi_path_planning_client_.call(rp_srv);
 					if (rp_srv.response.VoronoiPath.empty()) {
@@ -806,6 +868,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 
 	callSynchronously(bind(&grasp::TmsRpController::setTolerance,trc_,0.05));
 	cout << "set tolerance." << endl;
+
 	callSynchronously(bind(&grasp::TmsRpController::graspPathPlanStart,trc_,
 			0, begin, end, pb->targetArmFinger->name, pb->targetObject->name(), 1, &trajectory, &state));
 
@@ -898,20 +961,27 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd) {
 				kxp_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg);
 				update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], arg[11], 3005, arg[12], "");
 			} else {
-				kxp_set_odom();
 				tms_msg_rc::katana_pos_array katana_srv;
 				tms_msg_rc::katana_pos argument;
 				katana_srv.request.pose_array.clear();
 
 				for (int t=0; t<trajectory.size(); t++) {
+					argument.pose.clear();
 					for (int u=0; u<trajectory.at(t).joints.size(); u++) {
-						argument.pose.clear();
-						ROS_INFO("joint[%d][%d]=%f", t, u, rad2deg(trajectory.at(t).joints[u]));
-						argument.pose.push_back(rad2deg(trajectory.at(t).joints[u]));
+						if (u==5 || u==6) {
+							ROS_INFO("joint[%d][%d]=%f", t, u, (rad2deg(trajectory.at(t).joints[u]))+25);
+							argument.pose.push_back((rad2deg(trajectory.at(t).joints[u])) + 25);
+						} else {
+							ROS_INFO("joint[%d][%d]=%f", t, u, (rad2deg(trajectory.at(t).joints[u])));
+							argument.pose.push_back((rad2deg(trajectory.at(t).joints[u])));
+						}
 					}
 					katana_srv.request.pose_array.push_back(argument);
 				}
-				katana_client.call(katana_srv);
+				if (!katana_client.call(katana_srv)) {
+					ROS_ERROR("Failed to call katana_srv");
+					return false;
+				}
 				update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], arg[11], 3001, arg[12], "");
 			}
 			break;
@@ -1002,9 +1072,31 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 				arg[2] = rp_srv.response.VoronoiPath[i].th;
 
 				if (sd.robot_id == 2002 || sd.robot_id == 2003) {
-					if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg)) { // move smartpal5_1(computational model)
-						send_rc_exception(1);
-						return false;
+					if (sd.type) {
+						if (((rp_srv.response.VoronoiPath[i-1].th>90 && rp_srv.response.VoronoiPath[i-1].th<=180) &&
+								(rp_srv.response.VoronoiPath[i].th>=-180 && rp_srv.response.VoronoiPath[i].th<0)) ||
+								((rp_srv.response.VoronoiPath[i].th>0 && rp_srv.response.VoronoiPath[i].th<=180) &&
+								(rp_srv.response.VoronoiPath[i-1].th>=-180 && rp_srv.response.VoronoiPath[i-1].th<-90))) {
+							double g_ang = rp_srv.response.VoronoiPath[i].th - rp_srv.response.VoronoiPath[i-1].th;
+							if (g_ang > 180) g_ang = g_ang - 360;
+							else if (g_ang < -180) g_ang = g_ang + 360;
+							double tmp_arg[3] = {0.0, 0.0, g_ang};
+							ROS_INFO("goal_ang=%f", g_ang);
+							if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_REL, 3, tmp_arg)) {
+								return false;
+							}
+						} else {
+							if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg)) {
+								send_rc_exception(1);
+								return false;
+							}
+						}
+					} else {
+						if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg)) {
+							send_rc_exception(1);
+							return false;
+						}
+						sleep(1.0);
 					}
 					if (sd.type == true) {
 						if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
@@ -1017,17 +1109,32 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 		    			double dis = distance(rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
 		    					    					rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
 		    			double ang = rp_srv.response.VoronoiPath[i].th - rp_srv.response.VoronoiPath[i-1].th;
-		    			if (ang == 0) {
+	    				if (ang > 180.0) ang = ang - 360.0;
+	    				else if (ang < -180.0) ang = ang + 360.0;
+		    			ROS_INFO("voronoi[%d]:(%f,%f,%f), voronoi[%d]:(%f,%f,%f)",i-1, rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
+		    					rp_srv.response.VoronoiPath[i-1].th, i, rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y, rp_srv.response.VoronoiPath[i].th);
+		    			if (dis != 0) {
+		    				ROS_INFO("cmd1:%f", dis);
 			    			move_srv.request.command = 1;
 			    			move_srv.request.pdist = dis;
-		    			} else {
-		    				if (ang > 180.0) ang = ang - 360.0;
-		    				else if (ang < -180.0) ang = ang + 360.0;
+			    			if(kxp_mbase_client.call(move_srv)) {
+			    				kxp_set_odom();
+			    			} else {
+			    				ROS_ERROR("Failed to call service kxp_pioneer_control");
+			    				return false;
+			    			}
+		    			}
+		    			if (ang != 0){
+		    				ROS_INFO("cmd2:%f", ang);
 			    			move_srv.request.command = 2;
 			    			move_srv.request.pangle = ang;
+			    			if (kxp_mbase_client.call(move_srv)) {
+			    				kxp_set_odom();
+			    			} else {
+			    				ROS_ERROR("Failed to call service kxp_katana_control");
+			    				return false;
+			    			}
 		    			}
-		    			kxp_mbase_client.call(move_srv);
-		    			kxp_set_odom();
 					} else {
 						tms_msg_rc::tms_rc_pmove kxp_srv;
 						kxp_srv.request.w_x = arg[0];
@@ -1093,8 +1200,13 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 					error_x = fabs(rp_srv.request.start_pos.x - rp_srv.request.goal_pos.x);
 					error_y = fabs(rp_srv.request.start_pos.y - rp_srv.request.goal_pos.y);
 					error_th = fabs(rp_srv.request.start_pos.th - rp_srv.request.goal_pos.th);
-					if (error_x<5 && error_y<5 && error_th<2) break; // dis_error:5mm, ang_error:2deg
-
+					if (error_th > 180.0) error_th = error_th - 360.0;
+					else if (error_th < -180.0) error_th = error_th + 360.0;
+					ROS_INFO("error_x:%f,error_y:%f,error_th:%f", error_x, error_y, error_th);
+					if (error_x<=10 && error_y<=10 && (error_th>=-3 && error_th<=3)) {
+						ROS_INFO("finish");
+						break; // dis_error:10mm, ang_error:3deg
+					}
 					rp_srv.response.VoronoiPath.clear();
 					voronoi_path_planning_client_.call(rp_srv);
 					if (rp_srv.response.VoronoiPath.empty()) {
@@ -1151,7 +1263,7 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 //			return false;
 //		}
 	} else if (sd.robot_id == 2006) {
-		double give_pose[7] = {0.0, 0.0, 0.0, 46.8, 0.0, 5.0, 5.0};
+		double give_pose[7] = {0.0, 0.0, 0.0, 46.8, 0.0, 24.0, 24.0};
 		tms_msg_rc::katana_pos_array katana_srv;
 		tms_msg_rc::katana_pos argument;
 		katana_srv.request.pose_array.clear();
@@ -1162,7 +1274,7 @@ bool tms_rp::TmsRpSubtask::give(SubtaskData sd) {
 
 		if (sd.type == true) katana_client.call(katana_srv);
 		else v_katana_client.call(katana_srv);
-		update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], arg[11], 3001, arg[12], "");
+//		update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], arg[11], 3001, arg[12], "");
 	}
 	nh1.setParam("grasping", 0);
 
