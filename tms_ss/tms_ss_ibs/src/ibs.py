@@ -10,6 +10,8 @@
     @todo readujust threshold of GetWeightDiff
 '''
 
+import serial
+import sys
 #include <vector>
 #include <algorithm>
 #include <functional>
@@ -99,13 +101,23 @@ std.string PORT_TR, PORT_LC0
 #define D_COUT(x)
 #endif
 
-
+D_COUT = sys.stdout.write
 
 #------------------------------------------------------------------------------
-class CLoadCellprivate:
-    struct termios oldtio, newtio;  ''' 通信ポートを制御するためのインターフェイス '''
-    bool Close()
-    void OpenPort()
+class CLoadCellprivate():
+    def __Close(self):
+        close(fd)
+            print "CLOSED: LoadCell"
+    return True;
+
+    def OpenPort(self):    #通信関連初期化
+        self.__ser = serial.Serial(port=PORT_LC0, baudrate=115200)
+        D_COUT("opening port : ", PORT_LC0, "   ")
+        D_COUT("\033[1K\r"
+    def ClosePort(self):    tcsetattr(fd, TCSANOW, &oldtio);  ''' 退避させた設定に戻す '''
+        print "closing port : " << PORT_LC0 << "   ")
+        close(fd)
+        D_COUT("\033[1K\r");
     void ClosePort()
     int mPreSensorsWeight[LC_MAX_SENSOR_NUM]
     float mSensorPosX[LC_MAX_SENSOR_NUM]
@@ -210,31 +222,31 @@ def Setup(self):    #数値初期化関連
     return True;
 
 #------------------------------------------------------------------------------
-def Close(self):    close(fd)
+# def Close(self):    close(fd)
 
-    std.cout << "CLOSED: LoadCell" << std.endl
-    return True;
+#     std.cout << "CLOSED: LoadCell" << std.endl
+#     return True;
 
-def OpenPort(self):    #通信関連初期化
-    D_COUT("opening port : " << PORT_LC0 << "   ")
-    if  (fd = open(PORT_LC0.c_str(), (O_RDWR | O_NOCTTY) )) < 0 :        printf("FAILED: LoadCell.OpenComPort:PORT_LC0 \n")
-        exit(-1);
-    D_COUT("\033[1K\r")
-    tcgetattr(fd, &oldtio);         ''' 現在のシリアルポートの設定を待避させる'''
-    memset(&newtio, 0, sizeof(newtio))
-    newtio.c_cflag = B115200 | CS8 | CLOCAL | CREAD
-    newtio.c_iflag = IGNPAR
-    newtio.c_oflag = 0
-    newtio.c_lflag = 0
-    newtio.c_cc[VTIME] = 0
-    newtio.c_cc[VMIN] = 15;            ''' 15文字受け取るまでブロックする '''
-    tcflush(fd, TCIFLUSH)
-    tcsetattr(fd, TCSANOW, &newtio);
+# def OpenPort(self):    #通信関連初期化
+#     D_COUT("opening port : " << PORT_LC0 << "   ")
+#     if  (fd = open(PORT_LC0.c_str(), (O_RDWR | O_NOCTTY) )) < 0 :        printf("FAILED: LoadCell.OpenComPort:PORT_LC0 \n")
+#         exit(-1);
+#     D_COUT("\033[1K\r")
+#     tcgetattr(fd, &oldtio);         ''' 現在のシリアルポートの設定を待避させる'''
+#     memset(&newtio, 0, sizeof(newtio))
+#     newtio.c_cflag = B115200 | CS8 | CLOCAL | CREAD
+#     newtio.c_iflag = IGNPAR
+#     newtio.c_oflag = 0
+#     newtio.c_lflag = 0
+#     newtio.c_cc[VTIME] = 0
+#     newtio.c_cc[VMIN] = 15;            ''' 15文字受け取るまでブロックする '''
+#     tcflush(fd, TCIFLUSH)
+#     tcsetattr(fd, TCSANOW, &newtio);
 
-def ClosePort(self):    tcsetattr(fd, TCSANOW, &oldtio);  ''' 退避させた設定に戻す '''
-    D_COUT("closing port : " << PORT_LC0 << "   ")
-    close(fd)
-    D_COUT("\033[1K\r");
+# def ClosePort(self):    tcsetattr(fd, TCSANOW, &oldtio);  ''' 退避させた設定に戻す '''
+#     D_COUT("closing port : " << PORT_LC0 << "   ")
+#     close(fd)
+#     D_COUT("\033[1K\r");
 
 #------------------------------------------------------------------------------
 def SetSensorPos(self, sensor_num, x[], y[]):    mSensorNum = sensor_num
