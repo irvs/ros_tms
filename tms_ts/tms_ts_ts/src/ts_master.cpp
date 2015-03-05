@@ -161,43 +161,42 @@ bool TmsTsMaster::ts_master_callback(tms_msg_ts::ts_req::Request &req,
 
 bool TmsTsMaster::stsCallback(tms_msg_ts::ts_state_control::Request &req,
 		tms_msg_ts::ts_state_control::Response &res) {
-	if (req.type == 0) {
-		// judge segment(from TS)
+	if (req.type == 0) { // judge segment(from TS)
 		if (req.cc_subtasks == 0) {
-			while (loop_counter < 1) {
+			while (loop_counter < 1) { // TIMEOUT
 				if (abort == true) {
 					abort = false;
 					break;
 				}
-			} // TIMEOUT
+			}
 			if (state_condition == 0) {
-				state_condition = -1;
-				loop_counter = 0;
+				state_condition = -1; // initialize
+				loop_counter = 0; // initialize
 				res.result = 1;
 				return true;
 			} else {
 				ROS_ERROR("Sequential task stopped due to subtask return false");
-				state_condition = -1;
-				loop_counter = 0;
+				state_condition = -1; // initialize
+				loop_counter = 0; // initialize
 				res.result = 0;
 				return false;
 			}
 		} else if (req.cc_subtasks >= 2) {
-			while (loop_counter < req.cc_subtasks) {
+			while (loop_counter < req.cc_subtasks) { // TIMEOUT
 				if (abort == true) {
 					abort = false;
 					break;
 				}
-			} // TIMEOUT
+			}
 			if (state_condition == (req.cc_subtasks-1)) {
-				state_condition = -1;
-				loop_counter = 0;
+				state_condition = -1; // initialize
+				loop_counter = 0; // initialize
 				res.result = 1;
 				return true;
 			} else {
 				ROS_ERROR("Concurrence task stopped due to subtask return false");
-				state_condition = -1;
-				loop_counter = 0;
+				state_condition = -1; // initialize
+				loop_counter = 0; // initialize
 				res.result = 0;
 				return false;
 			}
@@ -207,8 +206,10 @@ bool TmsTsMaster::stsCallback(tms_msg_ts::ts_state_control::Request &req,
 			loop_counter = 0;
 			return false;
 		}
-	} else if (req.type == 1) {
-		// update segment(from RP)
+	} else if (req.type == 1) { // update segment(from RP)
+		// req.state
+		//            0 : error occurred
+		// other number : succeed subtask
 		if (req.state == 0) {
 			ROS_ERROR("Error %d: %s", req.state, req.error_msg.c_str());
 			loop_counter++;
@@ -217,8 +218,8 @@ bool TmsTsMaster::stsCallback(tms_msg_ts::ts_state_control::Request &req,
 		state_condition += req.state;
 		loop_counter++;
 		return true;
-	} else if (req.type == 2) {
-		// abort instruction
+	} else if (req.type == 2) { // abort instruction(from RC)
+		//** 今はRPで呼び出したRCのプログラムがfalseで返ってきたときにtype2でエラーをTSに通知する
 		ROS_ERROR("Error %d: %s", req.state, req.error_msg.c_str());
 		abort = true;
 		return false;
