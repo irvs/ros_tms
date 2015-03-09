@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="geometry_msgs-1.10.6">
-    <CLASSES>
-      <root url="jar:///opt/ros/hydro/share/maven/org/ros/rosjava_messages/geometry_msgs/1.10.6/geometry_msgs-1.10.6.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

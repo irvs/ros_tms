@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="android_honeycomb_mr2-0.1.2">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/tms_ur_demo_client/build/intermediates/exploded-aar/org.ros.android_core/android_honeycomb_mr2/0.1.2/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/tms_ur_demo_client/build/intermediates/exploded-aar/org.ros.android_core/android_honeycomb_mr2/0.1.2/res" />
+      <root url="file://$PROJECT_DIR$/tms_ur_refrigerator/build/intermediates/exploded-aar/org.ros.android_core/android_honeycomb_mr2/0.1.2/res" />
+      <root url="jar://$PROJECT_DIR$/tms_ur_refrigerator/build/intermediates/exploded-aar/org.ros.android_core/android_honeycomb_mr2/0.1.2/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
