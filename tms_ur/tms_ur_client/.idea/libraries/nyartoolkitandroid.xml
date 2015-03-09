@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="nyartoolkitandroid">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/tms_ur_arviewer/libs/nyartoolkitandroid.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -23,6 +23,18 @@ android {
     targetSdkVersion 13
     versionCode 1
     versionName "1.0"
+    ndk {
+      moduleName "yuv420sp2rgb"
+    }
   }
+}
+
+dependencies {
+  compile('org.ros.android_core:android_gingerbread_mr1:[0.1,0.2)') {
+    exclude group: 'junit'
+    exclude group: 'xml-apis'
+  }
+  compile files('libs/tms_msg_db-1.0.2.jar')
+  compile files('libs/nyartoolkitandroid.jar')
 }
  
