@@ -17,12 +17,25 @@
 apply plugin: 'com.android.application'
 
 android {
-  compileSdkVersion 13
-  defaultConfig {
-    minSdkVersion 13
-    targetSdkVersion 13
-    versionCode 1
-    versionName "1.0"
-  }
+    compileSdkVersion 13
+    defaultConfig {
+        minSdkVersion 13
+        targetSdkVersion 13
+        versionCode 1
+        versionName "1.0"
+        ndk {
+            moduleName "yuv420sp2rgb"
+        }
+    }
 }
- 
+
+dependencies {
+    compile('org.ros.android_core:android_gingerbread_mr1:[0.1,0.2)') {
+        exclude group: 'junit'
+        exclude group: 'xml-apis'
+    }
+    compile files('libs/mysql-connector-java-5.1.34-bin.jar')
+    compile files('libs/nyartoolkitandroid.jar')
+    compile files('libs/sanmoku-feature-ex-0.0.1.jar')
+    compile files('libs/tms_msg_db-1.0.2.jar')
+}
