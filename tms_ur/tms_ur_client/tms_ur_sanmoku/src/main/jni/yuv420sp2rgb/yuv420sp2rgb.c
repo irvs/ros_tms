@@ -222,7 +222,7 @@ static void argb_cb(
     return common_rgb_cb(r,g,b,ctx,1);
 }
 
-JNIEXPORT void JNICALL Java_irvs_tms_urclientactivity_ARToolkitDrawer_decodeYUV420SP(JNIEnv * env, jobject obj, jintArray rgb, jbyteArray yuv420sp, jint width, jint height, jint type)
+JNIEXPORT void JNICALL Java_com_github_irvs_ros_1tms_tms_1ur_tms_1ur_1sanmoku_urclientactivity_ARToolkitDrawer_decodeYUV420SP(JNIEnv * env, jobject obj, jintArray rgb, jbyteArray yuv420sp, jint width, jint height, jint type)
 {
     void *in, *out;
     int psz = getpagesize();
