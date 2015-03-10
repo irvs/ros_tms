@@ -12,6 +12,7 @@
 
 import serial
 import sys
+import math
 #include <vector>
 #include <algorithm>
 #include <functional>
@@ -101,39 +102,106 @@ std.string PORT_TR, PORT_LC0
 #define D_COUT(x)
 #endif
 
+LC_MAX_SENSOR_NUM = 4
 D_COUT = sys.stdout.write
 
 #------------------------------------------------------------------------------
-class CLoadCellprivate():
-    def __Close(self):
-        close(fd)
-            print "CLOSED: LoadCell"
-    return True;
+class CLoadCell(object):
+
+    def __init__(self):
+        self.__mPreSensorsWeight = [0]*LC_MAX_SENSOR_NUM
+        self.__mSensorPosX = [0.0]*LC_MAX_SENSOR_NUM
+        self.__mSensorPosY = [0.0]*LC_MAX_SENSOR_NUM
 
     def OpenPort(self):    #通信関連初期化
         self.__ser = serial.Serial(port=PORT_LC0, baudrate=115200)
         D_COUT("opening port : ", PORT_LC0, "   ")
-        D_COUT("\033[1K\r"
-    def ClosePort(self):    tcsetattr(fd, TCSANOW, &oldtio);  ''' 退避させた設定に戻す '''
-        print "closing port : " << PORT_LC0 << "   ")
-        close(fd)
+        D_COUT("\033[1K\r")
+
+    def ClosePort(self):
+        self.__ser.close()
+        print "closing port : ", PORT_LC0
         D_COUT("\033[1K\r");
-    void ClosePort()
-    int mPreSensorsWeight[LC_MAX_SENSOR_NUM]
-    float mSensorPosX[LC_MAX_SENSOR_NUM]
-    float mSensorPosY[LC_MAX_SENSOR_NUM]
 
-public:
-    CLoadCell() {
-    ~CLoadCell()        Close();
-    bool Setup()
+    def Close(self):
+        self.ClosePort()
+        print "CLOSED: LoadCell"
 
-    int mSensorNum
-    void ResetWeight(int initial[] = NULL, num = 10)
-    void SetSensorPos(int sensor_num, x[], y[])
-    int GetWeight(int sensor_id)
-    int GetWeightDiff(float *x, *y, diffs[], threshold = 20)
-    int fd;
+    def Setup(self):    #数値初期化関連
+        self.__mSensorNum = LC_MAX_SENSOR_NUM
+        print "OPENING: LoadCell(port:", PORT_LC0.c_str(), ")"
+        self.__OpenPort()
+        print "OPENED: LoadCell(port:", PORT_LC0.c_str(), ")"
+        self.__ClosePort()
+        print "CLOSED: LoadCell(port:", PORT_LC0.c_str(), ")"
+        self.ResetWeight()
+
+    # 指定されたセンサから重さを取得する
+    def GetWeight(self, sensor_id):
+        self.__OpenPort()
+        self.__ser.write(str(sensor_id))
+        # write(fd, &signal, 1)
+        buf = self.__ser.read(size=15)
+        self.__ClosePort()
+        return int(buf) * 5 #0.28は経験的な値
+
+    def ResetWeight(self, initial=[], num=10):
+    if inital:  #  if not empty
+        self.__mPreSensorsWeight = initial
+        return
+    self.__mPreSensorsWeight = [0] * self.__mSensorNum
+    for i in xrange(num):
+        for j in len(self.__mPreSensorsWeight):
+            self.__mPreSensorsWeight[j] = self.GetWeight(j)
+    self.__mPreSensorsWeight =  map(lamda x:x/num, self.__mPreSensorsWeight)
+
+    def SetSensorPos(self, sensor_num, x_list, y_list):
+        self.__mSensorNum = sensor_num
+        self.__mSensorPosX = list(x_list)
+        self.__mSensorPosY = list(y_list)
+
+        #重量の増減（物体の増減）があるかをチェック
+    def GetWeightDiff(self, *x, *y, diffs[], threshold):
+        #出力が安定するまで待つ
+        for i in xrange(self.__mSensorNum):
+            pre[i] = self.GetWeight(i)
+        cnt = 0;    #繰り返し回数
+        '''------------------------------------------'''
+        while cnt <  LC_GET_WEIGHT_CNT:
+            # usleep(4000) #4ms程度は間隔を空ける
+            usleep(20000)  #for demo
+            weight = 0
+            for i in xrange(self.__mSensorNum):
+                now = GetWeight(i)
+                weight += math.fabs(now - pre[i])
+                pre[i] = now
+                buf[cnt][i] = now
+            if weight < LC_GET_WEIGHT_STABLE:
+                cnt += 1
+            else:
+                cnt = 0
+        '''------------------------------------------'''
+        #出力
+        pre = [0] * self.__mSensorNum
+        for i in xrange(LC_GET_WEIGHT_CNT):
+            for j in xrange(self.__mSensorNum):
+                pre[j] += buf[i][j]
+        pre = map(lamda x:x/LC_GET_CNT,pre)
+        diffs = map(lamda x:x[0]-x[1], zip(pre, self.__mPreSensorsWeight))
+        x = y = 0
+        weight = 0
+        for i in xrange(self.__mSensorNum):
+            x += self.__mSensorPosX[i] * math.fabs(diffs[i])
+            y += self.__mSensorPosY[i] * math.fabs(diffs[i])
+            weight += diffs[i]
+        x /= math.fabs(weight)
+        y /= math.fabs(weight)
+    
+        if abs(weight) < threshold:
+            return 0;
+        else:
+            self.__mPreSensorsWeight = pre
+            return weight
 
 #------------------------------------------------------------------------------
 class CTR3private:
@@ -208,18 +276,18 @@ public:
     int UpdateObj(int stageNo, *cInOut);
 
 #------------------------------------------------------------------------------
-def Setup(self):    #数値初期化関連
-    for (i = 0; i < LC_MAX_SENSOR_NUM; i++)        mPreSensorsWeight[i] = 0
-        mSensorPosX[i] = 0
-        mSensorPosY[i] = 0;
-    mSensorNum = LC_MAX_SENSOR_NUM
-    std.cout << "OPENING: LoadCell(port:" << PORT_LC0.c_str() << ")" << std.endl
-    OpenPort()
-    std.cout << "OPENED: LoadCell(port:" << PORT_LC0.c_str() << ")" << std.endl
-    ClosePort()
-    std.cout << "CLOSED: LoadCell(port:" << PORT_LC0.c_str() << ")" << std.endl
-    ResetWeight()
-    return True;
+# def Setup(self):    #数値初期化関連
+#     for (i = 0; i < LC_MAX_SENSOR_NUM; i++)        mPreSensorsWeight[i] = 0
+#         mSensorPosX[i] = 0
+#         mSensorPosY[i] = 0;
+#     mSensorNum = LC_MAX_SENSOR_NUM
+#     std.cout << "OPENING: LoadCell(port:" << PORT_LC0.c_str() << ")" << std.endl
+#     OpenPort()
+#     std.cout << "OPENED: LoadCell(port:" << PORT_LC0.c_str() << ")" << std.endl
+#     ClosePort()
+#     std.cout << "CLOSED: LoadCell(port:" << PORT_LC0.c_str() << ")" << std.endl
+#     ResetWeight()
+#     return True;
 
 #------------------------------------------------------------------------------
 # def Close(self):    close(fd)
@@ -249,86 +317,86 @@ def Setup(self):    #数値初期化関連
 #     D_COUT("\033[1K\r");
 
 #------------------------------------------------------------------------------
-def SetSensorPos(self, sensor_num, x[], y[]):    mSensorNum = sensor_num
-    for (i = 0; i < mSensorNum; i++)        mSensorPosX[i] = x[i]
-        mSensorPosY[i] = y[i]; }
+# def SetSensorPos(self, sensor_num, x[], y[]):    mSensorNum = sensor_num
+#     for (i = 0; i < mSensorNum; i++)        mSensorPosX[i] = x[i]
+#         mSensorPosY[i] = y[i]; }
 
 #------------------------------------------------------------------------------
-# 指定されたセンサから重さを取得する
-def GetWeight(self, sensor_id):    char signal, buf[20]
-    memset(&buf, 0, sizeof(buf))
-    # センサ番号からセンサのアドレスを求める
-    if 0 <= sensor_id and sensor_id <= 9:
-        signal = sensor_id + '0'; # 0.'0', 1.'1', ..., 9.'9'
-    else:
-        signal = sensor_id - 10 + 'A'; # 10.'A', 11.'B', ... , 35.'Z'
-    OpenPort()
-    write(fd, &signal, 1)
-    read(fd, buf, 15)
-    ClosePort()
-    output_value = atoi(buf)
-    # センサ出力を校正して返す
-    return (int)(output_value * 5); #0.28は経験的な値
+# # 指定されたセンサから重さを取得する
+# def GetWeight(self, sensor_id):    char signal, buf[20]
+#     memset(&buf, 0, sizeof(buf))
+#     # センサ番号からセンサのアドレスを求める
+#     if 0 <= sensor_id and sensor_id <= 9:
+#         signal = sensor_id + '0'; # 0.'0', 1.'1', ..., 9.'9'
+#     else:
+#         signal = sensor_id - 10 + 'A'; # 10.'A', 11.'B', ... , 35.'Z'
+#     OpenPort()
+#     write(fd, &signal, 1)
+#     read(fd, buf, 15)
+#     ClosePort()
+#     output_value = atoi(buf)
+#     # センサ出力を校正して返す
+#     return (int)(output_value * 5); #0.28は経験的な値
 
 
 #------------------------------------------------------------------------------
-def ResetWeight(self, initial[], num):    int i, j
+# def ResetWeight(self, initial[], num):    int i, j
 
-    if initial != NULL:        for (i = 0; i < mSensorNum; i++)
-            mPreSensorsWeight[i] = initial[i]
-        return;
+#     if initial != NULL:        for (i = 0; i < mSensorNum; i++)
+#             mPreSensorsWeight[i] = initial[i]
+#         return;
 
-    for (i = 0; i < mSensorNum; i++)
-        mPreSensorsWeight[i] = 0
+#     for (i = 0; i < mSensorNum; i++)
+#         mPreSensorsWeight[i] = 0
 
-    for (i = 0; i < num; i++)
-        for (j = 0; j < mSensorNum; j++)
-            mPreSensorsWeight[j] += GetWeight(j)
+#     for (i = 0; i < num; i++)
+#         for (j = 0; j < mSensorNum; j++)
+#             mPreSensorsWeight[j] += GetWeight(j)
 
-    for (i = 0; i < mSensorNum; i++)
-        mPreSensorsWeight[i] /= num;
+#     for (i = 0; i < mSensorNum; i++)
+#         mPreSensorsWeight[i] /= num;
 
 #------------------------------------------------------------------------------
-#重量の増減（物体の増減）があるかをチェック
-def GetWeightDiff(self, *x, *y, diffs[], threshold):    static int i, j, cnt, weight
-    static int now, pre[LC_MAX_SENSOR_NUM], buf[LC_GET_WEIGHT_CNT][LC_MAX_SENSOR_NUM];#, latest[LC_MAX_SENSOR_NUM]
+# #重量の増減（物体の増減）があるかをチェック
+# def GetWeightDiff(self, *x, *y, diffs[], threshold):    static int i, j, cnt, weight
+#     static int now, pre[LC_MAX_SENSOR_NUM], buf[LC_GET_WEIGHT_CNT][LC_MAX_SENSOR_NUM];#, latest[LC_MAX_SENSOR_NUM]
 
 
-    #出力が安定するまで待つ
-    for (i = 0; i < mSensorNum; i++)        pre[i] = GetWeight(i);
-    cnt = 0;    #繰り返し回数
-    '''------------------------------------------'''
-    do        #usleep(4000); #4ms程度は間隔を空ける
-        usleep(20000);  #for demo
-        weight = 0
-        for (i = 0; i < mSensorNum; i++)            now = GetWeight(i)
-            weight += abs(now - pre[i])
-            pre[i] = now
-            buf[cnt][i] = now;
-        if weight < LC_GET_WEIGHT_STABLE:            cnt++;
-        else:
-            cnt = 0; }
-    while (cnt < LC_GET_WEIGHT_CNT)
-    '''------------------------------------------'''
+#     #出力が安定するまで待つ
+#     for (i = 0; i < mSensorNum; i++)        pre[i] = GetWeight(i);
+#     cnt = 0;    #繰り返し回数
+#     '''------------------------------------------'''
+#     do        #usleep(4000); #4ms程度は間隔を空ける
+#         usleep(20000);  #for demo
+#         weight = 0
+#         for (i = 0; i < mSensorNum; i++)            now = GetWeight(i)
+#             weight += abs(now - pre[i])
+#             pre[i] = now
+#             buf[cnt][i] = now;
+#         if weight < LC_GET_WEIGHT_STABLE:            cnt++;
+#         else:
+#             cnt = 0; }
+#     while (cnt < LC_GET_WEIGHT_CNT)
+#     '''------------------------------------------'''
 
-    #出力
-    for (i = 0; i < mSensorNum; i++)        pre[i] = 0;
-    for (i = 0; i < LC_GET_WEIGHT_CNT; i++)        for (j = 0; j < mSensorNum; j++)            pre[j] += buf[i][j]; }
-    for (i = 0; i < mSensorNum; i++)        pre[i] /= LC_GET_WEIGHT_CNT
-        diffs[i] = pre[i] - mPreSensorsWeight[i];
+#     #出力
+#     for (i = 0; i < mSensorNum; i++)        pre[i] = 0;
+#     for (i = 0; i < LC_GET_WEIGHT_CNT; i++)        for (j = 0; j < mSensorNum; j++)            pre[j] += buf[i][j]; }
+#     for (i = 0; i < mSensorNum; i++)        pre[i] /= LC_GET_WEIGHT_CNT
+#         diffs[i] = pre[i] - mPreSensorsWeight[i];
 
-    *x = *y = 0
-    weight = 0
-    for (i = 0; i < mSensorNum; i++)        *x += (float)(mSensorPosX[i] * abs(diffs[i]))
-        *y += (float)(mSensorPosY[i] * abs(diffs[i]))
-        weight += diffs[i];
-    *x /= abs(weight)
-    *y /= abs(weight)
+#     *x = *y = 0
+#     weight = 0
+#     for (i = 0; i < mSensorNum; i++)        *x += (float)(mSensorPosX[i] * abs(diffs[i]))
+#         *y += (float)(mSensorPosY[i] * abs(diffs[i]))
+#         weight += diffs[i];
+#     *x /= abs(weight)
+#     *y /= abs(weight)
 
-    if abs(weight) < threshold:        return 0;
-    else:
-        for (i = 0; i < mSensorNum; i++)            mPreSensorsWeight[i] = pre[i];
-        return weight; }
+#     if abs(weight) < threshold:        return 0;
+#     else:
+#         for (i = 0; i < mSensorNum; i++)            mPreSensorsWeight[i] = pre[i];
+#         return weight; }
 
 #------------------------------------------------------------------------------
 def Setup(self):    #数値初期化関連
