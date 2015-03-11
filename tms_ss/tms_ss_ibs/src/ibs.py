@@ -204,28 +204,101 @@ class CLoadCell(object):
             return weight
 
 #------------------------------------------------------------------------------
-class CTR3private:
-    struct termios oldtio, newtio;  ''' 通信ポートを制御するためのインターフェイス '''
-    bool Close()
-    void OpenPort()
-    void ClosePort()
-    unsigned char mCommand[TR3_MAX_COMMAND_SIZE]
-    int  AddChecksum()
-    int  mActiveAntenna;  #not < 真にアクティブなアンテナ．シリアル通信での返り値が代入される．
-    int  Inventory2()
-public:
-    CTR3() {
-    ~CTR3()        Close();
-    vec_str mUIDs[TR3_USED_ANT_NUM];    #not < 見えているタグのUIDのリスト
+class CTR3(object):
 
-    bool Setup()
+    def __init__(self):
+        self.__mActiveAntenna = 0
+        self.__mUIDs = [""] * TR3_USED_ANT_NUM
+        self.__mCommand = [chr(0)] * TR3_MAX_COMMAND_SIZE
+
+    def Setup(self):
+        self.__mActiveAntenna = TR3_ANT1
+        self.__mCommand[0] = chr(TR3_STX)
+        self.__mCommand[1] = chr(0x00)      # アドレス
+        print "OPENING: TR3(port:", PORT_TR, ")"
+        self.__OpenPort();
+        print "OPENED: TR3(port:", PORT_TR, ")"
+        self.__ClosePort();
+        print "CLOSED: TR3(port:", PORT_TR, ")"
+
+    def __OpenPort(self):
+        self.__ser = serial.Serial(port=PORT_TR, baudrate=38400)
+        D_COUT("opening port : ", PORT_TR0, "   ")
+        D_COUT("\033[1K\r")
+
+    def __ClosePort(self):
+        self.__ser.close()
+        print "closing port : ", PORT_TR
+        D_COUT("\033[1K\r");
+
+    def Close(self):
+        self.__ClosePort()
+        print "CLOSED: TR3"
+
+    #アンテナの指定
+    def SetAntenna(self, char AN):
+        self.__mCommand[2] = 0x4E; #コマンド
+        self.__mCommand[3] = 0x02; #データ長
+        self.__mCommand[4] = 0x9C; #コマンド詳細
+        self.__mCommand[5] = AN; #アンテナ指定
+    
+        self.__OpenPort()
+        self.AddChecksum()
+        self.__ser.write(self.__mCommand)
+        buf = [chr(0)] * 100
+        buf = self.__ser.read(size = 9)
+        if buf[2] != TR3_ACK:        
+            # self.__ser.read(size = 100)
+            buf = self.__ser.readline()
+            # read(fd, buf, 100)
+            print "TR3: SendCommandError . SetAntenna"
+            return -1;
+        self.__mActiveAntenna = int(buf[5])
+        self.__ClosePort()
+        return int(buf[5])
+
+#アンテナの指定
+    def SetAntenna(self, char AN):    
+        self.__mCommand[2] = 0x4E; #コマンド
+        self.__mCommand[3] = 0x02; #データ長
+        self.__mCommand[4] = 0x9C; #コマンド詳細
+        self.__mCommand[5] = AN; #アンテナ指定
+    
+        self.__OpenPort()
+        self.AddChecksum()
+        self.__ser.write(self.__mCommand)
+        buf = [chr(0)] * 100
+        buf = self.__ser.read(size = 9)
+        if buf[2] != TR3_ACK:
+            # self.__ser.read(size = 100)
+            buf = self.__ser.readline()
+            # read(fd, buf, 100)
+            print "TR3: SendCommandError . SetAntenna",
+            return -1
+        self.__mActiveAntenna = int(buf[5])
+        self.__ClosePort()
+        return int(buf[5])
+    
+    # bool Close()
+    # void OpenPort()
+    # void ClosePort()
+    # unsigned char mCommand[TR3_MAX_COMMAND_SIZE]
+    int  AddChecksum()
+    # int  mActiveAntenna;  #not < 真にアクティブなアンテナ．シリアル通信での返り値が代入される．
+    int  Inventory2()
+# public:
+    # CTR3() {
+    # ~CTR3()        Close();
+    # vec_str mUIDs[TR3_USED_ANT_NUM];    #not < 見えているタグのUIDのリスト
+
+    # bool Setup()
     int  SetAntenna(unsigned AN = TR3_ANT1)
     bool AntennaPowerON()
     bool AntennaPowerOFF()
     void PrintTagUIDs()
 
     int  GetTagDiff(std.string &diffUID, char AN)
-    int fd;
+    # int fd;
 
 #------------------------------------------------------------------------------
 class CTagOBJprivate:
@@ -399,63 +472,63 @@ public:
 #         return weight; }
 
 #------------------------------------------------------------------------------
-def Setup(self):    #数値初期化関連
-    mActiveAntenna = TR3_ANT1
-    mCommand[0] = TR3_STX;  #
-    mCommand[1] = 0x00;     #アドレス
-    std.cout << "OPENING: TR3(port:" << PORT_TR.c_str() << ")" << std.endl
-    OpenPort()
-    std.cout << "OPENED: TR3(port:" << PORT_TR.c_str() << ")" << std.endl
-    ClosePort()
-    std.cout << "CLOSED: TR3(port:" << PORT_TR.c_str() << ")" << std.endl
+# def Setup(self):    #数値初期化関連
+#     mActiveAntenna = TR3_ANT1
+#     mCommand[0] = TR3_STX;  #
+#     mCommand[1] = 0x00;     #アドレス
+#     std.cout << "OPENING: TR3(port:" << PORT_TR.c_str() << ")" << std.endl
+#     OpenPort()
+#     std.cout << "OPENED: TR3(port:" << PORT_TR.c_str() << ")" << std.endl
+#     ClosePort()
+#     std.cout << "CLOSED: TR3(port:" << PORT_TR.c_str() << ")" << std.endl
 
-    return True;
+#     return True;
 
 #------------------------------------------------------------------------------
 #終了処理
-def Close(self):    close(fd)
+# def Close(self):    close(fd)
 
-    std.cout << "CLOSED: TR3" << std.endl
-    return True;
+#     std.cout << "CLOSED: TR3" << std.endl
+    # return True;
 
-def OpenPort(self):    D_COUT("opening port : " << PORT_LC0 << "   ")
-    if  (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 :        printf("ERRORnot !\n")
-        exit(-1);
-    D_COUT("\033[1K\r")
-    tcgetattr(fd, &oldtio);         ''' 現在のシリアルポートの設定を待避させる'''
-    memset(&newtio, 0, sizeof(newtio))
-    newtio.c_cflag = B38400 | CS8 | CLOCAL | CREAD
-    newtio.c_iflag = IGNPAR | ICRNL
-    newtio.c_oflag = 0
-    newtio.c_lflag = ICANON
-    tcflush(fd, TCIFLUSH)
-    tcsetattr(fd, TCSANOW, &newtio);
+# def OpenPort(self):    D_COUT("opening port : " << PORT_LC0 << "   ")
+#     if  (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 :        printf("ERRORnot !\n")
+#         exit(-1);
+#     D_COUT("\033[1K\r")
+#     tcgetattr(fd, &oldtio);         ''' 現在のシリアルポートの設定を待避させる'''
+#     memset(&newtio, 0, sizeof(newtio))
+#     newtio.c_cflag = B38400 | CS8 | CLOCAL | CREAD
+#     newtio.c_iflag = IGNPAR | ICRNL
+#     newtio.c_oflag = 0
+#     newtio.c_lflag = ICANON
+#     tcflush(fd, TCIFLUSH)
+#     tcsetattr(fd, TCSANOW, &newtio);
 
-def ClosePort(self):    tcsetattr(fd, TCSANOW, &oldtio);  ''' 退避させた設定に戻す '''
-    D_COUT("closing port : " << PORT_LC0)
-    close(fd)
-    D_COUT("\033[1K\r");
+# def ClosePort(self):    tcsetattr(fd, TCSANOW, &oldtio);  ''' 退避させた設定に戻す '''
+#     D_COUT("closing port : " << PORT_LC0)
+#     close(fd)
+#     D_COUT("\033[1K\r");
 
 #------------------------------------------------------------------------------
-#アンテナの指定
-def SetAntenna(self, char AN):    unsigned char buf[100]
+# #アンテナの指定
+# def SetAntenna(self, char AN):    unsigned char buf[100]
 
-    mCommand[2] = 0x4E; #コマンド
-    mCommand[3] = 0x02; #データ長
-    mCommand[4] = 0x9C; #コマンド詳細
-    mCommand[5] = AN; #アンテナ指定
+#     mCommand[2] = 0x4E; #コマンド
+#     mCommand[3] = 0x02; #データ長
+#     mCommand[4] = 0x9C; #コマンド詳細
+#     mCommand[5] = AN; #アンテナ指定
 
-    memset(&buf, 0, sizeof(buf))
-    OpenPort()
-    AddChecksum()
-    write(fd, mCommand, sizeof(mCommand))
-    read(fd, buf, 9)
-    if buf[2] != TR3_ACK:        read(fd, buf, 100)
-        std.cerr << "TR3: SendCommandError . SetAntenna" << std.endl
-        return -1;
-    mActiveAntenna = (int)buf[5]
-    ClosePort()
-    return (int)buf[5];
+#     memset(&buf, 0, sizeof(buf))
+#     OpenPort()
+#     AddChecksum()
+#     write(fd, mCommand, sizeof(mCommand))
+#     read(fd, buf, 9)
+#     if buf[2] != TR3_ACK:        read(fd, buf, 100)
+#         std.cerr << "TR3: SendCommandError . SetAntenna" << std.endl
+#         return -1;
+#     mActiveAntenna = (int)buf[5]
+#     ClosePort()
+#     return (int)buf[5];
 
 #------------------------------------------------------------------------------
 #アンテナの電源ON
