@@ -33,3 +33,4 @@ libqhull-dev \
 liblapack-dev \
 libqwt-dev \
 ros-indigo-kobuki-msgs \
+freeglut3-dev \

@@ -21,6 +21,7 @@ add_service_files(
   FILES
   tms_sa_find_objects.srv
   ts_req.srv
+  ts_state_control.srv
 )
 
 generate_messages(

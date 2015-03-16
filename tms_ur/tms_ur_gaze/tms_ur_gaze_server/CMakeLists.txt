@@ -2,17 +2,18 @@ cmake_minimum_required(VERSION 2.8.3)
 project(tms_ur_gaze_server)
 
 find_package(catkin REQUIRED COMPONENTS
+  pluginlib
+  nodelet
   roscpp
   rospy
   std_msgs
   message_generation
 )
 
-add_message_files(
-  FILES
-  result.msg
-  dictation_data.msg
-)
+find_package(Boost REQUIRED COMPONENTS system filesystem thread)
+
+## set the plugin name
+set(PLUGIN_NAME tms_ur_gaze)
 
 add_service_files(
   FILES
@@ -26,24 +27,33 @@ generate_messages(
 )
 
 catkin_package(
-# INCLUDE_DIRS include
-  LIBRARIES tms_ur_gaze_server
-  CATKIN_DEPENDS message_runtime roscpp rospy std_msgs
-  DEPENDS system_lib
+   INCLUDE_DIRS include
+   LIBRARIES tmd_ur_gaze_server ${PLUGIN_MAME}
+   CATKIN_DEPENDS message_runtime pluginlib nodelet roscpp rospy std_msgs
 )
 
+## setup the include dirs
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(object_selector_test src/object_selector.cpp)
-add_dependencies(object_selector_test tms_ur_gaze_server_generate_messages_cpp)
-target_link_libraries(object_selector_test
+## nodelet library
+add_library(${PLUGIN_NAME}
+  src/nodelet.cpp
+  src/evaluator.cpp
+  src/voice_receiver.cpp
+)
+add_dependencies(${PLUGIN_NAME} tms_ur_gaze_server_generate_messages_cpp)
+target_link_libraries(${PLUGIN_NAME}
   ${catkin_LIBRARIES}
 )
 
-add_executable(request_generator_test src/request_generator.cpp)
-add_dependencies(request_generator_test tms_ur_gaze_server_generate_messages_cpp)
-target_link_libraries(request_generator_test
+## nodelet loader
+add_executable(tms_ur_gaze_server
+  src/tms_ur_gaze_server.cpp
+)
+add_dependencies(tms_ur_gaze_server tms_ur_gaze_server_generate_messages_cpp)
+target_link_libraries(tms_ur_gaze_server
   ${catkin_LIBRARIES}
 )

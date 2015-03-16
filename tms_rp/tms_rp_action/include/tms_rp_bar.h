@@ -37,6 +37,7 @@
 #include <cnoid/BodyItem>
 #include <cnoid/ToolBar>
 #include <cnoid/SignalProxy>
+#include <cnoid/SceneView>
 #include <cnoid/MessageView>
 #include <cnoid/MainWindow>
 #include <cnoid/LazyCaller>
@@ -55,6 +56,7 @@
 #include <cstdlib>
 #include <string>
 #include <iostream>
+#include <exception>
 
 #include <QDialog>
 #include <QCheckBox>
@@ -69,6 +71,9 @@
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl_conversions/pcl_conversions.h>
+
+#define MAX_ICS_OBJECT_NUM    25
+#define MAX_FURNITURE_NUM     21
 
 #define PERSON 1
 //#define PERSON 0
@@ -108,32 +113,22 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   int argc_;
   char **argv_;
   uint32_t sid_;
+  Matrix3d mat0_, mat_ccw90_, mat_ccw180_, mat_cw90_;
+
   ros::ServiceClient get_data_client_;
   ros::ServiceClient sp5_control_client_;
   ros::ServiceClient path_planning_client_;
   ros::ServiceClient ardrone_client_;
   ros::ServiceClient request_robot_path_;
-  ros::Subscriber    subscribe_pcd_;
-  ros::Subscriber    subscribe_static_map_;
-  ros::Subscriber    subscribe_dynamic_map_;
-  ros::Subscriber    subscribe_path_map_;
-  ros::Subscriber    subscribe_lrf_raw_data1_;
-  ros::Subscriber    subscribe_lrf_raw_data2_;
-  ros::Subscriber    subscribe_person_tracker_;
+  ros::Subscriber    subscribe_umo_tracker_;
 
-  pcl::PointCloud<pcl::PointXYZ> point_cloud_data_;
-  tms_msg_rp::rps_map_full       static_map_data_;
-  tms_msg_rp::rps_map_full       dynamic_map_data_;
-  tms_msg_rp::rps_route          path_map_data_;
-  sensor_msgs::LaserScan         lrf_raw_data1_;
-  sensor_msgs::LaserScan         lrf_raw_data2_;
-  tms_msg_ss::tracking_points    person_position_;
+  tms_msg_ss::tracking_points    unknown_moving_object_position_;
 
   boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)>& sigBodyItemSelectionChanged() {return sigBodyItemSelectionChanged_;}
 
   bool object_state_[25];
   static std::string object_name_[25];
-  static std::string furniture_name_[20];
+  static std::string furniture_name_[21];
   static bool is_ros_Init_;
 
   double goal_position_x_;
@@ -141,21 +136,18 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   double goal_position_ry_;
 
   static bool production_version_;
-  static int planning_mode_; // 0:view mode / 1:planning mode
-  static int grasping_;
+
+  SgInvariantGroupPtr group_lrf_raw_data_;
 
   cnoid::BodyItemPtr currentBodyItem_;
   cnoid::ItemList<cnoid::BodyItem> selectedBodyItems_;
   cnoid::ItemList<cnoid::BodyItem> target_body_items_;
 
-  void updateEnvironmentInfomation(bool is_simulation);
-
  private:
   MessageView& mes_;
   std::ostream& os_;
   TmsRpController& trc_;
-  Matrix3d mat0_, mat_ccw90_, mat_ccw180_, mat_cw90_;
-
+  ros::NodeHandle nh;
   ToolButton* static_map_toggle_;
   ToolButton* dynamic_map_toggle_;
   ToolButton* local_map_toggle_;
@@ -176,13 +168,6 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void setCollisionTargetButtonClicked();
   void makeCollisionMapButtonClicked();
 
-  void viewStaticMap();
-  void viewDynamicMap();
-  void viewPathOfRobot();
-  void viewMarkerOfRobot();
-  void viewLrfRawData();
-  void viewPersonPostion();
-
   void pathPlanButtonClicked();
   void ardroneButtonClicked();
   void smartpalButtonClicked();
@@ -194,14 +179,9 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
   void receivePathMapData(const tms_msg_rp::rps_route::ConstPtr& msg);
   void receiveLrfRawData1(const sensor_msgs::LaserScan::ConstPtr& msg);
   void receiveLrfRawData2(const sensor_msgs::LaserScan::ConstPtr& msg);
-  void receivePersonTrackerInfo(const tms_msg_ss::tracking_points::ConstPtr& msg);
-
-  void moveToGoal();
-  void getPcdData();
+  void receiveUnknownMovingObjectTrackerInfo(const tms_msg_ss::tracking_points::ConstPtr& msg);
 
   void initPoseButtonClicked();
-  void startButtonClicked();
-  void startButtonClicked2();
   void changePlanningMode();
 };
 }

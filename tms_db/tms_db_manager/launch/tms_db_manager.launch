@@ -1,4 +1,4 @@
-﻿<launch>
+<launch>
   <node pkg="tms_db_manager" type="tms_db_reader"   name="tms_db_reader">
     <param name="is_debug" value="false" />
   </node>
@@ -6,6 +6,10 @@
     <param name="is_debug" value="false" />
   </node>
   <node pkg="tms_db_manager" type="tms_db_manager"  name="tms_db_manager">
+    <param name="update_time" value="0.01" />
+    <param name="is_debug" value="false" />
+  </node>
+  <node pkg="tms_db_manager" type="tms_db_publisher"  name="tms_db_publisher">
     <param name="update_time" value="0.01" />
     <param name="is_debug" value="false" />
   </node>

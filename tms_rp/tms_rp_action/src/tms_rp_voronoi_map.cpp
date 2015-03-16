@@ -21,6 +21,7 @@ TmsRpVoronoiMap::TmsRpVoronoiMap(): ToolBar("TmsRpVoronoiMap"),
 
   static_map_pub_  = nh.advertise<tms_msg_rp::rps_map_full>("rps_map_data", 1);
   dynamic_map_pub_ = nh.advertise<tms_msg_rp::rps_map_full>("rps_dynamic_map", 1);
+  get_data_client_ = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
 
   initCollisionMap(collision_map_);
   setVoronoiLine(collision_map_, result_msg_);
@@ -358,7 +359,7 @@ void TmsRpVoronoiMap::dynamicMapPublish()
 }
 
 //------------------------------------------------------------------------------
-void TmsRpVoronoiMap::dynamicMapPublish(tms_msg_ss::tracking_points person_pos)
+void TmsRpVoronoiMap::dynamicMapPublish(tms_msg_ss::tracking_points unknown_moving_object_pos)
 {
   int map_x = 0, map_y = 0;
   int obstacle_pos_x = 0, obstacle_pos_y = 0;
@@ -400,11 +401,12 @@ void TmsRpVoronoiMap::dynamicMapPublish(tms_msg_ss::tracking_points person_pos)
     }
   }
 
-  // add current position of obstacle (person)
-  for(unsigned int i=0;i<person_pos.tracking_grid.size();i++)
+  // add current position of unknown moving object (umo)
+  for(unsigned int i=0;i<unknown_moving_object_pos.tracking_grid.size();i++)
   {
-    obstacle_pos_x = person_pos.tracking_grid[i].x/1000;
-    obstacle_pos_y = person_pos.tracking_grid[i].y/1000;
+
+    obstacle_pos_x = unknown_moving_object_pos.tracking_grid[i].x/1000;
+    obstacle_pos_y = unknown_moving_object_pos.tracking_grid[i].y/1000;
 
     map_x = (int)round( ( obstacle_pos_x - x_llimit_ ) / cell_size_ );
     map_y = (int)round( ( obstacle_pos_y - y_llimit_ ) / cell_size_ );

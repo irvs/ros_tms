@@ -35,7 +35,7 @@ set(rostmsPluginPath ${ChoreonoidPath}/extplugin/rostmsPlugin)
 set(prmPath ${ChoreonoidPath}/extplugin/graspPlugin/PRM)
 set(ChoreonoidLibPath ${ChoreonoidPath}/lib/choreonoid-1.4)
 
-set(libname CnoidRosTmsTmsRpPlugin)
+set(libname CnoidRosTmsRpActionPlugin)
 
 
 ###############################
@@ -80,7 +80,7 @@ add_library(
   src/tms_rp_collision_map.cpp
 )
 
-add_dependencies(${libname} tms_msg_rp_gencpp tms_msg_db_gencpp tms_msg_rs_gencpp tms_msg_ss_gencpp)
+add_dependencies(${libname} tms_msg_ts_gencpp tms_msg_rp_gencpp tms_msg_db_gencpp tms_msg_rs_gencpp tms_msg_ss_gencpp)
 
 target_link_libraries(
   ${libname}
@@ -94,6 +94,7 @@ target_link_libraries(
   omniORB4
   omnithread
   omniDynamic4
+  glut
   ${catkin_LIBRARIES}
 )
 

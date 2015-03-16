@@ -10,6 +10,9 @@
 #include <tms_msg_db/tmsdb_get_movable_furnitures_info.h>
 #include <tms_msg_rp/rps_map_full.h>
 
+#include <algorithm>
+#include <iterator>
+
 namespace tms_rp {
 
 class TmsRpPathPlanning : public cnoid::ToolBar, public boost::signals::trackable
@@ -35,6 +38,7 @@ class TmsRpPathPlanning : public cnoid::ToolBar, public boost::signals::trackabl
   const double kSmartPal4CollisionThreshold_; //mm
   const double kKobukiCollisionThreshold_;    //mm
   const double kKKPCollisionThreshold_;       //mm
+  const double kMimamorukunCollisionThreshold_;    //mm
   const double kRobotControlWagonDist_;       //mm
   const double kSmoothVoronoiPathThreshold_;  //mm
   const double kPushWagonPathThreshold_;      //mm

@@ -23,6 +23,7 @@
 #define CMD_ABORT               5
 #define CMD_STOP                6
 #define CMD_GETSTATE            7
+#define SET_ODOM                7
 #define CMD_GETPOSE             8
 #define CMD_SYNC_OBJ            8
 #define CMD_CALC_BACKGROUND     9
@@ -63,12 +64,6 @@ class TmsRpController{
 
     bool setTolerance(double setTolerance);
 
-    bool graspPathPlanStart_(
-    		int mode, std::vector<double> begin, std::vector<double> end,
-    		std::string robotId, std::string objectTagId, double resolution,
-    		std::vector<pathInfo>* trajectory, int* state,
-    		std::vector<double>* obj_pos, std::vector<double>* obj_rot);
-
     bool graspPathPlanStart(
     		int mode, std::vector<double> begin, std::vector<double> end,
     		std::string robotId, std::string objectTagId, double resolution,
@@ -101,6 +96,7 @@ class TmsRpController{
     bool set_all_Pos(std::string tagId, cnoid::Vector3 pos, cnoid::Matrix3 ori, std::vector<double> begin);
     bool getPos(std::string tagId, cnoid::Vector3 *pos, cnoid::Matrix3 *ori);
     bool setBoolParameter(int mode,bool onoff);
+    bool setString(std::string tagId, cnoid::Vector3 pos, std::string str);
 
     std::string objectBasePath;
     std::map <int, std::string> objId2File;

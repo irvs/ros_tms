@@ -8,6 +8,8 @@
 
 #include <sensor_msgs/LaserScan.h>
 #include <tms_msg_ss/tracking_points.h>
+#include <tms_msg_rp/rps_map_full.h>
+#include <tms_msg_rp/rps_route.h>
 
 namespace grasp
 {

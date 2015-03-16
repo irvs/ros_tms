@@ -26,15 +26,15 @@ ros::ServiceClient get_data_client;
 int getRobotCurrentPos(double *x, double *y, double *th, double *waistL, double *waistH,
 		double *jointR, double *gripperR, double *jointL, double *gripperL)
 {
-  int8_t a, b, c, d, e, f;
-  a = smartpal->vehicleGetPos(x,y,th);
-  b = smartpal->armGetPos(ArmR,0,jointR);
-  c = smartpal->armGetPos(ArmL,0,jointL);
-  d = smartpal->gripperGetPos(ArmR,gripperR);
-  e = smartpal->gripperGetPos(ArmL,gripperL);
-  f = smartpal->lumbaGetPos(waistL, waistH);
+  int8_t ret1, ret2, ret3, ret4, ret5, ret6;
+  ret1 = smartpal->vehicleGetPos(x,y,th);
+  ret2 = smartpal->armGetPos(ArmR,0,jointR);
+  ret3 = smartpal->armGetPos(ArmL,0,jointL);
+  ret4 = smartpal->gripperGetPos(ArmR,gripperR);
+  ret5 = smartpal->gripperGetPos(ArmL,gripperL);
+  ret6 = smartpal->lumbaGetPos(waistL, waistH);
 
-  if((a+b+c+d+e+f) <= 0) {
+  if((ret1+ret2+ret3+ret4+ret5+ret6) <= 0) {
     ROS_ERROR("Failed to get robot position.\n");
     return 0;
   }
@@ -123,10 +123,12 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
         ROS_INFO("Failed to call service getRobotData ID: %d\n", getRobotData.request.tmsdb.id);
         break;
       }
-      if(getRobotData.response.tmsdb[0].x != 0 && getRobotData.response.tmsdb[0].y != 0) {
-        res.result = smartpal->vehicleSetPos( getRobotData.response.tmsdb[0].x,
-                                              getRobotData.response.tmsdb[0].y,
-                                              getRobotData.response.tmsdb[0].ry);
+      if(!getRobotData.response.tmsdb.empty()) {
+          if(getRobotData.response.tmsdb[0].x != 0 && getRobotData.response.tmsdb[0].y != 0) {
+            res.result = smartpal->vehicleSetPos( getRobotData.response.tmsdb[0].x,
+                                                  getRobotData.response.tmsdb[0].y,
+                                                  getRobotData.response.tmsdb[0].ry);
+          }
       }
       break;
     default:
@@ -158,7 +160,7 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
             int state = smartpal->vehicleGetState();
             if(state == VehicleBusy) {
               ROS_INFO("vehicle state : Busy\n");
-              ros::Duration(3.0).sleep();
+              ros::Duration(1.0).sleep();
             } else if(state == VehicleReady) {
               ROS_INFO("Succeed to move vehicle.state : Ready\n");
               res.result = SUCCESS;
@@ -177,7 +179,34 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
           }
           break;
         }
-      case 16:res.result = smartpal->vehicleMoveLinearRel(req.arg[0],req.arg[1],req.arg[2]); break;
+      case 16:
+      {
+        res.result = smartpal->vehicleMoveLinearRel(req.arg[0],req.arg[1],req.arg[2]);
+        // returnのタイミングをロボットの状態がReadyになるまで待機
+        ros::Time begin = ros::Time::now();
+        while(1) {
+          int state = smartpal->vehicleGetState();
+          if(state == VehicleBusy) {
+            ROS_INFO("vehicle state : Busy\n");
+            ros::Duration(1.0).sleep();
+          } else if(state == VehicleReady) {
+            ROS_INFO("Succeed to move vehicle.state : Ready\n");
+            res.result = SUCCESS;
+            break;
+          } else {
+            ROS_ERROR("Failed to get collect vehicle status:%d\n", state);
+          }
+
+          ros::Time now = ros::Time::now();
+          // Time out
+          if((now - begin).toSec() >= 60.0) {
+            ROS_ERROR("TIMEOUT!(vehicle)\n");
+            res.result = FAILURE;
+            break;
+          }
+        }
+        break;
+      }
       case 17:res.result = smartpal->vehicleMoveCruiseAbs(req.arg[0],req.arg[1]); break;
       case 18:res.result = smartpal->vehicleMoveCruiseRel(req.arg[0],req.arg[1]); break;
       case 19:res.result = smartpal->vehicleMoveContinuousRel(req.arg[0],req.arg[1],req.arg[2]); break;
@@ -200,8 +229,11 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
       case 6: res.result = smartpal->armStop(ArmR); break;
       case 7: res.result = smartpal->armGetState(ArmR); break;
       case 8: res.val.resize(7); res.result = smartpal->armGetPos(ArmR,req.arg[0],&res.val[0]); break;
+      case 9: res.result = smartpal->armGetActiveAlarm(ArmR, req.arg[0],&res.val[0]); break;
       case 10:res.result = smartpal->armSetJointAcc(ArmR,req.arg[0]); break;
       case 11:res.result = smartpal->armSetLinearAcc(ArmR,req.arg[0],req.arg[1]); break;
+      case 12:res.result = smartpal->armIsPowerOn(ArmR); break;
+      case 13:res.result = smartpal->armIsServoOn(ArmR); break;
       case 15:
         {
           res.result = smartpal->armMoveJointAbs(ArmR,&req.arg[0],req.arg[7]);
@@ -211,7 +243,7 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
             int state = smartpal->armGetState(ArmR);
             if(state == Busy) {
               ROS_INFO("armR state : Busy\n");
-              ros::Duration(3.0).sleep();
+              ros::Duration(1.0).sleep();
             } else if(state == Ready) {
               ROS_INFO("Succeed to manipulation action(armR).state : Ready\n");
               res.result = SUCCESS;
@@ -248,8 +280,11 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
       case 6: res.result = smartpal->armStop(ArmL); break;
       case 7: res.result = smartpal->armGetState(ArmL); break;
       case 8: res.val.resize(7); res.result = smartpal->armGetPos(ArmL,req.arg[0],&res.val[0]); break;
+      case 9: res.result = smartpal->armGetActiveAlarm(ArmL,req.arg[0],&res.val[0]); break;
       case 10:res.result = smartpal->armSetJointAcc(ArmL,req.arg[0]); break;
       case 11:res.result = smartpal->armSetLinearAcc(ArmL,req.arg[0],req.arg[1]); break;
+      case 12:res.result = smartpal->armIsPowerOn(ArmL); break;
+      case 13:res.result = smartpal->armIsServoOn(ArmL); break;
       case 15:
         {
           res.result = smartpal->armMoveJointAbs(ArmL,&req.arg[0],req.arg[7]);

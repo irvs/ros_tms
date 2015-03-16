@@ -29,8 +29,4 @@ include_directories(include
  add_dependencies(ts_master tms_msg_ts_generate_messages_cpp)
  
  target_link_libraries(ts_master ${catkin_LIBRARIES})
- 
-# for Nagatasan node
-#add_executable(tms_ts_task_scheduler src/tms_ts_task_scheduler.cpp)
-#add_dependencies(tms_ts_task_scheduler DEPENDS tms_msg_db_gencpp)
-#target_link_libraries(tms_ts_task_scheduler ${catkin_LIBRARIES})
+

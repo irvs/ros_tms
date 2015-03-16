@@ -29,6 +29,19 @@ int8_t Client::armReturnValue(int8_t msg)
 }
 
 //------------------------------------------------------------------------------
+int8_t Client::armReturnAlarm(int8_t msg)
+{
+    switch(msg)
+    {
+    case(0):	printf("AlarmType : Fault\n");                  break;
+    case(1):	printf("AlarmType : Warning\n");                break;
+    case(2):	printf("AlarmType : Unknown\n");                break;
+    default:    break;
+    }
+
+    return msg;
+}
+//------------------------------------------------------------------------------
 int8_t Client::armClearAlarm(int8_t RL)
 {
     int8_t ret;
@@ -246,6 +259,100 @@ int8_t Client::armStop(int8_t RL)
     return ret;
 }
 
+int8_t Client::armGetActiveAlarm(int8_t RL, u_int32_t num_request, double *return_code)
+{
+    int8_t ret;
+
+    if(!bInitialize) return CORBA_ERR;
+
+    CORBA::ULong  num_request_alarm  = (CORBA::ULong)num_request;
+    CORBA::ULong  num_response_alarm = 0;
+    AlarmSeq_var  alarms;
+
+    if(RL==ArmR)
+    {
+        ret = CommandObj_ArmR->getActiveAlarm(num_request_alarm, num_response_alarm, alarms);
+        printf("armGetActiveAlarm R: num_request_alarm = %d, num_response_alarm=%d\n",num_request_alarm,num_response_alarm);
+        printf("armGetActiveAlarm R result: ");
+        armReturnValue(ret);
+    }
+    else if(RL==ArmL)
+    {
+        ret = CommandObj_ArmL->getActiveAlarm(num_request_alarm, num_response_alarm, alarms);
+        printf("armGetActiveAlarm L: num_request_alarm = %d, num_response_alarm=%d\n",num_request_alarm,num_response_alarm);
+        printf("armGetActiveAlarm L result: ");
+        armReturnValue(ret);
+    }
+    else
+    {
+        printf("armGetActiveAlarm RL error\n");
+        return RL_ERR;
+    }
+
+    for (u_int32_t i=0; i<num_response_alarm; i++)
+    {
+      cout.setf(ios::hex, ios::basefield);
+      cout << "armGetActiveAlarm["<< i <<"] code(hex): "<< alarms[i].code << endl;
+      //return_code[i] = (double)alarms[i].code;
+      cout.unsetf(ios::hex);
+      armReturnAlarm(alarms[i].type);
+      cout << "armGetActiveAlarm["<< i <<"] description: "<< alarms[i].description << endl;
+    }
+
+    return ret;
+}
+
+//------------------------------------------------------------------------------
+bool Client::armIsPowerOn(int8_t RL)
+{
+    bool ret;
+
+    if(!bInitialize) return CORBA_ERR;
+
+    if(RL==ArmR)
+    {
+        ret = CommandObj_ArmR->isPowerOn();
+        printf("armIsPowerOn R result: %d", ret);
+    }
+    else if(RL==ArmL)
+    {
+        ret = CommandObj_ArmL->isPowerOn();
+        printf("armIsPowerOn L result: %d", ret);
+    }
+    else
+    {
+        printf("armIsPowerOn RL error\n");
+        return RL_ERR;
+    }
+
+    return ret;
+}
+
+//------------------------------------------------------------------------------
+bool Client::armIsServoOn(int8_t RL)
+{
+    bool ret;
+
+    if(!bInitialize) return CORBA_ERR;
+
+    if(RL==ArmR)
+    {
+        ret = CommandObj_ArmR->isServoOn();
+        printf("armIsServoOn R result: %d", ret);
+    }
+    else if(RL==ArmL)
+    {
+        ret = CommandObj_ArmL->isServoOn();
+        printf("armIsServoOn L result: %d", ret);
+    }
+    else
+    {
+        printf("armIsServoOn RL error\n");
+        return RL_ERR;
+    }
+
+    return ret;
+}
 //------------------------------------------------------------------------------
 int8_t Client::armGetState(int8_t RL)
 {

@@ -1,4 +1,5 @@
 #include <tms_rp_controller.h>
+#include <tms_rp_string_renderer.h>
 
 #include <Grasp/PlanBase.h>
 #include <Grasp/GraspController.h>
@@ -8,6 +9,9 @@
 #include <cnoid/ItemTreeView>
 #include <cnoid/RootItem>
 #include <cnoid/MessageView>
+
+#include <ros/ros.h>
+#include <tms_msg_db/TmsdbGetData.h>
 
 #include <fstream>
 
@@ -19,11 +23,6 @@ using namespace cnoid;
 #include <sys/resource.h>
 #include <stdlib.h>
 
-#ifdef WIN32
-double getrusage_sec() {
-	return clock();
-}
-#else
 double getrusage_sec() {
 	struct rusage t;
 	struct timeval tv;
@@ -31,15 +30,12 @@ double getrusage_sec() {
 	tv = t.ru_utime;
 	return tv.tv_sec + (double)tv.tv_usec*1e-6;
 }
-#endif
-
 
 TmsRpController* TmsRpController::instance()
 {
   static TmsRpController* instance = new TmsRpController();
 	return instance;
 }
-
 
 TmsRpController::TmsRpController() : os_ (MessageView::mainInstance()->cout() )
 {
@@ -83,263 +79,6 @@ TmsRpController::TmsRpController() : os_ (MessageView::mainInstance()->cout() )
 
 bool TmsRpController::setTolerance(double setTolerance){
 	PlanBase::instance()->tolerance = setTolerance;
-	return true;
-}
-
-bool TmsRpController::graspPathPlanStart_(
-			int mode, std::vector<double> begin, std::vector<double> end,
-			std::string robotId, std::string objectTagId, double resolution,
-			std::vector<pathInfo>* trajectory, int* state,
-			std::vector<double>* obj_pos, std::vector<double>* obj_rot)
-{
-	os_ << "in GraspPathController::graspPathPlanStart" << endl;
-	*state = 0;
-
-//	if(!checkPlanningMode()){
-//		*state = 6;
-//		return false;
-//	}
-
-	PlanBase* tc = PlanBase::instance();
-
-	if(robTag2Arm().find(robotId) == robTag2Arm().end()){
-		os_ << "Error no robotid " << robotId << endl;
-		*state = 1;
-		return false;
-	}
-	os_ << "set robot" << endl;
-	tc->targetArmFinger = robTag2Arm()[robotId];
-
-	tc->arm()->searchBasePositionMode = isPlanBaseMode;
-	if(isPlanBaseMode){
-        tc->arm()->base_p = tc->body()->link(0)->p();
-        tc->arm()->base_R = tc->body()->link(0)->R();
-	}
-	if(isSyncJointBaseMode) setTrajectoryPlanWholeDOF();
-	else tc->setTrajectoryPlanDOF();
-
-	if(objTag2Item().find(objectTagId) == objTag2Item().end()){
-		os_ << "Error no objectTagId " << objectTagId << endl;
-		*state = 2;
-		return false;
-	}
-	os_ << "set object id" << endl;
-	tc->SetGraspedObject(objTag2Item()[objectTagId]);
-	tc->targetObject->preplanningFileName = objTag2PrePlan[objectTagId];
-
-    Vector3 object_p = tc->object()->p();
-    Matrix3 object_R = tc->object()->R();
-
-	if(tc->bodyItemRobot()->body()->numJoints() != (int)begin.size() ||
-		tc->bodyItemRobot()->body()->numJoints() != (int)end.size() ){
-		os_ << "Error: the number of Joints of input shoud be "<< tc->bodyItemRobot()->body()->numJoints() << endl;
-		*state = 3;
-		return false;
-	}
-	os_ << "joint number OK" << endl;
-
-	for(int i=0;i<(int)begin.size();i++){
-        tc->bodyItemRobot()->body()->joint(i)->q() = begin[i];
-	}
-
-	tc->initial();
-	tc->initialCollisionWithMemory();
-	tc->graspMotionSeq.clear();
-
-	tc->setGraspingState(PlanBase::NOT_GRASPING);
-	tc->setObjectContactState(PlanBase::ON_ENVIRONMENT);
-	if(!isSyncJointBaseMode && isPlanBaseMode) tc->setTrajectoryPlanMapDOF();
-	MotionState beginMotionState =  tc->getMotionState();
-	beginMotionState.id = planGraspPath::APPROACH;
-	beginMotionState.tolerance = tc->tolerance;
-
-	GraspController::instance()->graspPranningReultList.clear();
-	bool success = GraspController::instance()->loadAndSelectGraspPattern();
-	if(!success){
-		os_ << "Error: Cannot find grasping_ posure" << endl;
-		*state = 4;
-		return false;
-	}
-	os_ << "get grasp position" << endl;
-	if(!isSyncJointBaseMode && isPlanBaseMode)  tc->setTrajectoryPlanDOF();
-	MotionState graspMotionState = tc->getMotionState();
-    Vector3 Pp_(tc->palm()->p());
-    Matrix3 Rp_(tc->palm()->R());
-
-	double quality = 1.0e10;
-
-	vector <MotionState> graspMotionSeq;
-	for(unsigned int k=0;k <GraspController::instance()->graspPranningReultList.size(); k++) {
-		bool ikConv;
-		graspMotionSeq.clear();
-        tc->object()->p() = object_p;
-        tc->object()->R() = object_R;
-
-		//==== Start Point
-		graspMotionSeq.push_back( beginMotionState );
-		tc->setMotionState( beginMotionState );
-
-		tc->setMotionState (GraspController::instance()->graspPranningReultList[k]);
-		if(!isSyncJointBaseMode && isPlanBaseMode)  tc->setTrajectoryPlanDOF();
-		graspMotionState = tc->getMotionState();
-        Vector3 Pp_(tc->palm()->p());
-        Matrix3 Rp_(tc->palm()->R());
-
-		double dist = 0.0;
-		for (int i = 0; i < tc->arm()->arm_path->numJoints(); i++){
-            double edist =  (tc->arm()->arm_path->joint(i)->q() - tc->arm()->armStandardPose[i]);
-			dist +=  edist*edist;
-		}
-		cout << k << " "<< dist << " " << quality << endl;
-		if(dist > quality) continue;
-
-		if(!isSyncJointBaseMode) {
-			for(int i=0;i<(int)begin.size();i++){
-                tc->bodyItemRobot()->body()->joint(i)->q() = begin[i];
-			}
-			tc->setGraspingState(PlanBase::NOT_GRASPING);
-			tc->setObjectContactState(PlanBase::ON_ENVIRONMENT);
-			tc->setTrajectoryPlanDOF();
-			tc->calcForwardKinematics();
-			graspMotionSeq.push_back( tc->getMotionState() );
-			graspMotionSeq.back().id = planGraspPath::APPROACH;
-			graspMotionSeq.back().tolerance = tc->tolerance;
-			if( !tc->arm()->checkArmLimit() || tc->isColliding()){
-				cout << "collision at base position at approach" << endl;
-				continue;
-			}
-		}
-
-		if(!isSyncJointBaseMode){
-			tc->arm()->searchBasePositionMode = false;
-			tc->setTrajectoryPlanDOF();
-		}
-		//==== Approach Point
-		tc->setMotionState( graspMotionState );
-		ikConv = tc->arm()->IK_arm(Rp_*tc->arm()->approachOffset+Pp_+Vector3(0,0,0.05), Rp_);
-		tc->setGraspingState(PlanBase::UNDER_GRASPING);
-		for(int i=0;i<tc->nFing();i++){
-			for(int j=0;j<tc->fingers(i)->fing_path->numJoints();j++){
-                tc->fingers(i)->fing_path->joint(j)->q() = tc->fingers(i)->fingerOpenPose[j];
-			}
-		}
-		graspMotionSeq.push_back( tc->getMotionState() );
-		graspMotionSeq.back().id = planGraspPath::APPROACH;
-		graspMotionSeq.back().tolerance = 0;
-		tc->calcForwardKinematics();
-		if( !ikConv  || !tc->arm()->checkArmLimit() || tc->isColliding()){
-			cout << "collision at approach point" << endl;
-			continue;
-		}
-
-		//==== Grasp Point and Hand open
-		tc->setMotionState( graspMotionState );
-		tc->setGraspingState(PlanBase::UNDER_GRASPING);
-		for(int i=0;i<tc->nFing();i++){
-			for(int j=0;j<tc->fingers(i)->fing_path->numJoints();j++){
-                tc->fingers(i)->fing_path->joint(j)->q() = tc->fingers(i)->fingerOpenPose[j];
-			}
-		}
-		graspMotionSeq.push_back( tc->getMotionState() );
-		graspMotionSeq.back().id = planGraspPath::CLOSING_GRIPPER;
-		graspMotionSeq.back().tolerance = 0;
-		tc->calcForwardKinematics();
-		if( !tc->arm()->checkArmLimit() || tc->isColliding()) continue;
-
-		//==== hand close
-		tc->setMotionState(graspMotionState) ;
-		tc->setGraspingState( PlanBase::GRASPING );
-		graspMotionSeq.push_back( tc->getMotionState() );
-		graspMotionSeq.back().id = planGraspPath::UP_HAND;
-		graspMotionSeq.back().tolerance = tc->tolerance;
-		tc->calcForwardKinematics();
-		if( !tc->arm()->checkArmLimit() || tc->isColliding()) continue;
-
-		//==== lift up
-		ikConv = tc->arm()->IK_arm(Vector3(Vector3(0,0,0.03)+Pp_), Rp_);
-		tc->setObjectContactState(PlanBase::OFF_ENVIRONMENT);
-		graspMotionSeq.push_back( tc->getMotionState() );
-		graspMotionSeq.back().id = planGraspPath::BACKAWAY;
-		graspMotionSeq.back().tolerance = tc->tolerance;
-		tc->calcForwardKinematics();
-		if(!ikConv  || !tc->arm()->checkArmLimit() || tc->isColliding()){
-			cout << "collision or ik error when lift up" << endl;
-			continue;
-		}
-
-		//==== end point
-		vector<double>closefinger;
-		for(int i=0;i<tc->nFing();i++){
-			for(int j=0;j<tc->fingers(i)->fing_path->numJoints();j++){
-                closefinger.push_back(tc->fingers(i)->fing_path->joint(j)->q());
-			}
-		}
-		for(int i=0;i<(int)begin.size();i++){
-            tc->bodyItemRobot()->body()->joint(i)->q() = end[i];
-		}
-		int cnt=0;
-		for(int i=0;i<tc->nFing();i++){
-			for(int j=0;j<tc->fingers(i)->fing_path->numJoints();j++){
-                tc->fingers(i)->fing_path->joint(j)->q() = closefinger[cnt++];
-			}
-		}
-		graspMotionSeq.push_back( tc->getMotionState() );
-		tc->calcForwardKinematics();
-		if( !tc->arm()->checkArmLimit() || tc->isColliding()){
-			cout << "collision at end pose" << endl;
-			continue;
-		}
-
-		tc->arm()->searchBasePositionMode = isPlanBaseMode;
-
-		tc->graspMotionSeq = graspMotionSeq;
-		quality = dist;
-	}
-    tc->object()->p() = object_p;
-    tc->object()->R() = object_R;
-
-	if(tc->graspMotionSeq.size() < 2){
-		os_ << "Error: Cannot find grasping_ posure" << endl;
-		*state = 4;
-		return false;
-	}
-
-
-	double start1 =  getrusage_sec();
-
-
-	for(unsigned int j=0; j < tc->graspMotionSeq.size();j++){
-		for(int i=0;i< tc->bodyItemRobot()->body()->numJoints() ; i++){
-            if(tc->body()->joint(i)->q_lower() > tc->graspMotionSeq[j].jointSeq[i]) cout << "joint " << i << " motion "<< j  << " under lmit" << endl;
-            if(tc->body()->joint(i)->q_upper() < tc->graspMotionSeq[j].jointSeq[i]) cout << "joint " << i << " motion "<< j  << " over limit" << endl;
-		}
-	}
-
-	success = setOutputData(trajectory,resolution);
-
-	double end1 =  getrusage_sec();
-	cout <<"pathplan " << end1-start1 << " sec "<<endl;
-
-	if(!success){
-		os_ << "Error: Cannot find motion path" << endl;
-		*state = 5;
-		return false;
-	}
-
-
-	objectPalmPos = tc->graspMotionSeq.back().objectPalmPos;
-	objectPalmRot = tc->graspMotionSeq.back().objectPalmRot;
-
-	os_ << objectPalmPos << endl;
-	os_ << objectPalmRot << endl;
-
-	os_ << "Planning Finished" << endl;
-
-	//==== Hand open
-	//tc->handJoint()->link(1)->q = 80.0*M_PI/180.0;
-	//tc->handJoint()->link(2)->q = -59.0*M_PI/180.0;
-	//tc->graspMotionSeq.push_back( tc->getMotionState() );
-
 	return true;
 }
 
@@ -554,12 +293,12 @@ bool TmsRpController::graspPathPlanStart(
 	double start1 =  getrusage_sec();
 
 
-	for(unsigned int j=0; j < tc->graspMotionSeq.size();j++){
-		for(int i=0;i< tc->bodyItemRobot()->body()->numJoints() ; i++){
-			if(tc->body()->joint(i)->llimit() > tc->graspMotionSeq[j].jointSeq[i]) cout << "joint " << i << " motion "<< j  << " under lmit" << endl;
-			if(tc->body()->joint(i)->ulimit() < tc->graspMotionSeq[j].jointSeq[i]) cout << "joint " << i << " motion "<< j  << " over limit" << endl;
-		}
-	}
+//	for(unsigned int j=0; j < tc->graspMotionSeq.size();j++){
+//		for(int i=0;i< tc->bodyItemRobot()->body()->numJoints() ; i++){
+//			if(tc->body()->joint(i)->llimit() > tc->graspMotionSeq[j].jointSeq[i]) cout << "joint " << i << " motion "<< j  << " under lmit" << endl;
+//			if(tc->body()->joint(i)->ulimit() < tc->graspMotionSeq[j].jointSeq[i]) cout << "joint " << i << " motion "<< j  << " over limit" << endl;
+//		}
+//	}
 
 	success = setOutputData(trajectory,resolution);
 
@@ -984,11 +723,15 @@ bool TmsRpController::createRobotRecord(int objId, std::string tagId){
   PlanBase::instance()->targetArmFinger = PlanBase::instance()->armsList[0];
   cout << PlanBase::instance()->targetArmFinger->name << " is target arm"<< endl;
 
-  if (robTag2Arm().find(string("SmartPalRight")) != robTag2Arm().end()) {
-    robTag2Arm()[string("SmartPalRight")]->dataFilePath = objectBasePath + "/robot/smartpal/data/";
-    cout << robTag2Arm()[string("SmartPalRight")]->dataFilePath << endl;
+  if (objId == 2002 == objId ==2003) {
+	  if (robTag2Arm().find(string("SmartPalRight")) != robTag2Arm().end()) {
+		  robTag2Arm()[string("SmartPalRight")]->dataFilePath = objectBasePath + "/robot/smartpal/data/";
+		  cout << robTag2Arm()[string("SmartPalRight")]->dataFilePath << endl;
+	  }
+  } else if (objId == 2006) {
+	  robTag2Arm()[string("KXPArm")]->dataFilePath = objectBasePath + "/robot/KXP/data/";
+	  cout << robTag2Arm()[string("KXPArm")]->dataFilePath << endl;
   }
-
   return true;
 }
 
@@ -1003,16 +746,65 @@ bool TmsRpController::deleteRecord(std::string tagId){
 	item->detachFromParentItem();
 
 	return true;
-}	
+}
+
+template <typename T> std::string tostr(const T& t)
+{
+    std::ostringstream os; os<<t; return os.str();
+}
 
 bool TmsRpController::appear(std::string tagId) {
   if (objTag2Item().find(tagId) == objTag2Item().end()) {
                 os_ << "Error: the tagId is not recorded " << tagId << endl;
 		return false;	
   }
-
 	BodyItemPtr item = objTag2Item()[tagId];
 	ItemTreeView::mainInstance()->checkItem(item,true);
+
+	if(tagId == "wheelchair"){
+        int heartrate = 0;
+        int mw_med = 0;
+        int mw_att = 0;
+        int mw_por = 0;
+        std::string heartrate_s;
+        std::string mw_med_s;
+        std::string mw_att_s;
+        std::string mw_por_s;
+        ros::NodeHandle n;
+        ros::ServiceClient db_client;
+        db_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
+        tms_msg_db::TmsdbGetData srv;
+        srv.request.tmsdb.id = 3018;	//heartrate sensor
+        srv.request.tmsdb.sensor = 3018;
+        if(! db_client.call(srv)){
+            os_ << "Failed to get heartrate data";
+        }else if(srv.response.tmsdb.empty()){
+            os_ << "DB response empty";
+        }else{
+        	sscanf(srv.response.tmsdb[0].note.c_str(),"{\"heartrate\": \"%d\"}",&heartrate);
+        	os_ << srv.response.tmsdb[0].note.c_str();
+        	os_ << heartrate;
+        }
+        srv.request.tmsdb.id = 3017;	//mindwave mobile
+        srv.request.tmsdb.sensor = 3017;
+        if(! db_client.call(srv)){
+            os_ << "Failed to get mindwave data";
+        }else if(srv.response.tmsdb.empty()){
+            os_ << "DB response empty";
+        }else{
+        	sscanf(srv.response.tmsdb[0].note.c_str(),"{\"meditation\": \"%d\", \"attention\": \"%d\", \"poor_signal\": \"%d\"}",&mw_med,&mw_att,&mw_por);
+        }
+        heartrate_s = tostr(heartrate);
+        mw_med_s = tostr(mw_med);
+        mw_att_s = tostr(mw_att);
+        mw_por_s = tostr(mw_por);
+        setString(tagId,Vector3(0,0,1),"hr:"+heartrate_s+"  med:"+mw_med_s+"  att:"+mw_att_s);
+        // mw_med_s = boost::lexical_cast<string>(mw_med);
+        // mw_att_s = boost::lexical_cast<string>(mw_att);
+        // mw_por_s = boost::lexical_cast<string>(mw_por);
+        // setString(tagId,Vector3(0,0,2),"heartrate: "+heartrate_s);
+        // setString(tagId,Vector3(0,0,1),"brainwave med: "+mw_med_s+"   att: "+mw_att_s);
+	}
 	return true;
 }
 
@@ -1024,6 +816,55 @@ bool TmsRpController::disappear(std::string tagId){
 	BodyItemPtr item = objTag2Item()[tagId];
 	PlanBase::instance()->RemoveEnvironment(item);
 	ItemTreeView::mainInstance()->checkItem(item,false);
+	return true;
+}
+
+// class stringViewer{
+// private:
+// 	SgStringRenderer *cr_;
+// 	sting st_;
+// 	BodyItemPtr item_;
+// public:
+// 	stringViewer(std::string tagId, Vector3 pos, string str){
+// 		item_ = objTag2Item()[tagId];
+// 		SgGroupPtr node  = (SgGroup*)item->body()->link(0)->shape();
+// 		cr_ = new SgStringRenderer (str, pos);
+// 		node->addChild(cr_);
+// 		st_ = str;
+// 	}
+// 	void setString(string arg){
+// 		st_ = arg;
+// 		cr_->setString(st_);
+// 	}
+// 	void update(){
+// 		ItemTreeView::mainInstance()->checkItem(item,false);
+// 		MessageView::mainInstance()->flush();
+// 		ItemTreeView::mainInstance()->checkItem(item,true);
+// 		MessageView::mainInstance()->flush();
+// 	}
+// }
+
+bool TmsRpController::setString(std::string tagId, Vector3 pos, string str) {
+    if (objTag2Item().find(tagId) == objTag2Item().end()) {
+        // os_ << "Error: the tagId is not recorded " << tagId << endl;
+		return false;	
+    }
+	BodyItemPtr item = objTag2Item()[tagId];
+
+	static SgStringRenderer * cr=NULL;
+	if(!cr){
+		SgGroupPtr node  = (SgGroup*)item->body()->link(0)->shape();
+		// cr = new SgStringRenderer ("test", Vector3(0,0,0.5));
+		cr = new SgStringRenderer ("", pos);
+		node->addChild(cr);
+	}else{
+		cr->setString(str);
+	}
+	// os_  << "set string" << endl;
+	ItemTreeView::mainInstance()->checkItem(item,false);
+	MessageView::mainInstance()->flush();
+	ItemTreeView::mainInstance()->checkItem(item,true);
+	MessageView::mainInstance()->flush();
 	return true;
 }
 

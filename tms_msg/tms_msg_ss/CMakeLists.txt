@@ -39,6 +39,15 @@ add_message_files(
   Furniture.msg
   tracking_points.msg
   tracking_grid.msg
+  pot_tracking_points.msg
+  pot_tracking_grid.msg
+  pot_tracking_psen.msg
+  pot_tracking_psens.msg
+  pot_manager.msg
+  pot_clustering.msg
+  tracking_cluster.msg
+  tracking_clusters_data.msg
+
   Sensor.msg
 )
 

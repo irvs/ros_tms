@@ -24,14 +24,12 @@
 
 ros::Publisher pose_publisher;
 // ロボット初期値----------------------------------------------------------------
-//double g_x = 7000.0;
-//double g_y = 1000.0;
 double g_x = 2000.0;
 double g_y = 500.0;
 double g_t = 0.0;
 double g_joint[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
-double g_hL = 10.0; // hand
-double g_hR = 10.0;
+double g_hL = 20.0; // hand
+double g_hR = 20.0;
 double g_r_state = 1;
 
 //robot model 2
@@ -39,8 +37,8 @@ double g_x2 = 2000.0;
 double g_y2 = 500.0;
 double g_t2 = 0.0;
 double g_joint2[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
-double g_hL2 = 10.0; // hand
-double g_hR2 = 10.0;
+double g_hL2 = 20.0; // hand
+double g_hR2 = 20.0;
 double g_r_state2 = 1;
 //------------------------------------------------------------------------------
 int g_oid;
@@ -371,20 +369,24 @@ int main(int argc, char **argv)
   //--------------------------------------------------------------------------
   ros::init(argc, argv, "kxp_virtual_control");
   ros::NodeHandle nh;
-  ros::ServiceServer service1 = nh.advertiseService("psetodom", pSetOdom);
-  ros::ServiceServer service2 = nh.advertiseService("pmove", pMove);
-  ros::ServiceServer service3 = nh.advertiseService("katana_move_angle_array", kMoveAngleArray);
-  ros::ServiceServer service4 = nh.advertiseService("kxp_virtual_control", robotControl);
 
-  pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
-  //--------------------------------------------------------------------------
   // kxp initialize
   printf("Virtual KXP initialization has been completed.\n\n");
+
+  ros::AsyncSpinner spinner(4);
+  pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
 
   // スレッド処理でロボット情報の更新と物体情報の更新を同時に行う
   boost::thread thr_rdu(&RobotDataUpdate);
   boost::thread thr_rdu2(&RobotDataUpdate2);
   boost::thread thr_odu(&ObjectDataUpdate);
+
+  ros::ServiceServer service1 = nh.advertiseService("virtual_psetodom", pSetOdom);
+  ros::ServiceServer service2 = nh.advertiseService("virtual_pmove", pMove);
+  ros::ServiceServer service3 = nh.advertiseService("virtual_katana_move_angle_array", kMoveAngleArray);
+  ros::ServiceServer service4 = nh.advertiseService("kxp_virtual_control", robotControl);
+  spinner.start();
+  ros::waitForShutdown();
 
   // スレッドの終了を待つ
   thr_rdu.join();
