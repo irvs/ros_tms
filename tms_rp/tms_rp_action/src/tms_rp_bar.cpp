@@ -25,9 +25,9 @@ std::string TmsRpBar::object_name_[25] = {"chipstar_red","chipstar_orange",
                                           "cup2","mugcup","remote","book_red","book_blue","dish"};
 
 std::string TmsRpBar::furniture_name_[21] = {"wardrobe","workdesk","drawer","chair","kitchen",
-                                             "meeting_table","partition2","partition3","bed","shelf",
-                                             "big_shelf","desk","chair_desk","table","chair_table1","chair_table2",
-                                             "shelfdoor","shelf2","wagon","sidetable","tree1"};
+                                             "meeting_table","meeting_chair1","meeting_chair2","meeting_chair3","meeting_chair4",
+                                             "meeting_chair5","desk","chair_desk","table","chair_table1","chair_table2",
+                                             "shelfdoor","shelf2","wagon","shelf","tree1"};
 
 // initialize static variables
 bool TmsRpBar::production_version_ = false;
@@ -248,11 +248,11 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   trc_.createRecord(6004,"chair");
   trc_.createRecord(6005,"kitchen");
   trc_.createRecord(6006,"meeting_table");
-  trc_.createRecord(6007,"partition2");
-  trc_.createRecord(6008,"partition3");
-  trc_.createRecord(6009,"bed");
-  trc_.createRecord(6010,"shelf");
-  trc_.createRecord(6011,"big_shelf");
+  trc_.createRecord(6007,"meeting_chair1");
+  trc_.createRecord(6008,"meeting_chair2");
+  trc_.createRecord(6009,"meeting_chair3");
+  trc_.createRecord(6010,"meeting_chair4");
+  trc_.createRecord(6011,"meeting_chair5");
   trc_.createRecord(6012,"desk");
   trc_.createRecord(6013,"chair_desk");
   trc_.createRecord(6014,"table");
@@ -261,7 +261,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   trc_.createRecord(6017,"shelfdoor");
   trc_.createRecord(6018,"shelf2");
   trc_.createRecord(6019,"wagon");
-  trc_.createRecord(6020,"sidetable");
+  trc_.createRecord(6020,"shelf");
   trc_.createRecord(6021,"tree1");
 
   // create etc model
