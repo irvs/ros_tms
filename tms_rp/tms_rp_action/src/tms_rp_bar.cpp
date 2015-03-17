@@ -24,11 +24,11 @@ std::string TmsRpBar::object_name_[25] = {"chipstar_red","chipstar_orange",
                                           "teapot","chawan","teacup1","teacup2","cup1",
                                           "cup2","mugcup","remote","book_red","book_blue","dish"};
 
-std::string TmsRpBar::furniture_name_[21] = {"wardrobe","workdesk","drawer","chair","kitchen",
+std::string TmsRpBar::furniture_name_[22] = {"wardrobe","workdesk","drawer","chair","kitchen",
                                              "meeting_table","meeting_chair1","meeting_chair2","meeting_chair3","meeting_chair4",
                                              "meeting_chair5","partition","tv_table","tv_52inch","playrecoder",
                                              "sofa","sofa_table","bed","wagon","shelf",
-                                             "tree"};
+                                             "tree","tv_multi"};
 
 // initialize static variables
 bool TmsRpBar::production_version_ = false;
@@ -264,6 +264,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   trc_.createRecord(6019,"wagon");
   trc_.createRecord(6020,"shelf");
   trc_.createRecord(6021,"tree");
+  trc_.createRecord(6022,"tv_multi");
 
   // create etc model
   trc_.createRecord(20001,"blink_arrow");
@@ -548,7 +549,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
 
   //----------------------------------------------------------------------------
   //  appear and setpos object_ model
-  for(int i=0; i<25; i++) {
+  for(int i=0; i<MAX_ICS_OBJECT_NUM; i++) {
     trc_.createRecord(7001+i, object_name_[i]);
   }
 

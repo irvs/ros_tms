@@ -73,7 +73,7 @@
 #include <pcl_conversions/pcl_conversions.h>
 
 #define MAX_ICS_OBJECT_NUM    25
-#define MAX_FURNITURE_NUM     21
+#define MAX_FURNITURE_NUM     22
 
 #define PERSON 1
 //#define PERSON 0
@@ -126,9 +126,9 @@ class TmsRpBar : public cnoid::ToolBar, public boost::signals::trackable {
 
   boost::signal<void(const cnoid::ItemList<cnoid::BodyItem>& selectedBodyItems)>& sigBodyItemSelectionChanged() {return sigBodyItemSelectionChanged_;}
 
-  bool object_state_[25];
-  static std::string object_name_[25];
-  static std::string furniture_name_[21];
+  bool object_state_[MAX_ICS_OBJECT_NUM];
+  static std::string object_name_[MAX_ICS_OBJECT_NUM];
+  static std::string furniture_name_[MAX_FURNITURE_NUM];
   static bool is_ros_Init_;
 
   double goal_position_x_;

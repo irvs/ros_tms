@@ -3,16 +3,16 @@
 
 # 'ShapeIndexedFaceSet'
 Shape {
-      appearance Appearance {
-        material DEF default Material {
-          diffuseColor 0.06 0.06 0.06
-          emissiveColor 0.0 0.0 0.0
-          specularColor 1.0 1.0 1.0
-          ambientIntensity 0.765743861823362
-          transparency 0.0
-          shininess 1.0
-        }
-      }
+  appearance Appearance {
+    material DEF default Material {
+      diffuseColor 0.06 0.06 0.06
+      emissiveColor 0.0 0.0 0.0
+      specularColor 1.0 1.0 1.0
+      ambientIntensity 0.765743861823362
+      transparency 0.0
+      shininess 1.0
+    }
+  }
 	geometry IndexedFaceSet {
 		coord Coordinate {
 			point [ 0.000000 0.000000 0.000000 -0.598000 -0.029999 -0.358500 -0.598000 -0.029999 0.358500 -0.598000 0.030001 -0.358500 -0.598000 0.030001 0.358500 0.598000 -0.030001 -0.358500 0.598000 0.029999 -0.358500 0.598000 -0.030001 0.358500 0.598000 0.029999 0.358500 ]
