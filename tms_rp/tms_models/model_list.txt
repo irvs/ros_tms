@@ -22,7 +22,8 @@
 5002 none /room/wall928_hrp.wrl
 5005 none /room/corridor928_hrp.wrl
 
-6001 none /furniture/big_sofa_hrp.wrl
+6001 none /furniture/wardrobe_hrp.wrl
+
 6002 none /furniture/mini_sofa_hrp.wrl
 6003 none /furniture/small_table_hrp.wrl
 6004 none /furniture/tv_table_hrp.wrl
