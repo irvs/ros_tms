@@ -24,8 +24,8 @@ std::string TmsRpBar::object_name_[25] = {"chipstar_red","chipstar_orange",
                                           "teapot","chawan","teacup1","teacup2","cup1",
                                           "cup2","mugcup","remote","book_red","book_blue","dish"};
 
-std::string TmsRpBar::furniture_name_[21] = {"wardrobe","mini_sofa","small_table","tv_table","tv",
-                                             "partition1","partition2","partition3","bed","shelf",
+std::string TmsRpBar::furniture_name_[21] = {"wardrobe","workdesk","drawer","chair","kitchen",
+                                             "meeting_table","partition2","partition3","bed","shelf",
                                              "big_shelf","desk","chair_desk","table","chair_table1","chair_table2",
                                              "shelfdoor","shelf2","wagon","sidetable","tree1"};
 
@@ -243,11 +243,11 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
 
   // create furniture model
   trc_.createRecord(6001,"wardrobe");
-  trc_.createRecord(6002,"mini_sofa");
-  trc_.createRecord(6003,"small_table");
-  trc_.createRecord(6004,"tv_table");
-  trc_.createRecord(6005,"tv");
-  trc_.createRecord(6006,"partition1");
+  trc_.createRecord(6002,"workdesk");
+  trc_.createRecord(6003,"drawer");
+  trc_.createRecord(6004,"chair");
+  trc_.createRecord(6005,"kitchen");
+  trc_.createRecord(6006,"meeting_table");
   trc_.createRecord(6007,"partition2");
   trc_.createRecord(6008,"partition3");
   trc_.createRecord(6009,"bed");

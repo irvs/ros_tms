@@ -23,13 +23,17 @@
 5005 none /room/corridor928_hrp.wrl
 
 6001 none /furniture/wardrobe_hrp.wrl
+6002 none /furniture/workdesk_hrp.wrl
+6003 none /furniture/drawer_hrp.wrl
+6004 none /furniture/chair_hrp.wrl
+6005 none /furniture/kitchen_hrp.wrl
+6006 none /furniture/meeting_table_hrp.wrl
+6007 none /furniture/meeting_chair.wrl
+6008 none /furniture/meeting_chair.wrl
+6009 none /furniture/meeting_chair.wrl
+6010 none /furniture/meeting_chair.wrl
+6011 none /furniture/meeting_chair.wrl
 
-6002 none /furniture/mini_sofa_hrp.wrl
-6003 none /furniture/small_table_hrp.wrl
-6004 none /furniture/tv_table_hrp.wrl
-6005 none /furniture/tv_hrp.wrl
-6006 none /furniture/partition1050x900_hrp.wrl
-6007 none /furniture/partition1050x700_hrp.wrl
 6008 none /furniture/partition1050x900_hrp.wrl
 6009 none /furniture/bed_hrp.wrl
 6010 none /furniture/shelf1_hrp.wrl
