@@ -257,7 +257,7 @@ class CTR3(object):
         self.__ClosePort()
         return int(buf[5])
 
-#アンテナの指定
+    #アンテナの指定
     def SetAntenna(self, char AN):    
         self.__mCommand[2] = 0x4E; #コマンド
         self.__mCommand[3] = 0x02; #データ長
@@ -278,74 +278,380 @@ class CTR3(object):
         self.__mActiveAntenna = int(buf[5])
         self.__ClosePort()
         return int(buf[5])
+
+    #アンテナの電源ON
+    def AntennaPowerON(self):
+        self.__mCommand[2] = 0x4E; #コマンド
+        self.__mCommand[3] = 0x02; #データ長
+        self.__mCommand[4] = 0x9E; #コマンド詳細
+        self.__mCommand[5] = 0x01; #パワーON
     
+        self.__OpenPort()
+        self.__AddChecksum()
+        self.__ser.write(self.__mCommand)
+        # write(fd, mCommand, sizeof(mCommand))
+        buf = [chr(0)] * 100
+        buf = self.__ser.read(size = 9)
+        # read(fd, buf, 9)    
+        if buf[2] != TR3_ACK:
+            buf = self.__ser.read(size = 100)
+            # read(fd, buf, 100)
+            print "TR3: SendCommandError . AntennaPowerON"
+            return False;
+        self.__ClosePort()
+        return True;
+
+    #アンテナの電源OFF
+    def AntennaPowerOFF(self):    # unsigned long num
+        mCommand[2] = 0x4E; #コマンド
+        mCommand[3] = 0x02; #データ長
+        mCommand[4] = 0x9E; #コマンド詳細
+        mCommand[5] = 0x00; #パワーOFF
+    
+        self.__OpenPort()
+        self.__AddChecksum()
+        self.__ser.write(self.__mCommand)
+        buf = [chr(0)] * 100
+        buf = self.__ser.read(size = 9)
+        if  buf[2] != TR3_ACK :
+            buf = self.__ser.read(size = 100)
+            print "TR3: SendCommandError . AntennaPowerOFF"
+            return False;
+        self.__ClosePort()
+        return True;
+
+    #各アンテナで計測されているタグIDを全て表示
+    def PrintTagUIDs(self):
+        for i in xrange(TR3_USED_ANT_NUM):
+            print "\n.. ANTENNA ", i + 1, " .."
+            for num,j in enumerate(mUIDs[i]):
+                print std.setw(3), num+1, ". ", j
+
+    #タグの読み取り
+    def Inventory2(self):
+        # アンテナを変更しないと既読込のUIDは返さず，新規UIDのみ返す
+        int i, j
+        self.__mCommand[2] = 0x78; #コマンド
+        self.__mCommand[3] = 0x03; #データ長
+        self.__mCommand[4] = 0xF0; #コマンド詳細
+        self.__mCommand[5] = 0x00; #アンチコリジョン有
+        self.__mCommand[6] = 0x01; #出力指定.取得データ数＋UIDデータ
+        
+        buf = [char(0)] * TR3_TAG_SIZE * TR3_TAG_MAX
+        self.__OpenPort()
+        self.AddChecksum()
+        self.__ser.write(self.__mCommand)
+        # write(fd, mCommand, sizeof(mCommand))
+        self.__ser.read(size = 9)
+        # read(fd, buf, 9)
+    
+        if buf[2] != TR3_ACK:        
+            print "TR3: SendCommandError . Inventory2"
+            usleep(100000)
+            self.__ser.read(size =  TR3_TAG_SIZE * TR3_TAG_MAX)
+            # read(fd, buf, * TR3_TAG_MAX)
+            return -1;
+    
+        tag_num = int(buf[5])  #読み込むタグの数
+        #-------------
+        #タグ情報の読込
+        for i in xrange(tag_num):
+            char hex[17]
+            self.__ser.read(size = TR3_TAG_SIZE)
+            # read(fd, buf, TR3_TAG_SIZE)
+            sprintf(hex, "%02X%02X%02X%02X%02X%02X%02X%02X",
+                    buf[12],    buf[11],    buf[10],    buf[9],
+                    buf[8],     buf[7],     buf[6],     buf[5])
+            # mUIDs[mActiveAntenna].push_back(std.string(hex));
+            mUIDs[self.__mActiveAntenna].append(hex)
+        self.__ClosePort()
+        return tag_num;
+
+    #通信用サブ関数
+    def AddChecksum(self):    
+        num = int(self.__mCommand[3]) + 5    
+        self.__mCommand[num - 1] = TR3_ETX
+        self.__mCommand[num + 1] = TR3_CR
+        self.__mCommand[num] = 0x00
+        for i in xrange(num):
+            self.__mCommand[num] += self.__mCommand[i]
+        return num + 2
+
+    #タグの入出のチェック
+    #このメソッドの書き換えメンドイ。
+    #修正は後回しで。
+    def GetTagDiff(self, &diffUID, char AN):
+        self.__SetAntenna(AN)
+        preUIDs = self.__mUIDs[self.__mActiveAntenna]
+        self.__mUIDs[mActiveAntenna].clear()
+        if self.Inventory2() == -1:
+            return 0;
+    
+        #タグの増減の確認
+        std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
+        # IDにあってpreIDにない => 追加された物品ID
+        vec_str increase
+        std.set_difference(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(), preUIDs.begin(), preUIDs.end(),
+                            std.inserter(increase, increase.begin()))
+    
+        # preIDにあってIDにない => 取り除かれた物品ID
+        vec_str decrease
+        std.set_difference(preUIDs.begin(), preUIDs.end(), mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(),
+                            std.inserter(decrease, decrease.begin()))
+    
+        # 増減なし
+        if  (increase.size() == 0) and (decrease.size() == 0) :
+            return 0
+        # 物品追加
+        if  (increase.size() == 1) and (decrease.size() == 0) :
+            diffUID = increase[0]
+            return 1;
+        # 物品除去
+        if  (increase.size() == 0) and (decrease.size() == 1) :
+            diffUID = decrease[0]
+            return -1;
+        # 複数物品の同時入出時（１個ずつ検出するようにする）
+        if increase.size() >= 1:
+            preUIDs.push_back(increase[0])
+            mUIDs[mActiveAntenna] = preUIDs
+            std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
+            diffUID = increase[0]
+            return 1;
+        if decrease.size() >= 1:
+            preUIDs.erase(remove(preUIDs.begin(), preUIDs.end(), decrease[0]),  preUIDs.end())
+            mUIDs[mActiveAntenna] = preUIDs
+            std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
+            diffUID = decrease[0]
+            return -1;
+        return 0;
+
     # bool Close()
     # void OpenPort()
     # void ClosePort()
     # unsigned char mCommand[TR3_MAX_COMMAND_SIZE]
-    int  AddChecksum()
+    # int  AddChecksum()
     # int  mActiveAntenna;  #not < 真にアクティブなアンテナ．シリアル通信での返り値が代入される．
-    int  Inventory2()
+    # int  Inventory2()
 # public:
     # CTR3() {
     # ~CTR3()        Close();
     # vec_str mUIDs[TR3_USED_ANT_NUM];    #not < 見えているタグのUIDのリスト
 
     # bool Setup()
-    int  SetAntenna(unsigned AN = TR3_ANT1)
-    bool AntennaPowerON()
-    bool AntennaPowerOFF()
-    void PrintTagUIDs()
+    # int  SetAntenna(unsigned AN = TR3_ANT1)
+    # bool AntennaPowerON()
+    # bool AntennaPowerOFF()
+    # void PrintTagUIDs()
 
-    int  GetTagDiff(std.string &diffUID, char AN)
+    # int  GetTagDiff(std.string &diffUID, char AN)
     # int fd;
 
 #------------------------------------------------------------------------------
-class CTagOBJprivate:
-    bool Setup()
-    bool Close()
+class CTagOBJ(object):
 
-public:
-    CTagOBJ()        Setup();
-    ~CTagOBJ()        Close();
+    def __init__(self):
+        self.__mUID = ""
+        self.__mWeight = 0
+        self.__mDiffs = [0] * LC_MAX_SENSOR_NUM
+        self.__mX = 0.0
+        self.__mY = 0.0
+        self.__mName = "\0"
+        self.__mComment "\0"
+        self.Setup()
+        pass
 
-    std.string mUID
-    int mWeight
-    int mDiffs[LC_MAX_SENSOR_NUM]
-    float mX
-    float mY
-    std.string  mName
-    std.string  mComment;
+    def  Setup(self):
+        char id[TR3_UID_SIZE * 2 + 1] = {'\0'}
+        for i in xrange(TR3_UID_SIZE * 2):
+            id[i] = 0x00
+        self.__mUID.assign(id)
+        # for i in xrange(LC_MAX_SENSOR_NUM):
+        #     self.__mDiffs[i] = 0
+        # self.__mX = self.__mY = 0.0
+        # self.__mWeight = 0
+        # self.__mName = '\0'
+        # self.__mComment = '\0'
+        return True;
+
+    def __del__(self):
+        self.Close()
+
+    def Close(self):
+        pass
+
+# public:
+#     CTagOBJ()        Setup();
+#     ~CTagOBJ()        Close();
+
+    # std.string mUID
+    # int mWeight
+    # int mDiffs[LC_MAX_SENSOR_NUM]
+    # float mX
+    # float mY
+    # std.string  mName
+    # std.string  mComment;
 
 #------------------------------------------------------------------------------
-class CStageprivate:
-    bool Close()
+class CStage(object):
 
-public:
-    CStage() {
-    CLoadCell cLoadCell
-    unsigned char mAntenna
-    int mStagePos[3]
-    std.string mName
-    std.vector<CTagOBJ> cTagObj
+    def __init__(self):
+        self.cLoadCell = CloadCell()
+        self.mAntenna = chr(0)
+        self.mStagePos = [0] * 3
+        self.mName = "\0"
+        std.vector<CTagOBJ> cTagObj
+        pass
 
-    bool Setup()
-    void SetSensorPos(int sensor_num, x[], y[])
-    void SetAntenna(unsigned char AN);
+    def Close(self):
+        pass
+
+    def Setup(self):    
+        self.cLoadCell.Setup()
+        # for i in xrange(3):
+        #     mStagePos[i] = 0
+        # mName = '\0'
+        return True
+
+    def SetSensorPos(self, sensor_num, x[], y[]):
+        self.cLoadCell.SetSensorPos(sensor_num, x, y)
+
+    def SetAntenna(self, char AN):
+        self.mAntenna =  AN
+
+# public:
+    # CStage() {
+    # CLoadCell cLoadCell
+    # unsigned char mAntenna
+    # int mStagePos[3]
+    # std.string mName
+    # std.vector<CTagOBJ> cTagObj
+
+    # bool Setup()
+    # void SetSensorPos(int sensor_num, x[], y[])
+    # void SetAntenna(unsigned char AN);
 
 #------------------------------------------------------------------------------
-class CIntelCabprivate:
-    bool Setup(int stage_num)
-    bool Close()
+class CIntelCab(object):
 
-public:
-    CIntelCab(stage_num = IC_STAGES_MAX)        Setup(stage_num);
-    ~CIntelCab()        Close();
-    CTR3 cTR3
-    CStage cStage[IC_STAGES_MAX]
-    int mStageNum
+    def __init__(self,stage_num = IC_STAGES_MAX):
+        self.cTR3 = CTR3()
+        self.cStage = [CStage] * IC_STAGES_MAX
+        self.mStageNum = 0
+        self.Setup(stage_num)
 
-    void PrintObjInfo()
+    def __del__(self):
+        self.Close()
+
+    def Setup(self, stage_num):
+        self.__mStageNum = stage_num
+        return True
+
+    def PrintObjInfo(self):
+        CTagOBJ  *cObj
+        for i in xrange(mStageNum):
+            print "\n", cStage[i].mName
+            # std.cout << "\n" << std.setw(20) << std.setfill(':') << cStage[i].mName << "....." << std.endl
+            for j, cOBj in enumerate(cStage[i].cTagObj):
+                # cObj = &(cStage[i].cTagObj[j])
+                print j+1, ":  UID."
+                print cObj.mUID,
+                # std.cout << cObj.mUID
+                print  "Weight=", cObj.mWeight, " X=", cObj.mX " Y=", cObj.mY
+                # printf("  Weight=%4d  X=%4.0f Y=%4.0f", cObj.mWeight, cObj.mX, cObj.mY)
+                print " <", cObj.mName, ":", cObj.mComment, ">"
+                # std.cout << " <" << cObj.mName << ":" << cObj.mComment << ">" << std.endl; } }
+    
+    def UpdateObj(self, No, *cInOut):    
+        cObj = cTagOBJ()
+        self.__cObjIn = [cTagOBJ()] * IC_STAGES_MAX
+        self.__cObjOut = [cTagOBJ()] * IC_STAGES_MAX
+        # static CTagOBJ  cObj, cObjIn[IC_STAGES_MAX], cObjOut[IC_STAGES_MAX]
+        self.__InOutTag = [0] * IC_STAGES_MAX
+        self.__InOutLC = [0] * IC_STAGES_MAX
+        # static int InOutTag[IC_STAGES_MAX], InOutLC[IC_STAGES_MAX]
+        value = IC_OBJECT_STAY
+    
+        if No >= mStageNum:
+            return IC_OBJECT_STAY
+    
+        #タグの増減チェック
+        self.cTR3.AntennaPowerON()
+        #not  @todo 理解不能なif分岐．実際はアンテナ0しか使ってない（通信の返り値て強制的に0になってる）のにこれのせいでアンテナ1を使用しようとしてる．
+        if self.mStageNum == 1:
+            self.cTR3.SetAntenna(self.cStage[No].mAntenna + 1);
+        inout = self.cTR3.GetTagDiff(cObj.mUID, self.cStage[No].mAntenna)
+        self.cTR3.AntennaPowerOFF()
+    
+        #タグ数増加
+        if inout > 0:
+            self.__InOutTag[No] = 1
+            self.__cObjIn[No] = cObj;
+        #タグ数減少，出庫
+        elif  inout < 0 :
+            for i in xrange(len(self.cStage[No].cTagObj)):
+                #self.cStage[No].cTagObjを更新
+                if self.cStage[No].cTagObj.at(i).mUID.compare(cObj.mUID) == 0:
+                    self.cStage[No].cTagObj.erase(self.cStage[No].cTagObj.begin() + i)
+                    self.__InOutLC[No] = 0
+                    break
+            self.__InOutTag[No] = 0
+            *cInOut = cObj
+            value = IC_OBJECT_OUT
+    
+        #ロードセルの増減チェック
+        cObj.mWeight = self.cStage[No].cLoadCell.GetWeightDiff(&cObj.mX, &cObj.mY, cObj.mDiffs)
+    
+        if  (cObj.mWeight > 0) and (self.__InOutTag[No] > 0) :        
+            #入庫
+            cObj.mUID = cObjIn[No].mUID
+            self.cStage[No].cTagObj.push_back(cObj)
+            self.__InOutTag[No] = 0
+            self.__InOutLC[No]  = 0
+            *cInOut = cObj
+            value = IC_OBJECT_IN;
+        elif  (cObj.mWeight > 0) and (self.__InOutLC[No] < 0) :
+            #庫内移動
+            cnt = TR3_TAG_MAX
+            for i in xrange(len(self.cStage[No].cTagObj)):
+                if self.cStage[No].cTagObj.at(i).mUID.compare(self.__cObjOut[No].mUID) == 0:
+                    cnt = i
+                    break
+            if cnt != TR3_TAG_MAX:
+                self.cStage[No].cTagObj.at(cnt) = cObj
+                self.cStage[No].cTagObj.at(cnt).mUID     = self.__cObjOut[No].mUID
+                self.cStage[No].cTagObj.at(cnt).mName    = self.__cObjOut[No].mName
+                self.cStage[No].cTagObj.at(cnt).mComment = self.__cObjOut[No].mComment
+                self.__InOutLC[No] = 0
+                *cInOut = self.cStage[No].cTagObj.at(cnt)
+                value = IC_OBJECT_MOVE
+        #タグ無し物品の入庫
+    
+        #持ち上げ
+        if cObj.mWeight < 0:
+            comp = 5000
+            cnt = TR3_TAG_MAX
+            for i in xrange(len(self.cStage[No].cTagObj)):
+                sum = 0
+                for j in xrange(LC_MAX_SENSOR_NUM):
+                    sum += abs(abs(self.cStage[No].cTagObj.at(i).mDiffs[j]) - abs(cObj.mDiffs[j]))
+                if sum < comp:
+                    comp = sum
+                    cnt = i
+            if cnt != TR3_TAG_MAX:
+                self.__cObjOut[No] = self.cStage[No].cTagObj.at(cnt)
+                self.__InOutLC[No] = -1
+        return value
+    # bool Setup(int stage_num)
+    # bool Close()
+
+# public:
+#     CIntelCab(stage_num = IC_STAGES_MAX)        Setup(stage_num);
+#     ~CIntelCab()        Close();
+    # CTR3 cTR3
+    # CStage cStage[IC_STAGES_MAX]
+    # int mStageNum
+
+    # void PrintObjInfo()
     int UpdateObj(int stageNo, *cInOut);
 
 #------------------------------------------------------------------------------
@@ -531,193 +837,194 @@ public:
 #     return (int)buf[5];
 
 #------------------------------------------------------------------------------
-#アンテナの電源ON
-def AntennaPowerON(self):    unsigned char buf[100]
+# #アンテナの電源ON
+# def AntennaPowerON(self):    unsigned char buf[100]
 
-    mCommand[2] = 0x4E; #コマンド
-    mCommand[3] = 0x02; #データ長
-    mCommand[4] = 0x9E; #コマンド詳細
-    mCommand[5] = 0x01; #パワーON
+#     mCommand[2] = 0x4E; #コマンド
+#     mCommand[3] = 0x02; #データ長
+#     mCommand[4] = 0x9E; #コマンド詳細
+#     mCommand[5] = 0x01; #パワーON
 
-    memset(&buf, 0, sizeof(buf))
-    OpenPort()
-    AddChecksum()
-    write(fd, mCommand, sizeof(mCommand))
-    read(fd, buf, 9)
+#     memset(&buf, 0, sizeof(buf))
+#     OpenPort()
+#     AddChecksum()
+#     write(fd, mCommand, sizeof(mCommand))
+#     read(fd, buf, 9)
 
-    if buf[2] != TR3_ACK:        read(fd, buf, 100)
-        std.cerr << "TR3: SendCommandError . AntennaPowerON" << std.endl
-        return False;
-    ClosePort()
-    return True;
-
-#------------------------------------------------------------------------------
-#アンテナの電源OFF
-def AntennaPowerOFF(self):    # unsigned long num
-    unsigned char buf[100]
-
-    mCommand[2] = 0x4E; #コマンド
-    mCommand[3] = 0x02; #データ長
-    mCommand[4] = 0x9E; #コマンド詳細
-    mCommand[5] = 0x00; #パワーOFF
-
-    memset(&buf, 0, sizeof(buf))
-    OpenPort()
-    AddChecksum()
-    write(fd, mCommand, sizeof(mCommand))
-    read(fd, buf, 9)
-
-    if  buf[2] != TR3_ACK :        read(fd, buf, 100)
-        std.cerr << "TR3: SendCommandError . AntennaPowerOFF" << std.endl
-        return False;
-    ClosePort()
-    return True;
+#     if buf[2] != TR3_ACK:        read(fd, buf, 100)
+#         std.cerr << "TR3: SendCommandError . AntennaPowerON" << std.endl
+#         return False;
+#     ClosePort()
+#     return True;
 
 #------------------------------------------------------------------------------
-#各アンテナで計測されているタグIDを全て表示
-def PrintTagUIDs(self):    int i, j
+# #アンテナの電源OFF
+# def AntennaPowerOFF(self):    # unsigned long num
+#     unsigned char buf[100]
 
-    for (i = 0; i < TR3_USED_ANT_NUM; i++)        std.cout << "\n.. ANTENNA " << i + 1 << " .." << std.endl
-        for (j = 0; j < (int)mUIDs[i].size(); j++)            std.cout << std.setw(3) << j + 1 << ". " << mUIDs[i][j] << std.endl; } }
+#     mCommand[2] = 0x4E; #コマンド
+#     mCommand[3] = 0x02; #データ長
+#     mCommand[4] = 0x9E; #コマンド詳細
+#     mCommand[5] = 0x00; #パワーOFF
 
-#------------------------------------------------------------------------------
-#タグの読み取り
-def Inventory2(self):    #アンテナを変更しないと既読込のUIDは返さず，新規UIDのみ返す
-    int i, j
-    static unsigned char buf[TR3_TAG_SIZE * TR3_TAG_MAX]
+#     memset(&buf, 0, sizeof(buf))
+#     OpenPort()
+#     AddChecksum()
+#     write(fd, mCommand, sizeof(mCommand))
+#     read(fd, buf, 9)
 
-    mCommand[2] = 0x78; #コマンド
-    mCommand[3] = 0x03; #データ長
-    mCommand[4] = 0xF0; #コマンド詳細
-    mCommand[5] = 0x00; #アンチコリジョン有
-    mCommand[6] = 0x01; #出力指定.取得データ数＋UIDデータ
-
-    OpenPort()
-    AddChecksum()
-    write(fd, mCommand, sizeof(mCommand))
-    read(fd, buf, 9)
-
-    if buf[2] != TR3_ACK:        std.cerr << "TR3: SendCommandError . Inventory2" << std.endl
-        usleep(100000)
-        read(fd, buf, * TR3_TAG_MAX)
-        return -1;
-
-    tag_num = (int)buf[5];  #読み込むタグの数
-    #-------------
-    #タグ情報の読込
-    for (i = 0; i < tag_num; i++)        char hex[17]
-        read(fd, buf, TR3_TAG_SIZE)
-        sprintf(hex, "%02X%02X%02X%02X%02X%02X%02X%02X",
-                buf[12],    buf[11],    buf[10],    buf[9],
-                buf[8],     buf[7],     buf[6],     buf[5])
-        mUIDs[mActiveAntenna].push_back(std.string(hex));
-    ClosePort()
-    return tag_num;
+#     if  buf[2] != TR3_ACK :        read(fd, buf, 100)
+#         std.cerr << "TR3: SendCommandError . AntennaPowerOFF" << std.endl
+#         return False;
+#     ClosePort()
+#     return True;
 
 #------------------------------------------------------------------------------
-#タグの入出のチェック
-def GetTagDiff(self, &diffUID, char AN):    SetAntenna(AN)
-    preUIDs = mUIDs[mActiveAntenna]
-    mUIDs[mActiveAntenna].clear()
-    if Inventory2() == -1:        return 0;
+# #各アンテナで計測されているタグIDを全て表示
+# def PrintTagUIDs(self):    int i, j
 
-    #タグの増減の確認
-    std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
-    # IDにあってpreIDにない => 追加された物品ID
-    vec_str increase
-    std.set_difference(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(), preUIDs.begin(), preUIDs.end(),
-                        std.inserter(increase, increase.begin()))
+#     for (i = 0; i < TR3_USED_ANT_NUM; i++)        std.cout << "\n.. ANTENNA " << i + 1 << " .." << std.endl
+#         for (j = 0; j < (int)mUIDs[i].size(); j++)            std.cout << std.setw(3) << j + 1 << ". " << mUIDs[i][j] << std.endl; } }
 
-    # preIDにあってIDにない => 取り除かれた物品ID
-    vec_str decrease
-    std.set_difference(preUIDs.begin(), preUIDs.end(), mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(),
-                        std.inserter(decrease, decrease.begin()))
+#------------------------------------------------------------------------------
+# #タグの読み取り
+# def Inventory2(self):    #アンテナを変更しないと既読込のUIDは返さず，新規UIDのみ返す
+#     int i, j
+#     static unsigned char buf[TR3_TAG_SIZE * TR3_TAG_MAX]
 
-    # 増減なし
-    if  (increase.size() == 0) and (decrease.size() == 0) :        return 0;
-    # 物品追加
-    if  (increase.size() == 1) and (decrease.size() == 0) :        diffUID = increase[0]
-        return 1;
-    # 物品除去
-    if  (increase.size() == 0) and (decrease.size() == 1) :        diffUID = decrease[0]
-        return -1;
-    # 複数物品の同時入出時（１個ずつ検出するようにする）
-    if increase.size() >= 1:        preUIDs.push_back(increase[0])
-        mUIDs[mActiveAntenna] = preUIDs
-        std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
-        diffUID = increase[0]
-        return 1;
-    if decrease.size() >= 1:        preUIDs.erase(remove(preUIDs.begin(), preUIDs.end(), decrease[0]),  preUIDs.end())
-        mUIDs[mActiveAntenna] = preUIDs
-        std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
-        diffUID = decrease[0]
-        return -1;
-    return 0;
+#     mCommand[2] = 0x78; #コマンド
+#     mCommand[3] = 0x03; #データ長
+#     mCommand[4] = 0xF0; #コマンド詳細
+#     mCommand[5] = 0x00; #アンチコリジョン有
+#     mCommand[6] = 0x01; #出力指定.取得データ数＋UIDデータ
+
+#     OpenPort()
+#     AddChecksum()
+#     write(fd, mCommand, sizeof(mCommand))
+#     read(fd, buf, 9)
+
+#     if buf[2] != TR3_ACK:        std.cerr << "TR3: SendCommandError . Inventory2" << std.endl
+#         usleep(100000)
+#         read(fd, buf, * TR3_TAG_MAX)
+#         return -1;
+
+#     tag_num = (int)buf[5];  #読み込むタグの数
+#     #-------------
+#     #タグ情報の読込
+#     for (i = 0; i < tag_num; i++)        char hex[17]
+#         read(fd, buf, TR3_TAG_SIZE)
+#         sprintf(hex, "%02X%02X%02X%02X%02X%02X%02X%02X",
+#                 buf[12],    buf[11],    buf[10],    buf[9],
+#                 buf[8],     buf[7],     buf[6],     buf[5])
+#         mUIDs[mActiveAntenna].push_back(std.string(hex));
+#     ClosePort()
+#     return tag_num;
+
+#------------------------------------------------------------------------------
+# #タグの入出のチェック
+# def GetTagDiff(self, &diffUID, char AN):    SetAntenna(AN)
+#     preUIDs = mUIDs[mActiveAntenna]
+#     mUIDs[mActiveAntenna].clear()
+#     if Inventory2() == -1:        return 0;
+
+#     #タグの増減の確認
+#     std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
+#     # IDにあってpreIDにない => 追加された物品ID
+#     vec_str increase
+#     std.set_difference(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(), preUIDs.begin(), preUIDs.end(),
+#                         std.inserter(increase, increase.begin()))
+
+#     # preIDにあってIDにない => 取り除かれた物品ID
+#     vec_str decrease
+#     std.set_difference(preUIDs.begin(), preUIDs.end(), mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(),
+#                         std.inserter(decrease, decrease.begin()))
+
+#     # 増減なし
+#     if  (increase.size() == 0) and (decrease.size() == 0) :        return 0;
+#     # 物品追加
+#     if  (increase.size() == 1) and (decrease.size() == 0) :        diffUID = increase[0]
+#         return 1;
+#     # 物品除去
+#     if  (increase.size() == 0) and (decrease.size() == 1) :        diffUID = decrease[0]
+#         return -1;
+#     # 複数物品の同時入出時（１個ずつ検出するようにする）
+#     if increase.size() >= 1:        preUIDs.push_back(increase[0])
+#         mUIDs[mActiveAntenna] = preUIDs
+#         std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
+#         diffUID = increase[0]
+#         return 1;
+#     if decrease.size() >= 1:        preUIDs.erase(remove(preUIDs.begin(), preUIDs.end(), decrease[0]),  preUIDs.end())
+#         mUIDs[mActiveAntenna] = preUIDs
+#         std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
+#         diffUID = decrease[0]
+#         return -1;
+#     return 0;
 
 
 #------------------------------------------------------------------------------
-#通信用サブ関数
-def AddChecksum(self):    num = (int)mCommand[3] + 5
+# #通信用サブ関数
+# def AddChecksum(self):    num = (int)mCommand[3] + 5
 
-    mCommand[num - 1] = TR3_ETX
-    mCommand[num + 1] = TR3_CR
+#     mCommand[num - 1] = TR3_ETX
+#     mCommand[num + 1] = TR3_CR
 
-    mCommand[num] = 0x00
-    for (i = 0; i < num; i++)        mCommand[num] += mCommand[i];
+#     mCommand[num] = 0x00
+#     for (i = 0; i < num; i++)        mCommand[num] += mCommand[i];
 
-    return num + 2;
-
-#------------------------------------------------------------------------------
-def Setup(self):    char id[TR3_UID_SIZE * 2 + 1] = {'\0'
-    for (i = 0; i < TR3_UID_SIZE * 2; i++)
-        id[i] = 0x00
-    mUID.assign(id)
-    for (i = 0; i < LC_MAX_SENSOR_NUM; i++)
-        mDiffs[i] = 0
-    mX = mY = 0
-    mWeight = 0
-    mName = '\0'
-    mComment = '\0'
-    return True;
+#     return num + 2;
 
 #------------------------------------------------------------------------------
-def Close(self):    return True;
+# def Setup(self):    char id[TR3_UID_SIZE * 2 + 1] = {'\0'
+#     for (i = 0; i < TR3_UID_SIZE * 2; i++)
+#         id[i] = 0x00
+#     mUID.assign(id)
+#     for (i = 0; i < LC_MAX_SENSOR_NUM; i++)
+#         mDiffs[i] = 0
+#     mX = mY = 0
+#     mWeight = 0
+#     mName = '\0'
+#     mComment = '\0'
+#     return True;
 
 #------------------------------------------------------------------------------
-def Setup(self):    cLoadCell.Setup()
-
-    for (i = 0; i < 3; i++)        mStagePos[i] = 0;
-    mName = '\0'
-    return True;
+# def Close(self):    return True;
 
 #------------------------------------------------------------------------------
-def Close(self):    return True;
+# def Setup(self):    cLoadCell.Setup()
+
+#     for (i = 0; i < 3; i++)        mStagePos[i] = 0;
+#     mName = '\0'
+#     return True;
 
 #------------------------------------------------------------------------------
-def SetSensorPos(self, sensor_num, x[], y[]):    cLoadCell.SetSensorPos(sensor_num, x, y);
+# def Close(self):    return True;
 
 #------------------------------------------------------------------------------
-def SetAntenna(self, char AN):    mAntenna =  AN;
+# def SetSensorPos(self, sensor_num, x[], y[]):    cLoadCell.SetSensorPos(sensor_num, x, y);
+
+# #------------------------------------------------------------------------------
+# def SetAntenna(self, char AN):    mAntenna =  AN;
 
 #------------------------------------------------------------------------------
-def Setup(self, stage_num):    mStageNum = stage_num
-    return True;
+# def Setup(self, stage_num):    mStageNum = stage_num
+#     return True;
 
 #------------------------------------------------------------------------------
-def Close(self):    return True;
+# def Close(self):    return True;
 
 #------------------------------------------------------------------------------
-def PrintObjInfo(self):    CTagOBJ  *cObj
+# def PrintObjInfo(self):    CTagOBJ  *cObj
 
-    for (i = 0; i < mStageNum; i++)        std.cout << "\n" << std.setw(20) << std.setfill(':') << cStage[i].mName << "....." << std.endl
-        for (j = 0; j < cStage[i].cTagObj.size(); j++)            cObj = &(cStage[i].cTagObj[j])
-            printf("%3d:  UID.", j + 1)
-            std.cout << cObj.mUID
-            printf("  Weight=%4d  X=%4.0f Y=%4.0f", cObj.mWeight, cObj.mX, cObj.mY)
-            std.cout << " <" << cObj.mName << ":" << cObj.mComment << ">" << std.endl; } }
+#     for (i = 0; i < mStageNum; i++)        std.cout << "\n" << std.setw(20) << std.setfill(':') << cStage[i].mName << "....." << std.endl
+#         for (j = 0; j < cStage[i].cTagObj.size(); j++)            cObj = &(cStage[i].cTagObj[j])
+#             printf("%3d:  UID.", j + 1)
+#             std.cout << cObj.mUID
+#             printf("  Weight=%4d  X=%4.0f Y=%4.0f", cObj.mWeight, cObj.mX, cObj.mY)
+#             std.cout << " <" << cObj.mName << ":" << cObj.mComment << ">" << std.endl; } }
 
 #------------------------------------------------------------------------------
-def UpdateObj(self, No, *cInOut):    static CTagOBJ  cObj, cObjIn[IC_STAGES_MAX], cObjOut[IC_STAGES_MAX]
+def UpdateObj(self, No, *cInOut):    
+    static CTagOBJ  cObj, cObjIn[IC_STAGES_MAX], cObjOut[IC_STAGES_MAX]
     static int InOutTag[IC_STAGES_MAX], InOutLC[IC_STAGES_MAX]
     value = IC_OBJECT_STAY
 
@@ -727,16 +1034,20 @@ def UpdateObj(self, No, *cInOut):    static CTagOBJ  cObj, cObjIn[IC_STAGES_MAX]
     #タグの増減チェック
     cTR3.AntennaPowerON()
     #not  @todo 理解不能なif分岐．実際はアンテナ0しか使ってない（通信の返り値て強制的に0になってる）のにこれのせいでアンテナ1を使用しようとしてる．
-    if mStageNum == 1:        cTR3.SetAntenna(cStage[No].mAntenna + 1);
+    if mStageNum == 1:
+        cTR3.SetAntenna(cStage[No].mAntenna + 1);
     inout = cTR3.GetTagDiff(cObj.mUID, cStage[No].mAntenna)
     cTR3.AntennaPowerOFF()
 
     #タグ数増加
-    if inout > 0:        InOutTag[No] = 1
+    if inout > 0:
+        InOutTag[No] = 1
         cObjIn[No] = cObj;
     #タグ数減少，出庫
-    elif  inout < 0 :        for (i = 0; i < cStage[No].cTagObj.size(); i++) {       #cStage[No].cTagObjを更新
-            if cStage[No].cTagObj.at(i).mUID.compare(cObj.mUID) == 0:                cStage[No].cTagObj.erase(cStage[No].cTagObj.begin() + i)
+    elif  inout < 0 :
+        for (i = 0; i < cStage[No].cTagObj.size(); i++) {       #cStage[No].cTagObjを更新
+            if cStage[No].cTagObj.at(i).mUID.compare(cObj.mUID) == 0:
+                cStage[No].cTagObj.erase(cStage[No].cTagObj.begin() + i)
                 InOutLC[No] = 0
                 break; }
         InOutTag[No] = 0
@@ -746,18 +1057,23 @@ def UpdateObj(self, No, *cInOut):    static CTagOBJ  cObj, cObjIn[IC_STAGES_MAX]
     #ロードセルの増減チェック
     cObj.mWeight = cStage[No].cLoadCell.GetWeightDiff(&cObj.mX, &cObj.mY, cObj.mDiffs)
 
-    if  (cObj.mWeight > 0) and (InOutTag[No] > 0) :        #入庫
+    if  (cObj.mWeight > 0) and (InOutTag[No] > 0) :        
+        #入庫
         cObj.mUID = cObjIn[No].mUID
         cStage[No].cTagObj.push_back(cObj)
         InOutTag[No] = 0
         InOutLC[No]  = 0
         *cInOut = cObj
         value = IC_OBJECT_IN;
-    elif  (cObj.mWeight > 0) and (InOutLC[No] < 0) :        #庫内移動
+    elif  (cObj.mWeight > 0) and (InOutLC[No] < 0) :
+        #庫内移動
         cnt = TR3_TAG_MAX
-        for (i = 0; i < cStage[No].cTagObj.size(); i++)            if cStage[No].cTagObj.at(i).mUID.compare(cObjOut[No].mUID) == 0:                cnt = i
+        for (i = 0; i < cStage[No].cTagObj.size(); i++)
+            if cStage[No].cTagObj.at(i).mUID.compare(cObjOut[No].mUID) == 0:
+                cnt = i
                 break; }
-        if cnt != TR3_TAG_MAX:            cStage[No].cTagObj.at(cnt) = cObj
+        if cnt != TR3_TAG_MAX:
+            cStage[No].cTagObj.at(cnt) = cObj
             cStage[No].cTagObj.at(cnt).mUID     = cObjOut[No].mUID
             cStage[No].cTagObj.at(cnt).mName    = cObjOut[No].mName
             cStage[No].cTagObj.at(cnt).mComment = cObjOut[No].mComment
@@ -768,18 +1084,24 @@ def UpdateObj(self, No, *cInOut):    static CTagOBJ  cObj, cObjIn[IC_STAGES_MAX]
     else {
 
     #持ち上げ
-    if cObj.mWeight < 0:        comp = 5000
+    if cObj.mWeight < 0:
+        comp = 5000
         cnt = TR3_TAG_MAX
-        for (i = 0; i < cStage[No].cTagObj.size(); i++)            sum = 0
-            for (j = 0; j < LC_MAX_SENSOR_NUM; j++)                sum += abs(abs(cStage[No].cTagObj.at(i).mDiffs[j]) - abs(cObj.mDiffs[j]));
-            if sum < comp:                comp = sum
+        for (i = 0; i < cStage[No].cTagObj.size(); i++):
+            sum = 0
+            for (j = 0; j < LC_MAX_SENSOR_NUM; j++):
+                sum += abs(abs(cStage[No].cTagObj.at(i).mDiffs[j]) - abs(cObj.mDiffs[j]));
+            if sum < comp:
+                comp = sum
                 cnt = i; }
-        if cnt != TR3_TAG_MAX:            cObjOut[No] = cStage[No].cTagObj.at(cnt)
+        if cnt != TR3_TAG_MAX:
+            cObjOut[No] = cStage[No].cTagObj.at(cnt)
             InOutLC[No] = -1; }
     return value;
 
 #------------------------------------------------------------------------------
-def main(self, argc, **argv):    std.map<std.string, rfidValue
+def main(self, argc, **argv):    
+    std.map<std.string, rfidValue
     rfidValue["E00401004E17F97A"] = 7001
     rfidValue["E00401004E180E50"] = 7002
     rfidValue["E00401004E180E58"] = 7003
