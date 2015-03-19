@@ -145,6 +145,7 @@ class CLoadCell(object):
 
         #重量の増減（物体の増減）があるかをチェック
     # def GetWeightDiff(self, *x, *y, diffs[], threshold):
+    # TODO: fix arguments passed by reference
     def GetWeightDiff(self, x, y, diffs, threshold):
         #出力が安定するまで待つ
         for i in xrange(self.__mSensorNum):
@@ -368,6 +369,7 @@ class CTR3(object):
     #このメソッドの書き換えメンドイ。
     #修正は後回しで。
     # def GetTagDiff(self, &diffUID, char AN):
+    # TODO: fix arguments passed by reference
     def GetTagDiff(self, diffUID, AN):
         self.__SetAntenna(AN)
         preUIDs = self.__mUIDs[self.__mActiveAntenna]
@@ -486,11 +488,12 @@ class CIntelCab(object):
         return True
 
     def PrintObjInfo(self):
-        CTagOBJ  *cObj
+        # TODO: fix this pointer variable
+        # CTagOBJ  *cObj
         for i in xrange(mStageNum):
-            print "\n", cStage[i].mName
+            print "\n", self.cStage[i].mName
             # std.cout << "\n" << std.setw(20) << std.setfill(':') << cStage[i].mName << "....." << std.endl
-            for j, cOBj in enumerate(cStage[i].cTagObj):
+            for j, cObj in enumerate(self.cStage[i].cTagObj):
                 # cObj = &(cStage[i].cTagObj[j])
                 print j+1, ":  UID."
                 print cObj.mUID,
@@ -500,7 +503,8 @@ class CIntelCab(object):
                 print " <", cObj.mName, ":", cObj.mComment, ">"
                 # std.cout << " <" << cObj.mName << ":" << cObj.mComment << ">" << std.endl; } }
     
-    def UpdateObj(self, No, *cInOut):    
+    # TODO: fix arguments passed by reference
+    def UpdateObj(self, No, *cInOut):
         cObj = cTagOBJ()
         self.__cObjIn = [cTagOBJ()] * IC_STAGES_MAX
         self.__cObjOut = [cTagOBJ()] * IC_STAGES_MAX
@@ -614,28 +618,42 @@ def main(self, argc, **argv):
     rfidValue["E00401004E17EEEF"] = 7024
     rfidValue["E00401004E17EEE7"] = 7025
 
-    CIntelCab cIntelCab(1)
-    float xpos0[] = {16, 407, 16, 407 }, ypos0[] = {16, 16, 244, 244 }; # colorbox
-    CTagOBJ  cObj
-
-    tms_msg_db.TmsdbStamped  icsmsg
-    tms_msg_db.Tmsdb                 tmpdata
-    int32_t idSensor, idPlace; # shelf (ics) >> 928_foor >> 928_room
+    cIntelCab = CIntelCab(1)
+    xpos0 = [16.0, 407.0, 16.0, 407.0 ]
+    ypos0 = [16.0, 16.0, 244.0, 244.0 ] # colorbox
+    # float xpos0[] = {16, 407, 16, 407 }, ypos0[] = {16, 16, 244, 244 }; # colorbox
+    # CTagOBJ  cObj
+    cObj = CTagOBJ()
+    # tms_msg_db.TmsdbStamped  icsmsg
+    # tms_msg_db.Tmsdb                 tmpdata
+    icsmsg = tms_msg_db.TmsdbStamped
+    tmpdata = tms_msg_db.Tmsdb
+    # int32_t idSensor, idPlace; # shelf (ics) >> 928_foor >> 928_room
+    idSensor = idPlace = 0 # shelf (ics) >> 928_foor >> 928_room
 
     ros.init(argc, argv, "ics", ros.init_options.AnonymousName)
+    rospy.init_node('ics') # TODO: add anonymous option
 
-    ros.NodeHandle n
-    ics_pub = n.advertise<tms_msg_db.TmsdbStamped>("tms_db_data", 10)
+    # ros.NodeHandle n
+    # ics_pub = n.advertise<tms_msg_db.TmsdbStamped>("tms_db_data", 10)
+    ics_pub = rospy.Publisher('tms_db_data', TmsdbStamped, queue_size=10)
 
-    ros.NodeHandle nh_param("~")
-    nh_param.param<std.string>("PORT_TR", PORT_TR, "/dev/ttyUSB0")
-    nh_param.param<std.string>("PORT_LC0", PORT_LC0, "/dev/ttyACM0")
-    std.cout << ("sudo -S chmod a+rw " + PORT_TR + " " + PORT_LC0).c_str()
-    system(("sudo -S chmod a+rw " + PORT_TR + " " + PORT_LC0).c_str())
-    if not  nh_param.getParam("idSensor", idSensor):        ROS_ERROR("ros param idSensor isn't exist")
-        return 0;
-    if not  nh_param.getParam("idPlace", idPlace):        ROS_ERROR("ros param idPlace isn't exist")
-        return 0;
+    # ros.NodeHandle nh_param("~")
+    # nh_param.param<std.string>("PORT_TR", PORT_TR, "/dev/ttyUSB0")
+    # nh_param.param<std.string>("PORT_LC0", PORT_LC0, "/dev/ttyACM0")
+    # std.cout << ("sudo -S chmod a+rw " + PORT_TR + " " + PORT_LC0).c_str()
+    # system(("sudo -S chmod a+rw " + PORT_TR + " " + PORT_LC0).c_str())
+    # if not  nh_param.getParam("idSensor", idSensor):
+    #       ROS_ERROR("ros param idSensor isn't exist")
+    #     return 0;
+    # if not  nh_param.getParam("idPlace", idPlace):
+    #     ROS_ERROR("ros param idPlace isn't exist")
+    #     return 0;
+
+    PORT_TR = "/dev/ttyUSB0"
+    PORT_LC0 = "/dev/ttyACM0"
+    idSensor = 3000
+    idPlace = 5000
 
     #iniファイルから値を読み込んで各デバイスに接続
     #RFIDリーダ接続
@@ -652,25 +670,29 @@ def main(self, argc, **argv):
     cIntelCab.cStage[0].mStagePos[2] = 830
 
     #初回時の起動は多少時間がかかるためここで一回実行しておく
-    for (i = 0; i < cIntelCab.mStageNum; i++)        cIntelCab.UpdateObj(i, &cObj);
+    for i in xrange(cIntelCab.mStageNum):
+        # cIntelCab.UpdateObj(i, &cObj)
+        cIntelCab.UpdateObj(i, cObj)
 
     #計測開始
     change_flag = False
     index = 0
-    std.cout << "\nSTART" << std.endl
+    print "\nSTART"
 
-    while (ros.ok())        # vector 初期化
+    while not rospy.is_shutdown():        # vector 初期化
         # 毎回初期化し，庫内にある物品だけ値を更新して送信する
         now = ros.Time.now() + ros.Duration(9 * 60 * 60); # GMT +9
-        D_COUT( boost.posix_time.to_iso_extended_string(now.toBoost()) << std.endl)
-        if not  nh_param.getParam("frame_id", icsmsg.header.frame_id):            ROS_ERROR("ros param frame_id isn't exist")
-            return 0;
-        icsmsg.header.stamp     = now
+        D_COUT(datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"))
+        icsmsg.header.frame_id = 0  # TODO: fix this value
+        # if not  nh_param.getParam("frame_id", icsmsg.header.frame_id):
+        #     ROS_ERROR("ros param frame_id isn't exist")
+        #     return 0;
+        icsmsg.header.stamp     = rospy.get_rostime()+rospy.Duration(9*60*60)
 
         icsmsg.tmsdb.clear()
-        for (i = 0; i < MAX_OBJECT_NUM; i++)            usleep(1000); #1ms
-            now = ros.Time.now() + ros.Duration(9 * 60 * 60); # GMT +9
-            tmpdata.time  = boost.posix_time.to_iso_extended_string(now.toBoost())
+        for i in xrange(MAX_OBJECT_NUM):
+            usleep(1000); #1ms
+            tmpdata.time  = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
             tmpdata.id        = i + 7001; #物品IDは 7001 から
             tmpdata.x         = -1.0
             tmpdata.y         = -1.0
@@ -680,49 +702,49 @@ def main(self, argc, **argv):
             tmpdata.state = NONE; #知的収納庫内に 0:存在しない, 1:存在する
             icsmsg.tmsdb.push_back(tmpdata);
 
-        for (i = 0; i < cIntelCab.mStageNum; i++)            #増減の確認
-            switch (cIntelCab.UpdateObj(i, &cObj))            case  IC_OBJECT_STAY:
+        for i in xrange(cIntelCab.mStageNum):            #増減の確認
+            # switch (cIntelCab.UpdateObj(i, &cObj))
+            state = cIntelCab.UpdateObj(i, cObj)
+            if state == IC_OBJECT_STAY:
                 change_flag = False
-                break
-            case  IC_OBJECT_IN:
+            elif state == IC_OBJECT_IN:
                 ##Beep(2500,50)
                 std.cout << "\n\n IN : "
-                index = (int)cIntelCab.cStage[i].cTagObj.size() - 1
+                # index = (int)cIntelCab.cStage[i].cTagObj.size() - 1
+                index = int(cIntelCab.cStage[i].cTagObj.size() - 1)
                 cIntelCab.cStage[i].cTagObj.at(index).mName    = cObj.mName
                 cIntelCab.cStage[i].cTagObj.at(index).mComment = cObj.mComment
                 change_flag = True
-                break
-            case  IC_OBJECT_MOVE:
+            elif state == IC_OBJECT_MOVE:
                 ##Beep(2500,50)
-                std.cout << "\n\nMOVE: "
+                print "\n\nMOVE: ",
                 change_flag = True
-                break
-            case IC_OBJECT_OUT:
+            elif state == IC_OBJECT_OUT:
                 ##Beep(2500,50); Sleep(50); Beep(2500,50)
-                std.cout << "\n\n OUT: "
+                print "\n\n OUT: ",
                 change_flag = True
-                break
-            default:
+            else:
                 change_flag = False
-                break;
 
-            if change_flag:                change_flag = False
+            if change_flag:
+                change_flag = False
                 vi = 255
-                for (j = 0; j < cIntelCab.cStage[i].cTagObj.size(); j++)                    cObj = cIntelCab.cStage[i].cTagObj[j]
+                for j in xrange(len(cIntelCab.cStage[i].cTagObj)):
+                    cObj = cIntelCab.cStage[i].cTagObj[j]
                     vi = rfidValue[cObj.mUID] - 7001
                     usleep(1000); #1ms
-                    now = ros.Time.now() + ros.Duration(9 * 60 * 60); # GMT +9
-                    icsmsg.tmsdb[vi].time     = boost.posix_time.to_iso_extended_string(now.toBoost())
+                    icsmsg.tmsdb[vi].time     = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
                     icsmsg.tmsdb[vi].id         = rfidValue[cObj.mUID]
                     icsmsg.tmsdb[vi].state  = EXIST;                        #知的収納庫内に 0:存在しない, 1:存在する
                     icsmsg.tmsdb[vi].x          = cObj.mX
                     icsmsg.tmsdb[vi].y          = cObj.mY
                     icsmsg.tmsdb[vi].weight = cObj.mWeight
                     # nh_param.param<float>("z",icsmsg.tmsdb[vi].z,NULL)
-                    if not  nh_param.getParam("z", icsmsg.tmsdb[vi].z):                        ROS_ERROR("ros param z isn't exist")
-                        return 0; }
+                    if not  nh_param.getParam("z", icsmsg.tmsdb[vi].z):
+                        ROS_ERROR("ros param z isn't exist")
+                        return 0
                 cIntelCab.PrintObjInfo()
-                ics_pub.publish(icsmsg); } }
+                ics_pub.publish(icsmsg)
     return 0;
 
 #------------------------------------------------------------------------------
