@@ -13,24 +13,6 @@
 import serial
 import sys
 import math
-#include <vector>
-#include <algorithm>
-#include <functional>
-#include <string>
-#include <iostream>
-#include <iomanip>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <math.h>
-#include <iterator>
-#include <sstream>
-#include <termios.h>
-#include <unistd.h>
-#include <ros/ros.h>
 #include <tms_msg_db/tmsdb_data.h>
 #include <tms_msg_ss/ics_object_data.h>
 #include <tms_msg_db/TmsdbStamped.h>
@@ -39,7 +21,9 @@ import math
 #include <cstdlib>
 
 #------------------------------------------------------------------------------
-std.string PORT_TR, PORT_LC0
+PORT_TR = ""
+PORT_LC0 = ""
+
 
 
 #define LC_MAX_SENSOR_NUM  4
@@ -49,51 +33,50 @@ std.string PORT_TR, PORT_LC0
 #define MAX_OBJECT_NUM      25      #環境内に存在する全物品数
 
 #仕様上の固定値
-#define TR3_STX   0x02
-#define TR3_ETX   0x03
-#define TR3_CR    0x0D
-#define TR3_ACK   0x30
-#define TR3_NACK  0x31
-#define TR3_UID_SEND   0x49
+TR3_STX             = 0x02
+TR3_ETX             = 0x03
+TR3_CR              = 0x0D
+TR3_ACK             = 0x30
+TR3_NACK            = 0x31
+TR3_UID_SEND        = 0x49
 
-#define TR3_ANT1   0x00
-#define TR3_ANT2   0x01
-#define TR3_ANT3   0x02
-#define TR3_ANT4   0x03
-#define TR3_ANT5   0x04
-#define TR3_ANT6   0x05
-#define TR3_ANT7   0x06
-#define TR3_ANT8   0x07
+TR3_ANT1            = 0x00
+TR3_ANT2            = 0x01
+TR3_ANT3            = 0x02
+TR3_ANT4            = 0x03
+TR3_ANT5            = 0x04
+TR3_ANT6            = 0x05
+TR3_ANT7            = 0x06
+TR3_ANT8            = 0x07
 
-#define TR3_ModeCommand   0x00
-#define TR3_ModeAutoscan  0x01
-#define TR3_ModeTriger    0x02
-#define TR3_ModePolling   0x03
-#define TR3_ModeEAS       0x24
-#define TR3_ModeInventory 0x50
-#define TR3_ModeRDLOOP    0x58
+TR3_ModeCommand     = 0x00
+TR3_ModeAutoscan    = 0x01
+TR3_ModeTriger      = 0x02
+TR3_ModePolling     = 0x03
+TR3_ModeEAS         = 0x24
+TR3_ModeInventory   = 0x50
+TR3_ModeRDLOOP      = 0x58
 
-#define TR3_UID_SIZE  8
-#define TR3_TAG_SIZE  16
+TR3_UID_SIZE        = 8
+TR3_TAG_SIZE        = 16
 
 #ユーザ設定値
-#define TR3_TAG_MAX  40 #HardwareMAX: 200
-#define TR3_MAX_COMMAND_SIZE  30
-#define TR3_USED_ANT_NUM  2
+TR3_TAG_MAX             = 40 #HardwareMAX: 200
+TR3_MAX_COMMAND_SIZE    = 30
+TR3_USED_ANT_NUM        = 2
+IC_STAGE_NAME_SIZE      = 100
+IC_TAG_MAX              = 20
+IC_STAGES_MAX           = 2
+IC_OBJECT_IN            = 1
+IC_OBJECT_OUT           = -1
+IC_OBJECT_MOVE          = 2
+IC_OBJECT_STAY          = 0
 
-#define IC_STAGE_NAME_SIZE  100
-#define IC_TAG_MAX  20
-#define IC_STAGES_MAX  2
-#define IC_OBJECT_IN     1
-#define IC_OBJECT_OUT   -1
-#define IC_OBJECT_MOVE   2
-#define IC_OBJECT_STAY   0
-
-#define NONE  0
-#define EXIST 1
+NONE                    = 0
+EXIST                   = 1
 
 
-#define vec_str std.vector<std.string>
+#define vec_str std.vector<std.string>s
 
 #define DEBUG_IBS 0
 #if     1 == DEBUG_IBS
@@ -146,14 +129,14 @@ class CLoadCell(object):
         return int(buf) * 5 #0.28は経験的な値
 
     def ResetWeight(self, initial=[], num=10):
-    if inital:  #  if not empty
-        self.__mPreSensorsWeight = initial
-        return
-    self.__mPreSensorsWeight = [0] * self.__mSensorNum
-    for i in xrange(num):
-        for j in len(self.__mPreSensorsWeight):
-            self.__mPreSensorsWeight[j] = self.GetWeight(j)
-    self.__mPreSensorsWeight =  map(lamda x:x/num, self.__mPreSensorsWeight)
+        if inital:  #  if not empty
+            self.__mPreSensorsWeight = initial
+            return
+        self.__mPreSensorsWeight = [0] * self.__mSensorNum
+        for i in xrange(num):
+            for j in len(self.__mPreSensorsWeight):
+                self.__mPreSensorsWeight[j] = self.GetWeight(j)
+        self.__mPreSensorsWeight =  map(lambda x:x/num, self.__mPreSensorsWeight)
 
     def SetSensorPos(self, sensor_num, x_list, y_list):
         self.__mSensorNum = sensor_num
@@ -161,7 +144,8 @@ class CLoadCell(object):
         self.__mSensorPosY = list(y_list)
 
         #重量の増減（物体の増減）があるかをチェック
-    def GetWeightDiff(self, *x, *y, diffs[], threshold):
+    # def GetWeightDiff(self, *x, *y, diffs[], threshold):
+    def GetWeightDiff(self, x, y, diffs, threshold):
         #出力が安定するまで待つ
         for i in xrange(self.__mSensorNum):
             pre[i] = self.GetWeight(i)
@@ -186,8 +170,8 @@ class CLoadCell(object):
         for i in xrange(LC_GET_WEIGHT_CNT):
             for j in xrange(self.__mSensorNum):
                 pre[j] += buf[i][j]
-        pre = map(lamda x:x/LC_GET_CNT,pre)
-        diffs = map(lamda x:x[0]-x[1], zip(pre, self.__mPreSensorsWeight))
+        pre = map(lambda x:x/LC_GET_CNT,pre)
+        diffs = map(lambda x:x[0]-x[1], zip(pre, self.__mPreSensorsWeight))
         x = y = 0
         weight = 0
         for i in xrange(self.__mSensorNum):
@@ -236,7 +220,8 @@ class CTR3(object):
         print "CLOSED: TR3"
 
     #アンテナの指定
-    def SetAntenna(self, char AN):
+    # def SetAntenna(self, char AN):
+    def SetAntenna(self, AN):
         self.__mCommand[2] = 0x4E; #コマンド
         self.__mCommand[3] = 0x02; #データ長
         self.__mCommand[4] = 0x9C; #コマンド詳細
@@ -258,7 +243,8 @@ class CTR3(object):
         return int(buf[5])
 
     #アンテナの指定
-    def SetAntenna(self, char AN):    
+    # def SetAntenna(self, char AN):
+    def SetAntenna(self, AN):    
         self.__mCommand[2] = 0x4E; #コマンド
         self.__mCommand[3] = 0x02; #データ長
         self.__mCommand[4] = 0x9C; #コマンド詳細
@@ -330,7 +316,7 @@ class CTR3(object):
     #タグの読み取り
     def Inventory2(self):
         # アンテナを変更しないと既読込のUIDは返さず，新規UIDのみ返す
-        int i, j
+        # int i, j
         self.__mCommand[2] = 0x78; #コマンド
         self.__mCommand[3] = 0x03; #データ長
         self.__mCommand[4] = 0xF0; #コマンド詳細
@@ -356,14 +342,15 @@ class CTR3(object):
         #-------------
         #タグ情報の読込
         for i in xrange(tag_num):
-            char hex[17]
+            # char hex[17]
+            hexs = [chr(0)] * 17
             self.__ser.read(size = TR3_TAG_SIZE)
             # read(fd, buf, TR3_TAG_SIZE)
-            sprintf(hex, "%02X%02X%02X%02X%02X%02X%02X%02X",
+            sprintf(hexs, "%02X%02X%02X%02X%02X%02X%02X%02X",
                     buf[12],    buf[11],    buf[10],    buf[9],
                     buf[8],     buf[7],     buf[6],     buf[5])
-            # mUIDs[mActiveAntenna].push_back(std.string(hex));
-            mUIDs[self.__mActiveAntenna].append(hex)
+            # mUIDs[mActiveAntenna].push_back(std.string(hexs));
+            mUIDs[self.__mActiveAntenna].append(hexs)
         self.__ClosePort()
         return tag_num;
 
@@ -380,7 +367,8 @@ class CTR3(object):
     #タグの入出のチェック
     #このメソッドの書き換えメンドイ。
     #修正は後回しで。
-    def GetTagDiff(self, &diffUID, char AN):
+    # def GetTagDiff(self, &diffUID, char AN):
+    def GetTagDiff(self, diffUID, AN):
         self.__SetAntenna(AN)
         preUIDs = self.__mUIDs[self.__mActiveAntenna]
         self.__mUIDs[mActiveAntenna].clear()
@@ -390,12 +378,14 @@ class CTR3(object):
         #タグの増減の確認
         std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
         # IDにあってpreIDにない => 追加された物品ID
-        vec_str increase
+        # vec_str increase
+        increase = [""]
         std.set_difference(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(), preUIDs.begin(), preUIDs.end(),
                             std.inserter(increase, increase.begin()))
     
         # preIDにあってIDにない => 取り除かれた物品ID
-        vec_str decrease
+        # vec_str decrease
+        decrease = [""]
         std.set_difference(preUIDs.begin(), preUIDs.end(), mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(),
                             std.inserter(decrease, decrease.begin()))
     
@@ -435,21 +425,16 @@ class CTagOBJ(object):
         self.__mX = 0.0
         self.__mY = 0.0
         self.__mName = "\0"
-        self.__mComment "\0"
+        self.__mComment = "\0"
         self.Setup()
         pass
 
     def  Setup(self):
-        char id[TR3_UID_SIZE * 2 + 1] = {'\0'}
+        # char id[TR3_UID_SIZE * 2 + 1] = {'\0'}
+        id = ["\0"] * (TR3_UID_SIZE * 2 + 1)
         for i in xrange(TR3_UID_SIZE * 2):
             id[i] = 0x00
         self.__mUID.assign(id)
-        # for i in xrange(LC_MAX_SENSOR_NUM):
-        #     self.__mDiffs[i] = 0
-        # self.__mX = self.__mY = 0.0
-        # self.__mWeight = 0
-        # self.__mName = '\0'
-        # self.__mComment = '\0'
         return True;
 
     def __del__(self):
@@ -457,18 +442,6 @@ class CTagOBJ(object):
 
     def Close(self):
         pass
-
-# public:
-#     CTagOBJ()        Setup();
-#     ~CTagOBJ()        Close();
-
-    # std.string mUID
-    # int mWeight
-    # int mDiffs[LC_MAX_SENSOR_NUM]
-    # float mX
-    # float mY
-    # std.string  mName
-    # std.string  mComment;
 
 #------------------------------------------------------------------------------
 class CStage(object):
@@ -486,28 +459,15 @@ class CStage(object):
 
     def Setup(self):    
         self.cLoadCell.Setup()
-        # for i in xrange(3):
-        #     mStagePos[i] = 0
-        # mName = '\0'
         return True
 
-    def SetSensorPos(self, sensor_num, x[], y[]):
+    # def SetSensorPos(self, sensor_num, x[], y[]):
+    def SetSensorPos(self, sensor_num, x, y):
         self.cLoadCell.SetSensorPos(sensor_num, x, y)
 
-    def SetAntenna(self, char AN):
+    # def SetAntenna(self, char AN):
+    def SetAntenna(self, AN):
         self.mAntenna =  AN
-
-# public:
-    # CStage() {
-    # CLoadCell cLoadCell
-    # unsigned char mAntenna
-    # int mStagePos[3]
-    # std.string mName
-    # std.vector<CTagOBJ> cTagObj
-
-    # bool Setup()
-    # void SetSensorPos(int sensor_num, x[], y[])
-    # void SetAntenna(unsigned char AN);
 
 #------------------------------------------------------------------------------
 class CIntelCab(object):
@@ -535,7 +495,7 @@ class CIntelCab(object):
                 print j+1, ":  UID."
                 print cObj.mUID,
                 # std.cout << cObj.mUID
-                print  "Weight=", cObj.mWeight, " X=", cObj.mX " Y=", cObj.mY
+                print  "Weight=", cObj.mWeight, " X=", cObj.mX, " Y=", cObj.mY
                 # printf("  Weight=%4d  X=%4.0f Y=%4.0f", cObj.mWeight, cObj.mX, cObj.mY)
                 print " <", cObj.mName, ":", cObj.mComment, ">"
                 # std.cout << " <" << cObj.mName << ":" << cObj.mComment << ">" << std.endl; } }
@@ -574,11 +534,13 @@ class CIntelCab(object):
                     self.__InOutLC[No] = 0
                     break
             self.__InOutTag[No] = 0
-            *cInOut = cObj
+            # *cInOut = cObj
+            cInOut = cObj
             value = IC_OBJECT_OUT
     
         #ロードセルの増減チェック
-        cObj.mWeight = self.cStage[No].cLoadCell.GetWeightDiff(&cObj.mX, &cObj.mY, cObj.mDiffs)
+        # cObj.mWeight = self.cStage[No].cLoadCell.GetWeightDiff(&cObj.mX, &cObj.mY, cObj.mDiffs)
+        cObj.mWeight = self.cStage[No].cLoadCell.GetWeightDiff(cObj.mX, cObj.mY, cObj.mDiffs)
     
         if  (cObj.mWeight > 0) and (self.__InOutTag[No] > 0) :        
             #入庫
@@ -586,7 +548,8 @@ class CIntelCab(object):
             self.cStage[No].cTagObj.push_back(cObj)
             self.__InOutTag[No] = 0
             self.__InOutLC[No]  = 0
-            *cInOut = cObj
+            # *cInOut = cObj
+            cInOut = cObj
             value = IC_OBJECT_IN;
         elif  (cObj.mWeight > 0) and (self.__InOutLC[No] < 0) :
             #庫内移動
@@ -601,7 +564,8 @@ class CIntelCab(object):
                 self.cStage[No].cTagObj.at(cnt).mName    = self.__cObjOut[No].mName
                 self.cStage[No].cTagObj.at(cnt).mComment = self.__cObjOut[No].mComment
                 self.__InOutLC[No] = 0
-                *cInOut = self.cStage[No].cTagObj.at(cnt)
+                # *cInOut = self.cStage[No].cTagObj.at(cnt)
+                cInOut = self.cStage[No].cTagObj.at(cnt)
                 value = IC_OBJECT_MOVE
         #タグ無し物品の入庫
     
@@ -620,83 +584,6 @@ class CIntelCab(object):
                 self.__cObjOut[No] = self.cStage[No].cTagObj.at(cnt)
                 self.__InOutLC[No] = -1
         return value
-
-#------------------------------------------------------------------------------
-def UpdateObj(self, No, *cInOut):    
-    static CTagOBJ  cObj, cObjIn[IC_STAGES_MAX], cObjOut[IC_STAGES_MAX]
-    static int InOutTag[IC_STAGES_MAX], InOutLC[IC_STAGES_MAX]
-    value = IC_OBJECT_STAY
-
-    if No >= mStageNum:
-        return IC_OBJECT_STAY
-
-    #タグの増減チェック
-    cTR3.AntennaPowerON()
-    #not  @todo 理解不能なif分岐．実際はアンテナ0しか使ってない（通信の返り値て強制的に0になってる）のにこれのせいでアンテナ1を使用しようとしてる．
-    if mStageNum == 1:
-        cTR3.SetAntenna(cStage[No].mAntenna + 1);
-    inout = cTR3.GetTagDiff(cObj.mUID, cStage[No].mAntenna)
-    cTR3.AntennaPowerOFF()
-
-    #タグ数増加
-    if inout > 0:
-        InOutTag[No] = 1
-        cObjIn[No] = cObj;
-    #タグ数減少，出庫
-    elif  inout < 0 :
-        for (i = 0; i < cStage[No].cTagObj.size(); i++) {       #cStage[No].cTagObjを更新
-            if cStage[No].cTagObj.at(i).mUID.compare(cObj.mUID) == 0:
-                cStage[No].cTagObj.erase(cStage[No].cTagObj.begin() + i)
-                InOutLC[No] = 0
-                break; }
-        InOutTag[No] = 0
-        *cInOut = cObj
-        value = IC_OBJECT_OUT;
-
-    #ロードセルの増減チェック
-    cObj.mWeight = cStage[No].cLoadCell.GetWeightDiff(&cObj.mX, &cObj.mY, cObj.mDiffs)
-
-    if  (cObj.mWeight > 0) and (InOutTag[No] > 0) :        
-        #入庫
-        cObj.mUID = cObjIn[No].mUID
-        cStage[No].cTagObj.push_back(cObj)
-        InOutTag[No] = 0
-        InOutLC[No]  = 0
-        *cInOut = cObj
-        value = IC_OBJECT_IN;
-    elif  (cObj.mWeight > 0) and (InOutLC[No] < 0) :
-        #庫内移動
-        cnt = TR3_TAG_MAX
-        for (i = 0; i < cStage[No].cTagObj.size(); i++)
-            if cStage[No].cTagObj.at(i).mUID.compare(cObjOut[No].mUID) == 0:
-                cnt = i
-                break; }
-        if cnt != TR3_TAG_MAX:
-            cStage[No].cTagObj.at(cnt) = cObj
-            cStage[No].cTagObj.at(cnt).mUID     = cObjOut[No].mUID
-            cStage[No].cTagObj.at(cnt).mName    = cObjOut[No].mName
-            cStage[No].cTagObj.at(cnt).mComment = cObjOut[No].mComment
-            InOutLC[No] = 0
-            *cInOut = cStage[No].cTagObj.at(cnt)
-            value = IC_OBJECT_MOVE; }
-    #タグ無し物品の入庫
-    else {
-
-    #持ち上げ
-    if cObj.mWeight < 0:
-        comp = 5000
-        cnt = TR3_TAG_MAX
-        for (i = 0; i < cStage[No].cTagObj.size(); i++):
-            sum = 0
-            for (j = 0; j < LC_MAX_SENSOR_NUM; j++):
-                sum += abs(abs(cStage[No].cTagObj.at(i).mDiffs[j]) - abs(cObj.mDiffs[j]));
-            if sum < comp:
-                comp = sum
-                cnt = i; }
-        if cnt != TR3_TAG_MAX:
-            cObjOut[No] = cStage[No].cTagObj.at(cnt)
-            InOutLC[No] = -1; }
-    return value;
 
 #------------------------------------------------------------------------------
 def main(self, argc, **argv):    
