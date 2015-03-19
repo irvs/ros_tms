@@ -140,12 +140,14 @@ class CLoadCell(object):
 
     def SetSensorPos(self, sensor_num, x_list, y_list):
         self.__mSensorNum = sensor_num
-        self.__mSensorPosX = list(x_list)
-        self.__mSensorPosY = list(y_list)
+        # self.__mSensorPosX = list(x_list)
+        # self.__mSensorPosY = list(y_list)
+        self.__mSensorPosX = x_list
+        self.__mSensorPosY = y_list
 
         #重量の増減（物体の増減）があるかをチェック
     # def GetWeightDiff(self, *x, *y, diffs[], threshold):
-    # TODO: fix arguments passed by reference
+    # TODO: fix arguments passed by reference(fixed)
     def GetWeightDiff(self, x, y, diffs, threshold):
         #出力が安定するまで待つ
         for i in xrange(self.__mSensorNum):
@@ -183,10 +185,10 @@ class CLoadCell(object):
         y /= math.fabs(weight)
     
         if abs(weight) < threshold:
-            return 0;
+            return 0, x, y, diffs
         else:
             self.__mPreSensorsWeight = pre
-            return weight
+            return weight, x, y, diffs
 
 #------------------------------------------------------------------------------
 class CTR3(object):
@@ -369,13 +371,13 @@ class CTR3(object):
     #このメソッドの書き換えメンドイ。
     #修正は後回しで。
     # def GetTagDiff(self, &diffUID, char AN):
-    # TODO: fix arguments passed by reference
+    # TODO: fix arguments passed by reference(fixed)
     def GetTagDiff(self, diffUID, AN):
         self.__SetAntenna(AN)
         preUIDs = self.__mUIDs[self.__mActiveAntenna]
         self.__mUIDs[mActiveAntenna].clear()
         if self.Inventory2() == -1:
-            return 0;
+            return 0, diffUID
     
         #タグの増減の確認
         std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
@@ -393,29 +395,29 @@ class CTR3(object):
     
         # 増減なし
         if  (increase.size() == 0) and (decrease.size() == 0) :
-            return 0
+            return 0, diffUID
         # 物品追加
         if  (increase.size() == 1) and (decrease.size() == 0) :
             diffUID = increase[0]
-            return 1
+            return 1, diffUID
         # 物品除去
         if  (increase.size() == 0) and (decrease.size() == 1) :
             diffUID = decrease[0]
-            return -1
+            return -1, diffUID
         # 複数物品の同時入出時（１個ずつ検出するようにする）
         if increase.size() >= 1:
             preUIDs.push_back(increase[0])
             mUIDs[mActiveAntenna] = preUIDs
             std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
             diffUID = increase[0]
-            return 1
+            return 1, diffUID
         if decrease.size() >= 1:
             preUIDs.erase(remove(preUIDs.begin(), preUIDs.end(), decrease[0]),  preUIDs.end())
             mUIDs[mActiveAntenna] = preUIDs
             std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
             diffUID = decrease[0]
-            return -1
-        return 0
+            return -1, diffUID
+        return 0, diffUID
 
 #------------------------------------------------------------------------------
 class CTagOBJ(object):
@@ -464,6 +466,7 @@ class CStage(object):
         return True
 
     # def SetSensorPos(self, sensor_num, x[], y[]):
+    # TODO: fix arguments passed by reference (fixed)
     def SetSensorPos(self, sensor_num, x, y):
         self.cLoadCell.SetSensorPos(sensor_num, x, y)
 
@@ -488,7 +491,7 @@ class CIntelCab(object):
         return True
 
     def PrintObjInfo(self):
-        # TODO: fix this pointer variable
+        # TODO: fix this pointer variable (fixed)
         # CTagOBJ  *cObj
         for i in xrange(mStageNum):
             print "\n", self.cStage[i].mName
@@ -503,8 +506,8 @@ class CIntelCab(object):
                 print " <", cObj.mName, ":", cObj.mComment, ">"
                 # std.cout << " <" << cObj.mName << ":" << cObj.mComment << ">" << std.endl; } }
     
-    # TODO: fix arguments passed by reference
-    def UpdateObj(self, No, *cInOut):
+    # TODO: fix arguments passed by reference (fixed)
+    def UpdateObj(self, No, cInOut):
         cObj = cTagOBJ()
         self.__cObjIn = [cTagOBJ()] * IC_STAGES_MAX
         self.__cObjOut = [cTagOBJ()] * IC_STAGES_MAX
@@ -522,7 +525,7 @@ class CIntelCab(object):
         #not  @todo 理解不能なif分岐．実際はアンテナ0しか使ってない（通信の返り値て強制的に0になってる）のにこれのせいでアンテナ1を使用しようとしてる．
         if self.mStageNum == 1:
             self.cTR3.SetAntenna(self.cStage[No].mAntenna + 1);
-        inout = self.cTR3.GetTagDiff(cObj.mUID, self.cStage[No].mAntenna)
+        inout, cObj.mUID = self.cTR3.GetTagDiff(cObj.mUID, self.cStage[No].mAntenna)
         self.cTR3.AntennaPowerOFF()
     
         #タグ数増加
@@ -544,7 +547,7 @@ class CIntelCab(object):
     
         #ロードセルの増減チェック
         # cObj.mWeight = self.cStage[No].cLoadCell.GetWeightDiff(&cObj.mX, &cObj.mY, cObj.mDiffs)
-        cObj.mWeight = self.cStage[No].cLoadCell.GetWeightDiff(cObj.mX, cObj.mY, cObj.mDiffs)
+        cObj.mWeight, cObj.mX, cObj.mY, cObj.mDiffs = self.cStage[No].cLoadCell.GetWeightDiff(cObj.mX, cObj.mY, cObj.mDiffs)
     
         if  (cObj.mWeight > 0) and (self.__InOutTag[No] > 0) :        
             #入庫
@@ -587,11 +590,12 @@ class CIntelCab(object):
             if cnt != TR3_TAG_MAX:
                 self.__cObjOut[No] = self.cStage[No].cTagObj.at(cnt)
                 self.__InOutLC[No] = -1
-        return value
+        return value, cInOut
 
 #------------------------------------------------------------------------------
 def main(self, argc, **argv):    
-    std.map<std.string, rfidValue
+    # std.map<std.string, rfidValue
+    rfidValue = {}
     rfidValue["E00401004E17F97A"] = 7001
     rfidValue["E00401004E180E50"] = 7002
     rfidValue["E00401004E180E58"] = 7003
@@ -704,7 +708,7 @@ def main(self, argc, **argv):
 
         for i in xrange(cIntelCab.mStageNum):            #増減の確認
             # switch (cIntelCab.UpdateObj(i, &cObj))
-            state = cIntelCab.UpdateObj(i, cObj)
+            state, cObj = cIntelCab.UpdateObj(i, cObj)
             if state == IC_OBJECT_STAY:
                 change_flag = False
             elif state == IC_OBJECT_IN:
