@@ -119,8 +119,6 @@ public class TmsUrMimamorukun extends RosActivity
 
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
-                // ActionBarDrawerToggleクラス内の同メソッドにてアイコンのアニメーションの処理をしている。
-                // overrideするときは気を付けること。
                 super.onDrawerSlide(drawerView, slideOffset);
                 drawer.bringToFront();
                 drawer.requestLayout();
@@ -217,6 +215,12 @@ public class TmsUrMimamorukun extends RosActivity
         wc_icon.setVisibility(View.VISIBLE);
         wc_icon.setX(target_point[0] - wc_icon_size[0] / 2);
         wc_icon.setY(target_point[1] - wc_icon_size[1] / 2);
+        return true;
+    }
+
+
+    public boolean drawCurrentPosition() {
+
         return true;
     }
 }
