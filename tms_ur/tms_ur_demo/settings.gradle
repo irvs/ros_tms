@@ -19,3 +19,4 @@ include 'my_android_project'
 include 'my_android_library_project'
 */
 include 'tms_ur_refrigerator'
+include 'tms_ur_mimamorukun'

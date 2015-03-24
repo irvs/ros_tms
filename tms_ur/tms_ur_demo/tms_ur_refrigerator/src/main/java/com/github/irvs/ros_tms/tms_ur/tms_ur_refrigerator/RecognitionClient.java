@@ -20,7 +20,7 @@ import tms_msg_rs.rs_home_appliancesResponse;
  */
 public class RecognitionClient extends AbstractNodeMain {
     private final String TAG = "recognition_client";
-    ServiceClient<rs_home_appliancesRequest, rs_home_appliancesResponse> serviceClient;
+    private ServiceClient<rs_home_appliancesRequest, rs_home_appliancesResponse> serviceClient;
 
     @Override
     public GraphName getDefaultNodeName() {
