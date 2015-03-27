@@ -41,6 +41,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:id="@+id/map_image"/>
+
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
@@ -50,21 +56,24 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="touch_position"
-                        android:id="@+id/touch_position"/>
+                        android:id="@+id/touch_position"
+                        android:textColor="#ffecff00"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="touch_acation"
-                        android:id="@+id/touch_action"/>
+                        android:id="@+id/touch_action"
+                        android:textColor="#ffecff00"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="debug_info"
+                        android:id="@+id/debug_info"
+                        android:textColor="#ffecff00"/>
 
                 </LinearLayout>
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/map_image"
-                    android:contentDescription="map_image"/>
 
             </RelativeLayout>
 
@@ -73,8 +82,12 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/wc_icon"
-            android:contentDescription="the icon of wheelchair"/>
+            android:id="@+id/current"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/target"/>
 
     </RelativeLayout>
 

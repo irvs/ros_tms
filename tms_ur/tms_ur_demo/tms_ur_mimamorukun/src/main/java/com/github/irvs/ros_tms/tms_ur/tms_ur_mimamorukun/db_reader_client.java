@@ -1,5 +1,7 @@
 package com.github.irvs.ros_tms.tms_ur.tms_ur_mimamorukun;
 
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import org.ros.concurrent.CancellableLoop;
@@ -22,7 +24,18 @@ import tms_msg_db.TmsdbGetDataResponse;
 public class db_reader_client extends AbstractNodeMain {
     private String TAG = "db_reader_client";
     private ServiceClient<TmsdbGetDataRequest, TmsdbGetDataResponse> dbClient;
-    public double[] current_position = {0, 0};
+    private Handler handler;
+    public CurrentPose currentPose = new CurrentPose();
+
+    public db_reader_client(Handler handler) {
+        this.handler = handler;
+    }
+
+    public class CurrentPose {
+        public double x;
+        public double y;
+        public double yaw;
+    }
 
     @Override
     public GraphName getDefaultNodeName() {
@@ -57,8 +70,12 @@ public class db_reader_client extends AbstractNodeMain {
                     @Override
                     public void onSuccess(TmsdbGetDataResponse res) {
                         Log.d(TAG, "onSuccess()");
-                        current_position[0] = res.getTmsdb().get(0).getX();
-                        current_position[1] = res.getTmsdb().get(0).getY();
+                        currentPose.x = res.getTmsdb().get(0).getX();
+                        currentPose.y = res.getTmsdb().get(0).getY();
+                        currentPose.yaw = res.getTmsdb().get(0).getRy();
+                        Message msg = handler.obtainMessage(TmsUrMimamorukun.UPDATE_POSITION,
+                            "from db_reader\n\tX:" + currentPose.x + ",Y:" + currentPose.y + ",Yaw:" + currentPose.yaw);
+                        handler.sendMessage(msg);
                     }
 
                     @Override
@@ -68,7 +85,7 @@ public class db_reader_client extends AbstractNodeMain {
                 });
 
                 // update the position on regular basis
-                Thread.sleep(1000);
+                Thread.sleep(1000); // 1sec
             }
         });
     }

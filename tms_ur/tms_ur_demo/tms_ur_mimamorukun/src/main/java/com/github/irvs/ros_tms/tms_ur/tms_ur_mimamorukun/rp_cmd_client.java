@@ -1,5 +1,6 @@
 package com.github.irvs.ros_tms.tms_ur.tms_ur_mimamorukun;
 
+import android.os.Handler;
 import android.util.Log;
 
 import org.ros.exception.RemoteException;
@@ -21,6 +22,11 @@ import tms_msg_rp.rp_cmdResponse;
 public class rp_cmd_client extends AbstractNodeMain {
     private String TAG = "rp_cmd_client";
     private ServiceClient<rp_cmdRequest, rp_cmdResponse> rpClient;
+    private Handler handler;
+
+    public rp_cmd_client(Handler handler) {
+        this.handler = handler;
+    }
 
     @Override
     public GraphName getDefaultNodeName() {
