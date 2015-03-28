@@ -25,13 +25,13 @@ public class db_reader_client extends AbstractNodeMain {
     private String TAG = "db_reader_client";
     private ServiceClient<TmsdbGetDataRequest, TmsdbGetDataResponse> dbClient;
     private Handler handler;
-    public CurrentPose currentPose = new CurrentPose();
+    public Pose current_pose = new Pose();
 
     public db_reader_client(Handler handler) {
         this.handler = handler;
     }
 
-    public class CurrentPose {
+    public class Pose {
         public double x;
         public double y;
         public double yaw;
@@ -45,13 +45,18 @@ public class db_reader_client extends AbstractNodeMain {
     @Override
     public void onStart(ConnectedNode connectedNode) {
         Log.d(TAG, "onStart");
+        String status;
         try {
             Log.d(TAG, "try to connect");
             dbClient = connectedNode.newServiceClient("/tms_db_reader/dbreader", TmsdbGetData._TYPE);
+            status = "connected";
         } catch (ServiceNotFoundException e) {
             Log.d(TAG, "ServiceNotFoundException");
+            status = "failed to connect";
             //throw new RosRuntimeException(e);
         }
+        Message msg = handler.obtainMessage(TmsUrMimamorukun.DBREADER_STATUS, status);
+        handler.sendMessage(msg);
 
         connectedNode.executeCancellableLoop(new CancellableLoop() {
             final TmsdbGetDataRequest req = dbClient.newMessage();
@@ -65,16 +70,16 @@ public class db_reader_client extends AbstractNodeMain {
 
             @Override
             protected void loop() throws InterruptedException {
-                Log.d(TAG, "loop");
+                Log.d(TAG, "loop()");
                 dbClient.call(req, new ServiceResponseListener<TmsdbGetDataResponse>() {
                     @Override
                     public void onSuccess(TmsdbGetDataResponse res) {
                         Log.d(TAG, "onSuccess()");
-                        currentPose.x = res.getTmsdb().get(0).getX();
-                        currentPose.y = res.getTmsdb().get(0).getY();
-                        currentPose.yaw = res.getTmsdb().get(0).getRy();
+                        current_pose.x = res.getTmsdb().get(0).getX();
+                        current_pose.y = res.getTmsdb().get(0).getY();
+                        current_pose.yaw = res.getTmsdb().get(0).getRy();
                         Message msg = handler.obtainMessage(TmsUrMimamorukun.UPDATE_POSITION,
-                            "from db_reader\n\tX:" + currentPose.x + ",Y:" + currentPose.y + ",Yaw:" + currentPose.yaw);
+                            "from db_reader\n\tX:" + current_pose.x + ",Y:" + current_pose.y + ",Yaw:" + current_pose.yaw);
                         handler.sendMessage(msg);
                     }
 
@@ -85,7 +90,7 @@ public class db_reader_client extends AbstractNodeMain {
                 });
 
                 // update the position on regular basis
-                Thread.sleep(1000); // 1sec
+                Thread.sleep(500); // 500msec
             }
         });
     }

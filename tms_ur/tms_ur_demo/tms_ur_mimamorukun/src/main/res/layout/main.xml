@@ -22,16 +22,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <Button
-                    style="?android:attr/buttonStyleSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Menu"
-                    android:id="@+id/button"/>
-
                 <SeekBar
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:id="@+id/seekBar"
                     android:layout_weight="2.36"/>
 
@@ -49,29 +43,24 @@
 
                 <LinearLayout
                     android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="10dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="touch_position"
                         android:id="@+id/touch_position"
-                        android:textColor="#ffecff00"/>
+                        android:textColor="#000000"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="touch_acation"
                         android:id="@+id/touch_action"
-                        android:textColor="#ffecff00"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="debug_info"
-                        android:id="@+id/debug_info"
-                        android:textColor="#ffecff00"/>
+                        android:textColor="#000000"/>
 
                 </LinearLayout>
 
@@ -87,24 +76,100 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+
             android:id="@+id/target"/>
 
     </RelativeLayout>
 
     <!-- The navigation drawer -->
     <LinearLayout
+        android:orientation="vertical"
         android:id="@+id/left_drawer"
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="left"
-        android:background="#333" >
+        android:background="#ffffff">
 
-    <Button
-        android:id="@+id/drawer_button"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:text="drawer button1" />
+        <Button
+            android:id="@+id/execute_button"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Execute" />
 
-</LinearLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- ROS_MASTER_URI -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="ROS_MASTER_URI"/>
+
+            <TextView
+                android:id="@+id/ros_master_uri"
+                android:layout_marginLeft="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <!-- local IP -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="ROS_IP"/>
+
+            <TextView
+                android:id="@+id/local_ip"
+                android:layout_marginLeft="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <!-- target point -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="Target"/>
+
+            <TextView
+                android:id="@+id/debug_info"
+                android:layout_marginLeft="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="information"/>
+
+            <!-- /tms_db_reader/dbreader connection -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="/tms_db_reader/dbreader"/>
+
+            <TextView
+                android:id="@+id/dbreader_status"
+                android:layout_marginLeft="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <!-- /rp_cmd connection -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="/rp_cmd"/>
+
+            <TextView
+                android:id="@+id/rp_cmd_status"
+                android:layout_marginLeft="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>
