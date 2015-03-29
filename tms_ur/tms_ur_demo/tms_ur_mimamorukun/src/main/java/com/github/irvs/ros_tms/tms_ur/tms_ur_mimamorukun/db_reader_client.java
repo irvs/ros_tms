@@ -47,12 +47,11 @@ public class db_reader_client extends AbstractNodeMain {
         Log.d(TAG, "onStart");
         String status;
         try {
-            Log.d(TAG, "try to connect");
             dbClient = connectedNode.newServiceClient("/tms_db_reader/dbreader", TmsdbGetData._TYPE);
-            status = "connected";
+            status = "Connected";
         } catch (ServiceNotFoundException e) {
             Log.d(TAG, "ServiceNotFoundException");
-            status = "failed to connect";
+            status = "Failed to connect";
             //throw new RosRuntimeException(e);
         }
         Message msg = handler.obtainMessage(TmsUrMimamorukun.DBREADER_STATUS, status);

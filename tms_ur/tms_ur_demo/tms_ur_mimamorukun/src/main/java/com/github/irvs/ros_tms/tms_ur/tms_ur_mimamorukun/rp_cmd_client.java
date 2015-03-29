@@ -39,10 +39,10 @@ public class rp_cmd_client extends AbstractNodeMain {
         String status;
         try {
             rpClient = connectedNode.newServiceClient("hogehogehoge", rp_cmd._TYPE);
-            status = "connected";
+            status = "Connected";
         } catch (ServiceNotFoundException e) {
             Log.d(TAG, "ServiceNotFoundException");
-            status = "failed to connect";
+            status = "Failed to connect";
             //throw new RosRuntimeException(e);
         }
         Message msg = handler.obtainMessage(TmsUrMimamorukun.RP_CMD_STATUS, status);
