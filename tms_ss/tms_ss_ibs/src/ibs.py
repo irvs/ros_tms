@@ -191,8 +191,6 @@ class CLoadCell(object):
             self.__mPreSensorsWeight = pre
             return weight, x, y, diffs
 
-#------------------------------------------------------------------------------
-
 
 class CTR3(object):
 
@@ -345,7 +343,7 @@ class CTR3(object):
             return -1
 
         tag_num = int(buf[5])  # 読み込むタグの数
-        #-------------
+
         # タグ情報の読込
         for i in xrange(tag_num):
             # char hex[17]
@@ -422,8 +420,6 @@ class CTR3(object):
             return -1, diffUID
         return 0, diffUID
 
-#------------------------------------------------------------------------------
-
 
 class CTagOBJ(object):
 
@@ -452,8 +448,6 @@ class CTagOBJ(object):
     def Close(self):
         pass
 
-#------------------------------------------------------------------------------
-
 
 class CStage(object):
 
@@ -480,8 +474,6 @@ class CStage(object):
     # def SetAntenna(self, char AN):
     def SetAntenna(self, AN):
         self.mAntenna = AN
-
-#------------------------------------------------------------------------------
 
 
 class CIntelCab(object):
@@ -601,8 +593,6 @@ class CIntelCab(object):
                 self.__cObjOut[No] = self.cStage[No].cTagObj.at(cnt)
                 self.__InOutLC[No] = -1
         return value, cInOut
-
-#------------------------------------------------------------------------------
 
 
 def main(self, argc, **argv):
@@ -740,7 +730,7 @@ def main(self, argc, **argv):
                 print "\n\nMOVE: ",
                 change_flag = True
             elif state == IC_OBJECT_OUT:
-                ##Beep(2500,50); Sleep(50); Beep(2500,50)
+                # ##Beep(2500,50); Sleep(50); Beep(2500,50)
                 print "\n\n OUT: ",
                 change_flag = True
             else:
@@ -773,5 +763,4 @@ def main(self, argc, **argv):
 if __name__ == '__main__':
     main()
 
-#------------------------------------------------------------------------------
 # EOF
