@@ -38,7 +38,7 @@ public class rp_cmd_client extends AbstractNodeMain {
         super.onStart(connectedNode);
         String status;
         try {
-            rpClient = connectedNode.newServiceClient("hogehogehoge", rp_cmd._TYPE);
+            rpClient = connectedNode.newServiceClient("/rp_cmd", rp_cmd._TYPE);
             status = "Connected";
         } catch (ServiceNotFoundException e) {
             Log.d(TAG, "ServiceNotFoundException");
@@ -54,35 +54,42 @@ public class rp_cmd_client extends AbstractNodeMain {
         super.onShutdown(node);
     }
 
-    public void sendRequest(double x, double y, double yaw) {
+    public void sendRequest(double x, double y, double yaw, boolean type) {
         Log.d(TAG, "sendRequest()");
-/*
 
         final rp_cmdRequest req = rpClient.newMessage();
 
         final double[] arg = {-1, x, y, yaw};
         req.setCommand(9001); // move
-        req.setType(true); // real (not simulation mode)
         req.setRobotId(2007); // Mimamorukun
+        req.setType(type); // true: real, false: simulation
         req.setArg(arg); // several arguments
 
+        /*
         rpClient.call(req, new ServiceResponseListener<rp_cmdResponse>() {
             @Override
             public void onSuccess(rp_cmdResponse res) {
                 Log.d(TAG, "onSuccess()" + res.getResult());
-                Message msg = handler.obtainMessage(TmsUrMimamorukun.RP_CMD_RESULT, "succeeded");
+                Message msg = handler.obtainMessage(TmsUrMimamorukun.RP_CMD_RESULT, "Succeeded to call service");
                 handler.sendMessage(msg);
             }
 
             @Override
             public void onFailure(RemoteException e) {
                 Log.d(TAG, "onFailure");
-                Message msg = handler.obtainMessage(TmsUrMimamorukun.RP_CMD_RESULT, "Failed to connect the server");
+                Message msg = handler.obtainMessage(TmsUrMimamorukun.RP_CMD_RESULT, "Failed to call service");
                 handler.sendMessage(msg);
             }
         });
-*/
-        Message msg = handler.obtainMessage(TmsUrMimamorukun.RP_CMD_RESULT, "debug");
-        handler.sendMessage(msg);
+        */
+
+        try {
+            Thread.sleep(1000);
+            Message msg = handler.obtainMessage(TmsUrMimamorukun.RP_CMD_RESULT, "Succeeded to call service");
+            handler.sendMessage(msg);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 }

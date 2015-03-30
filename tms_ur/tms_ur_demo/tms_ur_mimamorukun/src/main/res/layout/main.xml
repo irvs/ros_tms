@@ -12,58 +12,115 @@
                     android:layout_height="match_parent"
                     android:id="@+id/main_layout" >
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:weightSum="1">
 
-            <RelativeLayout
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:id="@+id/map_image"/>
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="20dp"
-                    android:id="@+id/map_image"/>
+            <LinearLayout
+                android:id="@+id/debug_info"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_alignParentTop="true"
+                android:gravity="center_horizontal">
 
                 <LinearLayout
                     android:orientation="vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginLeft="10dp"
-                    android:id="@+id/linearLayout">
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="touch_position"
-                        android:id="@+id/touch_position"
+                        android:text="onTouch()"
                         android:textColor="#000000"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="touch_acation"
-                        android:id="@+id/touch_action"
+                        android:id="@+id/ontouch_info"
+                        android:text="ontouch_info"
                         android:textColor="#000000"/>
 
                 </LinearLayout>
 
-                <Switch
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Current position"
+                        android:textColor="#000000"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/current_info"
+                        android:text="current_info"
+                        android:textColor="#000000"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Target position"
+                        android:textColor="#000000"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/target_info"
+                        android:text="target_info"
+                        android:textColor="#000000"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <RadioGroup
+                android:id="@+id/mode_switch"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#c0c0c0"
+                android:layout_marginBottom="30dp"
+                android:layout_marginLeft="10dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignLeft="@+id/map_image">
+
+                <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/mode_switch"
-                    android:textOn="Orientation"
-                    android:textOff="Position"
-                    android:layout_above="@+id/linearLayout"
-                    android:layout_alignLeft="@+id/linearLayout"/>
+                    android:text="Position"
+                    android:id="@+id/radio_position"/>
 
-            </RelativeLayout>
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:text="Orientation"
+                    android:id="@+id/radio_orientation"/>
 
-        </LinearLayout>
+            </RadioGroup>
+
+        </RelativeLayout>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -73,7 +130,6 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:id="@+id/target"/>
 
     </RelativeLayout>
@@ -125,20 +181,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            <!-- target point -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:text="Target"/>
-
-            <TextView
-                android:id="@+id/debug_info"
-                android:layout_marginLeft="30dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="information"/>
-
             <!-- /tms_db_reader/dbreader connection -->
             <TextView
                 android:layout_width="match_parent"
@@ -164,6 +206,13 @@
                 android:layout_marginLeft="30dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/rp_cmd_info"
+                android:layout_marginLeft="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="information"/>
 
             <!-- Setting -->
             <TextView

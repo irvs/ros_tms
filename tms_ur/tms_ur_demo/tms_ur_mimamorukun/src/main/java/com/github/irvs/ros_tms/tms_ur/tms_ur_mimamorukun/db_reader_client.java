@@ -26,6 +26,7 @@ public class db_reader_client extends AbstractNodeMain {
     private ServiceClient<TmsdbGetDataRequest, TmsdbGetDataResponse> dbClient;
     private Handler handler;
     public Pose current_pose = new Pose();
+    private boolean callable = false;
 
     public db_reader_client(Handler handler) {
         this.handler = handler;
@@ -49,6 +50,7 @@ public class db_reader_client extends AbstractNodeMain {
         try {
             dbClient = connectedNode.newServiceClient("/tms_db_reader/dbreader", TmsdbGetData._TYPE);
             status = "Connected";
+            callable = true;
         } catch (ServiceNotFoundException e) {
             Log.d(TAG, "ServiceNotFoundException");
             status = "Failed to connect";
@@ -57,41 +59,43 @@ public class db_reader_client extends AbstractNodeMain {
         Message msg = handler.obtainMessage(TmsUrMimamorukun.DBREADER_STATUS, status);
         handler.sendMessage(msg);
 
-        connectedNode.executeCancellableLoop(new CancellableLoop() {
-            final TmsdbGetDataRequest req = dbClient.newMessage();
+        if (callable) {
+            connectedNode.executeCancellableLoop(new CancellableLoop() {
+                final TmsdbGetDataRequest req = dbClient.newMessage();
 
-            @Override
-            protected void setup() {
-                Log.d(TAG, "setup");
-                req.getTmsdb().setId(2007); // Mimamorukun ID
-                req.getTmsdb().setSensor(3001); // 3501 kalman filter data
-            }
+                @Override
+                protected void setup() {
+                    Log.d(TAG, "setup");
+                    req.getTmsdb().setId(2007); // Mimamorukun ID
+                    req.getTmsdb().setSensor(3001); // 3501 kalman filter data
+                }
 
-            @Override
-            protected void loop() throws InterruptedException {
-                Log.d(TAG, "loop()");
-                dbClient.call(req, new ServiceResponseListener<TmsdbGetDataResponse>() {
-                    @Override
-                    public void onSuccess(TmsdbGetDataResponse res) {
-                        Log.d(TAG, "onSuccess()");
-                        current_pose.x = res.getTmsdb().get(0).getX();
-                        current_pose.y = res.getTmsdb().get(0).getY();
-                        current_pose.yaw = res.getTmsdb().get(0).getRy();
-                        Message msg = handler.obtainMessage(TmsUrMimamorukun.UPDATE_POSITION,
-                            "from db_reader\n\tX:" + current_pose.x + ",Y:" + current_pose.y + ",Yaw:" + current_pose.yaw);
-                        handler.sendMessage(msg);
-                    }
+                @Override
+                protected void loop() throws InterruptedException {
+                    Log.d(TAG, "loop()");
+                    dbClient.call(req, new ServiceResponseListener<TmsdbGetDataResponse>() {
+                        @Override
+                        public void onSuccess(TmsdbGetDataResponse res) {
+                            Log.d(TAG, "onSuccess()");
+                            current_pose.x = res.getTmsdb().get(0).getX();
+                            current_pose.y = res.getTmsdb().get(0).getY();
+                            current_pose.yaw = res.getTmsdb().get(0).getRy();
+                            Message msg = handler.obtainMessage(TmsUrMimamorukun.UPDATE_POSITION,
+                                "from db_reader\n\tX:" + current_pose.x + ",Y:" + current_pose.y + ",Yaw:" + current_pose.yaw);
+                            handler.sendMessage(msg);
+                        }
 
-                    @Override
-                    public void onFailure(RemoteException e) {
-                        Log.d(TAG, "onFailure");
-                    }
-                });
+                        @Override
+                        public void onFailure(RemoteException e) {
+                            Log.d(TAG, "onFailure");
+                        }
+                    });
 
-                // update the position on regular basis
-                Thread.sleep(500); // 500msec
-            }
-        });
+                    // update the position on regular basis
+                    Thread.sleep(500); // 500msec
+                }
+            });
+        }
     }
 
     @Override

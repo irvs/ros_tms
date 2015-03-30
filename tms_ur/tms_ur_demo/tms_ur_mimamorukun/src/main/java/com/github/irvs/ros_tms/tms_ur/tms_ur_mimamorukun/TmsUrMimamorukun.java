@@ -21,6 +21,9 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +41,9 @@ public class TmsUrMimamorukun extends RosActivity
 {
     private String TAG = "tms_ur_mimamorukun";
 
-    private TextView touch_position, touch_action, debug_info;
+    private LinearLayout debug_info;
+    private TextView ontouch_info, rp_cmd_info, target_info, current_info;
+
     private TextView ros_master_uri, local_ip;
     private TextView rp_cmd_status, dbreader_status;
 
@@ -55,26 +60,35 @@ public class TmsUrMimamorukun extends RosActivity
     private Handler handler;
 
     private Button execute_button;
-    private Switch debug_switch, mode_switch;
+    private Switch debug_switch;
+
+    private RadioGroup mode_switch;
+    private RadioButton radio_position;
+    private RadioButton radio_orientation;
 
     // conditional tag for handler
     public static final int UPDATE_POSITION = 0;
     public static final int RP_CMD_RESULT = 1;
     public static final int RP_CMD_STATUS = 2;
     public static final int DBREADER_STATUS = 3;
+    public static final int POSITION_SETTING = 0;
+    public static final int ORIENTATION_SETTING = 1;
 
-    // ros nodes
+    //ros nodes
+    private static URI master_uri = URI.create("http://192.168.4.170:11311");
     private rp_cmd_client rp_cmd_client;
     private db_reader_client db_reader_client;
 
     final Context context = this;
 
+    //pose
     public class Pose {
         public double x;
         public double y;
         public double yaw;
     }
 
+    //Icon Class for the Wheelchair
     public class WcIcon {
         public ImageView current, target;
         public float[] current_size = {0, 0};
@@ -99,7 +113,7 @@ public class TmsUrMimamorukun extends RosActivity
                 InputStream is = as.open("images/wc_icon2.png");
                 Bitmap bm = BitmapFactory.decodeStream(is);
                 target.setImageBitmap(bm);
-                target.setScaleX((float)0.15);
+                target.setScaleX((float) 0.15);
                 target.setScaleY((float) 0.15);
             } catch (IOException e){
                 Log.e(TAG, e.toString());
@@ -112,100 +126,140 @@ public class TmsUrMimamorukun extends RosActivity
         }
     }
 
+    public class MapImage {
+        public ImageView map_image;
+        public int[] map_offset = {0, 0};
+        public float[] map_size = {0, 0};
+        public float[] room_size = {0, 0};
+
+        public MapImage() {
+            map_image = (ImageView)findViewById(R.id.map_image);
+            AssetManager as = getResources().getAssets();
+            try {
+                InputStream is = as.open("images/map_image.png");
+                Bitmap bm = BitmapFactory.decodeStream(is);
+                map_image.setImageBitmap(bm);
+            } catch (IOException e) {
+                Log.e(TAG, e.toString());
+            }
+            mapTouchListener = new MapTouchListener();
+            map_image.setOnTouchListener(mapTouchListener);
+        }
+
+        public void init() {
+            map_image.getLocationOnScreen(map_offset);
+
+            //the height of statusbar
+            final Rect rect = new Rect();
+            Window window = getWindow();
+            window.getDecorView().getWindowVisibleDisplayFrame(rect);
+            Log.d(TAG, "statusbar height:" + rect.top);
+
+            map_offset[1] -= rect.top;
+        }
+    }
+
+    //OnTouchListener for the map
     public class MapTouchListener implements View.OnTouchListener {
         double touch_x, touch_y, orientation;
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             Log.d(TAG, "X:" + event.getX() + ",Y:" + event.getY());
-            touch_position.setText("X:" + event.getX() + ", Y:" + event.getY());
-            if (mode == 0) {
-                wc_icon.target_pose.x = event.getX();
-                wc_icon.target_pose.y = event.getY();
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        Log.d(TAG, "getAction()" + "ACTION_DOWN");
-                        touch_action.setText("ACTION_DOWN");
-                        drawTarget();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        Log.d(TAG, "getAction()" + "ACTION_UP");
-                        touch_action.setText("ACTION_UP");
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        Log.d(TAG, "getAction()" + "ACTION_MOVE");
-                        touch_action.setText("ACTION_MOVE");
-                        drawTarget();
-                        break;
-                    case MotionEvent.ACTION_CANCEL:
-                        Log.d(TAG, "getAction()" + "ACTION_CANCEL");
-                        touch_action.setText("ACTION_CANCEL");
-                        break;
-                }
-            } else if (mode == 1) {
-                touch_x = event.getX();
-                touch_y = event.getY();
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        Log.d(TAG, "getAction()" + "ACTION_DOWN");
-                        touch_action.setText("ACTION_DOWN");
-                        rotateTarget();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        Log.d(TAG, "getAction()" + "ACTION_UP");
-                        touch_action.setText("ACTION_UP");
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        Log.d(TAG, "getAction()" + "ACTION_MOVE");
-                        touch_action.setText("ACTION_MOVE");
-                        rotateTarget();
-                        break;
-                    case MotionEvent.ACTION_CANCEL:
-                        Log.d(TAG, "getAction()" + "ACTION_CANCEL");
-                        touch_action.setText("ACTION_CANCEL");
-                        break;
-                }
+            ontouch_info.setText("onTouch()\ngetX: " + event.getX() + "\ngetY: " + event.getY());
+            touch_x = event.getX();
+            touch_y = event.getY();
+            switch (mode) {
+                case POSITION_SETTING:
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            Log.d(TAG, "getAction()" + "ACTION_DOWN");
+                            drawTargetIcon();
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            Log.d(TAG, "getAction()" + "ACTION_UP");
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            Log.d(TAG, "getAction()" + "ACTION_MOVE");
+                            drawTargetIcon();
+                            break;
+                        case MotionEvent.ACTION_CANCEL:
+                            Log.d(TAG, "getAction()" + "ACTION_CANCEL");
+                            break;
+                    }
+                    setTargetPosition();
+                    break;
+                case ORIENTATION_SETTING:
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            Log.d(TAG, "getAction()" + "ACTION_DOWN");
+                            rotateTargetIcon();
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            Log.d(TAG, "getAction()" + "ACTION_UP");
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            Log.d(TAG, "getAction()" + "ACTION_MOVE");
+                            rotateTargetIcon();
+                            break;
+                        case MotionEvent.ACTION_CANCEL:
+                            Log.d(TAG, "getAction()" + "ACTION_CANCEL");
+                            break;
+                    }
+                    wc_icon.target_pose.yaw = wc_icon.target.getRotation()/* TODO + offset */;
+                    break;
             }
             return true;
         }
 
-        public void drawTarget() {
-            wc_icon.target.setVisibility(View.VISIBLE);
-            wc_icon.target.setX((float)wc_icon.target_pose.x - wc_icon.target_size[0] / 2 + map_offset[0]);
-            wc_icon.target.setY((float)wc_icon.target_pose.y - wc_icon.target_size[1] / 2 + map_offset[1]);
-            debug_info.setText("x: " + String.format("%.2f[m]\n", wc_icon.target_pose.x) +
-                "y: " + String.format("%.2f[m]\n", wc_icon.target_pose.y) +
-                "yaw: " + String.format("%.2f[deg]", wc_icon.target_pose.yaw));
+        public void setTargetPosition() {
+            wc_icon.target_pose.x = touch_x;
+            wc_icon.target_pose.y = touch_y;
         }
 
-        public void rotateTarget() {
+        public void drawTargetIcon() {
+            wc_icon.target.setVisibility(View.VISIBLE);
+            wc_icon.target.setX((float)touch_x - wc_icon.target_size[0] / 2 + map_offset[0]);
+            wc_icon.target.setY((float)touch_y - wc_icon.target_size[1] / 2 + map_offset[1]);
+            showTargetInfo();
+        }
+
+        public void rotateTargetIcon() {
             touch_x -= wc_icon.target.getX() + wc_icon.target_size[0] / 2 - map_offset[0];
             touch_y -= wc_icon.target.getY() + wc_icon.target_size[1] / 2 - map_offset[1];
             orientation = Math.atan2(touch_y, touch_x);
             wc_icon.target.setRotation((float)(orientation*180/Math.PI) - 90);
-            wc_icon.target_pose.yaw = wc_icon.target.getRotation();
-            debug_info.setText("x: " + String.format("%.2f[m]\n", wc_icon.target_pose.x) +
-                    "y: " + String.format("%.2f[m]\n", wc_icon.target_pose.y) +
-                    "yaw: " + String.format("%.2f[deg]", wc_icon.target_pose.yaw));
+            showTargetInfo();
+        }
+
+        public void showTargetInfo() {
+            rp_cmd_info.setText("x: " + String.format("%.2f[m]\n", wc_icon.target_pose.x) +
+                "y: " + String.format("%.2f[m]\n", wc_icon.target_pose.y) +
+                "yaw: " + String.format("%.2f[deg]", wc_icon.target_pose.yaw));
+            target_info.setText("x: " + String.format("%.2f[m]\n", wc_icon.target_pose.x) +
+                "y: " + String.format("%.2f[m]\n", wc_icon.target_pose.y) +
+                "yaw: " + String.format("%.2f[deg]", wc_icon.target_pose.yaw));
         }
     }
-    public TmsUrMimamorukun()
-    {
-        super("Mimamorukun Control", "Mimamorukun Control", URI.create("http://192.168.4.170:11311"));
+
+    public TmsUrMimamorukun() {
+        // the third arg is to avoid the MaterChooser activity
+        super("Mimamorukun Control", "Mimamorukun Control", master_uri);
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
         // for debug
-        touch_position = (TextView)findViewById(R.id.touch_position);
-        touch_position.setVisibility(View.INVISIBLE);
-        touch_action = (TextView)findViewById(R.id.touch_action);
-        touch_action.setVisibility(View.INVISIBLE);
-        debug_info = (TextView)findViewById(R.id.debug_info);
+        ontouch_info = (TextView)findViewById(R.id.ontouch_info);
+        target_info = (TextView)findViewById(R.id.target_info);
+        current_info = (TextView)findViewById(R.id.current_info);
+        debug_info = (LinearLayout)findViewById(R.id.debug_info);
+        debug_info.setVisibility(View.INVISIBLE);
+
+        rp_cmd_info = (TextView)findViewById(R.id.rp_cmd_info);
         ros_master_uri  = (TextView)findViewById(R.id.ros_master_uri);
         local_ip  = (TextView)findViewById(R.id.local_ip);
         rp_cmd_status = (TextView)findViewById(R.id.rp_cmd_status);
@@ -230,7 +284,8 @@ public class TmsUrMimamorukun extends RosActivity
         // navigation drawer
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerToggle = new ActionBarDrawerToggle(this, drawer,
-            org.ros.android.android_10.R.mipmap.icon, R.string.drawer_open,
+            org.ros.android.android_10.R.mipmap.icon,
+            R.string.drawer_open,
             R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
@@ -269,15 +324,10 @@ public class TmsUrMimamorukun extends RosActivity
                         wc_icon.current_pose.x = db_reader_client.current_pose.x;
                         wc_icon.current_pose.y = db_reader_client.current_pose.y;
                         wc_icon.current_pose.yaw = db_reader_client.current_pose.yaw;
-                        if(false) {
-                            wc_icon.current.setX((float) wc_icon.current_pose.x - wc_icon.current_size[0] / 2 + map_offset[0]);
-                            wc_icon.current.setY((float) wc_icon.current_pose.y - wc_icon.current_size[1] / 2 + map_offset[1]);
-                            wc_icon.current.setRotation((float) wc_icon.current_pose.yaw);
-                        } else {
-                            wc_icon.current.setX(100);
-                            wc_icon.current.setY(100);
-                            wc_icon.current.setRotation(90);
-                        }
+                        current_info.setText("x: " + String.format("%.2f[m]\n", wc_icon.current_pose.x) +
+                            "y: " + String.format("%.2f[m]\n", wc_icon.current_pose.y) +
+                            "yaw: " + String.format("%.2f[deg]", wc_icon.current_pose.yaw));
+                        drawCurrentIcon();
                         break;
                     }
                     case RP_CMD_RESULT: {
@@ -295,6 +345,18 @@ public class TmsUrMimamorukun extends RosActivity
                     }
                 }
             }
+
+            private void drawCurrentIcon() {
+                if(false) {
+                    wc_icon.current.setX((float) wc_icon.current_pose.x - wc_icon.current_size[0] / 2 + map_offset[0]);
+                    wc_icon.current.setY((float) wc_icon.current_pose.y - wc_icon.current_size[1] / 2 + map_offset[1]);
+                    wc_icon.current.setRotation((float) wc_icon.current_pose.yaw);
+                } else {
+                    wc_icon.current.setX(100);
+                    wc_icon.current.setY(100);
+                    wc_icon.current.setRotation(90);
+                }
+            }
         };
 
         // service execution
@@ -304,8 +366,9 @@ public class TmsUrMimamorukun extends RosActivity
             public void onClick(View v) {
                 Log.d(TAG, "onClick");
                 drawer.closeDrawers();
-                //TODO ProgressDialogの追加
-                rp_cmd_client.sendRequest(wc_icon.target_pose.x, wc_icon.target_pose.y, (wc_icon.target_pose.yaw * (float) Math.PI) / 180);
+
+                //rp_cmd_client.sendRequest(wc_icon.target_pose.x, wc_icon.target_pose.y, (wc_icon.target_pose.yaw * (float) Math.PI) / 180, false);
+                Log.d(TAG,"check");
             }
         });
 
@@ -320,23 +383,28 @@ public class TmsUrMimamorukun extends RosActivity
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked == true) {
-                    touch_action.setVisibility(View.VISIBLE);
-                    touch_position.setVisibility(View.VISIBLE);
+                    debug_info.setVisibility(View.VISIBLE);
                 } else {
-                    touch_action.setVisibility(View.INVISIBLE);
-                    touch_position.setVisibility(View.INVISIBLE);
+                    debug_info.setVisibility(View.INVISIBLE);
                 }
             }
         });
 
-        mode_switch = (Switch)findViewById(R.id.mode_switch);
-        mode_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mode_switch = (RadioGroup)findViewById(R.id.mode_switch);
+        radio_position = (RadioButton)findViewById(R.id.radio_position);
+        radio_orientation = (RadioButton)findViewById(R.id.radio_orientation);
+        mode_switch.check(radio_position.getId());
+        mode_switch.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked == true) {
-                    mode = 1;
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (-1 == checkedId) {
+                    ;
                 } else {
-                    mode = 0;
+                    if (checkedId == radio_position.getId()) {
+                        mode = POSITION_SETTING;
+                    } else {
+                        mode = ORIENTATION_SETTING;
+                    }
                 }
             }
         });
@@ -347,9 +415,11 @@ public class TmsUrMimamorukun extends RosActivity
         Log.d(TAG, "onWindowFocusChanged()");
         super.onWindowFocusChanged(hasFocus);
 
+        //map offset
         map_image.getLocationOnScreen(map_offset);
         Log.d(TAG, "map_offset x:" + map_offset[0] + ",y:" + map_offset[1]);
 
+        //the height of statusbar
         final Rect rect = new Rect();
         Window window = super.getWindow();
         window.getDecorView().getWindowVisibleDisplayFrame(rect);
@@ -358,6 +428,7 @@ public class TmsUrMimamorukun extends RosActivity
         map_offset[1] -= rect.top;
     }
 
+    // region NavigationDrawer
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -377,6 +448,7 @@ public class TmsUrMimamorukun extends RosActivity
         }
         return super.onOptionsItemSelected(item);
     }
+    //endregion
 
     @Override
     protected void onStart() {
