@@ -12,7 +12,6 @@
                     android:layout_height="match_parent"
                     android:id="@+id/main_layout" >
 
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -185,7 +184,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:text="ROS_IP"/>
+                    android:text="\nROS_IP"/>
 
                 <TextView
                     android:id="@+id/local_ip"
@@ -198,7 +197,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:text="/tms_db_reader/dbreader"/>
+                    android:text="\n/tms_db_reader/dbreader"/>
 
                 <TextView
                     android:id="@+id/dbreader_status"
@@ -211,7 +210,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:text="/rp_cmd"/>
+                    android:text="\n/rp_cmd"/>
 
                 <TextView
                     android:id="@+id/rp_cmd_status"
@@ -224,7 +223,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:text="rp_cmd.srv"/>
+                    android:text="\nrp_cmd.srv"/>
 
                 <TextView
                     android:id="@+id/rp_cmd_info"
@@ -238,7 +237,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:text="Setting"/>
+                    android:text="\nSetting"/>
 
                 <LinearLayout
                     android:layout_marginLeft="30dp"

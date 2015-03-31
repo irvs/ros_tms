@@ -52,7 +52,7 @@ public class TmsUrMimamorukun extends RosActivity
     private WcIcon wc_icon;
     private RoomMap room_map;
 
-    private int mode = 0;
+    private int adjust_mode = 0;
 
     private ActionBarDrawerToggle drawerToggle;
     private DrawerLayout drawer;
@@ -63,7 +63,7 @@ public class TmsUrMimamorukun extends RosActivity
     private Switch debug_switch;
     private Switch calib_switch;
 
-    //mode switch
+    //adjust_mode switch
     private RadioGroup mode_switch;
     private RadioButton radio_position;
     private RadioButton radio_orientation;
@@ -82,7 +82,6 @@ public class TmsUrMimamorukun extends RosActivity
     private db_reader_client db_reader_client;
 
     final Context context = this;
-    private float density;
 
     //pose
     public class Pose {
@@ -142,15 +141,15 @@ public class TmsUrMimamorukun extends RosActivity
         private MapTouchListener mapTouchListener;
         public int[] map_offset = {0, 0};
         public float[] map_origin = {0, 0};
-        public float[] map_size = {0, 0};
+        public float[] map_size = {0, 0}; //unused
         public boolean calib_mode = false;
+        public double map_scale; //TODO: ???
 
         public ImageView calib;
         public float[] calib_size = {0, 0};
 
         public RoomMap() {
             mapTouchListener = new MapTouchListener();
-            Log.d("calib", "check");
             map_origin[0] = (float)17.87;
             map_origin[1] = (float)626.2;
         }
@@ -198,7 +197,9 @@ public class TmsUrMimamorukun extends RosActivity
                 }
             }
             map_image.setOnTouchListener(mapTouchListener);
+        }
 
+        public void getSize() {
             map_image.getLocationOnScreen(map_offset);
             final Rect rect = new Rect();
             Window window = getWindow();
@@ -207,6 +208,7 @@ public class TmsUrMimamorukun extends RosActivity
             Log.d(TAG, "statusbar height: " + rect.top);
             Log.d("CHECK", "map_offset: " + map_offset[0] + ", " + map_offset[1]);
 
+            //set the map_size[]: unused
             if (true) {
                 //actual size
                 RectF imageRect = new RectF();
@@ -242,7 +244,7 @@ public class TmsUrMimamorukun extends RosActivity
                 touch_x = event.getX();
                 touch_y = event.getY();
                 if (!calib_mode) {
-                    switch (mode) {
+                    switch (adjust_mode) {
                         case POSITION_SETTING:
                             setTargetPosition();
                             switch (event.getAction()) {
@@ -339,9 +341,6 @@ public class TmsUrMimamorukun extends RosActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        density = getResources().getDisplayMetrics().density;
-        Log.d("CHECK", "density: " + density);
-
         // for debug
         ontouch_info = (TextView)findViewById(R.id.ontouch_info);
         target_info = (TextView)findViewById(R.id.target_info);
@@ -360,6 +359,7 @@ public class TmsUrMimamorukun extends RosActivity
 
         // the map of tms room
         room_map = new RoomMap();
+        room_map.init();
 
         // navigation drawer
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -475,19 +475,19 @@ public class TmsUrMimamorukun extends RosActivity
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked == true) {
-                    Log.d("calib", "calib_switch:checked");
                     wc_icon.target.setVisibility(View.INVISIBLE);
                     wc_icon.current.setVisibility(View.INVISIBLE);
                     mode_switch.setVisibility(View.INVISIBLE);
                     room_map.calib_mode = true;
                     room_map.init();
+                    room_map.getSize();
                 } else {
-                    Log.d("calib", "calib_switch:unchecked");
                     wc_icon.target.setVisibility(View.VISIBLE);
                     wc_icon.current.setVisibility(View.VISIBLE);
                     mode_switch.setVisibility(View.VISIBLE);
                     room_map.calib_mode = false;
                     room_map.init();
+                    room_map.getSize();
                 }
             }
         });
@@ -503,9 +503,9 @@ public class TmsUrMimamorukun extends RosActivity
                     ;
                 } else {
                     if (checkedId == radio_position.getId()) {
-                        mode = POSITION_SETTING;
+                        adjust_mode = POSITION_SETTING;
                     } else {
-                        mode = ORIENTATION_SETTING;
+                        adjust_mode = ORIENTATION_SETTING;
                     }
                 }
             }
@@ -517,7 +517,7 @@ public class TmsUrMimamorukun extends RosActivity
         Log.d(TAG, "onWindowFocusChanged()");
         super.onWindowFocusChanged(hasFocus);
 
-        room_map.init();
+        room_map.getSize();
         wc_icon.init();
     }
 
