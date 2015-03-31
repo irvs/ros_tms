@@ -207,7 +207,9 @@ class CTR3(object):
 
     def __init__(self):
         self.__mActiveAntenna = 0
-        self.__mUIDs = [""] * TR3_USED_ANT_NUM
+        # @TODO: make __mUIDs 2 dimension string list
+        # self.__mUIDs = [""] * TR3_USED_ANT_NUM
+        self.__mUIDs = [list() for i in xrange(TR3_USED_ANT_NUM)]
         self.__mCommand = [0] * TR3_MAX_COMMAND_SIZE
 
     def Setup(self):
@@ -310,6 +312,7 @@ class CTR3(object):
 
     # タグの読み取り
     def Inventory2(self):
+        del self.__mUIDs[self.__mActiveAntenna][:]
         # アンテナを変更しないと既読込のUIDは返さず，新規UIDのみ返す
         # int i, j
         self.__mCommand[2] = 0x78  # コマンド
@@ -318,7 +321,7 @@ class CTR3(object):
         self.__mCommand[5] = 0x00  # アンチコリジョン有
         self.__mCommand[6] = 0x01  # 出力指定.取得データ数＋UIDデータ
 
-        buf = [0] * TR3_TAG_SIZE * TR3_TAG_MAX
+        buf = [int()] * TR3_TAG_SIZE * TR3_TAG_MAX
         self.__OpenPort()
         self.AddChecksum()
         self.__ser.write("".join(map(chr, self.__mCommand)))
@@ -333,24 +336,24 @@ class CTR3(object):
             self.__ser.read(size=TR3_TAG_SIZE * TR3_TAG_MAX)
             # read(fd, buf, * TR3_TAG_MAX)
             return -1
-
         tag_num = buf[5]  # 読み込むタグの数
 
         # タグ情報の読込
         for i in xrange(tag_num):
             # char hex[17]
             hexs = [chr(0)] * 17
-            self.__ser.read(size=TR3_TAG_SIZE)
             # read(fd, buf, TR3_TAG_SIZE)
+            buf = map(ord, self.__ser.read(size=TR3_TAG_SIZE))
             # sprintf(hexs, "%02X%02X%02X%02X%02X%02X%02X%02X",
             #         buf[12],    buf[11],    buf[10],    buf[9],
             #         buf[8],     buf[7],     buf[6],     buf[5])
             # sprintf(hexs, "%02X%02X%02X%02X%02X%02X%02X%02X",
             #         buf[12],    buf[11],    buf[10],    buf[9],
             #         buf[8],     buf[7],     buf[6],     buf[5])
-            hexs = "{0:0<2X}{1:0<2X}{2:0<2X}{3:0<2X}{4:0<2X}{5:0<2X}{6:0<2X}{7:0<2X}".format(
+            hexs = "{0:0>2X}{1:0>2X}{2:0>2X}{3:0>2X}{4:0>2X}{5:0>2X}{6:0>2X}{7:0>2X}".format(
                 buf[12], buf[11], buf[10], buf[9], buf[8], buf[7], buf[6], buf[5])
             # mUIDs[mActiveAntenna].push_back(std.string(hexs));
+            print "mAcAnt:", self.__mActiveAntenna
             self.__mUIDs[self.__mActiveAntenna].append(hexs)
         self.__ClosePort()
         return tag_num
@@ -377,46 +380,55 @@ class CTR3(object):
     def GetTagDiff(self, diffUID, AN):
         self.__SetAntenna(AN)
         preUIDs = self.__mUIDs[self.__mActiveAntenna]
-        self.__mUIDs[mActiveAntenna].clear()
+        # self.__mUIDs[mActiveAntenna].clear()  # move to Inventory2()
         if self.Inventory2() == -1:
             return 0, diffUID
 
         # タグの増減の確認
-        std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
+        # std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
         # IDにあってpreIDにない => 追加された物品ID
         # vec_str increase
-        increase = [""]
-        std.set_difference(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(), preUIDs.begin(), preUIDs.end(),
-                           std.inserter(increase, increase.begin()))
+        increase = [str()]
+        # std.set_difference(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(),
+        #                    preUIDs.begin(), preUIDs.end(),
+        #                    std.inserter(increase, increase.begin()))
+        increase = list(set(self.__mUIDs[self.__mActiveAntenna]) - set(preUIDs))
 
         # preIDにあってIDにない => 取り除かれた物品ID
         # vec_str decrease
         decrease = [""]
-        std.set_difference(preUIDs.begin(), preUIDs.end(), mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(),
-                           std.inserter(decrease, decrease.begin()))
+        # std.set_difference(preUIDs.begin(), preUIDs.end(),
+        #                    mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(),
+        #                    std.inserter(decrease, decrease.begin()))
+        decrease = list(set(preUIDs) - set(self.__mUIDs[self.__mActiveAntenna]))
 
         # 増減なし
-        if (increase.size() == 0) and (decrease.size() == 0):
+        if (len(increase) == 0) and (len(decrease) == 0):
             return 0, diffUID
         # 物品追加
-        if (increase.size() == 1) and (decrease.size() == 0):
+        if (len(increase) == 1) and (len(decrease) == 0):
             diffUID = increase[0]
             return 1, diffUID
         # 物品除去
-        if (increase.size() == 0) and (decrease.size() == 1):
+        if (len(increase) == 0) and (len(decrease) == 1):
             diffUID = decrease[0]
             return -1, diffUID
+        # @TODO:maybe, unreachable and wrong branch serquence.
         # 複数物品の同時入出時（１個ずつ検出するようにする）
-        if increase.size() >= 1:
-            preUIDs.push_back(increase[0])
-            mUIDs[mActiveAntenna] = preUIDs
-            std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
+        if len(increase) >= 1:
+            # preUIDs.push_back(increase[0])
+            # self.__mUIDs[self.__mActiveAntenna] = preUIDs
+            # std.sort(self.__mUIDs[self.__mActiveAntenna].begin(),
+            #          self.__mUIDs[self.__mActiveAntenna].end())
+            self.__mUID[self.__mActiveAntenna].sort()
             diffUID = increase[0]
             return 1, diffUID
-        if decrease.size() >= 1:
-            preUIDs.erase(remove(preUIDs.begin(), preUIDs.end(), decrease[0]),  preUIDs.end())
-            mUIDs[mActiveAntenna] = preUIDs
-            std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
+        if len(decrease) >= 1:
+            # preUIDs.erase(remove(preUIDs.begin(), preUIDs.end(), decrease[0]),
+            #               preUIDs.end())
+            # mUIDs[mActiveAntenna] = preUIDs
+            # std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
+            self.__mUID[self.__mActiveAntenna].sort()
             diffUID = decrease[0]
             return -1, diffUID
         return 0, diffUID
