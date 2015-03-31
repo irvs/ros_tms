@@ -30,17 +30,18 @@ def test_CTR3():
     # tr3.AntennaPowerOFF()
     while True:
         time.sleep(0.1)
-        tr3.SetAntenna(0)
-        tr3.Inventory2()
-        print tr3._CTR3__mUIDs
+        # tr3.SetAntenna(0)
+        # tr3.Inventory2()
+        # print tr3._CTR3__mUIDs
+        print tr3.GetTagDiff("", 0)
 
-    while True:  # test like CIntelCab.UpdateObj serquence
-        tr3.AntennaPowerON()
-        # tr3.SetAntenna(cStage[No].mAntenna + 1)
-        tr3.SetAntenna(0)
-        # tr3.GetTagDiff(cObj.mUID, cStage[No].mAntenna)
-        tr3.GetTagDiff(0,0)
-        tr3.AntennaPowerOFF()
+    # while True:  # test like CIntelCab.UpdateObj serquence
+    #     tr3.AntennaPowerON()
+    #     # tr3.SetAntenna(cStage[No].mAntenna + 1)
+    #     tr3.SetAntenna(0)
+    #     # tr3.GetTagDiff(cObj.mUID, cStage[No].mAntenna)
+    #     tr3.GetTagDiff(0,0)
+    #     tr3.AntennaPowerOFF()
 
 
 def main():

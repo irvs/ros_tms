@@ -249,7 +249,7 @@ class CTR3(object):
         self.__ser.write("".join(map(chr, self.__mCommand)))
         buf = [int()] * 100
         buf = map(ord, self.__ser.read(size=9))
-        print "set antenna return:", buf
+        # print "set antenna return:", buf
         if buf[2] != TR3_ACK:
             # self.__ser.read(size = 100)
             buf = self.__ser.readline()
@@ -347,27 +347,25 @@ class CTR3(object):
             # sprintf(hexs, "%02X%02X%02X%02X%02X%02X%02X%02X",
             #         buf[12],    buf[11],    buf[10],    buf[9],
             #         buf[8],     buf[7],     buf[6],     buf[5])
-            # sprintf(hexs, "%02X%02X%02X%02X%02X%02X%02X%02X",
-            #         buf[12],    buf[11],    buf[10],    buf[9],
-            #         buf[8],     buf[7],     buf[6],     buf[5])
             hexs = "{0:0>2X}{1:0>2X}{2:0>2X}{3:0>2X}{4:0>2X}{5:0>2X}{6:0>2X}{7:0>2X}".format(
                 buf[12], buf[11], buf[10], buf[9], buf[8], buf[7], buf[6], buf[5])
             # mUIDs[mActiveAntenna].push_back(std.string(hexs));
-            print "mAcAnt:", self.__mActiveAntenna
+            # print "mAcAnt:", self.__mActiveAntenna
+            # print hexs
             self.__mUIDs[self.__mActiveAntenna].append(hexs)
         self.__ClosePort()
         return tag_num
 
     # 通信用サブ関数
     def AddChecksum(self):
-        print "command:", self.__mCommand
+        # print "command:", self.__mCommand
         num = self.__mCommand[3] + 5
-        print "num:", num
+        # print "num:", num
         self.__mCommand[num - 1] = TR3_ETX
         self.__mCommand[num + 1] = TR3_CR
         self.__mCommand[num] = 0x00
         for i in xrange(num):
-            print "i:", i
+            # print "i:", i
             self.__mCommand[num] += self.__mCommand[i]
         self.__mCommand[num] %= 256
         return num + 2
@@ -378,8 +376,9 @@ class CTR3(object):
     # def GetTagDiff(self, &diffUID, char AN):
     # TODO: fix arguments passed by reference(fixed)
     def GetTagDiff(self, diffUID, AN):
-        self.__SetAntenna(AN)
-        preUIDs = self.__mUIDs[self.__mActiveAntenna]
+        self.SetAntenna(AN)
+        diffUID = str()
+        preUIDs = list(self.__mUIDs[self.__mActiveAntenna])
         # self.__mUIDs[mActiveAntenna].clear()  # move to Inventory2()
         if self.Inventory2() == -1:
             return 0, diffUID
@@ -393,6 +392,7 @@ class CTR3(object):
         #                    preUIDs.begin(), preUIDs.end(),
         #                    std.inserter(increase, increase.begin()))
         increase = list(set(self.__mUIDs[self.__mActiveAntenna]) - set(preUIDs))
+        print set(self.__mUIDs[self.__mActiveAntenna]), set(preUIDs)
 
         # preIDにあってIDにない => 取り除かれた物品ID
         # vec_str decrease
@@ -420,7 +420,7 @@ class CTR3(object):
             # self.__mUIDs[self.__mActiveAntenna] = preUIDs
             # std.sort(self.__mUIDs[self.__mActiveAntenna].begin(),
             #          self.__mUIDs[self.__mActiveAntenna].end())
-            self.__mUID[self.__mActiveAntenna].sort()
+            self.__mUIDs[self.__mActiveAntenna].sort()
             diffUID = increase[0]
             return 1, diffUID
         if len(decrease) >= 1:
@@ -428,7 +428,7 @@ class CTR3(object):
             #               preUIDs.end())
             # mUIDs[mActiveAntenna] = preUIDs
             # std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
-            self.__mUID[self.__mActiveAntenna].sort()
+            self.__mUIDs[self.__mActiveAntenna].sort()
             diffUID = decrease[0]
             return -1, diffUID
         return 0, diffUID
