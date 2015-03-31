@@ -27,7 +27,7 @@ def test_CTagOBJ():
 def test_CTR3():
     tr3 = CTR3()
     tr3.Setup()
-    # tr3.AntennaPowerOFF()
+    tr3.AntennaPowerOFF()
     while True:
         time.sleep(0.1)
         # tr3.SetAntenna(0)

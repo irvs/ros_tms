@@ -270,11 +270,11 @@ class CTR3(object):
         self.__mCommand[5] = 0x01  # パワーON
 
         self.__OpenPort()
-        self.__AddChecksum()
-        self.__ser.write(self.__mCommand)
+        self.AddChecksum()
+        self.__ser.write("".join(map(chr, self.__mCommand)))
         # write(fd, mCommand, sizeof(mCommand))
         buf = [chr(0)] * 100
-        buf = self.__ser.read(size=9)
+        buf = map(ord, self.__ser.read(size=9))
         # read(fd, buf, 9)
         if buf[2] != TR3_ACK:
             buf = self.__ser.read(size=100)
@@ -292,12 +292,12 @@ class CTR3(object):
         self.__mCommand[5] = 0x00  # パワーOFF
 
         self.__OpenPort()
-        self.__AddChecksum()
-        self.__ser.write(self.__mCommand)
+        self.AddChecksum()
+        self.__ser.write("".join(map(chr, self.__mCommand)))
         buf = [chr(0)] * 100
-        buf = self.__ser.read(size=9)
+        buf = map(ord, self.__ser.read(size=9))
         if buf[2] != TR3_ACK:
-            buf = self.__ser.read(size=100)
+            # buf = self.__ser.read(size=100)
             print "TR3: SendCommandError . AntennaPowerOFF"
             return False
         self.__ClosePort()
