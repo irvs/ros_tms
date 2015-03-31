@@ -33,7 +33,8 @@ def test_CTR3():
         # tr3.SetAntenna(0)
         # tr3.Inventory2()
         # print tr3._CTR3__mUIDs
-        print tr3.GetTagDiff("", 0)
+        tr3.GetTagDiff("", 0)
+        tr3.PrintTagUIDs()
 
     # while True:  # test like CIntelCab.UpdateObj serquence
     #     tr3.AntennaPowerON()

@@ -307,8 +307,9 @@ class CTR3(object):
     def PrintTagUIDs(self):
         for i in xrange(TR3_USED_ANT_NUM):
             print "\n.. ANTENNA ", i + 1, " .."
-            for num, j in enumerate(mUIDs[i]):
-                print std.setw(3), num + 1, ". ", j
+            for num, j in enumerate(self.__mUIDs[i]):
+                # print std.setw(3), num + 1, ". ", j
+                print num+1, ". ", j
 
     # タグの読み取り
     def Inventory2(self):
@@ -392,7 +393,7 @@ class CTR3(object):
         #                    preUIDs.begin(), preUIDs.end(),
         #                    std.inserter(increase, increase.begin()))
         increase = list(set(self.__mUIDs[self.__mActiveAntenna]) - set(preUIDs))
-        print set(self.__mUIDs[self.__mActiveAntenna]), set(preUIDs)
+        # print set(self.__mUIDs[self.__mActiveAntenna]), set(preUIDs)
 
         # preIDにあってIDにない => 取り除かれた物品ID
         # vec_str decrease
