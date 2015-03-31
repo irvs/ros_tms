@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 
 # ------------------------------------------------------------------------------
-# @file   : ibs.cpp
+# @file   : ibs.py
 # @brief  : Intelligent Board System
 # @author : Akio Shigekane, Pyo
 # @version: Ver1.1.1 (since 2012.00.00)
@@ -79,8 +79,6 @@ NONE = 0
 EXIST = 1
 
 
-# define vec_str std.vector<std.string>s
-
 # define DEBUG_IBS 0
 # if     1 == DEBUG_IBS
 # define D_COUT(x) do { std.cout << x; } while (0)
@@ -90,8 +88,6 @@ EXIST = 1
 
 LC_MAX_SENSOR_NUM = 4
 D_COUT = sys.stdout.write
-
-# ------------------------------------------------------------------------------
 
 
 class CLoadCell(object):
@@ -152,7 +148,6 @@ class CLoadCell(object):
         self.__mSensorPosY = y_list
 
         # 重量の増減（物体の増減）があるかをチェック
-    # def GetWeightDiff(self, *x, *y, diffs[], threshold):
     # TODO: fix arguments passed by reference(fixed)
     def GetWeightDiff(self, x, y, diffs, threshold=20):
         # 出力が安定するまで待つ
@@ -163,10 +158,9 @@ class CLoadCell(object):
             pre[i] = self.GetWeight(i)
             # pre.append(self.GetWeight(i))
         cnt = 0    # 繰り返し回数
-        '''------------------------------------------'''
+
         while cnt < LC_GET_WEIGHT_CNT:
-            # usleep(4000) #4ms程度は間隔を空ける
-            # usleep(20000)  # for demo
+            # time,sleep(0.004) #4ms程度は間隔を空ける
             time.sleep(0.02)
             weight = 0
             for i in xrange(self.__mSensorNum):
@@ -178,7 +172,7 @@ class CLoadCell(object):
                 cnt += 1
             else:
                 cnt = 0
-        '''------------------------------------------'''
+
         # 出力
         pre = [0] * self.__mSensorNum
         for i in xrange(LC_GET_WEIGHT_CNT):
@@ -207,8 +201,6 @@ class CTR3(object):
 
     def __init__(self):
         self.__mActiveAntenna = 0
-        # @TODO: make __mUIDs 2 dimension string list
-        # self.__mUIDs = [""] * TR3_USED_ANT_NUM
         self.__mUIDs = [list() for i in xrange(TR3_USED_ANT_NUM)]
         self.__mCommand = [0] * TR3_MAX_COMMAND_SIZE
 
@@ -256,13 +248,12 @@ class CTR3(object):
             # read(fd, buf, 100)
             print "TR3: SendCommandError . SetAntenna"
             return -1
-        # self.__mActiveAntenna = int(buf[5])
         self.__mActiveAntenna = buf[5]
         self.__ClosePort()
-        # return int(buf[5])
         return buf[5]
 
     # アンテナの電源ON
+    # TODO: I dont know this method worked correctly
     def AntennaPowerON(self):
         self.__mCommand[2] = 0x4E  # コマンド
         self.__mCommand[3] = 0x02  # データ長
@@ -272,19 +263,17 @@ class CTR3(object):
         self.__OpenPort()
         self.AddChecksum()
         self.__ser.write("".join(map(chr, self.__mCommand)))
-        # write(fd, mCommand, sizeof(mCommand))
         buf = [chr(0)] * 100
         buf = map(ord, self.__ser.read(size=9))
-        # read(fd, buf, 9)
         if buf[2] != TR3_ACK:
             buf = self.__ser.read(size=100)
-            # read(fd, buf, 100)
             print "TR3: SendCommandError . AntennaPowerON"
             return False
         self.__ClosePort()
         return True
 
     # アンテナの電源OFF
+    # TODO: I dont know this method worked correctly
     def AntennaPowerOFF(self):    # unsigned long num
         self.__mCommand[2] = 0x4E  # コマンド
         self.__mCommand[3] = 0x02  # データ長
@@ -297,7 +286,6 @@ class CTR3(object):
         buf = [chr(0)] * 100
         buf = map(ord, self.__ser.read(size=9))
         if buf[2] != TR3_ACK:
-            # buf = self.__ser.read(size=100)
             print "TR3: SendCommandError . AntennaPowerOFF"
             return False
         self.__ClosePort()
@@ -315,7 +303,6 @@ class CTR3(object):
     def Inventory2(self):
         del self.__mUIDs[self.__mActiveAntenna][:]
         # アンテナを変更しないと既読込のUIDは返さず，新規UIDのみ返す
-        # int i, j
         self.__mCommand[2] = 0x78  # コマンド
         self.__mCommand[3] = 0x03  # データ長
         self.__mCommand[4] = 0xF0  # コマンド詳細
@@ -326,31 +313,21 @@ class CTR3(object):
         self.__OpenPort()
         self.AddChecksum()
         self.__ser.write("".join(map(chr, self.__mCommand)))
-        # write(fd, mCommand, sizeof(mCommand))
         buf = map(ord, self.__ser.read(size=9))
-        # read(fd, buf, 9)
 
         if buf[2] != TR3_ACK:
             print "TR3: SendCommandError . Inventory2"
-            # usleep(100000)
             time.sleep(0.1)
             self.__ser.read(size=TR3_TAG_SIZE * TR3_TAG_MAX)
-            # read(fd, buf, * TR3_TAG_MAX)
             return -1
         tag_num = buf[5]  # 読み込むタグの数
 
         # タグ情報の読込
         for i in xrange(tag_num):
-            # char hex[17]
             hexs = [chr(0)] * 17
-            # read(fd, buf, TR3_TAG_SIZE)
             buf = map(ord, self.__ser.read(size=TR3_TAG_SIZE))
-            # sprintf(hexs, "%02X%02X%02X%02X%02X%02X%02X%02X",
-            #         buf[12],    buf[11],    buf[10],    buf[9],
-            #         buf[8],     buf[7],     buf[6],     buf[5])
             hexs = "{0:0>2X}{1:0>2X}{2:0>2X}{3:0>2X}{4:0>2X}{5:0>2X}{6:0>2X}{7:0>2X}".format(
                 buf[12], buf[11], buf[10], buf[9], buf[8], buf[7], buf[6], buf[5])
-            # mUIDs[mActiveAntenna].push_back(std.string(hexs));
             # print "mAcAnt:", self.__mActiveAntenna
             # print hexs
             self.__mUIDs[self.__mActiveAntenna].append(hexs)
@@ -359,48 +336,32 @@ class CTR3(object):
 
     # 通信用サブ関数
     def AddChecksum(self):
-        # print "command:", self.__mCommand
         num = self.__mCommand[3] + 5
-        # print "num:", num
         self.__mCommand[num - 1] = TR3_ETX
         self.__mCommand[num + 1] = TR3_CR
         self.__mCommand[num] = 0x00
         for i in xrange(num):
-            # print "i:", i
             self.__mCommand[num] += self.__mCommand[i]
         self.__mCommand[num] %= 256
         return num + 2
 
-    # タグの入出のチェック
-    # このメソッドの書き換えメンドイ。
-    # 修正は後回しで。
     # def GetTagDiff(self, &diffUID, char AN):
     # TODO: fix arguments passed by reference(fixed)
     def GetTagDiff(self, diffUID, AN):
         self.SetAntenna(AN)
         diffUID = str()
         preUIDs = list(self.__mUIDs[self.__mActiveAntenna])
-        # self.__mUIDs[mActiveAntenna].clear()  # move to Inventory2()
         if self.Inventory2() == -1:
             return 0, diffUID
 
         # タグの増減の確認
-        # std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
         # IDにあってpreIDにない => 追加された物品ID
-        # vec_str increase
         increase = [str()]
-        # std.set_difference(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(),
-        #                    preUIDs.begin(), preUIDs.end(),
-        #                    std.inserter(increase, increase.begin()))
         increase = list(set(self.__mUIDs[self.__mActiveAntenna]) - set(preUIDs))
         # print set(self.__mUIDs[self.__mActiveAntenna]), set(preUIDs)
 
         # preIDにあってIDにない => 取り除かれた物品ID
-        # vec_str decrease
         decrease = [""]
-        # std.set_difference(preUIDs.begin(), preUIDs.end(),
-        #                    mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end(),
-        #                    std.inserter(decrease, decrease.begin()))
         decrease = list(set(preUIDs) - set(self.__mUIDs[self.__mActiveAntenna]))
 
         # 増減なし
@@ -417,18 +378,10 @@ class CTR3(object):
         # @TODO:maybe, unreachable and wrong branch serquence.
         # 複数物品の同時入出時（１個ずつ検出するようにする）
         if len(increase) >= 1:
-            # preUIDs.push_back(increase[0])
-            # self.__mUIDs[self.__mActiveAntenna] = preUIDs
-            # std.sort(self.__mUIDs[self.__mActiveAntenna].begin(),
-            #          self.__mUIDs[self.__mActiveAntenna].end())
             self.__mUIDs[self.__mActiveAntenna].sort()
             diffUID = increase[0]
             return 1, diffUID
         if len(decrease) >= 1:
-            # preUIDs.erase(remove(preUIDs.begin(), preUIDs.end(), decrease[0]),
-            #               preUIDs.end())
-            # mUIDs[mActiveAntenna] = preUIDs
-            # std.sort(mUIDs[mActiveAntenna].begin(), mUIDs[mActiveAntenna].end())
             self.__mUIDs[self.__mActiveAntenna].sort()
             diffUID = decrease[0]
             return -1, diffUID
