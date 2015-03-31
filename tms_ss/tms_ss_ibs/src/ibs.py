@@ -25,7 +25,7 @@ import time
 # include <cstdlib>
 
 # ------------------------------------------------------------------------------
-PORT_TR = ""
+PORT_TR = "/dev/ttyUSB0"
 PORT_LC0 = "/dev/ttyACM0"
 
 
@@ -130,6 +130,7 @@ class CLoadCell(object):
         self.__ser.write(str(sensor_id))
         # write(fd, &signal, 1)
         buf = self.__ser.read(size=15)
+        print type(buf)
         self.__ClosePort()
         return int(buf.replace("OK", "")) * 5  # 0.28は経験的な値
 
@@ -207,12 +208,12 @@ class CTR3(object):
     def __init__(self):
         self.__mActiveAntenna = 0
         self.__mUIDs = [""] * TR3_USED_ANT_NUM
-        self.__mCommand = [chr(0)] * TR3_MAX_COMMAND_SIZE
+        self.__mCommand = [0] * TR3_MAX_COMMAND_SIZE
 
     def Setup(self):
         self.__mActiveAntenna = TR3_ANT1
-        self.__mCommand[0] = chr(TR3_STX)
-        self.__mCommand[1] = chr(0x00)      # アドレス
+        self.__mCommand[0] = TR3_STX
+        self.__mCommand[1] = 0x00      # アドレス
         print "OPENING: TR3(port:", PORT_TR, ")"
         self.__OpenPort()
         print "OPENED: TR3(port:", PORT_TR, ")"
@@ -221,12 +222,12 @@ class CTR3(object):
 
     def __OpenPort(self):
         self.__ser = serial.Serial(port=PORT_TR, baudrate=38400)
-        D_COUT("opening port : ", PORT_TR0, "   ")
+        D_COUT("opening port : " + PORT_TR + "   ")
         D_COUT("\033[1K\r")
 
     def __ClosePort(self):
         self.__ser.close()
-        print "closing port : ", PORT_TR
+        D_COUT("closing port : " + PORT_TR)
         D_COUT("\033[1K\r")
 
     def Close(self):
@@ -243,41 +244,21 @@ class CTR3(object):
 
         self.__OpenPort()
         self.AddChecksum()
-        self.__ser.write(self.__mCommand)
-        buf = [chr(0)] * 100
-        buf = self.__ser.read(size=9)
+        self.__ser.write("".join(map(chr, self.__mCommand)))
+        buf = [int()] * 100
+        buf = map(ord, self.__ser.read(size=9))
+        print "set antenna return:", buf
         if buf[2] != TR3_ACK:
             # self.__ser.read(size = 100)
             buf = self.__ser.readline()
             # read(fd, buf, 100)
             print "TR3: SendCommandError . SetAntenna"
             return -1
-        self.__mActiveAntenna = int(buf[5])
+        # self.__mActiveAntenna = int(buf[5])
+        self.__mActiveAntenna = buf[5]
         self.__ClosePort()
-        return int(buf[5])
-
-    # アンテナの指定
-    # def SetAntenna(self, char AN):
-    def SetAntenna(self, AN):
-        self.__mCommand[2] = 0x4E  # コマンド
-        self.__mCommand[3] = 0x02  # データ長
-        self.__mCommand[4] = 0x9C  # コマンド詳細
-        self.__mCommand[5] = AN    # アンテナ指定
-
-        self.__OpenPort()
-        self.AddChecksum()
-        self.__ser.write(self.__mCommand)
-        buf = [chr(0)] * 100
-        buf = self.__ser.read(size=9)
-        if buf[2] != TR3_ACK:
-            # self.__ser.read(size = 100)
-            buf = self.__ser.readline()
-            # read(fd, buf, 100)
-            print "TR3: SendCommandError . SetAntenna",
-            return -1
-        self.__mActiveAntenna = int(buf[5])
-        self.__ClosePort()
-        return int(buf[5])
+        # return int(buf[5])
+        return buf[5]
 
     # アンテナの電源ON
     def AntennaPowerON(self):
@@ -303,10 +284,10 @@ class CTR3(object):
 
     # アンテナの電源OFF
     def AntennaPowerOFF(self):    # unsigned long num
-        mCommand[2] = 0x4E  # コマンド
-        mCommand[3] = 0x02  # データ長
-        mCommand[4] = 0x9E  # コマンド詳細
-        mCommand[5] = 0x00  # パワーOFF
+        self.__mCommand[2] = 0x4E  # コマンド
+        self.__mCommand[3] = 0x02  # データ長
+        self.__mCommand[4] = 0x9E  # コマンド詳細
+        self.__mCommand[5] = 0x00  # パワーOFF
 
         self.__OpenPort()
         self.__AddChecksum()
@@ -337,22 +318,23 @@ class CTR3(object):
         self.__mCommand[5] = 0x00  # アンチコリジョン有
         self.__mCommand[6] = 0x01  # 出力指定.取得データ数＋UIDデータ
 
-        buf = [char(0)] * TR3_TAG_SIZE * TR3_TAG_MAX
+        buf = [0] * TR3_TAG_SIZE * TR3_TAG_MAX
         self.__OpenPort()
         self.AddChecksum()
-        self.__ser.write(self.__mCommand)
+        self.__ser.write("".join(map(chr, self.__mCommand)))
         # write(fd, mCommand, sizeof(mCommand))
-        self.__ser.read(size=9)
+        buf = map(ord, self.__ser.read(size=9))
         # read(fd, buf, 9)
 
         if buf[2] != TR3_ACK:
             print "TR3: SendCommandError . Inventory2"
-            usleep(100000)
+            # usleep(100000)
+            time.sleep(0.1)
             self.__ser.read(size=TR3_TAG_SIZE * TR3_TAG_MAX)
             # read(fd, buf, * TR3_TAG_MAX)
             return -1
 
-        tag_num = int(buf[5])  # 読み込むタグの数
+        tag_num = buf[5]  # 読み込むタグの数
 
         # タグ情報の読込
         for i in xrange(tag_num):
@@ -360,22 +342,31 @@ class CTR3(object):
             hexs = [chr(0)] * 17
             self.__ser.read(size=TR3_TAG_SIZE)
             # read(fd, buf, TR3_TAG_SIZE)
-            sprintf(hexs, "%02X%02X%02X%02X%02X%02X%02X%02X",
-                    buf[12],    buf[11],    buf[10],    buf[9],
-                    buf[8],     buf[7],     buf[6],     buf[5])
+            # sprintf(hexs, "%02X%02X%02X%02X%02X%02X%02X%02X",
+            #         buf[12],    buf[11],    buf[10],    buf[9],
+            #         buf[8],     buf[7],     buf[6],     buf[5])
+            # sprintf(hexs, "%02X%02X%02X%02X%02X%02X%02X%02X",
+            #         buf[12],    buf[11],    buf[10],    buf[9],
+            #         buf[8],     buf[7],     buf[6],     buf[5])
+            hexs = "{0:0<2X}{1:0<2X}{2:0<2X}{3:0<2X}{4:0<2X}{5:0<2X}{6:0<2X}{7:0<2X}".format(
+                buf[12], buf[11], buf[10], buf[9], buf[8], buf[7], buf[6], buf[5])
             # mUIDs[mActiveAntenna].push_back(std.string(hexs));
-            mUIDs[self.__mActiveAntenna].append(hexs)
+            self.__mUIDs[self.__mActiveAntenna].append(hexs)
         self.__ClosePort()
         return tag_num
 
     # 通信用サブ関数
     def AddChecksum(self):
-        num = int(self.__mCommand[3]) + 5
+        print "command:", self.__mCommand
+        num = self.__mCommand[3] + 5
+        print "num:", num
         self.__mCommand[num - 1] = TR3_ETX
         self.__mCommand[num + 1] = TR3_CR
         self.__mCommand[num] = 0x00
         for i in xrange(num):
+            print "i:", i
             self.__mCommand[num] += self.__mCommand[i]
+        self.__mCommand[num] %= 256
         return num + 2
 
     # タグの入出のチェック
@@ -446,10 +437,11 @@ class CTagOBJ(object):
 
     def Setup(self):
         # char id[TR3_UID_SIZE * 2 + 1] = {'\0'}
-        id = ["\0"] * (TR3_UID_SIZE * 2 + 1)
+        tmp = ["\0"] * (TR3_UID_SIZE * 2 + 1)
         for i in xrange(TR3_UID_SIZE * 2):
-            id[i] = 0x00
-        self.__mUID.assign(id)
+            tmp[i] = 0x00
+        # self.__mUID.assign(tmp)
+        self.__mUID = tmp
         return True
 
     def __del__(self):
@@ -462,7 +454,7 @@ class CTagOBJ(object):
 class CStage(object):
 
     def __init__(self):
-        self.cLoadCell = CloadCell()
+        self.cLoadCell = CLoadCell()
         self.mAntenna = chr(0)
         self.mStagePos = [0] * 3
         self.mName = "\0"
