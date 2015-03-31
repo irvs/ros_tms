@@ -27,11 +27,11 @@ std::string TmsRpBar::object_name_[25] = {"chipstar_red","chipstar_orange",
                                           "teapot","chawan","teacup1","teacup2","cup1",
                                           "cup2","mugcup","remote","book_red","book_blue","dish"};
 
-std::string TmsRpBar::furniture_name_[23] = {"wardrobe","workdesk","drawer","chair","kitchen",
+std::string TmsRpBar::furniture_name_[24] = {"wardrobe","workdesk","drawer","chair","kitchen",
                                              "meeting_table","meeting_chair1","meeting_chair2","meeting_chair3","meeting_chair4",
                                              "meeting_chair5","partition","tv_table","tv_52inch","playrecoder",
                                              "sofa","sofa_table","bed","wagon","shelf",
-                                             "tree","tv_multi","wall_shelf"};
+                                             "tree","tv_multi","wall_shelf","carpet"};
 
 // initialize static variables
 bool TmsRpBar::production_version_ = false;
@@ -269,6 +269,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   trc_.createRecord(6021,"tree");
   trc_.createRecord(6022,"tv_multi");
   trc_.createRecord(6023,"wall_shelf");
+  trc_.createRecord(6024,"carpet");
 
   // create etc model
   trc_.createRecord(20001,"blink_arrow");
