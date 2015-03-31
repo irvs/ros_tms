@@ -133,6 +133,12 @@
             android:layout_height="wrap_content"
             android:id="@+id/target"/>
 
+        <!-- calibration -->
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/calib"/>
+
     </RelativeLayout>
 
     <!-- The navigation drawer -->
@@ -150,88 +156,133 @@
             android:layout_height="48dp"
             android:text="Execute" />
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_marginLeft="10dp"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:id="@+id/scrollView">
 
-            <!-- ROS_MASTER_URI -->
-            <TextView
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_marginLeft="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:text="ROS_MASTER_URI"/>
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/ros_master_uri"
-                android:layout_marginLeft="30dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                <!-- ROS_MASTER_URI -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:text="ROS_MASTER_URI"/>
 
-            <!-- local IP -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:text="ROS_IP"/>
+                <TextView
+                    android:id="@+id/ros_master_uri"
+                    android:layout_marginLeft="30dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
-            <TextView
-                android:id="@+id/local_ip"
-                android:layout_marginLeft="30dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                <!-- local IP -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:text="ROS_IP"/>
 
-            <!-- /tms_db_reader/dbreader connection -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:text="/tms_db_reader/dbreader"/>
+                <TextView
+                    android:id="@+id/local_ip"
+                    android:layout_marginLeft="30dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
-            <TextView
-                android:id="@+id/dbreader_status"
-                android:layout_marginLeft="30dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                <!-- /tms_db_reader/dbreader connection -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:text="/tms_db_reader/dbreader"/>
 
-            <!-- /rp_cmd connection -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:text="/rp_cmd"/>
+                <TextView
+                    android:id="@+id/dbreader_status"
+                    android:layout_marginLeft="30dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
-            <TextView
-                android:id="@+id/rp_cmd_status"
-                android:layout_marginLeft="30dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                <!-- /rp_cmd connection -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:text="/rp_cmd"/>
 
-            <TextView
-                android:id="@+id/rp_cmd_info"
-                android:layout_marginLeft="30dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="information"/>
+                <TextView
+                    android:id="@+id/rp_cmd_status"
+                    android:layout_marginLeft="30dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
-            <!-- Setting -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:text="Setting"/>
+                <!-- rp_cmd.srv -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:text="rp_cmd.srv"/>
 
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:textSize="14dp"
-                android:scrollbarSize="14dp"
-                android:layout_marginLeft="30dp"
-                android:text="Debug"
-                android:id="@+id/debug_switch"/>
+                <TextView
+                    android:id="@+id/rp_cmd_info"
+                    android:layout_marginLeft="30dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="information"/>
 
-        </LinearLayout>
+                <!-- Setting -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:text="Setting"/>
+
+                <LinearLayout
+                    android:layout_marginLeft="30dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="70dp"
+                        android:layout_height="wrap_content"
+                        android:text="Debug"/>
+
+                    <Switch
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14dp"
+                        android:scrollbarSize="14dp"
+                        android:id="@+id/debug_switch"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginLeft="30dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="70dp"
+                        android:layout_height="wrap_content"
+                        android:text="Calib"/>
+
+                    <Switch
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14dp"
+                        android:scrollbarSize="14dp"
+                        android:id="@+id/calib_switch"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
 
     </LinearLayout>
 

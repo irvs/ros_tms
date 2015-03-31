@@ -53,7 +53,6 @@ public class TmsUrMimamorukun extends RosActivity
     private RoomMap room_map;
 
     private int mode = 0;
-    private MapTouchListener mapTouchListener;
 
     private ActionBarDrawerToggle drawerToggle;
     private DrawerLayout drawer;
@@ -62,6 +61,7 @@ public class TmsUrMimamorukun extends RosActivity
 
     private Button execute_button;
     private Switch debug_switch;
+    private Switch calib_switch;
 
     //mode switch
     private RadioGroup mode_switch;
@@ -139,31 +139,67 @@ public class TmsUrMimamorukun extends RosActivity
     //room map icon class
     public class RoomMap {
         public ImageView map_image;
+        private MapTouchListener mapTouchListener;
         public int[] map_offset = {0, 0};
         public float[] map_origin = {0, 0};
         public float[] map_size = {0, 0};
-        public float[] room_size = {0, 0};
+        public boolean calib_mode = false;
+
+        public ImageView calib;
+        public float[] calib_size = {0, 0};
 
         public RoomMap() {
-            map_image = (ImageView)findViewById(R.id.map_image);
-            AssetManager as = getResources().getAssets();
-            try {
-                InputStream is = as.open("images/map_image.png");
-                Bitmap bm = BitmapFactory.decodeStream(is);
-                map_image.setImageBitmap(bm);
-            } catch (IOException e) {
-                Log.e(TAG, e.toString());
-            }
             mapTouchListener = new MapTouchListener();
-            map_image.setOnTouchListener(mapTouchListener);
-
-            map_origin[0] = 0;
-            map_origin[1] = 0;
+            Log.d("calib", "check");
+            map_origin[0] = (float)17.87;
+            map_origin[1] = (float)626.2;
         }
 
         public void init() {
-            map_image.getLocationOnScreen(map_offset);
+            if (!calib_mode) {
+                Log.d("calib", "calib_mode:false");
+                if (map_image != null) {
+                    map_image = null;
+                    calib.setVisibility(View.INVISIBLE);
+                    calib = null;
+                }
+                map_image = (ImageView) findViewById(R.id.map_image);
+                AssetManager as = getResources().getAssets();
+                try {
+                    InputStream is = as.open("images/map_image.png");
+                    Bitmap bm = BitmapFactory.decodeStream(is);
+                    map_image.setImageBitmap(bm);
+                } catch (IOException e) {
+                    Log.e(TAG, e.toString());
+                }
+            } else {
+                Log.d("calib", "calib_mode:true");
+                calib = (ImageView) findViewById(R.id.calib);
+                AssetManager as = getResources().getAssets();
+                try {
+                    InputStream is = as.open("calib/calib.png");
+                    Bitmap bm = BitmapFactory.decodeStream(is);
+                    calib.setImageBitmap(bm);
+                } catch (IOException e) {
+                    Log.e(TAG, e.toString());
+                }
+                calib.setVisibility(View.VISIBLE);
 
+                if (map_image != null) {
+                    map_image = null;
+                }
+                map_image = (ImageView) findViewById(R.id.map_image);
+                try {
+                    InputStream is = as.open("calib/map_image_calib.png");
+                    Bitmap bm = BitmapFactory.decodeStream(is);
+                    map_image.setImageBitmap(bm);
+                } catch (IOException e) {
+                    Log.e(TAG, e.toString());
+                }
+            }
+            map_image.setOnTouchListener(mapTouchListener);
+
+            map_image.getLocationOnScreen(map_offset);
             final Rect rect = new Rect();
             Window window = getWindow();
             window.getDecorView().getWindowVisibleDisplayFrame(rect);
@@ -188,90 +224,108 @@ public class TmsUrMimamorukun extends RosActivity
                 map_size[1] = map_image.getHeight();
                 Log.d("CHECK", "map: " + map_size[0] + ", " + map_size[1]);
             }
-            map_origin[1] = map_image.getHeight() - (map_image.getHeight() - map_size[1])/2;
-        }
-    }
 
-    //OnTouchListener for the map
-    public class MapTouchListener implements View.OnTouchListener {
-        double touch_x, touch_y, orientation;
-
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            Log.d(TAG, "X:" + event.getX() + ",Y:" + event.getY());
-            ontouch_info.setText("onTouch()\ngetX: " + event.getX() + "\ngetY: " + event.getY());
-            touch_x = event.getX();
-            touch_y = event.getY();
-            switch (mode) {
-                case POSITION_SETTING:
-                    setTargetPosition();
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            Log.d(TAG, "getAction()" + "ACTION_DOWN");
-                            drawTargetIcon();
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            Log.d(TAG, "getAction()" + "ACTION_UP");
-                            break;
-                        case MotionEvent.ACTION_MOVE:
-                            Log.d(TAG, "getAction()" + "ACTION_MOVE");
-                            drawTargetIcon();
-                            break;
-                        case MotionEvent.ACTION_CANCEL:
-                            Log.d(TAG, "getAction()" + "ACTION_CANCEL");
-                            break;
-                    }
-                    break;
-                case ORIENTATION_SETTING:
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            Log.d(TAG, "getAction()" + "ACTION_DOWN");
-                            rotateTargetIcon();
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            Log.d(TAG, "getAction()" + "ACTION_UP");
-                            break;
-                        case MotionEvent.ACTION_MOVE:
-                            Log.d(TAG, "getAction()" + "ACTION_MOVE");
-                            rotateTargetIcon();
-                            break;
-                        case MotionEvent.ACTION_CANCEL:
-                            Log.d(TAG, "getAction()" + "ACTION_CANCEL");
-                            break;
-                    }
-                    wc_icon.target_pose.yaw = wc_icon.target.getRotation()/* TODO + offset */;
-                    break;
+            if (calib_mode) {
+                calib_size[0] = calib.getWidth();
+                calib_size[1] = calib.getHeight();
             }
-            return true;
         }
 
-        public void setTargetPosition() {
-            wc_icon.target_pose.x = touch_x - room_map.map_origin[0];
-            wc_icon.target_pose.y = room_map.map_origin[1] - touch_y;
-        }
+        //OnTouchListener for the map
+        public class MapTouchListener implements View.OnTouchListener {
+            private double touch_x, touch_y, orientation;
 
-        public void drawTargetIcon() {
-            wc_icon.target.setVisibility(View.VISIBLE);
-            wc_icon.target.setX((float) touch_x - wc_icon.target_size[0] / 2 + room_map.map_offset[0]);
-            wc_icon.target.setY((float) touch_y - wc_icon.target_size[1] / 2 + room_map.map_offset[1]);
-            showTargetInfo();
-        }
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "X:" + event.getX() + ",Y:" + event.getY());
+                ontouch_info.setText("onTouch()\ngetX: " + event.getX() + "\ngetY: " + event.getY());
+                touch_x = event.getX();
+                touch_y = event.getY();
+                if (!calib_mode) {
+                    switch (mode) {
+                        case POSITION_SETTING:
+                            setTargetPosition();
+                            switch (event.getAction()) {
+                                case MotionEvent.ACTION_DOWN:
+                                    this.drawTargetIcon();
+                                    break;
+                                case MotionEvent.ACTION_UP:
+                                    break;
+                                case MotionEvent.ACTION_MOVE:
+                                    this.drawTargetIcon();
+                                    break;
+                                case MotionEvent.ACTION_CANCEL:
+                                    break;
+                            }
+                            break;
+                        case ORIENTATION_SETTING:
+                            switch (event.getAction()) {
+                                case MotionEvent.ACTION_DOWN:
+                                    this.rotateTargetIcon();
+                                    break;
+                                case MotionEvent.ACTION_UP:
+                                    break;
+                                case MotionEvent.ACTION_MOVE:
+                                    this.rotateTargetIcon();
+                                    break;
+                                case MotionEvent.ACTION_CANCEL:
+                                    break;
+                            }
+                            wc_icon.target_pose.yaw = wc_icon.target.getRotation()/* TODO + offset */;
+                            break;
+                    }
+                } else {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            this.drawTargetIcon();
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            this.drawTargetIcon();
+                            break;
+                        case MotionEvent.ACTION_CANCEL:
+                            break;
+                    }
+                }
+                return true;
+            }
 
-        public void rotateTargetIcon() {
-            touch_x -= wc_icon.target.getX() + wc_icon.target_size[0] / 2 - room_map.map_offset[0];
-            touch_y -= wc_icon.target.getY() + wc_icon.target_size[1] / 2 - room_map.map_offset[1];
-            orientation = Math.atan2(touch_y, touch_x);
-            wc_icon.target.setRotation((float)(orientation*180/Math.PI) - 90);
-            showTargetInfo();
-        }
+            private void setTargetPosition() {
+                wc_icon.target_pose.x = touch_x - room_map.map_origin[0];
+                wc_icon.target_pose.y = room_map.map_origin[1] - touch_y;
+            }
 
-        public void showTargetInfo() {
-            rp_cmd_info.setText("x: " + String.format("%.2f[m]\n", wc_icon.target_pose.x) +
-                "y: " + String.format("%.2f[m]\n", wc_icon.target_pose.y) +
-                "yaw: " + String.format("%.2f[deg]", wc_icon.target_pose.yaw));
-            target_info.setText("x: " + String.format("%.2f[m]\n", wc_icon.target_pose.x) +
-                "y: " + String.format("%.2f[m]\n", wc_icon.target_pose.y) +
-                "yaw: " + String.format("%.2f[deg]", wc_icon.target_pose.yaw));
+            private void drawTargetIcon() {
+                if (!calib_mode) {
+                    wc_icon.target.setVisibility(View.VISIBLE);
+                    wc_icon.target.setX((float) touch_x - wc_icon.target_size[0] / 2 + room_map.map_offset[0]);
+                    wc_icon.target.setY((float) touch_y - wc_icon.target_size[1] / 2 + room_map.map_offset[1]);
+                    showTargetInfo();
+                } else {
+                    calib.setX((float) touch_x - calib_size[0] + room_map.map_offset[0]);
+                    calib.setY((float) touch_y + room_map.map_offset[1]);
+                    target_info.setText("Left bottom\nx: " + String.format("%.2f[px]\n", touch_x - calib_size[0]) +
+                        "y: " + String.format("%.2f[px]\n", touch_y + calib_size[1]));
+                }
+            }
+
+            private void rotateTargetIcon() {
+                touch_x -= wc_icon.target.getX() + wc_icon.target_size[0] / 2 - room_map.map_offset[0];
+                touch_y -= wc_icon.target.getY() + wc_icon.target_size[1] / 2 - room_map.map_offset[1];
+                orientation = Math.atan2(touch_y, touch_x);
+                wc_icon.target.setRotation((float)(orientation*180/Math.PI) - 90);
+                showTargetInfo();
+            }
+
+            private void showTargetInfo() {
+                rp_cmd_info.setText("x: " + String.format("%.2f[m]\n", wc_icon.target_pose.x) +
+                    "y: " + String.format("%.2f[m]\n", wc_icon.target_pose.y) +
+                    "yaw: " + String.format("%.2f[deg]", wc_icon.target_pose.yaw));
+                target_info.setText("x: " + String.format("%.2f[m]\n", wc_icon.target_pose.x) +
+                    "y: " + String.format("%.2f[m]\n", wc_icon.target_pose.y) +
+                    "yaw: " + String.format("%.2f[deg]", wc_icon.target_pose.yaw));
+            }
         }
     }
 
@@ -316,7 +370,7 @@ public class TmsUrMimamorukun extends RosActivity
             @Override
             public void onDrawerClosed(View drawerView) {
                 Log.d(TAG, "onDrawerClosed");
-                room_map.map_image.setOnTouchListener(mapTouchListener);
+                room_map.map_image.setOnTouchListener(room_map.mapTouchListener);
             }
 
             @Override
@@ -412,6 +466,28 @@ public class TmsUrMimamorukun extends RosActivity
                     debug_info.setVisibility(View.VISIBLE);
                 } else {
                     debug_info.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+        calib_switch = (Switch)findViewById(R.id.calib_switch);
+        calib_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked == true) {
+                    Log.d("calib", "calib_switch:checked");
+                    wc_icon.target.setVisibility(View.INVISIBLE);
+                    wc_icon.current.setVisibility(View.INVISIBLE);
+                    mode_switch.setVisibility(View.INVISIBLE);
+                    room_map.calib_mode = true;
+                    room_map.init();
+                } else {
+                    Log.d("calib", "calib_switch:unchecked");
+                    wc_icon.target.setVisibility(View.VISIBLE);
+                    wc_icon.current.setVisibility(View.VISIBLE);
+                    mode_switch.setVisibility(View.VISIBLE);
+                    room_map.calib_mode = false;
+                    room_map.init();
                 }
             }
         });
