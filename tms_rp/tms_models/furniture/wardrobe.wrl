@@ -4,7 +4,13 @@
 # 'Wardrobe'
 Shape {
 	appearance Appearance {
-		material Material {
+		material DEF MA_Material Material {
+			diffuseColor 0.9803206 0.9150324 0.7204456
+			ambientIntensity 0.1666667
+			specularColor 0.4012008 0.4012008 0.4012008
+			emissiveColor  0.0 0.0 0.0
+			shininess 0.0976563
+			transparency 0.0
 		}
 	}
 	geometry IndexedFaceSet {
