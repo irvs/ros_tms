@@ -33,7 +33,7 @@ LC_MAX_SENSOR_NUM = 4
 LC_GET_WEIGHT_CNT = 2
 LC_GET_WEIGHT_STABLE = 12
 
-# define MAX_OBJECT_NUM      25      #環境内に存在する全物品数
+MAX_OBJECT_NUM =     25      #環境内に存在する全物品数
 
 # 仕様上の固定値
 TR3_STX = 0x02
@@ -126,7 +126,6 @@ class CLoadCell(object):
         self.__ser.write(str(sensor_id))
         # write(fd, &signal, 1)
         buf = self.__ser.read(size=15)
-        print type(buf)
         self.__ClosePort()
         return int(buf.replace("OK", "")) * 5  # 0.28は経験的な値
 
@@ -391,13 +390,13 @@ class CTR3(object):
 class CTagOBJ(object):
 
     def __init__(self):
-        self.__mUID = ""
-        self.__mWeight = 0
-        self.__mDiffs = [0] * LC_MAX_SENSOR_NUM
-        self.__mX = 0.0
-        self.__mY = 0.0
-        self.__mName = "\0"
-        self.__mComment = "\0"
+        self.mUID = ""
+        self.mWeight = 0
+        self.mDiffs = [0] * LC_MAX_SENSOR_NUM
+        self.mX = 0.0
+        self.mY = 0.0
+        self.mName = "\0"
+        self.mComment = "\0"
         self.Setup()
         pass
 
@@ -407,7 +406,7 @@ class CTagOBJ(object):
         for i in xrange(TR3_UID_SIZE * 2):
             tmp[i] = 0x00
         # self.__mUID.assign(tmp)
-        self.__mUID = tmp
+        self.mUID = tmp
         return True
 
     def __del__(self):
@@ -424,7 +423,8 @@ class CStage(object):
         self.mAntenna = chr(0)
         self.mStagePos = [0] * 3
         self.mName = "\0"
-        std.vector < CTagOBJ > cTagObj
+        # std.vector < CTagOBJ > cTagObj
+        self.cTagObj = list()
         pass
 
     def Close(self):
@@ -448,7 +448,7 @@ class CIntelCab(object):
 
     def __init__(self, stage_num=IC_STAGES_MAX):
         self.cTR3 = CTR3()
-        self.cStage = [CStage] * IC_STAGES_MAX
+        self.cStage = [CStage()] * IC_STAGES_MAX
         self.mStageNum = 0
         self.Setup(stage_num)
 
@@ -456,15 +456,19 @@ class CIntelCab(object):
         self.Close()
 
     def Setup(self, stage_num):
-        self.__mStageNum = stage_num
+        self.mStageNum = stage_num
         return True
+
+    def Close(self):
+        pass
 
     def PrintObjInfo(self):
         # TODO: fix this pointer variable (fixed)
         # CTagOBJ  *cObj
-        for i in xrange(mStageNum):
+        for i in xrange(self.__mStageNum):
             print "\n", self.cStage[i].mName
-            # std.cout << "\n" << std.setw(20) << std.setfill(':') << cStage[i].mName << "....." << std.endl
+            # std.cout << "\n" << std.setw(20) << std.setfill(':') <<
+            #                     cStage[i].mName << "....." << std.endl
             for j, cObj in enumerate(self.cStage[i].cTagObj):
                 # cObj = &(cStage[i].cTagObj[j])
                 print j + 1, ":  UID."
@@ -477,25 +481,28 @@ class CIntelCab(object):
 
     # TODO: fix arguments passed by reference (fixed)
     def UpdateObj(self, No, cInOut):
-        cObj = cTagOBJ()
-        self.__cObjIn = [cTagOBJ()] * IC_STAGES_MAX
-        self.__cObjOut = [cTagOBJ()] * IC_STAGES_MAX
+        cObj = CTagOBJ()
+        self.__cObjIn = [CTagOBJ()] * IC_STAGES_MAX
+        self.__cObjOut = [CTagOBJ()] * IC_STAGES_MAX
         # static CTagOBJ  cObj, cObjIn[IC_STAGES_MAX], cObjOut[IC_STAGES_MAX]
         self.__InOutTag = [0] * IC_STAGES_MAX
         self.__InOutLC = [0] * IC_STAGES_MAX
         # static int InOutTag[IC_STAGES_MAX], InOutLC[IC_STAGES_MAX]
         value = IC_OBJECT_STAY
 
-        if No >= mStageNum:
+        if No >= self.mStageNum:
             return IC_OBJECT_STAY
 
         # タグの増減チェック
-        self.cTR3.AntennaPowerON()
+        # self.cTR3.AntennaPowerON()
         # not  @todo 理解不能なif分岐．実際はアンテナ0しか使ってない（通信の返り値て強制的に0になってる）のにこれのせいでアンテナ1を使用しようとしてる．
         if self.mStageNum == 1:
             self.cTR3.SetAntenna(self.cStage[No].mAntenna + 1)
-        inout, cObj.mUID = self.cTR3.GetTagDiff(cObj.mUID, self.cStage[No].mAntenna)
-        self.cTR3.AntennaPowerOFF()
+        # inout, cObj.mUID = self.cTR3.GetTagDiff(cObj.mUID, self.cStage[No].mAntenna)
+        print self.cTR3.GetTagDiff("", 0)  # TODO: this work well
+        (inout, cObj.mUID) = self.cTR3.GetTagDiff(cObj.mUID, self.cStage[No].mAntenna)  #TODO: this doesnt work
+        print "GetTagDiss: ", inout, cObj.mUID
+        # self.cTR3.AntennaPowerOFF()
 
         # タグ数増加
         if inout > 0:
@@ -521,7 +528,7 @@ class CIntelCab(object):
 
         if (cObj.mWeight > 0) and (self.__InOutTag[No] > 0):
             # 入庫
-            cObj.mUID = cObjIn[No].mUID
+            cObj.mUID = self.__cObjIn[No].mUID
             self.cStage[No].cTagObj.push_back(cObj)
             self.__InOutTag[No] = 0
             self.__InOutLC[No] = 0
