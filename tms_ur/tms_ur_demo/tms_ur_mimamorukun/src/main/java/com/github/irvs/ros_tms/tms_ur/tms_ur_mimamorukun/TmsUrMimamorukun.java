@@ -1,7 +1,6 @@
 package com.github.irvs.ros_tms.tms_ur.tms_ur_mimamorukun;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,7 +34,6 @@ import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
@@ -102,25 +100,18 @@ public class TmsUrMimamorukun extends RosActivity
         public WcIcon() {
             current = (ImageView)findViewById(R.id.current);
             target = (ImageView)findViewById(R.id.target);
-            AssetManager as = getResources().getAssets();
-            try {
-                InputStream is = as.open("images/wc_icon.png");
-                Bitmap bm = BitmapFactory.decodeStream(is);
-                current.setImageBitmap(bm);
-                current.setScaleX(scale);
-                current.setScaleY(scale);
-            } catch (IOException e) {
-                Log.e(TAG, e.toString());
-            }
-            try {
-                InputStream is = as.open("images/wc_icon2.png");
-                Bitmap bm = BitmapFactory.decodeStream(is);
-                target.setImageBitmap(bm);
-                target.setScaleX(scale);
-                target.setScaleY(scale);
-            } catch (IOException e){
-                Log.e(TAG, e.toString());
-            }
+
+            InputStream is = getResources().openRawResource(R.raw.wc_icon);
+            Bitmap bm = BitmapFactory.decodeStream(is);
+            current.setImageBitmap(bm);
+            current.setScaleX(scale);
+            current.setScaleY(scale);
+
+            is = getResources().openRawResource(R.raw.wc_icon2);
+            bm = BitmapFactory.decodeStream(is);
+            target.setImageBitmap(bm);
+            target.setScaleX(scale);
+            target.setScaleY(scale);
         }
 
         public void init() {
@@ -163,38 +154,24 @@ public class TmsUrMimamorukun extends RosActivity
                     calib = null;
                 }
                 map_image = (ImageView) findViewById(R.id.map_image);
-                AssetManager as = getResources().getAssets();
-                try {
-                    InputStream is = as.open("images/map_image.png");
-                    Bitmap bm = BitmapFactory.decodeStream(is);
-                    map_image.setImageBitmap(bm);
-                } catch (IOException e) {
-                    Log.e(TAG, e.toString());
-                }
+                InputStream is = getResources().openRawResource(R.raw.map_image);
+                Bitmap bm = BitmapFactory.decodeStream(is);
+                map_image.setImageBitmap(bm);
             } else {
                 Log.d("calib", "calib_mode:true");
                 calib = (ImageView) findViewById(R.id.calib);
-                AssetManager as = getResources().getAssets();
-                try {
-                    InputStream is = as.open("calib/calib.png");
-                    Bitmap bm = BitmapFactory.decodeStream(is);
-                    calib.setImageBitmap(bm);
-                } catch (IOException e) {
-                    Log.e(TAG, e.toString());
-                }
+                InputStream is = getResources().openRawResource(R.raw.calib);
+                Bitmap bm = BitmapFactory.decodeStream(is);
+                calib.setImageBitmap(bm);
                 calib.setVisibility(View.VISIBLE);
 
                 if (map_image != null) {
                     map_image = null;
                 }
                 map_image = (ImageView) findViewById(R.id.map_image);
-                try {
-                    InputStream is = as.open("calib/map_image_calib.png");
-                    Bitmap bm = BitmapFactory.decodeStream(is);
-                    map_image.setImageBitmap(bm);
-                } catch (IOException e) {
-                    Log.e(TAG, e.toString());
-                }
+                is = getResources().openRawResource(R.raw.map_image_calib);
+                bm = BitmapFactory.decodeStream(is);
+                map_image.setImageBitmap(bm);
             }
             map_image.setOnTouchListener(mapTouchListener);
         }
@@ -333,7 +310,7 @@ public class TmsUrMimamorukun extends RosActivity
 
     public TmsUrMimamorukun() {
         // the third arg is to avoid the MaterChooser activity
-        super("Mimamorukun Control", "Mimamorukun Control", master_uri);
+        super("Mimamorukun Control", "Mimamorukun Control"/*, master_uri*/);
     }
 
     @Override
