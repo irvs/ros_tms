@@ -1,5 +1,5 @@
 #include <tms_ts/tms_ts_nodelet.hpp>
-#define N 20
+#define N 20 // num of stack
 
 int tms_ts_nodelet::ROS_TMS_TS::count_callback = 0;
 
@@ -72,6 +72,8 @@ int tms_ts_nodelet::ROS_TMS_TS::ConvertArgType(std::string arg_type) {
 	}
 }
 
+// token: サブタスクを表す
+// token_block: 既に演算子で1回以上接続されたトークンのまとまり
 /* return 0: token_block [+/|] token_block
  *        1: token [+/|] token_block
  *        2: token_block [+/|] token

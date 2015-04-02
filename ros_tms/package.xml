@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<package>
+  <name>ros_tms</name>
+  <version>3.4.1</version>
+  <license>BSD</license>
+  <description>
+    The ros_tms meta package
+  </description>
+
+  <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>
+
+  <author email="passionvirus@gmail.com">Yoonseok Pyo</author>
+  <author>Kazuto Nakashima</author>
+  <author>Yuta Watanabe</author>
+  <author>Daisuke Inada</author>
+  <author>Akio Shigekane</author>  
+  <author>Masatomo Onishi</author>
+  <author>Omar Alaoui</author>
+  <author>Shunya Kuwahata</author>
+  <author>Kouhei Nakashima</author>
+  <author>Kazuya Kusaka</author>
+  <author>Yuka Hashiguchi</author>
+  <author>Tetsuro Oishi</author>
+  <author>Kazuya Suginohara</author>
+  <author>Akihiro Nagata</author>
+  <author>Masahide Tanaka</author>
+  <author>Tokuo Tsuji</author>
+
+  <url type="website">http://irvs.github.io/ros_tms/</url>
+  <url type="repository">https://github.com/irvs/ros_tms</url>
+  <url type="bugtracker">https://github.com/irvs/ros_tms/issues</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <export>
+    <metapackage/>
+  </export>
+</package>

@@ -10,7 +10,13 @@
 
  Prof. Ryo Kurazume, Assistant Prof. Tokuo Tsuji
 
+* maintainer :
+
+ Yoonseok Pyo
+
 * developer :
+
+ 2015 : Yoonseok Pyo, Masatomo Onishi, Yuta Watanabe, Akio Shigekane, Tokuo Tsuji
 
  2014 : Yoonseok Pyo, Yuka Hashiguchi, Tetsuro Oishi, Kazuya Suginohara, Kazuto Nakashima, Yuta Watanabe, Daisuke Inada, Akio Shigekane, Tokuo Tsuji, Omar Alaoui
 
@@ -20,7 +26,7 @@
 
 * dependency software :
  * Ubuntu 14.04 LTS 64BIT
- * Ros Indigo
+ * ROS Indigo
  * Choreonoid 1.4 
  * graspPlugin for Choreonoid #329
  * MySQL 5.6.16
@@ -30,7 +36,8 @@
  * pcl_ros
  * ARIA 2.8.1 (http://robots.mobilerobots.com/wiki/ARIA)
 
-* repository :  https://github.com/irvs/ros_tms.git
+* page : http://irvs.github.io/ros_tms/
+* repository : https://github.com/irvs/ros_tms.git
 * wiki : https://github.com/irvs/ros_tms/wiki
 
 # ROS-TMS meta-package information
