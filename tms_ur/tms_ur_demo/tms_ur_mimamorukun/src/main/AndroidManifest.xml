@@ -17,7 +17,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="org.ros.android.MasterChooser" />
+        <activity android:name="org.ros.android.MasterChooser"
+                  android:theme="@android:style/Theme.Holo.Light.NoActionBar"/>
         <service android:name="org.ros.android.NodeMainExecutorService" />
     </application>
 </manifest>

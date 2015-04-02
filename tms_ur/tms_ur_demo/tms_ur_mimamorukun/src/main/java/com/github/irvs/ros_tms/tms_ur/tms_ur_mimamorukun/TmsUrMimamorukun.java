@@ -117,11 +117,8 @@ public class TmsUrMimamorukun extends RosActivity
         public void init() {
             current_size[0] = current.getWidth();
             current_size[1] = current.getHeight();
-            Log.d("CHECK", "current: " + current_size[0] + ", " + current_size[1]);
-
-            target_size[0] = target.getWidth(); //pixel?
+            target_size[0] = target.getWidth();
             target_size[1] = target.getHeight();
-            Log.d("CHECK", "target: " + target_size[0] + ", " + target_size[1]);
             target.setVisibility(View.INVISIBLE);
         }
     }
@@ -134,7 +131,7 @@ public class TmsUrMimamorukun extends RosActivity
         public float[] map_origin = {0, 0};
         public float[] map_size = {0, 0}; //unused
         public boolean calib_mode = false;
-        public double map_scale; //TODO: ???
+        public double map_scale = 4.4/(387.59 - 17.87); //map to room
 
         public ImageView calib;
         public float[] calib_size = {0, 0};
@@ -250,7 +247,6 @@ public class TmsUrMimamorukun extends RosActivity
                                 case MotionEvent.ACTION_CANCEL:
                                     break;
                             }
-                            wc_icon.target_pose.yaw = wc_icon.target.getRotation()/* TODO + offset */;
                             break;
                     }
                 } else {
@@ -271,8 +267,8 @@ public class TmsUrMimamorukun extends RosActivity
             }
 
             private void setTargetPosition() {
-                wc_icon.target_pose.x = touch_x - room_map.map_origin[0];
-                wc_icon.target_pose.y = room_map.map_origin[1] - touch_y;
+                wc_icon.target_pose.x = (touch_x - room_map.map_origin[0])*map_scale;
+                wc_icon.target_pose.y = (room_map.map_origin[1] - touch_y)*map_scale;
             }
 
             private void drawTargetIcon() {
@@ -292,24 +288,25 @@ public class TmsUrMimamorukun extends RosActivity
             private void rotateTargetIcon() {
                 touch_x -= wc_icon.target.getX() + wc_icon.target_size[0] / 2 - room_map.map_offset[0];
                 touch_y -= wc_icon.target.getY() + wc_icon.target_size[1] / 2 - room_map.map_offset[1];
+                touch_y *= -1;
                 orientation = Math.atan2(touch_y, touch_x);
-                wc_icon.target.setRotation((float)(orientation*180/Math.PI) - 90);
+                wc_icon.target_pose.yaw = orientation;
+                wc_icon.target.setRotation(-(float)(orientation*180/Math.PI)-90);
                 showTargetInfo();
             }
 
             private void showTargetInfo() {
                 rp_cmd_info.setText("x: " + String.format("%.2f[m]\n", wc_icon.target_pose.x) +
                     "y: " + String.format("%.2f[m]\n", wc_icon.target_pose.y) +
-                    "yaw: " + String.format("%.2f[deg]", wc_icon.target_pose.yaw));
+                    "yaw: " + String.format("%.2f[deg]", wc_icon.target_pose.yaw*180/Math.PI));
                 target_info.setText("x: " + String.format("%.2f[m]\n", wc_icon.target_pose.x) +
                     "y: " + String.format("%.2f[m]\n", wc_icon.target_pose.y) +
-                    "yaw: " + String.format("%.2f[deg]", wc_icon.target_pose.yaw));
+                    "yaw: " + String.format("%.2f[deg]", wc_icon.target_pose.yaw*180/Math.PI));
             }
         }
     }
 
     public TmsUrMimamorukun() {
-        // the third arg is to avoid the MaterChooser activity
         super("Mimamorukun Control", "Mimamorukun Control"/*, master_uri*/);
     }
 
@@ -378,8 +375,8 @@ public class TmsUrMimamorukun extends RosActivity
                 switch (msg.what) {
                     case UPDATE_POSITION: {
                         Log.d(TAG, "handleMessage/UPDATE_POSITION");
-                        wc_icon.current_pose.x = db_reader_client.current_pose.x;
-                        wc_icon.current_pose.y = db_reader_client.current_pose.y;
+                        wc_icon.current_pose.x = db_reader_client.current_pose.x/room_map.map_scale - room_map.map_origin[0];
+                        wc_icon.current_pose.y = room_map.map_origin[1] - db_reader_client.current_pose.y/room_map.map_scale;
                         wc_icon.current_pose.yaw = db_reader_client.current_pose.yaw;
                         current_info.setText("x: " + String.format("%.2f[m]\n", wc_icon.current_pose.x) +
                             "y: " + String.format("%.2f[m]\n", wc_icon.current_pose.y) +
@@ -407,7 +404,7 @@ public class TmsUrMimamorukun extends RosActivity
                 if(false) {
                     wc_icon.current.setX((float) wc_icon.current_pose.x - wc_icon.current_size[0] / 2 + room_map.map_offset[0]);
                     wc_icon.current.setY((float) wc_icon.current_pose.y - wc_icon.current_size[1] / 2 + room_map.map_offset[1]);
-                    wc_icon.current.setRotation((float) wc_icon.current_pose.yaw);
+                    wc_icon.current.setRotation(-(float)(wc_icon.current_pose.yaw*180/Math.PI)-90);
                 } else {
                     wc_icon.current.setX(100);
                     wc_icon.current.setY(100);
@@ -421,11 +418,9 @@ public class TmsUrMimamorukun extends RosActivity
         execute_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick");
+                Log.d(TAG,"sendRequest");
                 drawer.closeDrawers();
-
-                //rp_cmd_client.sendRequest(wc_icon.target_pose.x, wc_icon.target_pose.y, (wc_icon.target_pose.yaw * (float) Math.PI) / 180, false);
-                Log.d(TAG,"check");
+                //rp_cmd_client.sendRequest(wc_icon.target_pose.x, wc_icon.target_pose.y, wc_icon.target_pose.yaw, false);
             }
         });
 
@@ -439,7 +434,7 @@ public class TmsUrMimamorukun extends RosActivity
         debug_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked == true) {
+                if (isChecked) {
                     debug_info.setVisibility(View.VISIBLE);
                 } else {
                     debug_info.setVisibility(View.INVISIBLE);
@@ -451,7 +446,7 @@ public class TmsUrMimamorukun extends RosActivity
         calib_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked == true) {
+                if (isChecked) {
                     wc_icon.target.setVisibility(View.INVISIBLE);
                     wc_icon.current.setVisibility(View.INVISIBLE);
                     mode_switch.setVisibility(View.INVISIBLE);
