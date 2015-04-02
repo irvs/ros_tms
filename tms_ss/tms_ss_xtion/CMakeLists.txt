@@ -98,7 +98,7 @@ ADD_DEFINITIONS(
 include_directories(
   ${PCL_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
-  ~/OpenNI2/Include
+  #~/OpenNI2/Include
   include
 )
 
