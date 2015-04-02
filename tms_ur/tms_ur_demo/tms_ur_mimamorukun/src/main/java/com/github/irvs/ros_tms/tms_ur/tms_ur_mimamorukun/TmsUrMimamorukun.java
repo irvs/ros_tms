@@ -37,6 +37,9 @@ import org.ros.node.NodeMainExecutor;
 import java.io.InputStream;
 import java.net.URI;
 
+/**
+ * Created by kazuto on 15/03/24.
+ */
 public class TmsUrMimamorukun extends RosActivity
 {
     private String TAG = "tms_ur_mimamorukun";
@@ -307,7 +310,7 @@ public class TmsUrMimamorukun extends RosActivity
     }
 
     public TmsUrMimamorukun() {
-        super("Mimamorukun Control", "Mimamorukun Control"/*, master_uri*/);
+        super("Mimamorukun Control", "Mimamorukun Control", master_uri);
     }
 
     @Override
