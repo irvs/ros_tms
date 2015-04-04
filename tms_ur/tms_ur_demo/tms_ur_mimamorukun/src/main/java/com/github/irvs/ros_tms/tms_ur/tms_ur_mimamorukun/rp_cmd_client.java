@@ -86,11 +86,6 @@ public class rp_cmd_client extends AbstractNodeMain {
                 }
             });
         } else {
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             Message msg = handler.obtainMessage(TmsUrMimamorukun.RP_CMD_RESULT, "The service is unavailable");
             handler.sendMessage(msg);
         }

@@ -114,6 +114,7 @@ public class TmsUrMimamorukun extends RosActivity
             target.setImageBitmap(bm);
             target.setScaleX(scale);
             target.setScaleY(scale);
+            target.setRotation(-90);
         }
 
         public void init() {
