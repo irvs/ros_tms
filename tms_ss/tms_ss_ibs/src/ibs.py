@@ -404,9 +404,9 @@ class CTagOBJ(object):
         # char id[TR3_UID_SIZE * 2 + 1] = {'\0'}
         tmp = ["\0"] * (TR3_UID_SIZE * 2 + 1)
         for i in xrange(TR3_UID_SIZE * 2):
-            tmp[i] = 0x00
+            tmp[i] = chr(0)
         # self.__mUID.assign(tmp)
-        self.mUID = tmp
+        self.mUID = "".join(tmp)
         return True
 
     def __del__(self):
@@ -499,9 +499,10 @@ class CIntelCab(object):
         if self.mStageNum == 1:
             self.cTR3.SetAntenna(self.cStage[No].mAntenna + 1)
         # inout, cObj.mUID = self.cTR3.GetTagDiff(cObj.mUID, self.cStage[No].mAntenna)
-        print self.cTR3.GetTagDiff("", 0)  # TODO: this work well
-        (inout, cObj.mUID) = self.cTR3.GetTagDiff(cObj.mUID, self.cStage[No].mAntenna)  #TODO: this doesnt work
-        print "GetTagDiss: ", inout, cObj.mUID
+        # print self.cTR3.GetTagDiff("", 0)  # TODO: this work well
+        # (inout, cObj.mUID) = self.cTR3.GetTagDiff(cObj.mUID, self.cStage[No].mAntenna)  #TODO: this doesnt work
+        (inout, cObj.mUID) = self.cTR3.GetTagDiff("", 0)
+        print "GetTagDiff: ", inout, cObj.mUID
         # self.cTR3.AntennaPowerOFF()
 
         # タグ数増加
@@ -524,7 +525,7 @@ class CIntelCab(object):
         # ロードセルの増減チェック
         # cObj.mWeight = self.cStage[No].cLoadCell.GetWeightDiff(&cObj.mX, &cObj.mY, cObj.mDiffs)
         cObj.mWeight, cObj.mX, cObj.mY, cObj.mDiffs = self.cStage[
-            No].cLoadCell.GetWeightDiff(cObj.mX, cObj.mY, cObj.mDiffs)
+            No].cLoadCell.GetWeightDiff(None, None, None)
 
         if (cObj.mWeight > 0) and (self.__InOutTag[No] > 0):
             # 入庫

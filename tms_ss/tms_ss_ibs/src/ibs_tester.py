@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
+import ibs
 from ibs import CLoadCell
 from ibs import CTagOBJ
 from ibs import CTR3
@@ -17,13 +18,9 @@ xpos0 = [16.0, 407.0, 16.0, 407.0]
 ypos0 = [16.0, 16.0, 244.0, 244.0]  # colorbox
 
 
-
-
-
-
 def test_CLoadCell():
     lc = CLoadCell()
-    print lc._CLoadCell__mPreSensorsWeight, lc._CLoadCell__mSensorPosX, lc._CLoadCell__mSensorPosY
+    # print lc._CLoadCell__mPreSensorsWeight, lc._CLoadCell__mSensorPosX, lc._CLoadCell__mSensorPosY
     lc.Setup()
     xpos0 = [16.0, 407.0, 16.0, 407.0]
     ypos0 = [16.0, 16.0, 244.0, 244.0]  # colorbox
@@ -105,13 +102,14 @@ def test_CIntelCab():
 
     while True:
         time.sleep(0.3)
+        reload(ibs)
         print "start"
         # print "mStageNum:", incab.mStageNum
 
         for i in xrange(incab.mStageNum):  # 増減の確認
             # switch (cIntelCab.UpdateObj(i, &cObj))
             state, cObj = incab.UpdateObj(i, cObj)
-            print state, cObj
+            print "top stack:", state, cObj.mUID
             if state == IC_OBJECT_STAY:
                 change_flag = False
             elif state == IC_OBJECT_IN:
@@ -158,15 +156,13 @@ def test_CIntelCab():
                 # ics_pub.publish(icsmsg)
 
 
-
-
 def main():
     print "Hello World"
-    # test_CLoadCell()
+    test_CLoadCell()
     # test_CTagOBJ()
     # test_CTR3()
     # test_CStage()
-    test_CIntelCab()
+    # test_CIntelCab()
 
 
 if __name__ == '__main__':
