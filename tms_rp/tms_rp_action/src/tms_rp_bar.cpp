@@ -6,6 +6,9 @@
 #include <draw_points.h>
 #include <tms_rp_pp.h>
 
+#define BASIC_OFFSET_X 4700
+#define BASIC_OFFSET_Y 500
+
 //------------------------------------------------------------------------------
 using namespace std;
 using namespace boost;
@@ -24,11 +27,11 @@ std::string TmsRpBar::object_name_[25] = {"chipstar_red","chipstar_orange",
                                           "teapot","chawan","teacup1","teacup2","cup1",
                                           "cup2","mugcup","remote","book_red","book_blue","dish"};
 
-std::string TmsRpBar::furniture_name_[22] = {"wardrobe","workdesk","drawer","chair","kitchen",
+std::string TmsRpBar::furniture_name_[24] = {"wardrobe","workdesk","drawer","chair","kitchen",
                                              "meeting_table","meeting_chair1","meeting_chair2","meeting_chair3","meeting_chair4",
                                              "meeting_chair5","partition","tv_table","tv_52inch","playrecoder",
                                              "sofa","sofa_table","bed","wagon","shelf",
-                                             "tree","tv_multi"};
+                                             "tree","tv_multi","wall_shelf","carpet"};
 
 // initialize static variables
 bool TmsRpBar::production_version_ = false;
@@ -47,7 +50,7 @@ SetMapParamDialog::SetMapParamDialog() : QDialog(MainWindow::instance()) {
   hbox->addWidget(new QLabel(" x_llimit_  "));
   x_llimit_.setAlignment(Qt::AlignCenter);
   x_llimit_.setDecimals(2);
-  x_llimit_.setRange(-10.00, 10.00);
+  x_llimit_.setRange(-20.00, 20.00);
   x_llimit_.setSingleStep(0.01);
   x_llimit_.setValue(0.00);
   hbox->addWidget(&x_llimit_);
@@ -59,9 +62,9 @@ SetMapParamDialog::SetMapParamDialog() : QDialog(MainWindow::instance()) {
   hbox->addWidget(new QLabel(" x_ulimit_  "));
   x_ulimit_.setAlignment(Qt::AlignCenter);
   x_ulimit_.setDecimals(2);
-  x_ulimit_.setRange(-10.00, 10.00);
+  x_ulimit_.setRange(-20.00, 20.00);
   x_ulimit_.setSingleStep(0.01);
-  x_ulimit_.setValue(8.00);
+  x_ulimit_.setValue(15.00);
   hbox->addWidget(&x_ulimit_);
   hbox->addWidget(new QLabel("(m)"));
   hbox->addStretch();
@@ -71,7 +74,7 @@ SetMapParamDialog::SetMapParamDialog() : QDialog(MainWindow::instance()) {
   hbox->addWidget(new QLabel(" y_llimit_  "));
   y_llimit_.setAlignment(Qt::AlignCenter);
   y_llimit_.setDecimals(2);
-  y_llimit_.setRange(-10.00, 10.00);
+  y_llimit_.setRange(-20.00, 20.00);
   y_llimit_.setSingleStep(0.01);
   y_llimit_.setValue(0.00);
   hbox->addWidget(&y_llimit_);
@@ -83,9 +86,9 @@ SetMapParamDialog::SetMapParamDialog() : QDialog(MainWindow::instance()) {
   hbox->addWidget(new QLabel(" y_ulimit_  "));
   y_ulimit_.setAlignment(Qt::AlignCenter);
   y_ulimit_.setDecimals(2);
-  y_ulimit_.setRange(-10.00, 10.00);
+  y_ulimit_.setRange(-20.00, 20.00);
   y_ulimit_.setSingleStep(0.01);
-  y_ulimit_.setValue(4.50);
+  y_ulimit_.setValue(8.00);
   hbox->addWidget(&y_ulimit_);
   hbox->addWidget(new QLabel("(m)"));
   hbox->addStretch();
@@ -132,7 +135,7 @@ SelectGoalPosDialog::SelectGoalPosDialog() : QDialog(cnoid::MainWindow::instance
 
   hbox->addWidget(new QLabel("x:"));
   goal_pos_x_.setAlignment(Qt::AlignCenter);
-  goal_pos_x_.setRange(0, 8000);
+  goal_pos_x_.setRange(0, 15000);
   goal_pos_x_.setValue(0);
   hbox->addWidget(&goal_pos_x_);
   hbox->addStretch();
@@ -141,7 +144,7 @@ SelectGoalPosDialog::SelectGoalPosDialog() : QDialog(cnoid::MainWindow::instance
   hbox = new QHBoxLayout();
   hbox->addWidget(new QLabel("y:"));
   goal_pos_y_.setAlignment(Qt::AlignCenter);
-  goal_pos_y_.setRange(0, 4500);
+  goal_pos_y_.setRange(0, 8000);
   goal_pos_y_.setValue(0);
   hbox->addWidget(&goal_pos_y_);
   hbox->addStretch();
@@ -265,6 +268,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   trc_.createRecord(6020,"shelf");
   trc_.createRecord(6021,"tree");
   trc_.createRecord(6022,"tv_multi");
+  trc_.createRecord(6023,"wall_shelf");
+  trc_.createRecord(6024,"carpet");
 
   // create etc model
   trc_.createRecord(20001,"blink_arrow");
@@ -298,8 +303,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   //----------------------------------------------------------------------------
   get_db_data.request.tmsdb.id = 1001 + sid_;
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y)/1000;
+    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
+    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
     posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
     posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
@@ -316,8 +321,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 2001 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y)/1000;
+    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
+    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
     posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
     posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
@@ -334,8 +339,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 2002 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y)/1000;
+    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
+    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
     posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
     posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
@@ -352,8 +357,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 2003 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y)/1000;
+    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
+    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
     posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
     posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
@@ -370,8 +375,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 2005 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y)/1000;
+    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
+    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
     posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
     posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
@@ -388,8 +393,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 2006 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y)/1000;
+    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
+    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
     posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
     posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
@@ -410,8 +415,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 2007 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y)/1000;
+    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
+    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
     posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
     posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
@@ -428,8 +433,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 2008 + sid_;
 
   if (get_data_client_.call(get_db_data)) {
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x)/1000;
-    posY = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_y)/1000;
+    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
+    posY = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
     posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
     posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
@@ -450,8 +455,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 2009 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-  posX = (get_db_data.response.tmsdb[0].x)/1000;
-    posY = (get_db_data.response.tmsdb[0].y)/1000;
+    posX = (get_db_data.response.tmsdb[0].x+BASIC_OFFSET_X)/1000;
+    posY = (get_db_data.response.tmsdb[0].y+BASIC_OFFSET_Y)/1000;
     posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
     posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
@@ -472,8 +477,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 5001 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y)/1000;
+    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
+    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
     posZ = (get_db_data.response.tmsdb[0].z-get_db_data.response.tmsdb[0].offset_z)/1000;
     posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
@@ -490,8 +495,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 5002 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y)/1000;
+    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
+    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
     posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
     posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
@@ -508,8 +513,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 5005 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y)/1000;
+    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
+    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
     posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
     posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
@@ -532,8 +537,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
     if (get_data_client_.call(get_db_data)) {
       os_ << "[TmsAction] Get info of furniture ID: " << get_db_data.request.tmsdb.id <<"  OK" << endl;
 
-      posX = (get_db_data.response.tmsdb[0].x)/1000;
-      posY = (get_db_data.response.tmsdb[0].y)/1000;
+      posX = (get_db_data.response.tmsdb[0].x+BASIC_OFFSET_X)/1000;
+      posY = (get_db_data.response.tmsdb[0].y+BASIC_OFFSET_Y)/1000;
       posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
       posRR= deg2rad(get_db_data.response.tmsdb[0].rr);
       posRP= deg2rad(get_db_data.response.tmsdb[0].rp);

@@ -27,7 +27,7 @@
 #define SPACE_ID          5000
 #define MAX_SPACE_NUM     4
 #define FURNITURE_ID      6000
-#define MAX_FURNITURE_NUM 22
+#define MAX_FURNITURE_NUM 24
 
 //------------------------------------------------------------------------------
 using std::string;
