@@ -232,6 +232,51 @@
                     android:layout_height="wrap_content"
                     android:text="information"/>
 
+                <!-- TmsdbGetData.srv -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:text="\nTmsdbGetData.srv"/>
+
+                <LinearLayout
+                    android:layout_marginLeft="30dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="70dp"
+                        android:layout_height="wrap_content"
+                        android:text="id"/>
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14dp"
+                        android:id="@+id/db_id" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginLeft="30dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="70dp"
+                        android:layout_height="wrap_content"
+                        android:text="sensor"/>
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14dp"
+                        android:id="@+id/db_sensor" />
+
+                </LinearLayout>
+
                 <!-- Setting -->
                 <TextView
                     android:layout_width="match_parent"
@@ -248,7 +293,7 @@
                     <TextView
                         android:layout_width="70dp"
                         android:layout_height="wrap_content"
-                        android:text="Debug"/>
+                        android:text="debug"/>
 
                     <Switch
                         android:layout_width="wrap_content"
@@ -268,7 +313,7 @@
                     <TextView
                         android:layout_width="70dp"
                         android:layout_height="wrap_content"
-                        android:text="Calib"/>
+                        android:text="calib."/>
 
                     <Switch
                         android:layout_width="wrap_content"

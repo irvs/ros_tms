@@ -23,19 +23,23 @@ import tms_msg_db.TmsdbGetDataResponse;
  */
 public class db_reader_client extends AbstractNodeMain {
     private String TAG = "db_reader_client";
+    private String srv_name = "/tms_db_reader/dbreader";
+
     private ServiceClient<TmsdbGetDataRequest, TmsdbGetDataResponse> dbClient;
     private Handler handler;
     public Pose current_pose = new Pose();
-    private boolean callable = false;
 
-    public db_reader_client(Handler handler) {
-        this.handler = handler;
-    }
+    private int id = 2007;     //Mimamorukun
+    private int sensor = 3001; //Vicon
 
     public class Pose {
         public double x;
         public double y;
         public double yaw;
+    }
+
+    public db_reader_client(Handler handler) {
+        this.handler = handler;
     }
 
     @Override
@@ -48,26 +52,25 @@ public class db_reader_client extends AbstractNodeMain {
         Log.d(TAG, "onStart");
         String status;
         try {
-            dbClient = connectedNode.newServiceClient("/tms_db_reader/dbreader", TmsdbGetData._TYPE);
-            status = "Connected";
-            callable = true;
+            dbClient = connectedNode.newServiceClient(srv_name, TmsdbGetData._TYPE);
+            status = "connected";
         } catch (ServiceNotFoundException e) {
             Log.d(TAG, "ServiceNotFoundException");
-            status = "Failed to connect";
+            status = "failed to connect";
             //throw new RosRuntimeException(e);
         }
         Message msg = handler.obtainMessage(TmsUrMimamorukun.DBREADER_STATUS, status);
         handler.sendMessage(msg);
 
-        if (callable) {
+        if (dbClient != null) {
             connectedNode.executeCancellableLoop(new CancellableLoop() {
                 final TmsdbGetDataRequest req = dbClient.newMessage();
 
                 @Override
                 protected void setup() {
                     Log.d(TAG, "setup");
-                    req.getTmsdb().setId(1001); // Mimamorukun ID
-                    req.getTmsdb().setSensor(3001); // 3501 kalman filter data
+                    req.getTmsdb().setId(id); // Mimamorukun ID
+                    req.getTmsdb().setSensor(sensor); // 3001: Vicon, 3501: kalman filter data
                 }
 
                 @Override
@@ -93,8 +96,7 @@ public class db_reader_client extends AbstractNodeMain {
                         }
                     });
 
-                    // update the position on regular basis
-                    Thread.sleep(100); // 500msec
+                    Thread.sleep(100); // 100msec
                 }
             });
         }

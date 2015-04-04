@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -54,6 +52,7 @@ public class TmsUrMimamorukun extends RosActivity
     private RoomMap room_map;
 
     private int adjust_mode = 0;
+    private boolean in_motion = false;
 
     private ActionBarDrawerToggle drawerToggle;
     private DrawerLayout drawer;
@@ -132,7 +131,6 @@ public class TmsUrMimamorukun extends RosActivity
         private MapTouchListener mapTouchListener;
         public int[] map_offset = {0, 0};
         public float[] map_origin = {0, 0};
-        public float[] map_size = {0, 0}; //unused
         public boolean calib_mode = false;
         public double map_scale = 0.0125;//4.4/(387.59 - 17.87) map to room
 
@@ -184,25 +182,6 @@ public class TmsUrMimamorukun extends RosActivity
             map_offset[1] -= rect.top; //the height of status bar
             Log.d(TAG, "statusbar height: " + rect.top);
             Log.d("CHECK", "map_offset: " + map_offset[0] + ", " + map_offset[1]);
-
-            //set the map_size[]: unused
-            if (true) {
-                //actual size
-                RectF imageRect = new RectF();
-                imageRect.right = imageRect.left + map_image.getDrawable().getIntrinsicWidth();
-                imageRect.bottom = imageRect.top + map_image.getDrawable().getIntrinsicHeight();
-
-                Matrix m = map_image.getImageMatrix();
-                m.mapRect(imageRect);
-                map_size[0] = imageRect.width();
-                map_size[1] = imageRect.height();
-                Log.d("CHECK", "map: " + map_size[0] + ", " + map_size[1]);
-            } else {
-                //view size
-                map_size[0] = map_image.getWidth();
-                map_size[1] = map_image.getHeight();
-                Log.d("CHECK", "map: " + map_size[0] + ", " + map_size[1]);
-            }
 
             if (calib_mode) {
                 calib_size[0] = calib.getWidth();
@@ -347,7 +326,9 @@ public class TmsUrMimamorukun extends RosActivity
             @Override
             public void onDrawerClosed(View drawerView) {
                 Log.d(TAG, "onDrawerClosed");
-                room_map.map_image.setOnTouchListener(room_map.mapTouchListener);
+                if (!in_motion) {
+                    room_map.map_image.setOnTouchListener(room_map.mapTouchListener);
+                }
             }
 
             @Override
@@ -389,6 +370,8 @@ public class TmsUrMimamorukun extends RosActivity
                     }
                     case RP_CMD_RESULT: {
                         Log.d(TAG, "handleMessage/RP_CMD_RESULT");
+                        in_motion = false;
+                        room_map.map_image.setOnTouchListener(room_map.mapTouchListener);
                         Toast.makeText(context, (String)msg.obj, Toast.LENGTH_SHORT).show();
                         break;
                     }
@@ -404,15 +387,9 @@ public class TmsUrMimamorukun extends RosActivity
             }
 
             private void drawCurrentIcon() {
-                if(true) {
-                    wc_icon.current.setX((float) wc_icon.current_pose.x - wc_icon.current_size[0] / 2 + room_map.map_offset[0]);
-                    wc_icon.current.setY((float) wc_icon.current_pose.y - wc_icon.current_size[1] / 2 + room_map.map_offset[1]);
-                    wc_icon.current.setRotation(-(float)wc_icon.current_pose.yaw-90);
-                } else {
-                    wc_icon.current.setX(100);
-                    wc_icon.current.setY(100);
-                    wc_icon.current.setRotation(90);
-                }
+                wc_icon.current.setX((float) wc_icon.current_pose.x - wc_icon.current_size[0] / 2 + room_map.map_offset[0]);
+                wc_icon.current.setY((float) wc_icon.current_pose.y - wc_icon.current_size[1] / 2 + room_map.map_offset[1]);
+                wc_icon.current.setRotation(-(float)wc_icon.current_pose.yaw-90);
             }
         };
 
@@ -421,9 +398,15 @@ public class TmsUrMimamorukun extends RosActivity
         execute_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG,"sendRequest");
-                drawer.closeDrawers();
-                //rp_cmd_client.sendRequest(wc_icon.target_pose.x, wc_icon.target_pose.y, wc_icon.target_pose.yaw, false);
+            Log.d(TAG,"sendRequest");
+            drawer.closeDrawers();
+            in_motion = true;
+            (new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    rp_cmd_client.sendRequest(wc_icon.target_pose.x*1000, wc_icon.target_pose.y*1000, wc_icon.target_pose.yaw, false);
+                }
+            })).start();
             }
         });
 
@@ -437,11 +420,11 @@ public class TmsUrMimamorukun extends RosActivity
         debug_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    debug_info.setVisibility(View.VISIBLE);
-                } else {
-                    debug_info.setVisibility(View.INVISIBLE);
-                }
+            if (isChecked) {
+                debug_info.setVisibility(View.VISIBLE);
+            } else {
+                debug_info.setVisibility(View.INVISIBLE);
+            }
             }
         });
 
@@ -449,21 +432,21 @@ public class TmsUrMimamorukun extends RosActivity
         calib_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    wc_icon.target.setVisibility(View.INVISIBLE);
-                    wc_icon.current.setVisibility(View.INVISIBLE);
-                    mode_switch.setVisibility(View.INVISIBLE);
-                    room_map.calib_mode = true;
-                    room_map.init();
-                    room_map.getSize();
-                } else {
-                    wc_icon.target.setVisibility(View.VISIBLE);
-                    wc_icon.current.setVisibility(View.VISIBLE);
-                    mode_switch.setVisibility(View.VISIBLE);
-                    room_map.calib_mode = false;
-                    room_map.init();
-                    room_map.getSize();
-                }
+            if (isChecked) {
+                wc_icon.target.setVisibility(View.INVISIBLE);
+                wc_icon.current.setVisibility(View.INVISIBLE);
+                mode_switch.setVisibility(View.INVISIBLE);
+                room_map.calib_mode = true;
+                room_map.init();
+                room_map.getSize();
+            } else {
+                wc_icon.target.setVisibility(View.VISIBLE);
+                wc_icon.current.setVisibility(View.VISIBLE);
+                mode_switch.setVisibility(View.VISIBLE);
+                room_map.calib_mode = false;
+                room_map.init();
+                room_map.getSize();
+            }
             }
         });
 
