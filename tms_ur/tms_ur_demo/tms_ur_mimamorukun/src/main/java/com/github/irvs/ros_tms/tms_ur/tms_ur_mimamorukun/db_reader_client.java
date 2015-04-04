@@ -94,7 +94,7 @@ public class db_reader_client extends AbstractNodeMain {
                     });
 
                     // update the position on regular basis
-                    Thread.sleep(500); // 500msec
+                    Thread.sleep(100); // 500msec
                 }
             });
         }

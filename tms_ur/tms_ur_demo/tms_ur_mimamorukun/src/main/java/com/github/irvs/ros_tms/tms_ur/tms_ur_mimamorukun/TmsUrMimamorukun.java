@@ -134,7 +134,7 @@ public class TmsUrMimamorukun extends RosActivity
         public float[] map_origin = {0, 0};
         public float[] map_size = {0, 0}; //unused
         public boolean calib_mode = false;
-        public double map_scale = 0.012;//4.4/(387.59 - 17.87) map to room
+        public double map_scale = 0.0125;//4.4/(387.59 - 17.87) map to room
 
         public ImageView calib;
         public float[] calib_size = {0, 0};
@@ -380,7 +380,7 @@ public class TmsUrMimamorukun extends RosActivity
                         Log.d(TAG, "handleMessage/UPDATE_POSITION");
                         wc_icon.current_pose.x = db_reader_client.current_pose.x/room_map.map_scale + room_map.map_origin[0];
                         wc_icon.current_pose.y = room_map.map_origin[1] - db_reader_client.current_pose.y/room_map.map_scale;
-                        wc_icon.current_pose.yaw = db_reader_client.current_pose.yaw - 90;
+                        wc_icon.current_pose.yaw = db_reader_client.current_pose.yaw;
                         current_info.setText("x: " + String.format("%.2f[m]\n", db_reader_client.current_pose.x) +
                             "y: " + String.format("%.2f[m]\n", db_reader_client.current_pose.y) +
                             "yaw: " + String.format("%.2f[deg]", db_reader_client.current_pose.yaw));
@@ -407,7 +407,7 @@ public class TmsUrMimamorukun extends RosActivity
                 if(true) {
                     wc_icon.current.setX((float) wc_icon.current_pose.x - wc_icon.current_size[0] / 2 + room_map.map_offset[0]);
                     wc_icon.current.setY((float) wc_icon.current_pose.y - wc_icon.current_size[1] / 2 + room_map.map_offset[1]);
-                    wc_icon.current.setRotation(-(float)(wc_icon.current_pose.yaw*180/Math.PI)-90);
+                    wc_icon.current.setRotation(-(float)wc_icon.current_pose.yaw-90);
                 } else {
                     wc_icon.current.setX(100);
                     wc_icon.current.setY(100);
