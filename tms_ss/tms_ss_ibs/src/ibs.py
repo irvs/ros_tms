@@ -121,13 +121,21 @@ class CLoadCell(object):
         self.ResetWeight()
 
     # 指定されたセンサから重さを取得する
-    def GetWeight(self, sensor_id):
+    def GetWeight(self, sensor_id, repeat=1):
         self.__OpenPort()
-        self.__ser.write(str(sensor_id))
-        # write(fd, &signal, 1)
-        buf = self.__ser.read(size=15)
+        buf = []
+        for _ in xrange(repeat):
+            # time.sleep(0.01)
+            self.__ser.flushInput
+            self.__ser.write(str(sensor_id))
+            # tmp = self.__ser.read(size=15)
+            tmp = self.__ser.readline()
+            # print tmp
+            buf.append(int(tmp.replace("O", "").replace("K", "").replace('"', ""))*5)
         self.__ClosePort()
-        return int(buf.replace("OK", "")) * 5  # 0.28は経験的な値
+        buf.sort()
+        return reduce(lambda x, y: x+y, buf)/len(buf)
+        # return buf[repeat/2]
 
     def ResetWeight(self, initial=[], num=10):
         if initial:   # if not empty
@@ -136,7 +144,7 @@ class CLoadCell(object):
         self.__mPreSensorsWeight = [0] * self.__mSensorNum
         for i in xrange(num):
             for j in xrange(len(self.__mPreSensorsWeight)):
-                self.__mPreSensorsWeight[j] = self.GetWeight(j)
+                self.__mPreSensorsWeight[j] += self.GetWeight(j)
         self.__mPreSensorsWeight = map(lambda x: x / num, self.__mPreSensorsWeight)
 
     def SetSensorPos(self, sensor_num, x_list, y_list):
@@ -163,10 +171,11 @@ class CLoadCell(object):
             time.sleep(0.02)
             weight = 0
             for i in xrange(self.__mSensorNum):
-                now = self.GetWeight(i)
+                now = self.GetWeight(i, repeat=1)
                 weight += math.fabs(now - pre[i])
                 pre[i] = now
                 buf[cnt][i] = now
+            print weight, pre
             if weight < LC_GET_WEIGHT_STABLE:
                 cnt += 1
             else:
