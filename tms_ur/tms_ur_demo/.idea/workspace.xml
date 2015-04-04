@@ -51,49 +51,39 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="TmsUrMimamorukun.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="TmsUrMimamorukun.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_mimamorukun/TmsUrMimamorukun.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7713249" vertical-offset="9241" max-vertical-offset="9792">
-              <caret line="539" column="0" selection-start-line="539" selection-start-column="0" selection-end-line="539" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="2177" max-vertical-offset="9540">
+              <caret line="138" column="31" selection-start-line="138" selection-start-column="31" selection-end-line="138" selection-end-column="31" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#12312#12313#0" expanded="true" />
-                <element signature="e#12391#12392#0" expanded="true" />
-                <element signature="e#13599#13619#0" expanded="true" />
-                <element signature="e#13633#13654#0" expanded="true" />
-                <element signature="e#17031#17351#0" expanded="true" />
-                <element signature="e#17340#17341#0" expanded="true" />
-                <element signature="e#17813#18192#0" expanded="true" />
-                <element signature="e#18181#18182#0" expanded="true" />
-                <element signature="e#18308#19202#0" expanded="true" />
-                <element signature="e#19191#19192#0" expanded="true" />
-                <element signature="e#19522#20019#0" expanded="true" />
-                <element signature="e#20008#20009#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/res/layout/main.xml">
-          <provider editor-type-id="android-designer">
-            <state />
-          </provider>
+      <file leaf-file-name="build.gradle" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2232" max-vertical-offset="5292">
-              <caret line="124" column="18" selection-start-line="124" selection-start-column="18" selection-end-line="124" selection-end-column="18" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="702">
+              <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="db_reader_client.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="db_reader_client.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_mimamorukun/db_reader_client.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="414" max-vertical-offset="1998">
-              <caret line="23" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
-              <folding />
+            <state vertical-scroll-proportion="1.2996743" vertical-offset="717" max-vertical-offset="1710">
+              <caret line="80" column="33" selection-start-line="80" selection-start-column="33" selection-end-line="80" selection-end-column="33" />
+              <folding>
+                <element signature="e#3436#3437#0" expanded="true" />
+                <element signature="e#3515#3516#0" expanded="true" />
+                <element signature="e#3755#3756#0" expanded="true" />
+                <element signature="e#3793#3794#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -101,8 +91,8 @@
       <file leaf-file-name="rp_cmd_client.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_mimamorukun/rp_cmd_client.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1062" max-vertical-offset="1818">
-              <caret line="59" column="56" selection-start-line="59" selection-start-column="56" selection-end-line="59" selection-end-column="56" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="655" max-vertical-offset="1512">
+              <caret line="60" column="0" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -111,8 +101,8 @@
       <file leaf-file-name="AndroidManifest.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/AndroidManifest.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="360" max-vertical-offset="540">
-              <caret line="20" column="76" selection-start-line="20" selection-start-column="76" selection-end-line="20" selection-end-column="76" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="558">
+              <caret line="7" column="63" selection-start-line="7" selection-start-column="63" selection-end-line="7" selection-end-column="63" />
               <folding />
             </state>
           </provider>
@@ -1386,11 +1376,11 @@
         <option value="$PROJECT_DIR$/tms_ur_mimamorukun/src/main/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/tms_ur_mimamorukun/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_mimamorukun/robot_control_client.java" />
         <option value="$PROJECT_DIR$/tms_ur_mimamorukun/src/main/res/layout/sample_map_image.xml" />
-        <option value="$PROJECT_DIR$/tms_ur_mimamorukun/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_mimamorukun/db_reader_client.java" />
         <option value="$PROJECT_DIR$/tms_ur_mimamorukun/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_mimamorukun/rp_cmd_client.java" />
         <option value="$PROJECT_DIR$/tms_ur_mimamorukun/src/main/res/layout/main.xml" />
         <option value="$PROJECT_DIR$/tms_ur_mimamorukun/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/tms_ur_mimamorukun/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_mimamorukun/TmsUrMimamorukun.java" />
+        <option value="$PROJECT_DIR$/tms_ur_mimamorukun/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_mimamorukun/db_reader_client.java" />
       </list>
     </option>
   </component>
@@ -1399,9 +1389,9 @@
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="65" />
-    <option name="y" value="24" />
+    <option name="y" value="-904" />
     <option name="width" value="1535" />
-    <option name="height" value="876" />
+    <option name="height" value="904" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -1692,10 +1682,10 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
       <pane id="AndroidView">
         <subPane />
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1924,7 +1914,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="65" y="24" width="1535" height="876" extended-state="6" />
+    <frame x="65" y="-904" width="1535" height="904" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -1938,7 +1928,7 @@
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19610476" sideWeight="0.5008606" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32934928" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22841966" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.55245686" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21393035" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24983211" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1952,8 +1942,8 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2498618" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Thumbnails" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32953465" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32975152" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32953465" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -1984,38 +1974,31 @@
           <caret line="392" column="63" selection-start-line="392" selection-start-column="63" selection-end-line="392" selection-end-column="63" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#12312#12313#0" expanded="true" />
-            <element signature="e#12391#12392#0" expanded="true" />
-            <element signature="e#13599#13619#0" expanded="true" />
-            <element signature="e#13633#13654#0" expanded="true" />
-            <element signature="e#17031#17351#0" expanded="true" />
-            <element signature="e#17340#17341#0" expanded="true" />
-            <element signature="e#17813#18192#0" expanded="true" />
-            <element signature="e#18181#18182#0" expanded="true" />
-            <element signature="e#18308#19202#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#19522#20019#0" expanded="true" />
-            <element signature="e#20008#20009#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/res/layout/main.xml">
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1860" max-vertical-offset="4410">
           <caret line="124" column="18" selection-start-line="124" selection-start-column="18" selection-end-line="124" selection-end-column="18" />
           <folding />
         </state>
       </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_mimamorukun/db_reader_client.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1170" max-vertical-offset="1665">
           <caret line="78" column="54" selection-start-line="78" selection-start-column="54" selection-end-line="78" selection-end-column="54" />
-          <folding />
+          <folding>
+            <element signature="e#3436#3437#0" expanded="true" />
+            <element signature="e#3515#3516#0" expanded="true" />
+            <element signature="e#3755#3756#0" expanded="true" />
+            <element signature="e#3793#3794#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -2049,38 +2032,31 @@
           <caret line="521" column="5" selection-start-line="521" selection-start-column="5" selection-end-line="521" selection-end-column="5" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#12312#12313#0" expanded="true" />
-            <element signature="e#12391#12392#0" expanded="true" />
-            <element signature="e#13599#13619#0" expanded="true" />
-            <element signature="e#13633#13654#0" expanded="true" />
-            <element signature="e#17031#17351#0" expanded="true" />
-            <element signature="e#17340#17341#0" expanded="true" />
-            <element signature="e#17813#18192#0" expanded="true" />
-            <element signature="e#18181#18182#0" expanded="true" />
-            <element signature="e#18308#19202#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#19522#20019#0" expanded="true" />
-            <element signature="e#20008#20009#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/res/layout/main.xml">
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="4352" max-vertical-offset="5292">
           <caret line="260" column="0" selection-start-line="260" selection-start-column="0" selection-end-line="260" selection-end-column="0" />
           <folding />
         </state>
       </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_mimamorukun/db_reader_client.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1404" max-vertical-offset="1998">
           <caret line="78" column="54" selection-start-line="78" selection-start-column="54" selection-end-line="78" selection-end-column="54" />
-          <folding />
+          <folding>
+            <element signature="e#3436#3437#0" expanded="true" />
+            <element signature="e#3515#3516#0" expanded="true" />
+            <element signature="e#3755#3756#0" expanded="true" />
+            <element signature="e#3793#3794#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -2106,38 +2082,31 @@
           <caret line="286" column="40" selection-start-line="286" selection-start-column="40" selection-end-line="286" selection-end-column="40" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#12312#12313#0" expanded="true" />
-            <element signature="e#12391#12392#0" expanded="true" />
-            <element signature="e#13599#13619#0" expanded="true" />
-            <element signature="e#13633#13654#0" expanded="true" />
-            <element signature="e#17031#17351#0" expanded="true" />
-            <element signature="e#17340#17341#0" expanded="true" />
-            <element signature="e#17813#18192#0" expanded="true" />
-            <element signature="e#18181#18182#0" expanded="true" />
-            <element signature="e#18308#19202#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#19522#20019#0" expanded="true" />
-            <element signature="e#20008#20009#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/res/layout/main.xml">
-      <provider selected="true" editor-type-id="android-designer">
-        <state />
-      </provider>
       <provider editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="2538" max-vertical-offset="3258">
           <caret line="162" column="16" selection-start-line="162" selection-start-column="16" selection-end-line="162" selection-end-column="16" />
           <folding />
         </state>
       </provider>
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_mimamorukun/db_reader_client.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1224" max-vertical-offset="1944">
           <caret line="68" column="13" selection-start-line="68" selection-start-column="13" selection-end-line="68" selection-end-column="13" />
-          <folding />
+          <folding>
+            <element signature="e#3436#3437#0" expanded="true" />
+            <element signature="e#3515#3516#0" expanded="true" />
+            <element signature="e#3755#3756#0" expanded="true" />
+            <element signature="e#3793#3794#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -2155,38 +2124,31 @@
           <caret line="218" column="53" selection-start-line="218" selection-start-column="53" selection-end-line="218" selection-end-column="53" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#12312#12313#0" expanded="true" />
-            <element signature="e#12391#12392#0" expanded="true" />
-            <element signature="e#13599#13619#0" expanded="true" />
-            <element signature="e#13633#13654#0" expanded="true" />
-            <element signature="e#17031#17351#0" expanded="true" />
-            <element signature="e#17340#17341#0" expanded="true" />
-            <element signature="e#17813#18192#0" expanded="true" />
-            <element signature="e#18181#18182#0" expanded="true" />
-            <element signature="e#18308#19202#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#19522#20019#0" expanded="true" />
-            <element signature="e#20008#20009#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/res/layout/main.xml">
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1220" max-vertical-offset="2214">
           <caret line="80" column="0" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
           <folding />
         </state>
       </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_mimamorukun/db_reader_client.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="828" max-vertical-offset="1854">
           <caret line="46" column="30" selection-start-line="46" selection-start-column="30" selection-end-line="46" selection-end-column="30" />
-          <folding />
+          <folding>
+            <element signature="e#3436#3437#0" expanded="true" />
+            <element signature="e#3515#3516#0" expanded="true" />
+            <element signature="e#3755#3756#0" expanded="true" />
+            <element signature="e#3793#3794#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -2204,18 +2166,6 @@
           <caret line="176" column="21" selection-start-line="176" selection-start-column="21" selection-end-line="176" selection-end-column="21" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#12312#12313#0" expanded="true" />
-            <element signature="e#12391#12392#0" expanded="true" />
-            <element signature="e#13599#13619#0" expanded="true" />
-            <element signature="e#13633#13654#0" expanded="true" />
-            <element signature="e#17031#17351#0" expanded="true" />
-            <element signature="e#17340#17341#0" expanded="true" />
-            <element signature="e#17813#18192#0" expanded="true" />
-            <element signature="e#18181#18182#0" expanded="true" />
-            <element signature="e#18308#19202#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#19522#20019#0" expanded="true" />
-            <element signature="e#20008#20009#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2226,18 +2176,6 @@
           <caret line="220" column="0" selection-start-line="220" selection-start-column="0" selection-end-line="220" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#12312#12313#0" expanded="true" />
-            <element signature="e#12391#12392#0" expanded="true" />
-            <element signature="e#13599#13619#0" expanded="true" />
-            <element signature="e#13633#13654#0" expanded="true" />
-            <element signature="e#17031#17351#0" expanded="true" />
-            <element signature="e#17340#17341#0" expanded="true" />
-            <element signature="e#17813#18192#0" expanded="true" />
-            <element signature="e#18181#18182#0" expanded="true" />
-            <element signature="e#18308#19202#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#19522#20019#0" expanded="true" />
-            <element signature="e#20008#20009#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2254,7 +2192,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1080" max-vertical-offset="1548">
           <caret line="60" column="75" selection-start-line="60" selection-start-column="75" selection-end-line="60" selection-end-column="75" />
-          <folding />
+          <folding>
+            <element signature="e#3436#3437#0" expanded="true" />
+            <element signature="e#3515#3516#0" expanded="true" />
+            <element signature="e#3755#3756#0" expanded="true" />
+            <element signature="e#3793#3794#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -2271,18 +2214,6 @@
           <caret line="177" column="70" selection-start-line="177" selection-start-column="70" selection-end-line="177" selection-end-column="70" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#12312#12313#0" expanded="true" />
-            <element signature="e#12391#12392#0" expanded="true" />
-            <element signature="e#13599#13619#0" expanded="true" />
-            <element signature="e#13633#13654#0" expanded="true" />
-            <element signature="e#17031#17351#0" expanded="true" />
-            <element signature="e#17340#17341#0" expanded="true" />
-            <element signature="e#17813#18192#0" expanded="true" />
-            <element signature="e#18181#18182#0" expanded="true" />
-            <element signature="e#18308#19202#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#19522#20019#0" expanded="true" />
-            <element signature="e#20008#20009#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2299,7 +2230,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="162" max-vertical-offset="1548">
           <caret line="63" column="29" selection-start-line="63" selection-start-column="29" selection-end-line="63" selection-end-column="29" />
-          <folding />
+          <folding>
+            <element signature="e#3436#3437#0" expanded="true" />
+            <element signature="e#3515#3516#0" expanded="true" />
+            <element signature="e#3755#3756#0" expanded="true" />
+            <element signature="e#3793#3794#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -2309,18 +2245,6 @@
           <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#12312#12313#0" expanded="true" />
-            <element signature="e#12391#12392#0" expanded="true" />
-            <element signature="e#13599#13619#0" expanded="true" />
-            <element signature="e#13633#13654#0" expanded="true" />
-            <element signature="e#17031#17351#0" expanded="true" />
-            <element signature="e#17340#17341#0" expanded="true" />
-            <element signature="e#17813#18192#0" expanded="true" />
-            <element signature="e#18181#18182#0" expanded="true" />
-            <element signature="e#18308#19202#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#19522#20019#0" expanded="true" />
-            <element signature="e#20008#20009#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2339,18 +2263,6 @@
           <caret line="82" column="30" selection-start-line="82" selection-start-column="30" selection-end-line="82" selection-end-column="30" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#12312#12313#0" expanded="true" />
-            <element signature="e#12391#12392#0" expanded="true" />
-            <element signature="e#13599#13619#0" expanded="true" />
-            <element signature="e#13633#13654#0" expanded="true" />
-            <element signature="e#17031#17351#0" expanded="true" />
-            <element signature="e#17340#17341#0" expanded="true" />
-            <element signature="e#17813#18192#0" expanded="true" />
-            <element signature="e#18181#18182#0" expanded="true" />
-            <element signature="e#18308#19202#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#19522#20019#0" expanded="true" />
-            <element signature="e#20008#20009#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2455,74 +2367,67 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.12316716" vertical-offset="0" max-vertical-offset="1023">
-          <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_mimamorukun/rp_cmd_client.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="525" max-vertical-offset="1548">
-          <caret line="59" column="56" selection-start-line="59" selection-start-column="56" selection-end-line="59" selection-end-column="56" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/AndroidManifest.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="540">
-          <caret line="20" column="76" selection-start-line="20" selection-start-column="76" selection-end-line="20" selection-end-column="76" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/res/layout/main.xml">
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1814" max-vertical-offset="5292">
           <caret line="124" column="18" selection-start-line="124" selection-start-column="18" selection-end-line="124" selection-end-column="18" />
           <folding />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_mimamorukun/db_reader_client.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1602">
-          <caret line="23" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
-          <folding />
-        </state>
+      <provider editor-type-id="android-designer">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.2849365" vertical-offset="41" max-vertical-offset="594">
           <caret line="25" column="5" selection-start-line="25" selection-start-column="5" selection-end-line="25" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/AndroidManifest.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="558">
+          <caret line="7" column="63" selection-start-line="7" selection-start-column="63" selection-end-line="7" selection-end-column="63" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="702">
+          <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_mimamorukun/TmsUrMimamorukun.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7713249" vertical-offset="9241" max-vertical-offset="9792">
-          <caret line="539" column="0" selection-start-line="539" selection-start-column="0" selection-end-line="539" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="2177" max-vertical-offset="9540">
+          <caret line="138" column="31" selection-start-line="138" selection-start-column="31" selection-end-line="138" selection-end-column="31" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#12312#12313#0" expanded="true" />
-            <element signature="e#12391#12392#0" expanded="true" />
-            <element signature="e#13599#13619#0" expanded="true" />
-            <element signature="e#13633#13654#0" expanded="true" />
-            <element signature="e#17031#17351#0" expanded="true" />
-            <element signature="e#17340#17341#0" expanded="true" />
-            <element signature="e#17813#18192#0" expanded="true" />
-            <element signature="e#18181#18182#0" expanded="true" />
-            <element signature="e#18308#19202#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#19522#20019#0" expanded="true" />
-            <element signature="e#20008#20009#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_mimamorukun/rp_cmd_client.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="655" max-vertical-offset="1512">
+          <caret line="60" column="0" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tms_ur_mimamorukun/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_mimamorukun/db_reader_client.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.2996743" vertical-offset="717" max-vertical-offset="1710">
+          <caret line="80" column="33" selection-start-line="80" selection-start-column="33" selection-end-line="80" selection-end-column="33" />
+          <folding>
+            <element signature="e#3436#3437#0" expanded="true" />
+            <element signature="e#3515#3516#0" expanded="true" />
+            <element signature="e#3755#3756#0" expanded="true" />
+            <element signature="e#3793#3794#0" expanded="true" />
           </folding>
         </state>
       </provider>

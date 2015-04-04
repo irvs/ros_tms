@@ -66,7 +66,7 @@ public class db_reader_client extends AbstractNodeMain {
                 @Override
                 protected void setup() {
                     Log.d(TAG, "setup");
-                    req.getTmsdb().setId(2007); // Mimamorukun ID
+                    req.getTmsdb().setId(1001); // Mimamorukun ID
                     req.getTmsdb().setSensor(3001); // 3501 kalman filter data
                 }
 
@@ -77,12 +77,14 @@ public class db_reader_client extends AbstractNodeMain {
                         @Override
                         public void onSuccess(TmsdbGetDataResponse res) {
                             Log.d(TAG, "onSuccess()");
-                            current_pose.x = res.getTmsdb().get(0).getX();
-                            current_pose.y = res.getTmsdb().get(0).getY();
-                            current_pose.yaw = res.getTmsdb().get(0).getRy();
-                            Message msg = handler.obtainMessage(TmsUrMimamorukun.UPDATE_POSITION,
-                                "from db_reader\n\tX:" + current_pose.x + ",Y:" + current_pose.y + ",Yaw:" + current_pose.yaw);
-                            handler.sendMessage(msg);
+                            final int idx = 0;
+                            if (!res.getTmsdb().isEmpty()) {
+                                current_pose.x = res.getTmsdb().get(idx).getX() / 1000;
+                                current_pose.y = res.getTmsdb().get(idx).getY() / 1000;
+                                current_pose.yaw = res.getTmsdb().get(idx).getRy();
+                                Message msg = handler.obtainMessage(TmsUrMimamorukun.UPDATE_POSITION, "update msg");
+                                handler.sendMessage(msg);
+                            }
                         }
 
                         @Override

@@ -134,7 +134,7 @@ public class TmsUrMimamorukun extends RosActivity
         public float[] map_origin = {0, 0};
         public float[] map_size = {0, 0}; //unused
         public boolean calib_mode = false;
-        public double map_scale = 4.4/(387.59 - 17.87); //map to room
+        public double map_scale = 0.012;//4.4/(387.59 - 17.87) map to room
 
         public ImageView calib;
         public float[] calib_size = {0, 0};
@@ -293,18 +293,18 @@ public class TmsUrMimamorukun extends RosActivity
                 touch_y -= wc_icon.target.getY() + wc_icon.target_size[1] / 2 - room_map.map_offset[1];
                 touch_y *= -1;
                 orientation = Math.atan2(touch_y, touch_x);
-                wc_icon.target_pose.yaw = orientation;
-                wc_icon.target.setRotation(-(float)(orientation*180/Math.PI)-90);
+                wc_icon.target_pose.yaw = orientation*180/Math.PI;
+                wc_icon.target.setRotation(-(float)wc_icon.target_pose.yaw-90);
                 showTargetInfo();
             }
 
             private void showTargetInfo() {
                 rp_cmd_info.setText("x: " + String.format("%.2f[m]\n", wc_icon.target_pose.x) +
                     "y: " + String.format("%.2f[m]\n", wc_icon.target_pose.y) +
-                    "yaw: " + String.format("%.2f[deg]", wc_icon.target_pose.yaw*180/Math.PI));
+                    "yaw: " + String.format("%.2f[deg]", wc_icon.target_pose.yaw));
                 target_info.setText("x: " + String.format("%.2f[m]\n", wc_icon.target_pose.x) +
                     "y: " + String.format("%.2f[m]\n", wc_icon.target_pose.y) +
-                    "yaw: " + String.format("%.2f[deg]", wc_icon.target_pose.yaw*180/Math.PI));
+                    "yaw: " + String.format("%.2f[deg]", wc_icon.target_pose.yaw));
             }
         }
     }
@@ -378,12 +378,12 @@ public class TmsUrMimamorukun extends RosActivity
                 switch (msg.what) {
                     case UPDATE_POSITION: {
                         Log.d(TAG, "handleMessage/UPDATE_POSITION");
-                        wc_icon.current_pose.x = db_reader_client.current_pose.x/room_map.map_scale - room_map.map_origin[0];
+                        wc_icon.current_pose.x = db_reader_client.current_pose.x/room_map.map_scale + room_map.map_origin[0];
                         wc_icon.current_pose.y = room_map.map_origin[1] - db_reader_client.current_pose.y/room_map.map_scale;
-                        wc_icon.current_pose.yaw = db_reader_client.current_pose.yaw;
-                        current_info.setText("x: " + String.format("%.2f[m]\n", wc_icon.current_pose.x) +
-                            "y: " + String.format("%.2f[m]\n", wc_icon.current_pose.y) +
-                            "yaw: " + String.format("%.2f[deg]", wc_icon.current_pose.yaw));
+                        wc_icon.current_pose.yaw = db_reader_client.current_pose.yaw - 90;
+                        current_info.setText("x: " + String.format("%.2f[m]\n", db_reader_client.current_pose.x) +
+                            "y: " + String.format("%.2f[m]\n", db_reader_client.current_pose.y) +
+                            "yaw: " + String.format("%.2f[deg]", db_reader_client.current_pose.yaw));
                         drawCurrentIcon();
                         break;
                     }
@@ -404,7 +404,7 @@ public class TmsUrMimamorukun extends RosActivity
             }
 
             private void drawCurrentIcon() {
-                if(false) {
+                if(true) {
                     wc_icon.current.setX((float) wc_icon.current_pose.x - wc_icon.current_size[0] / 2 + room_map.map_offset[0]);
                     wc_icon.current.setY((float) wc_icon.current_pose.y - wc_icon.current_size[1] / 2 + room_map.map_offset[1]);
                     wc_icon.current.setRotation(-(float)(wc_icon.current_pose.yaw*180/Math.PI)-90);
