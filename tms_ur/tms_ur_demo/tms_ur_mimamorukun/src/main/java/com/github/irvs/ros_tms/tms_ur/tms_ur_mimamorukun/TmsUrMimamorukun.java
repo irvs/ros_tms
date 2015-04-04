@@ -404,7 +404,7 @@ public class TmsUrMimamorukun extends RosActivity
             (new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    rp_cmd_client.sendRequest(wc_icon.target_pose.x*1000, wc_icon.target_pose.y*1000, wc_icon.target_pose.yaw, false);
+                    rp_cmd_client.sendRequest(wc_icon.target_pose.x*1000, wc_icon.target_pose.y*1000, wc_icon.target_pose.yaw, true);
                 }
             })).start();
             }

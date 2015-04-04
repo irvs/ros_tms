@@ -22,7 +22,7 @@ import tms_msg_rp.rp_cmdResponse;
  */
 public class rp_cmd_client extends AbstractNodeMain {
     private String TAG = "rp_cmd_client";
-    private String srv_name = "/rp_cmddddddd";
+    private String srv_name = "/rp_cmd";
 
     private ServiceClient<rp_cmdRequest, rp_cmdResponse> rpClient;
     private Handler handler;
