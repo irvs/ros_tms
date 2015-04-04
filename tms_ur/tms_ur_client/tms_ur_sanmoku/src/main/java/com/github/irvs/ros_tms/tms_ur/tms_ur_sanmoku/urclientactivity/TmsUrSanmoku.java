@@ -85,6 +85,11 @@ import android.widget.Toast;
 
 import com.android.camera.CameraHardwareException;
 import com.android.camera.CameraHolder;
+import com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.data.TmsdbObject;
+import com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.data.TmsdbObjectListAdapter;
+import com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.ftp.FtpClient;
+import com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.srv.TmsdbGetDataNode;
+import com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.tag.TagAnalyzer;
 
 import org.ros.address.InetAddressFactory;
 import org.ros.android.RosActivity;
@@ -95,14 +100,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Locale;
-
-import com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.data.TmsdbObject;
-import com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.data.TmsdbObjectListAdapter;
-import com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.ftp.FtpClient;
-import com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.lib.TagAnalyzer;
-import com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.srv.TmsdbGetDataNode;
 
 //非推奨無視
 //面倒くさいので無視してるけど
@@ -116,7 +116,7 @@ public class TmsUrSanmoku extends RosActivity implements View.OnClickListener,
 SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 
 	public TmsUrSanmoku() {
-		super("tms_ur_client","tms_ur_client");
+		super("tms_ur_sanmoku","tms_ur_sanmoku", URI.create("http://192.168.4.170:11311/"));
 		Log.v("ROS", "Const");
 	}
 
@@ -422,7 +422,7 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 		holder.addCallback(this);
 		holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 		debugLog("onCreate");
-		new TagAnalyzer(MSQLIP,MSQLUSR,MSQLPASS);
+		new com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.tag.TagAnalyzer(MSQLIP,MSQLUSR,MSQLPASS);
 		debugLog("onCreate");
 		Log.v(TAG, "onCreateEnd");
 	}
@@ -1083,9 +1083,9 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 				@Override
 				protected ArrayList<String> doInBackground(Void... params){
 					ArrayList<String> results = new ArrayList<String>();
-					ArrayList<String> strs = TagAnalyzer.divideSentence(txtInput.getText().toString());
+					ArrayList<String> strs = com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.tag.TagAnalyzer.divideSentence(txtInput.getText().toString());
 
-					ArrayList<String> segs = TagAnalyzer.tagAnalyzer(com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.urclientactivity.TmsUrSanmoku.this,strs);
+					ArrayList<String> segs = com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.tag.TagAnalyzer.tagAnalyzer(com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.urclientactivity.TmsUrSanmoku.this, strs);
 
 					for(String string : segs){
 						results.add(string);

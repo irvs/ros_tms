@@ -100,6 +100,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,7 +110,7 @@ public class TmsUrArviewer extends RosActivity implements View.OnClickListener,
 SurfaceHolder.Callback , SensorEventListener/*,min3d.interfaces.ISceneController*/ {
 
 	public TmsUrArviewer() {
-		super("tms_ur_client","tms_ur_client");
+		super("tms_ur_arviewer","tms_ur_arviewer", URI.create("http://192.168.4.170:11311/"));
 		Log.v("ROS", "Const");
 	}
 

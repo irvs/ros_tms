@@ -17,29 +17,21 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 13
+    compileSdkVersion 15
     defaultConfig {
-        minSdkVersion 13
-        targetSdkVersion 13
+        minSdkVersion 15
+        targetSdkVersion 15
         versionCode 1
         versionName "1.0"
     }
 }
 
 dependencies {
-    compile('org.ros.android_core:android_honeycomb_mr2:[0.1,0.2)') {
+    compile('org.ros.android_core:android_15:[0.2,0.3)') {
         exclude group: 'junit'
         exclude group: 'xml-apis'
     }
     compile 'org.ros.rosjava_messages:std_msgs:[0.1,)'
     compile 'org.ros.rosjava_messages:sensor_msgs:[0.1,)'
-    compile files('libs/msg_data-0.0.0.jar')
-    compile files('libs/tms_msg_rc-1.0.2.jar')
-    compile files('libs/tms_msg_rp-1.0.2.jar')
     compile files('libs/tms_msg_rs-1.0.2.jar')
-    compile files('libs/tms_msg_sa-1.0.2.jar')
-    compile files('libs/tms_msg_ss-1.0.2.jar')
-    compile files('libs/tms_msg_ts-1.0.2.jar')
-    compile files('libs/tms_msg_ur-1.0.2.jar')
-    compile files('libs/tms_ur_gaze_server-0.0.0.jar')
 }
