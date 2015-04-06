@@ -103,8 +103,8 @@ public:
     // Init Vicon Stream
     ROS_ASSERT(init_vicon());
     // Publishers
-    db_pub    = nh.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data", 10);
-    pose_pub  = nh_priv.advertise<tms_msg_ss::vicon_data> ("output", 10);
+    db_pub    = nh.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data", 1000);
+    pose_pub  = nh_priv.advertise<tms_msg_ss::vicon_data> ("output", 1000);
     // TimerEvent
     update_timer = nh.createTimer(ros::Duration(update_time), &ViconStream::updateCallback, this);
   }
