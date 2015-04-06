@@ -23,11 +23,11 @@ std::string RpViewerBar::object_name_[25] = {"chipstar_red","chipstar_orange",
                                              "teapot","chawan","teacup1","teacup2","cup1",
                                              "cup2","mugcup","remote","book_red","book_blue","dish"};
 
-std::string RpViewerBar::furniture_name_[21] = {"big_sofa","mini_sofa","small_table","tv_table","tv",
-                                                "partition1","partition2","partition3","bed","shelf",
-                                                "big_shelf","desk","chair_desk","table","chair_table1","chair_table2",
-                                                "shelfdoor","shelf2","wagon","sidetable","tree1"};
-
+std::string RpViewerBar::furniture_name_[24] = {"wardrobe","workdesk","drawer","chair","kitchen",
+                                                "meeting_table","meeting_chair1","meeting_chair2","meeting_chair3","meeting_chair4",
+                                                "meeting_chair5","partition","tv_table","tv_52inch","playrecoder",
+                                                "sofa","sofa_table","bed","wagon","shelf",
+                                                "tree","tv_multi","wall_shelf","carpet"};
 
 //------------------------------------------------------------------------------
 RpViewerBar* RpViewerBar::instance(){
@@ -446,12 +446,29 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
 
         if(PosX == 0.0 && PosY == 0.0)
         {
-          callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1"));
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1_oculus"));
         }
         else
         {
-          callSynchronously(bind(&TmsRpController::appear,trc_,"person_1"));
-          callSynchronously(bind(&TmsRpController::setPos,trc_,"person_1",Vector3(PosX,PosY,PosZ),rot));
+          callSynchronously(bind(&TmsRpController::appear,trc_,"person_1_oculus"));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,"person_1_oculus",Vector3(PosX,PosY,PosZ),rot));
+        }
+    }
+    else if (id ==1002)
+    {
+        PosX = environment_information_.tmsdb[i].x/1000;
+        PosY = environment_information_.tmsdb[i].y/1000;
+        PosZ = 0.9;
+        rot = grasp::rotFromRpy(0,0,deg2rad(environment_information_.tmsdb[i].ry));
+
+        if(PosX == 0.0 && PosY == 0.0)
+        {
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"person_2_moverio"));
+        }
+        else
+        {
+          callSynchronously(bind(&TmsRpController::appear,trc_,"person_2_moverio"));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,"person_2_moverio",Vector3(PosX,PosY,PosZ),rot));
         }
     }
     else if (id ==6019) // wagon
