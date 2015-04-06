@@ -218,7 +218,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
 
   //----------------------------------------------------------------------------
   // create person model
-  trc_.createRecord(1001,"person_1");
+  trc_.createRecord(1001,"person_1_oculus");
+  trc_.createRecord(1002,"person_2_moverio");
 
   // create robot model
   //trc_.createRecord(2001,"smartpal4");
@@ -310,10 +311,27 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
     posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
 
-    trc_.appear("person_1");
-    trc_.setPos("person_1",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+    trc_.appear("person_1_oculus");
+    trc_.setPos("person_1_oculus",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
   } else {
-    trc_.appear("person_1");
+    trc_.appear("person_1_oculus");
+    ROS_ERROR("[TmsAction] Failed to call service get_db_data");
+  }
+
+  //----------------------------------------------------------------------------
+  get_db_data.request.tmsdb.id = 1002 + sid_;
+  if (get_data_client_.call(get_db_data)){
+    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
+    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
+    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
+    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
+    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
+    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+
+    trc_.appear("person_2_moverio");
+    trc_.setPos("person_2_moverio",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+  } else {
+    trc_.appear("person_2_moverio");
     ROS_ERROR("[TmsAction] Failed to call service get_db_data");
   }
 
@@ -638,7 +656,8 @@ void TmsRpBar::makeCollisionMapButtonClicked()
   }
   else
   {
-    trc_.disappear("person_1");
+    trc_.disappear("person_1_oculus");
+    trc_.disappear("person_2_moverio");
     trc_.disappear("smartpal4");
     trc_.disappear("smartpal5_1");
     trc_.disappear("smartpal5_2");
