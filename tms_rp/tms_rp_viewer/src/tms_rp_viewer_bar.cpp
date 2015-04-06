@@ -827,11 +827,12 @@ void RpViewerBar::viewPersonPostion()
 //------------------------------------------------------------------------------
 void RpViewerBar::rosOn()
 {
-  static ros::Rate loop_rate(30); // 0.1sec
+  static ros::Rate loop_rate(30);
   std::string tms_rp_state;
   int planning_mode;
 
-  callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1"));
+  callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1_oculus"));
+  callSynchronously(bind(&TmsRpController::disappear,trc_,"person_2_moverio"));
   callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal4"));
   callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_1"));
   callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_2"));
