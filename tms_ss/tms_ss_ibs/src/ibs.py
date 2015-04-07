@@ -188,7 +188,6 @@ class CTR3(object):
         self.__mActiveAntenna = TR3_ANT1
         self.__mUIDs = [list() for i in xrange(TR3_USED_ANT_NUM)]
         self.__mCommand = [0] * TR3_MAX_COMMAND_SIZE
-        self.__mActiveAntenna = TR3_ANT1
         self.__mCommand[0] = TR3_STX
         self.__mCommand[1] = 0x00      # アドレス
         print "OPENING: TR3(port:", PORT_TR, ")"
@@ -218,20 +217,19 @@ class CTR3(object):
         self.__OpenPort()
         self.AddChecksum()
         self.__ser.write("".join(map(chr, self.__mCommand)))
-        buf = [int()] * 100
         buf = map(ord, self.__ser.read(size=9))
         if buf[2] != TR3_ACK:
             print "TR3: SendCommandError . SetAntenna"
             self.__ser.read(size=100)
             return -1
-        self.__mActiveAntenna = buf[5]
+        # self.__mActiveAntenna = buf[5]  # TODO: get true active antenna number
         self.__ClosePort()
         return buf[5]
 
     # アンテナの電源ON
     # TODO: I dont know this method worked correctly
-    def AntennaPowerON(self):
-        self.SetAntenna(self.__mActiveAntenna)
+    def __AntennaPowerON(self):
+        self.__SetAntenna(self.__mActiveAntenna)
         self.__mCommand[2] = 0x4E  # コマンド
         self.__mCommand[3] = 0x02  # データ長
         self.__mCommand[4] = 0x9E  # コマンド詳細
@@ -240,7 +238,6 @@ class CTR3(object):
         self.__OpenPort()
         self.AddChecksum()
         self.__ser.write("".join(map(chr, self.__mCommand)))
-        buf = [chr(0)] * 100
         buf = map(ord, self.__ser.read(size=9))
         if buf[2] != TR3_ACK:
             buf = self.__ser.read(size=100)
@@ -251,7 +248,7 @@ class CTR3(object):
 
     # アンテナの電源OFF
     # TODO: I dont know this method worked correctly
-    def AntennaPowerOFF(self):    # unsigned long num
+    def __AntennaPowerOFF(self):    # unsigned long num
         self.__SetAntenna(self.__mActiveAntenna+1)  # TODO: fix correct serquence
 
         # self.__mCommand[2] = 0x4E  # コマンド
@@ -287,7 +284,6 @@ class CTR3(object):
         self.__mCommand[5] = 0x00  # アンチコリジョン有
         self.__mCommand[6] = 0x01  # 出力指定.取得データ数＋UIDデータ
 
-        buf = [int()] * TR3_TAG_SIZE * TR3_TAG_MAX
         self.__OpenPort()
         self.AddChecksum()
         self.__ser.write("".join(map(chr, self.__mCommand)))
@@ -325,11 +321,14 @@ class CTR3(object):
     # def GetTagDiff(self, &diffUID, char AN):
     # TODO: fix arguments passed by reference(fixed)
     def GetTagDiff(self, diffUID, AN):
-        self.__SetAntenna(AN)
         diffUID = str()
+        print self.__mUIDs, self.__mActiveAntenna
         preUIDs = list(self.__mUIDs[self.__mActiveAntenna])
+        self.__AntennaPowerON()
         if self.Inventory2() == -1:
+            self.__AntennaPowerOFF()
             return 0, diffUID
+        self.__AntennaPowerOFF()
 
         # IDにあってpreIDにない => 追加された物品ID
         # type: [str]
@@ -434,8 +433,6 @@ class CIntelCab(object):
         # (inout, cObj.mUID) = self.cTR3.GetTagDiff(cObj.mUID, self.cStage[No].mAntenna)
         (inout, cObj.mUID) = self.cTR3.GetTagDiff("", 0)
         # print "GetTagDiff: ", inout, cObj.mUID
-        self.cTR3.AntennaPowerOFF()
-        # self.cTR3.SetAntenna(1)
 
         # タグ数増加
         if inout > 0:
@@ -559,10 +556,6 @@ def main():
     # PORT_LC0 = "/dev/ttyACM0"
     # idSensor = 3000
     # idPlace = 5000
-
-    # RFIDリーダ接続
-    cIntelCab.cTR3.AntennaPowerOFF()
-    # cIntelCab.cStage[0].SetAntenna(TR3_ANT1)
 
     # ロードセル接続
     cIntelCab.cStage[0].SetSensorPos(4, xpos0, ypos0)
