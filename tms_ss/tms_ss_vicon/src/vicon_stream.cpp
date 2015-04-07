@@ -103,8 +103,8 @@ public:
     // Init Vicon Stream
     ROS_ASSERT(init_vicon());
     // Publishers
-    db_pub    = nh.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data", 1000);
-    pose_pub  = nh_priv.advertise<tms_msg_ss::vicon_data> ("output", 1000);
+    db_pub    = nh.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data", 1);
+    pose_pub  = nh_priv.advertise<tms_msg_ss::vicon_data> ("output", 1);
     // TimerEvent
     update_timer = nh.createTimer(ros::Duration(update_time), &ViconStream::updateCallback, this);
   }
@@ -208,6 +208,11 @@ private:
     unsigned int SubjectCount = MyClient.GetSubjectCount().SubjectCount;
     if(isDebug) std::cout << "Subjects (" << SubjectCount << "):" << std::endl;
 
+    ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+    tms_msg_db::TmsdbStamped db_msg;
+    db_msg.header.frame_id  = frame_id;
+    db_msg.header.stamp     = now;
+
     ///////////////////////////////////////////////////////////////////
     for( unsigned int SubjectIndex = 0 ; SubjectIndex < SubjectCount ; ++SubjectIndex )
     {
@@ -262,8 +267,7 @@ private:
 
 
         tms_msg_ss::vicon_data pose_msg;
-        
-        ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+        now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 
         pose_msg.header.frame_id  = frame_id;
         pose_msg.header.stamp     = now;
@@ -303,13 +307,8 @@ private:
 
         if(id != -1)
         {
-          now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
-          
-          tms_msg_db::TmsdbStamped db_msg;
           tms_msg_db::Tmsdb tmpData;
-
-          db_msg.header.frame_id  = frame_id;
-          db_msg.header.stamp     = now;
+          now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 
           tmpData.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
           tmpData.id      = id;
@@ -324,8 +323,6 @@ private:
           tmpData.state   = 1;
 
           db_msg.tmsdb.push_back(tmpData);
-          
-          db_pub.publish(db_msg);
         }
       }
 
@@ -351,6 +348,7 @@ private:
       //                                 << std::endl;
       // }
     }
+    db_pub.publish(db_msg);
   }
 };
 
