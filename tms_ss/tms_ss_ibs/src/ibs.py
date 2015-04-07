@@ -464,9 +464,14 @@ class CIntelCab(object):
         cObj = CTagOBJ()
         self.__cObjIn = [CTagOBJ()] * IC_STAGES_MAX
         self.__cObjOut = [CTagOBJ()] * IC_STAGES_MAX
-        self.__InOutTag = [0] * IC_STAGES_MAX
-        self.__InOutLC = [0] * IC_STAGES_MAX
+        if not hasattr(self, "_CIntelCab__InOutTag"):
+            self.__InOutTag = [0] * IC_STAGES_MAX
+        if not hasattr(self, "_CIntelCab__InOutLC"):
+            print "InOutLC reset"
+            self.__InOutLC = [0] * IC_STAGES_MAX
         value = IC_OBJECT_STAY
+
+        print "1: mWeighr:{0}   InOutLC:{1}".format(cObj.mWeight, self.__InOutLC[No])
 
         if No >= self.mStageNum:
             return IC_OBJECT_STAY
@@ -501,6 +506,7 @@ class CIntelCab(object):
         cObj.mWeight, cObj.mX, cObj.mY, cObj.mDiffs = self.cStage[
             No].cLoadCell.GetWeightDiff()
 
+        print "mWeighr:{0}   InOutLC:{1}".format(cObj.mWeight, self.__InOutLC[No]),
         if (cObj.mWeight > 0) and (self.__InOutTag[No] > 0):
             # 入庫
             cObj.mUID = self.__cObjIn[No].mUID
@@ -512,8 +518,9 @@ class CIntelCab(object):
         elif (cObj.mWeight > 0) and (self.__InOutLC[No] < 0):
             # 庫内移動
             cnt = TR3_TAG_MAX
+            print "move?:", len(self.cStage[No].cTagObj)
             for i in xrange(len(self.cStage[No].cTagObj)):
-                if self.cStage[No].cTagObj[i].mUID.compare(self.__cObjOut[No].mUID) == 0:
+                if self.cStage[No].cTagObj[i].mUID == self.__cObjOut[No].mUID:
                     cnt = i
                     break
             if cnt != TR3_TAG_MAX:
@@ -528,6 +535,7 @@ class CIntelCab(object):
 
         # 持ち上げ
         if cObj.mWeight < 0:
+            print "motiage"
             comp = 5000
             cnt = TR3_TAG_MAX
             for i in xrange(len(self.cStage[No].cTagObj)):
@@ -540,8 +548,8 @@ class CIntelCab(object):
             if cnt != TR3_TAG_MAX:
                 self.__cObjOut[No] = self.cStage[No].cTagObj[cnt]
                 self.__InOutLC[No] = -1
+                print "in out changed"
         return value, cInOut
-        return 0, cObj
 
 
 def main():
@@ -655,6 +663,7 @@ def main():
 
         for i in xrange(cIntelCab.mStageNum):  # 増減の確認
             state, cObj = cIntelCab.UpdateObj(i, cObj)
+            print "state:", state
             if state == IC_OBJECT_STAY:
                 change_flag = False
             elif state == IC_OBJECT_IN:
