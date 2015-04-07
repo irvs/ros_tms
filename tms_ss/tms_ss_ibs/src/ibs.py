@@ -473,8 +473,6 @@ class CIntelCab(object):
             self.__InOutLC = [0] * IC_STAGES_MAX
         value = IC_OBJECT_STAY
 
-        print "1: mWeighr:{0}   InOutLC:{1}".format(cObj.mWeight, self.__InOutLC[No])
-
         if No >= self.mStageNum:
             return IC_OBJECT_STAY
 
@@ -508,7 +506,7 @@ class CIntelCab(object):
         cObj.mWeight, cObj.mX, cObj.mY, cObj.mDiffs = self.cStage[
             No].cLoadCell.GetWeightDiff()
 
-        print "mWeighr:{0}   InOutLC:{1}".format(cObj.mWeight, self.__InOutLC[No]),
+        # print "mWeighr:{0}   InOutLC:{1}".format(cObj.mWeight, self.__InOutLC[No]),
         if (cObj.mWeight > 0) and (self.__InOutTag[No] > 0):
             # 入庫
             cObj.mUID = self.__cObjIn[No].mUID
@@ -520,7 +518,6 @@ class CIntelCab(object):
         elif (cObj.mWeight > 0) and (self.__InOutLC[No] < 0):
             # 庫内移動
             cnt = TR3_TAG_MAX
-            print "move?:", len(self.cStage[No].cTagObj)
             for i in xrange(len(self.cStage[No].cTagObj)):
                 if self.cStage[No].cTagObj[i].mUID == self.__cObjOut[No].mUID:
                     cnt = i
@@ -537,7 +534,6 @@ class CIntelCab(object):
 
         # 持ち上げ
         if cObj.mWeight < 0:
-            print "motiage"
             comp = 5000
             cnt = TR3_TAG_MAX
             for i in xrange(len(self.cStage[No].cTagObj)):
@@ -550,13 +546,11 @@ class CIntelCab(object):
             if cnt != TR3_TAG_MAX:
                 self.__cObjOut[No] = self.cStage[No].cTagObj[cnt]
                 self.__InOutLC[No] = -1
-                print "in out changed"
         return value, cInOut
 
 
 def main():
     print "Hello World"
-    # std.map<std.string, rfidValue
     rfidValue = {}
     rfidValue["E00401004E17F97A"] = 7001
     rfidValue["E00401004E180E50"] = 7002
@@ -665,7 +659,7 @@ def main():
 
         for i in xrange(cIntelCab.mStageNum):  # 増減の確認
             state, cObj = cIntelCab.UpdateObj(i, cObj)
-            print "state:", state
+            # print "state:", state
             if state == IC_OBJECT_STAY:
                 change_flag = False
             elif state == IC_OBJECT_IN:
