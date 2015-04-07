@@ -462,8 +462,10 @@ class CIntelCab(object):
     # TODO: fix arguments passed by reference (fixed)
     def UpdateObj(self, No, cInOut):
         cObj = CTagOBJ()
-        self.__cObjIn = [CTagOBJ()] * IC_STAGES_MAX
-        self.__cObjOut = [CTagOBJ()] * IC_STAGES_MAX
+        if not hasattr(self, "_CIntelCab__cObjIn"):
+            self.__cObjIn = [CTagOBJ()] * IC_STAGES_MAX
+        if not hasattr(self, "_CIntelCab__cObjOut"):
+            self.__cObjOut = [CTagOBJ()] * IC_STAGES_MAX
         if not hasattr(self, "_CIntelCab__InOutTag"):
             self.__InOutTag = [0] * IC_STAGES_MAX
         if not hasattr(self, "_CIntelCab__InOutLC"):
