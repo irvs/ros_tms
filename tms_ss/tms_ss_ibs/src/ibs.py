@@ -322,7 +322,7 @@ class CTR3(object):
     # TODO: fix arguments passed by reference(fixed)
     def GetTagDiff(self, diffUID, AN):
         diffUID = str()
-        print self.__mUIDs, self.__mActiveAntenna
+        # print self.__mUIDs, self.__mActiveAntenna
         preUIDs = list(self.__mUIDs[self.__mActiveAntenna])
         self.__AntennaPowerON()
         if self.Inventory2() == -1:
