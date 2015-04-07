@@ -13,7 +13,7 @@ using namespace tms_rp;
 //------------------------------------------------------------------------------
 bool RpViewerBar::isRosInit = false;
 
-std::string RpViewerBar::object_name_[25] = {"chipstar_red","chipstar_orange",
+std::string RpViewerBar::object_name_[MAX_ICS_OBJECT_NUM] = {"chipstar_red","chipstar_orange",
                                              "chipstar_green","greentea_bottle",
                                              "soukentea_bottle","cancoffee",
                                              "seasoner_bottle","dispenser",
@@ -23,11 +23,11 @@ std::string RpViewerBar::object_name_[25] = {"chipstar_red","chipstar_orange",
                                              "teapot","chawan","teacup1","teacup2","cup1",
                                              "cup2","mugcup","remote","book_red","book_blue","dish"};
 
-std::string RpViewerBar::furniture_name_[24] = {"wardrobe","workdesk","drawer","chair","kitchen",
-                                                "meeting_table","meeting_chair1","meeting_chair2","meeting_chair3","meeting_chair4",
-                                                "meeting_chair5","partition","tv_table","tv_52inch","playrecoder",
-                                                "sofa","sofa_table","bed","wagon","shelf",
-                                                "tree","tv_multi","wall_shelf","carpet"};
+std::string RpViewerBar::furniture_name_[MAX_FURNITURE_NUM] = {"wardrobe","workdesk","drawer","chair","kitchen",
+                                            "meeting_table","meeting_chair1","meeting_chair2","meeting_chair3","meeting_chair4",
+                                            "partition","tv_table","tv_52inch","playrecoder","sofa",
+                                            "sofa_table","bed","wagon","shelf","tree",
+                                            "tv_multi","wall_shelf","carpet"};
 
 //------------------------------------------------------------------------------
 RpViewerBar* RpViewerBar::instance(){

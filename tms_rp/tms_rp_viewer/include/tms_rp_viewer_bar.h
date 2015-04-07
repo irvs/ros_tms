@@ -55,7 +55,7 @@
 #include <pcl_conversions/pcl_conversions.h>
 
 #define MAX_ICS_OBJECT_NUM    25
-#define MAX_FURNITURE_NUM     24
+#define MAX_FURNITURE_NUM     23
 
 using namespace std;
 using namespace cnoid;
