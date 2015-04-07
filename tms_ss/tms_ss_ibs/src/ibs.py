@@ -175,7 +175,7 @@ class CLoadCell(object):
                 weight += math.fabs(now - pre[i])
                 pre[i] = now
                 buf[cnt][i] = now
-            print weight, pre
+            # print weight, pre
             if weight < LC_GET_WEIGHT_STABLE:
                 cnt += 1
             else:
@@ -474,7 +474,7 @@ class CIntelCab(object):
     def PrintObjInfo(self):
         # TODO: fix this pointer variable (fixed)
         # CTagOBJ  *cObj
-        for i in xrange(self.__mStageNum):
+        for i in xrange(self.mStageNum):
             print "\n", self.cStage[i].mName
             # std.cout << "\n" << std.setw(20) << std.setfill(':') <<
             #                     cStage[i].mName << "....." << std.endl
@@ -511,8 +511,9 @@ class CIntelCab(object):
         # print self.cTR3.GetTagDiff("", 0)  # TODO: this work well
         # (inout, cObj.mUID) = self.cTR3.GetTagDiff(cObj.mUID, self.cStage[No].mAntenna)  #TODO: this doesnt work
         (inout, cObj.mUID) = self.cTR3.GetTagDiff("", 0)
-        print "GetTagDiff: ", inout, cObj.mUID
-        # self.cTR3.AntennaPowerOFF()
+        # print "GetTagDiff: ", inout, cObj.mUID
+        self.cTR3.AntennaPowerOFF()
+        self.cTR3.SetAntenna(1)
 
         # タグ数増加
         if inout > 0:
@@ -522,8 +523,8 @@ class CIntelCab(object):
         elif inout < 0:
             for i in xrange(len(self.cStage[No].cTagObj)):
                 # self.cStage[No].cTagObjを更新
-                if self.cStage[No].cTagObj.at(i).mUID.compare(cObj.mUID) == 0:
-                    self.cStage[No].cTagObj.erase(self.cStage[No].cTagObj.begin() + i)
+                if self.cStage[No].cTagObj[i].mUID == cObj.mUID:
+                    del(self.cStage[No].cTagObj[i])
                     self.__InOutLC[No] = 0
                     break
             self.__InOutTag[No] = 0
@@ -539,7 +540,7 @@ class CIntelCab(object):
         if (cObj.mWeight > 0) and (self.__InOutTag[No] > 0):
             # 入庫
             cObj.mUID = self.__cObjIn[No].mUID
-            self.cStage[No].cTagObj.push_back(cObj)
+            self.cStage[No].cTagObj.append(cObj)
             self.__InOutTag[No] = 0
             self.__InOutLC[No] = 0
             # *cInOut = cObj
@@ -549,7 +550,7 @@ class CIntelCab(object):
             # 庫内移動
             cnt = TR3_TAG_MAX
             for i in xrange(len(self.cStage[No].cTagObj)):
-                if self.cStage[No].cTagObj.at(i).mUID.compare(self.__cObjOut[No].mUID) == 0:
+                if self.cStage[No].cTagObj[i].mUID.compare(self.__cObjOut[No].mUID) == 0:
                     cnt = i
                     break
             if cnt != TR3_TAG_MAX:
@@ -559,7 +560,7 @@ class CIntelCab(object):
                 self.cStage[No].cTagObj[cnt].mComment = self.__cObjOut[No].mComment
                 self.__InOutLC[No] = 0
                 # *cInOut = self.cStage[No].cTagObj.at(cnt)
-                cInOut = self.cStage[No].cTagObj.at(cnt)
+                cInOut = self.cStage[No].cTagObj[cnt]
                 value = IC_OBJECT_MOVE
         # タグ無し物品の入庫
 
@@ -570,14 +571,15 @@ class CIntelCab(object):
             for i in xrange(len(self.cStage[No].cTagObj)):
                 sum = 0
                 for j in xrange(LC_MAX_SENSOR_NUM):
-                    sum += abs(abs(self.cStage[No].cTagObj.at(i).mDiffs[j]) - abs(cObj.mDiffs[j]))
+                    sum += abs(abs(self.cStage[No].cTagObj[i].mDiffs[j]) - abs(cObj.mDiffs[j]))
                 if sum < comp:
                     comp = sum
                     cnt = i
             if cnt != TR3_TAG_MAX:
-                self.__cObjOut[No] = self.cStage[No].cTagObj.at(cnt)
+                self.__cObjOut[No] = self.cStage[No].cTagObj[cnt]
                 self.__InOutLC[No] = -1
         return value, cInOut
+        return 0, cObj
 
 
 def main():
@@ -712,8 +714,8 @@ def main():
 #                 std.cout << "\n\n IN : "
 #                 # index = (int)cIntelCab.cStage[i].cTagObj.size() - 1
 #                 index = int(cIntelCab.cStage[i].cTagObj.size() - 1)
-#                 cIntelCab.cStage[i].cTagObj.at(index).mName = cObj.mName
-#                 cIntelCab.cStage[i].cTagObj.at(index).mComment = cObj.mComment
+#                 cIntelCab.cStage[i].cTagObj[index]mName = cObj.mName
+#                 cIntelCab.cStage[i].cTagObj[index]mComment = cObj.mComment
 #                 change_flag = True
 #             elif state == IC_OBJECT_MOVE:
 #                 # Beep(2500,50)

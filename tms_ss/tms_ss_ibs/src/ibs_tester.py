@@ -26,8 +26,13 @@ def test_CLoadCell():
     ypos0 = [16.0, 16.0, 244.0, 244.0]  # colorbox
     lc.SetSensorPos(4, xpos0, ypos0)
     print lc._CLoadCell__mPreSensorsWeight, lc._CLoadCell__mSensorPosX, lc._CLoadCell__mSensorPosY
+    # tr3 = CTR3()
+    # tr3.Setup()
+    # tr3.SetAntenna(0)
+    # tr3.AntennaPowerOFF()  # not worked correctly?
     while True:
         time.sleep(0.1)
+        # tr3.GetTagDiff("", 0)
         print lc.GetWeightDiff(0, 0, [])
 
 
@@ -102,23 +107,23 @@ def test_CIntelCab():
 
     while True:
         time.sleep(0.3)
-        reload(ibs)
+        # reload(ibs)
         print "start"
         # print "mStageNum:", incab.mStageNum
 
         for i in xrange(incab.mStageNum):  # 増減の確認
             # switch (cIntelCab.UpdateObj(i, &cObj))
             state, cObj = incab.UpdateObj(i, cObj)
-            print "top stack:", state, cObj.mUID
+            # print "top stack:", state, cObj.mUID
             if state == IC_OBJECT_STAY:
                 change_flag = False
             elif state == IC_OBJECT_IN:
                 # Beep(2500,50)
                 print "\n\n IN : ",
                 # index = (int)incab.cStage[i].cTagObj.size() - 1
-                index = int(incab.cStage[i].cTagObj.size() - 1)
-                incab.cStage[i].cTagObj.at(index).mName = cObj.mName
-                incab.cStage[i].cTagObj.at(index).mComment = cObj.mComment
+                index = int(len(incab.cStage[i].cTagObj) - 1)
+                incab.cStage[i].cTagObj[index].mName = cObj.mName
+                incab.cStage[i].cTagObj[index].mComment = cObj.mComment
                 change_flag = True
             elif state == IC_OBJECT_MOVE:
                 # Beep(2500,50)
@@ -158,11 +163,11 @@ def test_CIntelCab():
 
 def main():
     print "Hello World"
-    test_CLoadCell()
+    # test_CLoadCell()
     # test_CTagOBJ()
     # test_CTR3()
     # test_CStage()
-    # test_CIntelCab()
+    test_CIntelCab()
 
 
 if __name__ == '__main__':
