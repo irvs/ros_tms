@@ -1,5 +1,5 @@
 1001 none /person/human_170.yaml
-1002 none /person/human_170.yaml
+1002 none /person/human_170_blue.yaml
 
 2001 none /robot/smartpal/SmartPal4.yaml
 2002 none /robot/smartpal/SmartPal5.yaml
