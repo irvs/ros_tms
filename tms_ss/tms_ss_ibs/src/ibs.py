@@ -89,6 +89,13 @@ class CLoadCell(object):
         self.__mPreSensorsWeight = [0] * LC_MAX_SENSOR_NUM
         self.__mSensorPosX = [0.0] * LC_MAX_SENSOR_NUM
         self.__mSensorPosY = [0.0] * LC_MAX_SENSOR_NUM
+        self.__mSensorNum = LC_MAX_SENSOR_NUM
+        print "OPENING: LoadCell(port:", PORT_LC0, ")"
+        self.__OpenPort()
+        print "OPENED: LoadCell(port:", PORT_LC0, ")"
+        self.__ClosePort()
+        print "CLOSED: LoadCell(port:", PORT_LC0, ")"
+        self.ResetWeight()
 
     def __OpenPort(self):    # 通信関連初期化
         self.__ser = serial.Serial(port=PORT_LC0, baudrate=115200)
@@ -99,19 +106,6 @@ class CLoadCell(object):
         self.__ser.close()
         D_COUT("closing port : " + PORT_LC0)
         D_COUT("\033[1K\r")
-
-    def Close(self):
-        self.ClosePort()
-        print "CLOSED: LoadCell"
-
-    def Setup(self):    # 数値初期化関連
-        self.__mSensorNum = LC_MAX_SENSOR_NUM
-        print "OPENING: LoadCell(port:", PORT_LC0, ")"
-        self.__OpenPort()
-        print "OPENED: LoadCell(port:", PORT_LC0, ")"
-        self.__ClosePort()
-        print "CLOSED: LoadCell(port:", PORT_LC0, ")"
-        self.ResetWeight()
 
     # 指定されたセンサから重さを取得する
     def GetWeight(self, sensor_id, repeat=1):
@@ -142,7 +136,6 @@ class CLoadCell(object):
         self.__mSensorPosY = list(y_list)
 
         # 重量の増減（物体の増減）があるかをチェック
-    # TODO: fix arguments passed by reference(fixed)
     def GetWeightDiff(self, threshold=20):
         # 出力が安定するまで待つ
         pre = [0] * self.__mSensorNum
@@ -172,7 +165,7 @@ class CLoadCell(object):
             for j in xrange(self.__mSensorNum):
                 pre[j] += buf[i][j]
         pre = map(lambda x: x / LC_GET_WEIGHT_CNT, pre)
-        diffs = map(lambda x: x[0] - x[1], zip(pre, self.__mPreSensorsWeight))
+        diffs = map(lambda x, y: x-y, pre, self.__mPreSensorsWeight)
         x = y = 0
         weight = 0
         for i in xrange(self.__mSensorNum):
@@ -192,11 +185,9 @@ class CLoadCell(object):
 class CTR3(object):
 
     def __init__(self):
-        self.__mActiveAntenna = 0
+        self.__mActiveAntenna = TR3_ANT1
         self.__mUIDs = [list() for i in xrange(TR3_USED_ANT_NUM)]
         self.__mCommand = [0] * TR3_MAX_COMMAND_SIZE
-
-    def Setup(self):
         self.__mActiveAntenna = TR3_ANT1
         self.__mCommand[0] = TR3_STX
         self.__mCommand[1] = 0x00      # アドレス
@@ -205,6 +196,7 @@ class CTR3(object):
         print "OPENED: TR3(port:", PORT_TR, ")"
         self.__ClosePort()
         print "CLOSED: TR3(port:", PORT_TR, ")"
+        self.__SetAntenna(self.__mActiveAntenna)
 
     def __OpenPort(self):
         self.__ser = serial.Serial(port=PORT_TR, baudrate=38400)
@@ -216,13 +208,8 @@ class CTR3(object):
         D_COUT("closing port : " + PORT_TR)
         D_COUT("\033[1K\r")
 
-    def Close(self):
-        self.__ClosePort()
-        print "CLOSED: TR3"
-
     # アンテナの指定
-    # def SetAntenna(self, char AN):
-    def SetAntenna(self, AN):
+    def __SetAntenna(self, AN):
         self.__mCommand[2] = 0x4E  # コマンド
         self.__mCommand[3] = 0x02  # データ長
         self.__mCommand[4] = 0x9C  # コマンド詳細
@@ -233,7 +220,6 @@ class CTR3(object):
         self.__ser.write("".join(map(chr, self.__mCommand)))
         buf = [int()] * 100
         buf = map(ord, self.__ser.read(size=9))
-        # print "set antenna return:", buf
         if buf[2] != TR3_ACK:
             print "TR3: SendCommandError . SetAntenna"
             self.__ser.read(size=100)
@@ -245,6 +231,7 @@ class CTR3(object):
     # アンテナの電源ON
     # TODO: I dont know this method worked correctly
     def AntennaPowerON(self):
+        self.SetAntenna(self.__mActiveAntenna)
         self.__mCommand[2] = 0x4E  # コマンド
         self.__mCommand[3] = 0x02  # データ長
         self.__mCommand[4] = 0x9E  # コマンド詳細
@@ -265,28 +252,29 @@ class CTR3(object):
     # アンテナの電源OFF
     # TODO: I dont know this method worked correctly
     def AntennaPowerOFF(self):    # unsigned long num
-        self.__mCommand[2] = 0x4E  # コマンド
-        self.__mCommand[3] = 0x02  # データ長
-        self.__mCommand[4] = 0x9E  # コマンド詳細
-        self.__mCommand[5] = 0x00  # パワーOFF
+        self.__SetAntenna(self.__mActiveAntenna+1)  # TODO: fix correct serquence
 
-        self.__OpenPort()
-        self.AddChecksum()
-        self.__ser.write("".join(map(chr, self.__mCommand)))
-        buf = [chr(0)] * 100
-        buf = map(ord, self.__ser.read(size=9))
-        if buf[2] != TR3_ACK:
-            print "TR3: SendCommandError . AntennaPowerOFF"
-            return False
-        self.__ClosePort()
-        return True
+        # self.__mCommand[2] = 0x4E  # コマンド
+        # self.__mCommand[3] = 0x02  # データ長
+        # self.__mCommand[4] = 0x9E  # コマンド詳細
+        # self.__mCommand[5] = 0x00  # パワーOFF
+
+        # self.__OpenPort()
+        # self.AddChecksum()
+        # self.__ser.write("".join(map(chr, self.__mCommand)))
+        # buf = [chr(0)] * 100
+        # buf = map(ord, self.__ser.read(size=9))
+        # if buf[2] != TR3_ACK:
+        #     print "TR3: SendCommandError . AntennaPowerOFF"
+        #     return False
+        # self.__ClosePort()
+        # return True
 
     # 各アンテナで計測されているタグIDを全て表示
     def PrintTagUIDs(self):
         for i in xrange(TR3_USED_ANT_NUM):
             print "\n.. ANTENNA ", i + 1, " .."
             for num, j in enumerate(self.__mUIDs[i]):
-                # print std.setw(3), num + 1, ". ", j
                 print "{0:>3}.{1}".format(num+1, j)
 
     # タグの読み取り
@@ -337,20 +325,19 @@ class CTR3(object):
     # def GetTagDiff(self, &diffUID, char AN):
     # TODO: fix arguments passed by reference(fixed)
     def GetTagDiff(self, diffUID, AN):
-        self.SetAntenna(AN)
+        self.__SetAntenna(AN)
         diffUID = str()
         preUIDs = list(self.__mUIDs[self.__mActiveAntenna])
         if self.Inventory2() == -1:
             return 0, diffUID
 
-        # タグの増減の確認
         # IDにあってpreIDにない => 追加された物品ID
-        increase = [str()]
+        # type: [str]
         increase = list(set(self.__mUIDs[self.__mActiveAntenna]) - set(preUIDs))
         # print set(self.__mUIDs[self.__mActiveAntenna]), set(preUIDs)
 
         # preIDにあってIDにない => 取り除かれた物品ID
-        decrease = [""]
+        # type: [str]
         decrease = list(set(preUIDs) - set(self.__mUIDs[self.__mActiveAntenna]))
 
         # 増減なし
@@ -385,25 +372,9 @@ class CTagOBJ(object):
         self.mDiffs = [0] * LC_MAX_SENSOR_NUM
         self.mX = 0.0
         self.mY = 0.0
-        self.mName = ""  #"\0"
-        self.mComment = ""  #"\0"
-        self.Setup()
-        pass
-
-    def Setup(self):
-        # char id[TR3_UID_SIZE * 2 + 1] = {'\0'}
-        # tmp = ["\0"] * (TR3_UID_SIZE * 2 + 1)
-        # for i in xrange(TR3_UID_SIZE * 2):
-            # tmp[i] = chr(0)
-        # self.mUID = "".join(tmp)
+        self.mName = ""
+        self.mComment = ""
         self.mUID = ""
-        return True
-
-    def __del__(self):
-        self.Close()
-
-    def Close(self):
-        pass
 
 
 class CStage(object):
@@ -414,16 +385,7 @@ class CStage(object):
         self.mStagePos = [0] * 3
         self.mName = "\0"
         self.cTagObj = list()
-        pass
 
-    def Close(self):
-        pass
-
-    def Setup(self):
-        self.cLoadCell.Setup()
-        return True
-
-    # TODO: fix arguments passed by reference (fixed)
     def SetSensorPos(self, sensor_num, x_list, y_list):
         self.cLoadCell.SetSensorPos(sensor_num, x_list, y_list)
 
@@ -435,22 +397,10 @@ class CIntelCab(object):
 
     def __init__(self, stage_num=IC_STAGES_MAX):
         self.cTR3 = CTR3()
-        self.cStage = [CStage()] * IC_STAGES_MAX
-        self.mStageNum = 0
-        self.Setup(stage_num)
-
-    def __del__(self):
-        self.Close()
-
-    def Setup(self, stage_num):
+        self.cStage = [CStage()] * stage_num
         self.mStageNum = stage_num
-        return True
-
-    def Close(self):
-        pass
 
     def PrintObjInfo(self):
-        # TODO: fix this pointer variable (fixed)
         for i in xrange(self.mStageNum):
             print "\n{0::>20}::::::::::".format(self.cStage[i].mName)
             for index, cObj in enumerate(self.cStage[i].cTagObj):
@@ -461,7 +411,7 @@ class CIntelCab(object):
 
     # TODO: fix arguments passed by reference (fixed)
     def UpdateObj(self, No, cInOut):
-        cObj = CTagOBJ()
+        # init static variables
         if not hasattr(self, "_CIntelCab__cObjIn"):
             self.__cObjIn = [CTagOBJ()] * IC_STAGES_MAX
         if not hasattr(self, "_CIntelCab__cObjOut"):
@@ -469,23 +419,23 @@ class CIntelCab(object):
         if not hasattr(self, "_CIntelCab__InOutTag"):
             self.__InOutTag = [0] * IC_STAGES_MAX
         if not hasattr(self, "_CIntelCab__InOutLC"):
-            print "InOutLC reset"
             self.__InOutLC = [0] * IC_STAGES_MAX
-        value = IC_OBJECT_STAY
 
+        cObj = CTagOBJ()
+        value = IC_OBJECT_STAY
         if No >= self.mStageNum:
             return IC_OBJECT_STAY
 
         # タグの増減チェック
         # self.cTR3.AntennaPowerON()
         # not  @todo 理解不能なif分岐．実際はアンテナ0しか使ってない（通信の返り値て強制的に0になってる）のにこれのせいでアンテナ1を使用しようとしてる．
-        if self.mStageNum == 1:
-            self.cTR3.SetAntenna(self.cStage[No].mAntenna + 1)
+        # if self.mStageNum == 1:
+            # self.cTR3.SetAntenna(self.cStage[No].mAntenna + 1)
         # (inout, cObj.mUID) = self.cTR3.GetTagDiff(cObj.mUID, self.cStage[No].mAntenna)
         (inout, cObj.mUID) = self.cTR3.GetTagDiff("", 0)
         # print "GetTagDiff: ", inout, cObj.mUID
         self.cTR3.AntennaPowerOFF()
-        self.cTR3.SetAntenna(1)
+        # self.cTR3.SetAntenna(1)
 
         # タグ数増加
         if inout > 0:
@@ -611,13 +561,10 @@ def main():
     # idPlace = 5000
 
     # RFIDリーダ接続
-    cIntelCab.cTR3.Setup()
     cIntelCab.cTR3.AntennaPowerOFF()
-    cIntelCab.cStage[0].SetAntenna(TR3_ANT1)
-    cIntelCab.cStage[1].SetAntenna(TR3_ANT2)
+    # cIntelCab.cStage[0].SetAntenna(TR3_ANT1)
 
     # ロードセル接続
-    cIntelCab.cStage[0].Setup()
     cIntelCab.cStage[0].SetSensorPos(4, xpos0, ypos0)
     cIntelCab.cStage[0].mStagePos[0] = 0
     cIntelCab.cStage[0].mStagePos[1] = 0
