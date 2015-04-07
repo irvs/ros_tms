@@ -108,7 +108,6 @@ def test_CIntelCab():
     while True:
         time.sleep(0.3)
         # reload(ibs)
-        print "start"
         # print "mStageNum:", incab.mStageNum
 
         for i in xrange(incab.mStageNum):  # 増減の確認
