@@ -261,7 +261,7 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   trc_.createRecord(6012,"tv_table");
   trc_.createRecord(6013,"tv_52inch");
   trc_.createRecord(6014,"playrecoder");
-  trc_.createRecord(6015"sofa");
+  trc_.createRecord(6015,"sofa");
   trc_.createRecord(6016,"sofa_table");
   trc_.createRecord(6017,"bed");
   trc_.createRecord(6018,"wagon");
