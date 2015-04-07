@@ -426,11 +426,6 @@ class CIntelCab(object):
             return IC_OBJECT_STAY
 
         # タグの増減チェック
-        # self.cTR3.AntennaPowerON()
-        # not  @todo 理解不能なif分岐．実際はアンテナ0しか使ってない（通信の返り値て強制的に0になってる）のにこれのせいでアンテナ1を使用しようとしてる．
-        # if self.mStageNum == 1:
-            # self.cTR3.SetAntenna(self.cStage[No].mAntenna + 1)
-        # (inout, cObj.mUID) = self.cTR3.GetTagDiff(cObj.mUID, self.cStage[No].mAntenna)
         (inout, cObj.mUID) = self.cTR3.GetTagDiff("", 0)
         # print "GetTagDiff: ", inout, cObj.mUID
 
