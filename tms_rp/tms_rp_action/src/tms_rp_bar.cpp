@@ -435,9 +435,9 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   if (get_data_client_.call(get_db_data)){
     posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
     posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
-    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
-    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
-    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
+    posZ = 0/1000;
+    posRR=deg2rad(0.0);
+    posRP=deg2rad(0.0);
     posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
 
     trc_.appear("wheelchair");
