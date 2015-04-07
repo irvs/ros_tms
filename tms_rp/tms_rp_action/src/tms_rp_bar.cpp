@@ -17,21 +17,21 @@ using namespace grasp;
 using namespace tms_rp;
 
 //------------------------------------------------------------------------------
-std::string TmsRpBar::object_name_[25] = {"chipstar_red","chipstar_orange",
-                                          "chipstar_green","greentea_bottle",
-                                          "soukentea_bottle","cancoffee",
-                                          "seasoner_bottle","dispenser",
-                                          "soysauce_bottle_black","soysauce_bottle_blue",
-                                          "soysauce_bottle_white","pepper_bottle_black",
-                                          "pepper_bottle_red","sake_bottle",
-                                          "teapot","chawan","teacup1","teacup2","cup1",
-                                          "cup2","mugcup","remote","book_red","book_blue","dish"};
+std::string TmsRpBar::object_name_[MAX_ICS_OBJECT_NUM] = {"chipstar_red","chipstar_orange",
+                                        "chipstar_green","greentea_bottle",
+                                        "soukentea_bottle","cancoffee",
+                                        "seasoner_bottle","dispenser",
+                                        "soysauce_bottle_black","soysauce_bottle_blue",
+                                        "soysauce_bottle_white","pepper_bottle_black",
+                                        "pepper_bottle_red","sake_bottle",
+                                        "teapot","chawan","teacup1","teacup2","cup1",
+                                        "cup2","mugcup","remote","book_red","book_blue","dish"};
 
-std::string TmsRpBar::furniture_name_[24] = {"wardrobe","workdesk","drawer","chair","kitchen",
-                                             "meeting_table","meeting_chair1","meeting_chair2","meeting_chair3","meeting_chair4",
-                                             "meeting_chair5","partition","tv_table","tv_52inch","playrecoder",
-                                             "sofa","sofa_table","bed","wagon","shelf",
-                                             "tree","tv_multi","wall_shelf","carpet"};
+std::string TmsRpBar::furniture_name_[MAX_FURNITURE_NUM] = {"wardrobe","workdesk","drawer","chair","kitchen",
+                                        "meeting_table","meeting_chair1","meeting_chair2","meeting_chair3","meeting_chair4",
+                                        "partition","tv_table","tv_52inch","playrecoder","sofa",
+                                        "sofa_table","bed","wagon","shelf","tree",
+                                        "tv_multi","wall_shelf","carpet"};
 
 // initialize static variables
 bool TmsRpBar::production_version_ = false;
@@ -257,20 +257,19 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   trc_.createRecord(6008,"meeting_chair2");
   trc_.createRecord(6009,"meeting_chair3");
   trc_.createRecord(6010,"meeting_chair4");
-  trc_.createRecord(6011,"meeting_chair5");
-  trc_.createRecord(6012,"partition");
-  trc_.createRecord(6013,"tv_table");
-  trc_.createRecord(6014,"tv_52inch");
-  trc_.createRecord(6015,"playrecoder");
-  trc_.createRecord(6016,"sofa");
-  trc_.createRecord(6017,"sofa_table");
-  trc_.createRecord(6018,"bed");
-  trc_.createRecord(6019,"wagon");
-  trc_.createRecord(6020,"shelf");
-  trc_.createRecord(6021,"tree");
-  trc_.createRecord(6022,"tv_multi");
-  trc_.createRecord(6023,"wall_shelf");
-  trc_.createRecord(6024,"carpet");
+  trc_.createRecord(6011,"partition");
+  trc_.createRecord(6012,"tv_table");
+  trc_.createRecord(6013,"tv_52inch");
+  trc_.createRecord(6014,"playrecoder");
+  trc_.createRecord(6015"sofa");
+  trc_.createRecord(6016,"sofa_table");
+  trc_.createRecord(6017,"bed");
+  trc_.createRecord(6018,"wagon");
+  trc_.createRecord(6019,"shelf");
+  trc_.createRecord(6020,"tree");
+  trc_.createRecord(6021,"tv_multi");
+  trc_.createRecord(6022,"wall_shelf");
+  trc_.createRecord(6023,"carpet");
 
   // create etc model
   trc_.createRecord(20001,"blink_arrow");
