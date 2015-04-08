@@ -318,7 +318,6 @@ class CTR3(object):
         self.__mCommand[num] %= 256
         return num + 2
 
-    # def GetTagDiff(self, &diffUID, char AN):
     # TODO: fix arguments passed by reference(fixed)
     def GetTagDiff(self, diffUID, AN):
         diffUID = str()
@@ -376,28 +375,17 @@ class CTagOBJ(object):
         self.mUID = ""
 
 
-class CStage(object):
-
-    def __init__(self):
-        self.cLoadCell = CLoadCell()
-        self.mName = "\0"
-        self.cTagObj = list()
-
-
 class CIntelCab(object):
 
     def __init__(self):
         self.cTR3 = CTR3()
-        # self.cStage = [CStage()] * stage_num
-        # self.mStageNum = stage_num
-
         self.cLoadCell = CLoadCell()
         self.mName = "\0"
-        self.cTagObj = list()
+        self.TagObjList = list()
 
     def PrintObjInfo(self):
         print "\n{0::>20}::::::::::".format(self.mName)
-        for index, cObj in enumerate(self.cTagObj):
+        for index, cObj in enumerate(self.TagObjList):
             print "{0:>3}:  UID->".format(index+1),
             print cObj.mUID,
             print "  Weight={0:>4}  X={1:.0f} Y={2:.0f}".format(cObj.mWeight, cObj.mX, cObj.mY),
@@ -429,9 +417,9 @@ class CIntelCab(object):
             self.__cObjIn = cObj
         # タグ数減少，出庫
         elif inout < 0:
-            for i in xrange(len(self.cTagObj)):
-                if self.cTagObj[i].mUID == cObj.mUID:
-                    del(self.cTagObj[i])
+            for i in xrange(len(self.TagObjList)):
+                if self.TagObjList[i].mUID == cObj.mUID:
+                    del(self.TagObjList[i])
                     self.__InOutLC = 0
                     break
             self.__InOutTag = 0
@@ -445,7 +433,7 @@ class CIntelCab(object):
         if (cObj.mWeight > 0) and (self.__InOutTag > 0):
             # 入庫
             cObj.mUID = self.__cObjIn.mUID
-            self.cTagObj.append(cObj)
+            self.TagObjList.append(cObj)
             self.__InOutTag = 0
             self.__InOutLC = 0
             cInOut = cObj
@@ -453,17 +441,17 @@ class CIntelCab(object):
         elif (cObj.mWeight > 0) and (self.__InOutLC < 0):
             # 庫内移動
             cnt = TR3_TAG_MAX
-            for i in xrange(len(self.cTagObj)):
-                if self.cTagObj[i].mUID == self.__cObjOut.mUID:
+            for i in xrange(len(self.TagObjList)):
+                if self.TagObjList[i].mUID == self.__cObjOut.mUID:
                     cnt = i
                     break
             if cnt != TR3_TAG_MAX:
-                self.cTagObj[cnt] = cObj
-                self.cTagObj[cnt].mUID = self.__cObjOut.mUID
-                self.cTagObj[cnt].mName = self.__cObjOut.mName
-                self.cTagObj[cnt].mComment = self.__cObjOut.mComment
+                self.TagObjList[cnt] = cObj
+                self.TagObjList[cnt].mUID = self.__cObjOut.mUID
+                self.TagObjList[cnt].mName = self.__cObjOut.mName
+                self.TagObjList[cnt].mComment = self.__cObjOut.mComment
                 self.__InOutLC = 0
-                cInOut = self.cTagObj[cnt]
+                cInOut = self.TagObjList[cnt]
                 value = IC_OBJECT_MOVE
         # タグ無し物品の入庫
 
@@ -471,15 +459,15 @@ class CIntelCab(object):
         if cObj.mWeight < 0:
             comp = 5000
             cnt = TR3_TAG_MAX
-            for i in xrange(len(self.cTagObj)):
+            for i in xrange(len(self.TagObjList)):
                 sum = 0
                 for j in xrange(LC_MAX_SENSOR_NUM):
-                    sum += abs(abs(self.cTagObj[i].mDiffs[j]) - abs(cObj.mDiffs[j]))
+                    sum += abs(abs(self.TagObjList[i].mDiffs[j]) - abs(cObj.mDiffs[j]))
                 if sum < comp:
                     comp = sum
                     cnt = i
             if cnt != TR3_TAG_MAX:
-                self.__cObjOut = self.cTagObj[cnt]
+                self.__cObjOut = self.TagObjList[cnt]
                 self.__InOutLC = -1
         return value, cInOut
 
@@ -588,10 +576,9 @@ def main():
         elif state == IC_OBJECT_IN:
             # Beep(2500,50)
             print "\n\n IN : ",
-            # index = (int)cIntelCab.cTagObj.size() - 1
-            index = int(len(cIntelCab.cTagObj) - 1)
-            cIntelCab.cTagObj[index].mName = cObj.mName
-            cIntelCab.cTagObj[index].mComment = cObj.mComment
+            index = int(len(cIntelCab.TagObjList) - 1)
+            cIntelCab.TagObjList[index].mName = cObj.mName
+            cIntelCab.TagObjList[index].mComment = cObj.mComment
             change_flag = True
         elif state == IC_OBJECT_MOVE:
             # Beep(2500,50)
@@ -606,8 +593,8 @@ def main():
         if change_flag:
             change_flag = False
             # vi = 255
-            for j in xrange(len(cIntelCab.cTagObj)):
-                cObj = cIntelCab.cTagObj[j]
+            for j in xrange(len(cIntelCab.TagObjList)):
+                cObj = cIntelCab.TagObjList[j]
             #     vi = rfidValue[cObj.mUID] - 7001
                 time.sleep(0.001)  # 1ms
             #     icsmsg.tmsdb[vi].time = datetime.datetime.now().strftime(
