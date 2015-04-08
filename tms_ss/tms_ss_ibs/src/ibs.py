@@ -19,6 +19,7 @@ import math
 import time
 import datetime
 import rospy
+import subprocess
 
 from tms_msg_db.msg import TmsdbStamped
 from tms_msg_db.msg import Tmsdb
@@ -518,6 +519,11 @@ def main():
     frame_id = rospy.get_param('~frame_id')
     PORT_LC0 = rospy.get_param("~PORT_LC0", "/dev/ttyACM0")
     PORT_TR = rospy.get_param("~PORT_TR", "/dev/ttyUSB0")
+
+    # cmd_chmod = "sudo chmod a+rw "+PORT_LC0
+    # print cmd_chmod+"\n",   subprocess.check_output(cmd_chmod.split(" "))
+    # cmd_chmod = "sudo chmod a+rw "+PORT_TR
+    # print cmd_chmod+"\n",   subprocess.check_output(cmd_chmod.split(" "))
 
     xpos0 = (16.0, 407.0, 16.0, 407.0)
     ypos0 = (16.0, 16.0, 244.0, 244.0)
