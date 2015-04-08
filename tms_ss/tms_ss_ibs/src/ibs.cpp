@@ -318,7 +318,9 @@ int  CLoadCell::GetWeightDiff(float *x, float *y, int diffs[], int threshold) {
             now = GetWeight(i);
             weight += abs(now - pre[i]);
             pre[i] = now;
-            buf[cnt][i] = now; }
+            buf[cnt][i] = now;
+            // std::cout << weight << "   "<<pre[0]<<" "<<pre[1]<<" "<<pre[2]<<" "<<pre[3]<<std::endl ;
+        }
         if (weight < LC_GET_WEIGHT_STABLE) {
             cnt++; }
         else {
