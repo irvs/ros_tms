@@ -18,6 +18,10 @@ import sys
 import math
 import time
 import datetime
+import rospy
+
+from tms_msg_db.msg import TmsdbStamped
+from tms_msg_db.msg import Tmsdb
 # include <tms_msg_db/tmsdb_data.h>
 # include <tms_msg_ss/ics_object_data.h>
 # include <tms_msg_db/TmsdbStamped.h>
@@ -504,6 +508,30 @@ def main():
     rfidValue["E00401004E17EEEF"] = 7024
     rfidValue["E00401004E17EEE7"] = 7025
 
+    # ##init ROS
+    rospy.init_node('ibs', anonymous=True)
+    db_pub = rospy.Publisher('tms_db_data', TmsdbStamped, queue_size=10)
+
+    if not rospy.has_param('~idSensor'):
+        print "ros param 'idSensor' isn't exist"
+        return
+    if not rospy.has_param('~idPlace'):
+        print "ros param 'idPlace' isn't exist"
+        return
+    if not rospy.has_param('~z'):
+        print "ros param 'z' isn't exist"
+        return
+    if not rospy.has_param('~frame_id'):
+        print "ros param 'frame_id' isn't exist"
+        return
+    idSensor = rospy.get_param('~idSensor')
+    idPlace = rospy.get_param('~idPlace')
+    z = rospy.get_param('~z')
+    frame_id = rospy.get_param('~frame_id')
+
+    PORT_LC0 = rospy.get_param("PORT_LC0", "/dev/ttyACM0")
+    PORT_TR = rospy.get_param("PORT_TR", "/dev/ttyUSB0")
+
     # tms_msg_db.TmsdbStamped  icsmsg
     # tms_msg_db.Tmsdb                 tmpdata
     # icsmsg = tms_msg_db.TmsdbStamped
@@ -527,8 +555,8 @@ def main():
     #     ROS_ERROR("ros param idPlace isn't exist")
     #     return 0;
 
-    PORT_LC0 = "/dev/ttyACM0"
-    PORT_TR = "/dev/ttyUSB0"
+    # PORT_LC0 = "/dev/ttyACM0"
+    # PORT_TR = "/dev/ttyUSB0"
     # idSensor = 3000
     # idPlace = 5000
 
@@ -551,8 +579,9 @@ def main():
     change_flag = False
     index = 0
     print "\nSTART"
-
-    while True:  # not rospy.is_shutdown():        # vector 初期化
+    r = rospy.Rate(10)
+    while not rospy.is_shutdown():        # vector 初期化
+        r.sleep()
         # 毎回初期化し，庫内にある物品だけ値を更新して送信する
         # now = ros.Time.now() + ros.Duration(9 * 60 * 60) # GMT +9
         # D_COUT(datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"))
@@ -598,27 +627,40 @@ def main():
             change_flag = True
         else:
             change_flag = False
+
         if change_flag:
             change_flag = False
-            # vi = 255
+            # 毎回初期化し，庫内にある物品だけ値を更新して送信する
+            msg = TmsdbStamped()
+            msg.header.frame_id = frame_id
+            msg.header.stamp = rospy.get_rostime()+rospy.Duration(9*60*60)
+            for i in xrange(MAX_OBJECT_NUM):
+                time.sleep(0.001)
+                tmp_db = Tmsdb()
+                tmp_db.time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
+                tmp_db.id = i+7001  # 物品IDは 7001 から
+                tmp_db.x = -1.0
+                tmp_db.y = -1.0
+                tmp_db.z = -1.0
+                tmp_db.place = idPlace
+                tmp_db.sensor = idSensor
+                tmp_db.state = NONE  # 知的収納庫内に 0:存在しない, 1:存在する
+                msg.tmsdb.append(tmp_db)
+
             for j in xrange(len(cIntelCab.TagObjList)):
                 cObj = cIntelCab.TagObjList[j]
-            #     vi = rfidValue[cObj.mUID] - 7001
+                vi = rfidValue[cObj.mUID] - 7001
                 time.sleep(0.001)  # 1ms
-            #     icsmsg.tmsdb[vi].time = datetime.datetime.now().strftime(
-            #         "%Y-%m-%dT%H:%M:%S.%f")
-            #     icsmsg.tmsdb[vi].id = rfidValue[cObj.mUID]
-            #     icsmsg.tmsdb[vi].state = EXIST
-            #     # 知的収納庫内に 0:存在しない, 1:存在する
-            #     icsmsg.tmsdb[vi].x = cObj.mX
-            #     icsmsg.tmsdb[vi].y = cObj.mY
-            #     icsmsg.tmsdb[vi].weight = cObj.mWeight
-            #     # nh_param.param<float>("z",icsmsg.tmsdb[vi].z,NULL)
-            #     if not nh_param.getParam("z", icsmsg.tmsdb[vi].z):
-            #         ROS_ERROR("ros param z isn't exist")
-            #         return 0
+                msg.tmsdb[vi].time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
+                msg.tmsdb[vi].id = rfidValue[cObj.mUID]
+                msg.tmsdb[vi].state = EXIST
+                msg.tmsdb[vi].x = cObj.mX
+                msg.tmsdb[vi].y = cObj.mY
+                msg.tmsdb[vi].z = z
+                msg.tmsdb[vi].weight = cObj.mWeight
+
             cIntelCab.PrintObjInfo()
-            # ics_pub.publish(icsmsg)
+            db_pub.publish(msg)
     return 0
 
 if __name__ == '__main__':
