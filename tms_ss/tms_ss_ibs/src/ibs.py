@@ -528,37 +528,8 @@ def main():
     idPlace = rospy.get_param('~idPlace')
     z = rospy.get_param('~z')
     frame_id = rospy.get_param('~frame_id')
-
-    PORT_LC0 = rospy.get_param("PORT_LC0", "/dev/ttyACM0")
-    PORT_TR = rospy.get_param("PORT_TR", "/dev/ttyUSB0")
-
-    # tms_msg_db.TmsdbStamped  icsmsg
-    # tms_msg_db.Tmsdb                 tmpdata
-    # icsmsg = tms_msg_db.TmsdbStamped
-    # tmpdata = tms_msg_db.Tmsdb
-    # idSensor = idPlace = 0  # shelf (ics) >> 928_foor >> 928_room
-
-    # ros.init(argc, argv, "ics", ros.init_options.AnonymousName)
-    # rospy.init_node('ics')  # TODO: add anonymous option
-
-    # ics_pub = rospy.Publisher('tms_db_data', TmsdbStamped, queue_size=10)
-
-    # ros.NodeHandle nh_param("~")
-    # nh_param.param<std.string>("PORT_TR", PORT_TR, "/dev/ttyUSB0")
-    # nh_param.param<std.string>("PORT_LC0", PORT_LC0, "/dev/ttyACM0")
-    # std.cout << ("sudo -S chmod a+rw " + PORT_TR + " " + PORT_LC0).c_str()
-    # system(("sudo -S chmod a+rw " + PORT_TR + " " + PORT_LC0).c_str())
-    # if not  nh_param.getParam("idSensor", idSensor):
-    #       ROS_ERROR("ros param idSensor isn't exist")
-    #     return 0;
-    # if not  nh_param.getParam("idPlace", idPlace):
-    #     ROS_ERROR("ros param idPlace isn't exist")
-    #     return 0;
-
-    # PORT_LC0 = "/dev/ttyACM0"
-    # PORT_TR = "/dev/ttyUSB0"
-    # idSensor = 3000
-    # idPlace = 5000
+    PORT_LC0 = rospy.get_param("~PORT_LC0", "/dev/ttyACM0")
+    PORT_TR = rospy.get_param("~PORT_TR", "/dev/ttyUSB0")
 
     xpos0 = (16.0, 407.0, 16.0, 407.0)
     ypos0 = (16.0, 16.0, 244.0, 244.0)
@@ -582,30 +553,6 @@ def main():
     r = rospy.Rate(10)
     while not rospy.is_shutdown():        # vector 初期化
         r.sleep()
-        # 毎回初期化し，庫内にある物品だけ値を更新して送信する
-        # now = ros.Time.now() + ros.Duration(9 * 60 * 60) # GMT +9
-        # D_COUT(datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"))
-        # icsmsg.header.frame_id = 0  # TODO: fix this value
-        # # if not  nh_param.getParam("frame_id", icsmsg.header.frame_id):
-        # #     ROS_ERROR("ros param frame_id isn't exist")
-        # #     return 0;
-        # icsmsg.header.stamp = rospy.get_rostime() + rospy.Duration(9 * 60 * 60)
-
-        # icsmsg.tmsdb.clear()
-        # for i in xrange(MAX_OBJECT_NUM):
-        #     time.sleep(0.001) #  1ms
-        #     tmpdata.time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
-        #     tmpdata.id = i + 7001
-        #     # 物品IDは 7001 から
-        #     tmpdata.x = -1.0
-        #     tmpdata.y = -1.0
-        #     tmpdata.z = -1.0
-        #     tmpdata.place = idPlace
-        #     tmpdata.sensor = idSensor
-        #     tmpdata.state = NONE
-        #     # 知的収納庫内に 0:存在しない, 1:存在する
-        #     icsmsg.tmsdb.push_back(tmpdata)
-
         state, cObj = cIntelCab.UpdateObj()
         # print "state:", state
         if state == IC_OBJECT_STAY:
