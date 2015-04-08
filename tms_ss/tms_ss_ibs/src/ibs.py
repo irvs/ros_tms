@@ -386,40 +386,38 @@ class CStage(object):
 
 class CIntelCab(object):
 
-    def __init__(self, stage_num=IC_STAGES_MAX):
+    def __init__(self):
         self.cTR3 = CTR3()
         # self.cStage = [CStage()] * stage_num
-        self.mStageNum = stage_num
+        # self.mStageNum = stage_num
 
         self.cLoadCell = CLoadCell()
         self.mName = "\0"
         self.cTagObj = list()
 
     def PrintObjInfo(self):
-        for i in xrange(self.mStageNum):
-            print "\n{0::>20}::::::::::".format(self.mName)
-            for index, cObj in enumerate(self.cTagObj):
-                print "{0:>3}:  UID->".format(index+1),
-                print cObj.mUID,
-                print "  Weight={0:>4}  X={1:.0f} Y={2:.0f}".format(cObj.mWeight, cObj.mX, cObj.mY),
-                print "<{0}:{1}>".format(cObj.mName, cObj.mComment)
+        print "\n{0::>20}::::::::::".format(self.mName)
+        for index, cObj in enumerate(self.cTagObj):
+            print "{0:>3}:  UID->".format(index+1),
+            print cObj.mUID,
+            print "  Weight={0:>4}  X={1:.0f} Y={2:.0f}".format(cObj.mWeight, cObj.mX, cObj.mY),
+            print "<{0}:{1}>".format(cObj.mName, cObj.mComment)
 
     # TODO: fix arguments passed by reference (fixed)
-    def UpdateObj(self, No, cInOut):
+    def UpdateObj(self):
         # init static variables
         if not hasattr(self, "_CIntelCab__cObjIn"):
-            self.__cObjIn = [CTagOBJ()] * IC_STAGES_MAX
+            self.__cObjIn = CTagOBJ()
         if not hasattr(self, "_CIntelCab__cObjOut"):
-            self.__cObjOut = [CTagOBJ()] * IC_STAGES_MAX
+            self.__cObjOut = CTagOBJ()
         if not hasattr(self, "_CIntelCab__InOutTag"):
-            self.__InOutTag = [0] * IC_STAGES_MAX
+            self.__InOutTag = 0
         if not hasattr(self, "_CIntelCab__InOutLC"):
-            self.__InOutLC = [0] * IC_STAGES_MAX
+            self.__InOutLC = 0
 
         cObj = CTagOBJ()
+        cInOut = CTagOBJ()
         value = IC_OBJECT_STAY
-        if No >= self.mStageNum:
-            return IC_OBJECT_STAY
 
         # タグの増減チェック
         (inout, cObj.mUID) = self.cTR3.GetTagDiff("", 0)
@@ -427,44 +425,44 @@ class CIntelCab(object):
 
         # タグ数増加
         if inout > 0:
-            self.__InOutTag[No] = 1
-            self.__cObjIn[No] = cObj
+            self.__InOutTag = 1
+            self.__cObjIn = cObj
         # タグ数減少，出庫
         elif inout < 0:
             for i in xrange(len(self.cTagObj)):
                 if self.cTagObj[i].mUID == cObj.mUID:
                     del(self.cTagObj[i])
-                    self.__InOutLC[No] = 0
+                    self.__InOutLC = 0
                     break
-            self.__InOutTag[No] = 0
+            self.__InOutTag = 0
             cInOut = cObj
             value = IC_OBJECT_OUT
 
         # ロードセルの増減チェック
         cObj.mWeight, cObj.mX, cObj.mY, cObj.mDiffs = self.cLoadCell.GetWeightDiff()
 
-        # print "mWeighr:{0}   InOutLC:{1}".format(cObj.mWeight, self.__InOutLC[No]),
-        if (cObj.mWeight > 0) and (self.__InOutTag[No] > 0):
+        # print "mWeighr:{0}   InOutLC:{1}".format(cObj.mWeight, self.__InOutLC),
+        if (cObj.mWeight > 0) and (self.__InOutTag > 0):
             # 入庫
-            cObj.mUID = self.__cObjIn[No].mUID
+            cObj.mUID = self.__cObjIn.mUID
             self.cTagObj.append(cObj)
-            self.__InOutTag[No] = 0
-            self.__InOutLC[No] = 0
+            self.__InOutTag = 0
+            self.__InOutLC = 0
             cInOut = cObj
             value = IC_OBJECT_IN
-        elif (cObj.mWeight > 0) and (self.__InOutLC[No] < 0):
+        elif (cObj.mWeight > 0) and (self.__InOutLC < 0):
             # 庫内移動
             cnt = TR3_TAG_MAX
             for i in xrange(len(self.cTagObj)):
-                if self.cTagObj[i].mUID == self.__cObjOut[No].mUID:
+                if self.cTagObj[i].mUID == self.__cObjOut.mUID:
                     cnt = i
                     break
             if cnt != TR3_TAG_MAX:
                 self.cTagObj[cnt] = cObj
-                self.cTagObj[cnt].mUID = self.__cObjOut[No].mUID
-                self.cTagObj[cnt].mName = self.__cObjOut[No].mName
-                self.cTagObj[cnt].mComment = self.__cObjOut[No].mComment
-                self.__InOutLC[No] = 0
+                self.cTagObj[cnt].mUID = self.__cObjOut.mUID
+                self.cTagObj[cnt].mName = self.__cObjOut.mName
+                self.cTagObj[cnt].mComment = self.__cObjOut.mComment
+                self.__InOutLC = 0
                 cInOut = self.cTagObj[cnt]
                 value = IC_OBJECT_MOVE
         # タグ無し物品の入庫
@@ -481,8 +479,8 @@ class CIntelCab(object):
                     comp = sum
                     cnt = i
             if cnt != TR3_TAG_MAX:
-                self.__cObjOut[No] = self.cTagObj[cnt]
-                self.__InOutLC[No] = -1
+                self.__cObjOut = self.cTagObj[cnt]
+                self.__InOutLC = -1
         return value, cInOut
 
 
@@ -515,7 +513,7 @@ def main():
     rfidValue["E00401004E17EEEF"] = 7024
     rfidValue["E00401004E17EEE7"] = 7025
 
-    cIntelCab = CIntelCab(1)
+    cIntelCab = CIntelCab()
     xpos0 = [16.0, 407.0, 16.0, 407.0]
     ypos0 = [16.0, 16.0, 244.0, 244.0]  # colorbox
     cObj = CTagOBJ()
@@ -551,8 +549,7 @@ def main():
     cIntelCab.cLoadCell.SetSensorPos(4, xpos0, ypos0)
 
     # 初回時の起動は多少時間がかかるためここで一回実行しておく
-    for i in xrange(cIntelCab.mStageNum):
-        cIntelCab.UpdateObj(i, cObj)
+    cIntelCab.UpdateObj()
 
     # 計測開始
     change_flag = False
@@ -584,51 +581,49 @@ def main():
         #     # 知的収納庫内に 0:存在しない, 1:存在する
         #     icsmsg.tmsdb.push_back(tmpdata)
 
-        for i in xrange(cIntelCab.mStageNum):  # 増減の確認
-            state, cObj = cIntelCab.UpdateObj(i, cObj)
-            # print "state:", state
-            if state == IC_OBJECT_STAY:
-                change_flag = False
-            elif state == IC_OBJECT_IN:
-                # Beep(2500,50)
-                print "\n\n IN : ",
-                # index = (int)cIntelCab.cTagObj.size() - 1
-                index = int(len(cIntelCab.cTagObj) - 1)
-                cIntelCab.cTagObj[index].mName = cObj.mName
-                cIntelCab.cTagObj[index].mComment = cObj.mComment
-                change_flag = True
-            elif state == IC_OBJECT_MOVE:
-                # Beep(2500,50)
-                print "\n\nMOVE: ",
-                change_flag = True
-            elif state == IC_OBJECT_OUT:
-                # ##Beep(2500,50); Sleep(50); Beep(2500,50)
-                print "\n\n OUT: ",
-                change_flag = True
-            else:
-                change_flag = False
-
-            if change_flag:
-                change_flag = False
-                # vi = 255
-                for j in xrange(len(cIntelCab.cTagObj)):
-                    cObj = cIntelCab.cTagObj[j]
-                #     vi = rfidValue[cObj.mUID] - 7001
-                    time.sleep(0.001)  # 1ms
-                #     icsmsg.tmsdb[vi].time = datetime.datetime.now().strftime(
-                #         "%Y-%m-%dT%H:%M:%S.%f")
-                #     icsmsg.tmsdb[vi].id = rfidValue[cObj.mUID]
-                #     icsmsg.tmsdb[vi].state = EXIST
-                #     # 知的収納庫内に 0:存在しない, 1:存在する
-                #     icsmsg.tmsdb[vi].x = cObj.mX
-                #     icsmsg.tmsdb[vi].y = cObj.mY
-                #     icsmsg.tmsdb[vi].weight = cObj.mWeight
-                #     # nh_param.param<float>("z",icsmsg.tmsdb[vi].z,NULL)
-                #     if not nh_param.getParam("z", icsmsg.tmsdb[vi].z):
-                #         ROS_ERROR("ros param z isn't exist")
-                #         return 0
-                cIntelCab.PrintObjInfo()
-                # ics_pub.publish(icsmsg)
+        state, cObj = cIntelCab.UpdateObj()
+        # print "state:", state
+        if state == IC_OBJECT_STAY:
+            change_flag = False
+        elif state == IC_OBJECT_IN:
+            # Beep(2500,50)
+            print "\n\n IN : ",
+            # index = (int)cIntelCab.cTagObj.size() - 1
+            index = int(len(cIntelCab.cTagObj) - 1)
+            cIntelCab.cTagObj[index].mName = cObj.mName
+            cIntelCab.cTagObj[index].mComment = cObj.mComment
+            change_flag = True
+        elif state == IC_OBJECT_MOVE:
+            # Beep(2500,50)
+            print "\n\nMOVE: ",
+            change_flag = True
+        elif state == IC_OBJECT_OUT:
+            # ##Beep(2500,50); Sleep(50); Beep(2500,50)
+            print "\n\n OUT: ",
+            change_flag = True
+        else:
+            change_flag = False
+        if change_flag:
+            change_flag = False
+            # vi = 255
+            for j in xrange(len(cIntelCab.cTagObj)):
+                cObj = cIntelCab.cTagObj[j]
+            #     vi = rfidValue[cObj.mUID] - 7001
+                time.sleep(0.001)  # 1ms
+            #     icsmsg.tmsdb[vi].time = datetime.datetime.now().strftime(
+            #         "%Y-%m-%dT%H:%M:%S.%f")
+            #     icsmsg.tmsdb[vi].id = rfidValue[cObj.mUID]
+            #     icsmsg.tmsdb[vi].state = EXIST
+            #     # 知的収納庫内に 0:存在しない, 1:存在する
+            #     icsmsg.tmsdb[vi].x = cObj.mX
+            #     icsmsg.tmsdb[vi].y = cObj.mY
+            #     icsmsg.tmsdb[vi].weight = cObj.mWeight
+            #     # nh_param.param<float>("z",icsmsg.tmsdb[vi].z,NULL)
+            #     if not nh_param.getParam("z", icsmsg.tmsdb[vi].z):
+            #         ROS_ERROR("ros param z isn't exist")
+            #         return 0
+            cIntelCab.PrintObjInfo()
+            # ics_pub.publish(icsmsg)
     return 0
 
 if __name__ == '__main__':
