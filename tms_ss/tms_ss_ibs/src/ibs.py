@@ -148,7 +148,8 @@ class CLoadCell(object):
                 weight += math.fabs(now - pre[i])
                 pre[i] = now
                 buf[cnt][i] = now
-            # print weight, pre
+                D_COUT("weight :{0}".format(weight))
+                D_COUT("\033[1K\r")
             if weight < LC_GET_WEIGHT_STABLE:
                 cnt += 1
             else:
@@ -505,16 +506,12 @@ def main():
     db_pub = rospy.Publisher('tms_db_data', TmsdbStamped, queue_size=10)
     if not rospy.has_param('~idSensor'):
         print "ros param 'idSensor' isn't exist"
-        return
     if not rospy.has_param('~idPlace'):
         print "ros param 'idPlace' isn't exist"
-        return
     if not rospy.has_param('~z'):
         print "ros param 'z' isn't exist"
-        return
     if not rospy.has_param('~frame_id'):
         print "ros param 'frame_id' isn't exist"
-        return
     idSensor = rospy.get_param('~idSensor')
     idPlace = rospy.get_param('~idPlace')
     z = rospy.get_param('~z')
@@ -541,6 +538,7 @@ def main():
     r = rospy.Rate(10)
     while not rospy.is_shutdown():        # vector 初期化
         r.sleep()
+        # D_COUT(datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"))
         # cObj: CTagOBJ type
         state, cObj = cIntelCab.UpdateObj()
         # print "state:", state
