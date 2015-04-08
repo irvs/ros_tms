@@ -9,7 +9,7 @@
 # @date   : 2015.2.25
 # ------------------------------------------------------------------------------
 
-'''not  @todo unite CStage class and CLoadCell class
+'''
     @todo readujust threshold of GetWeightDiff
 '''
 
@@ -22,20 +22,12 @@ import rospy
 
 from tms_msg_db.msg import TmsdbStamped
 from tms_msg_db.msg import Tmsdb
-# include <tms_msg_db/tmsdb_data.h>
-# include <tms_msg_ss/ics_object_data.h>
-# include <tms_msg_db/TmsdbStamped.h>
-# include <tms_msg_db/Tmsdb.h>
-# include <boost/date_time/posix_time/posix_time.hpp>
-# include <cstdlib>
-
-# ------------------------------------------------------------------------------
 
 LC_MAX_SENSOR_NUM = 4
 LC_GET_WEIGHT_CNT = 2
 LC_GET_WEIGHT_STABLE = 12
 
-MAX_OBJECT_NUM =     25      #環境内に存在する全物品数
+MAX_OBJECT_NUM = 25  # 環境内に存在する全物品数
 
 # 仕様上の固定値
 TR3_STX = 0x02
@@ -119,9 +111,9 @@ class CLoadCell(object):
             self.__ser.write(str(sensor_id))
             tmp = self.__ser.readline()
             # print tmp
-            buf.append(int(tmp.replace("O", "").replace("K", "").replace('"', ""))*5)
+            buf.append(int(tmp.replace("O", "").replace("K", "").replace('"', "")) * 5)
         self.__ClosePort()
-        return reduce(lambda x, y: x+y, buf)/len(buf)
+        return reduce(lambda x, y: x + y, buf) / len(buf)
 
     def __ResetWeight(self, initial=[], num=10):
         if initial:   # if not empty
@@ -168,7 +160,7 @@ class CLoadCell(object):
             for j in xrange(self.__mSensorNum):
                 pre[j] += buf[i][j]
         pre = map(lambda x: x / LC_GET_WEIGHT_CNT, pre)
-        diffs = map(lambda x, y: x-y, pre, self.__mPreSensorsWeight)
+        diffs = map(lambda x, y: x - y, pre, self.__mPreSensorsWeight)
         x = y = 0
         weight = 0
         for i in xrange(self.__mSensorNum):
@@ -254,7 +246,7 @@ class CTR3(object):
     # アンテナの電源OFF
     # TODO: I dont know this method worked correctly
     def __AntennaPowerOFF(self):    # unsigned long num
-        self.__SetAntenna(self.__mActiveAntenna+1)  # TODO: fix correct serquence
+        self.__SetAntenna(self.__mActiveAntenna + 1)  # TODO: fix correct serquence
 
         # self.__mCommand[2] = 0x4E  # コマンド
         # self.__mCommand[3] = 0x02  # データ長
@@ -277,7 +269,7 @@ class CTR3(object):
         for i in xrange(TR3_USED_ANT_NUM):
             print "\n.. ANTENNA ", i + 1, " .."
             for num, j in enumerate(self.__mUIDs[i]):
-                print "{0:>3}.{1}".format(num+1, j)
+                print "{0:>3}.{1}".format(num + 1, j)
 
     # タグの読み取り
     def Inventory2(self):
@@ -323,7 +315,6 @@ class CTR3(object):
         self.__mCommand[num] %= 256
         return num + 2
 
-    # TODO: fix arguments passed by reference(fixed)
     def GetTagDiff(self, diffUID, AN):
         diffUID = str()
         # print self.__mUIDs, self.__mActiveAntenna
@@ -393,12 +384,11 @@ class CIntelCab(object):
     def PrintObjInfo(self):
         print "\n{0::>20}::::::::::".format(self.mName)
         for index, cObj in enumerate(self.TagObjList):
-            print "{0:>3}:  UID->".format(index+1),
+            print "{0:>3}:  UID->".format(index + 1),
             print cObj.mUID,
             print "  Weight={0:>4}  X={1:.0f} Y={2:.0f}".format(cObj.mWeight, cObj.mX, cObj.mY),
             print "<{0}:{1}>".format(cObj.mName, cObj.mComment)
 
-    # TODO: fix arguments passed by reference (fixed)
     def UpdateObj(self):
         # init static variables
         if not hasattr(self, "_CIntelCab__cObjIn"):
@@ -460,7 +450,9 @@ class CIntelCab(object):
                 self.__InOutLC = 0
                 cInOut = self.TagObjList[cnt]
                 value = IC_OBJECT_MOVE
-        # タグ無し物品の入庫
+        else:
+            # タグ無し物品の入庫
+            pass
 
         # 持ち上げ
         if cObj.mWeight < 0:
@@ -481,7 +473,7 @@ class CIntelCab(object):
 
 def main():
     print "Hello World"
-    rfidValue = {}
+    rfidValue = dict()
     rfidValue["E00401004E17F97A"] = 7001
     rfidValue["E00401004E180E50"] = 7002
     rfidValue["E00401004E180E58"] = 7003
@@ -508,10 +500,9 @@ def main():
     rfidValue["E00401004E17EEEF"] = 7024
     rfidValue["E00401004E17EEE7"] = 7025
 
-    # ##init ROS
+    # init ROS
     rospy.init_node('ibs', anonymous=True)
     db_pub = rospy.Publisher('tms_db_data', TmsdbStamped, queue_size=10)
-
     if not rospy.has_param('~idSensor'):
         print "ros param 'idSensor' isn't exist"
         return
@@ -539,9 +530,6 @@ def main():
                           tr_port=PORT_TR,
                           tr_antenna=TR3_ANT1,
                           )
-    # ロードセル接続
-    # cIntelCab.cLoadCell.SetSensorPos(4, xpos0, ypos0)
-    cObj = CTagOBJ()
 
     # 初回時の起動は多少時間がかかるためここで一回実行しておく
     cIntelCab.UpdateObj()
@@ -553,6 +541,7 @@ def main():
     r = rospy.Rate(10)
     while not rospy.is_shutdown():        # vector 初期化
         r.sleep()
+        # cObj: CTagOBJ type
         state, cObj = cIntelCab.UpdateObj()
         # print "state:", state
         if state == IC_OBJECT_STAY:
@@ -569,7 +558,7 @@ def main():
             print "\n\nMOVE: ",
             change_flag = True
         elif state == IC_OBJECT_OUT:
-            # ##Beep(2500,50); Sleep(50); Beep(2500,50)
+            # Beep(2500,50); Sleep(50); Beep(2500,50)
             print "\n\n OUT: ",
             change_flag = True
         else:
@@ -580,12 +569,12 @@ def main():
             # 毎回初期化し，庫内にある物品だけ値を更新して送信する
             msg = TmsdbStamped()
             msg.header.frame_id = frame_id
-            msg.header.stamp = rospy.get_rostime()+rospy.Duration(9*60*60)
+            msg.header.stamp = rospy.get_rostime() + rospy.Duration(9 * 60 * 60)
             for i in xrange(MAX_OBJECT_NUM):
                 time.sleep(0.001)
                 tmp_db = Tmsdb()
                 tmp_db.time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
-                tmp_db.id = i+7001  # 物品IDは 7001 から
+                tmp_db.id = i + 7001  # 物品IDは 7001 から
                 tmp_db.x = -1.0
                 tmp_db.y = -1.0
                 tmp_db.z = -1.0
@@ -605,7 +594,6 @@ def main():
                 msg.tmsdb[vi].y = cObj.mY
                 msg.tmsdb[vi].z = z
                 msg.tmsdb[vi].weight = cObj.mWeight
-
             cIntelCab.PrintObjInfo()
             db_pub.publish(msg)
     return 0
