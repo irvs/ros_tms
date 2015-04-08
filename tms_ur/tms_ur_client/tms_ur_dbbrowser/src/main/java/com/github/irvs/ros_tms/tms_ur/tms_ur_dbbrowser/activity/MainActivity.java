@@ -22,18 +22,19 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView.BufferType;
 
-import org.ros.address.InetAddressFactory;
-import org.ros.android.RosActivity;
-import org.ros.node.NodeConfiguration;
-import org.ros.node.NodeMainExecutor;
-
-import java.util.ArrayList;
-
 import com.github.irvs.ros_tms.tms_ur.tms_ur_dbbrowser.data.TmsdbObject;
 import com.github.irvs.ros_tms.tms_ur.tms_ur_dbbrowser.data.TmsdbObjectListAdapter;
 import com.github.irvs.ros_tms.tms_ur.tms_ur_dbbrowser.ftp.FtpClient;
 import com.github.irvs.ros_tms.tms_ur.tms_ur_dbbrowser.srv.TmsdbGetDataNode;
 import com.github.irvs.ros_tms.tms_ur.tms_ur_dbbrowser.widget.Popup;
+
+import org.ros.address.InetAddressFactory;
+import org.ros.android.RosActivity;
+import org.ros.node.NodeConfiguration;
+import org.ros.node.NodeMainExecutor;
+
+import java.net.URI;
+import java.util.ArrayList;
 
 @SuppressLint("InflateParams")
 public class MainActivity extends RosActivity implements View.OnClickListener {
@@ -62,11 +63,10 @@ public class MainActivity extends RosActivity implements View.OnClickListener {
 	private Button mainObj;
 	private ImageButton srcObj;
 
-
 	private Popup popup;
 
 	public MainActivity() {
-		super("tms_ur_client","tms_ur_client");
+		super("tms_ur_dbbrowser", "tms_ur_dbbrowser", URI.create("http://192.168.4.170:11311/"));
 	}
 
 	private TmsdbGetDataNode data;

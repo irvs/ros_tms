@@ -17,10 +17,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 13
+    compileSdkVersion 15
     defaultConfig {
-        minSdkVersion 13
-        targetSdkVersion 13
+        minSdkVersion 15
+        targetSdkVersion 15
         versionCode 1
         versionName "1.0"
         ndk {
@@ -30,7 +30,7 @@ android {
 }
 
 dependencies {
-    compile('org.ros.android_core:android_gingerbread_mr1:[0.1,0.2)') {
+    compile('org.ros.android_core:android_15:[0.2,0.3)') {
         exclude group: 'junit'
         exclude group: 'xml-apis'
     }

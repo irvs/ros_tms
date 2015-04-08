@@ -2,8 +2,8 @@
 // @file   : vicon_stream.cpp
 // @brief  : data stream using ViconSDK v1.3 / simple version
 // @author : Yoonseok Pyo
-// @version: Ver0.1.5 (since 2014.05.02)
-// @date   : 2014.06.06
+// @version: Ver0.1.6 (since 2014.05.02)
+// @date   : 2015.04.06
 //------------------------------------------------------------------------------
 #include <ros/ros.h>
 
@@ -103,8 +103,8 @@ public:
     // Init Vicon Stream
     ROS_ASSERT(init_vicon());
     // Publishers
-    db_pub    = nh.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data", 10);
-    pose_pub  = nh_priv.advertise<tms_msg_ss::vicon_data> ("output", 10);
+    db_pub    = nh.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data", 1);
+    pose_pub  = nh_priv.advertise<tms_msg_ss::vicon_data> ("output", 1);
     // TimerEvent
     update_timer = nh.createTimer(ros::Duration(update_time), &ViconStream::updateCallback, this);
   }
@@ -208,6 +208,11 @@ private:
     unsigned int SubjectCount = MyClient.GetSubjectCount().SubjectCount;
     if(isDebug) std::cout << "Subjects (" << SubjectCount << "):" << std::endl;
 
+    ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+    tms_msg_db::TmsdbStamped db_msg;
+    db_msg.header.frame_id  = frame_id;
+    db_msg.header.stamp     = now;
+
     ///////////////////////////////////////////////////////////////////
     for( unsigned int SubjectIndex = 0 ; SubjectIndex < SubjectCount ; ++SubjectIndex )
     {
@@ -262,8 +267,7 @@ private:
 
 
         tms_msg_ss::vicon_data pose_msg;
-        
-        ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+        now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 
         pose_msg.header.frame_id  = frame_id;
         pose_msg.header.stamp     = now;
@@ -289,7 +293,8 @@ private:
         // publish to tms_db_writer
         int32_t id = 0;
 
-        if(SubjectName.compare("moverio") == 0)         id = 1001; //person_1
+        if(SubjectName.compare("oculus2") == 0)         id = 1001; // person_1_oculus
+        else if(SubjectName.compare("moverio") == 0)    id = 1002; // person_2_moverio
         else if(SubjectName.compare("sp4") == 0)        id = 2001;
         else if(SubjectName.compare("sp5_1") == 0)      id = 2002;
         else if(SubjectName.compare("sp5_2") == 0)      id = 2003;
@@ -297,21 +302,13 @@ private:
         else if(SubjectName.compare("kxp") == 0)        id = 2006;
         else if(SubjectName.compare("wheelchair") == 0) id = 2007;
         else if(SubjectName.compare("ardrone1") == 0)   id = 2008;
-        else if(SubjectName.compare("oculus") == 0)     id = 3006;
-        else if(SubjectName.compare("moverio") == 0)    id = 3016;
-        else if(SubjectName.compare("oculus2") == 0)    id = 3019;
         else if(SubjectName.compare("wagon") == 0)      id = 6019;
         else id = -1;
 
         if(id != -1)
         {
-          now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
-          
-          tms_msg_db::TmsdbStamped db_msg;
           tms_msg_db::Tmsdb tmpData;
-
-          db_msg.header.frame_id  = frame_id;
-          db_msg.header.stamp     = now;
+          now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 
           tmpData.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
           tmpData.id      = id;
@@ -326,8 +323,6 @@ private:
           tmpData.state   = 1;
 
           db_msg.tmsdb.push_back(tmpData);
-          
-          db_pub.publish(db_msg);
         }
       }
 
@@ -353,6 +348,7 @@ private:
       //                                 << std::endl;
       // }
     }
+    db_pub.publish(db_msg);
   }
 };
 

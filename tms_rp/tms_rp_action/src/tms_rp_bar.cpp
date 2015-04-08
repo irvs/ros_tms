@@ -17,21 +17,21 @@ using namespace grasp;
 using namespace tms_rp;
 
 //------------------------------------------------------------------------------
-std::string TmsRpBar::object_name_[25] = {"chipstar_red","chipstar_orange",
-                                          "chipstar_green","greentea_bottle",
-                                          "soukentea_bottle","cancoffee",
-                                          "seasoner_bottle","dispenser",
-                                          "soysauce_bottle_black","soysauce_bottle_blue",
-                                          "soysauce_bottle_white","pepper_bottle_black",
-                                          "pepper_bottle_red","sake_bottle",
-                                          "teapot","chawan","teacup1","teacup2","cup1",
-                                          "cup2","mugcup","remote","book_red","book_blue","dish"};
+std::string TmsRpBar::object_name_[MAX_ICS_OBJECT_NUM] = {"chipstar_red","chipstar_orange",
+                                        "chipstar_green","greentea_bottle",
+                                        "soukentea_bottle","cancoffee",
+                                        "seasoner_bottle","dispenser",
+                                        "soysauce_bottle_black","soysauce_bottle_blue",
+                                        "soysauce_bottle_white","pepper_bottle_black",
+                                        "pepper_bottle_red","sake_bottle",
+                                        "teapot","chawan","teacup1","teacup2","cup1",
+                                        "cup2","mugcup","remote","book_red","book_blue","dish"};
 
-std::string TmsRpBar::furniture_name_[24] = {"wardrobe","workdesk","drawer","chair","kitchen",
-                                             "meeting_table","meeting_chair1","meeting_chair2","meeting_chair3","meeting_chair4",
-                                             "meeting_chair5","partition","tv_table","tv_52inch","playrecoder",
-                                             "sofa","sofa_table","bed","wagon","shelf",
-                                             "tree","tv_multi","wall_shelf","carpet"};
+std::string TmsRpBar::furniture_name_[MAX_FURNITURE_NUM] = {"wardrobe","workdesk","drawer","chair","kitchen",
+                                        "meeting_table","meeting_chair1","meeting_chair2","meeting_chair3","meeting_chair4",
+                                        "partition","tv_table","tv_52inch","playrecoder","sofa",
+                                        "sofa_table","bed","wagon","shelf","tree",
+                                        "tv_multi","wall_shelf","carpet"};
 
 // initialize static variables
 bool TmsRpBar::production_version_ = false;
@@ -218,7 +218,8 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
 
   //----------------------------------------------------------------------------
   // create person model
-  trc_.createRecord(1001,"person_1");
+  trc_.createRecord(1001,"person_1_oculus");
+  trc_.createRecord(1002,"person_2_moverio");
 
   // create robot model
   //trc_.createRecord(2001,"smartpal4");
@@ -256,20 +257,19 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   trc_.createRecord(6008,"meeting_chair2");
   trc_.createRecord(6009,"meeting_chair3");
   trc_.createRecord(6010,"meeting_chair4");
-  trc_.createRecord(6011,"meeting_chair5");
-  trc_.createRecord(6012,"partition");
-  trc_.createRecord(6013,"tv_table");
-  trc_.createRecord(6014,"tv_52inch");
-  trc_.createRecord(6015,"playrecoder");
-  trc_.createRecord(6016,"sofa");
-  trc_.createRecord(6017,"sofa_table");
-  trc_.createRecord(6018,"bed");
-  trc_.createRecord(6019,"wagon");
-  trc_.createRecord(6020,"shelf");
-  trc_.createRecord(6021,"tree");
-  trc_.createRecord(6022,"tv_multi");
-  trc_.createRecord(6023,"wall_shelf");
-  trc_.createRecord(6024,"carpet");
+  trc_.createRecord(6011,"partition");
+  trc_.createRecord(6012,"tv_table");
+  trc_.createRecord(6013,"tv_52inch");
+  trc_.createRecord(6014,"playrecoder");
+  trc_.createRecord(6015,"sofa");
+  trc_.createRecord(6016,"sofa_table");
+  trc_.createRecord(6017,"bed");
+  trc_.createRecord(6018,"wagon");
+  trc_.createRecord(6019,"shelf");
+  trc_.createRecord(6020,"tree");
+  trc_.createRecord(6021,"tv_multi");
+  trc_.createRecord(6022,"wall_shelf");
+  trc_.createRecord(6023,"carpet");
 
   // create etc model
   trc_.createRecord(20001,"blink_arrow");
@@ -310,10 +310,27 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
     posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
     posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
 
-    trc_.appear("person_1");
-    trc_.setPos("person_1",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+    trc_.appear("person_1_oculus");
+    trc_.setPos("person_1_oculus",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
   } else {
-    trc_.appear("person_1");
+    trc_.appear("person_1_oculus");
+    ROS_ERROR("[TmsAction] Failed to call service get_db_data");
+  }
+
+  //----------------------------------------------------------------------------
+  get_db_data.request.tmsdb.id = 1002 + sid_;
+  if (get_data_client_.call(get_db_data)){
+    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
+    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
+    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
+    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
+    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
+    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+
+    trc_.appear("person_2_moverio");
+    trc_.setPos("person_2_moverio",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
+  } else {
+    trc_.appear("person_2_moverio");
     ROS_ERROR("[TmsAction] Failed to call service get_db_data");
   }
 
@@ -638,7 +655,8 @@ void TmsRpBar::makeCollisionMapButtonClicked()
   }
   else
   {
-    trc_.disappear("person_1");
+    trc_.disappear("person_1_oculus");
+    trc_.disappear("person_2_moverio");
     trc_.disappear("smartpal4");
     trc_.disappear("smartpal5_1");
     trc_.disappear("smartpal5_2");
