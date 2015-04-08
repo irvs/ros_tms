@@ -380,29 +380,25 @@ class CStage(object):
 
     def __init__(self):
         self.cLoadCell = CLoadCell()
-        self.mAntenna = chr(0)
-        self.mStagePos = [0] * 3
         self.mName = "\0"
         self.cTagObj = list()
-
-    def SetSensorPos(self, sensor_num, x_list, y_list):
-        self.cLoadCell.SetSensorPos(sensor_num, x_list, y_list)
-
-    def SetAntenna(self, AN):
-        self.mAntenna = AN
 
 
 class CIntelCab(object):
 
     def __init__(self, stage_num=IC_STAGES_MAX):
         self.cTR3 = CTR3()
-        self.cStage = [CStage()] * stage_num
+        # self.cStage = [CStage()] * stage_num
         self.mStageNum = stage_num
+
+        self.cLoadCell = CLoadCell()
+        self.mName = "\0"
+        self.cTagObj = list()
 
     def PrintObjInfo(self):
         for i in xrange(self.mStageNum):
-            print "\n{0::>20}::::::::::".format(self.cStage[i].mName)
-            for index, cObj in enumerate(self.cStage[i].cTagObj):
+            print "\n{0::>20}::::::::::".format(self.mName)
+            for index, cObj in enumerate(self.cTagObj):
                 print "{0:>3}:  UID->".format(index+1),
                 print cObj.mUID,
                 print "  Weight={0:>4}  X={1:.0f} Y={2:.0f}".format(cObj.mWeight, cObj.mX, cObj.mY),
@@ -435,9 +431,9 @@ class CIntelCab(object):
             self.__cObjIn[No] = cObj
         # タグ数減少，出庫
         elif inout < 0:
-            for i in xrange(len(self.cStage[No].cTagObj)):
-                if self.cStage[No].cTagObj[i].mUID == cObj.mUID:
-                    del(self.cStage[No].cTagObj[i])
+            for i in xrange(len(self.cTagObj)):
+                if self.cTagObj[i].mUID == cObj.mUID:
+                    del(self.cTagObj[i])
                     self.__InOutLC[No] = 0
                     break
             self.__InOutTag[No] = 0
@@ -445,14 +441,13 @@ class CIntelCab(object):
             value = IC_OBJECT_OUT
 
         # ロードセルの増減チェック
-        cObj.mWeight, cObj.mX, cObj.mY, cObj.mDiffs = self.cStage[
-            No].cLoadCell.GetWeightDiff()
+        cObj.mWeight, cObj.mX, cObj.mY, cObj.mDiffs = self.cLoadCell.GetWeightDiff()
 
         # print "mWeighr:{0}   InOutLC:{1}".format(cObj.mWeight, self.__InOutLC[No]),
         if (cObj.mWeight > 0) and (self.__InOutTag[No] > 0):
             # 入庫
             cObj.mUID = self.__cObjIn[No].mUID
-            self.cStage[No].cTagObj.append(cObj)
+            self.cTagObj.append(cObj)
             self.__InOutTag[No] = 0
             self.__InOutLC[No] = 0
             cInOut = cObj
@@ -460,17 +455,17 @@ class CIntelCab(object):
         elif (cObj.mWeight > 0) and (self.__InOutLC[No] < 0):
             # 庫内移動
             cnt = TR3_TAG_MAX
-            for i in xrange(len(self.cStage[No].cTagObj)):
-                if self.cStage[No].cTagObj[i].mUID == self.__cObjOut[No].mUID:
+            for i in xrange(len(self.cTagObj)):
+                if self.cTagObj[i].mUID == self.__cObjOut[No].mUID:
                     cnt = i
                     break
             if cnt != TR3_TAG_MAX:
-                self.cStage[No].cTagObj[cnt] = cObj
-                self.cStage[No].cTagObj[cnt].mUID = self.__cObjOut[No].mUID
-                self.cStage[No].cTagObj[cnt].mName = self.__cObjOut[No].mName
-                self.cStage[No].cTagObj[cnt].mComment = self.__cObjOut[No].mComment
+                self.cTagObj[cnt] = cObj
+                self.cTagObj[cnt].mUID = self.__cObjOut[No].mUID
+                self.cTagObj[cnt].mName = self.__cObjOut[No].mName
+                self.cTagObj[cnt].mComment = self.__cObjOut[No].mComment
                 self.__InOutLC[No] = 0
-                cInOut = self.cStage[No].cTagObj[cnt]
+                cInOut = self.cTagObj[cnt]
                 value = IC_OBJECT_MOVE
         # タグ無し物品の入庫
 
@@ -478,15 +473,15 @@ class CIntelCab(object):
         if cObj.mWeight < 0:
             comp = 5000
             cnt = TR3_TAG_MAX
-            for i in xrange(len(self.cStage[No].cTagObj)):
+            for i in xrange(len(self.cTagObj)):
                 sum = 0
                 for j in xrange(LC_MAX_SENSOR_NUM):
-                    sum += abs(abs(self.cStage[No].cTagObj[i].mDiffs[j]) - abs(cObj.mDiffs[j]))
+                    sum += abs(abs(self.cTagObj[i].mDiffs[j]) - abs(cObj.mDiffs[j]))
                 if sum < comp:
                     comp = sum
                     cnt = i
             if cnt != TR3_TAG_MAX:
-                self.__cObjOut[No] = self.cStage[No].cTagObj[cnt]
+                self.__cObjOut[No] = self.cTagObj[cnt]
                 self.__InOutLC[No] = -1
         return value, cInOut
 
@@ -553,10 +548,7 @@ def main():
     # idPlace = 5000
 
     # ロードセル接続
-    cIntelCab.cStage[0].SetSensorPos(4, xpos0, ypos0)
-    cIntelCab.cStage[0].mStagePos[0] = 0
-    cIntelCab.cStage[0].mStagePos[1] = 0
-    cIntelCab.cStage[0].mStagePos[2] = 830
+    cIntelCab.cLoadCell.SetSensorPos(4, xpos0, ypos0)
 
     # 初回時の起動は多少時間がかかるためここで一回実行しておく
     for i in xrange(cIntelCab.mStageNum):
@@ -600,10 +592,10 @@ def main():
             elif state == IC_OBJECT_IN:
                 # Beep(2500,50)
                 print "\n\n IN : ",
-                # index = (int)cIntelCab.cStage[i].cTagObj.size() - 1
-                index = int(len(cIntelCab.cStage[i].cTagObj) - 1)
-                cIntelCab.cStage[i].cTagObj[index].mName = cObj.mName
-                cIntelCab.cStage[i].cTagObj[index].mComment = cObj.mComment
+                # index = (int)cIntelCab.cTagObj.size() - 1
+                index = int(len(cIntelCab.cTagObj) - 1)
+                cIntelCab.cTagObj[index].mName = cObj.mName
+                cIntelCab.cTagObj[index].mComment = cObj.mComment
                 change_flag = True
             elif state == IC_OBJECT_MOVE:
                 # Beep(2500,50)
@@ -619,8 +611,8 @@ def main():
             if change_flag:
                 change_flag = False
                 # vi = 255
-                for j in xrange(len(cIntelCab.cStage[i].cTagObj)):
-                    cObj = cIntelCab.cStage[i].cTagObj[j]
+                for j in xrange(len(cIntelCab.cTagObj)):
+                    cObj = cIntelCab.cTagObj[j]
                 #     vi = rfidValue[cObj.mUID] - 7001
                     time.sleep(0.001)  # 1ms
                 #     icsmsg.tmsdb[vi].time = datetime.datetime.now().strftime(

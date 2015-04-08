@@ -2,24 +2,11 @@
 # -*- coding:utf-8 -*-
 
 import ibs
-from ibs import CLoadCell
-from ibs import CTagOBJ
-from ibs import CTR3
-from ibs import CIntelCab
-from ibs import IC_OBJECT_STAY
-from ibs import IC_OBJECT_IN
-from ibs import IC_OBJECT_MOVE
-from ibs import IC_OBJECT_OUT
-from ibs import MAX_OBJECT_NUM
 import time
 
 
-xpos0 = [16.0, 407.0, 16.0, 407.0]
-ypos0 = [16.0, 16.0, 244.0, 244.0]  # colorbox
-
-
 def test_CLoadCell():
-    lc = CLoadCell()
+    lc = ibs.CLoadCell()
     # print lc._CLoadCell__mPreSensorsWeight, lc._CLoadCell__mSensorPosX, lc._CLoadCell__mSensorPosY
     lc.Setup()
     xpos0 = [16.0, 407.0, 16.0, 407.0]
@@ -37,11 +24,12 @@ def test_CLoadCell():
 
 
 def test_CTagOBJ():
-    obj = CTagOBJ()
+    obj = ibs.CTagOBJ()
+    print obj.mUID
 
 
 def test_CTR3():
-    tr3 = CTR3()
+    tr3 = ibs.CTR3()
     tr3.Setup()
     tr3.SetAntenna(0)
     tr3.AntennaPowerOFF()  # not worked correctly?
@@ -92,43 +80,47 @@ def test_CIntelCab():
     rfidValue["E00401004E17EF27"] = 7023
     rfidValue["E00401004E17EEEF"] = 7024
     rfidValue["E00401004E17EEE7"] = 7025
-    incab = CIntelCab(1)
-    cObj = CTagOBJ()
-    incab.cTR3.Setup()
-    incab.cTR3.AntennaPowerOFF()
-    incab.cStage[0].SetAntenna(0x00)
-    incab.cStage[1].SetAntenna(0x01)
+    cIntelCab = ibs.CIntelCab(1)
+    cObj = ibs.CTagOBJ()
+    xpos0 = [16.0, 407.0, 16.0, 407.0]
+    ypos0 = [16.0, 16.0, 244.0, 244.0]  # colorbox
+    cIntelCab.cStage[0].SetSensorPos(4, xpos0, ypos0)
+    cIntelCab.cStage[0].mStagePos[0] = 0
+    cIntelCab.cStage[0].mStagePos[1] = 0
+    cIntelCab.cStage[0].mStagePos[2] = 830
 
-    incab.cStage[0].Setup()
-    incab.cStage[0].SetSensorPos(4, xpos0, ypos0)
-    incab.cStage[0].mStagePos[0] = 0
-    incab.cStage[0].mStagePos[1] = 0
-    incab.cStage[0].mStagePos[2] = 830
+    # 初回時の起動は多少時間がかかるためここで一回実行しておく
+    for i in xrange(cIntelCab.mStageNum):
+        cIntelCab.UpdateObj(i, cObj)
+
+    # 計測開始
+    change_flag = False
+    index = 0
+    print "\nSTART"
 
     while True:
-        time.sleep(0.3)
-        # reload(ibs)
-        # print "mStageNum:", incab.mStageNum
+        # time.sleep(0.3)
+        reload(ibs)
+        # print "mStageNum:", cIntelCab.mStageNum
 
-        for i in xrange(incab.mStageNum):  # 増減の確認
-            # switch (cIntelCab.UpdateObj(i, &cObj))
-            state, cObj = incab.UpdateObj(i, cObj)
+        for i in xrange(cIntelCab.mStageNum):  # 増減の確認
+            state, cObj = cIntelCab.UpdateObj(i, cObj)
             # print "top stack:", state, cObj.mUID
-            if state == IC_OBJECT_STAY:
+            if state == ibs.IC_OBJECT_STAY:
                 change_flag = False
-            elif state == IC_OBJECT_IN:
+            elif state == ibs.IC_OBJECT_IN:
                 # Beep(2500,50)
                 print "\n\n IN : ",
-                # index = (int)incab.cStage[i].cTagObj.size() - 1
-                index = int(len(incab.cStage[i].cTagObj) - 1)
-                incab.cStage[i].cTagObj[index].mName = cObj.mName
-                incab.cStage[i].cTagObj[index].mComment = cObj.mComment
+                # index = (int)cIntelCab.cStage[i].cTagObj.size() - 1
+                index = int(len(cIntelCab.cStage[i].cTagObj) - 1)
+                cIntelCab.cStage[i].cTagObj[index].mName = cObj.mName
+                cIntelCab.cStage[i].cTagObj[index].mComment = cObj.mComment
                 change_flag = True
-            elif state == IC_OBJECT_MOVE:
+            elif state == ibs.IC_OBJECT_MOVE:
                 # Beep(2500,50)
                 print "\n\nMOVE: ",
                 change_flag = True
-            elif state == IC_OBJECT_OUT:
+            elif state == ibs.IC_OBJECT_OUT:
                 # ##Beep(2500,50); Sleep(50); Beep(2500,50)
                 print "\n\n OUT: ",
                 change_flag = True
@@ -138,8 +130,8 @@ def test_CIntelCab():
             if change_flag:
                 change_flag = False
                 # vi = 255
-                for j in xrange(len(incab.cStage[i].cTagObj)):
-                    cObj = incab.cStage[i].cTagObj[j]
+                for j in xrange(len(cIntelCab.cStage[i].cTagObj)):
+                    cObj = cIntelCab.cStage[i].cTagObj[j]
                     # vi = rfidValue[cObj.mUID] - 7001
                     # usleep(1000)
                     time.sleep(0.001)
@@ -156,7 +148,7 @@ def test_CIntelCab():
                     # if not nh_param.getParam("z", icsmsg.tmsdb[vi].z):
                     #     ROS_ERROR("ros param z isn't exist")
                     #     return 0
-                incab.PrintObjInfo()
+                cIntelCab.PrintObjInfo()
                 # ics_pub.publish(icsmsg)
 
 
