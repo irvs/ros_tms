@@ -3,6 +3,29 @@
 
 #include <opencv2/opencv.hpp>
 
+#ifdef __linux__
+#include <termios.h>
+#include <unistd.h>
+#endif
+
+#define KEYCODE_d 0x64
+#define KEYCODE_p 0x70
+#define KEYCODE_q 0x71
+#define KEYCODE_r 0x72
+
+class KeyboardEventReader
+{
+  public:
+    KeyboardEventReader();
+    ~KeyboardEventReader();
+    bool getKeycode(char &c);
+  private:
+    int kfd;
+    bool dirty;
+    struct termios cooked;
+    struct termios raw;
+};
+
 const std::vector<openni::VideoMode> getAllSensorInfo(openni::Device& device);
 void showVideoMode(const openni::VideoMode& video_mode);
 int find_corner(const cv::Mat& image, const cv::Size pattern_size, 

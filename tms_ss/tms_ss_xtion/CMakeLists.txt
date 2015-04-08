@@ -4,7 +4,10 @@ project(tms_ss_xtion)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED
+  roscpp
+  sensor_msgs
+  )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -63,10 +66,10 @@ find_package(OpenCV REQUIRED)
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  sensor_msgs
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -98,7 +101,7 @@ ADD_DEFINITIONS(
 include_directories(
   ${PCL_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
-  #~/OpenNI2/Include
+  ${catkin__INCLUDE_DIRS}
   include
 )
 
@@ -109,15 +112,15 @@ include_directories(
 
 # Declare a cpp executable
 add_executable(estimateExtrinsicParameters
-  src/main.cpp
-  src/MyCalibration.cpp
-  src/DepthImageMaker.cpp
-  src/myutility.cpp
+  estimateExtrinsicParameters/main.cpp
+  estimateExtrinsicParameters/MyCalibration.cpp
+  estimateExtrinsicParameters/DepthImageMaker.cpp
+  estimateExtrinsicParameters/myutility.cpp
 )
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(tms_ss_xtion_node tms_ss_xtion_generate_messages_cpp)
+add_dependencies(estimateExtrinsicParameters tms_ss_xtion_generate_messages_cpp)
 
 # Specify libraries to link a library or executable target against
 target_link_libraries( estimateExtrinsicParameters

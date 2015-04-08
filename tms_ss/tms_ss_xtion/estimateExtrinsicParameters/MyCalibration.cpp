@@ -1,6 +1,7 @@
 #include <math.h>
 #include <limits.h>
 
+#include <cstdint>
 #include <map>
 
 // C++11
@@ -12,6 +13,9 @@
 #include <opencv2/opencv.hpp>
 #include <Eigen/Eigen>
 #include <OpenNI.h>
+
+#include <ros/ros.h>
+#include <sensor_msgs/Image.h>
 
 #include "myutility.h"
 #include "MyCalibration.h"
@@ -62,33 +66,32 @@ void mouseCallback(int event, int x,int y, int flag, void*)
 
 int MyCalibration::initialize(
     pcl::visualization::CloudViewer& viewer,
-    openni::VideoStream* depth_stream,
-    openni::VideoStream* color_stream)
+    uint8_t *depth_frame_region,
+    uint8_t *color_frame_region)
 {
-  correct_mirroring << -1,0,0,0,1,0,0,0,1;
+  //correct_mirroring << -1,0,0,0,1,0,0,0,1;
   { // Setting streams
-    if (depth_stream->getSensorInfo().getSensorType() == openni::SENSOR_DEPTH)
+    if (depth_frame_region != NULL)
     {
-      m_video_stream = depth_stream;
+      depth_frame = depth_frame_region;
     }
     else
     {
+      std::cout << "Failed to set pointer of depth frame." << std::endl;
       return -1;
     }
-    if (color_stream != NULL)
+    if (color_frame_region != NULL)
     {
-      if (color_stream->getSensorInfo().getSensorType() == openni::SENSOR_COLOR)
-      {
-        m_color_stream = color_stream;
-      }
-      else
-      {
-        return -2;
-      }
+      color_frame = color_frame_region;
+    }
+    else
+    {
+      std::cout << "Failed to set pointer of color frame." << std::endl;
+      return -1;
     }
   }
-  cloud->width = depth_stream->getVideoMode().getResolutionX();
-  cloud->height= depth_stream->getVideoMode().getResolutionY();
+  cloud->width = CAMERA_RESOLUTION_X;
+  cloud->height= CAMERA_RESOLUTION_Y;
   cloud->is_dense = false;
   cloud->points.resize(cloud->height * cloud->width);
   this->viewer = &viewer;
@@ -843,4 +846,32 @@ int MyCalibration::pickPointsAutomatically(int pattern_rows, int pattern_cols)
   }
 
   return 0;
+}
+
+void MyCalibration::getDepthFrameCallback(const sensor_msgs::Image::ConstPtr& frame)
+{
+  int i, j;
+  uint8_t *p;
+  for (i=0, p = depth_frame; i < frame->height*frame->step; i++, p++)
+  {
+    *p = frame->data[i];
+  }
+  cv::Mat image_tmp = cv::Mat(frame->height, frame->width, CV_16UC1, depth_frame);
+  image_tmp.convertTo(image, CV_8UC1, 255.0/10000.0);
+  return;
+}
+
+void MyCalibration::getColorFrameCallback(const sensor_msgs::Image::ConstPtr& frame)
+{
+  int i;
+  uint8_t *p;
+  for (i=0, p = color_frame; i < frame->height*frame->step; i++, p++)
+  {
+    *p = frame->data[i];
+  }
+  //cv::Mat image_tmp = cv::Mat(frame->height, frame->width, CV_8UC3, color_frame);
+  //cv::cvtColor(image_tmp,image_tmp,CV_BGR2RGB);
+  //cv::imshow("Color image", image_tmp);
+  //cv::waitKey(10);
+  return;
 }
