@@ -26,9 +26,6 @@ import datetime
 # include <cstdlib>
 
 # ------------------------------------------------------------------------------
-PORT_TR = "/dev/ttyUSB0"
-PORT_LC0 = "/dev/ttyACM0"
-
 
 LC_MAX_SENSOR_NUM = 4
 LC_GET_WEIGHT_CNT = 2
@@ -85,26 +82,28 @@ D_COUT = sys.stdout.write
 
 class CLoadCell(object):
 
-    def __init__(self):
+    def __init__(self, port):
         self.__mPreSensorsWeight = [0] * LC_MAX_SENSOR_NUM
         self.__mSensorPosX = [0.0] * LC_MAX_SENSOR_NUM
         self.__mSensorPosY = [0.0] * LC_MAX_SENSOR_NUM
         self.__mSensorNum = LC_MAX_SENSOR_NUM
-        print "OPENING: LoadCell(port:", PORT_LC0, ")"
+        self.__ser = serial.Serial(baudrate=115200)
+        self.__ser.port = port
+        print "OPENING: LoadCell(port:", port, ")"
         self.__OpenPort()
-        print "OPENED: LoadCell(port:", PORT_LC0, ")"
+        print "OPENED: LoadCell(port:", port, ")"
         self.__ClosePort()
-        print "CLOSED: LoadCell(port:", PORT_LC0, ")"
-        self.ResetWeight()
+        print "CLOSED: LoadCell(port:", port, ")"
+        self.__ResetWeight()
 
     def __OpenPort(self):    # 通信関連初期化
-        self.__ser = serial.Serial(port=PORT_LC0, baudrate=115200)
-        D_COUT("opening port : " + PORT_LC0 + "   ")
+        D_COUT("LoadCell: opening port...")
+        self.__ser.open()
         D_COUT("\033[1K\r")
 
     def __ClosePort(self):
+        D_COUT("LoadCell: closing port...")
         self.__ser.close()
-        D_COUT("closing port : " + PORT_LC0)
         D_COUT("\033[1K\r")
 
     # 指定されたセンサから重さを取得する
@@ -120,7 +119,7 @@ class CLoadCell(object):
         self.__ClosePort()
         return reduce(lambda x, y: x+y, buf)/len(buf)
 
-    def ResetWeight(self, initial=[], num=10):
+    def __ResetWeight(self, initial=[], num=10):
         if initial:   # if not empty
             self.__mPreSensorsWeight = initial
             return
@@ -132,8 +131,8 @@ class CLoadCell(object):
 
     def SetSensorPos(self, sensor_num, x_list, y_list):
         self.__mSensorNum = sensor_num
-        self.__mSensorPosX = list(x_list)
-        self.__mSensorPosY = list(y_list)
+        self.__mSensorPosX = tuple(x_list)
+        self.__mSensorPosY = tuple(y_list)
 
         # 重量の増減（物体の増減）があるかをチェック
     def GetWeightDiff(self, threshold=20):
@@ -184,27 +183,29 @@ class CLoadCell(object):
 
 class CTR3(object):
 
-    def __init__(self):
-        self.__mActiveAntenna = TR3_ANT1
+    def __init__(self, port, AnttenaNum):
+        self.__mActiveAntenna = AnttenaNum
         self.__mUIDs = [list() for i in xrange(TR3_USED_ANT_NUM)]
         self.__mCommand = [0] * TR3_MAX_COMMAND_SIZE
         self.__mCommand[0] = TR3_STX
         self.__mCommand[1] = 0x00      # アドレス
-        print "OPENING: TR3(port:", PORT_TR, ")"
+        self.__ser = serial.Serial(baudrate=38400)
+        self.__ser.port = port
+        print "OPENING: TR3(port:", port, ")"
         self.__OpenPort()
-        print "OPENED: TR3(port:", PORT_TR, ")"
+        print "OPENED: TR3(port:", port, ")"
         self.__ClosePort()
-        print "CLOSED: TR3(port:", PORT_TR, ")"
+        print "CLOSED: TR3(port:", port, ")"
         self.__SetAntenna(self.__mActiveAntenna)
 
     def __OpenPort(self):
-        self.__ser = serial.Serial(port=PORT_TR, baudrate=38400)
-        D_COUT("opening port : " + PORT_TR + "   ")
+        D_COUT("TagReader: opening port...")
+        self.__ser.open()
         D_COUT("\033[1K\r")
 
     def __ClosePort(self):
+        D_COUT("TagReader: closing port...")
         self.__ser.close()
-        D_COUT("closing port : " + PORT_TR)
         D_COUT("\033[1K\r")
 
     # アンテナの指定
@@ -377,9 +378,11 @@ class CTagOBJ(object):
 
 class CIntelCab(object):
 
-    def __init__(self):
-        self.cTR3 = CTR3()
-        self.cLoadCell = CLoadCell()
+    def __init__(self, lc_port="/dev/ttyACM0", lc_xpos=(0.0, 0.0, 0.0, 0.0), lc_ypos=(0.0, 0.0, 0.0, 0.0),
+                 tr_port="/dev/ttyUSB0", tr_antenna=TR3_ANT1):
+        self.cLoadCell = CLoadCell(lc_port)
+        self.cLoadCell.SetSensorPos(len(lc_xpos), lc_xpos, lc_ypos)
+        self.cTR3 = CTR3(tr_port, tr_antenna)
         self.mName = "\0"
         self.TagObjList = list()
 
@@ -501,10 +504,6 @@ def main():
     rfidValue["E00401004E17EEEF"] = 7024
     rfidValue["E00401004E17EEE7"] = 7025
 
-    cIntelCab = CIntelCab()
-    xpos0 = [16.0, 407.0, 16.0, 407.0]
-    ypos0 = [16.0, 16.0, 244.0, 244.0]  # colorbox
-    cObj = CTagOBJ()
     # tms_msg_db.TmsdbStamped  icsmsg
     # tms_msg_db.Tmsdb                 tmpdata
     # icsmsg = tms_msg_db.TmsdbStamped
@@ -528,13 +527,22 @@ def main():
     #     ROS_ERROR("ros param idPlace isn't exist")
     #     return 0;
 
-    # PORT_TR = "/dev/ttyUSB0"
-    # PORT_LC0 = "/dev/ttyACM0"
+    PORT_LC0 = "/dev/ttyACM0"
+    PORT_TR = "/dev/ttyUSB0"
     # idSensor = 3000
     # idPlace = 5000
 
+    xpos0 = (16.0, 407.0, 16.0, 407.0)
+    ypos0 = (16.0, 16.0, 244.0, 244.0)
+    cIntelCab = CIntelCab(lc_port=PORT_LC0,
+                          lc_xpos=xpos0,
+                          lc_ypos=ypos0,
+                          tr_port=PORT_TR,
+                          tr_antenna=TR3_ANT1,
+                          )
     # ロードセル接続
-    cIntelCab.cLoadCell.SetSensorPos(4, xpos0, ypos0)
+    # cIntelCab.cLoadCell.SetSensorPos(4, xpos0, ypos0)
+    cObj = CTagOBJ()
 
     # 初回時の起動は多少時間がかかるためここで一回実行しておく
     cIntelCab.UpdateObj()
