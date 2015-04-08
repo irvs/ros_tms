@@ -83,7 +83,7 @@ class CLoadCell(object):
         self.__mSensorPosX = [0.0] * LC_MAX_SENSOR_NUM
         self.__mSensorPosY = [0.0] * LC_MAX_SENSOR_NUM
         self.__mSensorNum = LC_MAX_SENSOR_NUM
-        self.__ser = serial.Serial(baudrate=115200)
+        self.__ser = serial.Serial(baudrate=115200, timeout=0.5)
         self.__ser.port = port
         print "OPENING: LoadCell(port:", port, ")"
         self.__OpenPort()
@@ -185,7 +185,7 @@ class CTR3(object):
         self.__mCommand = [0] * TR3_MAX_COMMAND_SIZE
         self.__mCommand[0] = TR3_STX
         self.__mCommand[1] = 0x00      # アドレス
-        self.__ser = serial.Serial(baudrate=38400)
+        self.__ser = serial.Serial(baudrate=38400, timeout=0.5)
         self.__ser.port = port
         print "OPENING: TR3(port:", port, ")"
         self.__OpenPort()
