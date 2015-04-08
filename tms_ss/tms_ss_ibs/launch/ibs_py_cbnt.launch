@@ -4,7 +4,7 @@
 		<param name="PORT_LC0" value="/dev/ttyACM0" />
 		<param name="frame_id" value="/ics" />
 		<param name="idSensor" value="3002" />
-		<param name="idPlace"  value="6010" />
+		<param name="idPlace"  value="6019" />
 		<param name="z"		   value="620.0" />
 	</node>
 </launch>
