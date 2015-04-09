@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="tms_msg_ur-1.0.2">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/tms_ur_demo_client/libs/tms_msg_ur-1.0.2.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

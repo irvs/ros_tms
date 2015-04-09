@@ -1,0 +1,10 @@
+<launch>
+	<node pkg="tms_ss_ibs" type="ibs.py" name="ibs_rfrg" output="screen">
+		<param name="PORT_TR"  value="/dev/ttyUSB1" />
+		<param name="PORT_LC0" value="/dev/ttyACM1" />
+		<param name="frame_id" value="/irs" />
+		<param name="idSensor" value="3018" />
+		<param name="idPlace"  value="2009" />
+		<param name="z"		   value="800.0" />
+	</node>
+</launch>

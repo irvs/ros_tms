@@ -95,7 +95,7 @@ std::string PORT_TR, PORT_LC0;
 #define DEBUG_IBS 0
 #if     1 == DEBUG_IBS
 #define D_COUT(x) do { std::cout << x; } while (0)
-#else 
+#else
 #define D_COUT(x)
 #endif
 
@@ -169,7 +169,7 @@ public:
     float mX;
     float mY;
     std::string  mName;
-    std::string  mComment;};
+    std::string  mComment; };
 
 //------------------------------------------------------------------------------
 class CStage {
@@ -186,7 +186,7 @@ public:
 
     bool Setup();
     void SetSensorPos(int sensor_num, float x[], float y[]);
-    void SetAntenna(unsigned char AN);};
+    void SetAntenna(unsigned char AN); };
 
 //------------------------------------------------------------------------------
 class CIntelCab {
@@ -204,7 +204,7 @@ public:
     int mStageNum;
 
     void PrintObjInfo();
-    int UpdateObj(int stageNo, CTagOBJ *cInOut);};
+    int UpdateObj(int stageNo, CTagOBJ *cInOut); };
 
 //------------------------------------------------------------------------------
 bool CLoadCell::Setup() {
@@ -229,13 +229,13 @@ bool CLoadCell::Close() {
     std::cout << "CLOSED: LoadCell" << std::endl;
     return true; }
 
-void CLoadCell::OpenPort(){	
-	//通信関連初期化
+void CLoadCell::OpenPort() {
+    //通信関連初期化
     D_COUT("opening port : " << PORT_LC0 << "   ");
     if ( (fd = open(PORT_LC0.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ) {
         printf("FAILED: LoadCell->OpenComPort:PORT_LC0 \n");
         exit(-1); }
-    D_COUT("\033[1K\r"); 
+    D_COUT("\033[1K\r");
     tcgetattr(fd, &oldtio);         /* 現在のシリアルポートの設定を待避させる*/
     memset(&newtio, 0, sizeof(newtio));
     newtio.c_cflag = B115200 | CS8 | CLOCAL | CREAD;
@@ -245,14 +245,13 @@ void CLoadCell::OpenPort(){
     newtio.c_cc[VTIME] = 0;
     newtio.c_cc[VMIN] = 15;            /* 15文字受け取るまでブロックする */
     tcflush(fd, TCIFLUSH);
-    tcsetattr(fd, TCSANOW, &newtio);}
+    tcsetattr(fd, TCSANOW, &newtio); }
 
-void CLoadCell::ClosePort(){
-	tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
+void CLoadCell::ClosePort() {
+    tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
     D_COUT("closing port : " << PORT_LC0 << "   ");
     close(fd);
-    D_COUT("\033[1K\r"); 
-}
+    D_COUT("\033[1K\r"); }
 
 //------------------------------------------------------------------------------
 void CLoadCell::SetSensorPos(int sensor_num, float x[], float y[]) {
@@ -319,7 +318,9 @@ int  CLoadCell::GetWeightDiff(float *x, float *y, int diffs[], int threshold) {
             now = GetWeight(i);
             weight += abs(now - pre[i]);
             pre[i] = now;
-            buf[cnt][i] = now; }
+            buf[cnt][i] = now;
+            // std::cout << weight << "   "<<pre[0]<<" "<<pre[1]<<" "<<pre[2]<<" "<<pre[3]<<std::endl ;
+        }
         if (weight < LC_GET_WEIGHT_STABLE) {
             cnt++; }
         else {
@@ -364,7 +365,7 @@ bool CTR3::Setup() {
     std::cout << "OPENED: TR3(port:" << PORT_TR.c_str() << ")" << std::endl;
     ClosePort();
     std::cout << "CLOSED: TR3(port:" << PORT_TR.c_str() << ")" << std::endl;
-    
+
     return true; }
 
 //------------------------------------------------------------------------------
@@ -375,12 +376,12 @@ bool CTR3::Close() {
     std::cout << "CLOSED: TR3" << std::endl;
     return true; }
 
-void CTR3::OpenPort(){
+void CTR3::OpenPort() {
     D_COUT("opening port : " << PORT_LC0 << "   ");
     if ( (fd = open(PORT_TR.c_str(), (O_RDWR | O_NOCTTY) )) < 0 ) {
-       printf("ERROR!!\n");
-       exit(-1); }
-    D_COUT("\033[1K\r"); 
+        printf("ERROR!!\n");
+        exit(-1); }
+    D_COUT("\033[1K\r");
     tcgetattr(fd, &oldtio);         /* 現在のシリアルポートの設定を待避させる*/
     memset(&newtio, 0, sizeof(newtio));
     newtio.c_cflag = B38400 | CS8 | CLOCAL | CREAD;
@@ -388,9 +389,9 @@ void CTR3::OpenPort(){
     newtio.c_oflag = 0;
     newtio.c_lflag = ICANON;
     tcflush(fd, TCIFLUSH);
-    tcsetattr(fd, TCSANOW, &newtio);}
+    tcsetattr(fd, TCSANOW, &newtio); }
 
-void CTR3::ClosePort(){
+void CTR3::ClosePort() {
     tcsetattr(fd, TCSANOW, &oldtio);  /* 退避させた設定に戻す */
     D_COUT("closing port : " << PORT_LC0);
     close(fd);
@@ -507,9 +508,9 @@ int CTR3::Inventory2() {
         char hex[17];
         read(fd, buf, TR3_TAG_SIZE);
         sprintf(hex, "%02X%02X%02X%02X%02X%02X%02X%02X",
-                buf[12],	buf[11],	buf[10],	buf[9],
-                buf[8],		buf[7],		buf[6],		buf[5]);
-        mUIDs[mActiveAntenna].push_back(std::string(hex));}
+                buf[12],    buf[11],    buf[10],    buf[9],
+                buf[8],     buf[7],     buf[6],     buf[5]);
+        mUIDs[mActiveAntenna].push_back(std::string(hex)); }
     ClosePort();
     return tag_num; }
 
@@ -659,7 +660,7 @@ int CIntelCab::UpdateObj(int No, CTagOBJ  *cInOut) {
         cObjIn[No] = cObj; }
     //タグ数減少，出庫
     else if ( inout < 0 ) {
-        for (int i = 0; i < cStage[No].cTagObj.size(); i++) {		//cStage[No].cTagObjを更新
+        for (int i = 0; i < cStage[No].cTagObj.size(); i++) {       //cStage[No].cTagObjを更新
             if (cStage[No].cTagObj.at(i).mUID.compare(cObj.mUID) == 0) {
                 cStage[No].cTagObj.erase(cStage[No].cTagObj.begin() + i);
                 InOutLC[No] = 0;
@@ -758,8 +759,8 @@ int main(int argc, char **argv) {
     ros::NodeHandle nh_param("~");
     nh_param.param<std::string>("PORT_TR", PORT_TR, "/dev/ttyUSB0");
     nh_param.param<std::string>("PORT_LC0", PORT_LC0, "/dev/ttyACM0");
-    std::cout << ("sudo -S chmod a+rw "+PORT_TR+" "+PORT_LC0).c_str();
-    system(("sudo -S chmod a+rw "+PORT_TR+" "+PORT_LC0).c_str());
+    std::cout << ("sudo -S chmod a+rw " + PORT_TR + " " + PORT_LC0).c_str();
+    system(("sudo -S chmod a+rw " + PORT_TR + " " + PORT_LC0).c_str());
     if (! nh_param.getParam("idSensor", idSensor)) {
         ROS_ERROR("ros param idSensor isn't exist");
         return 0; }

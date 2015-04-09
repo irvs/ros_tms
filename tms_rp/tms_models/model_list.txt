@@ -1,4 +1,5 @@
 1001 none /person/human_170.yaml
+1002 none /person/human_170_blue.yaml
 
 2001 none /robot/smartpal/SmartPal4.yaml
 2002 none /robot/smartpal/SmartPal5.yaml
@@ -22,27 +23,29 @@
 5002 none /room/wall928_hrp.wrl
 5005 none /room/corridor928_hrp.wrl
 
-6001 none /furniture/big_sofa_hrp.wrl
-6002 none /furniture/mini_sofa_hrp.wrl
-6003 none /furniture/small_table_hrp.wrl
-6004 none /furniture/tv_table_hrp.wrl
-6005 none /furniture/tv_hrp.wrl
-6006 none /furniture/partition1050x900_hrp.wrl
-6007 none /furniture/partition1050x700_hrp.wrl
-6008 none /furniture/partition1050x900_hrp.wrl
-6009 none /furniture/bed_hrp.wrl
-6010 none /furniture/shelf1_hrp.wrl
-6011 none /furniture/big_shelf_hrp.wrl
-6012 none /furniture/desk1_hrp.wrl
-6013 none /furniture/chair1_hrp.wrl
-6014 none /furniture/table_hrp.wrl
-6015 none /furniture/chair1_hrp.wrl
-6016 none /furniture/chair1_hrp.wrl
-6017 none /furniture/shelfdoor_hrp.wrl
-6018 none /furniture/shelf2_hrp.wrl
-6019 none /furniture/wagon_hrp.wrl
-6020 none /furniture/side_table_hrp.wrl
-6021 none /furniture/tree1_hrp.wrl
+6001 none /furniture/wardrobe_hrp.wrl
+6002 none /furniture/workdesk_hrp.wrl
+6003 none /furniture/drawer_hrp.wrl
+6004 none /furniture/chair_hrp.wrl
+6005 none /furniture/kitchen_hrp.wrl
+6006 none /furniture/meeting_table_hrp.wrl
+6007 none /furniture/meeting_chair_hrp.wrl
+6008 none /furniture/meeting_chair_hrp.wrl
+6009 none /furniture/meeting_chair_hrp.wrl
+6010 none /furniture/meeting_chair_hrp.wrl
+6011 none /furniture/partition_hrp.wrl
+6012 none /furniture/tv_table_hrp.wrl
+6013 none /furniture/tv_52inch_hrp.wrl
+6014 none /furniture/playrecoder_hrp.wrl
+6015 none /furniture/sofa_hrp.wrl
+6016 none /furniture/sofa_table_hrp.wrl
+6017 none /furniture/bed_hrp.wrl
+6018 none /furniture/wagon_hrp.wrl
+6019 none /furniture/shelf1_hrp.wrl
+6020 none /furniture/tree_hrp.wrl
+6021 none /furniture/tv_multi_hrp.wrl
+6022 none /furniture/wall_shelf_hrp.wrl
+6023 none /furniture/carpet_hrp.wrl
 
 7001 preplanning_chipstar_red.txt /object/chipstar_red_hrp.wrl
 7002 preplanning_chipstar_orange.txt /object/chipstar_orange_hrp.wrl

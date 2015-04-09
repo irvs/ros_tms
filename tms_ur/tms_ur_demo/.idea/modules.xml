@@ -3,7 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/tms_ur_demo.iml" filepath="$PROJECT_DIR$/tms_ur_demo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/tms_ur_demo_client/tms_ur_demo_client.iml" filepath="$PROJECT_DIR$/tms_ur_demo_client/tms_ur_demo_client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tms_ur_mimamorukun/tms_ur_mimamorukun.iml" filepath="$PROJECT_DIR$/tms_ur_mimamorukun/tms_ur_mimamorukun.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tms_ur_refrigerator/tms_ur_refrigerator.iml" filepath="$PROJECT_DIR$/tms_ur_refrigerator/tms_ur_refrigerator.iml" />
     </modules>
   </component>
 </project>
