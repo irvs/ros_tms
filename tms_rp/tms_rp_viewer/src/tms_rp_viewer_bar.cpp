@@ -437,23 +437,23 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
           }
         }
     }
-    else if (id ==1001)
-    {
-        PosX = environment_information_.tmsdb[i].x/1000;
-        PosY = environment_information_.tmsdb[i].y/1000;
-        PosZ = 0.9;
-        rot = grasp::rotFromRpy(0,0,deg2rad(environment_information_.tmsdb[i].ry));
+//    else if (id ==1001)
+//    {
+//        PosX = environment_information_.tmsdb[i].x/1000;
+//        PosY = environment_information_.tmsdb[i].y/1000;
+//        PosZ = 0.9;
+//        rot = grasp::rotFromRpy(0,0,deg2rad(environment_information_.tmsdb[i].ry));
 
-        if(PosX == 0.0 && PosY == 0.0)
-        {
-          callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1_oculus"));
-        }
-        else
-        {
-          callSynchronously(bind(&TmsRpController::appear,trc_,"person_1_oculus"));
-          callSynchronously(bind(&TmsRpController::setPos,trc_,"person_1_oculus",Vector3(PosX,PosY,PosZ),rot));
-        }
-    }
+//        if(PosX == 0.0 && PosY == 0.0)
+//        {
+//          callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1_oculus"));
+//        }
+//        else
+//        {
+//          callSynchronously(bind(&TmsRpController::appear,trc_,"person_1_oculus"));
+//          callSynchronously(bind(&TmsRpController::setPos,trc_,"person_1_oculus",Vector3(PosX,PosY,PosZ),rot));
+//        }
+//    }
     else if (id ==1002)
     {
         PosX = environment_information_.tmsdb[i].x/1000;
