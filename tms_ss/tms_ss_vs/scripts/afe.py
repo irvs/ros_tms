@@ -38,8 +38,8 @@ def main():
     est[KEYS[0]] = 0
     est[KEYS[1]] = 0
     est_K = {}
-    est_K[KEYS[0]] = 0.965
-    est_K[KEYS[1]] = 0.0
+    est_K[KEYS[0]] = 0.95
+    est_K[KEYS[1]] = 0.5
     # print subprocess.check_output("rqt_plot /afe/blood_pressue &".split(" "))
     # print subprocess.check_output("rqt_plot /afe/period &".split(" "))
     r = rospy.Rate(50)
