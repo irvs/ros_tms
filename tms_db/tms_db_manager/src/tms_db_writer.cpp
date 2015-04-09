@@ -27,7 +27,7 @@
 #define SPACE_ID          5000
 #define MAX_SPACE_NUM     4
 #define FURNITURE_ID      6000
-#define MAX_FURNITURE_NUM 24
+#define MAX_FURNITURE_NUM 23
 
 //------------------------------------------------------------------------------
 using std::string;
@@ -72,7 +72,7 @@ public:
     //Init Vicon Stream
     ROS_ASSERT(initDbWriter());
     // Subscriber for tms_db_data topic
-    data_sub = nh.subscribe("tms_db_data", 100, &DbWriter::dbWriteCallback, this);
+    data_sub = nh.subscribe("tms_db_data", 1, &DbWriter::dbWriteCallback, this);
     writeInitData();
   }  
 
@@ -250,7 +250,7 @@ private:
   void dbWriteCallback(const ros::MessageEvent<tms_msg_db::TmsdbStamped const>& event)
   {
     const std::string& publisher_name   = event.getPublisherName();
-    const tms_msg_db::TmsdbStamped::ConstPtr& msg = event.getMessage();
+    const tms_msg_db::TmsdbStampedConstPtr& msg = event.getMessage();
 
     if(is_debug) ROS_INFO("publisher name = %s", publisher_name.c_str());
 
@@ -262,6 +262,8 @@ private:
     std::string temp_type;
     std::string temp_name;
     std::string temp_probability;
+
+    if(is_debug) ROS_INFO("id = %d", msg->tmsdb[0].id);
 
     msg_size = msg->tmsdb.size();
     if(is_debug) ROS_INFO("msg_size = %d", msg_size);

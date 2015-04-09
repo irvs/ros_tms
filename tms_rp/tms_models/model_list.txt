@@ -1,5 +1,5 @@
 1001 none /person/human_170.yaml
-1002 none /person/human_170.yaml
+1002 none /person/human_170_blue.yaml
 
 2001 none /robot/smartpal/SmartPal4.yaml
 2002 none /robot/smartpal/SmartPal5.yaml
@@ -33,20 +33,19 @@
 6008 none /furniture/meeting_chair_hrp.wrl
 6009 none /furniture/meeting_chair_hrp.wrl
 6010 none /furniture/meeting_chair_hrp.wrl
-6011 none /furniture/meeting_chair_hrp.wrl
-6012 none /furniture/partition_hrp.wrl
-6013 none /furniture/tv_table_hrp.wrl
-6014 none /furniture/tv_52inch_hrp.wrl
-6015 none /furniture/playrecoder_hrp.wrl
-6016 none /furniture/sofa_hrp.wrl
-6017 none /furniture/sofa_table_hrp.wrl
-6018 none /furniture/bed_hrp.wrl
-6019 none /furniture/wagon_hrp.wrl
-6020 none /furniture/shelf1_hrp.wrl
-6021 none /furniture/tree_hrp.wrl
-6022 none /furniture/tv_multi_hrp.wrl
-6023 none /furniture/wall_shelf_hrp.wrl
-6024 none /furniture/carpet_hrp.wrl
+6011 none /furniture/partition_hrp.wrl
+6012 none /furniture/tv_table_hrp.wrl
+6013 none /furniture/tv_52inch_hrp.wrl
+6014 none /furniture/playrecoder_hrp.wrl
+6015 none /furniture/sofa_hrp.wrl
+6016 none /furniture/sofa_table_hrp.wrl
+6017 none /furniture/bed_hrp.wrl
+6018 none /furniture/wagon_hrp.wrl
+6019 none /furniture/shelf1_hrp.wrl
+6020 none /furniture/tree_hrp.wrl
+6021 none /furniture/tv_multi_hrp.wrl
+6022 none /furniture/wall_shelf_hrp.wrl
+6023 none /furniture/carpet_hrp.wrl
 
 7001 preplanning_chipstar_red.txt /object/chipstar_red_hrp.wrl
 7002 preplanning_chipstar_orange.txt /object/chipstar_orange_hrp.wrl
