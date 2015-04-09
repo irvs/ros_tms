@@ -26,7 +26,8 @@ from tms_msg_db.msg import Tmsdb
 
 LC_MAX_SENSOR_NUM = 4
 LC_GET_WEIGHT_CNT = 2
-LC_GET_WEIGHT_STABLE = 12
+# LC_GET_WEIGHT_STABLE = 12
+LC_GET_WEIGHT_STABLE = 30
 
 MAX_OBJECT_NUM = 25  # 環境内に存在する全物品数
 
@@ -84,7 +85,7 @@ class CLoadCell(object):
         self.__mSensorPosX = [0.0] * LC_MAX_SENSOR_NUM
         self.__mSensorPosY = [0.0] * LC_MAX_SENSOR_NUM
         self.__mSensorNum = LC_MAX_SENSOR_NUM
-        self.__ser = serial.Serial(baudrate=115200, timeout=1)
+        self.__ser = serial.Serial(baudrate=115200, timeout=3)
         self.__ser.port = port
         print "OPENING: LoadCell(port:", port, ")"
         self.__OpenPort()
@@ -149,8 +150,9 @@ class CLoadCell(object):
                 weight += math.fabs(now - pre[i])
                 pre[i] = now
                 buf[cnt][i] = now
-                D_COUT("weight :{0}".format(weight))
-                D_COUT("\033[1K\r")
+                # D_COUT("weight :{0}".format(weight))
+                # D_COUT("\n")
+                # D_COUT("\033[1K\r")
             if weight < LC_GET_WEIGHT_STABLE:
                 cnt += 1
             else:
@@ -187,7 +189,7 @@ class CTR3(object):
         self.__mCommand = [0] * TR3_MAX_COMMAND_SIZE
         self.__mCommand[0] = TR3_STX
         self.__mCommand[1] = 0x00      # アドレス
-        self.__ser = serial.Serial(baudrate=38400, timeout=1)
+        self.__ser = serial.Serial(baudrate=38400, timeout=3)
         self.__ser.port = port
         print "OPENING: TR3(port:", port, ")"
         self.__OpenPort()
@@ -304,6 +306,7 @@ class CTR3(object):
             # print hexs
             self.__mUIDs[self.__mActiveAntenna].append(hexs)
         self.__ClosePort()
+        #print self.__mUIDs[self.__mActiveAntenna]
         return tag_num
 
     # 通信用サブ関数
@@ -428,7 +431,7 @@ class CIntelCab(object):
         # ロードセルの増減チェック
         cObj.mWeight, cObj.mX, cObj.mY, cObj.mDiffs = self.cLoadCell.GetWeightDiff()
 
-        # print "mWeighr:{0}   InOutLC:{1}".format(cObj.mWeight, self.__InOutLC),
+        print "mWeight:{0}   InOutLC:{1}".format(cObj.mWeight, self.__InOutLC),
         if (cObj.mWeight > 0) and (self.__InOutTag > 0):
             # 入庫
             cObj.mUID = self.__cObjIn.mUID
@@ -544,7 +547,7 @@ def main():
     r = rospy.Rate(10)
     while not rospy.is_shutdown():        # vector 初期化
         r.sleep()
-        # D_COUT(datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"))
+        #D_COUT(datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")+"\n")
         # cObj: CTagOBJ type
         state, cObj = cIntelCab.UpdateObj()
         # print "state:", state
