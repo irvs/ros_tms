@@ -20,6 +20,7 @@ import tms_msg_rs.rs_home_appliancesResponse;
  */
 public class RecognitionClient extends AbstractNodeMain {
     private final String TAG = "recognition_client";
+    private final String srv_name = "/refrigerator_controller";
     private ServiceClient<rs_home_appliancesRequest, rs_home_appliancesResponse> serviceClient;
 
     @Override
@@ -29,18 +30,8 @@ public class RecognitionClient extends AbstractNodeMain {
 
     @Override
     public void onStart(final ConnectedNode connectedNode) {
-        /**
-         * Connect to server with the service, "ref_demo".
-         * "rs_home_appliances.srv"
-         * --------------------------------------------
-         * int32 id         // Refrigerator ID: 2009
-         * int32 service    // 0: Close, 1: Open
-         * ---
-         * int32 result     // 0: failure, 1: Success
-         * --------------------------------------------
-         */
         try {
-            serviceClient = connectedNode.newServiceClient("ref_demo", tms_msg_rs.rs_home_appliances._TYPE);
+            serviceClient = connectedNode.newServiceClient(srv_name, tms_msg_rs.rs_home_appliances._TYPE);
         } catch (ServiceNotFoundException e) {
             //throw new RosRuntimeException(e3);
         }
