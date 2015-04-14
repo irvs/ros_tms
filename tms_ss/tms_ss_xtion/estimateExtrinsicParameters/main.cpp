@@ -12,15 +12,16 @@
 #include <boost/algorithm/string.hpp>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/pcd_io.h>
-#include <OpenNI.h>
+//#include <OpenNI.h>
 #include <opencv2/opencv.hpp>
 #include <Eigen/Eigen>
 
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
+#include <sensor_msgs/PointCloud2.h>
 
 #include "MyCalibration.h"
-#include "DepthImageMaker.h"
+//#include "DepthImageMaker.h"
 //#include "OpenNIDeviceListener.hpp"
 #include "myutility.h"
 
@@ -112,45 +113,56 @@ int main (int argc, char **argv)
   char key;
   uint8_t *pdepth;
   uint8_t *pcolor;
+  //uint8_t *ppoints;
   pdepth = new uint8_t [CAMERA_RESOLUTION_X*CAMERA_RESOLUTION_Y*2];
   pcolor = new uint8_t [CAMERA_RESOLUTION_X*CAMERA_RESOLUTION_Y*3];
+  //ppoints = new uint8_t [CAMERA_RESOLUTION_X*CAMERA_RESOLUTION_Y*16];
 
   MyCalibration my_calib;
   my_calib.initialize(viewer, pdepth, pcolor);
 
   ros::Subscriber sub_depth = ros_nh.subscribe("/camera/depth/image_raw", 1, &MyCalibration::getDepthFrameCallback, &my_calib);
   ros::Subscriber sub_color = ros_nh.subscribe("/camera/rgb/image_raw", 1, &MyCalibration::getColorFrameCallback, &my_calib);
+  ros::Subscriber sub_points = ros_nh.subscribe("/camera/depth/points", 1, &MyCalibration::getPointsCallback, &my_calib);
 
-  ros::Rate loop_late(1000);
-  ros::spin();
+  ros::Rate loop_late(100);
 
   KeyboardEventReader keyboard;
 
-  while (ros::ok()) // key == 'q' ?
+  while (ros::ok() && key != KEYCODE_q) // key == 'q' ?
   {
-    if (keyboard.getKeycode(key))
+    ros::spinOnce();
+    if (key == KEYCODE_r) // key == 'r' ?
     {
-      //printf("key:%c, %x\n", key, key);
-      if (key == KEYCODE_r) // key == 'r' ?
+      my_calib.extractPlanePoints();
+      my_calib.viewPoints();
+      my_calib.calcurateExtrinsicParameters(
+          d_convertion_threshold,
+          d_convertion_method,
+          pattern_width);
+    }
+    if (key == KEYCODE_p) // key == 'p' ?
+    {
+      my_calib.startPickingPoints();
+    }
+    if (key == KEYCODE_d) // key == 'd' ?
+    {
+      while (my_calib.pickPointsAutomatically(5,6) != 0)
       {
-        //my_calib.extractPlanePoints();
-        //  my_calib.viewPoints();
-        //  my_calib.calcurateExtrinsicParameters(
-        //      d_convertion_threshold,
-        //      d_convertion_method,
-        //      pattern_width);
-      }
-      if (key == KEYCODE_p) // key == 'p' ?
-      {
-        //my_calib.startPickingPoints();
-      }
-      if (key == KEYCODE_d) // key == 'd' ?
-      {
-        //my_calib.pickPointsAutomatically(5,6);
+        ros::spinOnce();
       }
     }
-    ros::spinOnce();
+    key = cv::waitKey(10) & 0x00ff;
+    char tmp_key;
+    //if (keyboard.getKeycode(tmp_key))
+    //{
+    //  key = tmp_key;
+    //}
+    //std::cout << "Hi" << std::endl;
   }
+
+  delete [] pdepth;
+  delete [] pcolor;
 
   //depth_stream.removeNewFrameListener(&new_frame_listener);
 

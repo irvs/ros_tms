@@ -28,16 +28,15 @@ public:
   int pickPointsAutomatically(int pattern_rows, int pattern_cols);
   void getDepthFrameCallback(const sensor_msgs::Image::ConstPtr& frame);
   void getColorFrameCallback(const sensor_msgs::Image::ConstPtr& frame);
+  void getPointsCallback(const sensor_msgs::PointCloud2::ConstPtr& points);
+
 private:
   Eigen::Matrix3f correct_mirroring;
   uint8_t *depth_frame;
   uint8_t *color_frame;
-  openni::VideoStream *m_video_stream;
-  openni::VideoStream *m_color_stream;
+  sensor_msgs::PointCloud2::ConstPtr points;
   Eigen::Vector3f world_points[CORRESPOND_POINTS];
   Eigen::Vector3f picked_points[CORRESPOND_POINTS];
-
-  std::vector<Eigen::Vector3f> all_points;
 
   std::vector<Eigen::Vector3f*> points_on_plane;
   std::vector<Eigen::Vector3f*> other_points;

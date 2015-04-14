@@ -114,7 +114,7 @@ include_directories(
 add_executable(estimateExtrinsicParameters
   estimateExtrinsicParameters/main.cpp
   estimateExtrinsicParameters/MyCalibration.cpp
-  estimateExtrinsicParameters/DepthImageMaker.cpp
+  #estimateExtrinsicParameters/DepthImageMaker.cpp
   estimateExtrinsicParameters/myutility.cpp
 )
 

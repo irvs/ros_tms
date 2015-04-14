@@ -16,6 +16,7 @@
 
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
+#include <sensor_msgs/PointCloud2.h>
 
 #include "myutility.h"
 #include "MyCalibration.h"
@@ -108,6 +109,7 @@ int MyCalibration::initialize(
 int MyCalibration::extractPlanePoints()
 {
   int i, j;
+  std::vector<Eigen::Vector3f> all_points;
 
   // Sort points
   int min_cross;
@@ -159,35 +161,43 @@ int MyCalibration::extractPlanePoints()
   Eigen::Vector3f tmp_vec3[1];
   openni::DepthPixel *p_depth;
 
-  m_video_stream->readFrame(&frame);
+  //m_video_stream->readFrame(&frame);
 
   points_on_plane.clear();
   all_points.clear();
-  all_points.resize(m_video_stream->getVideoMode().getResolutionX()
-      * m_video_stream->getVideoMode().getResolutionY(),
-      Eigen::Vector3f(0,0,0));
+  all_points.resize(CAMERA_RESOLUTION_X * CAMERA_RESOLUTION_Y, Eigen::Vector3f(0,0,0));
   other_points.clear();
   points_attribute.clear();
-  points_attribute.resize(m_video_stream->getVideoMode().getResolutionX()
-      * m_video_stream->getVideoMode().getResolutionY(), (char)0x00);
+  points_attribute.resize(CAMERA_RESOLUTION_X * CAMERA_RESOLUTION_Y, (char)0x00);
 
-  int now;
-  openni::DepthPixel *dp;
-  dp = (openni::DepthPixel*)frame.getData();
-  picked_points_around.clear();
-  for (i=0; i<frame.getHeight(); i++)
-  { // Converting depth points to 3D world
-    for (j=0; j<frame.getWidth(); j++)
+  // Get static point cloud
+  for (i=0; i<CAMERA_RESOLUTION_Y; i++)
+  {
+    for (j=0; j<CAMERA_RESOLUTION_X; j++)
     {
-      Eigen::Vector3f tmp;
-      now = (i*frame.getWidth()+j);
-      openni::CoordinateConverter::convertDepthToWorld(*m_video_stream,
-          j, i, *(openni::DepthPixel*)(dp+now),
-          &tmp[0], &tmp[1], &tmp[2]);
-      tmp = correct_mirroring * tmp;  // Correction of mirroring
-      all_points[now] = tmp;
+      all_points[i*CAMERA_RESOLUTION_Y+j][0] = points->data[i*CAMERA_RESOLUTION_Y+j];
+      all_points[i*CAMERA_RESOLUTION_Y+j][1] = points->data[i*CAMERA_RESOLUTION_Y+j+sizeof(float)*1];
+      all_points[i*CAMERA_RESOLUTION_Y+j][2] = points->data[i*CAMERA_RESOLUTION_Y+j+sizeof(float)*2];
     }
   }
+
+  //int now;
+  //openni::DepthPixel *dp;
+  //dp = (openni::DepthPixel*)frame.getData();
+  //picked_points_around.clear();
+  //for (i=0; i<frame.getHeight(); i++)
+  //{ // Converting depth points to 3D world
+  //  for (j=0; j<frame.getWidth(); j++)
+  //  {
+  //    Eigen::Vector3f tmp;
+  //    now = (i*frame.getWidth()+j);
+  //    openni::CoordinateConverter::convertDepthToWorld(*m_video_stream,
+  //        j, i, *(openni::DepthPixel*)(dp+now),
+  //        &tmp[0], &tmp[1], &tmp[2]);
+  //    tmp = correct_mirroring * tmp;  // Correction of mirroring
+  //    all_points[now] = tmp;
+  //  }
+  //}
 
   std::vector<Eigen::Vector2i> loop_stack;
   loop_stack.clear();
@@ -245,6 +255,7 @@ int MyCalibration::extractPlanePoints()
 
   const int radius = 3;
   int k;
+  int now;
   for (k=0; k<CORRESPOND_POINTS; k++)
   { // Detecting points around picked points : 0x02
     unsigned int _cnt = 0;
@@ -380,6 +391,36 @@ inline double _E(double phi_x, double phi_y, double phi_z, double t_x, double t_
     ret += pow(tmp.norm(),2.0);
   }
   return ret;
+}
+
+inline int find_corner(const cv::Mat& image, const cv::Size pattern_size, 
+    std::vector<cv::Point2f>& corners, bool& pattern_found)
+{
+  cv::Mat gray(image.rows, image.cols, CV_8UC1);
+  switch(image.type())
+  {
+  case CV_8UC1:
+    gray = image;
+    break;
+  case CV_8UC3:
+    cv::cvtColor(image, gray, CV_BGR2GRAY);
+    break;
+  default:
+    std::cerr << "Unexpected image type." << std::endl;
+    return -1;
+  }
+  pattern_found = cv::findChessboardCorners(gray, pattern_size, corners,
+      cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE | cv::CALIB_CB_FAST_CHECK);
+  if (pattern_found)
+  {
+    cv::cornerSubPix(gray, corners, cv::Size(15,15), cv::Size(-1,-1),
+        cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 15, 0.01));
+  }
+  else
+  {
+    //std::cerr << "Warning: Couldn't detect corner" << std::endl;
+  }
+  return 0;
 }
 
 pcl::PointXYZRGB _s, _ex, _ey, _ez;
@@ -757,11 +798,7 @@ int MyCalibration::pickPointsAutomatically(int pattern_rows, int pattern_cols)
 {
   int i,j;
   int key;
-  cv::Mat image(
-      cv::Size(
-        m_video_stream->getVideoMode().getResolutionX(),
-        m_video_stream->getVideoMode().getResolutionY()),
-      CV_8UC3);
+  cv::Mat image_chess(CAMERA_RESOLUTION_Y, CAMERA_RESOLUTION_X, CV_8UC3);
 
   openni::VideoFrameRef frame;
   bool pattern_found;
@@ -771,60 +808,54 @@ int MyCalibration::pickPointsAutomatically(int pattern_rows, int pattern_cols)
   {
     for (j=0; j<image.cols; j++)
     {
-      image.at<cv::Vec3b>(i,j) = cv::Vec3b(255,255,255);
-    }
-  }
-  while (key != 1048689) // key == 'q' ?
-  {
-    if (m_color_stream != NULL)
-    { // Detect corners with color image.
-      m_color_stream->readFrame(&frame);
-      image = cv::Mat(image.rows,image.cols,CV_8UC3,(char*)frame.getData());
-      cv::cvtColor(image,image,CV_BGR2RGB);
-    }
-    else
-    { // Detect corners with depth image.
-      if (key == 1048681) // key == 'i' ?
-      { // Clean image
-        for (i=0; i<image.rows; i++)
-        {
-          for (j=0; j<image.cols; j++)
-          {
-            image.at<cv::Vec3b>(i,j) = cv::Vec3b(255,255,255);
-          }
-        }
-      }
-      // Fill with brack at invalid pixel
-      m_video_stream->readFrame(&frame);
-      openni::DepthPixel *dp;
-      dp = (openni::DepthPixel*)frame.getData();
-      for (i=0; i<image.rows; i++)
-      {
-        for (j=0; j<image.cols; j++)
-        {
-          int now = (i*frame.getWidth()+j);
-          if (*(openni::DepthPixel*)(dp+now) == INVALID_PIXEL_VALUE)
-          {
-            image.at<cv::Vec3b>(i,j) = cv::Vec3b(0,0,0);
-          }
-        }
-      }
-    }
-    find_corner(image, cv::Size(pattern_cols,pattern_rows), corners, pattern_found);
-    cv::drawChessboardCorners( image, cv::Size(pattern_cols,pattern_rows),
-        (cv::Mat)corners, pattern_found);
-    cv::imshow("Detecting points", image);
-    if(pattern_found)
-    {
-      std::cout << "Detected corners" << std::endl;
-      key = cv::waitKey(0);
-    }
-    else
-    {
-      key = cv::waitKey(100);
+      image_chess.at<cv::Vec3b>(i,j) = cv::Vec3b(255,255,255);
     }
   }
 
+  if (color_frame != NULL)
+  { // Detect corners with color image.
+    image_chess = cv::Mat(CAMERA_RESOLUTION_Y,CAMERA_RESOLUTION_X,CV_8UC3,color_frame);
+    cv::cvtColor(image_chess,image_chess,CV_BGR2RGB);
+  }
+  else
+  { // Detect corners with depth image.
+    if (key == 1048681) // key == 'i' ?
+    { // Clean image
+      for (i=0; i<CAMERA_RESOLUTION_Y; i++)
+      {
+        for (j=0; j<CAMERA_RESOLUTION_X; j++)
+        {
+          image.at<cv::Vec3b>(i,j) = cv::Vec3b(255,255,255);
+        }
+      }
+    }
+    // Fill with brack at invalid pixel
+    openni::DepthPixel *dp;
+    dp = (openni::DepthPixel*)depth_frame;
+    for (i=0; i<image.rows; i++)
+    {
+      for (j=0; j<image.cols; j++)
+      {
+        int now = (i*frame.getWidth()+j);
+        if (*(openni::DepthPixel*)(dp+now) == INVALID_PIXEL_VALUE)
+        {
+          image.at<cv::Vec3b>(i,j) = cv::Vec3b(0,0,0);
+        }
+      }
+    }
+  }
+  find_corner(image_chess, cv::Size(pattern_cols,pattern_rows), corners, pattern_found);
+  cv::drawChessboardCorners( image_chess, cv::Size(pattern_cols,pattern_rows),
+      (cv::Mat)corners, pattern_found);
+  cv::imshow("Detecting points", image_chess);
+  if(!pattern_found)
+  {
+    cv::waitKey(10);
+    return -1;
+  }
+
+  std::cout << "Detected corners" << std::endl;
+  key = cv::waitKey(0);
   cv::destroyWindow("Detecting points");
 
   g_points[0][0] = (int)corners[ 0].x;
@@ -858,6 +889,7 @@ void MyCalibration::getDepthFrameCallback(const sensor_msgs::Image::ConstPtr& fr
   }
   cv::Mat image_tmp = cv::Mat(frame->height, frame->width, CV_16UC1, depth_frame);
   image_tmp.convertTo(image, CV_8UC1, 255.0/10000.0);
+  //cv::imshow("Depth image", image);
   return;
 }
 
@@ -873,5 +905,11 @@ void MyCalibration::getColorFrameCallback(const sensor_msgs::Image::ConstPtr& fr
   //cv::cvtColor(image_tmp,image_tmp,CV_BGR2RGB);
   //cv::imshow("Color image", image_tmp);
   //cv::waitKey(10);
+  return;
+}
+
+void MyCalibration::getPointsCallback(const sensor_msgs::PointCloud2::ConstPtr& points)
+{
+  this->points = points;
   return;
 }
