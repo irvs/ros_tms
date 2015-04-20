@@ -55,7 +55,7 @@
 #include <pcl_conversions/pcl_conversions.h>
 
 #define MAX_ICS_OBJECT_NUM    25
-#define MAX_FURNITURE_NUM     21
+#define MAX_FURNITURE_NUM     23
 
 using namespace std;
 using namespace cnoid;
@@ -93,8 +93,8 @@ public:
 
 private:
   static bool isRosInit;
-  static std::string object_name_[25];
-  static std::string furniture_name_[21];
+  static std::string object_name_[MAX_ICS_OBJECT_NUM];
+  static std::string furniture_name_[MAX_FURNITURE_NUM];
   Matrix3d mat0_, mat_ccw90_, mat_ccw180_, mat_cw90_;
   ToolButton* visibility_toggle_;
   ToolButton* static_map_toggle_;

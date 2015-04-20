@@ -15,6 +15,7 @@ import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
+import java.net.URI;
 import java.util.ArrayList;
 
 public class TmsUrRefrigerator extends RosActivity implements View.OnClickListener,RecognitionListener
@@ -29,7 +30,7 @@ public class TmsUrRefrigerator extends RosActivity implements View.OnClickListen
      * Default constructor
      */
     public TmsUrRefrigerator() {
-        super("Speech Recognition Test","Speech Recognition Test");
+        super("fridge control", "fridge control", URI.create("http://192.168.4.170:11311"));
     }
 
     @Override

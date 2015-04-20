@@ -5,18 +5,19 @@
 **ROS-TMS** is new information management system for the informationally structured environment. This system enables to integrate various data from distributed sensors, store them to an online database, and plan service motion of a robot using real-time information about the surroundings.
 
 # Version and developer information
-* date : 2014.10.13 (since 2012.5.1 ROS-TMS / since 2005.11.1 TMS)
+* date : 2015.04.15 (since 2012.5.1 ROS-TMS / since 2005.11.1 TMS)
+* current version : 3.4.2 (2015.04.15)
 * director :
 
  Prof. Ryo Kurazume, Assistant Prof. Tokuo Tsuji
 
 * maintainer :
 
- Yoonseok Pyo
+ Yoonseok Pyo (pyo at irvs.ait.kyushu-u.ac.jp, passionvirus at gmail.com)
 
 * developer :
 
- 2015 : Yoonseok Pyo, Masatomo Onishi, Yuta Watanabe, Akio Shigekane, Tokuo Tsuji
+ 2015 : Yoonseok Pyo, Masatomo Onishi, Yuta Watanabe, Akio Shigekane, Daisuke Inada, Kazuto Nakashima
 
  2014 : Yoonseok Pyo, Yuka Hashiguchi, Tetsuro Oishi, Kazuya Suginohara, Kazuto Nakashima, Yuta Watanabe, Daisuke Inada, Akio Shigekane, Tokuo Tsuji, Omar Alaoui
 

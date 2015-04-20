@@ -13,7 +13,7 @@ using namespace tms_rp;
 //------------------------------------------------------------------------------
 bool RpViewerBar::isRosInit = false;
 
-std::string RpViewerBar::object_name_[25] = {"chipstar_red","chipstar_orange",
+std::string RpViewerBar::object_name_[MAX_ICS_OBJECT_NUM] = {"chipstar_red","chipstar_orange",
                                              "chipstar_green","greentea_bottle",
                                              "soukentea_bottle","cancoffee",
                                              "seasoner_bottle","dispenser",
@@ -23,11 +23,11 @@ std::string RpViewerBar::object_name_[25] = {"chipstar_red","chipstar_orange",
                                              "teapot","chawan","teacup1","teacup2","cup1",
                                              "cup2","mugcup","remote","book_red","book_blue","dish"};
 
-std::string RpViewerBar::furniture_name_[21] = {"big_sofa","mini_sofa","small_table","tv_table","tv",
-                                                "partition1","partition2","partition3","bed","shelf",
-                                                "big_shelf","desk","chair_desk","table","chair_table1","chair_table2",
-                                                "shelfdoor","shelf2","wagon","sidetable","tree1"};
-
+std::string RpViewerBar::furniture_name_[MAX_FURNITURE_NUM] = {"wardrobe","workdesk","drawer","chair","kitchen",
+                                            "meeting_table","meeting_chair1","meeting_chair2","meeting_chair3","meeting_chair4",
+                                            "partition","tv_table","tv_52inch","playrecoder","sofa",
+                                            "sofa_table","bed","wagon","shelf","tree",
+                                            "tv_multi","wall_shelf","carpet"};
 
 //------------------------------------------------------------------------------
 RpViewerBar* RpViewerBar::instance(){
@@ -437,7 +437,24 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
           }
         }
     }
-    else if (id ==1001)
+//    else if (id ==1001)
+//    {
+//        PosX = environment_information_.tmsdb[i].x/1000;
+//        PosY = environment_information_.tmsdb[i].y/1000;
+//        PosZ = 0.9;
+//        rot = grasp::rotFromRpy(0,0,deg2rad(environment_information_.tmsdb[i].ry));
+
+//        if(PosX == 0.0 && PosY == 0.0)
+//        {
+//          callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1_oculus"));
+//        }
+//        else
+//        {
+//          callSynchronously(bind(&TmsRpController::appear,trc_,"person_1_oculus"));
+//          callSynchronously(bind(&TmsRpController::setPos,trc_,"person_1_oculus",Vector3(PosX,PosY,PosZ),rot));
+//        }
+//    }
+    else if (id ==1002)
     {
         PosX = environment_information_.tmsdb[i].x/1000;
         PosY = environment_information_.tmsdb[i].y/1000;
@@ -446,12 +463,12 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
 
         if(PosX == 0.0 && PosY == 0.0)
         {
-          callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1"));
+          callSynchronously(bind(&TmsRpController::disappear,trc_,"person_2_moverio"));
         }
         else
         {
-          callSynchronously(bind(&TmsRpController::appear,trc_,"person_1"));
-          callSynchronously(bind(&TmsRpController::setPos,trc_,"person_1",Vector3(PosX,PosY,PosZ),rot));
+          callSynchronously(bind(&TmsRpController::appear,trc_,"person_2_moverio"));
+          callSynchronously(bind(&TmsRpController::setPos,trc_,"person_2_moverio",Vector3(PosX,PosY,PosZ),rot));
         }
     }
     else if (id ==6019) // wagon
@@ -481,30 +498,20 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
     	if (sensor == 3018 && place==2009)  //refrigerator, irs
     	{
             oID   = id - 7001;
-            PosX = 4.5 - environment_information_.tmsdb[i].y/1000;
-            PosY = 2.3 + environment_information_.tmsdb[i].x/1000;
+            PosX = 12.1 - environment_information_.tmsdb[i].y/1000;
+            PosY = 4.5 + environment_information_.tmsdb[i].x/1000;
             PosZ = 0.0 + environment_information_.tmsdb[i].z/1000;
             callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
             callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(PosX,PosY,PosZ), mat_cw90_));
             object_state[oID] = true;
 
     	}
-    	else if (/*sensor == 3002 && */place==6010) //shelf, ics
+        else if (place==6019) //shelf, ics
     	{
     		oID   = id - 7001;
-    		PosX = 4.26  - environment_information_.tmsdb[i].y/1000;
-    		PosY = 1.683  + environment_information_.tmsdb[i].x/1000;
+            PosX = 11.9  - environment_information_.tmsdb[i].y/1000;
+            PosY = 3.8  + environment_information_.tmsdb[i].x/1000;
     		PosZ = 0.08 + environment_information_.tmsdb[i].z/1000;
-    		callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
-    		callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(PosX,PosY,PosZ), mat_cw90_));
-    		object_state[oID] = true;
-    	}
-    	else if (place==6011) // big_shelf
-    	{
-    		oID   = id - 7001;
-    		PosX = 1.499  + environment_information_.tmsdb[i].x/1000;
-    		PosY = 4.12  + environment_information_.tmsdb[i].y/1000;
-    		PosZ = environment_information_.tmsdb[i].z/1000;
     		callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
     		callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(PosX,PosY,PosZ), mat_cw90_));
     		object_state[oID] = true;
@@ -810,11 +817,12 @@ void RpViewerBar::viewPersonPostion()
 //------------------------------------------------------------------------------
 void RpViewerBar::rosOn()
 {
-  static ros::Rate loop_rate(30); // 0.1sec
+  static ros::Rate loop_rate(30);
   std::string tms_rp_state;
   int planning_mode;
 
-  callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1"));
+  callSynchronously(bind(&TmsRpController::disappear,trc_,"person_1_oculus"));
+  callSynchronously(bind(&TmsRpController::disappear,trc_,"person_2_moverio"));
   callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal4"));
   callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_1"));
   callSynchronously(bind(&TmsRpController::disappear,trc_,"smartpal5_2"));
