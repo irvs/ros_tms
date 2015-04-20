@@ -154,11 +154,6 @@ int main (int argc, char **argv)
     }
     key = cv::waitKey(10) & 0x00ff;
     char tmp_key;
-    //if (keyboard.getKeycode(tmp_key))
-    //{
-    //  key = tmp_key;
-    //}
-    //std::cout << "Hi" << std::endl;
   }
 
   delete [] pdepth;

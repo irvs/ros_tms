@@ -175,9 +175,11 @@ int MyCalibration::extractPlanePoints()
   {
     for (j=0; j<CAMERA_RESOLUTION_X; j++)
     {
-      all_points[i*CAMERA_RESOLUTION_Y+j][0] = points->data[i*CAMERA_RESOLUTION_Y+j];
-      all_points[i*CAMERA_RESOLUTION_Y+j][1] = points->data[i*CAMERA_RESOLUTION_Y+j+sizeof(float)*1];
-      all_points[i*CAMERA_RESOLUTION_Y+j][2] = points->data[i*CAMERA_RESOLUTION_Y+j+sizeof(float)*2];
+      float *p;
+      p = (float*)&points->data[(i*CAMERA_RESOLUTION_X+j)*sizeof(float)*4];
+      all_points[i*CAMERA_RESOLUTION_X+j][0] = *p*1000; p++;
+      all_points[i*CAMERA_RESOLUTION_X+j][1] = *p*1000; p++;
+      all_points[i*CAMERA_RESOLUTION_X+j][2] = *p*1000;
     }
   }
 
@@ -185,12 +187,12 @@ int MyCalibration::extractPlanePoints()
   //openni::DepthPixel *dp;
   //dp = (openni::DepthPixel*)frame.getData();
   //picked_points_around.clear();
-  //for (i=0; i<frame.getHeight(); i++)
+  //for (i=0; i<CAMERA_RESOLUTION_Y; i++)
   //{ // Converting depth points to 3D world
-  //  for (j=0; j<frame.getWidth(); j++)
+  //  for (j=0; j<CAMERA_RESOLUTION_X; j++)
   //  {
   //    Eigen::Vector3f tmp;
-  //    now = (i*frame.getWidth()+j);
+  //    now = (i*CAMERA_RESOLUTION_X+j);
   //    openni::CoordinateConverter::convertDepthToWorld(*m_video_stream,
   //        j, i, *(openni::DepthPixel*)(dp+now),
   //        &tmp[0], &tmp[1], &tmp[2]);
@@ -206,7 +208,7 @@ int MyCalibration::extractPlanePoints()
   { // Detecting points on plane : 0x01
     tmp_vec[0] = loop_stack.back();
     loop_stack.pop_back();
-    if (points_attribute[tmp_vec[0][0]+tmp_vec[0][1]*frame.getWidth()]&0x01)
+    if (points_attribute[tmp_vec[0][0]+tmp_vec[0][1]*CAMERA_RESOLUTION_X]&0x01)
     {
       continue;
     }
@@ -233,20 +235,20 @@ int MyCalibration::extractPlanePoints()
     if (check_flg)
     {
       // This point is on the plane. (because user chooses a region of a plane)
-      points_attribute[tmp_vec[0][0]+tmp_vec[0][1]*frame.getWidth()] |= 0x01;
-      if (!(points_attribute[tmp_vec[0][0]+1+tmp_vec[0][1]*frame.getWidth()]&0x01) )
+      points_attribute[tmp_vec[0][0]+tmp_vec[0][1]*CAMERA_RESOLUTION_X] |= 0x01;
+      if (!(points_attribute[tmp_vec[0][0]+1+tmp_vec[0][1]*CAMERA_RESOLUTION_X]&0x01) )
       {
         loop_stack.push_back(Eigen::Vector2i(tmp_vec[0][0]+1, tmp_vec[0][1]));
       }
-      if (!(points_attribute[tmp_vec[0][0]-1+tmp_vec[0][1]*frame.getWidth()]&0x01) )
+      if (!(points_attribute[tmp_vec[0][0]-1+tmp_vec[0][1]*CAMERA_RESOLUTION_X]&0x01) )
       {
         loop_stack.push_back(Eigen::Vector2i(tmp_vec[0][0]-1, tmp_vec[0][1]));
       }
-      if (!(points_attribute[tmp_vec[0][0]+(tmp_vec[0][1]+1)*frame.getWidth()]&0x01) )
+      if (!(points_attribute[tmp_vec[0][0]+(tmp_vec[0][1]+1)*CAMERA_RESOLUTION_X]&0x01) )
       {
         loop_stack.push_back(Eigen::Vector2i(tmp_vec[0][0], tmp_vec[0][1]+1));
       }
-      if (!(points_attribute[tmp_vec[0][0]+(tmp_vec[0][1]-1)*frame.getWidth()]&0x01) )
+      if (!(points_attribute[tmp_vec[0][0]+(tmp_vec[0][1]-1)*CAMERA_RESOLUTION_X]&0x01) )
       {
         loop_stack.push_back(Eigen::Vector2i(tmp_vec[0][0], tmp_vec[0][1]-1));
       }
@@ -265,9 +267,9 @@ int MyCalibration::extractPlanePoints()
       for (j=-sqrt(pow(radius,2.0)-pow((i-g_picked_points[k][1]),2.0))+g_picked_points[k][0];
            j<=sqrt(pow(radius,2.0)-pow((i-g_picked_points[k][1]),2.0))+g_picked_points[k][0]; j++)
       {
-        if(i>=0 && i<frame.getHeight() && j>=0 && j<frame.getWidth())
+        if(i>=0 && i<CAMERA_RESOLUTION_Y && j>=0 && j<CAMERA_RESOLUTION_X)
         { // picked_points_around
-          now = i*frame.getWidth()+j;
+          now = i*CAMERA_RESOLUTION_X+j;
           points_attribute[now] |= 0x02;
           picked_points[k] += all_points[now];
           _cnt++;
@@ -277,11 +279,11 @@ int MyCalibration::extractPlanePoints()
     picked_points[k] = picked_points[k]/(double)_cnt;
   }
 
-  for (i=0; i<frame.getHeight(); i++)
+  for (i=0; i<CAMERA_RESOLUTION_Y; i++)
   { // Add to vector as attribute
-    for (j=0; j<frame.getWidth(); j++)
+    for (j=0; j<CAMERA_RESOLUTION_X; j++)
     {
-      now = (i*frame.getWidth()+j);
+      now = (i*CAMERA_RESOLUTION_X+j);
       if (points_attribute[now] == 0x00)
       {
         other_points.push_back(&all_points[now]);
@@ -783,6 +785,8 @@ int MyCalibration::calcurateExtrinsicParameters(double convertion_th,
     viewer->runOnVisualizationThread(viewerDrawAxis);
     viewer->showCloud(cloud);
   }
+  std::cout << "Draw axis" << std::endl;
+  std::cout << _s.x << "\t" << _s.y << "\t" << _s.z << std::endl;
 
 
   return 0;
@@ -800,7 +804,7 @@ int MyCalibration::pickPointsAutomatically(int pattern_rows, int pattern_cols)
   int key;
   cv::Mat image_chess(CAMERA_RESOLUTION_Y, CAMERA_RESOLUTION_X, CV_8UC3);
 
-  openni::VideoFrameRef frame;
+  //openni::VideoFrameRef frame;
   bool pattern_found;
   std::vector<cv::Point2f> corners;
   cv::namedWindow("Detecting points");
@@ -830,14 +834,14 @@ int MyCalibration::pickPointsAutomatically(int pattern_rows, int pattern_cols)
       }
     }
     // Fill with brack at invalid pixel
-    openni::DepthPixel *dp;
-    dp = (openni::DepthPixel*)depth_frame;
+    float *dp;
+    //dp = (openni::DepthPixel*)depth_frame;
     for (i=0; i<image.rows; i++)
     {
       for (j=0; j<image.cols; j++)
       {
-        int now = (i*frame.getWidth()+j);
-        if (*(openni::DepthPixel*)(dp+now) == INVALID_PIXEL_VALUE)
+        int now = (i*CAMERA_RESOLUTION_X+j);
+        if (*(float*)(dp+now) == INVALID_PIXEL_VALUE)
         {
           image.at<cv::Vec3b>(i,j) = cv::Vec3b(0,0,0);
         }
