@@ -89,7 +89,7 @@ public:
     idSensor(3001),   // vicon sensor
     idPlace(5001),    // 988 room
     stream_mode("ClientPull"),
-    host_name("192.168.4.175:801"),
+    host_name("192.168.4.151:801"),
     frame_id("/world"),
     update_time(0.01),  //sec
     isDebug(false)

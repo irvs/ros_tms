@@ -8,11 +8,11 @@ from tms_msg_rs.srv import *
 from tms_msg_db.msg import TmsdbStamped
 from tms_msg_db.msg import Tmsdb
 
-mbed = HTTPRPC("192.168.4.181")
+mbed = HTTPRPC("192.168.4.239")
 startpin  = DigitalOut(mbed, p21);
 closepin  = DigitalOut(mbed, p22);
-openpin   = DigitalOut(mbed, p23);
-clearpin  = DigitalOut(mbed, p24);  
+openpin   = DigitalOut(mbed, p24);
+clearpin  = DigitalOut(mbed, p23);  
 pub       = rospy.Publisher('tms_db_data', TmsdbStamped, queue_size=10)
 
 def control_refrigerator(req):
