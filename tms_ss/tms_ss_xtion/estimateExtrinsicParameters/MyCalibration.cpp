@@ -395,7 +395,7 @@ inline double _E(double phi_x, double phi_y, double phi_z, double t_x, double t_
   return ret;
 }
 
-inline int find_corner(const cv::Mat& image, const cv::Size pattern_size, 
+inline int find_corner(const cv::Mat& image, const cv::Size pattern_size,
     std::vector<cv::Point2f>& corners, bool& pattern_found)
 {
   cv::Mat gray(image.rows, image.cols, CV_8UC1);
@@ -728,13 +728,13 @@ int MyCalibration::calcurateExtrinsicParameters(double convertion_th,
     return 1;
   }
 
-  std::cout << "Tried " << cnt << " times" << std::endl;
-  std::cout << "rpy: " <<
+  std::cout << "Tried " << cnt << " times for convertion calcuration of extrinsic parameters" << std::endl;
+  std::cout << "rpy[deg]: " <<
     phi_x*180.0/M_PI << ", " <<
     phi_y*180.0/M_PI << ", " <<
     phi_z*180.0/M_PI << std::endl;
 
-  std::cout << "t: " <<
+  std::cout << "t[mm]: " <<
     t_x << ", " <<
     t_y << ", " <<
     t_z << std::endl;
@@ -785,9 +785,6 @@ int MyCalibration::calcurateExtrinsicParameters(double convertion_th,
     viewer->runOnVisualizationThread(viewerDrawAxis);
     viewer->showCloud(cloud);
   }
-  std::cout << "Draw axis" << std::endl;
-  std::cout << _s.x << "\t" << _s.y << "\t" << _s.z << std::endl;
-
 
   return 0;
 }
@@ -854,8 +851,8 @@ int MyCalibration::pickPointsAutomatically(int pattern_rows, int pattern_cols)
   cv::imshow("Detecting points", image_chess);
   if(!pattern_found)
   {
-    cv::waitKey(10);
-    return -1;
+    int key = cv::waitKey(10);
+    return key;
   }
 
   std::cout << "Detected corners" << std::endl;

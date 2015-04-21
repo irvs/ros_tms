@@ -147,9 +147,10 @@ int main (int argc, char **argv)
     }
     if (key == KEYCODE_d) // key == 'd' ?
     {
-      while (my_calib.pickPointsAutomatically(5,6) != 0)
+      while (key != 0 && key != KEYCODE_q)
       {
         ros::spinOnce();
+        key = my_calib.pickPointsAutomatically(5,6) & 0x00ff;
       }
     }
     key = cv::waitKey(10) & 0x00ff;
