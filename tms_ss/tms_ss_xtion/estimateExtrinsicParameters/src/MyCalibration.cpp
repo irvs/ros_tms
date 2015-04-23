@@ -12,7 +12,6 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <opencv2/opencv.hpp>
 #include <Eigen/Eigen>
-#include <OpenNI.h>
 
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
@@ -157,11 +156,7 @@ int MyCalibration::extractPlanePoints()
   int check;
   bool check_flg;
   std::vector<char> points_attribute;
-  openni::VideoFrameRef frame;
   Eigen::Vector3f tmp_vec3[1];
-  openni::DepthPixel *p_depth;
-
-  //m_video_stream->readFrame(&frame);
 
   points_on_plane.clear();
   all_points.clear();
@@ -331,7 +326,10 @@ int MyCalibration::viewPoints()
     point.r = 255;
     point.g = tmp[2] / 5;
     point.b = 255;
-    cloud->push_back(point);
+    if (point.z < 10.0)
+    {
+      cloud->push_back(point);
+    }
   }
   for (it = points_on_plane.begin();
       it != points_on_plane.end(); it++)
