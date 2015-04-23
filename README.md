@@ -41,10 +41,11 @@
 * repository : https://github.com/irvs/ros_tms.git
 * wiki : https://github.com/irvs/ros_tms/wiki
 
-# ROS-TMS meta-package information
+# ROS-TMS packages information
 * meta-package : 1
-* package : 52
-* node : 93
-* lib for cnoid : 6
-* messages : 43
-* services : 70 
+* group : 11
+* package : 73
+* node : 151
+* library for choreonid : 8
+* messages : 58
+* services : 81 
