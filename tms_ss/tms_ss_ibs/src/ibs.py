@@ -25,9 +25,9 @@ from tms_msg_db.msg import TmsdbStamped
 from tms_msg_db.msg import Tmsdb
 
 LC_MAX_SENSOR_NUM = 4
-LC_GET_WEIGHT_CNT = 2
+LC_GET_WEIGHT_CNT = 5
 # LC_GET_WEIGHT_STABLE = 12
-LC_GET_WEIGHT_STABLE = 30
+LC_GET_WEIGHT_STABLE = 60
 
 MAX_OBJECT_NUM = 25  # 環境内に存在する全物品数
 
