@@ -306,7 +306,7 @@ class CTR3(object):
             # print hexs
             self.__mUIDs[self.__mActiveAntenna].append(hexs)
         self.__ClosePort()
-        #print self.__mUIDs[self.__mActiveAntenna]
+        # print self.__mUIDs[self.__mActiveAntenna]
         return tag_num
 
     # 通信用サブ関数
@@ -516,20 +516,26 @@ def main():
         print "ros param 'z' isn't exist"
     if not rospy.has_param('~frame_id'):
         print "ros param 'frame_id' isn't exist"
+    if not rospy.has_param('~loadcell_points/x'):
+        print "ros param 'loadcell_points/x' isn't exist"
+    if not rospy.has_param('~loadcell_points/y'):
+        print "ros param 'loadcell_points/y' isn't exist"
     idSensor = rospy.get_param('~idSensor')
     idPlace = rospy.get_param('~idPlace')
     z = rospy.get_param('~z')
     frame_id = rospy.get_param('~frame_id')
     PORT_LC0 = rospy.get_param("~PORT_LC0", "/dev/ttyACM0")
     PORT_TR = rospy.get_param("~PORT_TR", "/dev/ttyUSB0")
+    xpos0 = rospy.get_param('~loadcell_points/x', (0.0, 1000.0, 0.0, 1000.0))
+    ypos0 = rospy.get_param('~loadcell_points/y', (0.0, 0.0, 1000.0, 1000.0))
 
     # cmd_chmod = "sudo chmod a+rw "+PORT_LC0
     # print cmd_chmod+"\n",   subprocess.check_output(cmd_chmod.split(" "))
     # cmd_chmod = "sudo chmod a+rw "+PORT_TR
     # print cmd_chmod+"\n",   subprocess.check_output(cmd_chmod.split(" "))
 
-    xpos0 = (16.0, 407.0, 16.0, 407.0)
-    ypos0 = (16.0, 16.0, 244.0, 244.0)
+    # xpos0 = (16.0, 407.0, 16.0, 407.0)
+    # ypos0 = (16.0, 16.0, 244.0, 244.0)
     cIntelCab = CIntelCab(lc_port=PORT_LC0,
                           lc_xpos=xpos0,
                           lc_ypos=ypos0,
@@ -547,7 +553,7 @@ def main():
     r = rospy.Rate(10)
     while not rospy.is_shutdown():        # vector 初期化
         r.sleep()
-        #D_COUT(datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")+"\n")
+        # D_COUT(datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")+"\n")
         # cObj: CTagOBJ type
         state, cObj = cIntelCab.UpdateObj()
         # print "state:", state

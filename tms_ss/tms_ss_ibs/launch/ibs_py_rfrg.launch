@@ -6,5 +6,7 @@
 		<param name="idSensor" value="3018" />
 		<param name="idPlace"  value="2009" />
 		<param name="z"		   value="800.0" />
+		<rosparam param="loadcell_points/x">[70.0, 380.0, 70.0, 380.0]</rosparam>
+		<rosparam param="loadcell_points/y">[70.0, 70.0, 410.0, 410.0]</rosparam>
 	</node>
 </launch>
