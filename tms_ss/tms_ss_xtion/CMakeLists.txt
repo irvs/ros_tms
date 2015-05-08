@@ -4,19 +4,19 @@ project(tms_ss_xtion)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
-  PCL
-  OpenCV
+  pcl_ros
 )
+find_package(OpenCV REQUIRED)
 
 ###################################
 ## catkin specific configuration ##
 ###################################
 catkin_package(
   CATKIN_DEPENDS
+    roscpp
     sensor_msgs
-    openni2_launch
+    pcl_ros
   DEPENDS
-    PCL
     OpenCV
 )
 
@@ -30,6 +30,7 @@ ADD_DEFINITIONS(
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
   estimateExtrinsicParameters/include
   include
 )
@@ -42,6 +43,7 @@ add_executable(estimateExtrinsicParameters
 
 target_link_libraries( estimateExtrinsicParameters
   ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
 )
 
 add_dependencies(estimateExtrinsicParameters tms_ss_xtion_gencpp)

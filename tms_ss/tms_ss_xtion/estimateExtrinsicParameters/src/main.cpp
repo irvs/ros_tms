@@ -12,7 +12,6 @@
 #include <boost/algorithm/string.hpp>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/pcd_io.h>
-//#include <OpenNI.h>
 #include <opencv2/opencv.hpp>
 #include <Eigen/Eigen>
 
@@ -21,8 +20,6 @@
 #include <sensor_msgs/PointCloud2.h>
 
 #include "MyCalibration.h"
-//#include "DepthImageMaker.h"
-//#include "OpenNIDeviceListener.hpp"
 #include "myutility.h"
 
 extern Eigen::Vector2i g_points[4];
@@ -31,13 +28,13 @@ extern Eigen::Vector2i g_points[4];
 bool g_DebugFlg = false;
 double d_roll, d_pitch, d_yaw;
 double d_tx, d_ty, d_tz;
-double d_convertion_threshold = 0.0001;
 int d_convertion_method = 2;
 int main (int argc, char **argv)
 {
   int option;
-  float pattern_width=45;
-  while ((option=getopt(argc,argv,"dhw:0:12:"))!=-1)
+  float pattern_width=45.0;
+  double convertion_threshold = 0.0001;
+  while ((option=getopt(argc,argv,"dht:w:0:1"))!=-1)
   {
     char tmp = '\0';
     if (optarg == NULL)
@@ -51,17 +48,22 @@ int main (int argc, char **argv)
     {
     case 'h':
       std::cout << "-- Usage" << std::endl <<
+        "  -d flag for debug" << std::endl <<
+        "In Debug Mode: " << std::endl <<
         "  -0\t" << "[roll],[pitch],[yaw],[tx],[ty],[tz]" << std::endl <<
         "  -1\t" << "Switch convertion method. (Perturbation method -> Steepest descent method)" << std::endl <<
-        "  -2\t" << "Change threshold of convertion calcuration." << std::endl
-        << std::endl;
+        std::endl;
       return 0;
       break;
     case 'd':
       g_DebugFlg = true;
       break;
+    case 't':
+      convertion_threshold = atof(args.c_str());
+      break;
     case 'w':
       pattern_width = atof(args.c_str());
+      break;
     case '0':
       if (g_DebugFlg)
       {
@@ -80,12 +82,6 @@ int main (int argc, char **argv)
         d_convertion_method = 1;
       }
       break;
-    case '2':
-      if (g_DebugFlg)
-      {
-        d_convertion_threshold = atof(args.c_str());
-      }
-      break;
     case ':':
       std::cerr << "Need some values" << std::endl;
       break;
@@ -94,6 +90,7 @@ int main (int argc, char **argv)
       break;
     }
   }
+
 
   ros::init(argc, argv, "ExtrinsicParameterEstimation");
   ros::NodeHandle ros_nh;
@@ -113,10 +110,8 @@ int main (int argc, char **argv)
   char key;
   uint8_t *pdepth;
   uint8_t *pcolor;
-  //uint8_t *ppoints;
   pdepth = new uint8_t [CAMERA_RESOLUTION_X*CAMERA_RESOLUTION_Y*2];
   pcolor = new uint8_t [CAMERA_RESOLUTION_X*CAMERA_RESOLUTION_Y*3];
-  //ppoints = new uint8_t [CAMERA_RESOLUTION_X*CAMERA_RESOLUTION_Y*16];
 
   MyCalibration my_calib;
   my_calib.initialize(viewer, pdepth, pcolor);
@@ -137,7 +132,7 @@ int main (int argc, char **argv)
       my_calib.extractPlanePoints();
       my_calib.viewPoints();
       my_calib.calcurateExtrinsicParameters(
-          d_convertion_threshold,
+          convertion_threshold,
           d_convertion_method,
           pattern_width);
     }
@@ -159,15 +154,6 @@ int main (int argc, char **argv)
 
   delete [] pdepth;
   delete [] pcolor;
-
-  //depth_stream.removeNewFrameListener(&new_frame_listener);
-
-  //depth_stream.stop();
-  //color_stream.stop();
-  //depth_stream.destroy();
-  //color_stream.destroy();
-  //device.close();
-  //openni::OpenNI::shutdown();
 
   return 0;
 }

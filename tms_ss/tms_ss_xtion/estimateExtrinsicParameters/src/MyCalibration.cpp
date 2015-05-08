@@ -178,24 +178,6 @@ int MyCalibration::extractPlanePoints()
     }
   }
 
-  //int now;
-  //openni::DepthPixel *dp;
-  //dp = (openni::DepthPixel*)frame.getData();
-  //picked_points_around.clear();
-  //for (i=0; i<CAMERA_RESOLUTION_Y; i++)
-  //{ // Converting depth points to 3D world
-  //  for (j=0; j<CAMERA_RESOLUTION_X; j++)
-  //  {
-  //    Eigen::Vector3f tmp;
-  //    now = (i*CAMERA_RESOLUTION_X+j);
-  //    openni::CoordinateConverter::convertDepthToWorld(*m_video_stream,
-  //        j, i, *(openni::DepthPixel*)(dp+now),
-  //        &tmp[0], &tmp[1], &tmp[2]);
-  //    tmp = correct_mirroring * tmp;  // Correction of mirroring
-  //    all_points[now] = tmp;
-  //  }
-  //}
-
   std::vector<Eigen::Vector2i> loop_stack;
   loop_stack.clear();
   loop_stack.push_back(Eigen::Vector2i(tmp_vec[0][0], tmp_vec[0][1]));
@@ -416,10 +398,6 @@ inline int find_corner(const cv::Mat& image, const cv::Size pattern_size,
     cv::cornerSubPix(gray, corners, cv::Size(15,15), cv::Size(-1,-1),
         cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 15, 0.01));
   }
-  else
-  {
-    //std::cerr << "Warning: Couldn't detect corner" << std::endl;
-  }
   return 0;
 }
 
@@ -505,13 +483,6 @@ int MyCalibration::calcurateExtrinsicParameters(double convertion_th,
       ax[2] = -ax[2];
     }
     ax[2] = ax[2]/ax[2].norm();
-    //if (ax[0].cross(ax[1]).dot(ax[2]) < 0)
-    //{
-    //  Eigen::Vector3d tmp;
-    //  tmp = ax[0];
-    //  ax[0] = ax[1];
-    //  ax[1] = tmp;
-    //}
   }
 
   // Estimate other 4 parameters
@@ -718,6 +689,10 @@ int MyCalibration::calcurateExtrinsicParameters(double convertion_th,
         break;
       }
       cnt++;
+      if (cnt % 1000 == 0)
+      {
+        std::cout << "delta_E " << cnt << "-> " << E_prev - E << std::endl;
+      }
     } while (E_prev - E > _th);
   }
   else
