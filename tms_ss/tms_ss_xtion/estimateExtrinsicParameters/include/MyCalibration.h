@@ -4,7 +4,7 @@
 #define CAMERA_RESOLUTION_X 640
 #define CAMERA_RESOLUTION_Y 480
 
-#define PATTERN_WIDTH 45
+#define PATTERN_WIDTH 45.0
 #define CORRESPOND_POINTS 30
 
 void mouseCallback(int event, int x,int y, int flag, void*);
@@ -23,7 +23,7 @@ public:
   int calcurateExtrinsicParameters(
       double convertion_th = 0.01,
       int convertion_method = 2,
-      float pattern_width = 45.0);
+      float pattern_width = PATTERN_WIDTH);
   int startPickingPoints();
   int pickPointsAutomatically(int pattern_rows, int pattern_cols);
   void getDepthFrameCallback(const sensor_msgs::Image::ConstPtr& frame);
