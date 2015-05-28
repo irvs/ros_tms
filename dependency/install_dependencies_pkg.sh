@@ -35,3 +35,5 @@ libqwt-dev \
 ros-indigo-kobuki-msgs \
 ros-indigo-kobuki* \
 freeglut3-dev \
+ros-indigo-amcl \
+ros-indigo-urg-node
