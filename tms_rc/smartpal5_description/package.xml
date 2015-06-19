@@ -12,7 +12,7 @@
   <license>BSD</license>
 
   <author email="pyo@irvs.ait.kyushu-u.ac.jp">Yoonseok Pyo</author>
-  <author email="taylor@irvs.ait.kyushu-u.ac.jp">taylor</maintainer>
+  <author email="taylor@irvs.ait.kyushu-u.ac.jp">taylor</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 
