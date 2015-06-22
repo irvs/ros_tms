@@ -10,8 +10,15 @@
   <url type="website">http://robotics.ait.kyushu-u.ac.jp/index-e.html</url>
   <url type="git">https://github.com/irvs/ros_tms</url>
 
+<<<<<<< HEAD
   <author email="taylor@irvs.ait.kyushu-u.ac.jp">Taylor</author>
   <author email="passionvirus@gmail.com">Yoonseok Pyo</author>
+=======
+  <license>BSD</license>
+
+  <author email="pyo@irvs.ait.kyushu-u.ac.jp">Yoonseok Pyo</author>
+  <author email="taylor@irvs.ait.kyushu-u.ac.jp">taylor</author>
+>>>>>>> issue379
 
   <buildtool_depend>catkin</buildtool_depend>
 
