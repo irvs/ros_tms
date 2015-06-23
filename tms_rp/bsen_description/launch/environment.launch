@@ -1,0 +1,21 @@
+<launch>
+
+  <!-- Environment description file -->
+  <param name="robot_description" textfile="$(find bsen_description)/urdf/bsen.urdf" />
+
+  <!-- Starting robot_state_publisher node -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" >
+  </node>
+
+  <!-- Starting a joint state publisher -->
+  <node name="oculus_robot_motion" pkg="oculus_move" type="oculus_robot_motion">  
+  </node>
+  <!-- Starting joint_state_publisher node with GUI -->
+  <!--  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="use_gui" value="true" />
+  </node>  -->
+
+  <!-- Starting rviz node -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find smartpal5_description)/rviz_config/rviz_config.rviz" respawn="true" />
+
+</launch>
