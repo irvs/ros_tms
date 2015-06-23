@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<robot name="smartpal5">
+
+  <!-- ========== basic link ========== -->
+  <link name="origin_position"/>
+
+  <joint name="world_x_joint" type="prismatic">
+    <parent link="origin_position"/>
+    <child link="world_x_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <limit effort="1000.0" lower="-5." upper="5." velocity="0.5"/>
+  </joint>
+
+  <link name="world_x_link"/>
+
+  <joint name="world_y_joint" type="prismatic">
+    <parent link="world_x_link"/>
+    <child link="world_y_link"/>
+    <origin xyz="0 0 0" rpy="0 0 1.57075"/>
+    <limit effort="1000.0" lower="-5." upper="5." velocity="0.5"/>
+  </joint>
+
+  <link name="world_y_link"/>
+  
+  <joint name="world_theta_joint" type="continuous">
+    <parent link="world_y_link"/>
+    <child link="base_footprint"/>
+    <origin xyz="0 0 0" rpy="0 0 -1.57075"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="base_footprint"/>
+
+<!--   <joint name="base_footprint_joint" type="fixed">  
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint> -->
+
+  <!-- ========== robots ========== -->  
+
+  <!-- ========== environment ========== -->
+
+  <joint name="world_joint" type="fixed">
+    <parent link="origin_position"/>
+    <child link="bsen_room"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <link name="bsen_room">
+    <visual>
+      <geometry>
+        <mesh filename="package://bsen_description/models/room.dae"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+</robot>
