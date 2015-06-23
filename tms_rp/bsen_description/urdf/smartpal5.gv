@@ -1,0 +1,17 @@
+digraph G {
+node [shape=box];
+"origin_position" [label="origin_position"];
+"bsen_room" [label="bsen_room"];
+"world_x_link" [label="world_x_link"];
+"world_y_link" [label="world_y_link"];
+"base_footprint" [label="base_footprint"];
+node [shape=ellipse, color=blue, fontcolor=blue];
+"origin_position" -> "world_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"world_joint" -> "bsen_room"
+"origin_position" -> "world_x_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"world_x_joint" -> "world_x_link"
+"world_x_link" -> "world_y_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 1.57075"]
+"world_y_joint" -> "world_y_link"
+"world_y_link" -> "world_theta_joint" [label="xyz: 0 0 0 \nrpy: 0 0 -1.57075"]
+"world_theta_joint" -> "base_footprint"
+}
