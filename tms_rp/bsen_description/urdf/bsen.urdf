@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot name="smartpal5">
+<robot name="environment">
 
   <!-- ========== basic link ========== -->
   <link name="origin_position"/>
@@ -48,12 +48,13 @@
   </joint>
 
   <link name="bsen_room">
-    <visual>
+    <visual>ls
+
       <geometry>
-        <mesh filename="package://bsen_description/models/room.dae"/>
+        <mesh filename="package://bsen_description/models/coi.stl"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
   </link>
 
-</robot>
+</robot>s
