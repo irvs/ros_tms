@@ -4,7 +4,7 @@
   <!-- ========== basic link ========== -->
   <link name="origin_position"/>
 
-  <joint name="world_x_joint" type="prismatic">
+<!--   <joint name="world_x_joint" type="prismatic">
     <parent link="origin_position"/>
     <child link="world_x_link"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -29,7 +29,7 @@
     <axis xyz="0 0 1"/>
   </joint>
 
-  <link name="base_footprint"/>
+  <link name="base_footprint"/> -->
 
 <!--   <joint name="base_footprint_joint" type="fixed">  
     <parent link="base_footprint"/>
@@ -50,10 +50,145 @@
   <link name="bsen_room">
     <visual>
       <geometry>
-        <mesh filename="package://bsen_description/models/coi.stl"/>
+        <mesh filename="package://environmental_model/model/bsen.stl"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
   </link>
 
+  <joint name="bsen_room_to_chair" type="fixed">
+    <parent link="bsen_room"/>
+    <child link="chair"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <link name="chair">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/chair.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="bsen_room_to_meeting_chair" type="fixed">
+    <parent link="bsen_room"/>
+    <child link="meeting_chair"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <link name="meeting_chair">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/meeting_chair.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="bsen_room_to_refrigerator" type="fixed">
+    <parent link="bsen_room"/>
+    <child link="refrigerator"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <link name="refrigerator">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/refrigerator.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="bsen_room_to_table" type="fixed">
+    <parent link="bsen_room"/>
+    <child link="table"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <link name="table">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/table.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+  
+  <joint name="bsen_room_to_tree" type="fixed">
+    <parent link="bsen_room"/>
+    <child link="tree"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <link name="tree">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/tree.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="bsen_room_to_tv_table" type="fixed">
+    <parent link="bsen_room"/>
+    <child link="tv_table"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <link name="tv_table">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/tv_table.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="bsen_room_to_wagon" type="fixed">
+    <parent link="bsen_room"/>
+    <child link="wagon"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <link name="wagon">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/wagon.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="bsen_room_to_water_bed" type="fixed">
+    <parent link="bsen_room"/>
+    <child link="water_bed"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <link name="water_bed">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/water_bed.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="bsen_room_to_wordrobe" type="fixed">
+    <parent link="bsen_room"/>
+    <child link="wordrobe"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+  
+  <link name="wordrobe">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/wordrobe.stl"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+                  
 </robot>s
