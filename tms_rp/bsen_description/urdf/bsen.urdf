@@ -41,6 +41,10 @@
 
   <!-- ========== environment ========== -->
 
+  <material name="temp">
+    <color rgba="0.5 0.5 0.8 1.0"/>
+  </material>
+
   <joint name="world_joint" type="fixed">
     <parent link="origin_position"/>
     <child link="bsen_room"/>
@@ -52,12 +56,28 @@
       <geometry>
         <mesh filename="package://environmental_model/model/bsen.stl"/>
       </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="temp"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="bsen_origin_joint" type="fixed">
+    <parent link="bsen_room"/>
+    <child link="bsen_origin"/>
+    <origin xyz="4.5 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <link name="bsen_origin">
+    <visual>
+      <geometry>
+        <box size="0.1 0.1 0.1"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
   </link>
 
   <joint name="bsen_room_to_chair" type="fixed">
-    <parent link="bsen_room"/>
+    <parent link="bsen_origin"/>
     <child link="chair"/>
     <origin xyz="0 0 0"/>
   </joint>
@@ -67,27 +87,13 @@
       <geometry>
         <mesh filename="package://environmental_model/model/chair.stl"/>
       </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
-  </link>
-
-  <joint name="bsen_room_to_meeting_chair" type="fixed">
-    <parent link="bsen_room"/>
-    <child link="meeting_chair"/>
-    <origin xyz="0 0 0"/>
-  </joint>
-
-  <link name="meeting_chair">
-    <visual>
-      <geometry>
-        <mesh filename="package://environmental_model/model/meeting_chair.stl"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="temp"/>
+      <origin xyz="7.8 5.62 0.51" rpy="0 0 1.57079633"/>
     </visual>
   </link>
 
   <joint name="bsen_room_to_refrigerator" type="fixed">
-    <parent link="bsen_room"/>
+    <parent link="bsen_origin"/>
     <child link="refrigerator"/>
     <origin xyz="0 0 0"/>
   </joint>
@@ -97,27 +103,94 @@
       <geometry>
         <mesh filename="package://environmental_model/model/refrigerator.stl"/>
       </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="temp"/>
+      <origin xyz="7.2 4.2 0.56" rpy="0 0 0"/>
     </visual>
   </link>
 
-  <joint name="bsen_room_to_table" type="fixed">
-    <parent link="bsen_room"/>
-    <child link="table"/>
+  <joint name="bsen_room_to_meeting_chair1" type="fixed">
+    <parent link="bsen_origin"/>
+    <child link="meeting_chair1"/>
     <origin xyz="0 0 0"/>
   </joint>
 
-  <link name="table">
+  <link name="meeting_chair1">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/meeting_chair.stl"/>
+      </geometry>
+      <material name="temp"/>
+      <origin xyz="1.2 2.1 0.3978" rpy="0 0 -1.57079633"/>
+    </visual>
+  </link>
+
+  <joint name="bsen_room_to_meeting_chair2" type="fixed">
+    <parent link="bsen_origin"/>
+    <child link="meeting_chair2"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <link name="meeting_chair2">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/meeting_chair.stl"/>
+      </geometry>
+      <material name="temp"/>
+      <origin xyz="0.6 1.5 0.3978" rpy="0 0 0"/>
+    </visual>
+  </link>
+
+   <joint name="bsen_room_to_meeting_chair3" type="fixed">
+    <parent link="bsen_origin"/>
+    <child link="meeting_chair3"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <link name="meeting_chair3">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/meeting_chair.stl"/>
+      </geometry>
+      <material name="temp"/>
+      <origin xyz="1.2 0.9 0.3978" rpy="0 0 1.57079633"/>
+    </visual>
+  </link>
+
+   <joint name="bsen_room_to_meeting_chair4" type="fixed">
+    <parent link="bsen_origin"/>
+    <child link="meeting_chair4"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <link name="meeting_chair4">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/meeting_chair.stl"/>
+      </geometry>
+      <material name="temp"/>
+      <origin xyz="1.8 1.5 0.3978" rpy="0 0 3.14159265"/>
+    </visual>
+  </link>
+
+  <joint name="bsen_room_to_meeting_table" type="fixed">
+    <parent link="bsen_origin"/>
+    <child link="meeting_table"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+      
+  <link name="meeting_table">
     <visual>
       <geometry>
         <mesh filename="package://environmental_model/model/table.stl"/>
       </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="temp"/>
+      <origin xyz="1.2 1.5 0.36" rpy="0 0 0"/>
     </visual>
   </link>
-  
+
+
   <joint name="bsen_room_to_tree" type="fixed">
-    <parent link="bsen_room"/>
+    <parent link="bsen_origin"/>
     <child link="tree"/>
     <origin xyz="0 0 0"/>
   </joint>
@@ -127,12 +200,13 @@
       <geometry>
         <mesh filename="package://environmental_model/model/tree.stl"/>
       </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="temp"/>
+      <origin xyz="9.8 5.3 0.872" rpy="0 0 0"/>
     </visual>
   </link>
 
   <joint name="bsen_room_to_tv_table" type="fixed">
-    <parent link="bsen_room"/>
+    <parent link="bsen_origin"/>
     <child link="tv_table"/>
     <origin xyz="0 0 0"/>
   </joint>
@@ -142,53 +216,76 @@
       <geometry>
         <mesh filename="package://environmental_model/model/tv_table.stl"/>
       </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="temp"/>
+      <origin xyz="6.6 2.9 0.175" rpy="0 0 0"/>
     </visual>
   </link>
 
-  <joint name="bsen_room_to_wagon" type="fixed">
-    <parent link="bsen_room"/>
-    <child link="wagon"/>
+  <joint name="bsen_room_to_drawer" type="fixed">
+    <parent link="bsen_origin"/>
+    <child link="drawer"/>
     <origin xyz="0 0 0"/>
   </joint>
 
-  <link name="wagon">
+  <link name="drawer">
     <visual>
       <geometry>
         <mesh filename="package://environmental_model/model/wagon.stl"/>
       </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="temp"/>
+      <origin xyz="8.43 5.8 0.303" rpy="0 0 -1.57079633"/>
     </visual>
   </link>
 
-  <joint name="bsen_room_to_water_bed" type="fixed">
-    <parent link="bsen_room"/>
-    <child link="water_bed"/>
+  <joint name="bsen_room_to_bed" type="fixed">
+    <parent link="bsen_origin"/>
+    <child link="bed"/>
     <origin xyz="0 0 0"/>
   </joint>
 
-  <link name="water_bed">
+  <link name="bed">
     <visual>
       <geometry>
         <mesh filename="package://environmental_model/model/water_bed.stl"/>
       </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="temp"/>
+      <origin xyz="8.04 2.3 0.2075" rpy="0 0 1.57079633"/>
     </visual>
   </link>
 
   <joint name="bsen_room_to_wordrobe" type="fixed">
-    <parent link="bsen_room"/>
+    <parent link="bsen_origin"/>
     <child link="wordrobe"/>
     <origin xyz="0 0 0"/>
   </joint>
-  
+
   <link name="wordrobe">
     <visual>
       <geometry>
         <mesh filename="package://environmental_model/model/wordrobe.stl"/>
       </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="temp"/>
+      <origin xyz="9.1 5.8 1.3" rpy="0 0 -1.57079633"/>
     </visual>
   </link>
-                  
-</robot>s
+
+  <joint name="bsen_room_to_workdesk" type="fixed">
+    <parent link="bsen_origin"/>
+    <child link="workdesk"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <link name="workdesk">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/workdesk.stl"/>
+      </geometry>
+      <material name="temp"/>
+      <origin xyz="7.43 5.9 0.5" rpy="0 0 1.57079633"/>
+    </visual>
+  </link>
+
+</robot>
+
+<!-- 90  degree to radian 1.57079633 -->
+<!-- 180 degree to radian 3.14159265 -->
