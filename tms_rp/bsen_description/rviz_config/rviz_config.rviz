@@ -7,7 +7,6 @@ Panels:
         - /Global Options1
         - /Status1
         - /RobotModel1
-        - /RobotModel1/Status1
         - /RobotModel1/Links1
         - /RobotModel1/Links1/bsen_room1
       Splitter Ratio: 0.5
@@ -120,22 +119,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 22426.5
+      Distance: 26.0969
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 1215.49
-        Y: -3265.65
-        Z: -3748.18
+        X: 2.5933
+        Y: 0.0561008
+        Z: -2.68543
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: -0.889797
+      Pitch: 0.650398
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.57541
+      Yaw: 0.685398
     Saved: ~
 Window Geometry:
   Displays:
