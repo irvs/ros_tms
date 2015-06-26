@@ -701,10 +701,12 @@
 
   <!-- ========== environment ========== -->
 
-  <!-- ========== environment ========== -->
-
   <material name="temp">
     <color rgba="0.5 0.5 0.8 1.0"/>
+  </material>
+
+  <material name="beige">
+    <color rgba="0.98 0.915 0.72 1.0"/>
   </material>
 
   <joint name="world_joint" type="fixed">
@@ -943,6 +945,22 @@
         <mesh filename="package://environmental_model/model/workdesk.stl"/>
       </geometry>
       <material name="temp"/>
+      <origin xyz="7.43 5.9 0.5" rpy="0 0 1.57079633"/>
+    </visual>
+  </link>
+
+  <joint name="bsen_room_to_wagon" type="fixed">
+    <parent link="bsen_origin"/>
+    <child link="wagon"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <link name="wagon">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/wagon.stl"/>
+      </geometry>
+      <material name="beige"/>
       <origin xyz="7.43 5.9 0.5" rpy="0 0 1.57079633"/>
     </visual>
   </link>
