@@ -892,7 +892,7 @@
   <link name="drawer">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/wagon.stl"/>
+        <mesh filename="package://environmental_model/model/drawer.stl"/>
       </geometry>
       <material name="temp"/>
       <origin xyz="8.43 5.8 0.303" rpy="0 0 -1.57079633"/>
@@ -908,7 +908,7 @@
   <link name="bed">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/water_bed.stl"/>
+        <mesh filename="package://environmental_model/model/bed.stl"/>
       </geometry>
       <material name="temp"/>
       <origin xyz="8.04 2.3 0.2075" rpy="0 0 1.57079633"/>
