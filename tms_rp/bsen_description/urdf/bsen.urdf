@@ -305,6 +305,29 @@
     </visual>
   </link>
 
+  <link name="wagon_x_link"/>
+  <joint name="wagon_x_joint" type="prismatic">
+    <parent link="origin_position"/>
+    <child link="wagon_x_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <limit effort="1000.0" lower="-5." upper="5." velocity="0.5"/>
+  </joint>
+
+  <link name="wagon_y_link"/>
+  <joint name="wagon_y_joint" type="prismatic">
+    <parent link="wagon_x_link"/>
+    <child link="wagon_y_link"/>
+    <origin xyz="0 0 0" rpy="0 0 1.57075"/>
+    <limit effort="1000.0" lower="-5." upper="5." velocity="0.5"/>
+  </joint>
+
+  <joint name="wagon_theta_joint" type="continuous">
+    <parent link="wagon_y_link"/>
+    <child link="wagon"/>
+    <origin xyz="0 0 0" rpy="0 0 -1.57075"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
 </robot>
 
 <!-- 90  degree to radian 1.57079633 -->
