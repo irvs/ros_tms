@@ -1,0 +1,59 @@
+digraph G {
+node [shape=box];
+"origin_position" [label="origin_position"];
+"bsen_room" [label="bsen_room"];
+"bsen_origin" [label="bsen_origin"];
+"bed" [label="bed"];
+"chair" [label="chair"];
+"drawer" [label="drawer"];
+"meeting_chair1" [label="meeting_chair1"];
+"meeting_chair2" [label="meeting_chair2"];
+"meeting_chair3" [label="meeting_chair3"];
+"meeting_chair4" [label="meeting_chair4"];
+"meeting_table" [label="meeting_table"];
+"refrigerator" [label="refrigerator"];
+"tree" [label="tree"];
+"tv_table" [label="tv_table"];
+"wordrobe" [label="wordrobe"];
+"workdesk" [label="workdesk"];
+"wagon_x_link" [label="wagon_x_link"];
+"wagon_y_link" [label="wagon_y_link"];
+"wagon" [label="wagon"];
+node [shape=ellipse, color=blue, fontcolor=blue];
+"origin_position" -> "world_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"world_joint" -> "bsen_room"
+"bsen_room" -> "bsen_origin_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"bsen_origin_joint" -> "bsen_origin"
+"bsen_origin" -> "bsen_room_to_bed" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"bsen_room_to_bed" -> "bed"
+"bsen_origin" -> "bsen_room_to_chair" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"bsen_room_to_chair" -> "chair"
+"bsen_origin" -> "bsen_room_to_drawer" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"bsen_room_to_drawer" -> "drawer"
+"bsen_origin" -> "bsen_room_to_meeting_chair1" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"bsen_room_to_meeting_chair1" -> "meeting_chair1"
+"bsen_origin" -> "bsen_room_to_meeting_chair2" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"bsen_room_to_meeting_chair2" -> "meeting_chair2"
+"bsen_origin" -> "bsen_room_to_meeting_chair3" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"bsen_room_to_meeting_chair3" -> "meeting_chair3"
+"bsen_origin" -> "bsen_room_to_meeting_chair4" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"bsen_room_to_meeting_chair4" -> "meeting_chair4"
+"bsen_origin" -> "bsen_room_to_meeting_table" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"bsen_room_to_meeting_table" -> "meeting_table"
+"bsen_origin" -> "bsen_room_to_refrigerator" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"bsen_room_to_refrigerator" -> "refrigerator"
+"bsen_origin" -> "bsen_room_to_tree" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"bsen_room_to_tree" -> "tree"
+"bsen_origin" -> "bsen_room_to_tv_table" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"bsen_room_to_tv_table" -> "tv_table"
+"bsen_origin" -> "bsen_room_to_wordrobe" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"bsen_room_to_wordrobe" -> "wordrobe"
+"bsen_origin" -> "bsen_room_to_workdesk" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"bsen_room_to_workdesk" -> "workdesk"
+"bsen_origin" -> "wagon_x_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"wagon_x_joint" -> "wagon_x_link"
+"wagon_x_link" -> "wagon_y_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 1.5708"]
+"wagon_y_joint" -> "wagon_y_link"
+"wagon_y_link" -> "wagon_theta_joint" [label="xyz: 0 0 0 \nrpy: 0 0 -1.5708"]
+"wagon_theta_joint" -> "wagon"
+}
