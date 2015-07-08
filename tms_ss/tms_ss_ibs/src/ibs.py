@@ -529,10 +529,10 @@ def main():
     xpos0 = rospy.get_param('~loadcell_points/x', (0.0, 1000.0, 0.0, 1000.0))
     ypos0 = rospy.get_param('~loadcell_points/y', (0.0, 0.0, 1000.0, 1000.0))
 
-    # cmd_chmod = "sudo chmod a+rw "+PORT_LC0
-    # print cmd_chmod+"\n",   subprocess.check_output(cmd_chmod.split(" "))
-    # cmd_chmod = "sudo chmod a+rw "+PORT_TR
-    # print cmd_chmod+"\n",   subprocess.check_output(cmd_chmod.split(" "))
+    cmd_chmod = "sudo -S chmod a+rw "+PORT_LC0
+    print cmd_chmod+"\n",   subprocess.check_output(cmd_chmod.split(" "))
+    cmd_chmod = "sudo -S chmod a+rw "+PORT_TR
+    print cmd_chmod+"\n",   subprocess.check_output(cmd_chmod.split(" "))
 
     # xpos0 = (16.0, 407.0, 16.0, 407.0)
     # ypos0 = (16.0, 16.0, 244.0, 244.0)
