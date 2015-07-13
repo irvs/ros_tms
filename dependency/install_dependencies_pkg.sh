@@ -32,6 +32,7 @@ qhull-bin \
 libqhull-dev \
 liblapack-dev \
 libqwt-dev \
+ros-indigo-move-base \
 ros-indigo-kobuki-msgs \
 ros-indigo-kobuki* \
 freeglut3-dev \
