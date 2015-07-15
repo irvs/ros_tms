@@ -718,9 +718,8 @@
   <link name="bsen_room">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/bsen.stl"/>
+        <mesh filename="package://environmental_model/model/bsen.dae"/>
       </geometry>
-      <material name="temp"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
   </link>
@@ -740,6 +739,51 @@
     </visual>
   </link>
 
+  <joint name="bsen_room_to_wall" type="fixed">
+    <parent link="bsen_room"/>
+    <child link="bsen_wall"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <link name="bsen_wall">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/bsen_wall.dae"/>
+      </geometry>
+      <origin xyz="0. 0. 0." rpy="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="bsen_room_to_celling" type="fixed">
+    <parent link="bsen_room"/>
+    <child link="bsen_celling"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <link name="bsen_celling">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/bsen_celling.dae"/>
+      </geometry>
+      <origin xyz="0. 0. 2.3" rpy="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="bsen_room_to_kitchen" type="fixed">
+    <parent link="bsen_origin"/>
+    <child link="kitchen"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <link name="kitchen">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/kitchen.dae"/>
+      </geometry>
+      <origin xyz="4.66 5.9 0.4855" rpy="0 0 -1.57079633"/>
+    </visual>
+  </link>
+
   <joint name="bsen_room_to_chair" type="fixed">
     <parent link="bsen_origin"/>
     <child link="chair"/>
@@ -749,9 +793,8 @@
   <link name="chair">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/chair.stl"/>
+        <mesh filename="package://environmental_model/model/chair.dae"/>
       </geometry>
-      <material name="temp"/>
       <origin xyz="7.8 5.62 0.51" rpy="0 0 1.57079633"/>
     </visual>
   </link>
@@ -765,9 +808,8 @@
   <link name="refrigerator">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/refrigerator.stl"/>
+        <mesh filename="package://environmental_model/model/refrigerator.dae"/>
       </geometry>
-      <material name="temp"/>
       <origin xyz="7.2 4.2 0.56" rpy="0 0 0"/>
     </visual>
   </link>
@@ -781,9 +823,8 @@
   <link name="meeting_chair1">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/meeting_chair.stl"/>
+        <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
       </geometry>
-      <material name="temp"/>
       <origin xyz="1.2 2.1 0.3978" rpy="0 0 -1.57079633"/>
     </visual>
   </link>
@@ -797,9 +838,8 @@
   <link name="meeting_chair2">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/meeting_chair.stl"/>
+        <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
       </geometry>
-      <material name="temp"/>
       <origin xyz="0.6 1.5 0.3978" rpy="0 0 0"/>
     </visual>
   </link>
@@ -813,9 +853,8 @@
   <link name="meeting_chair3">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/meeting_chair.stl"/>
+        <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
       </geometry>
-      <material name="temp"/>
       <origin xyz="1.2 0.9 0.3978" rpy="0 0 1.57079633"/>
     </visual>
   </link>
@@ -829,9 +868,8 @@
   <link name="meeting_chair4">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/meeting_chair.stl"/>
+        <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
       </geometry>
-      <material name="temp"/>
       <origin xyz="1.8 1.5 0.3978" rpy="0 0 3.14159265"/>
     </visual>
   </link>
@@ -845,9 +883,8 @@
   <link name="meeting_table">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/table.stl"/>
+        <mesh filename="package://environmental_model/model/meeting_table.dae"/>
       </geometry>
-      <material name="temp"/>
       <origin xyz="1.2 1.5 0.36" rpy="0 0 0"/>
     </visual>
   </link>
@@ -862,10 +899,9 @@
   <link name="tree">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/tree.stl"/>
+        <mesh filename="package://environmental_model/model/tree.dae"/>
       </geometry>
-      <material name="temp"/>
-      <origin xyz="9.8 5.3 0.872" rpy="0 0 0"/>
+      <origin xyz="9.8 5.3 0." rpy="0 0 0"/>
     </visual>
   </link>
 
@@ -878,9 +914,8 @@
   <link name="tv_table">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/tv_table.stl"/>
+        <mesh filename="package://environmental_model/model/tv_table.dae"/>
       </geometry>
-      <material name="temp"/>
       <origin xyz="6.6 2.9 0.175" rpy="0 0 0"/>
     </visual>
   </link>
@@ -894,9 +929,8 @@
   <link name="drawer">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/drawer.stl"/>
+        <mesh filename="package://environmental_model/model/drawer.dae"/>
       </geometry>
-      <material name="temp"/>
       <origin xyz="8.43 5.8 0.303" rpy="0 0 -1.57079633"/>
     </visual>
   </link>
@@ -910,9 +944,8 @@
   <link name="bed">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/bed.stl"/>
+        <mesh filename="package://environmental_model/model/bed.dae"/>
       </geometry>
-      <material name="temp"/>
       <origin xyz="8.04 2.3 0.2075" rpy="0 0 1.57079633"/>
     </visual>
   </link>
@@ -926,9 +959,8 @@
   <link name="wordrobe">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/wordrobe.stl"/>
+        <mesh filename="package://environmental_model/model/wordrobe.dae"/>
       </geometry>
-      <material name="temp"/>
       <origin xyz="9.1 5.8 1.3" rpy="0 0 -1.57079633"/>
     </visual>
   </link>
@@ -942,9 +974,8 @@
   <link name="workdesk">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/workdesk.stl"/>
+        <mesh filename="package://environmental_model/model/work_desk.dae"/>
       </geometry>
-      <material name="temp"/>
       <origin xyz="7.43 5.9 0.5" rpy="0 0 1.57079633"/>
     </visual>
   </link>
@@ -960,8 +991,8 @@
       <geometry>
         <mesh filename="package://environmental_model/model/wagon.stl"/>
       </geometry>
-      <material name="beige"/>
-      <origin xyz="7.43 5.9 0.5" rpy="0 0 1.57079633"/>
+      <material name="grey"/>
+      <origin xyz="2. 4. 0.5" rpy="0 0 1.57079633"/>
     </visual>
   </link>
 
