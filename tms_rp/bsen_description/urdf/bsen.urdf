@@ -425,11 +425,11 @@
     </visual>
   </link>
 
-  <joint name="bsen_room_to_wagon" type="fixed">
+<!--   <joint name="bsen_room_to_wagon" type="fixed">
     <parent link="bsen_origin"/>
     <child link="wagon"/>
     <origin xyz="0 0 0"/>
-  </joint>
+  </joint> -->
 
   <link name="wagon">
     <visual>
@@ -437,7 +437,8 @@
         <mesh filename="package://environmental_model/model/wagon.dae"/>
       </geometry>
       <material name="grey"/>
-      <origin xyz="2. 4. 0.5" rpy="0 0 1.57079633"/>
+<!--       <origin xyz="2. 4. 0.5" rpy="0 0 1.57079633"/> -->
+      <origin xyz="0. 0. 0.5" rpy="0 0 1.57079633"/>
     </visual>
   </link>
 
@@ -445,7 +446,7 @@
 
   <link name="wagon_x_link"/>
   <joint name="wagon_x_joint" type="prismatic">
-    <parent link="bsen_origin"/>
+    <parent link="start_position"/>
     <child link="wagon_x_link"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
@@ -462,7 +463,7 @@
   <joint name="wagon_theta_joint" type="continuous">
     <parent link="wagon_y_link"/>
     <child link="wagon"/>
-    <origin xyz="0 0 0" rpy="0 0 -1.57079633"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
   </joint>
 
