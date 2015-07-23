@@ -2,8 +2,9 @@
 <launch>
 
   <!-- Environment description file -->
-  <param name="robot_description" textfile="$(find bsen_description)/urdf/bsen.urdf" />
-
+<!--   <param name="robot_description" textfile="$(find bsen_description)/urdf/bsen.urdf" /> -->
+  <param name="robot_description"
+   command="$(find xacro)/xacro.py '$(find environment_description)/urdf/environment.xacro'" />
   <!-- Starting robot_state_publisher node -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" >
   </node>
@@ -14,6 +15,6 @@
   </node>  -->
 
   <!-- Starting rviz node -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find bsen_description)/rviz_config/rviz_config.rviz" respawn="true" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find environment_description)/rviz_config/rviz_config.rviz" respawn="true" />
 
 </launch>

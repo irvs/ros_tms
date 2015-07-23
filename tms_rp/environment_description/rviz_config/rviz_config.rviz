@@ -164,10 +164,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        start_position:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         tree:
           Alpha: 1
           Show Axes: false
@@ -211,6 +207,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        world:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
       Name: RobotModel
       Robot Description: robot_description
       TF Prefix: ""
@@ -220,7 +220,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: start_position
+    Fixed Frame: world
     Frame Rate: 30
   Name: root
   Tools:
