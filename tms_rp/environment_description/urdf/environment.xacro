@@ -1,50 +1,21 @@
 <?xml version="1.0"?>
-<robot name="environment">
+<!-- Environment of B-Sen Project room -->
+<robot name="environment" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <!-- ========== basic link ========== -->
-  <link name="start_position"/>
+  <!-- Constants for robot dimensions -->
+  <xacro:property name="PI" value="3.1415926535897931"/>
 
-<!--   <joint name="world_x_joint" type="prismatic">
-    <parent link="origin_position"/>
-    <child link="world_x_link"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <limit effort="1000.0" lower="-5." upper="5." velocity="0.5"/>
-  </joint>
+  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
+  <xacro:include filename="$(find environment_description)/urdf/environment.gazebo" />
+  <!-- Import Rviz colors -->
+  <xacro:include filename="$(find environment_description)/urdf/materials.xacro" />
 
-  <link name="world_x_link"/>
+  <!-- Used for fixing robot to Gazebo 'base_link' -->
+  <link name="world"/>
 
-  <joint name="world_y_joint" type="prismatic">
-    <parent link="world_x_link"/>
-    <child link="world_y_link"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <limit effort="1000.0" lower="-5." upper="5." velocity="0.5"/>
-  </joint>
-
-  <link name="world_y_link"/>
-  
-  <joint name="world_theta_joint" type="continuous">
-    <parent link="world_y_link"/>
-    <child link="base_footprint"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <axis xyz="0 0 1"/>
-  </joint>
-
-  <link name="base_footprint"/> -->
-
-<!--   <joint name="base_footprint_joint" type="fixed">  
-    <parent link="base_footprint"/>
-    <child link="base_link"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-  </joint> -->
-
-  <!-- ========== robots ========== -->  
-
-  <!-- ========== environment ========== -->
-
-
-
+  <!--  Environment -->
   <joint name="world_joint" type="fixed">
-    <parent link="start_position"/>
+    <parent link="world"/>
     <child link="bsen_room"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint>
@@ -56,6 +27,15 @@
       </geometry>
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1"/>
+      <inertia
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
+    </inertial>    
   </link>
 
   <joint name="bsen_origin_joint" type="fixed">
@@ -438,7 +418,7 @@
 
   <link name="wagon_x_link"/>
   <joint name="wagon_x_joint" type="prismatic">
-    <parent link="start_position"/>
+    <parent link="world"/>
     <child link="wagon_x_link"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
@@ -460,6 +440,3 @@
   </joint>
 
 </robot>
-
-<!-- 90  degree to radian 1.57079633 -->
-<!-- 180 degree to radian 3.14159265 -->

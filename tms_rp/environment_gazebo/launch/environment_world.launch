@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
 
   <arg name="paused" default="false"/>
@@ -16,8 +17,9 @@
   </include>
 
   <param name="robot_description"
-	 command="$(find xacro)/xacro.py '$(find environment_description)/urdf/environment.xacro'" />
+	 command="$(find xacro)/xacro.py '$(find environment_description)/urdf/environment.xacro'"/>
 
-  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"	args="-urdf -model environment -param robot_description"/>
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+  args="-urdf -model environment -param robot_description"/>
 
 </launch>
