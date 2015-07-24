@@ -462,18 +462,6 @@ void Viewer::drawHumanPoint()
             drawPoint(x, y, QPen(Qt::yellow, 15));
           }
         }
-        /*
-        QPainter CPainter(&m_stImage);
-        CPainter.setPen(QPen(Qt::blue,10));
-        for(int i=0; i < msgRawdata.tracking_grid.size();i++)
-        {
-        double x = ORIGIN_X + msgRawdata.tracking_grid[i].x * REDUCED_SCALE;
-        double y = ORIGIN_Y - msgRawdata.tracking_grid[i].y * REDUCED_SCALE;
-        QPoint poi(x, y);
-        CPainter.drawPoint(poi);
-        }
-        update();
-        */
     }
     update();
 }
