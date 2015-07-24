@@ -2,6 +2,8 @@
   <group ns="pot_urg1">
     <node pkg="urg_node" name="urg_node" type="urg_node">
     <param name="serial_port" value="/dev/ttyACM0" />
+    <param name="angle_min" value="-1.57079632679" />
+    <param name="angle_max" value="1.57079632679" />
     </node>
   </group>
 </launch>

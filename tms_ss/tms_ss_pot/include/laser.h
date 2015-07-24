@@ -1,4 +1,4 @@
-// Laser.h : CLaser 
+// Laser.h : CLaser クラスのインターフェイス
 //
 
 
@@ -7,14 +7,6 @@
 #ifndef M_PI
 #define M_PI        3.14159265358979323846  /* pi */
 #endif
-
-#define MAX_LRF_RANGE 5.6
-//#define MAX_LRF_RANGE 55.0
-#define MIN_DIFF_DIST 0.02
-//#define MIN_DIFF_DIST 0.5
-//#define MIN_OBJ_PROB 0.0001
-#define MIN_OBJ_PROB 0.03//0.05//0.01
-#define	N_RING 500//100//1000//100
 
 typedef struct {
 	double x;
@@ -43,8 +35,6 @@ public:
 	static const int m_cnMaxConnect = MAX_CONNECT;
 	static const int m_cnMaxDataSizeLRF = MAX_DATA_SIZE_LRF;
 	static const int m_cnMaxTrackingObject = MAX_TRACKING_OBJECT;
-	static const int m_cnMaxParticleNum = MAX_PARTICLE_NUM + MAX_PARTICLE_NUM_MCMC;
-	static const int m_cnTrackingHistory = TRACKING_HISTORY;
 	bool m_bNodeActive[m_cnMaxConnect];
 	int m_nConnectNum;
 
@@ -63,17 +53,8 @@ public:
 	double m_DivAngle[m_cnMaxConnect];
 	LRFParam m_LRFParam[m_cnMaxConnect];
 
-	//
-	CvMat* m_Particle[m_cnMaxParticleNum];
-	double m_ParticleLikelihood[m_cnMaxParticleNum];
-	int m_ParticleLabel[m_cnMaxParticleNum];
-	int m_nParticleNum;
-
 	CTarget* m_pTarget[m_cnMaxTrackingObject];
 	int m_Target_cnt[m_cnMaxTrackingObject];
-
-	int m_TargetNum;
-	double m_Grid[(STAGE_X/GRID_DISTANCE)*(STAGE_Y/GRID_DISTANCE)];
 
 	int m_n_ring;
 	std::vector<std::vector<std::vector<double> > > m_BackLRFDataRing;
