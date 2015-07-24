@@ -70,7 +70,7 @@ Viewer::Viewer(QNode *node, QWidget *parent) :
     //-----------------------------------------------------------------------
     //draw_setting
     //-----------------------------------------------------------------------
-    m_stImage.load("src/ros_tms/tms_dev/test_viewer/image/COI3.jpg");
+    m_stImage.load("./src/ros_tms/tms_dev/portable_viewer/image/COI3.jpg");
     drawGridSquare();
     clearImage_Button       = false;
     reloadImage_Button      = false;
@@ -276,7 +276,7 @@ void Viewer::laserDraw3()
 void Viewer::clearImage()
 {
     //m_stImage.load("src/ros_tms/tms_dev/test_viewer/image/COI.jpg");
-    m_stImage.load("src/ros_tms/tms_dev/test_viewer/image/COI3.jpg");
+    m_stImage.load("./src/ros_tms/tms_dev/portable_viewer/image/COI3.jpg");
     this->clearImage_Button = false;
     update();
 }
@@ -367,7 +367,7 @@ void Viewer::resizeEvent(QResizeEvent *event)
 {
     QImage newImage(event->size(), QImage::Format_RGB32);
     //newImage.load("src/ros_tms/tms_dev/test_viewer/image/COI.jpg");
-    newImage.load("src/ros_tms/tms_dev/test_viewer/image/COI3.jpg");
+    newImage.load("./src/ros_tms/tms_dev/portable_viewer/image/COI3.jpg");
     m_stImage = newImage;
 }
 
@@ -840,7 +840,7 @@ L:      int n_flag = 0;
 void Viewer::setPortable(int x, int y)
 {
     QLabel *my_label = new QLabel(this);
-    QPixmap photo("/home/kurt/catkin_ws/psen/portable.png");
+    QPixmap photo("./src/ros_tms/tms_dev/portable_viewer/image/portable.png");
     my_label->setGeometry(x-14,y-23,28,46);
     //my_label->setStyleSheet("background-color: red;");
     my_label->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
