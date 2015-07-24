@@ -1,0 +1,18 @@
+#ifndef TEXT_EDIT_H
+#define TEXT_EDIT_H
+
+#include <QMainWindow>
+#include "ui_text_edit.h"
+
+class QAction;
+
+class text_edit : public QMainWindow, private Ui_MainWindow
+{
+  Q_OBJECT
+  
+public:
+  text_edit(QWidget *parent=0);
+
+};
+
+#endif
