@@ -14,7 +14,6 @@
 #include <pthread.h>
 #include <std_msgs/String.h>
 #include <sensor_msgs/LaserScan.h>
-#include <tms_ss_pot/define.h>
 
 pthread_mutex_t mutex_laser  = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
@@ -26,7 +25,7 @@ void LaserSensingCallback(const sensor_msgs::LaserScan::ConstPtr &scan)
 {
     pthread_mutex_lock(&mutex_laser);
     //std::cout << "\ESC[2J" ;
-    ROS_INFO("start pot_urg_pot");
+    ROS_INFO("start pot_urg nan to number");
 
     sensor_msgs::LaserScan Laser;
     Laser.header.seq      = scan->header.seq;
@@ -41,6 +40,7 @@ void LaserSensingCallback(const sensor_msgs::LaserScan::ConstPtr &scan)
     Laser.range_max       = scan->range_max;
 
     if (Laser.ranges.size() == 0 ) Laser.ranges.resize(scan->ranges.size());
+    //Laser.ranges.clear();
     for (int i = 0; i < scan->ranges.size(); i++)
     {
         if (isnan(scan->ranges[scan->ranges.size() - i -1]) == 0)
@@ -52,9 +52,10 @@ void LaserSensingCallback(const sensor_msgs::LaserScan::ConstPtr &scan)
             Laser.ranges[i] = 5.59999999999;
         }
     }
+    std::cout <<  "number of points " << Laser.ranges.size() << std::endl;
     Laser.intensities = scan->intensities;
     pub.publish(Laser);
-    ROS_INFO("end   pot_urg_pot");
+    ROS_INFO("end   pot_urg nan to number");
 
     pthread_mutex_unlock(&mutex_laser);
 }
