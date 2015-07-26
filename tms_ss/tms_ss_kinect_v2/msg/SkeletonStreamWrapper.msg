@@ -1,0 +1,4 @@
+Header header
+int8 camera_number
+tms_ss_kinect_v2/Skeleton skeleton
+tms_ss_kinect_v2/CameraPosture camera_posture
