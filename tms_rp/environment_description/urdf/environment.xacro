@@ -25,11 +25,11 @@
       <geometry>
         <mesh filename="package://environmental_model/model/bsen.dae"/>
       </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0.001" rpy="0 0 0"/>
     </visual>
 
     <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0.001" rpy="0 0 0"/>
       <mass value="1"/>
       <inertia
         ixx="1.0" ixy="0.0" ixz="0.0"
