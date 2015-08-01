@@ -139,7 +139,7 @@ void visualization_callback(const tms_msg_ss::tracking_points::ConstPtr &msg)
           
           //line
           visualization_msgs::Marker marker_line;
-          marker_line.header.frame_id = "/laser";
+          marker_line.header.frame_id = "/world";
           marker_line.header.stamp    = ros::Time::now();          
  Z_REFRESH1:
              for(int j = 0; j < msg->tracking_grid.size(); j++)
@@ -177,7 +177,7 @@ void visualization_callback(const tms_msg_ss::tracking_points::ConstPtr &msg)
             
              visualization_msgs::Marker marker;
 
-             marker.header.frame_id       = "/laser";
+             marker.header.frame_id       = "/world";
              marker.header.stamp          = ros::Time::now();
              
  Z_REFRESH:    
@@ -227,7 +227,7 @@ void visualization_callback(const tms_msg_ss::tracking_points::ConstPtr &msg)
              {
           //circle
           visualization_msgs::Marker marker_circle;
-          marker_circle.header.frame_id = "/laser";
+          marker_circle.header.frame_id = "/world";
           marker_circle.header.stamp    = ros::Time::now();
 Z_REFRESH2:
              for(int j = 0; j < msg->tracking_grid.size(); j++)
@@ -241,8 +241,8 @@ Z_REFRESH2:
                marker_circle.id      =  msg->tracking_grid[i].id;
                marker_circle.type    =  shape_circle;
                marker_circle.action  =  visualization_msgs::Marker::ADD;
-               marker_circle.scale.x = 0.1;
-               marker_circle.scale.y = 0.1;
+               marker_circle.scale.x = 0.102;
+               marker_circle.scale.y = 0.102;
                marker_circle.scale.z = 1.0;
                int color_c = p->id % 14;
                marker_circle.color.r = colorset[color_c][0];
