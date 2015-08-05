@@ -214,7 +214,7 @@ void visualization_callback(const tms_msg_ss::tracking_points::ConstPtr &msg)
              marker.color.g = colorset[color][1];
              marker.color.b = colorset[color][2];
              marker.color.a = 0.4;
-             marker.lifetime = ros::Duration(0.5);
+             marker.lifetime = ros::Duration(0.001);
 
              markerArray.markers.push_back(marker);
              z_id++;
