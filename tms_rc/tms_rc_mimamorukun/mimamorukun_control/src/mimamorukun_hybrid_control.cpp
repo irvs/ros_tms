@@ -46,8 +46,6 @@ int POS_Y = 0;
 double TURN_KP;
 double SPD_KP;
 int ARV_DIST;
-// double   POS_SIGMA = 0;
-// double   POS_ANG = 0;
 
 /*double joy_cmd_spd = 0.0;
 double joy_cmd_turn = 0.0;*/
@@ -112,7 +110,7 @@ class MachinePose_s {
     double getCurrentVelocityX();
     double getCurrentVelocityY();
     double getCurrentOmega();
-    bool goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/);
+    // bool goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/);
 
     Kalman *kalman;
     enum InfoType {
@@ -150,7 +148,6 @@ double nomalizeAng(double rad) {
 }
 
 void MachinePose_s::updateVicon() {
-    // printf("line:%s\n",__LINE__);
     tms_msg_db::TmsdbGetData srv;
     srv.request.tmsdb.id = 2007;
     srv.request.tmsdb.sensor = 3001;
@@ -355,6 +352,7 @@ bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/) 
 }
 
 bool MachinePose_s::postPose() {
+    // @todo publish pose data
     /*    tms_msg_db::TmsdbStamped db_msg;
         tms_msg_db::Tmsdb tmpData;
         ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
@@ -572,63 +570,63 @@ double MachinePose_s::getCurrentVelocityY() { return vel_fusioned.y; }
 
 double MachinePose_s::getCurrentOmega() { return vel_fusioned.theta; }
 
-bool MachinePose_s::goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/) {
-    /* Kanayama, Y.; Kimura, Y.; Miyazaki, F.; Noguchi, T.; ,
-    "A stable tracking control method for an autonomous mobile robot," Robotics and Automation,
-    1990.
-    Proceedings., 1990 IEEE International Conference on , vol., no., pp.384-389 vol.1, 13-18 May
-    1990 */
-
-    double dirVel = 250.0;
-    double dirOmega = 0.0;
-
-    double Kx = 0.0001;  // 0.01;
-    double Ky = 1.5e-6;
-    double Kt = 0.1;
-
-    double gain = 3.0;  // 0.1;
-
-    double targetX = this->tgtPose.x;
-    double targetY = this->tgtPose.y;
-    double errorX = targetX - this->getCurrentPositionX();
-    double errorY = targetY - this->getCurrentPositionY();
-    double targetT = atan2(errorY, errorX);
-    double theta = this->getCurrentTheta();
-
-    double errorNX = errorX * cos(theta) + errorY * sin(theta);
-    double errorNY = -errorX * sin(theta) + errorY * cos(theta);
-    double errorNT = targetT - theta;
-
-    double vel = sqrt(sqr(this->getCurrentVelocityX()) + sqr(this->getCurrentVelocityY()));
-    double omega = this->getCurrentOmega();
-    double mu1 = -Kx * errorNX;
-    double mu2 = -Ky * errorNY * dirVel - Kt * sin(errorNT);
-    double u1 = fabs(dirVel * cos(errorNT)) - mu1;
-    double u2 = dirOmega - mu2;
-
-    bool ret = false;
-
-    if (this->tgtPose.x == 0.0 && this->tgtPose.y == 0.0) {  // mokutekiti
-        u1 = u2 = 0;
-    }
-
-    double tmp_spd = u1 * gain;
-    double tmp_turn = Rad2Deg(u2) * gain;
-    tmp_spd = Limit(tmp_spd, 100, -100);
-    tmp_turn = Limit(tmp_turn, 30, -30);
-    double distance = sqrt(sqr(errorX) + sqr(errorY));
-    if (distance <= 200) {
-        tmp_spd = 0.0;
-    }
-    printf("spd:%+8.2lf turn:%+4.1lf", tmp_spd, tmp_turn);
-    printf("spd:%+8.2lf turn:%+4.1lf", tmp_spd, tmp_turn);
-    if (distance <= 200 /* && 60>fabs(Rad2Deg(errorNT))*/) {
-        this->tgtTwist.angular.z = 0;
-        this->tgtTwist.linear.x = 0;
-        return true;
-    } else {
-        this->tgtTwist.angular.z = Deg2Rad(tmp_turn);
-        this->tgtTwist.linear.x = tmp_spd;
-        return false;
-    }
-}
+// bool MachinePose_s::goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/) {
+//     /* Kanayama, Y.; Kimura, Y.; Miyazaki, F.; Noguchi, T.; ,
+//     "A stable tracking control method for an autonomous mobile robot," Robotics and Automation,
+//     1990.
+//     Proceedings., 1990 IEEE International Conference on , vol., no., pp.384-389 vol.1, 13-18 May
+//     1990 */
+//
+//     double dirVel = 250.0;
+//     double dirOmega = 0.0;
+//
+//     double Kx = 0.0001;  // 0.01;
+//     double Ky = 1.5e-6;
+//     double Kt = 0.1;
+//
+//     double gain = 3.0;  // 0.1;
+//
+//     double targetX = this->tgtPose.x;
+//     double targetY = this->tgtPose.y;
+//     double errorX = targetX - this->getCurrentPositionX();
+//     double errorY = targetY - this->getCurrentPositionY();
+//     double targetT = atan2(errorY, errorX);
+//     double theta = this->getCurrentTheta();
+//
+//     double errorNX = errorX * cos(theta) + errorY * sin(theta);
+//     double errorNY = -errorX * sin(theta) + errorY * cos(theta);
+//     double errorNT = targetT - theta;
+//
+//     double vel = sqrt(sqr(this->getCurrentVelocityX()) + sqr(this->getCurrentVelocityY()));
+//     double omega = this->getCurrentOmega();
+//     double mu1 = -Kx * errorNX;
+//     double mu2 = -Ky * errorNY * dirVel - Kt * sin(errorNT);
+//     double u1 = fabs(dirVel * cos(errorNT)) - mu1;
+//     double u2 = dirOmega - mu2;
+//
+//     bool ret = false;
+//
+//     if (this->tgtPose.x == 0.0 && this->tgtPose.y == 0.0) {  // mokutekiti
+//         u1 = u2 = 0;
+//     }
+//
+//     double tmp_spd = u1 * gain;
+//     double tmp_turn = Rad2Deg(u2) * gain;
+//     tmp_spd = Limit(tmp_spd, 100, -100);
+//     tmp_turn = Limit(tmp_turn, 30, -30);
+//     double distance = sqrt(sqr(errorX) + sqr(errorY));
+//     if (distance <= 200) {
+//         tmp_spd = 0.0;
+//     }
+//     printf("spd:%+8.2lf turn:%+4.1lf", tmp_spd, tmp_turn);
+//     printf("spd:%+8.2lf turn:%+4.1lf", tmp_spd, tmp_turn);
+//     if (distance <= 200 /* && 60>fabs(Rad2Deg(errorNT))*/) {
+//         this->tgtTwist.angular.z = 0;
+//         this->tgtTwist.linear.x = 0;
+//         return true;
+//     } else {
+//         this->tgtTwist.angular.z = Deg2Rad(tmp_turn);
+//         this->tgtTwist.linear.x = tmp_spd;
+//         return false;
+//     }
+// }
