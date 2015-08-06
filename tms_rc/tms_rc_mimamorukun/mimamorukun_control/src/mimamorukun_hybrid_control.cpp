@@ -56,6 +56,7 @@ ros::Publisher db_pub;
 pthread_t thread_vicon;
 pthread_t thread_odom;
 pthread_mutex_t mutex_update_kalman = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex_socket = PTHREAD_MUTEX_INITIALIZER;
 
 class MachinePose_s {
    private:
@@ -176,8 +177,10 @@ void MachinePose_s::updateOdom() {
     long int tmpENC_L = 0;
     long int tmpENC_R = 0;
     string reply;
+    pthread_mutex_lock(&mutex_socket);
     client_socket << "@GP1@GP2"; /*use 250ms for send and get reply*/
     client_socket >> reply;
+    pthread_mutex_unlock(&mutex_socket);
     ROS_DEBUG_STREAM("@GP raw:" << reply);
     sscanf(reply.c_str(), "@GP1,%ld@GP2,%ld", &tmpENC_L, &tmpENC_R);
     ROS_DEBUG_STREAM("tmpENC_L:" << tmpENC_L << "    tmpENC_R:" << tmpENC_R);
@@ -240,11 +243,13 @@ void spinWheel(/*double arg_speed, double arg_theta*/) {
 
     string message;
     message = "@SS1," + cmd_L + "@SS2," + cmd_R;
+    pthread_mutex_lock(&mutex_socket);
     client_socket << message;
     // message = "@SS2," + cmd_R;
     // client_socket << message;
     string reply;
     client_socket >> reply;
+    pthread_mutex_unlock(&mutex_socket);
     ROS_DEBUG_STREAM("@SS raw: "<<reply);
     // cout << "Response:" << reply << "   ";
 }
@@ -269,7 +274,8 @@ bool receiveGoalPose(tms_msg_rc::rc_robot_control::Request &req,
     // while(! mchn_pose.goPose()){
     //     ROS_INFO("doing goPose");
     // }
-    ros::Rate r(4);
+    // ros::Rate r(4);
+    ros::Rate r(ROS_RATE);
     while (ros::ok()) {
         ROS_DEBUG("doing goPose");
         printf("pos x:%4.2lf y:%4.2lf th:%4.2lf     \n", mchn_pose.pos_vicon.x,
@@ -377,7 +383,8 @@ bool MachinePose_s::postPose() {
 }
 
 void *vicon_update(void *ptr) {
-    ros::Rate r(30);
+    // ros::Rate r(ROS_RATE);
+    ros::Rate r(ROS_RATE);
     while (ros::ok()) {
         mchn_pose.updateVicon();
         if (1000 < mchn_pose.pos_vicon.x && 1000 < mchn_pose.pos_vicon.y) {
@@ -390,7 +397,8 @@ void *vicon_update(void *ptr) {
 }
 
 void *odom_update(void *ptr) {
-    ros::Rate r(30);
+    // ros::Rate r(ROS_RATE);
+    ros::Rate r(ROS_RATE);
     while (ros::ok()) {
         mchn_pose.updateOdom();
         pthread_mutex_lock(&mutex_update_kalman);
