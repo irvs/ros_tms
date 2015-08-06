@@ -1,3 +1,7 @@
+// This source is old and not used now.
+// Now this was ported to ibs.py
+
+
 //------------------------------------------------------------------------------
 // @file   : ibs.cpp
 // @brief  : Intelligent Board System
@@ -5,6 +9,8 @@
 // @version: Ver1.1.1 (since 2012.00.00)
 // @date   : 2015.2.25
 //------------------------------------------------------------------------------
+
+
 
 /*! @todo unite CStage class and CLoadCell class
     @todo readujust threshold of GetWeightDiff
