@@ -61,7 +61,7 @@ class MachinePose_s {
    private:
    public:
     MachinePose_s() {
-        // printf("In Constructor");
+        ROS_DEBUG("In Mimamorukun Constructor");
         this->pos_vicon.x = 0.0;
         this->pos_vicon.y = 0.0;
         this->pos_vicon.theta = 0.0;
@@ -118,14 +118,13 @@ class MachinePose_s {
         POSISION
     };
     geometry_msgs::Pose2D UpdatePosition(geometry_msgs::Pose2D tpose, InfoType Info);
-
 } mchn_pose;
 
 int Dist2Pulse(int dist) { return ((float)dist) / DIST_PER_PULSE; }
 int Pulse2Dist(int pulse) { return ((float)pulse) * DIST_PER_PULSE; }
 double Rad2Deg(double rad) { return rad * (180.0) / M_PI; }
-// double Deg2Rad(double deg){ return deg*M_PI/180.0;}
-double Deg2Rad(double deg) { return deg * 3 / 180.0; }
+double Deg2Rad(double deg){ return deg*M_PI/180.0;}
+// double Deg2Rad(double deg) { return deg * 3 / 180.0; }
 double MM2M(double mm) { return mm * 0.001; }
 double M2MM(double M) { return M * 1000; }
 double sqr(double val) { return pow(val, 2); }
@@ -179,9 +178,9 @@ void MachinePose_s::updateOdom() {
     string reply;
     client_socket << "@GP1@GP2"; /*use 250ms for send and get reply*/
     client_socket >> reply;
-    // cout << "Response:" << reply << "";
+    ROS_DEBUG_STREAM("@GP raw:" << reply);
     sscanf(reply.c_str(), "@GP1,%ld@GP2,%ld", &tmpENC_L, &tmpENC_R);
-    // cout << "tmpENC_L:" << tmpENC_L << "    tmpENC_R:" << tmpENC_R ;
+    ROS_DEBUG_STREAM("tmpENC_L:" << tmpENC_L << "    tmpENC_R:" << tmpENC_R);
     if (tmpENC_L > ENC_MAX / 2)
         ENC_L = tmpENC_L - (ENC_MAX + 1);
     else
@@ -240,12 +239,13 @@ void spinWheel(/*double arg_speed, double arg_theta*/) {
     string cmd_R = boost::lexical_cast<string>(val_R);
 
     string message;
-    message = "@SS1," + cmd_L;
+    message = "@SS1," + cmd_L + "@SS2," + cmd_R;
     client_socket << message;
-    message = "@SS2," + cmd_R;
-    client_socket << message;
+    // message = "@SS2," + cmd_R;
+    // client_socket << message;
     string reply;
-    // client_socket >> reply;
+    client_socket >> reply;
+    ROS_DEBUG_STREAM("@SS raw: "<<reply);
     // cout << "Response:" << reply << "   ";
 }
 
@@ -271,7 +271,7 @@ bool receiveGoalPose(tms_msg_rc::rc_robot_control::Request &req,
     // }
     ros::Rate r(4);
     while (ros::ok()) {
-        printf("doing goPose");
+        ROS_DEBUG("doing goPose");
         printf("pos x:%4.2lf y:%4.2lf th:%4.2lf     \n", mchn_pose.pos_vicon.x,
                mchn_pose.pos_vicon.y, Rad2Deg(mchn_pose.pos_vicon.theta));
         printf("tgt x:%4.2lf y:%4.2lf th:%4.2lf     ", mchn_pose.tgtPose.x, mchn_pose.tgtPose.y,
@@ -424,7 +424,6 @@ int main(int argc, char **argv) {
     s_Kd_ = boost::lexical_cast<string>(Kd_);
 
     try {
-        // ClientSocket client_socket ( "192.168.11.99", 4321 );
         string reply;
         try {
             // koyuusinndou 3Hz at Kp = 8000
@@ -471,7 +470,6 @@ int main(int argc, char **argv) {
 
     ros::Rate r(ROS_RATE);
     while (n.ok()) {
-        // ROS_INFO("");
         spinWheel(/*joy_cmd_spd,joy_cmd_turn*/);
 
         //        mchn_pose.goPose();
