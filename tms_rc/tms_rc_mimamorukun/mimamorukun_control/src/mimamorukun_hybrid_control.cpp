@@ -73,7 +73,7 @@ public:
         this->pos_odom.theta = 0.0;
         this->pos_fusioned.x = 0.0;
         this->pos_fusioned.y = 0.0;
-        this->pos_fusioned.theta = 0.0; 
+        this->pos_fusioned.theta = 0.0;
         this->vel_odom.x =  0.0;
         this->vel_odom.y =  0.0;
         this->vel_odom.theta = 0.0;
@@ -173,7 +173,7 @@ void MachinePose_s::updateOdom(){
     long int tmpENC_R = 0;
     string reply;
     client_socket << "@GP1@GP2";    /*use 250ms for send and get reply*/
-    client_socket >> reply;          
+    client_socket >> reply;
     // cout << "Response:" << reply << "";
     sscanf(reply.c_str(),"@GP1,%ld@GP2,%ld",&tmpENC_L,&tmpENC_R);
     // cout << "tmpENC_L:" << tmpENC_L << "    tmpENC_R:" << tmpENC_R ;
@@ -319,10 +319,10 @@ bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/){
     double errorX = this->tgtPose.x - this->pos_vicon.x;
     double errorY = this->tgtPose.y - this->pos_vicon.y;
     double targetT = atan2(errorY,errorX);
- 
+
     double theta = this->pos_vicon.theta;
     double errorNX = errorX * cos(-theta) -  errorY * sin(-theta);
-    //double errorNY = errorX * sin(-theta) +  errorY * cos(-theta); 
+    //double errorNY = errorX * sin(-theta) +  errorY * cos(-theta);
     double errorNT = nomalizeAng(targetT - theta);
 
 
@@ -400,7 +400,7 @@ int main(int argc, char **argv){
     ros::init(argc, argv, "wc_controller");
     ros::NodeHandle n;
     // ros::NodeHandle nh2;
-    
+
 
     int Kp_,Ki_,Kd_;
     string s_Kp_,s_Ki_,s_Kd_;
@@ -584,7 +584,7 @@ bool MachinePose_s::goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/)
     /* Kanayama, Y.; Kimura, Y.; Miyazaki, F.; Noguchi, T.; ,
     "A stable tracking control method for an autonomous mobile robot," Robotics and Automation, 1990.
     Proceedings., 1990 IEEE International Conference on , vol., no., pp.384-389 vol.1, 13-18 May 1990 */
- 
+
     double dirVel = 250.0;
     double dirOmega = 0.0;
 
@@ -611,7 +611,7 @@ bool MachinePose_s::goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/)
     double mu2 = -Ky * errorNY * dirVel - Kt * sin(errorNT);
     double u1 = fabs(dirVel * cos(errorNT)) - mu1;
     double u2 = dirOmega - mu2;
- 
+
     bool ret = false;
 
     if(this->tgtPose.x==0.0 && this->tgtPose.y==0.0){  //mokutekiti
@@ -637,4 +637,3 @@ bool MachinePose_s::goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/)
         return false;
      }
 }
-
