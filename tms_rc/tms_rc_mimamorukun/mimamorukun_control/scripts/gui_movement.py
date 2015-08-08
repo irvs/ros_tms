@@ -16,9 +16,11 @@ MAP_PATH = '/images/map.jpg'
 TGT_PATH = '/images/tgt_pos.png'
 WC_PATH = '/images/wc.png'
 
-MAP_ORIGN = QtCore.QPoint(19.0, 369.0)
+# MAP_ORIGN = QtCore.QPoint(19.0, 369.0)
+MAP_ORIGN = QtCore.QPoint(0.0, 400.0)
 MAP_SIZE = QtCore.QPoint(780.0, 437.0)
-ROOM_SIZE = QtCore.QPoint(16000.0, 9000.0)
+# ROOM_SIZE = QtCore.QPoint(16000.0, 9000.0)
+ROOM_SIZE = QtCore.QPoint(15000.0, 8000.0)
 
 
 class MainWidget(QtGui.QWidget):
