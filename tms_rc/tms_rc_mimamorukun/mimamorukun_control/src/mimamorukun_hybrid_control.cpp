@@ -383,7 +383,7 @@ bool MachinePose_s::postPose() {
 }
 
 void *vicon_update(void *ptr) {
-    // ros::Rate r(ROS_RATE);
+    // ros::Rate r(30);
     ros::Rate r(ROS_RATE);
     while (ros::ok()) {
         mchn_pose.updateVicon();
@@ -397,7 +397,7 @@ void *vicon_update(void *ptr) {
 }
 
 void *odom_update(void *ptr) {
-    // ros::Rate r(ROS_RATE);
+    // ros::Rate r(30);
     ros::Rate r(ROS_RATE);
     while (ros::ok()) {
         mchn_pose.updateOdom();
@@ -412,7 +412,6 @@ int main(int argc, char **argv) {
     ROS_INFO("wc_controller");
     ros::init(argc, argv, "wc_controller");
     ros::NodeHandle n;
-    // ros::NodeHandle nh2;
 
     int Kp_, Ki_, Kd_;
     string s_Kp_, s_Ki_, s_Kd_;
