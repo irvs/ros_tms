@@ -63,7 +63,8 @@ private:
   ros::NodeHandle nh;
   ros::NodeHandle nh_priv;
   // ROS Timer
-  ros::Timer update_timer;
+  ros::Timer static_map_update_timer;
+  ros::Timer dynamic_map_update_timer;
   // ROS Topic Subscriber
   ros::Publisher static_map_pub_;
   ros::Publisher dynamic_map_pub_;
@@ -72,7 +73,7 @@ private:
   tms_msg_rp::rps_map_full dynamic_map_;
   string result_msg_;
   ros::ServiceClient get_data_client_;
-  ros::Publisher marker_pub;
+  ros::Publisher marker_pub, dynamic_marker_pub;
   // ROS Parameters:
   double update_time;
   bool is_debug;
@@ -93,8 +94,10 @@ public:
     dynamic_map_pub_ = nh.advertise<tms_msg_rp::rps_map_full>("rps_dynamic_map", 1);
     get_data_client_ = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
     marker_pub = nh.advertise<visualization_msgs::Marker>("voronoi_map_marker", 1);
+    dynamic_marker_pub = nh.advertise<visualization_msgs::Marker>("dynamic_map_marker", 1);
     //TimerEvent
-    update_timer = nh.createTimer(ros::Duration(update_time), &TmsRpVoronoiMap::staticMapPublish, this);
+    static_map_update_timer = nh.createTimer(ros::Duration(update_time), &TmsRpVoronoiMap::staticMapPublish, this);
+    dynamic_map_update_timer = nh.createTimer(ros::Duration(update_time), &TmsRpVoronoiMap::dynamicMapPublish, this);
 
     initCollisionMap(collision_map_);
     setVoronoiLine(collision_map_, result_msg_);
@@ -445,7 +448,7 @@ private:
   }
 
   //------------------------------------------------------------------------------
-  void dynamicMapPublish()
+  void dynamicMapPublish(const ros::TimerEvent& e)
   {
     int map_x = 0, map_y = 0;
     vector<vector<CollisionMapData> > temp_Map;
@@ -491,6 +494,50 @@ private:
     convertMap(temp_Map, dynamic_map_);
 
     dynamic_map_pub_.publish(dynamic_map_);
+
+    uint32_t shape = visualization_msgs::Marker::POINTS;
+    visualization_msgs::Marker marker;
+    marker.header.frame_id = "world";
+    marker.header.stamp = ros::Time::now();
+    marker.ns = "dynamic_map";
+    marker.id = 0;
+    marker.type = shape;
+    marker.action = visualization_msgs::Marker::ADD;
+
+    marker.pose.orientation.x = 0.0;
+    marker.pose.orientation.y = 0.0;
+    marker.pose.orientation.z = 0.0;
+    marker.pose.orientation.w = 1.0;
+
+    // Set the scale of the marker -- 1x1x1 here means 1m on a side
+    marker.scale.x = 0.1;
+    marker.scale.y = 0.1;
+    marker.scale.z = 0.1;
+
+    // Set the color -- be sure to set alpha to something non-zero!
+    marker.color.r = 1.0f;
+    marker.color.g = 0.0f;
+    marker.color.b = 0.0f;
+    marker.color.a = 1.0;
+
+    geometry_msgs::Point p;
+
+    for(unsigned int x=0;x<dynamic_map_.rps_map_x.size();x++){
+      for(unsigned int y=0;y<dynamic_map_.rps_map_x[x].rps_map_y.size();y++){
+        if(dynamic_map_.rps_map_x[x].rps_map_y[y].voronoi){
+        marker.id = 0;
+        // Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
+
+        p.x = x*0.1 - 0.3;
+        p.y = y*0.1 - 0.5;
+        p.z = 0.01;
+        marker.points.push_back(p);
+
+        }
+      }
+    }
+
+    dynamic_marker_pub.publish(marker);
   }
 
   //------------------------------------------------------------------------------

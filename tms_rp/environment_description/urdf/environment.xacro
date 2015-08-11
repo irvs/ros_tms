@@ -405,18 +405,18 @@
     <origin xyz="0 0 0"/>
   </joint> -->
 
-  <link name="wagon">
+<!--   <link name="wagon">
     <visual>
       <geometry>
         <mesh filename="package://environmental_model/model/wagon.dae"/>
       </geometry>
       <origin xyz="0. 0. 0.5" rpy="0 0 1.57079633"/>
     </visual>
-  </link>
+  </link> -->
 
   <!-- ========== Movable object ========== -->
 
-  <link name="wagon_x_link"/>
+<!--   <link name="wagon_x_link"/>
   <joint name="wagon_x_joint" type="prismatic">
     <parent link="world"/>
     <child link="wagon_x_link"/>
@@ -437,6 +437,6 @@
     <child link="wagon"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-  </joint>
+  </joint> -->
 
 </robot>
