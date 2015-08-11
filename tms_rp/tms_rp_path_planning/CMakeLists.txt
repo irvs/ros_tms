@@ -4,6 +4,7 @@ project(tms_rp_path_planning)
 find_package(catkin REQUIRED
   roscpp
   std_msgs
+  visualization_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -20,7 +21,7 @@ find_package(catkin REQUIRED
 catkin_package(
 # INCLUDE_DIRS include
   LIBRARIES tms_rp_voronoi_map
-  CATKIN_DEPENDS roscpp std_msgs tms_msg_db tms_msg_rp tms_msg_ss
+  CATKIN_DEPENDS roscpp std_msgs visualization_msgs tms_msg_db tms_msg_rp tms_msg_ss
   DEPENDS system_lib eigen
 )
 
