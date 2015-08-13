@@ -7,6 +7,7 @@
    command="$(find xacro)/xacro.py '$(find environment_description)/urdf/environment.xacro'" />
   <!-- Starting robot_state_publisher node -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" >
+    <param name="tf_prefix" value="environment" />
   </node>
 
   <!-- joint_state_publisher node with GUI -->
