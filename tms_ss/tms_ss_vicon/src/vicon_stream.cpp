@@ -302,7 +302,7 @@ private:
         else if(SubjectName.compare("kxp") == 0)        id = 2006;
         else if(SubjectName.compare("wheelchair") == 0) id = 2007;
         else if(SubjectName.compare("ardrone1") == 0)   id = 2008;
-        else if(SubjectName.compare("wagon") == 0)      id = 6019;
+        else if(SubjectName.compare("wagon") == 0)      id = 6018;
         else id = -1;
 
         if(id != -1)
