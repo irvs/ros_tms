@@ -11,3 +11,15 @@ controller_list:
   - name: fake_gripper_left_controller
     joints:
       - leftGripper__leftGripper_thumb_joint
+  - name: fake_arm_right_controller
+    joints:
+      - lumbar_j2__rightArm_j1_joint
+      - rightArm_j1__rightArm_j2_joint
+      - rightArm_j2__rightArm_j3_joint
+      - rightArm_j3__rightArm_j4_joint
+      - rightArm_j4__rightArm_j5_joint
+      - rightArm_j5__rightArm_j6_joint
+      - rightArm_j6__rightArm_j7_joint
+  - name: fake_gripper_right_controller
+    joints:
+      - rightGripper__rightGripper_thumb_joint
