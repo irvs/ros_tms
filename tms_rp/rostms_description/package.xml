@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package>
-  <name>environment_description</name>
-  <version>0.0.2</version>
+  <name>rostms_description</name>
+  <version>0.0.3</version>
   <license>BSD</license>
-  <description>The environment_description package</description>
+  <description>The rostms_description package</description>
 
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>
 

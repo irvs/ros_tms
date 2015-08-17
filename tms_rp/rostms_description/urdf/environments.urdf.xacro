@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <!-- Environment of ROS-TMS project room -->
 <robot name="environment" xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <!-- Import common properties -->
-  <xacro:include filename="$(find environment_description)/urdf/common_properties.urdf.xacro" />
+
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <xacro:include filename="$(find environment_description)/urdf/environment_gazebo.urdf.xacro" />
 

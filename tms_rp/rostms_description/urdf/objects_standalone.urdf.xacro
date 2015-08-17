@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!-- Environment of B-Sen Project room -->
+<robot name="objects" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
+  <xacro:include filename="$(find environment_description)/urdf/environment.gazebo" />
+  <!-- Import Rviz colors -->
+  <xacro:include filename="$(find environment_description)/urdf/materials.xacro" />
+
+  <!-- Used for fixing robot to Gazebo 'base_link' -->
+  <link name="world"/>
+
+  <!--  Movable object  -->
+  <link name="wagon">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/wagon.dae"/>
+      </geometry>
+      <origin xyz="0. 0. 0.5" rpy="0 0 1.57079633"/>
+    </visual>
+  </link>
+
+  <!-- ========== Movable object ========== -->
+  <link name="wagon_x_link"/>
+  <joint name="wagon_x_joint" type="prismatic">
+    <parent link="world"/>
+    <child link="wagon_x_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+  </joint>
+
+  <link name="wagon_y_link"/>
+  <joint name="wagon_y_joint" type="prismatic">
+    <parent link="wagon_x_link"/>
+    <child link="wagon_y_link"/>
+    <origin xyz="0 0 0" rpy="0 0 1.57079633"/>
+    <limit effort="1000.0" lower="0." upper="7." velocity="0.5"/>
+  </joint>
+
+  <joint name="wagon_theta_joint" type="continuous">
+    <parent link="wagon_y_link"/>
+    <child link="wagon"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+</robot>

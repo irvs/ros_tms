@@ -5,7 +5,7 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" >
     <param name="tf_prefix" value="" />
     <param name="robot_description"
-           command="$(find xacro)/xacro.py '$(find environment_description)/urdf/environment_standalone.urdf.xacro'" />
+           command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/environment_standalone.urdf.xacro'" />
   </node>
 
   <!-- joint_state_publisher -->
@@ -16,6 +16,6 @@
   </node> 
 
   <!-- RViz -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find environment_description)/rviz_config/rviz_config.rviz" respawn="true" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rostms_description)/rviz_config/rviz_config.rviz" respawn="true" />
 
 </launch>
