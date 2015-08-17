@@ -1,0 +1,244 @@
+<?xml version="1.0"?>
+<!-- Objects of ROS-TMS -->
+<robot name="objects" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
+  <xacro:include filename="$(find rostms_description)/urdf/objects_gazebo.urdf.xacro" />
+
+  <xacro:macro name="objects">
+
+    <!-- chair -->
+    <link name="chair">
+      <visual>
+        <geometry>
+          <mesh filename="package://environmental_model/model/chair.dae"/>
+        </geometry>
+        <origin xyz="12.3 5.62 0.51" rpy="0 0 1.57079633"/>
+      </visual>
+    </link>
+
+    <link name="chair_x_link"/>
+    <joint name="chair_x_joint" type="prismatic">
+      <parent link="world"/>
+      <child link="chair_x_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+    </joint>
+
+    <link name="chair_y_link"/>
+    <joint name="chair_y_joint" type="prismatic">
+      <parent link="chair_x_link"/>
+      <child link="chair_y_link"/>
+      <origin xyz="0 0 0" rpy="0 0 1.57079633"/>
+      <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+    </joint>
+
+    <joint name="chair_yaw_joint" type="continuous">
+      <parent link="chair_y_link"/>
+      <child link="chair"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+
+    <!-- refrigerator -->
+    <link name="refrigerator">
+      <visual>
+        <geometry>
+          <mesh filename="package://environmental_model/model/refrigerator.dae"/>
+        </geometry>
+        <origin xyz="11.7 4.2 0.56" rpy="0 0 0"/>
+      </visual>
+    </link>
+
+    <link name="refrigerator_x_link"/>
+    <joint name="refrigerator_x_joint" type="prismatic">
+      <parent link="world"/>
+      <child link="refrigerator_x_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+    </joint>
+
+    <link name="refrigerator_y_link"/>
+    <joint name="refrigerator_y_joint" type="prismatic">
+      <parent link="refrigerator_x_link"/>
+      <child link="refrigerator_y_link"/>
+      <origin xyz="0 0 0" rpy="0 0 1.57079633"/>
+      <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+    </joint>
+
+    <joint name="refrigerator_yaw_joint" type="continuous">
+      <parent link="refrigerator_y_link"/>
+      <child link="refrigerator"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+
+    <!-- meeting_chair1 -->
+    <link name="meeting_chair1">
+      <visual>
+        <geometry>
+          <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
+        </geometry>
+        <origin xyz="5.7 2.1 0.3978" rpy="0 0 -1.57079633"/>
+      </visual>
+    </link>
+
+    <link name="meeting_chair1_x_link"/>
+    <joint name="meeting_chair1_x_joint" type="prismatic">
+      <parent link="world"/>
+      <child link="meeting_chair1_x_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+    </joint>
+
+    <link name="meeting_chair1_y_link"/>
+    <joint name="meeting_chair1_y_joint" type="prismatic">
+      <parent link="meeting_chair1_x_link"/>
+      <child link="meeting_chair1_y_link"/>
+      <origin xyz="0 0 0" rpy="0 0 1.57079633"/>
+      <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+    </joint>
+
+    <joint name="meeting_chair1_yaw_joint" type="continuous">
+      <parent link="meeting_chair1_y_link"/>
+      <child link="meeting_chair1"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+
+    <!--  meeting_chair2 -->
+    <link name="meeting_chair2">
+      <visual>
+        <geometry>
+          <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
+        </geometry>
+        <origin xyz="5.1 1.5 0.3978" rpy="0 0 0"/>
+      </visual>
+    </link>
+
+    <link name="meeting_chair2_x_link"/>
+    <joint name="meeting_chair2_x_joint" type="prismatic">
+      <parent link="world"/>
+      <child link="meeting_chair2_x_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+    </joint>
+
+    <link name="meeting_chair2_y_link"/>
+    <joint name="meeting_chair2_y_joint" type="prismatic">
+      <parent link="meeting_chair2_x_link"/>
+      <child link="meeting_chair2_y_link"/>
+      <origin xyz="0 0 0" rpy="0 0 1.57079633"/>
+      <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+    </joint>
+
+    <joint name="meeting_chair2_yaw_joint" type="continuous">
+      <parent link="meeting_chair2_y_link"/>
+      <child link="meeting_chair2"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+
+    <!-- meeting_chair3 -->
+    <link name="meeting_chair3">
+      <visual>
+        <geometry>
+          <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
+        </geometry>
+        <origin xyz="5.7 0.9 0.3978" rpy="0 0 1.57079633"/>
+      </visual>
+    </link>
+
+    <link name="meeting_chair3_x_link"/>
+    <joint name="meeting_chair3_x_joint" type="prismatic">
+      <parent link="world"/>
+      <child link="meeting_chair3_x_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+    </joint>
+
+    <link name="meeting_chair3_y_link"/>
+    <joint name="meeting_chair3_y_joint" type="prismatic">
+      <parent link="meeting_chair3_x_link"/>
+      <child link="meeting_chair3_y_link"/>
+      <origin xyz="0 0 0" rpy="0 0 1.57079633"/>
+      <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+    </joint>
+
+    <joint name="meeting_chair3_yaw_joint" type="continuous">
+      <parent link="meeting_chair3_y_link"/>
+      <child link="meeting_chair3"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+
+    <!-- meeting_chair4 -->
+    <link name="meeting_chair4">
+      <visual>
+        <geometry>
+          <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
+        </geometry>
+        <origin xyz="6.3 1.5 0.3978" rpy="0 0 3.14159265"/>
+      </visual>
+    </link>
+
+    <link name="meeting_chair4_x_link"/>
+    <joint name="meeting_chair4_x_joint" type="prismatic">
+      <parent link="world"/>
+      <child link="meeting_chair4_x_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+    </joint>
+
+    <link name="meeting_chair4_y_link"/>
+    <joint name="meeting_chair4_y_joint" type="prismatic">
+      <parent link="meeting_chair4_x_link"/>
+      <child link="meeting_chair4_y_link"/>
+      <origin xyz="0 0 0" rpy="0 0 1.57079633"/>
+      <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+    </joint>
+
+    <joint name="meeting_chair4_yaw_joint" type="continuous">
+      <parent link="meeting_chair4_y_link"/>
+      <child link="meeting_chair4"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+
+    <!-- wagon -->
+    <link name="wagon">
+      <visual>
+        <geometry>
+          <mesh filename="package://environmental_model/model/wagon.dae"/>
+        </geometry>
+        <origin xyz="0. 0. 0.5" rpy="0 0 1.57079633"/>
+      </visual>
+    </link>
+
+    <link name="wagon_x_link"/>
+    <joint name="wagon_x_joint" type="prismatic">
+      <parent link="world"/>
+      <child link="wagon_x_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+    </joint>
+
+    <link name="wagon_y_link"/>
+    <joint name="wagon_y_joint" type="prismatic">
+      <parent link="wagon_x_link"/>
+      <child link="wagon_y_link"/>
+      <origin xyz="0 0 0" rpy="0 0 1.57079633"/>
+      <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+    </joint>
+
+    <joint name="wagon_yaw_joint" type="continuous">
+      <parent link="wagon_y_link"/>
+      <child link="wagon"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+
+    <objects_sim/>  
+
+  </xacro:macro>
+</robot>

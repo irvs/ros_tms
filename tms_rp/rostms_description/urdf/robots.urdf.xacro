@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 <!-- Environment of B-Sen Project room -->
-<robot name="objects" xmlns:xacro="http://www.ros.org/wiki/xacro">
-
-  <!-- Constants for robot dimensions -->
-  <xacro:property name="PI" value="3.1415926535897931"/>
+<robot name="object" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <xacro:include filename="$(find environment_description)/urdf/environment.gazebo" />
