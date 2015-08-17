@@ -32,8 +32,41 @@
         <joint name="leftGripper__leftGripper_thumb_joint" />
         <chain base_link="leftGripper_link" tip_link="leftGripper_thumb_link" />
     </group>
+    <group name="arm_right">
+        <link name="rightArm_j1_link" />
+        <link name="rightArm_j2_link" />
+        <link name="rightArm_j3_link" />
+        <link name="rightArm_j4_link" />
+        <link name="rightArm_j5_link" />
+        <link name="rightArm_j6_link" />
+        <link name="rightArm_j7_link" />
+        <joint name="lumbar_j2__rightArm_j1_joint" />
+        <joint name="rightArm_j1__rightArm_j2_joint" />
+        <joint name="rightArm_j2__rightArm_j3_joint" />
+        <joint name="rightArm_j3__rightArm_j4_joint" />
+        <joint name="rightArm_j4__rightArm_j5_joint" />
+        <joint name="rightArm_j5__rightArm_j6_joint" />
+        <joint name="rightArm_j6__rightArm_j7_joint" />
+        <joint name="rightArm_j7__rightGripper_joint" />
+        <chain base_link="rightArm_j1_link" tip_link="rightArm_j7_link" />
+    </group>
+    <group name="gripper_right">
+        <link name="rightGripper_link" />
+        <link name="rightGripper_thumb_link" />
+        <joint name="rightGripper__rightGripper_thumb_joint" />
+        <chain base_link="rightGripper_link" tip_link="rightGripper_thumb_link" />
+    </group>
     <!--GROUP STATES: Purpose: Define a named state for a particular group, in terms of joint values. This is useful to define states like 'folded arms'-->
-    <group_state name="init" group="arm_left">
+    <group_state name="init_arm_right" group="arm_right">
+        <joint name="lumbar_j2__rightArm_j1_joint" value="0" />
+        <joint name="rightArm_j1__rightArm_j2_joint" value="-0.07" />
+        <joint name="rightArm_j2__rightArm_j3_joint" value="0" />
+        <joint name="rightArm_j3__rightArm_j4_joint" value="0" />
+        <joint name="rightArm_j4__rightArm_j5_joint" value="0" />
+        <joint name="rightArm_j5__rightArm_j6_joint" value="0" />
+        <joint name="rightArm_j6__rightArm_j7_joint" value="0" />
+    </group_state>
+    <group_state name="init_arm_left" group="arm_left">
         <joint name="leftArm_j1__leftArm_j2_joint" value="0.07" />
         <joint name="leftArm_j2__leftArm_j3_joint" value="0" />
         <joint name="leftArm_j3__leftArm_j4_joint" value="0" />
@@ -44,6 +77,7 @@
     </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
     <end_effector name="gripper_left" parent_link="leftArm_j7_link" group="gripper_left" />
+    <end_effector name="gripper_right" parent_link="rightArm_j7_link" group="gripper_right" />
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="base_link" link2="camera_link" reason="Never" />
     <disable_collisions link1="base_link" link2="leftArm_j1_link" reason="Never" />
