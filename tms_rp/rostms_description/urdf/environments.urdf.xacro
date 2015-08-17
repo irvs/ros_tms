@@ -1,14 +1,11 @@
 <?xml version="1.0"?>
-<!-- Environment of ROS-TMS project room -->
-<robot name="environment" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<!-- Environments of ROS-TMS -->
+<robot name="environments" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
-  <xacro:include filename="$(find environment_description)/urdf/environment_gazebo.urdf.xacro" />
+  <xacro:include filename="$(find rostms_description)/urdf/environments_gazebo.urdf.xacro"/>
 
-  <xacro:macro name="environment">   
-
-    <!-- Used for fixing robot to Gazebo 'base_link' -->
-    <link name="world"/>
+  <xacro:macro name="environments">   
 
     <!--  Environment -->
     <joint name="world_joint" type="fixed">
@@ -95,96 +92,6 @@
       </visual>
     </link>
 
-    <joint name="bsen_room_to_chair" type="fixed">
-      <parent link="bsen_origin"/>
-      <child link="chair"/>
-      <origin xyz="0 0 0"/>
-    </joint>
-
-    <link name="chair">
-      <visual>
-        <geometry>
-          <mesh filename="package://environmental_model/model/chair.dae"/>
-        </geometry>
-        <origin xyz="7.8 5.62 0.51" rpy="0 0 1.57079633"/>
-      </visual>
-    </link>
-
-    <joint name="bsen_room_to_refrigerator" type="fixed">
-      <parent link="bsen_origin"/>
-      <child link="refrigerator"/>
-      <origin xyz="0 0 0"/>
-    </joint>
-
-    <link name="refrigerator">
-      <visual>
-        <geometry>
-          <mesh filename="package://environmental_model/model/refrigerator.dae"/>
-        </geometry>
-        <origin xyz="7.2 4.2 0.56" rpy="0 0 0"/>
-      </visual>
-    </link>
-
-    <joint name="bsen_room_to_meeting_chair1" type="fixed">
-      <parent link="bsen_origin"/>
-      <child link="meeting_chair1"/>
-      <origin xyz="0 0 0"/>
-    </joint>
-
-    <link name="meeting_chair1">
-      <visual>
-        <geometry>
-          <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
-        </geometry>
-        <origin xyz="1.2 2.1 0.3978" rpy="0 0 -1.57079633"/>
-      </visual>
-    </link>
-
-    <joint name="bsen_room_to_meeting_chair2" type="fixed">
-      <parent link="bsen_origin"/>
-      <child link="meeting_chair2"/>
-      <origin xyz="0 0 0"/>
-    </joint>
-
-    <link name="meeting_chair2">
-      <visual>
-        <geometry>
-          <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
-        </geometry>
-        <origin xyz="0.6 1.5 0.3978" rpy="0 0 0"/>
-      </visual>
-    </link>
-
-     <joint name="bsen_room_to_meeting_chair3" type="fixed">
-      <parent link="bsen_origin"/>
-      <child link="meeting_chair3"/>
-      <origin xyz="0 0 0"/>
-    </joint>
-
-    <link name="meeting_chair3">
-      <visual>
-        <geometry>
-          <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
-        </geometry>
-        <origin xyz="1.2 0.9 0.3978" rpy="0 0 1.57079633"/>
-      </visual>
-    </link>
-
-     <joint name="bsen_room_to_meeting_chair4" type="fixed">
-      <parent link="bsen_origin"/>
-      <child link="meeting_chair4"/>
-      <origin xyz="0 0 0"/>
-    </joint>
-
-    <link name="meeting_chair4">
-      <visual>
-        <geometry>
-          <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
-        </geometry>
-        <origin xyz="1.8 1.5 0.3978" rpy="0 0 3.14159265"/>
-      </visual>
-    </link>
-
     <joint name="bsen_room_to_meeting_table" type="fixed">
       <parent link="bsen_origin"/>
       <child link="meeting_table"/>
@@ -199,7 +106,6 @@
         <origin xyz="1.2 1.5 0.36" rpy="0 0 0"/>
       </visual>
     </link>
-
 
     <joint name="bsen_room_to_tree" type="fixed">
       <parent link="bsen_origin"/>
@@ -396,7 +302,7 @@
       </visual>
     </link>
 
-    <environment_sim/>  
+    <environments_sim/>  
 
   </xacro:macro>
 </robot>

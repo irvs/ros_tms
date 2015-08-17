@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <launch>
 
+  <param name="robot_description"
+         command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/robots_standalone.urdf.xacro'" />
+
   <!-- robot_state_publisher -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" >
     <param name="tf_prefix" value="" />
-    <param name="robot_description"
-           command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/environment_standalone.urdf.xacro'" />
   </node>
 
   <!-- joint_state_publisher -->

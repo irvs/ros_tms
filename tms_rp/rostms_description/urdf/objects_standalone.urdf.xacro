@@ -1,47 +1,18 @@
 <?xml version="1.0"?>
-<!-- Environment of B-Sen Project room -->
-<robot name="objects" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<!-- Objects of ROS-TMS project -->
+<robot name="objects_standalone"
+       xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       xmlns:xacro="http://ros.org/wiki/xacro">
 
-  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
-  <xacro:include filename="$(find environment_description)/urdf/environment.gazebo" />
-  <!-- Import Rviz colors -->
-  <xacro:include filename="$(find environment_description)/urdf/materials.xacro" />
+  <!-- Import common properties -->
+  <xacro:include filename="$(find rostms_description)/urdf/common_properties.urdf.xacro" />
 
-  <!-- Used for fixing robot to Gazebo 'base_link' -->
+  <!-- Used for fixing all components to 'world' frame of RViz and Gazebo 'world' -->
   <link name="world"/>
-
-  <!--  Movable object  -->
-  <link name="wagon">
-    <visual>
-      <geometry>
-        <mesh filename="package://environmental_model/model/wagon.dae"/>
-      </geometry>
-      <origin xyz="0. 0. 0.5" rpy="0 0 1.57079633"/>
-    </visual>
-  </link>
-
-  <!-- ========== Movable object ========== -->
-  <link name="wagon_x_link"/>
-  <joint name="wagon_x_joint" type="prismatic">
-    <parent link="world"/>
-    <child link="wagon_x_link"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
-  </joint>
-
-  <link name="wagon_y_link"/>
-  <joint name="wagon_y_joint" type="prismatic">
-    <parent link="wagon_x_link"/>
-    <child link="wagon_y_link"/>
-    <origin xyz="0 0 0" rpy="0 0 1.57079633"/>
-    <limit effort="1000.0" lower="0." upper="7." velocity="0.5"/>
-  </joint>
-
-  <joint name="wagon_theta_joint" type="continuous">
-    <parent link="wagon_y_link"/>
-    <child link="wagon"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <axis xyz="0 0 1"/>
-  </joint>
-
+  
+  <!-- Defines the component tags -->
+  <xacro:include filename="$(find rostms_description)/urdf/objects.urdf.xacro" />
+  <objects/>
 </robot>
