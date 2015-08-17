@@ -1,0 +1,2 @@
+<?xml version="1.0"?>
+<xacro:include filename="$(find environment_description)/urdf/all.xacro" />
