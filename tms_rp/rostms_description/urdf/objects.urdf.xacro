@@ -13,7 +13,7 @@
         <geometry>
           <mesh filename="package://environmental_model/model/chair.dae"/>
         </geometry>
-        <origin xyz="12.3 5.62 0.51" rpy="0 0 1.57079633"/>
+        <origin xyz="0.0 0.0 0.51" rpy="0.0 0.0 0.0"/>
       </visual>
     </link>
 
@@ -46,7 +46,7 @@
         <geometry>
           <mesh filename="package://environmental_model/model/refrigerator.dae"/>
         </geometry>
-        <origin xyz="11.7 4.2 0.56" rpy="0 0 0"/>
+        <origin xyz="0.0 0.0 0.56" rpy="0 0 0"/>
       </visual>
     </link>
 
@@ -79,7 +79,7 @@
         <geometry>
           <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
         </geometry>
-        <origin xyz="5.7 2.1 0.3978" rpy="0 0 -1.57079633"/>
+        <origin xyz="0.0 0.0 0.3978" rpy="0 0 0"/>
       </visual>
     </link>
 
@@ -112,7 +112,7 @@
         <geometry>
           <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
         </geometry>
-        <origin xyz="5.1 1.5 0.3978" rpy="0 0 0"/>
+        <origin xyz="0.0 0.0 0.3978" rpy="0 0 0"/>
       </visual>
     </link>
 
@@ -145,7 +145,7 @@
         <geometry>
           <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
         </geometry>
-        <origin xyz="5.7 0.9 0.3978" rpy="0 0 1.57079633"/>
+        <origin xyz="0.0 0.0 0.3978" rpy="0 0 0"/>
       </visual>
     </link>
 
@@ -178,7 +178,7 @@
         <geometry>
           <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
         </geometry>
-        <origin xyz="6.3 1.5 0.3978" rpy="0 0 3.14159265"/>
+        <origin xyz="0.0 0.0 0.3978" rpy="0 0 0"/>
       </visual>
     </link>
 
@@ -211,7 +211,7 @@
         <geometry>
           <mesh filename="package://environmental_model/model/wagon.dae"/>
         </geometry>
-        <origin xyz="0. 0. 0.5" rpy="0 0 1.57079633"/>
+        <origin xyz="0. 0. 0.5" rpy="0 0 0"/>
       </visual>
     </link>
 
