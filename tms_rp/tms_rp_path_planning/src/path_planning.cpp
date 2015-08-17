@@ -11,6 +11,9 @@
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 
+#include <tf2_ros/transform_broadcaster.h>
+#include <tf2/LinearMath/Quaternion.h>
+
 #include <tms_msg_db/TmsdbGetData.h>
 #include <tms_msg_db/TmsdbStamped.h>
 #include <tms_msg_db/Tmsdb.h>
@@ -70,7 +73,7 @@ private:
   // ROS Topic Subscriber
   ros::Subscriber dynamic_map_sub_;
   ros::ServiceServer service_voronoi_path_;
-  ros::Publisher robot_path_pub_, path_marker_pub;
+  ros::Publisher robot_path_pub_, path_marker_pub, mesh_marker_pub;
   // ROS Parameters:
   bool is_debug;
   const double kSmartPal5CollisionThreshold_; //mm
@@ -105,6 +108,7 @@ public:
     service_voronoi_path_ = nh.advertiseService("/rps_voronoi_path_planning", &TmsRpPathPlanning::voronoiPathPlanner, this);
     robot_path_pub_ = nh.advertise<tms_msg_rp::rps_route>("/rps_robot_path", 1);
     path_marker_pub = nh.advertise<visualization_msgs::MarkerArray>("robot_path_marker", 1);
+    mesh_marker_pub = nh.advertise<visualization_msgs::MarkerArray>("shadow_path_marker", 1);
   }
 
   //----------------------------------------------------------------------------
@@ -306,6 +310,17 @@ private:
     marker.color.b = 0.0f;
     marker.color.a = 1.0;
     //
+    //
+    visualization_msgs::Marker mesh;
+    visualization_msgs::MarkerArray meshs;
+    mesh.header.frame_id = "world";
+    mesh.header.stamp = ros::Time::now();
+    mesh.ns = "robot_shadow";
+    mesh.type = visualization_msgs::Marker::MESH_RESOURCE;
+    mesh.action = visualization_msgs::Marker::ADD;
+    mesh.scale.x = mesh.scale.y = mesh.scale.z = 1.0;
+    mesh.mesh_resource = "package://smartpal5_description/meshes/collision/Pal5_body_vehicle.dae";
+    //
 
     for(unsigned int i=0;i<smooth_path.size()-1;i++){
       marker.id = i;
@@ -316,10 +331,26 @@ private:
       marker.points[1].x = smooth_path[i+1][0] - 0.3;
       marker.points[1].y = smooth_path[i+1][1] - 0.5;
       marker.points[1].z = 0.03;
-      markers.markers.push_back(marker);
+      markers.markers.push_back(marker); 
+    }
+
+    tf2::Quaternion q;
+
+    for(unsigned int i=0;i<smooth_path.size();i++){
+      mesh.id = i;
+      mesh.pose.position.x = smooth_path[i][0] - 0.3;
+      mesh.pose.position.y = smooth_path[i][1] - 0.5;
+      mesh.pose.position.z = 0.03;
+      q.setRPY(0, 0, smooth_path[i][2]);
+      mesh.pose.orientation.x = q.x();
+      mesh.pose.orientation.y = q.y();
+      mesh.pose.orientation.z = q.z();
+      mesh.pose.orientation.w = q.w();
+      meshs.markers.push_back(mesh);
     }
 
     path_marker_pub.publish(markers);
+    mesh_marker_pub.publish(meshs);
 
     ROS_INFO("...Voronoi Path Plan Success");
 
