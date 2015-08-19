@@ -18,6 +18,27 @@ std::string to_str(const T& t)
   return ss.str();
 }
 
+inline tms_ss_kinect_v2::Skeleton initialize_skeleton()
+{
+	tms_ss_kinect_v2::Skeleton ret;
+	ret.user_id = -1;
+  ret.position.resize(25);
+  ret.orientation.resize(25);
+  ret.confidence.resize(25);
+  for(int i=0; i<25; i++)
+  {
+    ret.position[i].x = 0.0;
+    ret.position[i].y = 0.0;
+    ret.position[i].z = 0.0;
+    ret.orientation[i].w = 1.0;
+    ret.orientation[i].x = 0.0;
+    ret.orientation[i].y = 0.0;
+    ret.orientation[i].z = 0.0;
+    ret.confidence[i] = 0;
+  }
+  return ret;
+}
+
 class SkeletonIntegrator
 {
   public:
@@ -36,6 +57,11 @@ class SkeletonIntegrator
 SkeletonIntegrator::SkeletonIntegrator(const std::vector<int> &camera) :
   array(camera)
 {
+	skeletons.data.resize(6);
+	for (int i = 0; i < 6; i++)
+	{
+		skeletons.data[i] = initialize_skeleton();
+	}
   return;
 }
 
@@ -62,6 +88,7 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
       camera_posture.rotation.z);
 
   tms_ss_kinect_v2::Skeleton integrated_skeleton;
+	integrated_skeleton.user_id = skeleton.user_id;
   integrated_skeleton.position.resize(25);
   integrated_skeleton.orientation.resize(25);
   integrated_skeleton.confidence.resize(25);
@@ -87,15 +114,9 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
     integrated_skeleton.orientation[i].z = ori.z();
     integrated_skeleton.confidence[i] = skeleton.confidence[i];
   }
-  bool already_detect = false;
-  if (skeletons.data.size() < msg->camera_number)
-  {
-    skeletons.data.push_back(integrated_skeleton);
-  }
-  else
-  {
-    skeletons.data[msg->camera_number-1] = integrated_skeleton;
-  }
+	// Temporary 
+	skeletons.data.resize(6);
+	skeletons.data[integrated_skeleton.user_id] = integrated_skeleton;
   //for (int i = 0; i < skeletons.data.size(); i++)
   //{
   //  //Eigen::Vector3f v1(
@@ -117,8 +138,17 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
   //{
   //  skeletons.data.push_back(integrated_skeleton);
   //}
-
-  std::cout << skeletons.data.size() << std::endl;
+	
+	int skeleton_num = skeletons.data.size();
+	std::cout << skeletons.data.size();
+	if (skeleton_num > 1)
+	{
+		std::cout << " skeletons are detected." << std::endl;
+	}
+	else
+	{
+		std::cout << " skeletons is detected." << std::endl;
+	}
   ppub->publish(skeletons);
 
   return;

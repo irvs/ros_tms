@@ -70,7 +70,7 @@ void SkeletonViewer::callback_skeleton(const tms_ss_kinect_v2::SkeletonArray::Co
     for (int i = 0; i < 25; i++)
     {
       visualization_msgs::Marker marker;
-      marker.header.frame_id = "/my_frame";
+      marker.header.frame_id = "/map";
       marker.header.stamp = ros::Time::now();
       std::string name("skeleton");
       marker.ns = name.append(to_str<int>(j+1));
@@ -92,15 +92,14 @@ void SkeletonViewer::callback_skeleton(const tms_ss_kinect_v2::SkeletonArray::Co
       marker.scale.x = 0.05;
       marker.scale.y = 0.05;
       marker.scale.z = 0.05;
-      marker.color.r = marker_color[j+1][2];
-      marker.color.g = marker_color[j+1][1];
-      marker.color.b = marker_color[j+1][0];
+      marker.color.r = marker_color[j][2];
+      marker.color.g = marker_color[j][1];
+      marker.color.b = marker_color[j][0];
       marker.color.a = 1.0f*(float)skeleton.confidence[i]/2.0f;
       marker.lifetime = ros::Duration();
       marker_array.markers.push_back(marker);
     }
   }
-  std::cout << marker_array.markers.size() << std::endl;
   _pmarker_array_pub->publish(marker_array);
 
   return;

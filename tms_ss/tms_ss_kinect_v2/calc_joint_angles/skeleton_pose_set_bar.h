@@ -10,6 +10,7 @@
 #include <cnoid/ToolBar>
 //~ #include <cnoid/SignalProxy>
 #include <cnoid/MessageView>
+#include <Grasp/PlanBase.h>
 #include <Grasp/exportdef.h>
 
 using namespace cnoid;
@@ -28,7 +29,10 @@ namespace grasp {
       MessageView& mes;
       std::ostream& os;
 
+			grasp::PlanBase* tc;
+
       void onSetPoseButtonClicked();
+			void connectROS();
   };
 }
 

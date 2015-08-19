@@ -13,7 +13,7 @@ class OffsetManager:
         self.ip_index = index
         self.xml_file = path.normpath(
             path.join(path.dirname(path.abspath(__file__)),
-                      '../data/offset'+str(self.ip_index)+'.xml')
+                      '../data/offset'+str(self.ip_index+1)+'.xml')
         )
         self.translation = [0.0, 0.0, 0.0]  # x,y,z
         self.rotation = [0.0, 0.0, 0.0, 1.0]  # x,y,z,w

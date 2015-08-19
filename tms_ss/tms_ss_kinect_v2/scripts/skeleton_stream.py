@@ -59,17 +59,15 @@ class SkeletonStream:
     process_list = []
     sock = None
 
-    def __init__(self, host, index):
+    def __init__(self, index):
         self.camera_id = index+1
-        self.host = host
         self.port = NETWORK_SETTING.PORT
         self.bufsize = 16383
         self.gotOffset = False
 
     def __getOffset(self):
         try:
-            print(self.camera_id)
-            offset = OffsetManager.OffsetManager(self.camera_id)
+            offset = OffsetManager.OffsetManager(self.camera_id-1)
             translation, rotation = offset.read()
             self.offsetT = np.array([
                 translation[0],
@@ -199,34 +197,32 @@ class SkeletonStream:
 if __name__ == '__main__':
     try:
         argc = len(sys.argv)
-        if (argc == 1):
-            print('=== Usage ===\n[command] [camera_id_list ...]\n')
+        if (argc < 3):
+            print('=== Usage ===\n[command] [host_ip] [camera_id_list ...]\n')
             print('--IP_LIST (refer NETWORK_SETTING.py)')
             for i in range(0, NETWORK_SETTING.length):
                 print('  {0}: {1}'.format(i+1, NETWORK_SETTING.IP_LIST[i]))
             quit()
         else:
+            localhost = sys.argv[1]
             pid_list = []
-            SkeletonStream.process_list = [int(i)-1 for i in sys.argv[1:]]
+            SkeletonStream.process_list = [int(i)-1 for i in sys.argv[2:]]
             SkeletonStream.sock = socket.socket(socket.AF_INET,
                                                 socket.SOCK_DGRAM)
             try:
-                print(SkeletonStream.sock)
-                SkeletonStream.sock.bind((NETWORK_SETTING.IP_LIST[2],
+                SkeletonStream.sock.bind((localhost,
                                           NETWORK_SETTING.PORT))
                 for i in SkeletonStream.process_list:
                     pid_list.append(os.fork())
                     if pid_list[-1] == 0:
-                        obj = SkeletonStream(NETWORK_SETTING
-                                             .IP_LIST[2], i)
-                        obj.run()
+                        obj = SkeletonStream(i)
                         print('Receive from: {0}'
                               .format(NETWORK_SETTING.IP_LIST[i]))
-                        print('Host: {0}'
-                              .format(NETWORK_SETTING.IP_LIST[2]))
+                        print('Host IP: {0}'
+                              .format(localhost))
                         print('Port: {0}'
                               .format(NETWORK_SETTING.PORT))
-                print(pid_list)
+                        obj.run()
                 os.wait()
             except:
                 print('Failed to bind socket')
