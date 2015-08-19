@@ -3,7 +3,7 @@
 // @file   : tms_db_state_publisher.cpp
 // @brief  : subscribe the current information of object and publish the state of object
 // @author : Yoonseok Pyo
-// @version: Ver0.0.2 (since 2015.07.22)
+// @version: Ver0.0.3 (since 2015.07.22)
 // @date   : 2015.07.23
 //------------------------------------------------------------------------------
 //include for ROS
@@ -84,7 +84,7 @@ private:
   void dbTFCallback(const tms_msg_db::TmsdbStamped::ConstPtr& msg)
   {
     uint32_t id, oID, sensor, state, place;
-    double posX,posY,posT;
+    double posX,posY,rotY;
     sensor_msgs::JointState state_data;
 
     if (msg->tmsdb.size()==0)
@@ -97,13 +97,163 @@ private:
       state   = msg->tmsdb[i].state;
       place   = msg->tmsdb[i].place;
 
-      if (id ==6019) // wagon
+      if (id==2009) // refrigerator
+      {
+        if (state!=0)
+        {
+          posX = msg->tmsdb[i].x/1000;
+          posY = msg->tmsdb[i].y/1000;
+          rotY = deg2rad(msg->tmsdb[i].ry);
+
+          if(posX == 0.0 && posY == 0.0)
+          {
+            continue;
+          }
+          else
+          {
+            state_data.header.stamp = ros::Time::now();
+            state_data.name.push_back("refrigerator_x_joint");
+            state_data.name.push_back("refrigerator_y_joint");
+            state_data.name.push_back("refrigerator_yaw_joint");
+            state_data.position.push_back(posX);
+            state_data.position.push_back(posY);
+            state_data.position.push_back(rotY);
+          }
+        }
+      }
+
+      if (id==6004) // chair
+      {
+        if (state!=0)
+        {
+          posX = msg->tmsdb[i].x/1000;
+          posY = msg->tmsdb[i].y/1000;
+          rotY = deg2rad(msg->tmsdb[i].ry);
+
+          if(posX == 0.0 && posY == 0.0)
+          {
+            continue;
+          }
+          else
+          {
+            state_data.header.stamp = ros::Time::now();
+            state_data.name.push_back("chair_x_joint");
+            state_data.name.push_back("chair_y_joint");
+            state_data.name.push_back("chair_yaw_joint");
+            state_data.position.push_back(posX);
+            state_data.position.push_back(posY);
+            state_data.position.push_back(rotY);
+          }
+        }
+      }
+
+      if (id==6007) // meeting_chair1
+      {
+        if (state!=0)
+        {
+          posX = msg->tmsdb[i].x/1000;
+          posY = msg->tmsdb[i].y/1000;
+          rotY = deg2rad(msg->tmsdb[i].ry);
+
+          if(posX == 0.0 && posY == 0.0)
+          {
+            continue;
+          }
+          else
+          {
+            state_data.header.stamp = ros::Time::now();
+            state_data.name.push_back("meeting_chair1_x_joint");
+            state_data.name.push_back("meeting_chair1_y_joint");
+            state_data.name.push_back("meeting_chair1_yaw_joint");
+            state_data.position.push_back(posX);
+            state_data.position.push_back(posY);
+            state_data.position.push_back(rotY);
+          }
+        }
+      }
+
+      if (id==6008) // meeting_chair2
+      {
+        if (state!=0)
+        {
+          posX = msg->tmsdb[i].x/1000;
+          posY = msg->tmsdb[i].y/1000;
+          rotY = deg2rad(msg->tmsdb[i].ry);
+
+          if(posX == 0.0 && posY == 0.0)
+          {
+            continue;
+          }
+          else
+          {
+            state_data.header.stamp = ros::Time::now();
+            state_data.name.push_back("meeting_chair2_x_joint");
+            state_data.name.push_back("meeting_chair2_y_joint");
+            state_data.name.push_back("meeting_chair2_yaw_joint");
+            state_data.position.push_back(posX);
+            state_data.position.push_back(posY);
+            state_data.position.push_back(rotY);
+          }
+        }
+      }
+
+      if (id==6009) // meeting_chair3
+      {
+        if (state!=0)
+        {
+          posX = msg->tmsdb[i].x/1000;
+          posY = msg->tmsdb[i].y/1000;
+          rotY = deg2rad(msg->tmsdb[i].ry);
+
+          if(posX == 0.0 && posY == 0.0)
+          {
+            continue;
+          }
+          else
+          {
+            state_data.header.stamp = ros::Time::now();
+            state_data.name.push_back("meeting_chair3_x_joint");
+            state_data.name.push_back("meeting_chair3_y_joint");
+            state_data.name.push_back("meeting_chair3_yaw_joint");
+            state_data.position.push_back(posX);
+            state_data.position.push_back(posY);
+            state_data.position.push_back(rotY);
+          }
+        }
+      }
+
+      if (id==6010) // meeting_chair4
+      {
+        if (state!=0)
+        {
+          posX = msg->tmsdb[i].x/1000;
+          posY = msg->tmsdb[i].y/1000;
+          rotY = deg2rad(msg->tmsdb[i].ry);
+
+          if(posX == 0.0 && posY == 0.0)
+          {
+            continue;
+          }
+          else
+          {
+            state_data.header.stamp = ros::Time::now();
+            state_data.name.push_back("meeting_chair4_x_joint");
+            state_data.name.push_back("meeting_chair4_y_joint");
+            state_data.name.push_back("meeting_chair4_yaw_joint");
+            state_data.position.push_back(posX);
+            state_data.position.push_back(posY);
+            state_data.position.push_back(rotY);
+          }
+        }
+      }
+
+      if (id==6018) // wagon
       {
         if (state==1)
         {
           posX = msg->tmsdb[i].x/1000;
           posY = msg->tmsdb[i].y/1000;
-          posT = deg2rad(msg->tmsdb[i].ry);
+          rotY = deg2rad(msg->tmsdb[i].ry);
 
           if(posX == 0.0 && posY == 0.0)
           {
@@ -114,10 +264,10 @@ private:
             state_data.header.stamp = ros::Time::now();
             state_data.name.push_back("wagon_x_joint");
             state_data.name.push_back("wagon_y_joint");
-            state_data.name.push_back("wagon_theta_joint");
+            state_data.name.push_back("wagon_yaw_joint");
             state_data.position.push_back(posX);
             state_data.position.push_back(posY);
-            state_data.position.push_back(posT);
+            state_data.position.push_back(rotY);
           }
         }
       }

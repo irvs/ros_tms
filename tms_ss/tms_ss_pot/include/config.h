@@ -14,7 +14,7 @@ class Config{
 			// set default value
 			n_of_particles = 100;
 			max_lrf_range=   5.6;
-      min_lrf_range=   0.2;
+                        min_lrf_range=   0.2;
 			target_area[0]= -4.5; 
 			target_area[1]= -4.5; 
 			target_area[2]=  4.5; 
