@@ -75,6 +75,24 @@
         <joint name="leftArm_j6__leftArm_j7_joint" value="0" />
         <joint name="lumbar_j2__leftArm_j1_joint" value="0" />
     </group_state>
+    <group_state name="arm_left_l_pose" group="arm_left">
+        <joint name="leftArm_j1__leftArm_j2_joint" value="0.07" />
+        <joint name="leftArm_j2__leftArm_j3_joint" value="0" />
+        <joint name="leftArm_j3__leftArm_j4_joint" value="1.5707" />
+        <joint name="leftArm_j4__leftArm_j5_joint" value="0" />
+        <joint name="leftArm_j5__leftArm_j6_joint" value="0" />
+        <joint name="leftArm_j6__leftArm_j7_joint" value="0" />
+        <joint name="lumbar_j2__leftArm_j1_joint" value="0" />
+    </group_state>
+    <group_state name="arm_right_l_pose" group="arm_right">
+        <joint name="lumbar_j2__rightArm_j1_joint" value="0" />
+        <joint name="rightArm_j1__rightArm_j2_joint" value="-0.07" />
+        <joint name="rightArm_j2__rightArm_j3_joint" value="0" />
+        <joint name="rightArm_j3__rightArm_j4_joint" value="1.5707" />
+        <joint name="rightArm_j4__rightArm_j5_joint" value="0" />
+        <joint name="rightArm_j5__rightArm_j6_joint" value="0" />
+        <joint name="rightArm_j6__rightArm_j7_joint" value="0" />
+    </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
     <end_effector name="gripper_left" parent_link="leftArm_j7_link" group="gripper_left" />
     <end_effector name="gripper_right" parent_link="rightArm_j7_link" group="gripper_right" />
