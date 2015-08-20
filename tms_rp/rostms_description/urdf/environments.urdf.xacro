@@ -63,7 +63,7 @@
     <joint name="bsen_room_to_kitchen" type="fixed">
       <parent link="bsen_room"/>
       <child link="kitchen"/>
-      <origin xyz="9.16 5.9 0.4855" rpy="0 0 -1.57079633"/>
+      <origin xyz="9.26 5.9 0.4855" rpy="0 0 -1.57079633"/>
     </joint>
 
     <link name="kitchen">
@@ -217,7 +217,7 @@
     <joint name="bsen_room_to_wordrobe" type="fixed">
       <parent link="bsen_room"/>
       <child link="wordrobe"/>
-      <origin xyz="13.6 5.8 1.3" rpy="0 0 -1.57079633"/>
+      <origin xyz="13.7 5.9 1.3" rpy="0 0 -1.57079633"/>
     </joint>
 
     <link name="wordrobe">
@@ -231,7 +231,7 @@
     <joint name="bsen_room_to_workdesk" type="fixed">
       <parent link="bsen_room"/>
       <child link="workdesk"/>
-      <origin xyz="11.93 5.9 0.5" rpy="0 0 -1.57079633"/>
+      <origin xyz="12.05 5.9 0.5" rpy="0 0 -1.57079633"/>
     </joint>
 
     <link name="workdesk">
