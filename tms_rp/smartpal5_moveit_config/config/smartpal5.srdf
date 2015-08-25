@@ -112,8 +112,8 @@
         <joint name="rightGripper__rightGripper_thumb_joint" value="0" />
     </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
-    <end_effector name="gripper_left" parent_link="leftGripper_link" group="gripper_left" />
-    <end_effector name="gripper_right" parent_link="rightGripper_link" group="gripper_right" />
+    <end_effector name="gripper_left" parent_link="leftGripper_link" group="gripper_left" parent_group="arm_left" />
+    <end_effector name="gripper_right" parent_link="rightGripper_link" group="gripper_right" parent_group="arm_right" />
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="base_link" link2="camera_link" reason="Never" />
     <disable_collisions link1="base_link" link2="leftArm_j1_link" reason="Never" />
