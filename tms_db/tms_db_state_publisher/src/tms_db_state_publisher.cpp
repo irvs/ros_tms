@@ -3,8 +3,8 @@
 // @file   : tms_db_state_publisher.cpp
 // @brief  : subscribe the current information of object and publish the state of object
 // @author : Yoonseok Pyo
-// @version: Ver0.0.3 (since 2015.07.22)
-// @date   : 2015.07.23
+// @version: Ver0.0.4 (since 2015.07.22)
+// @date   : 2015.08.26
 //------------------------------------------------------------------------------
 //include for ROS
 #include <ros/ros.h>
@@ -23,8 +23,8 @@
 #include <vector>
 #include <map>
 
-#define rad2deg(x)	((x)*(180.0)/M_PI)
-#define deg2rad(x)	((x)*M_PI/180.0)
+// #define rad2deg(x)	((x)*(180.0)/M_PI)
+// #define deg2rad(x)	((x)*M_PI/180.0)
 
 //------------------------------------------------------------------------------
 using std::string;
@@ -101,9 +101,9 @@ private:
       {
         if (state!=0)
         {
-          posX = msg->tmsdb[i].x/1000;
-          posY = msg->tmsdb[i].y/1000;
-          rotY = deg2rad(msg->tmsdb[i].ry);
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotY = msg->tmsdb[i].ry;
 
           if(posX == 0.0 && posY == 0.0)
           {
@@ -126,9 +126,9 @@ private:
       {
         if (state!=0)
         {
-          posX = msg->tmsdb[i].x/1000;
-          posY = msg->tmsdb[i].y/1000;
-          rotY = deg2rad(msg->tmsdb[i].ry);
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotY = msg->tmsdb[i].ry;
 
           if(posX == 0.0 && posY == 0.0)
           {
@@ -151,9 +151,9 @@ private:
       {
         if (state!=0)
         {
-          posX = msg->tmsdb[i].x/1000;
-          posY = msg->tmsdb[i].y/1000;
-          rotY = deg2rad(msg->tmsdb[i].ry);
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotY = msg->tmsdb[i].ry;
 
           if(posX == 0.0 && posY == 0.0)
           {
@@ -176,9 +176,9 @@ private:
       {
         if (state!=0)
         {
-          posX = msg->tmsdb[i].x/1000;
-          posY = msg->tmsdb[i].y/1000;
-          rotY = deg2rad(msg->tmsdb[i].ry);
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotY = msg->tmsdb[i].ry;
 
           if(posX == 0.0 && posY == 0.0)
           {
@@ -201,9 +201,9 @@ private:
       {
         if (state!=0)
         {
-          posX = msg->tmsdb[i].x/1000;
-          posY = msg->tmsdb[i].y/1000;
-          rotY = deg2rad(msg->tmsdb[i].ry);
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotY = msg->tmsdb[i].ry;
 
           if(posX == 0.0 && posY == 0.0)
           {
@@ -226,9 +226,9 @@ private:
       {
         if (state!=0)
         {
-          posX = msg->tmsdb[i].x/1000;
-          posY = msg->tmsdb[i].y/1000;
-          rotY = deg2rad(msg->tmsdb[i].ry);
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotY = msg->tmsdb[i].ry;
 
           if(posX == 0.0 && posY == 0.0)
           {
@@ -251,9 +251,9 @@ private:
       {
         if (state==1)
         {
-          posX = msg->tmsdb[i].x/1000;
-          posY = msg->tmsdb[i].y/1000;
-          rotY = deg2rad(msg->tmsdb[i].ry);
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotY = msg->tmsdb[i].ry;
 
           if(posX == 0.0 && posY == 0.0)
           {
