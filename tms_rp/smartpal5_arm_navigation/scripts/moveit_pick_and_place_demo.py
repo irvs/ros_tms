@@ -140,6 +140,7 @@ class MoveItDemo:
         table_pose.pose.position.y = 0.0
         table_pose.pose.position.z = table_ground + table_size[2] / 2.0
         table_pose.pose.orientation.w = 1.0
+
         scene.add_box(table_id, table_pose, table_size)   
         
         # Set the target pose in between the boxes and on the table
@@ -148,7 +149,10 @@ class MoveItDemo:
         target_pose.pose.position.x = 0.35
         target_pose.pose.position.y = 0.2
         target_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0
-        target_pose.pose.orientation.w = 1.0
+        target_pose.pose.orientation.x = -0.010082021909
+        target_pose.pose.orientation.y = 0.0100961922622
+        target_pose.pose.orientation.z = -0.70704228273
+        target_pose.pose.orientation.w = 0.707027319252
 
         # Add the target object to the scene
         scene.add_box(target_id, target_pose, target_size)
@@ -178,7 +182,15 @@ class MoveItDemo:
         
         # Shift the grasp pose by half the width of the target to center it
         grasp_pose.pose.position.y -= target_size[1] / 2.0
-                
+
+        grasp_pose.pose.position.x = 0.267514881422
+        grasp_pose.pose.position.y = 0.229652712222
+        grasp_pose.pose.position.z = 0.738724230837
+        grasp_pose.pose.orientation.x = -0.010082021909
+        grasp_pose.pose.orientation.y = 0.0100961922622
+        grasp_pose.pose.orientation.z = -0.70704228273
+        grasp_pose.pose.orientation.w = 0.707027319252
+
         # Generate a list of grasps
         grasps = self.make_grasps(grasp_pose, [target_id])
 
