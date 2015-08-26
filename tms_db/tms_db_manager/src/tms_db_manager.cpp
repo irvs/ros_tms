@@ -2,8 +2,8 @@
 // @file   : tms_db_manager.cpp
 // @brief  : manage the ros-tms database
 // @author : Yoonseok Pyo
-// @version: Ver0.1.7 (since 2014.05.07)
-// @date   : 2014.11.19
+// @version: Ver0.2.0 (since 2014.05.07)
+// @date   : 2015.08.26
 //------------------------------------------------------------------------------
 //include for ROS
 #include <ros/ros.h>

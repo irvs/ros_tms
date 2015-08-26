@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <node pkg="tms_db_manager" type="tms_db_reader"   name="tms_db_reader">
     <param name="is_debug" value="false" />

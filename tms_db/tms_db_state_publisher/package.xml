@@ -1,14 +1,16 @@
 <?xml version="1.0"?>
 <package>
   <name>tms_db_state_publisher</name>
-  <version>0.0.2</version>
-  <license>BSD</license>
+  <version>0.0.3</version>
   <description>The tms_db_state_publisher package</description>
 
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>
 
-  <url type="website">http://robotics.ait.kyushu-u.ac.jp/index-e.html</url>
-  <url type="git">https://github.com/irvs/ros_tms</url>
+  <license>BSD</license>
+  
+  <url type="website">http://irvs.github.io/ros_tms/</url>
+  <url type="repository">https://github.com/irvs/ros_tms</url>
+  <url type="bugtracker">https://github.com/irvs/ros_tms/issues</url>
 
   <author email="passionvirus@gmail.com">Yoonseok Pyo</author>
   
