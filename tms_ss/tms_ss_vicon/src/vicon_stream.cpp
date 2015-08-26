@@ -2,8 +2,8 @@
 // @file   : vicon_stream.cpp
 // @brief  : data stream using ViconSDK v1.3 / simple version
 // @author : Yoonseok Pyo
-// @version: Ver0.1.6 (since 2014.05.02)
-// @date   : 2015.04.06
+// @version: Ver0.2.0 (since 2014.05.02)
+// @date   : 2015.08.26
 //------------------------------------------------------------------------------
 #include <ros/ros.h>
 
@@ -21,8 +21,8 @@
 #include <ctime>
 #include <time.h>
 
-#define rad2deg(x) ((x)*(180.0)/M_PI)
-#define deg2rad(x)  ((x)*M_PI/180.0)
+// #define rad2deg(x) ((x)*(180.0)/M_PI)
+// #define deg2rad(x)  ((x)*M_PI/180.0)
 //------------------------------------------------------------------------------
 using std::string;
 using namespace ViconDataStreamSDK::CPP;
@@ -312,12 +312,14 @@ private:
 
           tmpData.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
           tmpData.id      = id;
-          tmpData.x       = pose_msg.translation.x;
-          tmpData.y       = pose_msg.translation.y;
-          tmpData.z       = pose_msg.translation.z;
-          tmpData.rr      = rad2deg(pose_msg.eulerXYZ[0]);
-          tmpData.rp      = rad2deg(pose_msg.eulerXYZ[1]);
-          tmpData.ry      = rad2deg(pose_msg.eulerXYZ[2]);
+          // Vicon DataStream SDK: Positions are expressed in millimeters.
+          tmpData.x       = pose_msg.translation.x / 1000;
+          tmpData.y       = pose_msg.translation.y / 1000;
+          tmpData.z       = pose_msg.translation.z / 1000;
+          // Vicon DataStream SDK: Rotations are expressed in radians.
+          tmpData.rr      = pose_msg.eulerXYZ[0];
+          tmpData.rp      = pose_msg.eulerXYZ[1];
+          tmpData.ry      = pose_msg.eulerXYZ[2];
           tmpData.place   = idPlace;
           tmpData.sensor  = idSensor;
           tmpData.state   = 1;
