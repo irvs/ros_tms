@@ -129,22 +129,22 @@ class MoveItDemo:
         self.sendColors()    
         
         # Set the target pose in between the boxes and above the table
-        target_pose = PoseStamped()
-        target_pose.header.frame_id = reference_frame
-        target_pose.pose.position.x = 0.35
-        target_pose.pose.position.y = 0.1
-        target_pose.pose.position.z = table_pose.pose.position.z + table_size[2] + 0.05
-        target_pose.pose.orientation.w = 1.0
-
         # target_pose = PoseStamped()
         # target_pose.header.frame_id = reference_frame
-        # target_pose.pose.position.x = -0.025293
-        # target_pose.pose.position.y = 0.19799
-        # target_pose.pose.position.z = 0.54051
-        # target_pose.pose.orientation.x = 0.50017    
-        # target_pose.pose.orientation.y = -0.50013
-        # target_pose.pose.orientation.z = 0.49983
-        # target_pose.pose.orientation.w = -0.49987
+        # target_pose.pose.position.x = 0.35
+        # target_pose.pose.position.y = 0.1
+        # target_pose.pose.position.z = table_pose.pose.position.z + table_size[2] + 0.05
+        # target_pose.pose.orientation.w = 1.0
+
+        target_pose = PoseStamped()
+        target_pose.header.frame_id = reference_frame
+        target_pose.pose.position.x = 0.223921872338
+        target_pose.pose.position.y = 0.145208042062
+        target_pose.pose.position.z = 0.83441333983
+        target_pose.pose.orientation.x = -0.0447586940241  
+        target_pose.pose.orientation.y = 0.0448121192015
+        target_pose.pose.orientation.z = -0.705654041391
+        target_pose.pose.orientation.w = 0.705720133729
 
         # Set the target pose for the arm
         right_arm.set_pose_target(target_pose, end_effector_link)

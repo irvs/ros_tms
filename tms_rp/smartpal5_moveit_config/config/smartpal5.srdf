@@ -17,6 +17,7 @@
         <link name="leftArm_j5_link" />
         <link name="leftArm_j6_link" />
         <link name="leftArm_j7_link" />
+        <joint name="lumbar_j2__leftArm_j1_joint" />
         <joint name="leftArm_j1__leftArm_j2_joint" />
         <joint name="leftArm_j2__leftArm_j3_joint" />
         <joint name="leftArm_j3__leftArm_j4_joint" />
