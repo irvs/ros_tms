@@ -402,6 +402,27 @@
 		</inertial>
 	</link>
 
+	<joint name="left_end_effector_joint" type="fixed">
+    <origin xyz="0.01 0.11 0" rpy="0 0 0"/>
+    <parent link="leftGripper_link"/>
+    <child link="left_end_effector_link"/>
+  </joint>
+
+  <link name="left_end_effector_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
 	<joint name="leftGripper__leftGripper_thumb_joint" type="revolute">
 		<parent link="leftGripper_link"/>
 		<child link="leftGripper_thumb_link"/>
@@ -669,6 +690,27 @@
 			<inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
 		</inertial>
 	</link>
+
+	<joint name="right_end_effector_joint" type="fixed">
+    <origin xyz="0.11 0.01 0" rpy="0 0 0"/>
+    <parent link="rightGripper_link"/>
+    <child link="right_end_effector_link"/>
+  </joint>
+
+  <link name="right_end_effector_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
 
 	<joint name="rightGripper__rightGripper_thumb_joint" type="revolute">
 		<parent link="rightGripper_link"/>

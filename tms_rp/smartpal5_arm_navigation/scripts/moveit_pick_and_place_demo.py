@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 """
-    moveit_pick_and_place_demo.py - Version 0.1 2014-01-14
+    moveit_pick_and_place_demo.py - Version 0.1.1 2015-08-26
     
     Command the gripper to grasp a target object and move it to a new location, all
     while avoiding simulated obstacles.
     
-    Created for the Pi Robot Project: http://www.pirobot.org
-    Copyright (c) 2014 Patrick Goebel.  All rights reserved.
+    Copyright 2014 by Patrick Goebel <patrick@pirobot.org, www.pirobot.org>
+    Copyright 2015 by YS Pyo <passionvirus@gmail.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,8 +20,6 @@
     GNU General Public License for more details at:
     
     http://www.gnu.org/licenses/gpl.html
-
-    modified 2015-08-25
 """
 
 import rospy, sys
@@ -38,10 +36,10 @@ from copy import deepcopy
 GROUP_NAME_ARM = 'arm_left'
 GROUP_NAME_GRIPPER = 'gripper_left'
 
-GRIPPER_FRAME = 'leftGripper_link'
+GRIPPER_FRAME = 'left_end_effector_link'
 
 GRIPPER_OPEN = [-0.8]
-GRIPPER_CLOSED = [-0.1]
+GRIPPER_CLOSED = [-0.5]
 GRIPPER_NEUTRAL = [0.0]
 
 GRIPPER_JOINT_NAMES = ['leftGripper__leftGripper_thumb_joint']
@@ -55,7 +53,7 @@ class MoveItDemo:
         # Initialize the move_group API
         moveit_commander.roscpp_initialize(sys.argv)
         
-        rospy.init_node('moveit_demo')
+        rospy.init_node('moveit_pick_and_place_demo')
         
         # Use the planning scene object to add or remove objects
         scene = PlanningSceneInterface()
@@ -70,32 +68,32 @@ class MoveItDemo:
         self.colors = dict()
                         
         # Initialize the move group for the right arm
-        right_arm = MoveGroupCommander(GROUP_NAME_ARM)
+        arm = MoveGroupCommander(GROUP_NAME_ARM)
         
         # Initialize the move group for the right gripper
-        right_gripper = MoveGroupCommander(GROUP_NAME_GRIPPER)
+        gripper = MoveGroupCommander(GROUP_NAME_GRIPPER)
         
         # Get the name of the end-effector link
-        end_effector_link = right_arm.get_end_effector_link()
+        end_effector_link = arm.get_end_effector_link()
  
         # Allow some leeway in position (meters) and orientation (radians)
-        right_arm.set_goal_position_tolerance(0.05)
-        right_arm.set_goal_orientation_tolerance(0.1)
+        arm.set_goal_position_tolerance(0.05)
+        arm.set_goal_orientation_tolerance(0.1)
 
         # Allow replanning to increase the odds of a solution
-        right_arm.allow_replanning(True)
+        arm.allow_replanning(True)
         
         # Set the right arm reference frame
-        right_arm.set_pose_reference_frame(REFERENCE_FRAME)
+        arm.set_pose_reference_frame(REFERENCE_FRAME)
         
         # Allow 5 seconds per planning attempt
-        right_arm.set_planning_time(5)
+        arm.set_planning_time(5)
         
         # Set a limit on the number of pick attempts before bailing
-        max_pick_attempts = 20
+        max_pick_attempts = 5
         
         # Set a limit on the number of place attempts
-        max_place_attempts = 20
+        max_place_attempts = 5
                 
         # Give the scene a chance to catch up
         rospy.sleep(2)
@@ -115,12 +113,12 @@ class MoveItDemo:
         rospy.sleep(1)
         
         # Start the arm in the "resting" pose stored in the SRDF file
-        right_arm.set_named_target('arm_left_init')
-        right_arm.go()
+        arm.set_named_target('arm_left_init')
+        arm.go()
         
         # Open the gripper to the neutral position
-        right_gripper.set_joint_value_target(GRIPPER_NEUTRAL)
-        right_gripper.go()
+        gripper.set_joint_value_target(GRIPPER_NEUTRAL)
+        gripper.go()
        
         rospy.sleep(1)
 
@@ -140,6 +138,7 @@ class MoveItDemo:
         table_pose.pose.position.y = 0.0
         table_pose.pose.position.z = table_ground + table_size[2] / 2.0
         table_pose.pose.orientation.w = 1.0
+
         scene.add_box(table_id, table_pose, table_size)   
         
         # Set the target pose in between the boxes and on the table
@@ -148,7 +147,11 @@ class MoveItDemo:
         target_pose.pose.position.x = 0.35
         target_pose.pose.position.y = 0.2
         target_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0
-        target_pose.pose.orientation.w = 1.0
+        q = quaternion_from_euler(0, 0, -1.57079633)
+        target_pose.pose.orientation.x = q[0]
+        target_pose.pose.orientation.y = q[1]
+        target_pose.pose.orientation.z = q[2]
+        target_pose.pose.orientation.w = q[3]
 
         # Add the target object to the scene
         scene.add_box(target_id, target_pose, target_size)
@@ -163,22 +166,26 @@ class MoveItDemo:
         self.sendColors()
         
         # Set the support surface name to the table object
-        right_arm.set_support_surface_name(table_id)
+        arm.set_support_surface_name(table_id)
         
         # Specify a pose to place the target after being picked up
         place_pose = PoseStamped()
         place_pose.header.frame_id = REFERENCE_FRAME
         place_pose.pose.position.x = 0.35
-        place_pose.pose.position.y = 0.4
+        place_pose.pose.position.y = 0.3
         place_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0
-        place_pose.pose.orientation.w = 1.0
+        q = quaternion_from_euler(0, 0, -1.57079633)
+        place_pose.pose.orientation.x = q[0]
+        place_pose.pose.orientation.y = q[1]
+        place_pose.pose.orientation.z = q[2]
+        place_pose.pose.orientation.w = q[3]
 
         # Initialize the grasp pose to the target pose
         grasp_pose = target_pose
         
         # Shift the grasp pose by half the width of the target to center it
         grasp_pose.pose.position.y -= target_size[1] / 2.0
-                
+
         # Generate a list of grasps
         grasps = self.make_grasps(grasp_pose, [target_id])
 
@@ -195,7 +202,7 @@ class MoveItDemo:
         while result != MoveItErrorCodes.SUCCESS and n_attempts < max_pick_attempts:
             n_attempts += 1
             rospy.loginfo("Pick attempt: " +  str(n_attempts))
-            result = right_arm.pick(target_id, grasps)
+            result = arm.pick(target_id, grasps)
             rospy.sleep(0.2)
         
         # If the pick was successful, attempt the place operation   
@@ -211,7 +218,7 @@ class MoveItDemo:
                 n_attempts += 1
                 rospy.loginfo("Place attempt: " +  str(n_attempts))
                 for place in places:
-                    result = right_arm.place(target_id, place)
+                    result = arm.place(target_id, place)
                     if result == MoveItErrorCodes.SUCCESS:
                         break
                 rospy.sleep(0.2)
@@ -222,12 +229,12 @@ class MoveItDemo:
             rospy.loginfo("Pick operation failed after " + str(n_attempts) + " attempts.")
                 
         # Return the arm to the "resting" pose stored in the SRDF file
-        right_arm.set_named_target('arm_left_init')
-        right_arm.go()
+        arm.set_named_target('arm_left_init')
+        arm.go()
         
         # Open the gripper to the neutral position
-        right_gripper.set_joint_value_target(GRIPPER_NEUTRAL)
-        right_gripper.go()
+        gripper.set_joint_value_target(GRIPPER_NEUTRAL)
+        gripper.go()
        
         rospy.sleep(1)
 
@@ -291,8 +298,8 @@ class MoveItDemo:
         g.grasp_posture = self.make_gripper_posture(GRIPPER_CLOSED)
                 
         # Set the approach and retreat parameters as desired
-        g.pre_grasp_approach = self.make_gripper_translation(0.01, 0.1, [1.0, 0.0, 0.0])
-        g.post_grasp_retreat = self.make_gripper_translation(0.1, 0.1, [0.0, 0.0, 1.0])
+        g.pre_grasp_approach = self.make_gripper_translation(0.01, 0.2, [0.0, 1.0, 0.0])
+        g.post_grasp_retreat = self.make_gripper_translation(0.1, 0.2, [0.0, 0.0, 1.0])
         
         # Set the first grasp pose to the input pose
         g.grasp_pose = initial_pose_stamped
@@ -310,14 +317,20 @@ class MoveItDemo:
         for y in yaw_vals:
             for p in pitch_vals:
                 # Create a quaternion from the Euler angles
-                q = quaternion_from_euler(0, p, y)
+                # q = quaternion_from_euler(0, p, y)
                 
-                # Set the grasp pose orientation accordingly
+                # # Set the grasp pose orientation accordingly
+                # g.grasp_pose.pose.orientation.x = q[0]
+                # g.grasp_pose.pose.orientation.y = q[1]
+                # g.grasp_pose.pose.orientation.z = q[2]
+                # g.grasp_pose.pose.orientation.w = q[3]
+                
+                q = quaternion_from_euler(0, 0, -1.57079633)
                 g.grasp_pose.pose.orientation.x = q[0]
                 g.grasp_pose.pose.orientation.y = q[1]
                 g.grasp_pose.pose.orientation.z = q[2]
                 g.grasp_pose.pose.orientation.w = q[3]
-                
+
                 # Set and id for this grasp (simply needs to be unique)
                 g.id = str(len(grasps))
                 
@@ -367,14 +380,20 @@ class MoveItDemo:
                         place.pose.position.y = init_pose.pose.position.y + y
                         
                         # Create a quaternion from the Euler angles
-                        q = quaternion_from_euler(0, p, y)
+                        # q = quaternion_from_euler(0, p, y)
                         
-                        # Set the place pose orientation accordingly
+                        # # Set the place pose orientation accordingly
+                        # place.pose.orientation.x = q[0]
+                        # place.pose.orientation.y = q[1]
+                        # place.pose.orientation.z = q[2]
+                        # place.pose.orientation.w = q[3]
+
+                        q = quaternion_from_euler(0, 0, -1.57079633)
                         place.pose.orientation.x = q[0]
                         place.pose.orientation.y = q[1]
                         place.pose.orientation.z = q[2]
                         place.pose.orientation.w = q[3]
-                        
+
                         # Append this place pose to the list
                         places.append(deepcopy(place))
         
