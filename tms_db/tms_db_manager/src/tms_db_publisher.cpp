@@ -1,10 +1,9 @@
-
 //------------------------------------------------------------------------------
 // @file   : tms_db_publisher.cpp
 // @brief  : read the ros-tms database and publish the current information
 // @author : Yoonseok Pyo
-// @version: Ver0.0.1 (since 2014.11.24)
-// @date   : 2014.11.24
+// @version: Ver0.2.0 (since 2014.11.24)
+// @date   : 2015.08.26
 //------------------------------------------------------------------------------
 //include for ROS
 #include <ros/ros.h>
@@ -207,7 +206,7 @@ int main(int argc, char **argv)
   //Init ROS node
   ros::init(argc, argv, "tms_db_publisher");
   DbPublisher dp;
-  ros::Rate loop_rate(100); // 0.01sec
+  ros::Rate loop_rate(100);
 
   while (ros::ok())
   {
