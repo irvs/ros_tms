@@ -1,5 +1,26 @@
 #!/usr/bin/env python
 
+"""
+    moveit_ik_demo.py - Version 0.1.1 2015-08-26
+    
+    Use inverse kinemtatics to move the end effector to a specified pose
+
+    Copyright 2014 by Patrick Goebel <patrick@pirobot.org, www.pirobot.org>
+    Copyright 2015 by YS Pyo <passionvirus@gmail.com>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.5
+    
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details at:
+    
+    http://www.gnu.org/licenses/gpl.html
+"""
+
 import rospy, sys
 import moveit_commander
 from control_msgs.msg import GripperCommand
@@ -8,6 +29,21 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 from geometry_msgs.msg import PoseStamped, Pose
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
+GROUP_NAME_ARM = 'arm_left'
+GROUP_NAME_GRIPPER = 'gripper_left'
+
+GRIPPER_FRAME = 'left_end_effector_link'
+
+GRIPPER_OPEN = [-0.8]
+GRIPPER_CLOSED = [-0.5]
+GRIPPER_NEUTRAL = [0.0]
+
+GRIPPER_JOINT_NAMES = ['leftGripper__leftGripper_thumb_joint']
+
+GRIPPER_EFFORT = [1.0]
+
+REFERENCE_FRAME = 'start_position'
+
 class MoveItFKDemo:
     def __init__(self):
         # Initialize the move_group API and node
@@ -15,28 +51,27 @@ class MoveItFKDemo:
         rospy.init_node('moveit_ik_demo', anonymous=True)
 
         # Use the groups of SmartPal5
-        arm_left = moveit_commander.MoveGroupCommander('arm_left')
-        gripper_left = moveit_commander.MoveGroupCommander('gripper_left')
-        end_effector_link = arm_left.get_end_effector_link() # leftGripper_link
-        reference_frame = 'start_position'
+        arm = moveit_commander.MoveGroupCommander(GROUP_NAME_ARM)
+        gripper = moveit_commander.MoveGroupCommander(GROUP_NAME_GRIPPER)
+        end_effector_link = arm.get_end_effector_link()
 
         # Set a goal joint tolerance
-        arm_left.set_goal_joint_tolerance(0.001)
-        gripper_left.set_goal_joint_tolerance(0.001)
+        arm.set_goal_joint_tolerance(0.001)
+        gripper.set_goal_joint_tolerance(0.001)
 
         # Set the option related IK solution
-        arm_left.allow_replanning(True)
+        arm.allow_replanning(True)
 
         # Use the pose stored in the SRDF file
         # 1. Set the target pose
         # 2. Plan a trajectory
         # 3. Execute the planned trajectory
-        arm_left.set_named_target('arm_left_init')
-        arm_left.go()
+        arm.set_named_target('arm_left_init')
+        arm.go()
         rospy.sleep(1)
          
-        gripper_left.set_named_target('gripper_left_init')
-        gripper_left.go()
+        gripper.set_named_target('gripper_left_init')
+        gripper.go()
         rospy.sleep(1)
 
         # Use the joint pose with IK
@@ -44,7 +79,7 @@ class MoveItFKDemo:
         # 2. Plan a trajectory
         # 3. Execute the planned trajectory
         target_pose = PoseStamped()
-        target_pose.header.frame_id = reference_frame
+        target_pose.header.frame_id = REFERENCE_FRAME
         target_pose.header.stamp = rospy.Time.now()     
         target_pose.pose.position.x = 0.370748751767
         target_pose.pose.position.y = 0.420162677108
@@ -54,29 +89,29 @@ class MoveItFKDemo:
         target_pose.pose.orientation.z = -0.706731080872
         target_pose.pose.orientation.w = 0.706616439789
 
-        arm_left.set_start_state_to_current_state()
-        arm_left.set_pose_target(target_pose, end_effector_link)
-        traj = arm_left.plan()
-        arm_left.execute(traj)
+        arm.set_start_state_to_current_state()
+        arm.set_pose_target(target_pose, end_effector_link)
+        traj = arm.plan()
+        arm.execute(traj)
         rospy.sleep(1)
 
         # Shift the target pose (0,1,2,3,4,5 = x,y,z,r,p,y)
-        arm_left.shift_pose_target(1, -0.1, end_effector_link)
-        arm_left.go()
+        arm.shift_pose_target(1, -0.1, end_effector_link)
+        arm.go()
         rospy.sleep(1)
          
-        gripper_left.set_named_target('gripper_left_open')
-        gripper_left.go()
+        gripper.set_named_target('gripper_left_open')
+        gripper.go()
         rospy.sleep(1)
                  
         # Return
-        arm_left.set_named_target('arm_left_init')
-        traj = arm_left.plan()
-        arm_left.execute(traj)
+        arm.set_named_target('arm_left_init')
+        traj = arm.plan()
+        arm.execute(traj)
         rospy.sleep(1)
          
-        gripper_left.set_named_target('gripper_left_init')
-        gripper_left.go()
+        gripper.set_named_target('gripper_left_init')
+        gripper.go()
         rospy.sleep(1)
 
         # Cleanly shut down MoveIt

@@ -17,19 +17,23 @@
         <link name="leftArm_j5_link" />
         <link name="leftArm_j6_link" />
         <link name="leftArm_j7_link" />
-        <joint name="lumbar_j2__leftArm_j1_joint" />
-        <joint name="leftArm_j1__leftArm_j2_joint" />
-        <joint name="leftArm_j2__leftArm_j3_joint" />
-        <joint name="leftArm_j3__leftArm_j4_joint" />
-        <joint name="leftArm_j4__leftArm_j5_joint" />
-        <joint name="leftArm_j5__leftArm_j6_joint" />
-        <joint name="leftArm_j6__leftArm_j7_joint" />
+        <link name="leftGripper_link" />
+        <link name="left_end_effector_link" />
+        <joint name="left_end_effector_joint" />
         <joint name="leftArm_j7__leftGripper_joint" />
-        <chain base_link="leftArm_j1_link" tip_link="leftArm_j7_link" />
+        <joint name="leftArm_j6__leftArm_j7_joint" />
+        <joint name="leftArm_j5__leftArm_j6_joint" />
+        <joint name="leftArm_j4__leftArm_j5_joint" />
+        <joint name="leftArm_j3__leftArm_j4_joint" />
+        <joint name="leftArm_j2__leftArm_j3_joint" />
+        <joint name="leftArm_j1__leftArm_j2_joint" />
+        <joint name="lumbar_j2__leftArm_j1_joint" />
+        <chain base_link="lumbar_j2_link" tip_link="left_end_effector_link" />
     </group>
     <group name="gripper_left">
         <link name="leftGripper_link" />
         <link name="leftGripper_thumb_link" />
+        <link name="left_end_effector_link" />
         <joint name="leftGripper__leftGripper_thumb_joint" />
         <chain base_link="leftGripper_link" tip_link="leftGripper_thumb_link" />
     </group>
@@ -113,8 +117,10 @@
         <joint name="rightGripper__rightGripper_thumb_joint" value="0" />
     </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
-    <end_effector name="gripper_left" parent_link="leftGripper_link" group="gripper_left" parent_group="arm_left" />
+    <end_effector name="gripper_left" parent_link="left_end_effector_link" group="gripper_left" />
     <end_effector name="gripper_right" parent_link="rightGripper_link" group="gripper_right" parent_group="arm_right" />
+    <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
+    <virtual_joint name="world_joint" type="fixed" parent_frame="world" child_link="start_position" />
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="base_link" link2="camera_link" reason="Never" />
     <disable_collisions link1="base_link" link2="leftArm_j1_link" reason="Never" />
@@ -130,6 +136,7 @@
     <disable_collisions link1="base_link" link2="rightGripper_thumb_link" reason="Default" />
     <disable_collisions link1="camera_link" link2="leftArm_j1_link" reason="Never" />
     <disable_collisions link1="camera_link" link2="leftArm_j2_link" reason="Never" />
+    <disable_collisions link1="camera_link" link2="left_end_effector_link" reason="Never" />
     <disable_collisions link1="camera_link" link2="lumbar_j1_link" reason="Never" />
     <disable_collisions link1="camera_link" link2="lumbar_j2_link" reason="Adjacent" />
     <disable_collisions link1="camera_link" link2="rightArm_j1_link" reason="Never" />
@@ -142,12 +149,15 @@
     <disable_collisions link1="leftArm_j1_link" link2="leftArm_j7_link" reason="Never" />
     <disable_collisions link1="leftArm_j1_link" link2="leftGripper_link" reason="Never" />
     <disable_collisions link1="leftArm_j1_link" link2="leftGripper_thumb_link" reason="Never" />
+    <disable_collisions link1="leftArm_j1_link" link2="left_end_effector_link" reason="Never" />
     <disable_collisions link1="leftArm_j1_link" link2="lumbar_j1_link" reason="Never" />
     <disable_collisions link1="leftArm_j1_link" link2="lumbar_j2_link" reason="Adjacent" />
     <disable_collisions link1="leftArm_j1_link" link2="rightArm_j1_link" reason="Never" />
     <disable_collisions link1="leftArm_j1_link" link2="rightArm_j2_link" reason="Never" />
     <disable_collisions link1="leftArm_j1_link" link2="rightArm_j3_link" reason="Never" />
     <disable_collisions link1="leftArm_j1_link" link2="rightArm_j4_link" reason="Never" />
+    <disable_collisions link1="leftArm_j1_link" link2="rightArm_j5_link" reason="Never" />
+    <disable_collisions link1="leftArm_j1_link" link2="rightArm_j6_link" reason="Never" />
     <disable_collisions link1="leftArm_j2_link" link2="leftArm_j3_link" reason="Adjacent" />
     <disable_collisions link1="leftArm_j2_link" link2="leftArm_j4_link" reason="Never" />
     <disable_collisions link1="leftArm_j2_link" link2="leftArm_j5_link" reason="Never" />
@@ -155,6 +165,7 @@
     <disable_collisions link1="leftArm_j2_link" link2="leftArm_j7_link" reason="Never" />
     <disable_collisions link1="leftArm_j2_link" link2="leftGripper_link" reason="Never" />
     <disable_collisions link1="leftArm_j2_link" link2="leftGripper_thumb_link" reason="Never" />
+    <disable_collisions link1="leftArm_j2_link" link2="left_end_effector_link" reason="Never" />
     <disable_collisions link1="leftArm_j2_link" link2="lumbar_j1_link" reason="Never" />
     <disable_collisions link1="leftArm_j2_link" link2="lumbar_j2_link" reason="Never" />
     <disable_collisions link1="leftArm_j2_link" link2="rightArm_j1_link" reason="Never" />
@@ -163,44 +174,61 @@
     <disable_collisions link1="leftArm_j2_link" link2="rightArm_j4_link" reason="Never" />
     <disable_collisions link1="leftArm_j2_link" link2="rightArm_j5_link" reason="Never" />
     <disable_collisions link1="leftArm_j2_link" link2="rightArm_j6_link" reason="Never" />
-    <disable_collisions link1="leftArm_j2_link" link2="rightArm_j7_link" reason="Never" />
     <disable_collisions link1="leftArm_j3_link" link2="leftArm_j4_link" reason="Adjacent" />
     <disable_collisions link1="leftArm_j3_link" link2="leftArm_j5_link" reason="Never" />
     <disable_collisions link1="leftArm_j3_link" link2="leftArm_j6_link" reason="Never" />
     <disable_collisions link1="leftArm_j3_link" link2="leftArm_j7_link" reason="Never" />
     <disable_collisions link1="leftArm_j3_link" link2="leftGripper_link" reason="Never" />
     <disable_collisions link1="leftArm_j3_link" link2="leftGripper_thumb_link" reason="Never" />
+    <disable_collisions link1="leftArm_j3_link" link2="left_end_effector_link" reason="Never" />
     <disable_collisions link1="leftArm_j3_link" link2="lumbar_j1_link" reason="Never" />
     <disable_collisions link1="leftArm_j3_link" link2="rightArm_j1_link" reason="Never" />
     <disable_collisions link1="leftArm_j3_link" link2="rightArm_j2_link" reason="Never" />
     <disable_collisions link1="leftArm_j3_link" link2="rightArm_j3_link" reason="Never" />
     <disable_collisions link1="leftArm_j3_link" link2="rightArm_j4_link" reason="Never" />
+    <disable_collisions link1="leftArm_j3_link" link2="right_end_effector_link" reason="Never" />
     <disable_collisions link1="leftArm_j4_link" link2="leftArm_j5_link" reason="Adjacent" />
     <disable_collisions link1="leftArm_j4_link" link2="leftArm_j6_link" reason="Never" />
     <disable_collisions link1="leftArm_j4_link" link2="leftArm_j7_link" reason="Never" />
     <disable_collisions link1="leftArm_j4_link" link2="leftGripper_link" reason="Never" />
     <disable_collisions link1="leftArm_j4_link" link2="leftGripper_thumb_link" reason="Never" />
+    <disable_collisions link1="leftArm_j4_link" link2="left_end_effector_link" reason="Never" />
     <disable_collisions link1="leftArm_j4_link" link2="lumbar_j1_link" reason="Never" />
     <disable_collisions link1="leftArm_j4_link" link2="rightArm_j1_link" reason="Never" />
     <disable_collisions link1="leftArm_j4_link" link2="rightArm_j2_link" reason="Never" />
     <disable_collisions link1="leftArm_j4_link" link2="rightArm_j3_link" reason="Never" />
     <disable_collisions link1="leftArm_j4_link" link2="rightArm_j4_link" reason="Never" />
+    <disable_collisions link1="leftArm_j4_link" link2="right_end_effector_link" reason="Never" />
     <disable_collisions link1="leftArm_j5_link" link2="leftArm_j6_link" reason="Adjacent" />
     <disable_collisions link1="leftArm_j5_link" link2="leftArm_j7_link" reason="Default" />
     <disable_collisions link1="leftArm_j5_link" link2="leftGripper_link" reason="Never" />
     <disable_collisions link1="leftArm_j5_link" link2="leftGripper_thumb_link" reason="Never" />
-    <disable_collisions link1="leftArm_j5_link" link2="rightArm_j1_link" reason="Never" />
+    <disable_collisions link1="leftArm_j5_link" link2="left_end_effector_link" reason="Never" />
     <disable_collisions link1="leftArm_j5_link" link2="rightArm_j2_link" reason="Never" />
-    <disable_collisions link1="leftArm_j5_link" link2="rightArm_j3_link" reason="Never" />
     <disable_collisions link1="leftArm_j6_link" link2="leftArm_j7_link" reason="Adjacent" />
     <disable_collisions link1="leftArm_j6_link" link2="leftGripper_link" reason="Never" />
     <disable_collisions link1="leftArm_j6_link" link2="leftGripper_thumb_link" reason="Never" />
+    <disable_collisions link1="leftArm_j6_link" link2="left_end_effector_link" reason="Never" />
     <disable_collisions link1="leftArm_j6_link" link2="rightArm_j2_link" reason="Never" />
-    <disable_collisions link1="leftArm_j6_link" link2="rightArm_j3_link" reason="Never" />
+    <disable_collisions link1="leftArm_j6_link" link2="right_end_effector_link" reason="Never" />
     <disable_collisions link1="leftArm_j7_link" link2="leftGripper_link" reason="Adjacent" />
     <disable_collisions link1="leftArm_j7_link" link2="leftGripper_thumb_link" reason="Never" />
-    <disable_collisions link1="leftArm_j7_link" link2="rightGripper_thumb_link" reason="Never" />
+    <disable_collisions link1="leftArm_j7_link" link2="left_end_effector_link" reason="Never" />
+    <disable_collisions link1="leftArm_j7_link" link2="rightArm_j2_link" reason="Never" />
     <disable_collisions link1="leftGripper_link" link2="leftGripper_thumb_link" reason="Adjacent" />
+    <disable_collisions link1="leftGripper_link" link2="left_end_effector_link" reason="Adjacent" />
+    <disable_collisions link1="leftGripper_link" link2="right_end_effector_link" reason="Never" />
+    <disable_collisions link1="leftGripper_thumb_link" link2="left_end_effector_link" reason="Never" />
+    <disable_collisions link1="leftGripper_thumb_link" link2="right_end_effector_link" reason="Never" />
+    <disable_collisions link1="left_end_effector_link" link2="lumbar_j1_link" reason="Never" />
+    <disable_collisions link1="left_end_effector_link" link2="rightArm_j3_link" reason="Never" />
+    <disable_collisions link1="left_end_effector_link" link2="rightArm_j4_link" reason="Never" />
+    <disable_collisions link1="left_end_effector_link" link2="rightArm_j5_link" reason="Never" />
+    <disable_collisions link1="left_end_effector_link" link2="rightArm_j6_link" reason="Never" />
+    <disable_collisions link1="left_end_effector_link" link2="rightArm_j7_link" reason="Never" />
+    <disable_collisions link1="left_end_effector_link" link2="rightGripper_link" reason="Never" />
+    <disable_collisions link1="left_end_effector_link" link2="rightGripper_thumb_link" reason="Never" />
+    <disable_collisions link1="left_end_effector_link" link2="right_end_effector_link" reason="Never" />
     <disable_collisions link1="lumbar_j1_link" link2="lumbar_j2_link" reason="Adjacent" />
     <disable_collisions link1="lumbar_j1_link" link2="rightArm_j1_link" reason="Never" />
     <disable_collisions link1="lumbar_j1_link" link2="rightArm_j2_link" reason="Never" />
@@ -216,6 +244,7 @@
     <disable_collisions link1="rightArm_j1_link" link2="rightArm_j7_link" reason="Never" />
     <disable_collisions link1="rightArm_j1_link" link2="rightGripper_link" reason="Never" />
     <disable_collisions link1="rightArm_j1_link" link2="rightGripper_thumb_link" reason="Never" />
+    <disable_collisions link1="rightArm_j1_link" link2="right_end_effector_link" reason="Never" />
     <disable_collisions link1="rightArm_j2_link" link2="rightArm_j3_link" reason="Adjacent" />
     <disable_collisions link1="rightArm_j2_link" link2="rightArm_j4_link" reason="Never" />
     <disable_collisions link1="rightArm_j2_link" link2="rightArm_j5_link" reason="Never" />
@@ -223,25 +252,33 @@
     <disable_collisions link1="rightArm_j2_link" link2="rightArm_j7_link" reason="Never" />
     <disable_collisions link1="rightArm_j2_link" link2="rightGripper_link" reason="Never" />
     <disable_collisions link1="rightArm_j2_link" link2="rightGripper_thumb_link" reason="Never" />
+    <disable_collisions link1="rightArm_j2_link" link2="right_end_effector_link" reason="Never" />
     <disable_collisions link1="rightArm_j3_link" link2="rightArm_j4_link" reason="Adjacent" />
     <disable_collisions link1="rightArm_j3_link" link2="rightArm_j5_link" reason="Never" />
     <disable_collisions link1="rightArm_j3_link" link2="rightArm_j6_link" reason="Never" />
     <disable_collisions link1="rightArm_j3_link" link2="rightArm_j7_link" reason="Never" />
     <disable_collisions link1="rightArm_j3_link" link2="rightGripper_link" reason="Never" />
     <disable_collisions link1="rightArm_j3_link" link2="rightGripper_thumb_link" reason="Never" />
+    <disable_collisions link1="rightArm_j3_link" link2="right_end_effector_link" reason="Never" />
     <disable_collisions link1="rightArm_j4_link" link2="rightArm_j5_link" reason="Adjacent" />
     <disable_collisions link1="rightArm_j4_link" link2="rightArm_j6_link" reason="Never" />
     <disable_collisions link1="rightArm_j4_link" link2="rightArm_j7_link" reason="Never" />
     <disable_collisions link1="rightArm_j4_link" link2="rightGripper_link" reason="Never" />
     <disable_collisions link1="rightArm_j4_link" link2="rightGripper_thumb_link" reason="Never" />
+    <disable_collisions link1="rightArm_j4_link" link2="right_end_effector_link" reason="Never" />
     <disable_collisions link1="rightArm_j5_link" link2="rightArm_j6_link" reason="Adjacent" />
     <disable_collisions link1="rightArm_j5_link" link2="rightArm_j7_link" reason="Default" />
     <disable_collisions link1="rightArm_j5_link" link2="rightGripper_link" reason="Never" />
     <disable_collisions link1="rightArm_j5_link" link2="rightGripper_thumb_link" reason="Never" />
+    <disable_collisions link1="rightArm_j5_link" link2="right_end_effector_link" reason="Never" />
     <disable_collisions link1="rightArm_j6_link" link2="rightArm_j7_link" reason="Adjacent" />
     <disable_collisions link1="rightArm_j6_link" link2="rightGripper_link" reason="Never" />
     <disable_collisions link1="rightArm_j6_link" link2="rightGripper_thumb_link" reason="Never" />
+    <disable_collisions link1="rightArm_j6_link" link2="right_end_effector_link" reason="Never" />
     <disable_collisions link1="rightArm_j7_link" link2="rightGripper_link" reason="Adjacent" />
     <disable_collisions link1="rightArm_j7_link" link2="rightGripper_thumb_link" reason="Never" />
+    <disable_collisions link1="rightArm_j7_link" link2="right_end_effector_link" reason="Never" />
     <disable_collisions link1="rightGripper_link" link2="rightGripper_thumb_link" reason="Adjacent" />
+    <disable_collisions link1="rightGripper_link" link2="right_end_effector_link" reason="Adjacent" />
+    <disable_collisions link1="rightGripper_thumb_link" link2="right_end_effector_link" reason="Never" />
 </robot>
