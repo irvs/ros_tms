@@ -1,0 +1,38 @@
+Generic MongoDB Logging for ROS
+===============================
+
+Autonomous mobile robots produce an astonishing amount of run-time
+data during their operation. Data is acquired from sensors and
+actuator feedback, processed to extract information, and further
+refined as the basis for decision making or parameter estimation. In
+today's robot systems, this data is typically volatile. It is
+generated, used, and disposed right away. However, some of this data
+might be useful later, for example to analyze faults or evaluate the
+robot's performance. A system is required to store this data as well
+as enable efficient and flexible querying mechanisms.
+
+This package contains the relevant pieces to setup this generic
+logging for ROS. It features a generic logger written in Python
+capable of logging any topic, and loggers written in C++ written for
+specific message types which are known to be large in size or to be
+transmitted at a high frequency. This is to cope with Python inherent
+overhead and processing limits. You might find that for certain
+additional topics you need to write custom fast loggers following a
+template of the existing loggers. If you do this for publicly
+available message types we'd like to hear about it and maybe include
+it in a later release. We are also investigating the possibility to
+have generic message introspection in C++ for ROS, which would remedy
+this problem.
+Additionally, this package includes tools to monitor the logging
+process and MongoDB and generate graphs using RRDtool.
+
+For the conceptual background please refer to the paper "A Generic
+Robot Database and its Application in Fault Analysis and Performance
+Evaluation" by Niemueller et al. [1].
+For technical information please refer to the project's website [2].
+The ROS wiki page gives more details on how to get started on ROS [3].
+
+[1] http://www.fawkesrobotics.org/publications/2012/robodb-iros2012/
+[2] http://www.fawkesrobotics.org/projects/mongodb-log/
+[3] http://www.ros.org/wiki/mongodb_log
+

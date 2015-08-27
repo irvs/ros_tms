@@ -1,0 +1,10 @@
+# message used for inserting a ROS msg into a MongoDB database
+
+string database
+string collection
+SerialisedMessage message
+# meta description to be added to message, each pair interpreted as key = value
+StringPairList meta
+---
+# id of the inserted msg
+string id

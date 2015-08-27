@@ -1,0 +1,12 @@
+# the db to move entries from
+string database
+# the collections to move entries from
+StringList collections
+# only entries before rospy.get_rostime() - move_before are moved. if 0, all are moved
+duration move_before
+bool delete_after_move
+---
+
+---
+# the collections which have been operated on so far
+string[] completed

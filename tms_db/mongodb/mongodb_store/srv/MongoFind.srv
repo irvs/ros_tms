@@ -1,0 +1,5 @@
+string db
+string collection
+string query
+---
+string result
