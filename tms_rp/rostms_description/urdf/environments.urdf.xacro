@@ -216,14 +216,14 @@
 
     <joint name="bsen_room_to_wordrobe" type="fixed">
       <parent link="bsen_room"/>
-      <child link="wordrobe"/>
+      <child link="wardrobe"/>
       <origin xyz="13.7 5.9 1.3" rpy="0 0 -1.57079633"/>
     </joint>
 
-    <link name="wordrobe">
+    <link name="wardrobe">
       <visual>
         <geometry>
-          <mesh filename="package://environmental_model/model/wordrobe.dae"/>
+          <mesh filename="package://environmental_model/model/wardrobe.dae"/>
         </geometry>
       </visual>
     </link>

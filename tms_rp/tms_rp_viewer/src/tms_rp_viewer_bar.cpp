@@ -236,9 +236,9 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
         continue;
     }
 
-    PosX = environment_information_.tmsdb[i].x/1000;
-    PosY = environment_information_.tmsdb[i].y/1000;
-    PosZ = environment_information_.tmsdb[i].offset_z/1000;
+    PosX = environment_information_.tmsdb[i].x;
+    PosY = environment_information_.tmsdb[i].y;
+    PosZ = environment_information_.tmsdb[i].offset_z;
     rot = grasp::rotFromRpy(deg2rad(environment_information_.tmsdb[i].rr),
     		deg2rad(environment_information_.tmsdb[i].rp),
     		deg2rad(environment_information_.tmsdb[i].ry));
@@ -439,8 +439,8 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
     }
 //    else if (id ==1001)
 //    {
-//        PosX = environment_information_.tmsdb[i].x/1000;
-//        PosY = environment_information_.tmsdb[i].y/1000;
+//        PosX = environment_information_.tmsdb[i].x;
+//        PosY = environment_information_.tmsdb[i].y;
 //        PosZ = 0.9;
 //        rot = grasp::rotFromRpy(0,0,deg2rad(environment_information_.tmsdb[i].ry));
 
@@ -456,8 +456,8 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
 //    }
     else if (id ==1002)
     {
-        PosX = environment_information_.tmsdb[i].x/1000;
-        PosY = environment_information_.tmsdb[i].y/1000;
+        PosX = environment_information_.tmsdb[i].x;
+        PosY = environment_information_.tmsdb[i].y;
         PosZ = 0.9;
         rot = grasp::rotFromRpy(0,0,deg2rad(environment_information_.tmsdb[i].ry));
 
@@ -475,8 +475,8 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
     {
     	if (state==1)
         {
-          PosX = environment_information_.tmsdb[i].x/1000;
-          PosY = environment_information_.tmsdb[i].y/1000;
+          PosX = environment_information_.tmsdb[i].x;
+          PosY = environment_information_.tmsdb[i].y;
           PosZ = 0.35;
           rot = grasp::rotFromRpy(deg2rad(environment_information_.tmsdb[i].rr),
                                   deg2rad(environment_information_.tmsdb[i].rp),
@@ -498,9 +498,9 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
     	if (sensor == 3018 && place==2009)  //refrigerator, irs
     	{
             oID   = id - 7001;
-            PosX = 12.1 - environment_information_.tmsdb[i].y/1000;
-            PosY = 4.5 + environment_information_.tmsdb[i].x/1000;
-            PosZ = 0.0 + environment_information_.tmsdb[i].z/1000;
+            PosX = 12.1 - environment_information_.tmsdb[i].y;
+            PosY = 4.5 + environment_information_.tmsdb[i].x;
+            PosZ = 0.0 + environment_information_.tmsdb[i].z;
             callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
             callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(PosX,PosY,PosZ), mat_cw90_));
             object_state[oID] = true;
@@ -509,9 +509,9 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
         else if (place==6019) //shelf, ics
     	{
     		oID   = id - 7001;
-            PosX = 11.9  - environment_information_.tmsdb[i].y/1000;
-            PosY = 3.8  + environment_information_.tmsdb[i].x/1000;
-    		PosZ = 0.08 + environment_information_.tmsdb[i].z/1000;
+            PosX = 11.9  - environment_information_.tmsdb[i].y;
+            PosY = 3.8  + environment_information_.tmsdb[i].x;
+            PosZ = 0.08 + environment_information_.tmsdb[i].z;
     		callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
     		callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(PosX,PosY,PosZ), mat_cw90_));
     		object_state[oID] = true;
@@ -519,9 +519,9 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
     	else if (state == 2) // grasped object
     	{
     		oID   = id - 7001;
-    		PosX = environment_information_.tmsdb[i].x/1000;
-    		PosY = environment_information_.tmsdb[i].y/1000;
-    		PosZ = environment_information_.tmsdb[i].z/1000;
+            PosX = environment_information_.tmsdb[i].x;
+            PosY = environment_information_.tmsdb[i].y;
+            PosZ = environment_information_.tmsdb[i].z;
     		rot = grasp::rotFromRpy(deg2rad(environment_information_.tmsdb[i].rr),
     				deg2rad(environment_information_.tmsdb[i].rp),
     				deg2rad(environment_information_.tmsdb[i].ry));
@@ -546,8 +546,8 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
     	          ss >> d_tmp;
     	          seq_of_rpos.push_back(d_tmp);
     	        }
-        	    rPosX = seq_of_rpos.at(0)/1000;
-        	    rPosY = seq_of_rpos.at(1)/1000;
+                rPosX = seq_of_rpos.at(0);
+                rPosY = seq_of_rpos.at(1);
         	    rPosZ = 0.0;
         	    rrot = grasp::rotFromRpy(deg2rad(0.0), deg2rad(0.0), deg2rad(seq_of_rpos.at(2)));
 
@@ -579,9 +579,9 @@ void RpViewerBar::updateEnvironmentInformation(bool is_simulation)
     	else
     	{
     		oID   = id - 7001;
-    		PosX = environment_information_.tmsdb[i].x/1000;
-    		PosY = environment_information_.tmsdb[i].y/1000;
-    		PosZ = environment_information_.tmsdb[i].z/1000;
+            PosX = environment_information_.tmsdb[i].x;
+            PosY = environment_information_.tmsdb[i].y;
+            PosZ = environment_information_.tmsdb[i].z;
     		callSynchronously(bind(&TmsRpController::appear,trc_,object_name_[oID]));
     		callSynchronously(bind(&TmsRpController::setPos,trc_,object_name_[oID],Vector3(PosX,PosY,PosZ), mat_cw90_));
     		object_state[oID] = true;

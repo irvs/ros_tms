@@ -6,9 +6,6 @@
 #include <draw_points.h>
 #include <tms_rp_pp.h>
 
-#define BASIC_OFFSET_X 4700
-#define BASIC_OFFSET_Y 500
-
 //------------------------------------------------------------------------------
 using namespace std;
 using namespace boost;
@@ -16,10 +13,10 @@ using namespace cnoid;
 using namespace grasp;
 using namespace tms_rp;
 
-//------------------------------------------------------------------------------
 std::string TmsRpBar::object_name_[MAX_ICS_OBJECT_NUM] = {"chipstar_red","chipstar_orange",
                                         "chipstar_green","greentea_bottle",
                                         "soukentea_bottle","cancoffee",
+//------------------------------------------------------------------------------
                                         "seasoner_bottle","dispenser",
                                         "soysauce_bottle_black","soysauce_bottle_blue",
                                         "soysauce_bottle_white","pepper_bottle_black",
@@ -303,12 +300,12 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
 //  //----------------------------------------------------------------------------
 //  get_db_data.request.tmsdb.id = 1001 + sid_;
 //  if (get_data_client_.call(get_db_data)){
-//    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
-//    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
-//    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
-//    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
-//    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
-//    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+//    posX = get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x;
+//    posY = get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y;
+//    posZ = get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z;
+//    posRR= get_db_data.response.tmsdb[0].rr;
+//    posRP= get_db_data.response.tmsdb[0].rp;
+//    posRY= get_db_data.response.tmsdb[0].ry;
 
 //    trc_.appear("person_1_oculus");
 //    trc_.setPos("person_1_oculus",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
@@ -320,12 +317,12 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   //----------------------------------------------------------------------------
   get_db_data.request.tmsdb.id = 1002 + sid_;
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
-    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
-    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
-    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
-    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+    posX = get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x;
+    posY = get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y;
+    posZ = get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z;
+    posRR= get_db_data.response.tmsdb[0].rr;
+    posRP= get_db_data.response.tmsdb[0].rp;
+    posRY= get_db_data.response.tmsdb[0].ry;
 
     trc_.appear("person_2_moverio");
     trc_.setPos("person_2_moverio",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
@@ -338,12 +335,12 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 2001 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
-    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
-    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
-    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
-    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+    posX = get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x;
+    posY = get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y;
+    posZ = get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z;
+    posRR= get_db_data.response.tmsdb[0].rr;
+    posRP= get_db_data.response.tmsdb[0].rp;
+    posRY= get_db_data.response.tmsdb[0].ry;
 
     trc_.appear("smartpal4");
     trc_.setPos("smartpal4",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
@@ -356,12 +353,12 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 2002 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
-    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
-    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
-    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
-    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+    posX = get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x;
+    posY = get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y;
+    posZ = get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z;
+    posRR= get_db_data.response.tmsdb[0].rr;
+    posRP= get_db_data.response.tmsdb[0].rp;
+    posRY= get_db_data.response.tmsdb[0].ry;
 
     trc_.appear("smartpal5_1");
     trc_.setPos("smartpal5_1",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
@@ -374,12 +371,12 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 2003 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
-    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
-    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
-    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
-    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+    posX = get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x;
+    posY = get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y;
+    posZ = get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z;
+    posRR= get_db_data.response.tmsdb[0].rr;
+    posRP= get_db_data.response.tmsdb[0].rp;
+    posRY= get_db_data.response.tmsdb[0].ry;
 
     trc_.appear("smartpal5_2");
     trc_.setPos("smartpal5_2",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
@@ -392,12 +389,12 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 2005 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
-    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
-    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
-    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
-    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+    posX = get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x;
+    posY = get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y;
+    posZ = get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z;
+    posRR= get_db_data.response.tmsdb[0].rr;
+    posRP= get_db_data.response.tmsdb[0].rp;
+    posRY= get_db_data.response.tmsdb[0].ry;
 
     trc_.appear("kobuki");
     trc_.setPos("kobuki",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
@@ -410,12 +407,12 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 2006 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
-    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
-    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
-    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
-    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+    posX = get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x;
+    posY = get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y;
+    posZ = get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z;
+    posRR= get_db_data.response.tmsdb[0].rr;
+    posRP= get_db_data.response.tmsdb[0].rp;
+    posRY= get_db_data.response.tmsdb[0].ry;
 
     trc_.appear("kxp");
     trc_.setPos("kxp",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
@@ -432,12 +429,12 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 2007 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
-    posZ = 0/1000;
-    posRR=deg2rad(0.0);
-    posRP=deg2rad(0.0);
-    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+    posX = get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x;
+    posY = get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y;
+    posZ = 0;
+    posRR= 0.0;
+    posRP= 0.0;
+    posRY= get_db_data.response.tmsdb[0].ry;
 
     trc_.appear("wheelchair");
     trc_.setPos("wheelchair",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
@@ -450,12 +447,12 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 2008 + sid_;
 
   if (get_data_client_.call(get_db_data)) {
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
-    posY = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
-    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
-    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
-    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
-    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+    posX = get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x;
+    posY = get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_y;
+    posZ = get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z;
+    posRR= get_db_data.response.tmsdb[0].rr;
+    posRP= get_db_data.response.tmsdb[0].rp;
+    posRY= get_db_data.response.tmsdb[0].ry;
 
     trc_.appear("ardrone");
     trc_.setPos("ardrone",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
@@ -472,12 +469,12 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 2009 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+BASIC_OFFSET_X)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+BASIC_OFFSET_Y)/1000;
-    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
-    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
-    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
-    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+    posX = get_db_data.response.tmsdb[0].x;
+    posY = get_db_data.response.tmsdb[0].y;
+    posZ = get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z;
+    posRR= get_db_data.response.tmsdb[0].rr;
+    posRP= get_db_data.response.tmsdb[0].rp;
+    posRY= get_db_data.response.tmsdb[0].ry;
 
     trc_.appear("refrigerator");
     trc_.setPos("refrigerator",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
@@ -494,12 +491,12 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 5001 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
-    posZ = (get_db_data.response.tmsdb[0].z-get_db_data.response.tmsdb[0].offset_z)/1000;
-    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
-    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
-    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+    posX = get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x;
+    posY = get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y;
+    posZ = get_db_data.response.tmsdb[0].z-get_db_data.response.tmsdb[0].offset_z;
+    posRR= get_db_data.response.tmsdb[0].rr;
+    posRP= get_db_data.response.tmsdb[0].rp;
+    posRY= get_db_data.response.tmsdb[0].ry;
 
     trc_.appear("floor928");
     trc_.setPos("floor928",   Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
@@ -512,12 +509,12 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 5002 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
-    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
-    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
-    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
-    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+    posX = get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x;
+    posY = get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y;
+    posZ = get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z;
+    posRR= get_db_data.response.tmsdb[0].rr;
+    posRP= get_db_data.response.tmsdb[0].rp;
+    posRY= get_db_data.response.tmsdb[0].ry;
 
     trc_.appear("wall928");
     trc_.setPos("wall928", Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
@@ -530,12 +527,12 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
   get_db_data.request.tmsdb.id = 5005 + sid_;
 
   if (get_data_client_.call(get_db_data)){
-    posX = (get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x+BASIC_OFFSET_X)/1000;
-    posY = (get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y+BASIC_OFFSET_Y)/1000;
-    posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
-    posRR=deg2rad(get_db_data.response.tmsdb[0].rr);
-    posRP=deg2rad(get_db_data.response.tmsdb[0].rp);
-    posRY=deg2rad(get_db_data.response.tmsdb[0].ry);
+    posX = get_db_data.response.tmsdb[0].x+get_db_data.response.tmsdb[0].offset_x;
+    posY = get_db_data.response.tmsdb[0].y+get_db_data.response.tmsdb[0].offset_y;
+    posZ = get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z;
+    posRR= get_db_data.response.tmsdb[0].rr;
+    posRP= get_db_data.response.tmsdb[0].rp;
+    posRY= get_db_data.response.tmsdb[0].ry;
 
     trc_.appear("corridor928");
     trc_.setPos("corridor928", Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
@@ -554,12 +551,12 @@ TmsRpBar::TmsRpBar(): ToolBar("TmsRpBar"), mes_(*MessageView::mainInstance()),
     if (get_data_client_.call(get_db_data)) {
       os_ << "[TmsAction] Get info of furniture ID: " << get_db_data.request.tmsdb.id <<"  OK" << endl;
 
-      posX = (get_db_data.response.tmsdb[0].x+BASIC_OFFSET_X)/1000;
-      posY = (get_db_data.response.tmsdb[0].y+BASIC_OFFSET_Y)/1000;
-      posZ = (get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z)/1000;
-      posRR= deg2rad(get_db_data.response.tmsdb[0].rr);
-      posRP= deg2rad(get_db_data.response.tmsdb[0].rp);
-      posRY= deg2rad(get_db_data.response.tmsdb[0].ry);
+      posX = get_db_data.response.tmsdb[0].x;
+      posY = get_db_data.response.tmsdb[0].y;
+      posZ = get_db_data.response.tmsdb[0].z+get_db_data.response.tmsdb[0].offset_z;
+      posRR= get_db_data.response.tmsdb[0].rr;
+      posRP= get_db_data.response.tmsdb[0].rp;
+      posRY= get_db_data.response.tmsdb[0].ry;
       trc_.appear(furniture_name_[furnitureID]);
       trc_.setPos(furniture_name_[furnitureID],Vector3(posX,posY,posZ), Matrix3(rotFromRpy(Vector3(posRR, posRP,posRY))));
 
@@ -714,8 +711,8 @@ void TmsRpBar::initPoseButtonClicked()
   sp_control_srv.request.unit = UNIT_VEHICLE;
   sp_control_srv.request.cmd  = CMD_MOVE_ABS;
   sp_control_srv.request.arg.resize(3);
-  sp_control_srv.request.arg[0] = 1000;
-  sp_control_srv.request.arg[1] = 1000;
+  sp_control_srv.request.arg[0] = 1;
+  sp_control_srv.request.arg[1] = 1;
   sp_control_srv.request.arg[2] = 0;
 
   if (sp5_control_client_.call(sp_control_srv)) {
@@ -921,10 +918,10 @@ void TmsRpBar::ardroneButtonClicked()
 
   tms_msg_rc::robot_control ardrone_control_srv;
 
-  ardrone_control_srv.request.x = ardrone_pos(0) * 1000;
-  ardrone_control_srv.request.y = ardrone_pos(1) * 1000;
-  ardrone_control_srv.request.z = ardrone_pos(2) * 1000;
-  ardrone_control_srv.request.ry = rad2deg(ardrone_rpy(2));
+  ardrone_control_srv.request.x = ardrone_pos(0);
+  ardrone_control_srv.request.y = ardrone_pos(1);
+  ardrone_control_srv.request.z = ardrone_pos(2);
+  ardrone_control_srv.request.ry = ardrone_rpy(2);
 
   if (ardrone_client_.call(ardrone_control_srv)) {
     bool result = ardrone_control_srv.response.status;
@@ -966,8 +963,8 @@ void TmsRpBar::moveSmartpal()
   robot_rpy = rpyFromRot(robot_ori);
 
   path_planning_srv.request.robot_id = 2003;
-  path_planning_srv.request.start_pos.x = robot_pos(0) * 1000;
-  path_planning_srv.request.start_pos.y = robot_pos(1) * 1000;
+  path_planning_srv.request.start_pos.x = robot_pos(0);
+  path_planning_srv.request.start_pos.y = robot_pos(1);
   path_planning_srv.request.start_pos.z = 0.0;
   path_planning_srv.request.start_pos.th = rad2deg(robot_rpy(2));
   path_planning_srv.request.start_pos.roll = 0.0;
@@ -986,8 +983,8 @@ void TmsRpBar::moveSmartpal()
 
   robot_rpy = rpyFromRot(robot_ori);
 
-  path_planning_srv.request.goal_pos.x = robot_pos(0) * 1000;
-  path_planning_srv.request.goal_pos.y = robot_pos(1) * 1000;
+  path_planning_srv.request.goal_pos.x = robot_pos(0);
+  path_planning_srv.request.goal_pos.y = robot_pos(1);
   path_planning_srv.request.goal_pos.z = 0.0;
   path_planning_srv.request.goal_pos.th = rad2deg(robot_rpy(2));
   path_planning_srv.request.goal_pos.roll = 0.0;
