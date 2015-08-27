@@ -1,0 +1,13 @@
+<launch>
+  
+  
+	<include file="$(find mongodb_store)/launch/mongodb_store.launch"> 
+  		<arg name="test_mode" default="true" />
+  	</include>
+
+  	<!-- THIS DOES NOT WORK AS LOGGER CAN'T BE LAUNCHE VIA LAUNCH FILE FOR SOME REASON -->
+	<node pkg="mongodb_log" type="mongodb_log.py" name="mongodb_log" args="test_0 test_1"/>
+  
+	<test test-name="count_test" pkg="mongodb_log" type="test_publisher.py" />
+
+</launch>
