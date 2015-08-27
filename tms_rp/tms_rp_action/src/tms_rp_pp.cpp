@@ -15,14 +15,14 @@ TmsRpPathPlanning* TmsRpPathPlanning::instance()
 }
 
 //------------------------------------------------------------------------------
-TmsRpPathPlanning::TmsRpPathPlanning(): kSmartPal5CollisionThreshold_(400.0),
-                                        kSmartPal4CollisionThreshold_(400.0),
-                                        kKobukiCollisionThreshold_(200.0),
-                                        kKKPCollisionThreshold_(400.0),
-                                        kMimamorukunCollisionThreshold_(400.0),
-                                        kRobotControlWagonDist_(400.0),
-                                        kSmoothVoronoiPathThreshold_(100.0),
-                                        kPushWagonPathThreshold_(200.0),
+TmsRpPathPlanning::TmsRpPathPlanning(): kSmartPal5CollisionThreshold_(0.4),
+                                        kSmartPal4CollisionThreshold_(0.4),
+                                        kKobukiCollisionThreshold_(0.2),
+                                        kKKPCollisionThreshold_(0.4),
+                                        kMimamorukunCollisionThreshold_(0.4),
+                                        kRobotControlWagonDist_(0.4),
+                                        kSmoothVoronoiPathThreshold_(0.1),
+                                        kPushWagonPathThreshold_(0.2),
                                         ToolBar("TmsRpPathPlanning"),
                                         os_(MessageView::mainInstance()->cout()),
                                         trc_(*TmsRpController::instance())
@@ -84,13 +84,13 @@ bool TmsRpPathPlanning::voronoiPathPlanner(tms_msg_rp::rps_voronoi_path_planning
   start.resize(3);
   goal.resize(3);
 
-  start[0] = req.start_pos.x / 1000.0;	//(m)
-  start[1] = req.start_pos.y / 1000.0;	//(m)
-  start[2] = deg2rad(req.start_pos.th); //(rad)
+  start[0] = req.start_pos.x;	//(m)
+  start[1] = req.start_pos.y;	//(m)
+  start[2] = req.start_pos.th; //(rad)
 
-  goal[0] = req.goal_pos.x / 1000.0; //(m)
-  goal[1] = req.goal_pos.y / 1000.0; //(m)
-  goal[2] = deg2rad(req.goal_pos.th); //(rad)
+  goal[0] = req.goal_pos.x; //(m)
+  goal[1] = req.goal_pos.y; //(m)
+  goal[2] = req.goal_pos.th; //(rad)
 
   ROS_INFO("Init map ...");
   vector<vector<CollisionMapData> > using_map;
@@ -168,7 +168,7 @@ bool TmsRpPathPlanning::voronoiPathPlanner(tms_msg_rp::rps_voronoi_path_planning
     return false;
   }
 
-  smoothVoronoiPath(using_map, start, goal, voronoi_path, smooth_path, kSmoothVoronoiPathThreshold_/1000.0);
+  smoothVoronoiPath(using_map, start, goal, voronoi_path, smooth_path, kSmoothVoronoiPathThreshold_);
   //~ compVoronoiPath(smooth_path, comp_path);
 
   //~ t_end = clock();
@@ -180,9 +180,9 @@ bool TmsRpPathPlanning::voronoiPathPlanner(tms_msg_rp::rps_voronoi_path_planning
   rps_robot_path.rps_route.clear();
 
   for(unsigned int i=0;i<smooth_path.size();i++){
-    temp_pos.x = smooth_path[i][0] * 1000.0;
-    temp_pos.y = smooth_path[i][1] * 1000.0;
-    temp_pos.th = rad2deg(smooth_path[i][2]);
+    temp_pos.x = smooth_path[i][0];
+    temp_pos.y = smooth_path[i][1];
+    temp_pos.th = smooth_path[i][2];
 
     res.VoronoiPath.push_back(temp_pos);
     res.voronoi_path.rps_route.push_back(temp_pos);
@@ -215,25 +215,25 @@ double TmsRpPathPlanning::getRobotCollisionThreshold(int robot_id)
 
   switch(robot_id){
     case 2001:  //SmartPal4
-      collision_threshold = kSmartPal4CollisionThreshold_ / 1000.0;
+      collision_threshold = kSmartPal4CollisionThreshold_;
       break;
     case 2002:  //SmartPal5_1
-      collision_threshold = kSmartPal5CollisionThreshold_ / 1000.0;
+      collision_threshold = kSmartPal5CollisionThreshold_;
       break;
     case 2003:  //SmartPal5_2
-      collision_threshold = kSmartPal5CollisionThreshold_ / 1000.0;
+      collision_threshold = kSmartPal5CollisionThreshold_;
       break;
     case 2004:  //turtlebot2
-      collision_threshold = kKobukiCollisionThreshold_ / 1000.0;
+      collision_threshold = kKobukiCollisionThreshold_;
       break;
     case 2005:  //kobuki
-      collision_threshold = kKobukiCollisionThreshold_ / 1000.0;
+      collision_threshold = kKobukiCollisionThreshold_;
       break;
     case 2006:  //KKP
-      collision_threshold = kKKPCollisionThreshold_ / 1000.0;
+      collision_threshold = kKKPCollisionThreshold_;
       break;
     case 2007:
-      collision_threshold = kMimamorukunCollisionThreshold_ / 1000.0;
+      collision_threshold = kMimamorukunCollisionThreshold_;
       break;
     default:
       collision_threshold = 0.1;
