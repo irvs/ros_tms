@@ -1,15 +1,12 @@
 <?xml version="1.0"?>
-<!-- SmartPal5 -->
 <robot name="smartpal5" xmlns:xacro="http://www.ros.org/wiki/xacro">
-
-	<!-- ==================== Planar joint ==================== -->
-	
-    <joint name="world_x_joint" type="prismatic">
-        <parent link="world"/>
-        <child link="world_x_link"/>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <limit effort="1000.0" lower="-5." upper="5." velocity="0.5"/>
-    </joint>
+	<!-- Vehicle -->
+  <joint name="world_x_joint" type="prismatic">
+		<parent link="world"/>
+    <child link="world_x_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <limit effort="1000.0" lower="-5." upper="5." velocity="0.5"/>
+  </joint>
 
     <link name="world_x_link"/>
 
@@ -37,9 +34,7 @@
 		<origin xyz="0 0 0" rpy="0 0 0"/>
 	</joint>
 
-	<!-- ==================== Vehicle ==================== -->
-
-	<link name="base_link"> <!-- Vehicle -->
+	<link name="base_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_body_vehicle.dae"/>
@@ -127,7 +122,7 @@
     <joint name="lumbar_j2__head_camera_joint" type="fixed">
 		<parent link="lumbar_j2_link"/>
 		<child link="camera_link"/>
-		<origin xyz="0.02 -0.7 0" rpy="1.57075 0 0"/>			
+		<origin xyz="0.02 -0.7 0" rpy="1.57075 0 0"/>
 	</joint>
 
     <!-- ==================== RGBD Camera ==================== -->
@@ -156,7 +151,7 @@
     <!--joint name="camera_orientation" type="fixed">
         <parent link="camera_link"/>
         <child link="camera_oriented_link"/>
-		<origin xyz="0 0 0" rpy="0 -1.57075 0"/>	
+		<origin xyz="0 0 0" rpy="0 -1.57075 0"/>
     </joint>
 
     <link name="camera_oriented_link"/-->
