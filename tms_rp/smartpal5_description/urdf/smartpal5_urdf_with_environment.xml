@@ -2,8 +2,8 @@
 <robot name="smartpal5">
 
   <!-- ==================== Planar joint ==================== -->
-  
-    <link name="start_position"/>
+
+    <link name="world_link"/>
 
     <joint name="world_x_joint" type="prismatic">
         <parent link="start_position"/>
@@ -128,7 +128,7 @@
     <joint name="lumbar_j2__head_camera_joint" type="fixed">
     <parent link="lumbar_j2_link"/>
     <child link="camera_link"/>
-    <origin xyz="0.02 -0.7 0" rpy="1.57075 0 0"/>     
+    <origin xyz="0.02 -0.7 0" rpy="1.57075 0 0"/>
   </joint>
 
     <!-- ==================== RGBD Camera ==================== -->
@@ -157,7 +157,7 @@
     <!--joint name="camera_orientation" type="fixed">
         <parent link="camera_link"/>
         <child link="camera_oriented_link"/>
-    <origin xyz="0 0 0" rpy="0 -1.57075 0"/>  
+    <origin xyz="0 0 0" rpy="0 -1.57075 0"/>
     </joint>
 
     <link name="camera_oriented_link"/-->
@@ -879,7 +879,7 @@
     <child link="meeting_table"/>
     <origin xyz="0 0 0"/>
   </joint>
-      
+
   <link name="meeting_table">
     <visual>
       <geometry>
