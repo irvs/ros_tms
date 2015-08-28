@@ -26,7 +26,7 @@ if __name__ == '__main__':
         # you don't need a name (note that this p_id is different than one above)
         p_id = msg_store.insert(p)
 
-        p_id = msg_store.insert(['test1', 'test2'])         
+        #p_id = msg_store.insert(['test1', 'test2'])         
 
         # get it back with a name
         print msg_store.query_named("my favourite pose", Pose._type)
