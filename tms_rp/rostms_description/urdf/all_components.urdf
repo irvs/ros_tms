@@ -238,8 +238,208 @@
       </geometry>
     </visual>
   </link>
-  <!-- <xacro:include filename="$(find rostms_description)/urdf/objects.urdf.xacro" />
-  <objects/> -->
+  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
+  <!-- meeting_chair -->
+  <!-- chair -->
+  <link name="chair_x_link"/>
+  <joint name="chair_x_joint" type="prismatic">
+    <parent link="world_link"/>
+    <child link="chair_x_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+  </joint>
+  <link name="chair_y_link"/>
+  <joint name="chair_y_joint" type="prismatic">
+    <parent link="chair_x_link"/>
+    <child link="chair_y_link"/>
+    <origin rpy="0 0 1.57079633" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+  </joint>
+  <joint name="chair_yaw_joint" type="continuous">
+    <parent link="chair_y_link"/>
+    <child link="chair"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <link name="chair">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/chair.dae"/>
+      </geometry>
+      <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.51"/>
+    </visual>
+  </link>
+  <!-- refrigerator -->
+  <link name="refrigerator_x_link"/>
+  <joint name="refrigerator_x_joint" type="prismatic">
+    <parent link="world_link"/>
+    <child link="refrigerator_x_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+  </joint>
+  <link name="refrigerator_y_link"/>
+  <joint name="refrigerator_y_joint" type="prismatic">
+    <parent link="refrigerator_x_link"/>
+    <child link="refrigerator_y_link"/>
+    <origin rpy="0 0 1.57079633" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+  </joint>
+  <joint name="refrigerator_yaw_joint" type="continuous">
+    <parent link="refrigerator_y_link"/>
+    <child link="refrigerator"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <link name="refrigerator">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/refrigerator.dae"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.56"/>
+    </visual>
+  </link>
+  <!-- Add meeting_chair -->
+  <link name="meeting_chair1_x_link"/>
+  <joint name="meeting_chair1_x_joint" type="prismatic">
+    <parent link="world_link"/>
+    <child link="meeting_chair1_x_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+  </joint>
+  <link name="meeting_chair1_y_link"/>
+  <joint name="meeting_chair1_y_joint" type="prismatic">
+    <parent link="meeting_chair1_x_link"/>
+    <child link="meeting_chair1_y_link"/>
+    <origin rpy="0 0 1.57079633" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+  </joint>
+  <joint name="meeting_chair1_yaw_joint" type="continuous">
+    <parent link="meeting_chair1_y_link"/>
+    <child link="meeting_chair1"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <link name="meeting_chair1">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.3978"/>
+    </visual>
+  </link>
+  <link name="meeting_chair2_x_link"/>
+  <joint name="meeting_chair2_x_joint" type="prismatic">
+    <parent link="world_link"/>
+    <child link="meeting_chair2_x_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+  </joint>
+  <link name="meeting_chair2_y_link"/>
+  <joint name="meeting_chair2_y_joint" type="prismatic">
+    <parent link="meeting_chair2_x_link"/>
+    <child link="meeting_chair2_y_link"/>
+    <origin rpy="0 0 1.57079633" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+  </joint>
+  <joint name="meeting_chair2_yaw_joint" type="continuous">
+    <parent link="meeting_chair2_y_link"/>
+    <child link="meeting_chair2"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <link name="meeting_chair2">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.3978"/>
+    </visual>
+  </link>
+  <link name="meeting_chair3_x_link"/>
+  <joint name="meeting_chair3_x_joint" type="prismatic">
+    <parent link="world_link"/>
+    <child link="meeting_chair3_x_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+  </joint>
+  <link name="meeting_chair3_y_link"/>
+  <joint name="meeting_chair3_y_joint" type="prismatic">
+    <parent link="meeting_chair3_x_link"/>
+    <child link="meeting_chair3_y_link"/>
+    <origin rpy="0 0 1.57079633" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+  </joint>
+  <joint name="meeting_chair3_yaw_joint" type="continuous">
+    <parent link="meeting_chair3_y_link"/>
+    <child link="meeting_chair3"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <link name="meeting_chair3">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.3978"/>
+    </visual>
+  </link>
+  <link name="meeting_chair4_x_link"/>
+  <joint name="meeting_chair4_x_joint" type="prismatic">
+    <parent link="world_link"/>
+    <child link="meeting_chair4_x_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+  </joint>
+  <link name="meeting_chair4_y_link"/>
+  <joint name="meeting_chair4_y_joint" type="prismatic">
+    <parent link="meeting_chair4_x_link"/>
+    <child link="meeting_chair4_y_link"/>
+    <origin rpy="0 0 1.57079633" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+  </joint>
+  <joint name="meeting_chair4_yaw_joint" type="continuous">
+    <parent link="meeting_chair4_y_link"/>
+    <child link="meeting_chair4"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <link name="meeting_chair4">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.3978"/>
+    </visual>
+  </link>
+  <!-- wagon -->
+  <link name="wagon_x_link"/>
+  <joint name="wagon_x_joint" type="prismatic">
+    <parent link="world_link"/>
+    <child link="wagon_x_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+  </joint>
+  <link name="wagon_y_link"/>
+  <joint name="wagon_y_joint" type="prismatic">
+    <parent link="wagon_x_link"/>
+    <child link="wagon_y_link"/>
+    <origin rpy="0 0 1.57079633" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+  </joint>
+  <joint name="wagon_yaw_joint" type="continuous">
+    <parent link="wagon_y_link"/>
+    <child link="wagon"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <link name="wagon">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/wagon.dae"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0. 0. 0.5"/>
+    </visual>
+  </link>
   <!-- <xacro:include filename="$(find rostms_description)/urdf/robots.urdf.xacro" />
   <robots/> -->
 </robot>

@@ -25,8 +25,9 @@
   <!-- Defines the components tags -->
   <xacro:include filename="$(find rostms_description)/urdf/environments.urdf.xacro" />
   <xacro:environments/>
-  <!-- <xacro:include filename="$(find rostms_description)/urdf/objects.urdf.xacro" />
-  <objects/> -->
+
+  <xacro:include filename="$(find rostms_description)/urdf/objects.urdf.xacro" />
+  <xacro:objects/>
   <!-- <xacro:include filename="$(find rostms_description)/urdf/robots.urdf.xacro" />
   <robots/> -->
 </robot>
