@@ -80,11 +80,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        bsen_origin:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         bsen_room:
           Alpha: 1
           Show Axes: false
@@ -96,11 +91,6 @@ Visualization Manager:
           Show Trail: false
           Value: true
         carpet:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        chair:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -120,37 +110,12 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        meeting_chair1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        meeting_chair2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        meeting_chair3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        meeting_chair4:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         meeting_table:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
         recorder:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        refrigerator:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -185,7 +150,7 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        wordrobe:
+        wardrobe:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -195,7 +160,7 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        world:
+        world_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -232,7 +197,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: world
+    Fixed Frame: world_link
     Frame Rate: 30
   Name: root
   Tools:
@@ -287,4 +252,4 @@ Window Geometry:
     collapsed: true
   Width: 1863
   X: 1967
-  Y: 26
+  Y: 16

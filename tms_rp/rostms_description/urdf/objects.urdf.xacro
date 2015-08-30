@@ -19,7 +19,7 @@
 
     <link name="chair_x_link"/>
     <joint name="chair_x_joint" type="prismatic">
-      <parent link="world"/>
+      <parent link="world_link"/>
       <child link="chair_x_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
@@ -52,7 +52,7 @@
 
     <link name="refrigerator_x_link"/>
     <joint name="refrigerator_x_joint" type="prismatic">
-      <parent link="world"/>
+      <parent link="world_link"/>
       <child link="refrigerator_x_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
@@ -85,7 +85,7 @@
 
     <link name="meeting_chair1_x_link"/>
     <joint name="meeting_chair1_x_joint" type="prismatic">
-      <parent link="world"/>
+      <parent link="world_link"/>
       <child link="meeting_chair1_x_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
@@ -118,7 +118,7 @@
 
     <link name="meeting_chair2_x_link"/>
     <joint name="meeting_chair2_x_joint" type="prismatic">
-      <parent link="world"/>
+      <parent link="world_link"/>
       <child link="meeting_chair2_x_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
@@ -151,7 +151,7 @@
 
     <link name="meeting_chair3_x_link"/>
     <joint name="meeting_chair3_x_joint" type="prismatic">
-      <parent link="world"/>
+      <parent link="world_link"/>
       <child link="meeting_chair3_x_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
@@ -184,7 +184,7 @@
 
     <link name="meeting_chair4_x_link"/>
     <joint name="meeting_chair4_x_joint" type="prismatic">
-      <parent link="world"/>
+      <parent link="world_link"/>
       <child link="meeting_chair4_x_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
@@ -217,7 +217,7 @@
 
     <link name="wagon_x_link"/>
     <joint name="wagon_x_joint" type="prismatic">
-      <parent link="world"/>
+      <parent link="world_link"/>
       <child link="wagon_x_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
@@ -238,7 +238,7 @@
       <axis xyz="0 0 1"/>
     </joint>
 
-    <objects_sim/>  
+    <objects_sim/>
 
   </xacro:macro>
 </robot>

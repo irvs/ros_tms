@@ -6,7 +6,7 @@
   <xacro:include filename="$(find smartpal5_description)/urdf/smartpal5_gazebo.urdf.xacro" />
 
   <xacro:macro name="robots">
-  <xacro:include filename="$(find smartpal5_description)/urdf/smartpal5.urdf.xacro" />
-  <smartpal5_sim/>  
+    <xacro:include filename="$(find smartpal5_description)/urdf/smartpal5.urdf.xacro" />
+    <smartpal5_sim/>
   </xacro:macro>
 </robot>
