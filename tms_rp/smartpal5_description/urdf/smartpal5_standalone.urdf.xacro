@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<robot name="smartpal5_standalone" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- Used for fixing all components to 'world' frame of RViz and Gazebo 'world' -->
+  <link name="world"/>
+  <!-- Defines the components tags -->
+  <xacro:include filename="$(find rostms_description)/urdf/smartpal5.urdf.xacro" />
+</robot>

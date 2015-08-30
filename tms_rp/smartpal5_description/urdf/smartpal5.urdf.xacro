@@ -1,45 +1,44 @@
 <?xml version="1.0"?>
-<!-- SmartPal5 -->
+
 <robot name="smartpal5" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-	<!-- ==================== Planar joint ==================== -->
-	
-    <joint name="world_x_joint" type="prismatic">
-        <parent link="world"/>
-        <child link="world_x_link"/>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <limit effort="1000.0" lower="-5." upper="5." velocity="0.5"/>
-    </joint>
+	<!-- Base, Vehicle -->
+  <link name="smartpal5_link"/>
 
-    <link name="world_x_link"/>
+  <joint name="smartpal5_x_joint" type="prismatic">
+	  <parent link="smartpal5_link"/>
+    <child link="smartpal5_x_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <limit effort="1000.0" lower="-5." upper="5." velocity="0.5"/>
+  </joint>
 
-    <joint name="world_y_joint" type="prismatic">
-		<parent link="world_x_link"/>
-		<child link="world_y_link"/>
-		<origin xyz="0 0 0" rpy="0 0 1.57075"/>
-        <limit effort="1000.0" lower="-5." upper="5." velocity="0.5"/>
-    </joint>
+  <link name="smartpal5_x_link"/>
 
-    <link name="world_y_link"/>
+  <joint name="smartpal5_y_joint" type="prismatic">
+    <parent link="smartpal5_x_link"/>
+    <child link="smartpal5_y_link"/>
+    <origin xyz="0 0 0" rpy="0 0 1.57075"/>
+    <limit effort="1000.0" lower="-5." upper="5." velocity="0.5"/>
+  </joint>
 
-    <joint name="world_theta_joint" type="continuous">
-		<parent link="world_y_link"/>
+  <link name="smartpal5_y_link"/>
+
+  <joint name="smartpal5_yaw_joint" type="continuous">
+	  <parent link="smartpal5_y_link"/>
 		<child link="base_footprint"/>
 		<origin xyz="0 0 0" rpy="0 0 -1.57075"/>
-        <axis xyz="0 0 1"/>
+    <axis xyz="0 0 1"/>
 	</joint>
 
-    <link name="base_footprint"/>
+  <link name="base_footprint"/>
 
 	<joint name="base_footprint_joint" type="fixed">
-        <parent link="base_footprint"/>
-		<child link="base_link"/>
+    <parent link="base_footprint"/>
+	  <child link="base_link"/>
 		<origin xyz="0 0 0" rpy="0 0 0"/>
 	</joint>
 
-	<!-- ==================== Vehicle ==================== -->
-
-	<link name="base_link"> <!-- Vehicle -->
+	<link name="base_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_body_vehicle.dae"/>
@@ -60,19 +59,16 @@
 		</inertial>
 	</link>
 
-	<!-- ==================== Vehicle - Lumbar Joint ==================== -->
-
-	<joint name="vehicle__lumbar_j1_joint" type="revolute">
-		<parent link="base_link"/> <!-- Vehicle -->
-		<child link="lumbar_j1_link"/>
+	<!-- Lumbar -->
+	<joint name="lumbar_lower_joint" type="revolute">
+	  <parent link="base_link"/>
+		<child link="lumbar_lower_link"/>
 		<origin xyz="0 0 0.4365" rpy="-1.57075 0 0"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="-0.2" upper="0.00872664625997165" effort="100.0" velocity="1.0"/>
 	</joint>
 
-	<!-- ==================== Lumbar ==================== -->
-
-	<link name="lumbar_j1_link">
+	<link name="lumbar_lower_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_body_lumbar-J1.dae"/>
@@ -93,15 +89,15 @@
 		</inertial>
 	</link>
 
-	<joint name="lumbar_j1__lumbar_j2_joint" type="revolute">
-		<parent link="lumbar_j1_link"/>
-		<child link="lumbar_j2_link"/>
+	<joint name="lumbar_upper_joint" type="revolute">
+		<parent link="lumbar_lower_link"/>
+		<child link="lumbar_upper_link"/>
 		<origin xyz="0 -0.21 0" rpy="0 0 0"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="-0.00872664625997165" upper="2.10312174865317" effort="100.0" velocity="1.0"/>
 	</joint>
 
-	<link name="lumbar_j2_link">
+	<link name="lumbar_upper_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_body_lumbar-J2.dae"/>
@@ -122,18 +118,15 @@
 		</inertial>
 	</link>
 
-    <!-- ==================== Lumbar - RGBD Camera Joint ==================== -->
-
-    <joint name="lumbar_j2__head_camera_joint" type="fixed">
-		<parent link="lumbar_j2_link"/>
+  <!-- RGB-D Camera -->
+  <joint name="head_camera_joint" type="fixed">
+		<parent link="lumbar_upper_link"/>
 		<child link="camera_link"/>
-		<origin xyz="0.02 -0.7 0" rpy="1.57075 0 0"/>			
+		<origin xyz="0.02 -0.7 0" rpy="1.57075 0 0"/>
 	</joint>
 
-    <!-- ==================== RGBD Camera ==================== -->
-
-    <link name="camera_link">
-		<visual>
+  <link name="camera_link">
+	  <visual>
 			<geometry>
 				<box size="0.03 0.15 0.05"/>
 			</geometry>
@@ -153,28 +146,16 @@
 		</inertial>
 	</link>
 
-    <!--joint name="camera_orientation" type="fixed">
-        <parent link="camera_link"/>
-        <child link="camera_oriented_link"/>
-		<origin xyz="0 0 0" rpy="0 -1.57075 0"/>	
-    </joint>
-
-    <link name="camera_oriented_link"/-->
-
-
-	<!-- ==================== Lumbar - Left Arm Joint ==================== -->
-
-	<joint name="lumbar_j2__leftArm_j1_joint" type="revolute">
-		<parent link="lumbar_j2_link"/>
-		<child link="leftArm_j1_link"/>
+	<!-- Left Arm -->
+  <joint name="l_arm_j1_joint" type="revolute">
+		<parent link="lumbar_upper_link"/>
+		<child link="l_arm_j1_link"/>
 		<origin xyz="-0.025 -0.480 0.200" rpy="3.14159 0 0"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="-0.7679" upper="3.1066" effort="100.0" velocity="1.0"/>
 	</joint>
 
-	<!-- ==================== Left Arm ==================== -->
-
-	<link name="leftArm_j1_link">
+	<link name="l_arm_j1_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_leftArm_J1.dae"/>
@@ -195,15 +176,15 @@
 		</inertial>
 	</link>
 
-	<joint name="leftArm_j1__leftArm_j2_joint" type="revolute">
-		<parent link="leftArm_j1_link"/>
-		<child link="leftArm_j2_link"/>
+	<joint name="l_arm_j2_joint" type="revolute">
+		<parent link="l_arm_j1_link"/>
+		<child link="l_arm_j2_link"/>
 		<origin xyz="0 0 0" rpy="1.57075 3.14159 1.57075"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="-0.2443" upper="1.9024" effort="100.0" velocity="1.0"/>
 	</joint>
 
-	<link name="leftArm_j2_link">
+	<link name="l_arm_j2_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_leftArm_J2.dae"/>
@@ -224,15 +205,15 @@
 		</inertial>
 	</link>
 
-	<joint name="leftArm_j2__leftArm_j3_joint" type="revolute">
-		<parent link="leftArm_j2_link"/>
-		<child link="leftArm_j3_link"/>
+	<joint name="l_arm_j3_joint" type="revolute">
+		<parent link="l_arm_j2_link"/>
+		<child link="l_arm_j3_link"/>
 		<origin xyz="0 0 0" rpy="1.57075 1.57075 1.57075"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="-2.0769" upper="2.0769" effort="100.0" velocity="1.0"/>
 	</joint>
 
-	<link name="leftArm_j3_link">
+	<link name="l_arm_j3_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_leftArm_J3.dae"/>
@@ -253,15 +234,15 @@
 		</inertial>
 	</link>
 
-	<joint name="leftArm_j3__leftArm_j4_joint" type="revolute">
-		<parent link="leftArm_j3_link"/>
-		<child link="leftArm_j4_link"/>
+	<joint name="l_arm_j4_joint" type="revolute">
+		<parent link="l_arm_j3_link"/>
+		<child link="l_arm_j4_link"/>
 		<origin xyz="-0.02 0.0 0.25" rpy="-1.57075 0 3.14159"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="-0.0174" upper="2.2514" effort="100.0" velocity="1.0"/>
 	</joint>
 
-	<link name="leftArm_j4_link">
+	<link name="l_arm_j4_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_leftArm_J4.dae"/>
@@ -282,15 +263,15 @@
 		</inertial>
 	</link>
 
-	<joint name="leftArm_j4__leftArm_j5_joint" type="revolute">
-		<parent link="leftArm_j4_link"/>
-		<child link="leftArm_j5_link"/>
+	<joint name="l_arm_j5_joint" type="revolute">
+		<parent link="l_arm_j4_link"/>
+		<child link="l_arm_j5_link"/>
 		<origin xyz="-0.02 0.0 0.0" rpy="1.57075 0 0"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="-2.0769" upper="2.0769" effort="100.0" velocity="1.0"/>
 	</joint>
 
-	<link name="leftArm_j5_link">
+	<link name="l_arm_j5_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_leftArm_J5.dae"/>
@@ -311,15 +292,15 @@
 		</inertial>
 	</link>
 
-	<joint name="leftArm_j5__leftArm_j6_joint" type="revolute">
-		<parent link="leftArm_j5_link"/>
-		<child link="leftArm_j6_link"/>
+	<joint name="l_arm_j6_joint" type="revolute">
+		<parent link="l_arm_j5_link"/>
+		<child link="l_arm_j6_link"/>
 		<origin xyz="0.0 0.0 0.28" rpy="-1.57075 1.57075 0"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="-0.2617" upper="0.7504" effort="100.0" velocity="1.0"/>
 	</joint>
 
-	<link name="leftArm_j6_link">
+	<link name="l_arm_j6_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_leftArm_J6.dae"/>
@@ -340,15 +321,15 @@
 		</inertial>
 	</link>
 
-	<joint name="leftArm_j6__leftArm_j7_joint" type="revolute">
-		<parent link="leftArm_j6_link"/>
-		<child link="leftArm_j7_link"/>
+	<joint name="l_arm_j7_joint" type="revolute">
+		<parent link="l_arm_j6_link"/>
+		<child link="l_arm_j7_link"/>
 		<origin xyz="0.0 0.0 0" rpy="1.57075 3.14159 0"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="0" upper="0.5" effort="100.0" velocity="1.0"/>
 	</joint>
 
-	<link name="leftArm_j7_link">
+	<link name="l_arm_j7_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_leftArm_J7.dae"/>
@@ -369,18 +350,15 @@
 		</inertial>
 	</link>
 
-	<!-- ==================== Left Arm - Left Gripper Joint ==================== -->
-
-	<joint name="leftArm_j7__leftGripper_joint" type="fixed">
-		<parent link="leftArm_j7_link"/>
-		<child link="leftGripper_link"/>
+	<!-- Left Gripper -->
+	<joint name="l_gripper_joint" type="fixed">
+		<parent link="l_arm_j7_link"/>
+		<child link="l_gripper_link"/>
 		<origin xyz="0.056 0 0" rpy="3.14159 3.14159 1.57075"/>
 		<axis xyz="0 0 1"/>
 	</joint>
 
-	<!-- ==================== Left Gripper ==================== -->
-
-	<link name="leftGripper_link">
+	<link name="l_gripper_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_leftGripper_gripper.dae"/>
@@ -401,13 +379,13 @@
 		</inertial>
 	</link>
 
-  <joint name="left_end_effector_joint" type="fixed">
-    <origin xyz="0.05 0 0" rpy="-0 0 0"/>
-    <parent link="leftGripper_link"/>
-    <child link="left_end_effector_link"/>
+  <joint name="l_end_effector_joint" type="fixed">
+    <origin xyz="0.05 0 0" rpy="0 0 0"/>
+    <parent link="l_gripper_link"/>
+    <child link="l_end_effector_link"/>
   </joint>
 
-  <link name="left_end_effector_link">
+  <link name="l_end_effector_link">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -422,15 +400,15 @@
     </collision>
   </link>
 
-	<joint name="leftGripper__leftGripper_thumb_joint" type="revolute">
-		<parent link="leftGripper_link"/>
-		<child link="leftGripper_thumb_link"/>
+	<joint name="l_gripper_thumb_joint" type="revolute">
+		<parent link="l_gripper_link"/>
+		<child link="l_gripper_thumb_link"/>
 		<origin xyz="0.027 0.042 0.0" rpy="0 0 0"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="-1.0122" upper="0.1396" effort="100.0" velocity="1.0"/>
 	</joint>
 
-	<link name="leftGripper_thumb_link">
+	<link name="l_gripper_thumb_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_leftGripper_g-thumb.dae"/>
@@ -451,19 +429,16 @@
 		</inertial>
 	</link>
 
-	<!-- ==================== Lumbar - Right Arm Joint ==================== -->
-
-	<joint name="lumbar_j2__rightArm_j1_joint" type="revolute">
-		<parent link="lumbar_j2_link"/>
-		<child link="rightArm_j1_link"/>
+	<!-- Right Arm -->
+	<joint name="r_arm_j1_joint" type="revolute">
+		<parent link="lumbar_upper_link"/>
+		<child link="r_arm_j1_link"/>
 		<origin xyz="-0.025 -0.480 -0.200" rpy="3.14159 0 0"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="-0.7679" upper="3.1066" effort="100.0" velocity="1.0"/>
 	</joint>
 
-	<!-- ==================== Right Arm ==================== -->
-
-	<link name="rightArm_j1_link">
+	<link name="r_arm_j1_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_rightArm_J1.dae"/>
@@ -484,15 +459,15 @@
 		</inertial>
 	</link>
 
-	<joint name="rightArm_j1__rightArm_j2_joint" type="revolute">
-		<parent link="rightArm_j1_link"/>
-		<child link="rightArm_j2_link"/>
+	<joint name="r_armj2_joint" type="revolute">
+		<parent link="r_arm_j1_link"/>
+		<child link="r_arm_j2_link"/>
 		<origin xyz="0 0 0" rpy="-1.57075 0 -1.57075"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="-1.9024" upper="0.2443" effort="100.0" velocity="1.0"/>
 	</joint>
 
-	<link name="rightArm_j2_link">
+	<link name="r_arm_j2_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_rightArm_J2.dae"/>
@@ -513,15 +488,15 @@
 		</inertial>
 	</link>
 
-	<joint name="rightArm_j2__rightArm_j3_joint" type="revolute">
-		<parent link="rightArm_j2_link"/>
-		<child link="rightArm_j3_link"/>
+	<joint name="r_arm_j3_joint" type="revolute">
+		<parent link="r_arm_j2_link"/>
+		<child link="r_arm_j3_link"/>
 		<origin xyz="0 0 0" rpy="1.57075 1.57075 1.57075"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="-2.0769" upper="2.0769" effort="100.0" velocity="1.0"/>
 	</joint>
 
-	<link name="rightArm_j3_link">
+	<link name="r_arm_j3_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_rightArm_J3.dae"/>
@@ -542,15 +517,15 @@
 		</inertial>
 	</link>
 
-	<joint name="rightArm_j3__rightArm_j4_joint" type="revolute">
-		<parent link="rightArm_j3_link"/>
-		<child link="rightArm_j4_link"/>
+	<joint name="r_arm_j4_joint" type="revolute">
+		<parent link="r_arm_j3_link"/>
+		<child link="r_arm_j4_link"/>
 		<origin xyz="-0.02 0.0 0.25" rpy="-1.57075 0 3.14159"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="-0.0174" upper="2.2514" effort="100.0" velocity="1.0"/>
 	</joint>
 
-	<link name="rightArm_j4_link">
+	<link name="r_arm_j4_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_rightArm_J4.dae"/>
@@ -571,15 +546,15 @@
 		</inertial>
 	</link>
 
-	<joint name="rightArm_j4__rightArm_j5_joint" type="revolute">
-		<parent link="rightArm_j4_link"/>
-		<child link="rightArm_j5_link"/>
+	<joint name="r_arm_j5_joint" type="revolute">
+		<parent link="r_arm_j4_link"/>
+		<child link="r_arm_j5_link"/>
 		<origin xyz="-0.02 0.0 0.0" rpy="1.57075 0 0"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="-2.0769" upper="2.0769" effort="100.0" velocity="1.0"/>
 	</joint>
 
-	<link name="rightArm_j5_link">
+	<link name="r_arm_j5_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_rightArm_J5.dae"/>
@@ -600,15 +575,15 @@
 		</inertial>
 	</link>
 
-	<joint name="rightArm_j5__rightArm_j6_joint" type="revolute">
-		<parent link="rightArm_j5_link"/>
-		<child link="rightArm_j6_link"/>
+	<joint name="r_arm_j6_joint" type="revolute">
+		<parent link="r_arm_j5_link"/>
+		<child link="r_arm_j6_link"/>
 		<origin xyz="0.0 0.0 0.28" rpy="-1.57075 1.57075 0"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="-0.2617" upper="0.7504" effort="100.0" velocity="1.0"/>
 	</joint>
 
-	<link name="rightArm_j6_link">
+	<link name="r_arm_j6_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_rightArm_J6.dae"/>
@@ -629,15 +604,15 @@
 		</inertial>
 	</link>
 
-	<joint name="rightArm_j6__rightArm_j7_joint" type="revolute">
-		<parent link="rightArm_j6_link"/>
-		<child link="rightArm_j7_link"/>
+	<joint name="r_arm_j7_joint" type="revolute">
+		<parent link="r_arm_j6_link"/>
+		<child link="r_arm_j7_link"/>
 		<origin xyz="0.0 0.0 0" rpy="1.57075 3.14159 0"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="-1.0122" upper="1.0" effort="100.0" velocity="1.0"/>
 	</joint>
 
-	<link name="rightArm_j7_link">
+	<link name="r_arm_j7_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_rightArm_J7.dae"/>
@@ -658,18 +633,15 @@
 		</inertial>
 	</link>
 
-	<!-- ==================== Right Arm - Right Gripper Joint ==================== -->
-
-	<joint name="rightArm_j7__rightGripper_joint" type="fixed">
-		<parent link="rightArm_j7_link"/>
-		<child link="rightGripper_link"/>
+	<!-- Right Gripper -->
+	<joint name="r_gripper_joint" type="fixed">
+		<parent link="r_arm_j7_link"/>
+		<child link="r_gripper_link"/>
 		<origin xyz="0.056 0 0" rpy="3.14159 3.14159 3.14159"/>
 		<axis xyz="0 0 1"/>
 	</joint>
 
-	<!-- ==================== Right Gripper ==================== -->
-
-	<link name="rightGripper_link">
+	<link name="r_gripper_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_rightGripper_gripper.dae"/>
@@ -690,15 +662,36 @@
 		</inertial>
 	</link>
 
-	<joint name="rightGripper__rightGripper_thumb_joint" type="revolute">
-		<parent link="rightGripper_link"/>
-		<child link="rightGripper_thumb_link"/>
+  <joint name="r_end_effector_joint" type="fixed">
+    <origin xyz="0 0.05 0" rpy="0 0 0"/>
+    <parent link="r_gripper_link"/>
+    <child link="r_end_effector_link"/>
+  </joint>
+
+  <link name="r_end_effector_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+	<joint name="r_gripper_thumb_joint" type="revolute">
+		<parent link="r_gripper_link"/>
+		<child link="r_gripper_thumb_link"/>
 		<origin xyz="0.042 0.027 0.0" rpy="0 0 -1.57075"/>
 		<axis xyz="0 0 1"/>
 		<limit lower="-0.1396" upper="1.0122" effort="100.0" velocity="1.0"/>
-	</joint>
+  </joint>
 
-	<link name="rightGripper_thumb_link">
+	<link name="r_gripper_thumb_link">
 		<visual>
 			<geometry>
 				<mesh filename="package://smartpal5_description/meshes/visual/Pal5_rightGripper_g-thumb.dae"/>
@@ -717,6 +710,6 @@
 			<mass value="0.4"/>
 			<inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
 		</inertial>
-    </link>
+  </link>
 
 </robot>
