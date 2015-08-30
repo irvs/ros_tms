@@ -43,7 +43,7 @@ private:
   // ROS Topic Subscriber
   ros::Subscriber data_sub;
   // ROS Topic Publisher
-  ros::Publisher  state_pub;  
+  ros::Publisher  state_pub;
 
 //------------------------------------------------------------------------------
 public:
@@ -96,6 +96,31 @@ private:
       sensor  = msg->tmsdb[i].sensor;
       state   = msg->tmsdb[i].state;
       place   = msg->tmsdb[i].place;
+
+      if (id==2003) // smartpal5-2
+      {
+        if (state==1)
+        {
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotY = msg->tmsdb[i].ry;
+
+          if(posX == 0.0 && posY == 0.0)
+          {
+            continue;
+          }
+          else
+          {
+            state_data.header.stamp = ros::Time::now();
+            state_data.name.push_back("smartpal5_x_joint");
+            state_data.name.push_back("smartpal5_y_joint");
+            state_data.name.push_back("smartpal5_yaw_joint");
+            state_data.position.push_back(posX);
+            state_data.position.push_back(posY);
+            state_data.position.push_back(rotY);
+          }
+        }
+      }
 
       if (id==2009) // refrigerator
       {
@@ -273,7 +298,7 @@ private:
       }
     }
     state_pub.publish(state_data);
-  }  
+  }
 };
 
 //------------------------------------------------------------------------------
