@@ -2,10 +2,10 @@
 <launch>
 
 	<!-- Providing the SmartPal5 description file -->
-	<param name="robot_description" command="cat $(find smartpal5_description)/urdf/smartpal5_urdf.xml" />
+	<param name="robot_description" command="cat $(find smartpal5_description)/urdf/smartpal5.urdf.xacro" />
 
 	<!-- Starting joint_state_publisher node with GUI -->
-	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">	
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
 		<param name="use_gui" value="true" />
 	</node>
 
