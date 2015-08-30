@@ -5,23 +5,16 @@
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <xacro:include filename="$(find rostms_description)/urdf/environments_gazebo.urdf.xacro"/>
 
-  <xacro:macro name="environments">   
+  <xacro:macro name="environments">
 
     <!--  Environment -->
-    <joint name="world_joint" type="fixed">
-      <parent link="world"/>
-      <child link="bsen_room"/>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-    </joint>
-
-    <link name="bsen_room">
+    <link name="bsen_room_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/bsen.dae"/>
         </geometry>
         <origin xyz="0 0 0.001" rpy="0 0 0"/>
       </visual>
-
       <inertial>
         <origin xyz="0 0 0.001" rpy="0 0 0"/>
         <mass value="1"/>
@@ -29,16 +22,16 @@
           ixx="1.0" ixy="0.0" ixz="0.0"
           iyy="1.0" iyz="0.0"
           izz="1.0"/>
-      </inertial>    
+      </inertial>
     </link>
 
-    <joint name="bsen_room_to_wall" type="fixed">
-      <parent link="bsen_room"/>
-      <child link="bsen_wall"/>
+    <joint name="wall_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="bsen_wall_link"/>
       <origin xyz="0. 0. 0." rpy="0 0 0"/>
     </joint>
 
-    <link name="bsen_wall">
+    <link name="bsen_wall_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/bsen_wall.dae"/>
@@ -46,13 +39,13 @@
       </visual>
     </link>
 
-    <joint name="bsen_room_to_celling" type="fixed">
-      <parent link="bsen_room"/>
-      <child link="bsen_celling"/>
+    <joint name="celling_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="bsen_celling_link"/>
       <origin xyz="0. 0. 2.3" rpy="0 0 0"/>
     </joint>
 
-    <link name="bsen_celling">
+    <link name="bsen_celling_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/bsen_celling.dae"/>
@@ -60,13 +53,13 @@
       </visual>
     </link>
 
-    <joint name="bsen_room_to_kitchen" type="fixed">
-      <parent link="bsen_room"/>
-      <child link="kitchen"/>
+    <joint name="kitchen_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="kitchen_link"/>
       <origin xyz="9.26 5.9 0.4855" rpy="0 0 -1.57079633"/>
     </joint>
 
-    <link name="kitchen">
+    <link name="kitchen_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/kitchen.dae"/>
@@ -74,13 +67,13 @@
       </visual>
     </link>
 
-    <joint name="bsen_room_to_meeting_table" type="fixed">
-      <parent link="bsen_room"/>
-      <child link="meeting_table"/>
+    <joint name="meeting_table_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="meeting_table_link"/>
       <origin xyz="5.7 1.5 0.36" rpy="0 0 0"/>
     </joint>
-        
-    <link name="meeting_table">
+
+    <link name="meeting_table_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/meeting_table.dae"/>
@@ -88,13 +81,13 @@
       </visual>
     </link>
 
-    <joint name="bsen_room_to_tree" type="fixed">
-      <parent link="bsen_room"/>
-      <child link="tree"/>
+    <joint name="tree_link" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="tree_link"/>
       <origin xyz="14.3 5.3 0." rpy="0 0 0"/>
     </joint>
 
-    <link name="tree">
+    <link name="tree_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/tree.dae"/>
@@ -102,13 +95,13 @@
       </visual>
     </link>
 
-    <joint name="bsen_room_to_tv_table" type="fixed">
-      <parent link="bsen_room"/>
-      <child link="tv_table"/>
+    <joint name="tv_table_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="tv_table_link"/>
       <origin xyz="11.1 2.9 0.175" rpy="0 0 0"/>
     </joint>
 
-    <link name="tv_table">
+    <link name="tv_table_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/tv_table.dae"/>
@@ -116,13 +109,13 @@
       </visual>
     </link>
 
-    <joint name="bsen_room_to_tv_52" type="fixed">
-      <parent link="bsen_room"/>
-      <child link="tv_52"/>
+    <joint name="tv_52_link" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="tv_52_link"/>
       <origin xyz="11.2 2.9 0.7085" rpy="0 0 -1.57079633"/>
     </joint>
 
-    <link name="tv_52">
+    <link name="tv_52_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/tv_52.dae"/>
@@ -130,13 +123,13 @@
       </visual>
     </link>
 
-    <joint name="bsen_room_to_recorder" type="fixed">
-      <parent link="bsen_room"/>
-      <child link="recorder"/>
+    <joint name="recorder_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="recorder_link"/>
       <origin xyz="11.1 2.9 0.3805" rpy="0 0 3.14159265"/>
     </joint>
 
-    <link name="recorder">
+    <link name="recorder_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/recorder.dae"/>
@@ -144,13 +137,13 @@
       </visual>
     </link>
 
-    <joint name="bsen_room_to_sofa" type="fixed">
-      <parent link="bsen_room"/>
-      <child link="sofa"/>
+    <joint name="sofa_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="sofa_link"/>
       <origin xyz="9.1 2.9 0.395" rpy="0 0 0"/>
     </joint>
 
-    <link name="sofa">
+    <link name="sofa_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/sofa.dae"/>
@@ -158,13 +151,13 @@
       </visual>
     </link>
 
-    <joint name="bsen_room_to_sofa_table" type="fixed">
-      <parent link="bsen_room"/>
-      <child link="sofa_table"/>
+    <joint name="sofa_table_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="sofa_table_link"/>
       <origin xyz="10.2 2.9 0.235" rpy="0 0 0"/>
     </joint>
 
-    <link name="sofa_table">
+    <link name="sofa_table_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/sofa_table.dae"/>
@@ -172,13 +165,13 @@
       </visual>
     </link>
 
-    <joint name="bsen_room_to_carpet" type="fixed">
-      <parent link="bsen_room"/>
-      <child link="carpet"/>
+    <joint name="carpet_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="carpet_link"/>
       <origin xyz="9.9 2.9 0.1" rpy="0 0 0"/>
     </joint>
 
-    <link name="carpet">
+    <link name="carpet_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/carpet.dae"/>
@@ -186,13 +179,13 @@
       </visual>
     </link>
 
-    <joint name="bsen_room_to_drawer" type="fixed">
-      <parent link="bsen_room"/>
-      <child link="drawer"/>
+    <joint name="drawer_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="drawer_link"/>
       <origin xyz="12.93 5.8 0.303" rpy="0 0 -1.57079633"/>
     </joint>
 
-    <link name="drawer">
+    <link name="drawer_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/drawer.dae"/>
@@ -200,13 +193,13 @@
       </visual>
     </link>
 
-    <joint name="bsen_room_to_bed" type="fixed">
-      <parent link="bsen_room"/>
-      <child link="bed"/>
+    <joint name="bed_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="bed_link"/>
       <origin xyz="12.48 2.3 0.2075" rpy="0 0 0"/>
     </joint>
 
-    <link name="bed">
+    <link name="bed_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/bed.dae"/>
@@ -214,13 +207,13 @@
       </visual>
     </link>
 
-    <joint name="bsen_room_to_wordrobe" type="fixed">
-      <parent link="bsen_room"/>
-      <child link="wardrobe"/>
+    <joint name="wardrobe_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="wardrobe_link"/>
       <origin xyz="13.7 5.9 1.3" rpy="0 0 -1.57079633"/>
     </joint>
 
-    <link name="wardrobe">
+    <link name="wardrobe_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/wardrobe.dae"/>
@@ -228,13 +221,13 @@
       </visual>
     </link>
 
-    <joint name="bsen_room_to_workdesk" type="fixed">
-      <parent link="bsen_room"/>
-      <child link="workdesk"/>
+    <joint name="workdesk_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="workdesk_link"/>
       <origin xyz="12.05 5.9 0.5" rpy="0 0 -1.57079633"/>
     </joint>
 
-    <link name="workdesk">
+    <link name="workdesk_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/work_desk.dae"/>
@@ -242,13 +235,13 @@
       </visual>
     </link>
 
-    <joint name="bsen_room_to_tv_multi" type="fixed">
-      <parent link="bsen_room"/>
-      <child link="tv_multi"/>
+    <joint name="tv_multi_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="tv_multi_link"/>
       <origin xyz="14.37 2.2 1.0" rpy="0 0 -1.57079633"/>
     </joint>
 
-    <link name="tv_multi">
+    <link name="tv_multi_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/tv_multi.dae"/>
@@ -256,13 +249,13 @@
       </visual>
     </link>
 
-    <joint name="bsen_room_to_intelingent_shelf" type="fixed">
-      <parent link="bsen_room"/>
-      <child link="intelingent_shelf"/>
+    <joint name="intelingent_shelf_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="intelingent_shelf_link"/>
       <origin xyz="11.56 3.520 0.445" rpy="0 0 0"/>
     </joint>
 
-    <link name="intelingent_shelf">
+    <link name="intelingent_shelf_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/intelingent_shelf.dae"/>
@@ -270,7 +263,8 @@
       </visual>
     </link>
 
-    <environments_sim/>  
+    <xacro:environments_sim/>
 
   </xacro:macro>
+
 </robot>
