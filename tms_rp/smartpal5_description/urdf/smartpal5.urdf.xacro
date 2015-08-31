@@ -459,7 +459,7 @@
 		</inertial>
 	</link>
 
-	<joint name="r_armj2_joint" type="revolute">
+	<joint name="r_arm_j2_joint" type="revolute">
 		<parent link="r_arm_j1_link"/>
 		<child link="r_arm_j2_link"/>
 		<origin xyz="0 0 0" rpy="-1.57075 0 -1.57075"/>

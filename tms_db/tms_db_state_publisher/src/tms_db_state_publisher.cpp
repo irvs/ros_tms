@@ -115,9 +115,37 @@ private:
             state_data.name.push_back("smartpal5_x_joint");
             state_data.name.push_back("smartpal5_y_joint");
             state_data.name.push_back("smartpal5_yaw_joint");
+            state_data.name.push_back("base_footprint_joint");
+            state_data.name.push_back("lumbar_lower_joint");
+            state_data.name.push_back("lumbar_upper_joint");
+            // state_data.name.push_back("head_camera_joint");
+            state_data.name.push_back("l_arm_j1_joint");
+            state_data.name.push_back("l_arm_j2_joint");
+            state_data.name.push_back("l_arm_j3_joint");
+            state_data.name.push_back("l_arm_j4_joint");
+            state_data.name.push_back("l_arm_j5_joint");
+            state_data.name.push_back("l_arm_j6_joint");
+            state_data.name.push_back("l_arm_j7_joint");
+            state_data.name.push_back("l_gripper_thumb_joint");
+            // state_data.name.push_back("l_gripper_joint");
+            // state_data.name.push_back("l_end_effector_joint");
+            state_data.name.push_back("r_arm_j1_joint");
+            state_data.name.push_back("r_arm_j2_joint");
+            state_data.name.push_back("r_arm_j3_joint");
+            state_data.name.push_back("r_arm_j4_joint");
+            state_data.name.push_back("r_arm_j5_joint");
+            state_data.name.push_back("r_arm_j6_joint");
+            state_data.name.push_back("r_arm_j7_joint");
+            state_data.name.push_back("r_gripper_thumb_joint");
+            // state_data.name.push_back("r_gripper_joint");
+            // state_data.name.push_back("r_end_effector_joint");
             state_data.position.push_back(posX);
             state_data.position.push_back(posY);
             state_data.position.push_back(rotY);
+            for (int i=0; i<19; i++)
+            {
+              state_data.position.push_back(0);
+            }
           }
         }
       }
