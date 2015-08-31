@@ -352,7 +352,7 @@
     </inertial>
   </link>
   <joint name="l_end_effector_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0.05 0 0"/>
+    <origin rpy="0 0 0" xyz="0.01 0.11 0"/>
     <parent link="l_gripper_link"/>
     <child link="l_end_effector_link"/>
   </joint>
@@ -425,7 +425,7 @@
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
     </inertial>
   </link>
-  <joint name="r_armj2_joint" type="revolute">
+  <joint name="r_arm_j2_joint" type="revolute">
     <parent link="r_arm_j1_link"/>
     <child link="r_arm_j2_link"/>
     <origin rpy="-1.57075 0 -1.57075" xyz="0 0 0"/>
@@ -615,7 +615,7 @@
     </inertial>
   </link>
   <joint name="r_end_effector_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0.05 0"/>
+    <origin rpy="0 0 0" xyz="0.11 0.01 0"/>
     <parent link="r_gripper_link"/>
     <child link="r_end_effector_link"/>
   </joint>

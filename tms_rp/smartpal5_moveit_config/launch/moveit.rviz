@@ -648,7 +648,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: /start_position
+    Fixed Frame: /world_link
   Name: root
   Tools:
     - Class: rviz/Interact
@@ -667,7 +667,7 @@ Visualization Manager:
       Name: Current View
       Near Clip Distance: 0.01
       Pitch: 0.509797
-      Target Frame: /start_position
+      Target Frame: /smartpal5_link
       Value: XYOrbit (rviz)
       Yaw: 5.65995
     Saved: ~

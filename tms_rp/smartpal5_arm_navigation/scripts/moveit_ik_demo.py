@@ -2,7 +2,7 @@
 
 """
     moveit_ik_demo.py - Version 0.1.1 2015-08-26
-    
+
     Use inverse kinemtatics to move the end effector to a specified pose
 
     Copyright 2014 by Patrick Goebel <patrick@pirobot.org, www.pirobot.org>
@@ -12,12 +12,12 @@
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.5
-    
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details at:
-    
+
     http://www.gnu.org/licenses/gpl.html
 """
 
@@ -29,20 +29,20 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 from geometry_msgs.msg import PoseStamped, Pose
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
-GROUP_NAME_ARM = 'arm_left'
-GROUP_NAME_GRIPPER = 'gripper_left'
+GROUP_NAME_ARM = 'l_arm'
+GROUP_NAME_GRIPPER = 'l_gripper'
 
-GRIPPER_FRAME = 'left_end_effector_link'
+GRIPPER_FRAME = 'l_end_effector_link'
 
-GRIPPER_OPEN = [-0.8]
-GRIPPER_CLOSED = [-0.5]
+GRIPPER_OPEN = [-1.0]
+GRIPPER_CLOSED = [-0.3]
 GRIPPER_NEUTRAL = [0.0]
 
-GRIPPER_JOINT_NAMES = ['leftGripper__leftGripper_thumb_joint']
+GRIPPER_JOINT_NAMES = ['l_gripper_thumb_joint']
 
 GRIPPER_EFFORT = [1.0]
 
-REFERENCE_FRAME = 'start_position'
+REFERENCE_FRAME = 'world_link'
 
 class MoveItFKDemo:
     def __init__(self):
@@ -66,11 +66,11 @@ class MoveItFKDemo:
         # 1. Set the target pose
         # 2. Plan a trajectory
         # 3. Execute the planned trajectory
-        arm.set_named_target('arm_left_init')
+        arm.set_named_target('l_arm_init')
         arm.go()
         rospy.sleep(1)
-         
-        gripper.set_named_target('gripper_left_init')
+
+        gripper.set_named_target('l_gripper_init')
         gripper.go()
         rospy.sleep(1)
 
@@ -80,7 +80,7 @@ class MoveItFKDemo:
         # 3. Execute the planned trajectory
         target_pose = PoseStamped()
         target_pose.header.frame_id = REFERENCE_FRAME
-        target_pose.header.stamp = rospy.Time.now()     
+        target_pose.header.stamp = rospy.Time.now()
         target_pose.pose.position.x = 0.370748751767
         target_pose.pose.position.y = 0.420162677108
         target_pose.pose.position.z = 0.840162164512
@@ -99,18 +99,22 @@ class MoveItFKDemo:
         arm.shift_pose_target(1, -0.1, end_effector_link)
         arm.go()
         rospy.sleep(1)
-         
-        gripper.set_named_target('gripper_left_open')
+
+        gripper.set_named_target('l_gripper_open')
         gripper.go()
         rospy.sleep(1)
-                 
+
+        gripper.set_named_target('l_gripper_init')
+        gripper.go()
+        rospy.sleep(1)
+
         # Return
-        arm.set_named_target('arm_left_init')
+        arm.set_named_target('l_arm_init')
         traj = arm.plan()
         arm.execute(traj)
         rospy.sleep(1)
-         
-        gripper.set_named_target('gripper_left_init')
+
+        gripper.set_named_target('l_gripper_init')
         gripper.go()
         rospy.sleep(1)
 

@@ -1,37 +1,37 @@
 controller_list:
-  - name: arm_left_controller
+  - name: l_arm_controller
     action_ns: follow_joint_trajectory
     type: FollowJointTrajectory
     default: true
     joints:
-      - lumbar_j2__leftArm_j1_joint
-      - leftArm_j1__leftArm_j2_joint
-      - leftArm_j2__leftArm_j3_joint
-      - leftArm_j3__leftArm_j4_joint
-      - leftArm_j4__leftArm_j5_joint
-      - leftArm_j5__leftArm_j6_joint
-      - leftArm_j6__leftArm_j7_joint
-  - name: gripper_left_controller
+      - l_arm_j1_joint
+      - l_arm_j2_joint
+      - l_arm_j3_joint
+      - l_arm_j4_joint
+      - l_arm_j5_joint
+      - l_arm_j6_joint
+      - l_arm_j7_joint
+  - name: l_gripper_controller
     action_ns: gripper_action
     type: GripperCommand
     default: true
     joints:
-      - leftGripper__leftGripper_thumb_joint
-  - name: arm_right_controller
+      - l_gripper_thumb_joint
+  - name: r_arm_controller
     action_ns: follow_joint_trajectory
     type: FollowJointTrajectory
     default: true
     joints:
-      - lumbar_j2__rightArm_j1_joint
-      - rightArm_j1__rightArm_j2_joint
-      - rightArm_j2__rightArm_j3_joint
-      - rightArm_j3__rightArm_j4_joint
-      - rightArm_j4__rightArm_j5_joint
-      - rightArm_j5__rightArm_j6_joint
-      - rightArm_j6__rightArm_j7_joint
-  - name: gripper_right_controller
+      - r_arm_j1_joint
+      - r_arm_j2_joint
+      - r_arm_j3_joint
+      - r_arm_j4_joint
+      - r_arm_j5_joint
+      - r_arm_j6_joint
+      - r_arm_j7_joint
+  - name: r_gripper_controller
     action_ns: gripper_action
     type: GripperCommand
     default: true
     joints:
-      - rightGripper__rightGripper_thumb_joint
+      - r_gripper_thumb_joint
