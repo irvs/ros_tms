@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(tms_ss_kinect_v2)
 
 ## If you will use choreonoid, Switch to ON
-set(USING_Choreonoid_AND_Grasp_Plugin ON)
+set(USING_Choreonoid_AND_Grasp_Plugin OFF)
 
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
@@ -30,8 +30,8 @@ add_message_files(
 )
 
 add_service_files(
-	FILES
-		ConvertToJointAngles.srv
+  FILES
+    ConvertToJointAngles.srv
 )
 
 generate_messages(
@@ -59,7 +59,7 @@ if (${USING_Choreonoid_AND_Grasp_Plugin})
   #######################################
   ## Choreonoid specific configuration ##
   #######################################
-	set(Choreonoid_ROOT ~/choreonoid)
+  set(Choreonoid_ROOT ~/choreonoid)
   set(GraspPlugin_PATH ${Choreonoid_ROOT}/extplugin/graspPlugin)
   set(PRM_PATH ${GraspPlugin_PATH}/PRM)
   set(Choreonoid_LIB_DIR ${Choreonoid_ROOT}/lib/choreonoid-1.4)
