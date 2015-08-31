@@ -2,7 +2,7 @@
 
 """
     moveit_fk_demo.py - Version 0.1.1 2015-08-26
-    
+
     Use forward kinemtatics to move the arm to a specified set of joint angles
 
     Copyright 2014 by Patrick Goebel <patrick@pirobot.org, www.pirobot.org>
@@ -12,12 +12,12 @@
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.5
-    
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details at:
-    
+
     http://www.gnu.org/licenses/gpl.html
 """
 
@@ -25,8 +25,8 @@ import rospy, sys
 import moveit_commander
 from control_msgs.msg import GripperCommand
 
-GROUP_NAME_ARM = 'arm_left'
-GROUP_NAME_GRIPPER = 'gripper_left'
+GROUP_NAME_ARM = 'l_arm'
+GROUP_NAME_GRIPPER = 'l_gripper'
 
 class MoveItFKDemo:
     def __init__(self):
@@ -37,7 +37,7 @@ class MoveItFKDemo:
         # Use the groups of SmartPal5
         arm = moveit_commander.MoveGroupCommander(GROUP_NAME_ARM)
         gripper_left = moveit_commander.MoveGroupCommander(GROUP_NAME_GRIPPER)
-                
+
         # Set a goal joint tolerance
         arm.set_goal_joint_tolerance(0.001)
         gripper_left.set_goal_joint_tolerance(0.001)
@@ -46,12 +46,12 @@ class MoveItFKDemo:
         # 1. Set the target pose
         # 2. Plan a trajectory
         # 3. Execute the planned trajectory
-        arm.set_named_target('arm_left_init')
+        arm.set_named_target('l_arm_init')
         traj = arm.plan()
         arm.execute(traj)
         rospy.sleep(1)
-         
-        gripper_left.set_named_target('gripper_left_init')
+
+        gripper_left.set_named_target('l_gripper_init')
         gripper_left.go()
         rospy.sleep(1)
 
@@ -63,18 +63,18 @@ class MoveItFKDemo:
         arm.set_joint_value_target(joint_positions)
         arm.go()
         rospy.sleep(1)
-         
-        gripper_left.set_named_target('gripper_left_open')
+
+        gripper_left.set_named_target('l_gripper_open')
         gripper_left.go()
         rospy.sleep(1)
-                 
+
         # Return
-        arm.set_named_target('arm_left_init')
+        arm.set_named_target('l_arm_init')
         traj = arm.plan()
         arm.execute(traj)
         rospy.sleep(1)
-         
-        gripper_left.set_named_target('gripper_left_init')
+
+        gripper_left.set_named_target('l_gripper_init')
         gripper_left.go()
         rospy.sleep(1)
 
