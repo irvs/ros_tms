@@ -1,0 +1,11 @@
+<launch>
+
+  <node name="mongo_server" pkg="mongodb_store" type="mongodb_server.py" output="screen">
+    <param name="test_mode" value="true"/>
+  </node>
+
+  <node name="message_store" pkg="mongodb_store" type="message_store_node.py" output="screen"/>
+  
+  <test test-name="test_message_store_cpp" pkg="mongodb_store" type="message_store_cpp_test" />
+
+</launch>

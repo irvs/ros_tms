@@ -3,8 +3,8 @@
 // @file   : tms_db_state_publisher.cpp
 // @brief  : subscribe the current information of object and publish the state of object
 // @author : Yoonseok Pyo
-// @version: Ver0.0.3 (since 2015.07.22)
-// @date   : 2015.07.23
+// @version: Ver0.0.4 (since 2015.07.22)
+// @date   : 2015.08.26
 //------------------------------------------------------------------------------
 //include for ROS
 #include <ros/ros.h>
@@ -23,8 +23,8 @@
 #include <vector>
 #include <map>
 
-#define rad2deg(x)	((x)*(180.0)/M_PI)
-#define deg2rad(x)	((x)*M_PI/180.0)
+// #define rad2deg(x)	((x)*(180.0)/M_PI)
+// #define deg2rad(x)	((x)*M_PI/180.0)
 
 //------------------------------------------------------------------------------
 using std::string;
@@ -43,7 +43,7 @@ private:
   // ROS Topic Subscriber
   ros::Subscriber data_sub;
   // ROS Topic Publisher
-  ros::Publisher  state_pub;  
+  ros::Publisher  state_pub;
 
 //------------------------------------------------------------------------------
 public:
@@ -97,13 +97,66 @@ private:
       state   = msg->tmsdb[i].state;
       place   = msg->tmsdb[i].place;
 
+      if (id==2003) // smartpal5-2
+      {
+        if (state==1)
+        {
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotY = msg->tmsdb[i].ry;
+
+          if(posX == 0.0 && posY == 0.0)
+          {
+            continue;
+          }
+          else
+          {
+            state_data.header.stamp = ros::Time::now();
+            state_data.name.push_back("smartpal5_x_joint");
+            state_data.name.push_back("smartpal5_y_joint");
+            state_data.name.push_back("smartpal5_yaw_joint");
+            state_data.name.push_back("base_footprint_joint");
+            state_data.name.push_back("lumbar_lower_joint");
+            state_data.name.push_back("lumbar_upper_joint");
+            // state_data.name.push_back("head_camera_joint");
+            state_data.name.push_back("l_arm_j1_joint");
+            state_data.name.push_back("l_arm_j2_joint");
+            state_data.name.push_back("l_arm_j3_joint");
+            state_data.name.push_back("l_arm_j4_joint");
+            state_data.name.push_back("l_arm_j5_joint");
+            state_data.name.push_back("l_arm_j6_joint");
+            state_data.name.push_back("l_arm_j7_joint");
+            state_data.name.push_back("l_gripper_thumb_joint");
+            // state_data.name.push_back("l_gripper_joint");
+            // state_data.name.push_back("l_end_effector_joint");
+            state_data.name.push_back("r_arm_j1_joint");
+            state_data.name.push_back("r_arm_j2_joint");
+            state_data.name.push_back("r_arm_j3_joint");
+            state_data.name.push_back("r_arm_j4_joint");
+            state_data.name.push_back("r_arm_j5_joint");
+            state_data.name.push_back("r_arm_j6_joint");
+            state_data.name.push_back("r_arm_j7_joint");
+            state_data.name.push_back("r_gripper_thumb_joint");
+            // state_data.name.push_back("r_gripper_joint");
+            // state_data.name.push_back("r_end_effector_joint");
+            state_data.position.push_back(posX);
+            state_data.position.push_back(posY);
+            state_data.position.push_back(rotY);
+            for (int i=0; i<19; i++)
+            {
+              state_data.position.push_back(0);
+            }
+          }
+        }
+      }
+
       if (id==2009) // refrigerator
       {
         if (state!=0)
         {
-          posX = msg->tmsdb[i].x/1000;
-          posY = msg->tmsdb[i].y/1000;
-          rotY = deg2rad(msg->tmsdb[i].ry);
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotY = msg->tmsdb[i].ry;
 
           if(posX == 0.0 && posY == 0.0)
           {
@@ -126,9 +179,9 @@ private:
       {
         if (state!=0)
         {
-          posX = msg->tmsdb[i].x/1000;
-          posY = msg->tmsdb[i].y/1000;
-          rotY = deg2rad(msg->tmsdb[i].ry);
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotY = msg->tmsdb[i].ry;
 
           if(posX == 0.0 && posY == 0.0)
           {
@@ -151,9 +204,9 @@ private:
       {
         if (state!=0)
         {
-          posX = msg->tmsdb[i].x/1000;
-          posY = msg->tmsdb[i].y/1000;
-          rotY = deg2rad(msg->tmsdb[i].ry);
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotY = msg->tmsdb[i].ry;
 
           if(posX == 0.0 && posY == 0.0)
           {
@@ -176,9 +229,9 @@ private:
       {
         if (state!=0)
         {
-          posX = msg->tmsdb[i].x/1000;
-          posY = msg->tmsdb[i].y/1000;
-          rotY = deg2rad(msg->tmsdb[i].ry);
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotY = msg->tmsdb[i].ry;
 
           if(posX == 0.0 && posY == 0.0)
           {
@@ -201,9 +254,9 @@ private:
       {
         if (state!=0)
         {
-          posX = msg->tmsdb[i].x/1000;
-          posY = msg->tmsdb[i].y/1000;
-          rotY = deg2rad(msg->tmsdb[i].ry);
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotY = msg->tmsdb[i].ry;
 
           if(posX == 0.0 && posY == 0.0)
           {
@@ -226,9 +279,9 @@ private:
       {
         if (state!=0)
         {
-          posX = msg->tmsdb[i].x/1000;
-          posY = msg->tmsdb[i].y/1000;
-          rotY = deg2rad(msg->tmsdb[i].ry);
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotY = msg->tmsdb[i].ry;
 
           if(posX == 0.0 && posY == 0.0)
           {
@@ -251,9 +304,9 @@ private:
       {
         if (state==1)
         {
-          posX = msg->tmsdb[i].x/1000;
-          posY = msg->tmsdb[i].y/1000;
-          rotY = deg2rad(msg->tmsdb[i].ry);
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotY = msg->tmsdb[i].ry;
 
           if(posX == 0.0 && posY == 0.0)
           {
@@ -273,7 +326,7 @@ private:
       }
     }
     state_pub.publish(state_data);
-  }  
+  }
 };
 
 //------------------------------------------------------------------------------

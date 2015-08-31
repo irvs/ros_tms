@@ -2,8 +2,8 @@
 // @file   : tms_db_writer.cpp
 // @brief  : write data into rostms database
 // @author : Yoonseok Pyo
-// @version: Ver0.2.2 (since 2014.05.07)
-// @date   : 2014.11.19
+// @version: Ver0.2.3 (since 2014.05.07)
+// @date   : 2015.08.26
 //------------------------------------------------------------------------------
 //include for ROS
 #include <ros/ros.h>

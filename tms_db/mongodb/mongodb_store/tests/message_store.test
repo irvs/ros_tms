@@ -1,0 +1,14 @@
+<launch>
+  
+  <node name="mongo_server" pkg="mongodb_store" type="mongodb_server.py" output="screen">
+    <param name="test_mode" value="true"/>
+  </node>
+
+  <node name="message_store" pkg="mongodb_store" type="message_store_node.py" output="screen"/>
+
+  <!-- rosout and diagnostic topic logger -->
+  <!-- <node name="diagnostics_logger" pkg="strands_diagnostics" type="logger" output="screen"/> -->
+  
+  <test test-name="test_messagestore" pkg="mongodb_store" type="test_messagestore.py" />
+
+</launch>

@@ -1,0 +1,54 @@
+<launch>
+  <arg name="db_path" default="/var/local/mongodb_store"/>
+  <arg name="port" default="62345" />
+  <arg name="defaults_path" default=""/>
+  <arg name="replicator_dump_path" default="/tmp/replicator_dumps"/>
+  <arg name="use_daemon" default="false" />
+
+  <arg name="use_machine" default="true" />
+  <arg name="machine" default="localhost" />
+  <arg name="user" default="" />
+  <arg name="test_mode" default="false" />
+  <arg name="use_repl_set" default="false" />
+  <arg name="repl_set" default="rs0" />
+
+
+  <machine name="$(arg machine)" address="$(arg machine)" env-loader="$(optenv ROS_ENV_LOADER )" user="$(arg user)" default="true"
+           if="$(arg use_machine)"/>
+
+  <param name="mongodb_use_daemon" value="$(arg use_daemon)" />
+  <group if="$(arg use_daemon)">
+    <param name="mongodb_port" value="$(arg port)" />
+    <param name="mongodb_host" value="$(optenv HOSTNAME localhost)" />
+  </group>
+  <group unless="$(arg use_daemon)">
+	<!-- launch in test mode -->
+	<group if="$(arg test_mode)">
+		<node name="mongo_server" pkg="mongodb_store" type="mongodb_server.py" output="screen">
+			<param name="test_mode" value="true"/>
+		</node>
+	</group>
+
+	<!-- launch in non-test, i.e. normal, mode -->
+	<group unless="$(arg test_mode)">
+		<param name="mongodb_port" value="$(arg port)" />
+		<param name="mongodb_host" value="$(optenv HOSTNAME localhost)" />
+ 
+	  <node name="mongo_server" pkg="mongodb_store" type="mongodb_server.py" output="screen">
+	    <param name="database_path" value="$(arg db_path)"/>
+	    <param name="repl_set" value="$(arg repl_set)" if="$(arg use_repl_set)" />
+	  </node>
+	</group>
+  </group>
+
+  <node name="config_manager" pkg="mongodb_store" type="config_manager.py" output="screen">
+    <param name="defaults_path" value="$(arg defaults_path)"/>
+  </node>
+
+  <node name="message_store" pkg="mongodb_store" type="message_store_node.py" output="screen"/>
+
+
+  <node name="replicator_node" pkg="mongodb_store" type="replicator_node.py" output="screen">
+    <param name="replicator_dump_path" value="$(arg replicator_dump_path)"/>
+  </node>
+</launch>

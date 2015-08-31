@@ -1,0 +1,21 @@
+# message used for querying for ids of matching ROS msgs from a MongoDB database
+
+# constant passed as key in query to indicate the value should be treated as a query string (assuming that is possible...)
+string JSON_QUERY="jnsdfskajd_fmgs.dlf"
+
+string database
+string collection
+# type to deserialise into
+string type
+# whether you're only looking for a single 
+bool single
+# key/values to be turned into a query doc on message content
+StringPairList message_query
+# key/values to be turned into a query doc on meta content
+StringPairList meta_query
+# key/values to be turned into a sort query
+StringPairList sort_query
+---
+# messages which match the query
+SerialisedMessage[] messages
+StringPairList[] metas

@@ -1,0 +1,27 @@
+authors: Chris Burbridge <cburbridge@gmail.com>, Nick Hawes <n.a.hawes@cs.bham.ac.uk>
+brief: ''
+bugtracker: ''
+depends:
+- std_srvs
+- mongodb_store_msgs
+- std_msgs
+- python-catkin-pkg
+- rostest
+- rospy
+- message_generation
+- catkin
+- python-pymongo
+description: A MongoDB based central store for data from a ROS system, eg. configurations,
+  logged states, etc
+license: GPL
+maintainers: Chris Curbridge <cburbridge@gmail.com>, Nick Hawes <n.a.hawes@cs.bham.ac.uk>
+msgs: []
+package_type: package
+repo_url: ''
+srvs:
+- GetParam
+- MongoInsert
+- MongoUpdate
+- SetParam
+- MongoFind
+url: ''
