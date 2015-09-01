@@ -4,7 +4,7 @@
 <!-- |    EDITING THIS FILE BY HAND IS NOT RECOMMENDED                                 | -->
 <!-- =================================================================================== -->
 <!-- All components of ROS-TMS project -->
-<robot name="ros-tms" xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller" xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface" xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="rostms" xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller" xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface" xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor" xmlns:xacro="http://www.ros.org/wiki/xacro">
   <!-- Import common properties -->
   <!-- Used for fixing all components to 'world' frame of RViz and Gazebo 'world' -->
   <link name="world_link"/>
@@ -257,11 +257,11 @@
   </joint>
   <joint name="chair_yaw_joint" type="continuous">
     <parent link="chair_y_link"/>
-    <child link="chair"/>
+    <child link="chair_link"/>
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <axis xyz="0 0 1"/>
   </joint>
-  <link name="chair">
+  <link name="chair_link">
     <visual>
       <geometry>
         <mesh filename="package://environmental_model/model/chair.dae"/>
@@ -286,11 +286,11 @@
   </joint>
   <joint name="refrigerator_yaw_joint" type="continuous">
     <parent link="refrigerator_y_link"/>
-    <child link="refrigerator"/>
+    <child link="refrigerator_link"/>
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <axis xyz="0 0 1"/>
   </joint>
-  <link name="refrigerator">
+  <link name="refrigerator_link">
     <visual>
       <geometry>
         <mesh filename="package://environmental_model/model/refrigerator.dae"/>
@@ -315,11 +315,11 @@
   </joint>
   <joint name="meeting_chair1_yaw_joint" type="continuous">
     <parent link="meeting_chair1_y_link"/>
-    <child link="meeting_chair1"/>
+    <child link="meeting_chair1_link"/>
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <axis xyz="0 0 1"/>
   </joint>
-  <link name="meeting_chair1">
+  <link name="meeting_chair1_link">
     <visual>
       <geometry>
         <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
@@ -343,11 +343,11 @@
   </joint>
   <joint name="meeting_chair2_yaw_joint" type="continuous">
     <parent link="meeting_chair2_y_link"/>
-    <child link="meeting_chair2"/>
+    <child link="meeting_chair2_link"/>
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <axis xyz="0 0 1"/>
   </joint>
-  <link name="meeting_chair2">
+  <link name="meeting_chair2_link">
     <visual>
       <geometry>
         <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
@@ -371,11 +371,11 @@
   </joint>
   <joint name="meeting_chair3_yaw_joint" type="continuous">
     <parent link="meeting_chair3_y_link"/>
-    <child link="meeting_chair3"/>
+    <child link="meeting_chair3_link"/>
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <axis xyz="0 0 1"/>
   </joint>
-  <link name="meeting_chair3">
+  <link name="meeting_chair3_link">
     <visual>
       <geometry>
         <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
@@ -399,11 +399,11 @@
   </joint>
   <joint name="meeting_chair4_yaw_joint" type="continuous">
     <parent link="meeting_chair4_y_link"/>
-    <child link="meeting_chair4"/>
+    <child link="meeting_chair4_link"/>
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <axis xyz="0 0 1"/>
   </joint>
-  <link name="meeting_chair4">
+  <link name="meeting_chair4_link">
     <visual>
       <geometry>
         <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
@@ -428,11 +428,11 @@
   </joint>
   <joint name="wagon_yaw_joint" type="continuous">
     <parent link="wagon_y_link"/>
-    <child link="wagon"/>
+    <child link="wagon_link"/>
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <axis xyz="0 0 1"/>
   </joint>
-  <link name="wagon">
+  <link name="wagon_link">
     <visual>
       <geometry>
         <mesh filename="package://environmental_model/model/wagon.dae"/>
@@ -789,7 +789,7 @@
     </inertial>
   </link>
   <joint name="l_end_effector_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0.05 0 0"/>
+    <origin rpy="0 0 0" xyz="0.01 0.11 0"/>
     <parent link="l_gripper_link"/>
     <child link="l_end_effector_link"/>
   </joint>
@@ -1052,7 +1052,7 @@
     </inertial>
   </link>
   <joint name="r_end_effector_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0.05 0"/>
+    <origin rpy="0 0 0" xyz="0.11 0.01 0"/>
     <parent link="r_gripper_link"/>
     <child link="r_end_effector_link"/>
   </joint>
