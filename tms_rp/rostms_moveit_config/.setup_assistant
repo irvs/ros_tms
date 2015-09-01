@@ -5,4 +5,4 @@ moveit_setup_assistant_config:
   SRDF:
     relative_path: config/rostms.srdf
   CONFIG:
-    generated_timestamp: 1441072418
+    generated_timestamp: 1441075477
