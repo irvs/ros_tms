@@ -34,7 +34,7 @@
     <!--GROUP STATES: Purpose: Define a named state for a particular group, in terms of joint values. This is useful to define states like 'folded arms'-->
     <group_state name="l_arm_init" group="l_arm">
         <joint name="l_arm_j1_joint" value="0" />
-        <joint name="l_arm_j2_joint" value="0.07" />
+        <joint name="l_arm_j2_joint" value="0.08" />
         <joint name="l_arm_j3_joint" value="0" />
         <joint name="l_arm_j4_joint" value="0" />
         <joint name="l_arm_j5_joint" value="0" />
@@ -43,26 +43,68 @@
     </group_state>
     <group_state name="r_arm_init" group="r_arm">
         <joint name="r_arm_j1_joint" value="0" />
-        <joint name="r_arm_j2_joint" value="-0.07" />
+        <joint name="r_arm_j2_joint" value="-0.08" />
         <joint name="r_arm_j3_joint" value="0" />
         <joint name="r_arm_j4_joint" value="0" />
         <joint name="r_arm_j5_joint" value="0" />
         <joint name="r_arm_j6_joint" value="0" />
         <joint name="r_arm_j7_joint" value="0" />
     </group_state>
+    <group_state name="l_arm_serving_pose" group="l_arm">
+        <joint name="l_arm_j1_joint" value="0" />
+        <joint name="l_arm_j2_joint" value="0.08" />
+        <joint name="l_arm_j3_joint" value="0" />
+        <joint name="l_arm_j4_joint" value="1.5707" />
+        <joint name="l_arm_j5_joint" value="0" />
+        <joint name="l_arm_j6_joint" value="0" />
+        <joint name="l_arm_j7_joint" value="0" />
+    </group_state>
+    <group_state name="r_arm_serving_pose" group="r_arm">
+        <joint name="r_arm_j1_joint" value="0" />
+        <joint name="r_arm_j2_joint" value="-0.08" />
+        <joint name="r_arm_j3_joint" value="0" />
+        <joint name="r_arm_j4_joint" value="1.5707" />
+        <joint name="r_arm_j5_joint" value="0" />
+        <joint name="r_arm_j6_joint" value="0" />
+        <joint name="r_arm_j7_joint" value="0" />
+    </group_state>
+    <group_state name="l_gripper_open" group="l_gripper">
+        <joint name="l_gripper_thumb_joint" value="-1" />
+    </group_state>
+    <group_state name="r_gripper_open" group="r_gripper">
+        <joint name="r_gripper_thumb_joint" value="1" />
+    </group_state>
+    <group_state name="l_gripper_close" group="l_gripper">
+        <joint name="l_gripper_thumb_joint" value="-0.3" />
+    </group_state>
+    <group_state name="r_gripper_close" group="r_gripper">
+        <joint name="r_gripper_thumb_joint" value="0.3" />
+    </group_state>
+    <group_state name="l_gripper_init" group="l_gripper">
+        <joint name="l_gripper_thumb_joint" value="0" />
+    </group_state>
+    <group_state name="r_gripper_init" group="r_gripper">
+        <joint name="r_gripper_thumb_joint" value="0" />
+    </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
-    <end_effector name="l_end_effector" parent_link="l_gripper_link" group="l_gripper" />
-    <end_effector name="r_end_effector" parent_link="r_gripper_link" group="r_gripper" />
+    <end_effector name="l_end_effector" parent_link="l_end_effector_link" group="l_gripper" />
+    <end_effector name="r_end_effector" parent_link="r_end_effector_link" group="r_gripper" />
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
+    <disable_collisions link1="base_link" link2="bed_link" reason="User" />
     <disable_collisions link1="base_link" link2="bsen_celling_link" reason="Never" />
     <disable_collisions link1="base_link" link2="bsen_room_link" reason="Adjacent" />
     <disable_collisions link1="base_link" link2="bsen_wall_link" reason="Never" />
     <disable_collisions link1="base_link" link2="camera_link" reason="Never" />
+    <disable_collisions link1="base_link" link2="carpet_link" reason="User" />
     <disable_collisions link1="base_link" link2="chair_link" reason="Adjacent" />
+    <disable_collisions link1="base_link" link2="drawer_link" reason="User" />
     <disable_collisions link1="base_link" link2="intelingent_shelf_link" reason="Never" />
+    <disable_collisions link1="base_link" link2="kitchen_link" reason="User" />
     <disable_collisions link1="base_link" link2="l_arm_j1_link" reason="Never" />
     <disable_collisions link1="base_link" link2="l_arm_j2_link" reason="Never" />
+    <disable_collisions link1="base_link" link2="l_arm_j3_link" reason="Never" />
     <disable_collisions link1="base_link" link2="l_gripper_link" reason="Default" />
+    <disable_collisions link1="base_link" link2="l_gripper_thumb_link" reason="Default" />
     <disable_collisions link1="base_link" link2="lumbar_lower_link" reason="Adjacent" />
     <disable_collisions link1="base_link" link2="meeting_chair1_link" reason="Adjacent" />
     <disable_collisions link1="base_link" link2="meeting_chair2_link" reason="Adjacent" />
@@ -73,10 +115,14 @@
     <disable_collisions link1="base_link" link2="r_arm_j2_link" reason="Never" />
     <disable_collisions link1="base_link" link2="r_arm_j3_link" reason="Never" />
     <disable_collisions link1="base_link" link2="r_gripper_link" reason="Default" />
+    <disable_collisions link1="base_link" link2="r_gripper_thumb_link" reason="Default" />
     <disable_collisions link1="base_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="base_link" link2="refrigerator_link" reason="Adjacent" />
+    <disable_collisions link1="base_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="base_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="base_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="base_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="base_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="base_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="base_link" link2="wagon_link" reason="Adjacent" />
     <disable_collisions link1="base_link" link2="wardrobe_link" reason="Never" />
@@ -84,17 +130,39 @@
     <disable_collisions link1="bed_link" link2="bsen_celling_link" reason="Never" />
     <disable_collisions link1="bed_link" link2="bsen_room_link" reason="Adjacent" />
     <disable_collisions link1="bed_link" link2="bsen_wall_link" reason="Never" />
+    <disable_collisions link1="bed_link" link2="camera_link" reason="User" />
     <disable_collisions link1="bed_link" link2="carpet_link" reason="Always" />
     <disable_collisions link1="bed_link" link2="chair_link" reason="Always" />
     <disable_collisions link1="bed_link" link2="drawer_link" reason="Default" />
     <disable_collisions link1="bed_link" link2="intelingent_shelf_link" reason="Default" />
     <disable_collisions link1="bed_link" link2="kitchen_link" reason="Always" />
+    <disable_collisions link1="bed_link" link2="l_arm_j1_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="l_arm_j2_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="l_arm_j3_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="l_arm_j4_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="l_arm_j5_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="l_arm_j6_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="l_arm_j7_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="l_end_effector_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="l_gripper_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="l_gripper_thumb_link" reason="User" />
     <disable_collisions link1="bed_link" link2="lumbar_lower_link" reason="Never" />
+    <disable_collisions link1="bed_link" link2="lumbar_upper_link" reason="User" />
     <disable_collisions link1="bed_link" link2="meeting_chair1_link" reason="Always" />
     <disable_collisions link1="bed_link" link2="meeting_chair2_link" reason="Always" />
     <disable_collisions link1="bed_link" link2="meeting_chair3_link" reason="Always" />
     <disable_collisions link1="bed_link" link2="meeting_chair4_link" reason="Always" />
     <disable_collisions link1="bed_link" link2="meeting_table_link" reason="Always" />
+    <disable_collisions link1="bed_link" link2="r_arm_j1_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="r_arm_j2_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="r_arm_j3_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="r_arm_j4_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="r_arm_j5_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="r_arm_j6_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="r_arm_j7_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="r_end_effector_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="r_gripper_link" reason="User" />
+    <disable_collisions link1="bed_link" link2="r_gripper_thumb_link" reason="User" />
     <disable_collisions link1="bed_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="bed_link" link2="refrigerator_link" reason="Always" />
     <disable_collisions link1="bed_link" link2="sofa_link" reason="Always" />
@@ -163,7 +231,12 @@
     <disable_collisions link1="bsen_room_link" link2="l_arm_j2_link" reason="Never" />
     <disable_collisions link1="bsen_room_link" link2="l_arm_j3_link" reason="Never" />
     <disable_collisions link1="bsen_room_link" link2="l_arm_j4_link" reason="Never" />
+    <disable_collisions link1="bsen_room_link" link2="l_arm_j5_link" reason="User" />
+    <disable_collisions link1="bsen_room_link" link2="l_arm_j6_link" reason="User" />
+    <disable_collisions link1="bsen_room_link" link2="l_arm_j7_link" reason="User" />
     <disable_collisions link1="bsen_room_link" link2="l_end_effector_link" reason="Never" />
+    <disable_collisions link1="bsen_room_link" link2="l_gripper_link" reason="User" />
+    <disable_collisions link1="bsen_room_link" link2="l_gripper_thumb_link" reason="User" />
     <disable_collisions link1="bsen_room_link" link2="lumbar_lower_link" reason="Never" />
     <disable_collisions link1="bsen_room_link" link2="lumbar_upper_link" reason="Never" />
     <disable_collisions link1="bsen_room_link" link2="meeting_chair1_link" reason="Adjacent" />
@@ -175,7 +248,12 @@
     <disable_collisions link1="bsen_room_link" link2="r_arm_j2_link" reason="Never" />
     <disable_collisions link1="bsen_room_link" link2="r_arm_j3_link" reason="Never" />
     <disable_collisions link1="bsen_room_link" link2="r_arm_j4_link" reason="Never" />
+    <disable_collisions link1="bsen_room_link" link2="r_arm_j5_link" reason="User" />
+    <disable_collisions link1="bsen_room_link" link2="r_arm_j6_link" reason="User" />
+    <disable_collisions link1="bsen_room_link" link2="r_arm_j7_link" reason="User" />
     <disable_collisions link1="bsen_room_link" link2="r_end_effector_link" reason="Never" />
+    <disable_collisions link1="bsen_room_link" link2="r_gripper_link" reason="User" />
+    <disable_collisions link1="bsen_room_link" link2="r_gripper_thumb_link" reason="User" />
     <disable_collisions link1="bsen_room_link" link2="recorder_link" reason="Adjacent" />
     <disable_collisions link1="bsen_room_link" link2="refrigerator_link" reason="Adjacent" />
     <disable_collisions link1="bsen_room_link" link2="sofa_link" reason="Adjacent" />
@@ -231,7 +309,11 @@
     <disable_collisions link1="bsen_wall_link" link2="wagon_link" reason="Never" />
     <disable_collisions link1="bsen_wall_link" link2="wardrobe_link" reason="Never" />
     <disable_collisions link1="bsen_wall_link" link2="workdesk_link" reason="Never" />
+    <disable_collisions link1="camera_link" link2="carpet_link" reason="User" />
+    <disable_collisions link1="camera_link" link2="chair_link" reason="User" />
+    <disable_collisions link1="camera_link" link2="drawer_link" reason="User" />
     <disable_collisions link1="camera_link" link2="intelingent_shelf_link" reason="Never" />
+    <disable_collisions link1="camera_link" link2="kitchen_link" reason="User" />
     <disable_collisions link1="camera_link" link2="l_arm_j1_link" reason="Never" />
     <disable_collisions link1="camera_link" link2="l_arm_j2_link" reason="Never" />
     <disable_collisions link1="camera_link" link2="lumbar_lower_link" reason="Never" />
@@ -245,8 +327,11 @@
     <disable_collisions link1="camera_link" link2="r_arm_j2_link" reason="Never" />
     <disable_collisions link1="camera_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="camera_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="camera_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="camera_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="camera_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="camera_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="camera_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="camera_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="camera_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="camera_link" link2="wardrobe_link" reason="Never" />
@@ -255,11 +340,33 @@
     <disable_collisions link1="carpet_link" link2="drawer_link" reason="Always" />
     <disable_collisions link1="carpet_link" link2="intelingent_shelf_link" reason="Always" />
     <disable_collisions link1="carpet_link" link2="kitchen_link" reason="Default" />
+    <disable_collisions link1="carpet_link" link2="l_arm_j1_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="l_arm_j2_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="l_arm_j3_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="l_arm_j4_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="l_arm_j5_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="l_arm_j6_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="l_arm_j7_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="l_end_effector_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="l_gripper_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="l_gripper_thumb_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="lumbar_lower_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="lumbar_upper_link" reason="User" />
     <disable_collisions link1="carpet_link" link2="meeting_chair1_link" reason="Default" />
     <disable_collisions link1="carpet_link" link2="meeting_chair2_link" reason="Default" />
     <disable_collisions link1="carpet_link" link2="meeting_chair3_link" reason="Default" />
     <disable_collisions link1="carpet_link" link2="meeting_chair4_link" reason="Default" />
     <disable_collisions link1="carpet_link" link2="meeting_table_link" reason="Default" />
+    <disable_collisions link1="carpet_link" link2="r_arm_j1_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="r_arm_j2_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="r_arm_j3_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="r_arm_j4_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="r_arm_j5_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="r_arm_j6_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="r_arm_j7_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="r_end_effector_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="r_gripper_link" reason="User" />
+    <disable_collisions link1="carpet_link" link2="r_gripper_thumb_link" reason="User" />
     <disable_collisions link1="carpet_link" link2="recorder_link" reason="Always" />
     <disable_collisions link1="carpet_link" link2="refrigerator_link" reason="Always" />
     <disable_collisions link1="carpet_link" link2="sofa_link" reason="Default" />
@@ -305,6 +412,7 @@
     <disable_collisions link1="chair_link" link2="refrigerator_link" reason="Adjacent" />
     <disable_collisions link1="chair_link" link2="sofa_link" reason="Always" />
     <disable_collisions link1="chair_link" link2="sofa_table_link" reason="Always" />
+    <disable_collisions link1="chair_link" link2="tree_link" reason="User" />
     <disable_collisions link1="chair_link" link2="tv_52_link" reason="Always" />
     <disable_collisions link1="chair_link" link2="tv_multi_link" reason="Always" />
     <disable_collisions link1="chair_link" link2="tv_table_link" reason="Always" />
@@ -313,11 +421,33 @@
     <disable_collisions link1="chair_link" link2="workdesk_link" reason="Always" />
     <disable_collisions link1="drawer_link" link2="intelingent_shelf_link" reason="Default" />
     <disable_collisions link1="drawer_link" link2="kitchen_link" reason="Always" />
+    <disable_collisions link1="drawer_link" link2="l_arm_j1_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="l_arm_j2_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="l_arm_j3_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="l_arm_j4_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="l_arm_j5_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="l_arm_j6_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="l_arm_j7_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="l_end_effector_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="l_gripper_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="l_gripper_thumb_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="lumbar_lower_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="lumbar_upper_link" reason="User" />
     <disable_collisions link1="drawer_link" link2="meeting_chair1_link" reason="Always" />
     <disable_collisions link1="drawer_link" link2="meeting_chair2_link" reason="Always" />
     <disable_collisions link1="drawer_link" link2="meeting_chair3_link" reason="Always" />
     <disable_collisions link1="drawer_link" link2="meeting_chair4_link" reason="Always" />
     <disable_collisions link1="drawer_link" link2="meeting_table_link" reason="Always" />
+    <disable_collisions link1="drawer_link" link2="r_arm_j1_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="r_arm_j2_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="r_arm_j3_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="r_arm_j4_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="r_arm_j5_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="r_arm_j6_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="r_arm_j7_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="r_end_effector_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="r_gripper_link" reason="User" />
+    <disable_collisions link1="drawer_link" link2="r_gripper_thumb_link" reason="User" />
     <disable_collisions link1="drawer_link" link2="recorder_link" reason="Default" />
     <disable_collisions link1="drawer_link" link2="refrigerator_link" reason="Always" />
     <disable_collisions link1="drawer_link" link2="sofa_link" reason="Always" />
@@ -368,12 +498,33 @@
     <disable_collisions link1="intelingent_shelf_link" link2="wagon_link" reason="Always" />
     <disable_collisions link1="intelingent_shelf_link" link2="wardrobe_link" reason="Default" />
     <disable_collisions link1="intelingent_shelf_link" link2="workdesk_link" reason="Default" />
+    <disable_collisions link1="kitchen_link" link2="l_arm_j1_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="l_arm_j2_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="l_arm_j3_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="l_arm_j4_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="l_arm_j5_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="l_arm_j6_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="l_arm_j7_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="l_end_effector_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="l_gripper_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="l_gripper_thumb_link" reason="User" />
     <disable_collisions link1="kitchen_link" link2="lumbar_lower_link" reason="Never" />
+    <disable_collisions link1="kitchen_link" link2="lumbar_upper_link" reason="User" />
     <disable_collisions link1="kitchen_link" link2="meeting_chair1_link" reason="Default" />
     <disable_collisions link1="kitchen_link" link2="meeting_chair2_link" reason="Default" />
     <disable_collisions link1="kitchen_link" link2="meeting_chair3_link" reason="Default" />
     <disable_collisions link1="kitchen_link" link2="meeting_chair4_link" reason="Default" />
     <disable_collisions link1="kitchen_link" link2="meeting_table_link" reason="Default" />
+    <disable_collisions link1="kitchen_link" link2="r_arm_j1_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="r_arm_j2_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="r_arm_j3_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="r_arm_j4_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="r_arm_j5_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="r_arm_j6_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="r_arm_j7_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="r_end_effector_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="r_gripper_link" reason="User" />
+    <disable_collisions link1="kitchen_link" link2="r_gripper_thumb_link" reason="User" />
     <disable_collisions link1="kitchen_link" link2="recorder_link" reason="Always" />
     <disable_collisions link1="kitchen_link" link2="refrigerator_link" reason="Always" />
     <disable_collisions link1="kitchen_link" link2="sofa_link" reason="Default" />
@@ -407,8 +558,11 @@
     <disable_collisions link1="l_arm_j1_link" link2="r_arm_j4_link" reason="Never" />
     <disable_collisions link1="l_arm_j1_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="l_arm_j1_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="l_arm_j1_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="l_arm_j1_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="l_arm_j1_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="l_arm_j1_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="l_arm_j1_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="l_arm_j1_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="l_arm_j1_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="l_arm_j1_link" link2="wardrobe_link" reason="Never" />
@@ -434,8 +588,11 @@
     <disable_collisions link1="l_arm_j2_link" link2="r_arm_j4_link" reason="Never" />
     <disable_collisions link1="l_arm_j2_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="l_arm_j2_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="l_arm_j2_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="l_arm_j2_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="l_arm_j2_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="l_arm_j2_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="l_arm_j2_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="l_arm_j2_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="l_arm_j2_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="l_arm_j2_link" link2="wardrobe_link" reason="Never" />
@@ -459,8 +616,11 @@
     <disable_collisions link1="l_arm_j3_link" link2="r_arm_j4_link" reason="Never" />
     <disable_collisions link1="l_arm_j3_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="l_arm_j3_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="l_arm_j3_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="l_arm_j3_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="l_arm_j3_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="l_arm_j3_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="l_arm_j3_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="l_arm_j3_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="l_arm_j3_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="l_arm_j3_link" link2="wardrobe_link" reason="Never" />
@@ -483,8 +643,11 @@
     <disable_collisions link1="l_arm_j4_link" link2="r_arm_j4_link" reason="Never" />
     <disable_collisions link1="l_arm_j4_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="l_arm_j4_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="l_arm_j4_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="l_arm_j4_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="l_arm_j4_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="l_arm_j4_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="l_arm_j4_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="l_arm_j4_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="l_arm_j4_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="l_arm_j4_link" link2="wardrobe_link" reason="Never" />
@@ -501,8 +664,11 @@
     <disable_collisions link1="l_arm_j5_link" link2="meeting_table_link" reason="Never" />
     <disable_collisions link1="l_arm_j5_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="l_arm_j5_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="l_arm_j5_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="l_arm_j5_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="l_arm_j5_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="l_arm_j5_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="l_arm_j5_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="l_arm_j5_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="l_arm_j5_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="l_arm_j5_link" link2="wardrobe_link" reason="Never" />
@@ -519,8 +685,11 @@
     <disable_collisions link1="l_arm_j6_link" link2="r_end_effector_link" reason="Never" />
     <disable_collisions link1="l_arm_j6_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="l_arm_j6_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="l_arm_j6_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="l_arm_j6_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="l_arm_j6_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="l_arm_j6_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="l_arm_j6_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="l_arm_j6_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="l_arm_j6_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="l_arm_j6_link" link2="wardrobe_link" reason="Never" />
@@ -535,8 +704,11 @@
     <disable_collisions link1="l_arm_j7_link" link2="meeting_table_link" reason="Never" />
     <disable_collisions link1="l_arm_j7_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="l_arm_j7_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="l_arm_j7_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="l_arm_j7_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="l_arm_j7_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="l_arm_j7_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="l_arm_j7_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="l_arm_j7_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="l_arm_j7_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="l_arm_j7_link" link2="wardrobe_link" reason="Never" />
@@ -553,8 +725,11 @@
     <disable_collisions link1="l_end_effector_link" link2="r_gripper_thumb_link" reason="Never" />
     <disable_collisions link1="l_end_effector_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="l_end_effector_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="l_end_effector_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="l_end_effector_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="l_end_effector_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="l_end_effector_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="l_end_effector_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="l_end_effector_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="l_end_effector_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="l_end_effector_link" link2="wardrobe_link" reason="Never" />
@@ -567,8 +742,11 @@
     <disable_collisions link1="l_gripper_link" link2="meeting_table_link" reason="Never" />
     <disable_collisions link1="l_gripper_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="l_gripper_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="l_gripper_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="l_gripper_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="l_gripper_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="l_gripper_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="l_gripper_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="l_gripper_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="l_gripper_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="l_gripper_link" link2="wardrobe_link" reason="Never" />
@@ -580,8 +758,11 @@
     <disable_collisions link1="l_gripper_thumb_link" link2="meeting_table_link" reason="Never" />
     <disable_collisions link1="l_gripper_thumb_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="l_gripper_thumb_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="l_gripper_thumb_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="l_gripper_thumb_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="l_gripper_thumb_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="l_gripper_thumb_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="l_gripper_thumb_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="l_gripper_thumb_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="l_gripper_thumb_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="l_gripper_thumb_link" link2="wardrobe_link" reason="Never" />
@@ -598,8 +779,11 @@
     <disable_collisions link1="lumbar_lower_link" link2="r_arm_j4_link" reason="Never" />
     <disable_collisions link1="lumbar_lower_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="lumbar_lower_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="lumbar_lower_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="lumbar_lower_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="lumbar_lower_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="lumbar_lower_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="lumbar_lower_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="lumbar_lower_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="lumbar_lower_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="lumbar_lower_link" link2="wardrobe_link" reason="Never" />
@@ -613,8 +797,11 @@
     <disable_collisions link1="lumbar_upper_link" link2="r_arm_j2_link" reason="Never" />
     <disable_collisions link1="lumbar_upper_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="lumbar_upper_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="lumbar_upper_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="lumbar_upper_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="lumbar_upper_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="lumbar_upper_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="lumbar_upper_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="lumbar_upper_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="lumbar_upper_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="lumbar_upper_link" link2="wardrobe_link" reason="Never" />
@@ -637,8 +824,10 @@
     <disable_collisions link1="meeting_chair1_link" link2="refrigerator_link" reason="Adjacent" />
     <disable_collisions link1="meeting_chair1_link" link2="sofa_link" reason="Default" />
     <disable_collisions link1="meeting_chair1_link" link2="sofa_table_link" reason="Default" />
+    <disable_collisions link1="meeting_chair1_link" link2="tree_link" reason="User" />
     <disable_collisions link1="meeting_chair1_link" link2="tv_52_link" reason="Always" />
     <disable_collisions link1="meeting_chair1_link" link2="tv_multi_link" reason="Always" />
+    <disable_collisions link1="meeting_chair1_link" link2="tv_table_link" reason="User" />
     <disable_collisions link1="meeting_chair1_link" link2="wagon_link" reason="Adjacent" />
     <disable_collisions link1="meeting_chair1_link" link2="wardrobe_link" reason="Always" />
     <disable_collisions link1="meeting_chair1_link" link2="workdesk_link" reason="Always" />
@@ -655,11 +844,14 @@
     <disable_collisions link1="meeting_chair2_link" link2="r_end_effector_link" reason="User" />
     <disable_collisions link1="meeting_chair2_link" link2="r_gripper_link" reason="User" />
     <disable_collisions link1="meeting_chair2_link" link2="r_gripper_thumb_link" reason="User" />
+    <disable_collisions link1="meeting_chair2_link" link2="recorder_link" reason="User" />
     <disable_collisions link1="meeting_chair2_link" link2="refrigerator_link" reason="Adjacent" />
     <disable_collisions link1="meeting_chair2_link" link2="sofa_link" reason="Default" />
     <disable_collisions link1="meeting_chair2_link" link2="sofa_table_link" reason="Default" />
+    <disable_collisions link1="meeting_chair2_link" link2="tree_link" reason="User" />
     <disable_collisions link1="meeting_chair2_link" link2="tv_52_link" reason="Always" />
     <disable_collisions link1="meeting_chair2_link" link2="tv_multi_link" reason="Always" />
+    <disable_collisions link1="meeting_chair2_link" link2="tv_table_link" reason="User" />
     <disable_collisions link1="meeting_chair2_link" link2="wagon_link" reason="Adjacent" />
     <disable_collisions link1="meeting_chair2_link" link2="wardrobe_link" reason="Always" />
     <disable_collisions link1="meeting_chair2_link" link2="workdesk_link" reason="Always" />
@@ -675,11 +867,14 @@
     <disable_collisions link1="meeting_chair3_link" link2="r_end_effector_link" reason="User" />
     <disable_collisions link1="meeting_chair3_link" link2="r_gripper_link" reason="User" />
     <disable_collisions link1="meeting_chair3_link" link2="r_gripper_thumb_link" reason="User" />
+    <disable_collisions link1="meeting_chair3_link" link2="recorder_link" reason="User" />
     <disable_collisions link1="meeting_chair3_link" link2="refrigerator_link" reason="Adjacent" />
     <disable_collisions link1="meeting_chair3_link" link2="sofa_link" reason="Default" />
     <disable_collisions link1="meeting_chair3_link" link2="sofa_table_link" reason="Default" />
+    <disable_collisions link1="meeting_chair3_link" link2="tree_link" reason="User" />
     <disable_collisions link1="meeting_chair3_link" link2="tv_52_link" reason="Always" />
     <disable_collisions link1="meeting_chair3_link" link2="tv_multi_link" reason="Always" />
+    <disable_collisions link1="meeting_chair3_link" link2="tv_table_link" reason="User" />
     <disable_collisions link1="meeting_chair3_link" link2="wagon_link" reason="Adjacent" />
     <disable_collisions link1="meeting_chair3_link" link2="wardrobe_link" reason="Always" />
     <disable_collisions link1="meeting_chair3_link" link2="workdesk_link" reason="Always" />
@@ -698,8 +893,10 @@
     <disable_collisions link1="meeting_chair4_link" link2="refrigerator_link" reason="Adjacent" />
     <disable_collisions link1="meeting_chair4_link" link2="sofa_link" reason="Default" />
     <disable_collisions link1="meeting_chair4_link" link2="sofa_table_link" reason="Default" />
+    <disable_collisions link1="meeting_chair4_link" link2="tree_link" reason="User" />
     <disable_collisions link1="meeting_chair4_link" link2="tv_52_link" reason="Always" />
     <disable_collisions link1="meeting_chair4_link" link2="tv_multi_link" reason="Always" />
+    <disable_collisions link1="meeting_chair4_link" link2="tv_table_link" reason="User" />
     <disable_collisions link1="meeting_chair4_link" link2="wagon_link" reason="Adjacent" />
     <disable_collisions link1="meeting_chair4_link" link2="wardrobe_link" reason="Always" />
     <disable_collisions link1="meeting_chair4_link" link2="workdesk_link" reason="Always" />
@@ -735,8 +932,11 @@
     <disable_collisions link1="r_arm_j1_link" link2="r_gripper_thumb_link" reason="Never" />
     <disable_collisions link1="r_arm_j1_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="r_arm_j1_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="r_arm_j1_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="r_arm_j1_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="r_arm_j1_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="r_arm_j1_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="r_arm_j1_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="r_arm_j1_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="r_arm_j1_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="r_arm_j1_link" link2="wardrobe_link" reason="Never" />
@@ -751,8 +951,11 @@
     <disable_collisions link1="r_arm_j2_link" link2="r_gripper_thumb_link" reason="Never" />
     <disable_collisions link1="r_arm_j2_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="r_arm_j2_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="r_arm_j2_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="r_arm_j2_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="r_arm_j2_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="r_arm_j2_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="r_arm_j2_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="r_arm_j2_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="r_arm_j2_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="r_arm_j2_link" link2="wardrobe_link" reason="Never" />
@@ -766,8 +969,11 @@
     <disable_collisions link1="r_arm_j3_link" link2="r_gripper_thumb_link" reason="Never" />
     <disable_collisions link1="r_arm_j3_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="r_arm_j3_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="r_arm_j3_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="r_arm_j3_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="r_arm_j3_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="r_arm_j3_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="r_arm_j3_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="r_arm_j3_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="r_arm_j3_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="r_arm_j3_link" link2="wardrobe_link" reason="Never" />
@@ -780,8 +986,11 @@
     <disable_collisions link1="r_arm_j4_link" link2="r_gripper_thumb_link" reason="Never" />
     <disable_collisions link1="r_arm_j4_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="r_arm_j4_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="r_arm_j4_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="r_arm_j4_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="r_arm_j4_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="r_arm_j4_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="r_arm_j4_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="r_arm_j4_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="r_arm_j4_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="r_arm_j4_link" link2="wardrobe_link" reason="Never" />
@@ -793,8 +1002,11 @@
     <disable_collisions link1="r_arm_j5_link" link2="r_gripper_thumb_link" reason="Never" />
     <disable_collisions link1="r_arm_j5_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="r_arm_j5_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="r_arm_j5_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="r_arm_j5_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="r_arm_j5_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="r_arm_j5_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="r_arm_j5_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="r_arm_j5_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="r_arm_j5_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="r_arm_j5_link" link2="wardrobe_link" reason="Never" />
@@ -805,8 +1017,11 @@
     <disable_collisions link1="r_arm_j6_link" link2="r_gripper_thumb_link" reason="Never" />
     <disable_collisions link1="r_arm_j6_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="r_arm_j6_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="r_arm_j6_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="r_arm_j6_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="r_arm_j6_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="r_arm_j6_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="r_arm_j6_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="r_arm_j6_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="r_arm_j6_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="r_arm_j6_link" link2="wardrobe_link" reason="Never" />
@@ -816,8 +1031,11 @@
     <disable_collisions link1="r_arm_j7_link" link2="r_gripper_thumb_link" reason="Never" />
     <disable_collisions link1="r_arm_j7_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="r_arm_j7_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="r_arm_j7_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="r_arm_j7_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="r_arm_j7_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="r_arm_j7_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="r_arm_j7_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="r_arm_j7_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="r_arm_j7_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="r_arm_j7_link" link2="wardrobe_link" reason="Never" />
@@ -826,8 +1044,11 @@
     <disable_collisions link1="r_end_effector_link" link2="r_gripper_thumb_link" reason="Never" />
     <disable_collisions link1="r_end_effector_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="r_end_effector_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="r_end_effector_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="r_end_effector_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="r_end_effector_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="r_end_effector_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="r_end_effector_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="r_end_effector_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="r_end_effector_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="r_end_effector_link" link2="wardrobe_link" reason="Never" />
@@ -835,16 +1056,22 @@
     <disable_collisions link1="r_gripper_link" link2="r_gripper_thumb_link" reason="Adjacent" />
     <disable_collisions link1="r_gripper_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="r_gripper_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="r_gripper_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="r_gripper_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="r_gripper_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="r_gripper_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="r_gripper_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="r_gripper_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="r_gripper_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="r_gripper_link" link2="wardrobe_link" reason="Never" />
     <disable_collisions link1="r_gripper_link" link2="workdesk_link" reason="Never" />
     <disable_collisions link1="r_gripper_thumb_link" link2="recorder_link" reason="Never" />
     <disable_collisions link1="r_gripper_thumb_link" link2="refrigerator_link" reason="User" />
+    <disable_collisions link1="r_gripper_thumb_link" link2="sofa_link" reason="User" />
     <disable_collisions link1="r_gripper_thumb_link" link2="sofa_table_link" reason="Never" />
     <disable_collisions link1="r_gripper_thumb_link" link2="tree_link" reason="Never" />
+    <disable_collisions link1="r_gripper_thumb_link" link2="tv_52_link" reason="User" />
+    <disable_collisions link1="r_gripper_thumb_link" link2="tv_multi_link" reason="User" />
     <disable_collisions link1="r_gripper_thumb_link" link2="tv_table_link" reason="Never" />
     <disable_collisions link1="r_gripper_thumb_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="r_gripper_thumb_link" link2="wardrobe_link" reason="Never" />
@@ -886,6 +1113,7 @@
     <disable_collisions link1="tree_link" link2="tv_52_link" reason="Always" />
     <disable_collisions link1="tree_link" link2="tv_multi_link" reason="Default" />
     <disable_collisions link1="tree_link" link2="tv_table_link" reason="Always" />
+    <disable_collisions link1="tree_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="tree_link" link2="wardrobe_link" reason="Default" />
     <disable_collisions link1="tree_link" link2="workdesk_link" reason="Always" />
     <disable_collisions link1="tv_52_link" link2="tv_multi_link" reason="Always" />
@@ -897,6 +1125,7 @@
     <disable_collisions link1="tv_multi_link" link2="wagon_link" reason="Always" />
     <disable_collisions link1="tv_multi_link" link2="wardrobe_link" reason="Default" />
     <disable_collisions link1="tv_multi_link" link2="workdesk_link" reason="Always" />
+    <disable_collisions link1="tv_table_link" link2="wagon_link" reason="User" />
     <disable_collisions link1="tv_table_link" link2="wardrobe_link" reason="Default" />
     <disable_collisions link1="tv_table_link" link2="workdesk_link" reason="Default" />
     <disable_collisions link1="wagon_link" link2="wardrobe_link" reason="Always" />
