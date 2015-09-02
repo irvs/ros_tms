@@ -28,6 +28,12 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0.001"/>
     </visual>
+    <collision>
+      <geometry>
+        <box size="15.0 7.0 0.001"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="7.5 3.5 -0.001"/>
+    </collision>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0.001"/>
       <mass value="1"/>
@@ -45,6 +51,11 @@
         <mesh filename="package://environmental_model/model/bsen_wall.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://environmental_model/model/bsen_wall.dae"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="celling_joint" type="fixed">
     <parent link="bsen_room_link"/>
@@ -57,6 +68,11 @@
         <mesh filename="package://environmental_model/model/bsen_celling.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://environmental_model/model/bsen_celling.dae"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="kitchen_joint" type="fixed">
     <parent link="bsen_room_link"/>
@@ -69,6 +85,11 @@
         <mesh filename="package://environmental_model/model/kitchen.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.65 3.12 0.65"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="meeting_table_joint" type="fixed">
     <parent link="bsen_room_link"/>
@@ -81,6 +102,11 @@
         <mesh filename="package://environmental_model/model/meeting_table.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.73" radius="0.66"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="tree_link" type="fixed">
     <parent link="bsen_room_link"/>
@@ -93,6 +119,12 @@
         <mesh filename="package://environmental_model/model/tree.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="1.0" radius="0.2"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.55"/>
+    </collision>
   </link>
   <joint name="tv_table_joint" type="fixed">
     <parent link="bsen_room_link"/>
@@ -105,6 +137,11 @@
         <mesh filename="package://environmental_model/model/tv_table.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.35 2.7 0.35"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="tv_52_link" type="fixed">
     <parent link="bsen_room_link"/>
@@ -117,6 +154,11 @@
         <mesh filename="package://environmental_model/model/tv_52.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+        <box size="1.2 0.1 0.7"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="recorder_joint" type="fixed">
     <parent link="bsen_room_link"/>
@@ -129,6 +171,11 @@
         <mesh filename="package://environmental_model/model/recorder.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.25 0.45 0.1"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="sofa_joint" type="fixed">
     <parent link="bsen_room_link"/>
@@ -141,6 +188,11 @@
         <mesh filename="package://environmental_model/model/sofa.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.8 2.35 0.77"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="sofa_table_joint" type="fixed">
     <parent link="bsen_room_link"/>
@@ -153,11 +205,16 @@
         <mesh filename="package://environmental_model/model/sofa_table.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.5 1.3 0.43"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="carpet_joint" type="fixed">
     <parent link="bsen_room_link"/>
     <child link="carpet_link"/>
-    <origin rpy="0 0 0" xyz="9.9 2.9 0.1"/>
+    <origin rpy="0 0 0" xyz="9.9 2.9 0.01"/>
   </joint>
   <link name="carpet_link">
     <visual>
@@ -165,6 +222,11 @@
         <mesh filename="package://environmental_model/model/carpet.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+        <box size="1.76 2.55 0.01"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="drawer_joint" type="fixed">
     <parent link="bsen_room_link"/>
@@ -177,6 +239,11 @@
         <mesh filename="package://environmental_model/model/drawer.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.6 0.4 0.6"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="bed_joint" type="fixed">
     <parent link="bsen_room_link"/>
@@ -189,6 +256,11 @@
         <mesh filename="package://environmental_model/model/bed.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+        <box size="2.2 1.88 0.2"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="wardrobe_joint" type="fixed">
     <parent link="bsen_room_link"/>
@@ -201,6 +273,11 @@
         <mesh filename="package://environmental_model/model/wardrobe.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.7 0.95 2.56"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="workdesk_joint" type="fixed">
     <parent link="bsen_room_link"/>
@@ -213,6 +290,11 @@
         <mesh filename="package://environmental_model/model/work_desk.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.65 2.44 0.7"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="tv_multi_joint" type="fixed">
     <parent link="bsen_room_link"/>
@@ -225,6 +307,11 @@
         <mesh filename="package://environmental_model/model/tv_multi.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+        <box size="2.5 0.2 1.4"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="intelingent_shelf_joint" type="fixed">
     <parent link="bsen_room_link"/>
@@ -237,6 +324,11 @@
         <mesh filename="package://environmental_model/model/intelingent_shelf.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.3 0.5 0.9"/>
+      </geometry>
+    </collision>
   </link>
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <!-- meeting_chair -->
@@ -268,6 +360,12 @@
       </geometry>
       <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.51"/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="1.1" radius="0.35"/>
+      </geometry>
+      <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.51"/>
+    </collision>
   </link>
   <!-- refrigerator -->
   <link name="refrigerator_x_link"/>
@@ -297,6 +395,12 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0.0 0.0 0.56"/>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.6 0.5 1.1"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.56"/>
+    </collision>
   </link>
   <!-- Add meeting_chair -->
   <link name="meeting_chair1_x_link"/>
@@ -326,6 +430,12 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0.0 0.0 0.3978"/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.8" radius="0.35"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.3978"/>
+    </collision>
   </link>
   <link name="meeting_chair2_x_link"/>
   <joint name="meeting_chair2_x_joint" type="prismatic">
@@ -354,6 +464,12 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0.0 0.0 0.3978"/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.8" radius="0.35"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.3978"/>
+    </collision>
   </link>
   <link name="meeting_chair3_x_link"/>
   <joint name="meeting_chair3_x_joint" type="prismatic">
@@ -382,6 +498,12 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0.0 0.0 0.3978"/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.8" radius="0.35"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.3978"/>
+    </collision>
   </link>
   <link name="meeting_chair4_x_link"/>
   <joint name="meeting_chair4_x_joint" type="prismatic">
@@ -410,6 +532,12 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0.0 0.0 0.3978"/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.8" radius="0.35"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.3978"/>
+    </collision>
   </link>
   <!-- wagon -->
   <link name="wagon_x_link"/>
@@ -437,8 +565,14 @@
       <geometry>
         <mesh filename="package://environmental_model/model/wagon.dae"/>
       </geometry>
-      <origin rpy="0 0 0" xyz="0. 0. 0.5"/>
+      <origin rpy="0 0 0" xyz="0. 0. 0.3"/>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.6 0.4 0.7"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0. 0. 0.3"/>
+    </collision>
   </link>
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <!-- Base, Vehicle -->
