@@ -92,27 +92,6 @@
     <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
     <virtual_joint name="world_smartpal5_joint" type="planar" parent_frame="world_link" child_link="smartpal5_link" />
     <!-- PASSIVE JOINT: By default it is assumed that all joints specified by a URDF are active and their state is made available for planning. If this is not the case for some joints, this tag can be used to specify that. -->
-    <!-- <passive_joint name='refrigerator_x_joint'>
-    <passive_joint name='refrigerator_y_joint'>
-    <passive_joint name='refrigerator_yaw_joint'>
-    <passive_joint name='chair_x_joint'>
-    <passive_joint name='chair_y_joint'>
-    <passive_joint name='chair_yaw_joint'>
-    <passive_joint name='meeting_chair1_x_joint'>
-    <passive_joint name='meeting_chair1_y_joint'>
-    <passive_joint name='meeting_chair1_yaw_joint'>
-    <passive_joint name='meeting_chair2_x_joint'>
-    <passive_joint name='meeting_chair2_y_joint'>
-    <passive_joint name='meeting_chair2_yaw_joint'>
-    <passive_joint name='meeting_chair3_x_joint'>
-    <passive_joint name='meeting_chair3_y_joint'>
-    <passive_joint name='meeting_chair3_yaw_joint'>
-    <passive_joint name='meeting_chair4_x_joint'>
-    <passive_joint name='meeting_chair4_y_joint'>
-    <passive_joint name='meeting_chair4_yaw_joint'>
-    <passive_joint name='wagon_x_joint'>
-    <passive_joint name='wagon_y_joint'>
-    <passive_joint name='wagon_yaw_joint'> -->
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="base_link" link2="camera_link" reason="Never" />
     <disable_collisions link1="base_link" link2="l_arm_j1_link" reason="Never" />

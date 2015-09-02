@@ -2,8 +2,8 @@
 <launch>
 
   <!-- parameter setting for robot_description -->
-   <param name="robot_description"
-          command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/all_components_without_robots.urdf.xacro'" />
+  <param name="robot_description"
+         command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/all_components_without_robots.urdf.xacro'" />
 
   <!-- robot_state_publisher -->
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="environment_state_publisher">
@@ -17,7 +17,6 @@
     <param name="/use_gui" value="false"/>
     <rosparam param="/source_list">[/move_group/fake_controller_joint_states]</rosparam>
   </node> -->
-
 
   <!-- RViz -->
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rostms_description)/rviz_config/rviz_config.rviz" respawn="true" />
