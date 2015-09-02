@@ -11,7 +11,7 @@
   </node>
 
   <!-- joint_state_publisher -->
-  <node name="tms_db_state_publisher" pkg="tms_db_state_publisher" type="tms_db_state_publisher"/>
+  <!-- <node name="tms_db_state_publisher" pkg="tms_db_state_publisher" type="tms_db_state_publisher"/> -->
 
   <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
     <param name="/use_gui" value="false"/>
@@ -19,6 +19,6 @@
   </node> -->
 
   <!-- RViz -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rostms_description)/rviz_config/rviz_config.rviz" respawn="true" />
+  <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rostms_description)/rviz_config/rviz_config.rviz" respawn="true" /> -->
 
 </launch>
