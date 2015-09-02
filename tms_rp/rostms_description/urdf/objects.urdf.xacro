@@ -39,6 +39,12 @@
         </geometry>
         <origin xyz="0.0 0.0 0.3978" rpy="0 0 0"/>
       </visual>
+      <collision>
+        <geometry>
+          <cylinder radius="0.35" length="0.8"/>
+        </geometry>
+        <origin xyz="0.0 0.0 0.3978" rpy="0 0 0"/>
+      </collision>
     </link>
   </xacro:macro>
 
@@ -77,6 +83,12 @@
         </geometry>
         <origin xyz="0.0 0.0 0.51" rpy="0.0 0.0 0.0"/>
       </visual>
+      <collision>
+        <geometry>
+          <cylinder radius="0.35" length="1.1"/>
+        </geometry>
+        <origin xyz="0.0 0.0 0.51" rpy="0.0 0.0 0.0"/>
+      </collision>
     </link>
 
     <!-- refrigerator -->
@@ -112,6 +124,12 @@
         </geometry>
         <origin xyz="0.0 0.0 0.56" rpy="0 0 0"/>
       </visual>
+      <collision>
+        <geometry>
+          <box size="0.6 0.5 1.1"/>
+        </geometry>
+        <origin xyz="0.0 0.0 0.56" rpy="0 0 0"/>
+      </collision>
     </link>
 
     <!-- Add meeting_chair -->
@@ -151,8 +169,14 @@
         <geometry>
           <mesh filename="package://environmental_model/model/wagon.dae"/>
         </geometry>
-        <origin xyz="0. 0. 0.5" rpy="0 0 0"/>
+        <origin xyz="0. 0. 0.3" rpy="0 0 0"/>
       </visual>
+      <collision>
+        <geometry>
+          <box size="0.6 0.4 0.7"/>
+        </geometry>
+        <origin xyz="0. 0. 0.3" rpy="0 0 0"/>
+      </collision>
     </link>
 
     <objects_sim/>
