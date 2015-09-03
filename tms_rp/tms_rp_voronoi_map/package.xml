@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>tms_rp_voronoi_map</name>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
   <description>The tms_rp_voronoi_map package</description>
 
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>

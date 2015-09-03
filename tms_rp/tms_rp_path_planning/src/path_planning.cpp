@@ -2,8 +2,8 @@
 // @file   : path_planning.cpp
 // @brief  : robot's path planning using voronoi map
 // @author : Yoonseok Pyo
-// @version: Ver0.0.1 (since 2015.08.10)
-// @date   : 2015.08.10
+// @version: Ver 1.0.2 (since 2015.08.10)
+// @date   : 2015.09.03
 //------------------------------------------------------------------------------
 //include for ROS
 #include <ros/ros.h>
@@ -293,7 +293,7 @@ namespace tms_rp
       uint32_t shape = visualization_msgs::Marker::ARROW;
       visualization_msgs::Marker marker;
       visualization_msgs::MarkerArray markers;
-      marker.header.frame_id = "world";
+      marker.header.frame_id = "world_link";
       marker.header.stamp = ros::Time::now();
       marker.ns = "robot_path";
 
@@ -319,7 +319,7 @@ namespace tms_rp
       //
       visualization_msgs::Marker mesh;
       visualization_msgs::MarkerArray meshs;
-      mesh.header.frame_id = "world";
+      mesh.header.frame_id = "world_link";
       mesh.header.stamp = ros::Time::now();
       mesh.ns = "robot_shadow";
       mesh.type = visualization_msgs::Marker::MESH_RESOURCE;

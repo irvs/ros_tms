@@ -2,8 +2,8 @@
 // @file   : tms_rp_voronoi_map.cpp
 // @brief  : voronoi map for robot's path planning
 // @author : Yoonseok Pyo, Kouhei Nakashima
-// @version: Ver0.0.2 (since 2015.08.10)
-// @date   : 2015.08.18
+// @version: Ver0.0.3 (since 2015.08.10)
+// @date   : 2015.09.03
 //------------------------------------------------------------------------------
 //include for ROS
 #include <ros/ros.h>
@@ -431,7 +431,7 @@ namespace tms_rp
 
       uint32_t shape = visualization_msgs::Marker::POINTS;
       visualization_msgs::Marker marker;
-      marker.header.frame_id = "world";
+      marker.header.frame_id = "world_link";
       marker.header.stamp = ros::Time::now();
       marker.ns = "voronoi_map";
       marker.id = 0;
@@ -523,7 +523,7 @@ namespace tms_rp
 
       uint32_t shape = visualization_msgs::Marker::POINTS;
       visualization_msgs::Marker marker;
-      marker.header.frame_id = "world";
+      marker.header.frame_id = "world_link";
       marker.header.stamp = ros::Time::now();
       marker.ns = "dynamic_map";
       marker.id = 0;
