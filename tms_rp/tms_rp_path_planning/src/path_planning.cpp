@@ -332,11 +332,11 @@ namespace tms_rp
       {
         marker.id = i;
         marker.points.resize(2);
-        marker.points[0].x = smooth_path[i][0] - 0.3;
-        marker.points[0].y = smooth_path[i][1] - 0.5;
+        marker.points[0].x = smooth_path[i][0];
+        marker.points[0].y = smooth_path[i][1];
         marker.points[0].z = 0.03;
-        marker.points[1].x = smooth_path[i+1][0] - 0.3;
-        marker.points[1].y = smooth_path[i+1][1] - 0.5;
+        marker.points[1].x = smooth_path[i+1][0];
+        marker.points[1].y = smooth_path[i+1][1];
         marker.points[1].z = 0.03;
         markers.markers.push_back(marker);
       }
@@ -346,8 +346,8 @@ namespace tms_rp
       for(unsigned int i=0;i<smooth_path.size();i++)
       {
         mesh.id = i;
-        mesh.pose.position.x = smooth_path[i][0] - 0.3;
-        mesh.pose.position.y = smooth_path[i][1] - 0.5;
+        mesh.pose.position.x = smooth_path[i][0];
+        mesh.pose.position.y = smooth_path[i][1];
         mesh.pose.position.z = 0.03;
         q.setRPY(0, 0, smooth_path[i][2]);
         mesh.pose.orientation.x = q.x();

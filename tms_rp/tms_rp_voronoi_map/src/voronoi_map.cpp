@@ -7,6 +7,7 @@
 //------------------------------------------------------------------------------
 //include for ROS
 #include <ros/ros.h>
+#include <ros/package.h>
 #include <visualization_msgs/Marker.h>
 
 #include <tms_msg_db/TmsdbGetData.h>
@@ -71,7 +72,7 @@ namespace tms_rp
     tms_msg_rp::rps_map_full dynamic_map_;
     string result_msg_;
     ros::ServiceClient get_data_client_;
-    ros::Publisher marker_pub, dynamic_marker_pub;
+    ros::Publisher nonvoronoi_map_marker_pub, static_map_marker_pub, dynamic_marker_pub;
     // ROS Parameters:
     double update_time;
     bool is_debug;
@@ -87,10 +88,11 @@ namespace tms_rp
       nh_priv.param("is_debug", is_debug, is_debug);
       ROS_ASSERT(initTmsRpVoronoiMap());
       // Subscriber for tms_db_data topic
+      get_data_client_ = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
       static_map_pub_  = nh.advertise<tms_msg_rp::rps_map_full>("rps_map_data", 1);
       dynamic_map_pub_ = nh.advertise<tms_msg_rp::rps_map_full>("rps_dynamic_map", 1);
-      get_data_client_ = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
-      marker_pub = nh.advertise<visualization_msgs::Marker>("voronoi_map_marker", 1);
+      nonvoronoi_map_marker_pub = nh.advertise<visualization_msgs::Marker>("nonvoronoi_map_marker", 1);
+      static_map_marker_pub = nh.advertise<visualization_msgs::Marker>("voronoi_map_marker", 1);
       dynamic_marker_pub = nh.advertise<visualization_msgs::Marker>("dynamic_map_marker", 1);
       //TimerEvent
       static_map_update_timer = nh.createTimer(ros::Duration(update_time), &TmsRpVoronoiMap::staticMapPublish, this);
@@ -127,10 +129,13 @@ namespace tms_rp
       char home_dir[255];
       const char *fname;
 
-      strcpy(home_dir, getenv("HOME"));
-      file_name = home_dir;
-      file_name += "/catkin_ws/src/ros_tms/tms_rp/tms_rp_action/map/use_collision_map.csv";
+//      strcpy(home_dir, getenv("HOME"));
+//      file_name = home_dir;
+//      file_name += "/catkin_ws/src/ros_tms/tms_rp/tms_rp_action/map/use_collision_map.csv";
+      file_name = ros::package::getPath("tms_rp_voronoi_map") + "/map/use_collision_map.csv";
+      ROS_INFO(file_name.c_str());
       fname = file_name.c_str();
+
 
       while(1)
       {
@@ -430,29 +435,54 @@ namespace tms_rp
       static_map_pub_.publish(static_map_);
 
       uint32_t shape = visualization_msgs::Marker::POINTS;
-      visualization_msgs::Marker marker;
-      marker.header.frame_id = "world_link";
-      marker.header.stamp = ros::Time::now();
-      marker.ns = "voronoi_map";
-      marker.id = 0;
-      marker.type = shape;
-      marker.action = visualization_msgs::Marker::ADD;
 
-      marker.pose.orientation.x = 0.0;
-      marker.pose.orientation.y = 0.0;
-      marker.pose.orientation.z = 0.0;
-      marker.pose.orientation.w = 1.0;
+      visualization_msgs::Marker voronoi_marker;
+      voronoi_marker.header.frame_id = "world_link";
+      voronoi_marker.header.stamp = ros::Time::now();
+      voronoi_marker.ns = "voronoi_map";
+      voronoi_marker.id = 0;
+      voronoi_marker.type = shape;
+      voronoi_marker.action = visualization_msgs::Marker::ADD;
+
+      voronoi_marker.pose.orientation.x = 0.0;
+      voronoi_marker.pose.orientation.y = 0.0;
+      voronoi_marker.pose.orientation.z = 0.0;
+      voronoi_marker.pose.orientation.w = 1.0;
 
       // Set the scale of the marker -- 1x1x1 here means 1m on a side
-      marker.scale.x = 0.1;
-      marker.scale.y = 0.1;
-      marker.scale.z = 0.1;
+      voronoi_marker.scale.x = 0.1;
+      voronoi_marker.scale.y = 0.1;
+      voronoi_marker.scale.z = 0.1;
 
       // Set the color -- be sure to set alpha to something non-zero!
-      marker.color.r = 0.0f;
-      marker.color.g = 1.0f;
-      marker.color.b = 0.0f;
-      marker.color.a = 1.0;
+      voronoi_marker.color.r = 0.0f;
+      voronoi_marker.color.g = 1.0f;
+      voronoi_marker.color.b = 0.0f;
+      voronoi_marker.color.a = 1.0;
+
+      visualization_msgs::Marker nonvoronoi_marker;
+      nonvoronoi_marker.header.frame_id = "world_link";
+      nonvoronoi_marker.header.stamp = ros::Time::now();
+      nonvoronoi_marker.ns = "nonvoronoi_map";
+      nonvoronoi_marker.id = 0;
+      nonvoronoi_marker.type = shape;
+      nonvoronoi_marker.action = visualization_msgs::Marker::ADD;
+
+      nonvoronoi_marker.pose.orientation.x = 0.0;
+      nonvoronoi_marker.pose.orientation.y = 0.0;
+      nonvoronoi_marker.pose.orientation.z = 0.0;
+      nonvoronoi_marker.pose.orientation.w = 1.0;
+
+      // Set the scale of the marker -- 1x1x1 here means 1m on a side
+      nonvoronoi_marker.scale.x = 0.1;
+      nonvoronoi_marker.scale.y = 0.1;
+      nonvoronoi_marker.scale.z = 0.1;
+
+      // Set the color -- be sure to set alpha to something non-zero!
+      nonvoronoi_marker.color.r = 0.65;
+      nonvoronoi_marker.color.g = 0.65;
+      nonvoronoi_marker.color.b = 0.65;
+      nonvoronoi_marker.color.a = 1.0;
 
       geometry_msgs::Point p;
 
@@ -460,18 +490,27 @@ namespace tms_rp
       {
         for(unsigned int y=0;y<static_map_.rps_map_x[x].rps_map_y.size();y++)
         {
-          if(static_map_.rps_map_x[x].rps_map_y[y].voronoi){
-          marker.id = 0;
-          // Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
-          p.x = x*0.1 - 0.3;
-          p.y = y*0.1 - 0.5;
-          p.z = 0.01;
-          marker.points.push_back(p);
+          if(static_map_.rps_map_x[x].rps_map_y[y].voronoi)
+          {
+            // p.x = x*0.1 - 0.3;
+            // p.y = y*0.1 - 0.5;
+            p.x = x*0.1;
+            p.y = y*0.1;
+            p.z = 0.01;
+            voronoi_marker.points.push_back(p);
+          }
+
+          if(!static_map_.rps_map_x[x].rps_map_y[y].object)
+          {
+            p.x = x*0.1;
+            p.y = y*0.1;
+            p.z = 0.005;
+            nonvoronoi_marker.points.push_back(p);
           }
         }
       }
-
-      marker_pub.publish(marker);
+      static_map_marker_pub.publish(voronoi_marker);
+      nonvoronoi_map_marker_pub.publish(nonvoronoi_marker);
     }
 
     void dynamicMapPublish(const ros::TimerEvent& e)
@@ -555,8 +594,8 @@ namespace tms_rp
           if(dynamic_map_.rps_map_x[x].rps_map_y[y].voronoi){
           marker.id = 0;
           // Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
-          p.x = x*0.1 - 0.3;
-          p.y = y*0.1 - 0.5;
+          p.x = x*0.1;
+          p.y = y*0.1;
           p.z = 0.01;
           marker.points.push_back(p);
           }
