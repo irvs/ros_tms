@@ -325,7 +325,7 @@ namespace tms_rp
       mesh.type = visualization_msgs::Marker::MESH_RESOURCE;
       mesh.action = visualization_msgs::Marker::ADD;
       mesh.scale.x = mesh.scale.y = mesh.scale.z = 1.0;
-      mesh.mesh_resource = "package://smartpal5_description/meshes/collision/Pal5_body_vehicle.dae";
+      mesh.mesh_resource = "package://smartpal5_description/meshes/blender/smartpal5.dae";
       //
 
       for(unsigned int i=0;i<smooth_path.size()-1;i++)
