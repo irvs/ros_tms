@@ -326,6 +326,10 @@ namespace tms_rp
       mesh.action = visualization_msgs::Marker::ADD;
       mesh.scale.x = mesh.scale.y = mesh.scale.z = 1.0;
       mesh.mesh_resource = "package://smartpal5_description/meshes/blender/smartpal5.dae";
+      mesh.color.r = 0.6;
+      mesh.color.g = 0.6;
+      mesh.color.b = 0.6;
+      mesh.color.a = 1.0;
       //
 
       for(unsigned int i=0;i<smooth_path.size()-1;i++)
