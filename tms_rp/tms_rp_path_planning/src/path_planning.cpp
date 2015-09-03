@@ -2,8 +2,8 @@
 // @file   : path_planning.cpp
 // @brief  : robot's path planning using voronoi map
 // @author : Yoonseok Pyo
-// @version: Ver0.0.1 (since 2015.08.10)
-// @date   : 2015.08.10
+// @version: Ver 1.0.2 (since 2015.08.10)
+// @date   : 2015.09.03
 //------------------------------------------------------------------------------
 //include for ROS
 #include <ros/ros.h>
@@ -293,7 +293,7 @@ namespace tms_rp
       uint32_t shape = visualization_msgs::Marker::ARROW;
       visualization_msgs::Marker marker;
       visualization_msgs::MarkerArray markers;
-      marker.header.frame_id = "world";
+      marker.header.frame_id = "world_link";
       marker.header.stamp = ros::Time::now();
       marker.ns = "robot_path";
 
@@ -319,7 +319,7 @@ namespace tms_rp
       //
       visualization_msgs::Marker mesh;
       visualization_msgs::MarkerArray meshs;
-      mesh.header.frame_id = "world";
+      mesh.header.frame_id = "world_link";
       mesh.header.stamp = ros::Time::now();
       mesh.ns = "robot_shadow";
       mesh.type = visualization_msgs::Marker::MESH_RESOURCE;
@@ -332,11 +332,11 @@ namespace tms_rp
       {
         marker.id = i;
         marker.points.resize(2);
-        marker.points[0].x = smooth_path[i][0] - 0.3;
-        marker.points[0].y = smooth_path[i][1] - 0.5;
+        marker.points[0].x = smooth_path[i][0];
+        marker.points[0].y = smooth_path[i][1];
         marker.points[0].z = 0.03;
-        marker.points[1].x = smooth_path[i+1][0] - 0.3;
-        marker.points[1].y = smooth_path[i+1][1] - 0.5;
+        marker.points[1].x = smooth_path[i+1][0];
+        marker.points[1].y = smooth_path[i+1][1];
         marker.points[1].z = 0.03;
         markers.markers.push_back(marker);
       }
@@ -346,8 +346,8 @@ namespace tms_rp
       for(unsigned int i=0;i<smooth_path.size();i++)
       {
         mesh.id = i;
-        mesh.pose.position.x = smooth_path[i][0] - 0.3;
-        mesh.pose.position.y = smooth_path[i][1] - 0.5;
+        mesh.pose.position.x = smooth_path[i][0];
+        mesh.pose.position.y = smooth_path[i][1];
         mesh.pose.position.z = 0.03;
         q.setRPY(0, 0, smooth_path[i][2]);
         mesh.pose.orientation.x = q.x();
