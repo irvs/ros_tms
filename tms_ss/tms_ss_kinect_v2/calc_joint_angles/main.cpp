@@ -107,6 +107,7 @@ bool ConvertJointAngles::calculate_jointangles(
   vec = j[SpineMid]-j[SpineBase];
   res.joint_angles.position[3] = atan2(y.dot(vec),x.dot(vec));
 
+  /*-- Model1: for choreonoid  --*/
   //if (1)//req.skeleton.confidence[SpineMid] == 2 &&
   //    //req.skeleton.confidence[SpineBase] == 2 &&
   //    //req.skeleton.confidence[SpineShoulder] == 2 &&

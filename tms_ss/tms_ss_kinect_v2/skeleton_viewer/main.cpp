@@ -70,7 +70,7 @@ void SkeletonViewer::callback_skeleton(const tms_ss_kinect_v2::SkeletonArray::Co
     for (int i = 0; i < 25; i++)
     {
       visualization_msgs::Marker marker;
-      marker.header.frame_id = "/map";
+      marker.header.frame_id = "/base_link";
       marker.header.stamp = ros::Time::now();
       std::string name("skeleton");
       marker.ns = name.append(to_str<int>(j+1));

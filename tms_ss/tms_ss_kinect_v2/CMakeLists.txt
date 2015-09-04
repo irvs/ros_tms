@@ -11,8 +11,10 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   std_msgs
   visualization_msgs
+  sensor_msgs
   message_generation
   cmake_modules
+  robot_state_publisher
 )
 find_package(Eigen REQUIRED)
 
@@ -52,6 +54,7 @@ catkin_package(
     geometry_msgs
     std_msgs
     visualization_msgs
+    sensor_msgs
     cmake_modules
 )
 
@@ -102,6 +105,11 @@ add_dependencies(calc_joint_angles tms_ss_kinect_v2_generate_messages_cpp)
 add_executable(skeleton_integrator skeleton_integrator/main.cpp)
 target_link_libraries(skeleton_integrator ${catkin_LIBRARIES})
 add_dependencies(skeleton_integrator tms_ss_kinect_v2_generate_messages_cpp)
+
+add_executable(skeleton_state_publisher skeleton_state_publisher/main.cpp)
+target_link_libraries(skeleton_state_publisher ${catkin_LIBRARIES})
+add_dependencies(skeleton_state_publisher tms_ss_kinect_v2_generate_messages_cpp)
+
 
 if (${USING_Choreonoid_AND_Grasp_Plugin})
   add_library(

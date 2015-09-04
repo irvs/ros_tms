@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <launch>
+  <!-- Make skeleton streams -->
+  <node name="skeleton_integrator" pkg="tms_ss_kinect_v2" args="1" type="skeleton_integrator"/>
+
+  <!-- For visualize skeleton in rViz -->
   <param name="robot_description" textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
-  <arg name="gui" default="False" />
-  <param name="use_gui" value="$(arg gui)"/>
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"></node>
-  <node pkg="robot_state_publisher" type="robot_state_publisher" name="rob_st_pub"/>
+  <node name="skeleton_state_publisher" pkg="tms_ss_kinect_v2" type="skeleton_state_publisher"/>
+  <!--<node name="rviz" pkg="rviz" type="rviz" respawn="true"/>-->
   <node name="rviz" pkg="rviz" type="rviz" respawn="true"/>
 </launch>
