@@ -3,9 +3,15 @@
   <!-- Make skeleton streams -->
   <node name="skeleton_integrator" pkg="tms_ss_kinect_v2" args="1" type="skeleton_integrator"/>
 
+  <param name="robot_description"
+         command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/environments_standalone.urdf.xacro'" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+  <node name="tms_db_state_publisher" pkg="tms_db_state_publisher" type="tms_db_state_publisher"/>
+
   <!-- For visualize skeleton in rViz -->
-  <param name="robot_description" textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description" textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
   <node name="skeleton_state_publisher" pkg="tms_ss_kinect_v2" type="skeleton_state_publisher"/>
   <!--<node name="rviz" pkg="rviz" type="rviz" respawn="true"/>-->
-  <node name="rviz" pkg="rviz" type="rviz" respawn="true"/>
+  <node name="rviz" pkg="rviz" type="rviz"
+    args="-d $(find rostms_description)/rviz_config/skeleton_watching.rviz" respawn="true"/>
 </launch>

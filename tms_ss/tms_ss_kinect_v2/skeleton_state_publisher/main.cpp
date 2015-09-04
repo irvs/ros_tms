@@ -10,6 +10,7 @@
 
 #include "../calc_joint_angles/for_model01.h"
 
+//------------------------------------------------------------------------------
 class SkeletonStatePublisher : public robot_state_publisher::RobotStatePublisher
 {
   public:
@@ -88,11 +89,12 @@ void SkeletonStatePublisher::run()
     {
       joint_states[kJointName[j]] = 0.0;
     }
+    joint_states[kJointName[6]] = yaw;
     this->send(time);
     /* v Testing v */
     tf::Quaternion q;
-    q.setRPY(0,0,yaw);
-    transform_.setData(tf::Transform(q, tf::Vector3(1.0,0.0,0.0)));
+    q.setRPY(0,0,0);
+    transform_.setData(tf::Transform(q, tf::Vector3(0.0,0.0,0.0)));
     yaw += 0.1;
     /* ^ Testing ^ */
     ros::spinOnce();
@@ -113,11 +115,10 @@ void SkeletonStatePublisher::send(ros::Time time)
 //------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
-  ROS_INFO("Start program");
   ros::init(argc, argv, "skeleton_state_publisher");
   
   urdf::Model model;
-  model.initParam("robot_description");
+  model.initParam("skeleton_description");
   KDL::Tree tree;
   if (!kdl_parser::treeFromUrdfModel(model, tree))
   {
@@ -131,3 +132,4 @@ int main(int argc, char **argv)
 
   return 0;
 }
+

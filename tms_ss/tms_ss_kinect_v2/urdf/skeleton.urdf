@@ -8,7 +8,7 @@
       <geometry>
         <mesh filename="package://tms_ss_kinect_v2/model/male/Body.dae"/>
       </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0" />
+      <origin xyz="0 0 1.1" rpy="0 0 0" />
     </visual>
   </link>
 
@@ -17,7 +17,6 @@
       <geometry>
         <mesh filename="package://tms_ss_kinect_v2/model/male/Neck.dae"/>
       </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0" />
     </visual>
   </link>
 
@@ -26,7 +25,6 @@
       <geometry>
         <mesh filename="package://tms_ss_kinect_v2/model/male/Head.dae"/>
       </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0" />
     </visual>
   </link>
 
@@ -35,7 +33,6 @@
       <geometry>
         <mesh filename="package://tms_ss_kinect_v2/model/male/RightArm1.dae"/>
       </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0" />
     </visual>
   </link>
 
@@ -44,7 +41,6 @@
       <geometry>
         <mesh filename="package://tms_ss_kinect_v2/model/male/RightArm2.dae"/>
       </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0" />
     </visual>
   </link>
 
@@ -53,7 +49,6 @@
       <geometry>
         <mesh filename="package://tms_ss_kinect_v2/model/male/RightHand1.dae"/>
       </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0" />
     </visual>
   </link>
 
@@ -62,7 +57,6 @@
       <geometry>
         <mesh filename="package://tms_ss_kinect_v2/model/male/LeftArm1.dae"/>
       </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0" />
     </visual>
   </link>
 
@@ -71,7 +65,6 @@
       <geometry>
         <mesh filename="package://tms_ss_kinect_v2/model/male/LeftArm2.dae"/>
       </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0" />
     </visual>
   </link>
 
@@ -80,7 +73,6 @@
       <geometry>
         <mesh filename="package://tms_ss_kinect_v2/model/male/LeftHand1.dae"/>
       </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0" />
     </visual>
   </link>
 
@@ -89,7 +81,6 @@
       <geometry>
         <mesh filename="package://tms_ss_kinect_v2/model/male/RightLeg1.dae"/>
       </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0" />
     </visual>
   </link>
 
@@ -98,7 +89,6 @@
       <geometry>
         <mesh filename="package://tms_ss_kinect_v2/model/male/RightLeg2.dae"/>
       </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0" />
     </visual>
   </link>
 
@@ -107,7 +97,6 @@
       <geometry>
         <mesh filename="package://tms_ss_kinect_v2/model/male/RightFoot.dae"/>
       </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0" />
     </visual>
   </link>
 
@@ -116,7 +105,6 @@
       <geometry>
         <mesh filename="package://tms_ss_kinect_v2/model/male/LeftLeg1.dae"/>
       </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0" />
     </visual>
   </link>
 
@@ -125,7 +113,6 @@
       <geometry>
         <mesh filename="package://tms_ss_kinect_v2/model/male/LeftLeg2.dae"/>
       </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0" />
     </visual>
   </link>
 
@@ -134,7 +121,6 @@
       <geometry>
         <mesh filename="package://tms_ss_kinect_v2/model/male/LeftFoot.dae"/>
       </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0" />
     </visual>
   </link>
 
@@ -180,6 +166,7 @@
 
   <!-- Right Shoulder -->
   <joint name="R_ARM_JOINT1" type="continuous">
+    <origin xyz="0.185 0 1.39" rpy="0 0 0" />
     <parent link="Body"/>
     <child link="RightShoulderVirtual1"/>
   </joint>
@@ -196,6 +183,7 @@
 
   <!-- Right Elbow -->
   <joint name="R_ARM_JOINT4" type="continuous">
+    <origin xyz="0.215 0 0" rpy="0 0 0" />
     <parent link="RightArm1"/>
     <child link="RightElbowVirtual"/>
   </joint>
@@ -207,6 +195,7 @@
 
   <!-- Right Wrist -->
   <joint name="R_ARM_JOINT6" type="continuous">
+    <origin xyz="0.22 0 0" rpy="0 0 0" />
     <parent link="RightArm2"/>
     <child link="RightWristVirtual"/>
   </joint>
@@ -225,6 +214,7 @@
 
   <!-- Left Shoulder -->
   <joint name="L_ARM_JOINT1" type="continuous">
+    <origin xyz="-0.185 0 1.39" rpy="0 0 0" />
     <parent link="Body"/>
     <child link="LeftShoulderVirtual1"/>
   </joint>
@@ -241,6 +231,7 @@
 
   <!-- Left Elbow -->
   <joint name="L_ARM_JOINT4" type="continuous">
+    <origin xyz="-0.215 0 0" rpy="0 0 0" />
     <parent link="LeftArm1"/>
     <child link="LeftElbowVirtual"/>
   </joint>
@@ -252,6 +243,7 @@
 
   <!-- Left Wrist -->
   <joint name="L_ARM_JOINT6" type="continuous">
+    <origin xyz="-0.22 0 0" rpy="0 0 0" />
     <parent link="LeftArm2"/>
     <child link="LeftWristVirtual"/>
   </joint>
@@ -270,11 +262,13 @@
 
   <!-- Neck -->
   <joint name="NECK_JOINT0" type="continuous">
+    <origin xyz="0 0 1.45" rpy="0 0 0" />
     <parent link="Body"/>
     <child link="Neck"/>
   </joint>
 
   <joint name="NECK_JOINT1" type="continuous">
+    <origin xyz="0 0.04 0.03" rpy="0 0 0" />
     <parent link="Neck"/>
     <child link="NeckVirtual"/>
   </joint>
@@ -286,6 +280,7 @@
 
   <!-- Right Hip -->
   <joint name="R_LEG_JOINT1" type="continuous">
+    <origin xyz="0.072 0 0.85" rpy="0 0 0" />
     <parent link="Body"/>
     <child link="RightHipVirtual1"/>
   </joint>
@@ -302,6 +297,7 @@
 
   <!-- Right Knee -->
   <joint name="R_LEG_JOINT4" type="continuous">
+    <origin xyz="0.0 0 -0.3" rpy="0 0 0" />
     <parent link="RightLeg1"/>
     <child link="RightKneeVirtual"/>
   </joint>
@@ -313,12 +309,14 @@
 
   <!-- Right Ankle -->
   <joint name="R_LEG_JOINT6" type="continuous">
+    <origin xyz="0.0 0 -0.42" rpy="0 0 0" />
     <parent link="RightLeg2"/>
     <child link="RightFoot"/>
   </joint>
 
   <!-- Left Hip -->
   <joint name="L_LEG_JOINT1" type="continuous">
+    <origin xyz="-0.072 0 0.85" rpy="0 0 0" />
     <parent link="Body"/>
     <child link="LeftHipVirtual1"/>
   </joint>
@@ -335,6 +333,7 @@
 
   <!-- Left Knee -->
   <joint name="L_LEG_JOINT4" type="continuous">
+    <origin xyz="0.0 0 -0.3" rpy="0 0 0" />
     <parent link="LeftLeg1"/>
     <child link="LeftKneeVirtual"/>
   </joint>
@@ -346,6 +345,7 @@
 
   <!-- Left Ankle -->
   <joint name="L_LEG_JOINT6" type="continuous">
+    <origin xyz="0.0 0 -0.42" rpy="0 0 0" />
     <parent link="LeftLeg2"/>
     <child link="LeftFoot"/>
   </joint>
