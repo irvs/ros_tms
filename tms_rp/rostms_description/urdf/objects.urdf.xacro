@@ -6,7 +6,7 @@
   <xacro:include filename="$(find rostms_description)/urdf/objects_gazebo.urdf.xacro" />
 
   <!-- meeting_chair -->
-  <xacro:macro name="meeting_chair" params="num">
+  <xacro:macro name="meeting_chair_link" params="num">
     <link name="meeting_chair${num}_x_link"/>
 
     <joint name="meeting_chair${num}_x_joint" type="prismatic">
@@ -27,18 +27,24 @@
 
     <joint name="meeting_chair${num}_yaw_joint" type="continuous">
       <parent link="meeting_chair${num}_y_link"/>
-      <child link="meeting_chair${num}"/>
+      <child link="meeting_chair${num}_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
     </joint>
 
-    <link name="meeting_chair${num}">
+    <link name="meeting_chair${num}_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/meeting_chair.dae"/>
         </geometry>
         <origin xyz="0.0 0.0 0.3978" rpy="0 0 0"/>
       </visual>
+      <collision>
+        <geometry>
+          <cylinder radius="0.35" length="0.8"/>
+        </geometry>
+        <origin xyz="0.0 0.0 0.3978" rpy="0 0 0"/>
+      </collision>
     </link>
   </xacro:macro>
 
@@ -65,18 +71,24 @@
 
     <joint name="chair_yaw_joint" type="continuous">
       <parent link="chair_y_link"/>
-      <child link="chair"/>
+      <child link="chair_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
     </joint>
 
-    <link name="chair">
+    <link name="chair_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/chair.dae"/>
         </geometry>
         <origin xyz="0.0 0.0 0.51" rpy="0.0 0.0 0.0"/>
       </visual>
+      <collision>
+        <geometry>
+          <cylinder radius="0.35" length="1.1"/>
+        </geometry>
+        <origin xyz="0.0 0.0 0.51" rpy="0.0 0.0 0.0"/>
+      </collision>
     </link>
 
     <!-- refrigerator -->
@@ -100,25 +112,31 @@
 
     <joint name="refrigerator_yaw_joint" type="continuous">
       <parent link="refrigerator_y_link"/>
-      <child link="refrigerator"/>
+      <child link="refrigerator_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
     </joint>
 
-    <link name="refrigerator">
+    <link name="refrigerator_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/refrigerator.dae"/>
         </geometry>
         <origin xyz="0.0 0.0 0.56" rpy="0 0 0"/>
       </visual>
+      <collision>
+        <geometry>
+          <box size="0.6 0.5 1.1"/>
+        </geometry>
+        <origin xyz="0.0 0.0 0.56" rpy="0 0 0"/>
+      </collision>
     </link>
 
     <!-- Add meeting_chair -->
-    <xacro:meeting_chair num="1"/>
-    <xacro:meeting_chair num="2"/>
-    <xacro:meeting_chair num="3"/>
-    <xacro:meeting_chair num="4"/>
+    <xacro:meeting_chair_link num="1"/>
+    <xacro:meeting_chair_link num="2"/>
+    <xacro:meeting_chair_link num="3"/>
+    <xacro:meeting_chair_link num="4"/>
 
     <!-- wagon -->
     <link name="wagon_x_link"/>
@@ -141,18 +159,24 @@
 
     <joint name="wagon_yaw_joint" type="continuous">
       <parent link="wagon_y_link"/>
-      <child link="wagon"/>
+      <child link="wagon_link"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
     </joint>
 
-    <link name="wagon">
+    <link name="wagon_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/wagon.dae"/>
         </geometry>
-        <origin xyz="0. 0. 0.5" rpy="0 0 0"/>
+        <origin xyz="0. 0. 0.3" rpy="0 0 0"/>
       </visual>
+      <collision>
+        <geometry>
+          <box size="0.6 0.4 0.7"/>
+        </geometry>
+        <origin xyz="0. 0. 0.3" rpy="0 0 0"/>
+      </collision>
     </link>
 
     <objects_sim/>

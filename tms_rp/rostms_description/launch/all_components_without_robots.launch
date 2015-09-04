@@ -3,7 +3,7 @@
 
   <!-- parameter setting for robot_description -->
   <param name="robot_description"
-         command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/all_components.urdf.xacro'" />
+         command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/all_components_without_robots.urdf.xacro'" />
 
   <!-- robot_state_publisher -->
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="environment_state_publisher">

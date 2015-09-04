@@ -38,4 +38,5 @@ ros-indigo-kobuki* \
 freeglut3-dev \
 ros-indigo-amcl \
 ros-indigo-urg-node \
-ros-indigo-moveit-full
+ros-indigo-moveit-full \
+mongodb

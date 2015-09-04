@@ -18,11 +18,11 @@
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint>
 
-  <joint name="world_smartpal5_joint" type="fixed">
+  <!-- <joint name="world_smartpal5_joint" type="fixed">
 	  <parent link="world_link"/>
     <child link="smartpal5_link"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
-  </joint>
+  </joint> -->
 
   <!-- Defines the components tags -->
   <xacro:include filename="$(find rostms_description)/urdf/environments.urdf.xacro" />
@@ -30,7 +30,4 @@
 
   <xacro:include filename="$(find rostms_description)/urdf/objects.urdf.xacro" />
   <xacro:objects/>
-
-  <xacro:include filename="$(find rostms_description)/urdf/robots.urdf.xacro" />
-  <xacro:robots/>
 </robot>

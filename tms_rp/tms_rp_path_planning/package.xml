@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>tms_rp_path_planning</name>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <description>The tms_rp_path_planning package</description>
 
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- All components of ROS-TMS project -->
-<robot name="ros-tms"
+<robot name="rostms"
        xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
        xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
        xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"

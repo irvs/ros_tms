@@ -6,15 +6,17 @@
 
   <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
   <include file="$(find smartpal5_moveit_config)/launch/planning_context.launch">
-    <arg name="load_robot_description" value="false"/>
+    <arg name="load_robot_description" value="true"/>
   </include>
 
   <!-- parameter setting for robot_description -->
-  <param name="robot_description"
-         command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/all_components.urdf.xacro'" />
+  <!-- <param name="robot_description"
+         command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/all_components.urdf.xacro'" /> -->
+   <param name="robot_description"
+          command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/all_components_without_robots.urdf.xacro'" />
 
   <!-- robot_state_publisher -->
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" >
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="environment_state_publisher">
     <!-- <param name="tf_prefix" value="" /> -->
   </node>
 

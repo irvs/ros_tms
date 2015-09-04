@@ -3,6 +3,7 @@ project(tms_rp_voronoi_map)
 
 find_package(catkin REQUIRED
   roscpp
+  roslib
   std_msgs
   visualization_msgs
 )
