@@ -31,7 +31,7 @@ include_directories(
 )
 
 add_executable(tf_test_node src/tf_test.cpp)
-add_dependencies(tf_test_node tf_test_generate_messages_cpp)
+add_dependencies(tf_test_node tf_test_generate_messages_cpp tms_msg_rc_gencpp)
 target_link_libraries(tf_test_node ${catkin_LIBRARIES})
 
 add_executable(virtual_robot src/virtual_pot_robot.cpp)
