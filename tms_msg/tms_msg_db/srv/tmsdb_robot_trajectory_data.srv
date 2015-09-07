@@ -1,5 +1,0 @@
-time tStartTime
-time tEndTime
-int32 iID
----
-tms_msg_db/tmsdb_data[] msgTMSInfo

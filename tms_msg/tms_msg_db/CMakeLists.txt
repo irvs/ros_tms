@@ -7,6 +7,7 @@ project(tms_msg_db)
 find_package(catkin REQUIRED COMPONENTS
   std_msgs
   sensor_msgs
+  geometry_msgs
   message_generation
 )
 
@@ -18,7 +19,8 @@ add_message_files(
   FILES
   Tmsdb.msg
   TmsdbStamped.msg
-#  tmsdb_data.msg
+  TmsData.msg
+  TmsDataStamped.msg
 )
 
 add_service_files(
@@ -36,18 +38,17 @@ add_service_files(
   tmsdb_missing_objects_checker.srv
   tmsdb_obj_dt.srv
   tmsdb_planning.srv
-  tmsdb_robot_trajectory_data.srv
   tmsdb_file_conservation.srv
   tmsdb_objects_data.srv
   tmsdb_get_task_list.srv
   tmsdb_get_unknown_object.srv
-  tmsdb_ods_object_data.srv
 )
 
 generate_messages(
   DEPENDENCIES
   std_msgs
   sensor_msgs
+  geometry_msgs
 )
 
 
@@ -57,7 +58,7 @@ generate_messages(
 catkin_package(
   #  INCLUDE_DIRS include
   #  LIBRARIES tms_msg_db
-  CATKIN_DEPENDS std_msgs sensor_msgs
+  CATKIN_DEPENDS std_msgs sensor_msgs geometry_msgs
   #  DEPENDS system_lib
 )
 
