@@ -26,8 +26,8 @@ add_message_files(
   # fss_tf_data.msg
   # fss_tf_datas.msg
   bas_behavior_data.msg
-  ics_object_data.msg
-  iss_object_data.msg
+  # ics_object_data.msg
+  # iss_object_data.msg
   lrf_analyze_data.msg
   lrf_cluster.msg
   lrf_clusters_data.msg
