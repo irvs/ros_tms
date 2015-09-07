@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(tms_msg_ss)
 
 find_package(
-  catkin REQUIRED 
+  catkin REQUIRED
   COMPONENTS std_msgs sensor_msgs geometry_msgs message_generation
 )
 
@@ -16,15 +16,15 @@ add_message_files(
   FILES
   vicon_data.msg
   accumulate_data.msg
-  fss_class_data.msg
-  fss_cluster_data.msg
-  fss_detected_cluster_data.msg
-  fss_object_data.msg
-  fss_observed_datas.msg
-  fss_person_trajectory_data.msg
-  fss_pre_data.msg
-  fss_tf_data.msg
-  fss_tf_datas.msg
+  # fss_class_data.msg
+  # fss_cluster_data.msg
+  # fss_detected_cluster_data.msg
+  # fss_object_data.msg
+  # fss_observed_datas.msg
+  # fss_person_trajectory_data.msg
+  # fss_pre_data.msg
+  # fss_tf_data.msg
+  # fss_tf_datas.msg
   bas_behavior_data.msg
   ics_object_data.msg
   iss_object_data.msg
