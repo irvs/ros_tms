@@ -1,9 +1,0 @@
-time tMeasuredTime
-int32 iType
-int32 iID
-float32 fX
-float32 fY
-float32 fZ
-float32 fTheta
-int32 iPlace
-int32 iState

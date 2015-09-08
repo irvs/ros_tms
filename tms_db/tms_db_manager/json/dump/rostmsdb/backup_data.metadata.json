@@ -1,0 +1,1 @@
+{ "options" : { "create" : "backup_data" }, "indexes" : [ { "v" : 1, "key" : { "_id" : 1 }, "ns" : "rostmsdb.backup_data", "name" : "_id_" } ] }

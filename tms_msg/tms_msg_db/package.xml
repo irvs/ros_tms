@@ -4,7 +4,7 @@
   <version>1.0.2</version>
   <license>BSD</license>
   <description>The tms_msg_db package</description>
- 
+
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>
 
   <url type="website">http://robotics.ait.kyushu-u.ac.jp/index-e.html</url>
@@ -17,11 +17,13 @@
 
   <build_depend>std_msgs</build_depend>
   <build_depend>sensor_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
   <build_depend>message_generation</build_depend>
 
   <run_depend>std_msgs</run_depend>
   <run_depend>sensor_msgs</run_depend>
-  
+  <run_depend>geometry_msgs</run_depend>
+
   <export>
   </export>
 </package>

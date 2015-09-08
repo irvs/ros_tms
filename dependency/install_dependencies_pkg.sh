@@ -39,4 +39,5 @@ freeglut3-dev \
 ros-indigo-amcl \
 ros-indigo-urg-node \
 ros-indigo-moveit-full \
-mongodb
+mongodb \
+ros-indigo-smach-viewer

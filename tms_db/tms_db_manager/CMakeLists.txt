@@ -3,15 +3,18 @@ project(tms_db_manager)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  rospy
   std_msgs
   geometry_msgs
   tms_msg_db
 )
 
+catkin_python_setup()
+
 catkin_package(
   # INCLUDE_DIRS include
   LIBRARIES tms_db_manager
-  CATKIN_DEPENDS roscpp std_msgs geometry_msgs tms_msg_db
+  CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs tms_msg_db
   DEPENDS system_lib
 )
 
