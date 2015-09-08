@@ -26,16 +26,22 @@ class TmsDbWriter():
         self.writeInitData();
 
     def dbWriteCallback(self, msg):
-        rospy.loginfo("write the one msg")
+        # rospy.loginfo("writing the one msg")
         for tmsdb in msg.tmsdb:
             try:
                 doc = db_util.msg_to_document(tmsdb)
                 # store into db of history_data
+                # rospy.loginfo("store into db of history_data")
                 db.history_data.insert(doc)
                 # store into db of data_xxx
                 category="data_" + doc['type']
                 # print(category)
                 # print(doc['name'])
+                # rospy.loginfo("update into db of " + category)
+                result = db[category].find({"name": doc['name']})
+                # print(result.count())
+                if result.count() >= 1:
+                    del doc['_id']
                 result = db[category].update(
                     {"name": doc['name']},
                     doc,
@@ -49,7 +55,16 @@ class TmsDbWriter():
         cursor = db.default_data.find({"type": "furniture"})
         for doc in cursor:
             # print(doc['name'])
-            result = db.data_furniture.update(
+            result = db['data_furniture'].update(
+                {"name": doc['name']},
+                doc,
+                upsert=True
+            )
+            # print(result)
+        cursor = db.default_data.find({"type": "robot"})
+        for doc in cursor:
+            # print(doc['name'])
+            result = db['data_robot'].update(
                 {"name": doc['name']},
                 doc,
                 upsert=True
