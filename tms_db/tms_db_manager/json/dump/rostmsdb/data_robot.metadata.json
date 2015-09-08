@@ -1,0 +1,1 @@
+{ "options" : { "create" : "data_robot" }, "indexes" : [ { "v" : 1, "key" : { "_id" : 1 }, "ns" : "rostmsdb.data_robot", "name" : "_id_" } ] }

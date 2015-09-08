@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="db_path" default="/home/rts/mongodb_store"/>
-  <arg name="port" default="62345" />
+  <arg name="db_path" default="/var/lib/mongodb"/>
+  <arg name="port" default="27017" />
   <arg name="defaults_path" default=""/>
   <arg name="replicator_dump_path" default="/tmp/replicator_dumps"/>
-  <arg name="use_daemon" default="false" />
+  <arg name="use_daemon" default="true" />
 
   <arg name="use_machine" default="true" />
   <arg name="machine" default="localhost" />
@@ -34,7 +34,7 @@
   <group unless="$(arg test_mode)">
     <param name="mongodb_port" value="$(arg port)" />
     <param name="mongodb_host" value="$(optenv HOSTNAME localhost)" />
- 
+
     <node name="mongo_server" pkg="mongodb_store" type="mongodb_server.py" output="screen">
       <param name="database_path" value="$(arg db_path)"/>
       <param name="repl_set" value="$(arg repl_set)" if="$(arg use_repl_set)" />
