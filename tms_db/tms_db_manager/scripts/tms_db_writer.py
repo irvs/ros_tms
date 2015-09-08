@@ -15,7 +15,7 @@ db = client.rostmsdb
 
 class TmsDbWriter():
     def __init__(self):
-        rospy.init_node("tms_db_writer_")
+        rospy.init_node("tms_db_writer")
         rospy.on_shutdown(self.shutdown)
         db_host = 'localhost'
         db_port = 27017
