@@ -1,0 +1,1 @@
+{ "options" : { "create" : "data_sensor" }, "indexes" : [ { "v" : 1, "key" : { "_id" : 1 }, "ns" : "rostmsdb.data_sensor", "name" : "_id_" } ] }
