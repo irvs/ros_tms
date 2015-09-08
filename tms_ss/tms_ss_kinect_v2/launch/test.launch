@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-  <param name="robot_description" textfile="$(find tms_ss_kinect_v2)/urdf/test.urdf"/>
-  <arg name="gui" default="False" />
-  <param name="use_gui" value="$(arg gui)"/>
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"></node>
-  <node pkg="robot_state_publisher" type="robot_state_publisher" name="rob_st_pub"/>
-</launch>

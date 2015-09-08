@@ -8,7 +8,7 @@
       <geometry>
         <mesh filename="package://tms_ss_kinect_v2/model/male/Body.dae"/>
       </geometry>
-      <origin xyz="0 0 1.1" rpy="0 0 0" />
+      <!--<origin xyz="0 0 1.1" rpy="0 0 0" />-->
     </visual>
   </link>
 
@@ -166,24 +166,30 @@
 
   <!-- Right Shoulder -->
   <joint name="R_ARM_JOINT1" type="continuous">
-    <origin xyz="0.185 0 1.39" rpy="0 0 0" />
+    <axis xyz="-1.0 0.0 0.0"/>
+    <origin xyz="0.185 0 0.29" rpy="0 0 0" />
     <parent link="Body"/>
     <child link="RightShoulderVirtual1"/>
   </joint>
 
   <joint name="R_ARM_JOINT2" type="continuous">
+    <axis xyz="0.0 1.0 0.0"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0 1.57079632679 0" />
     <parent link="RightShoulderVirtual1"/>
     <child link="RightShoulderVirtual2"/>
   </joint>
 
   <joint name="R_ARM_JOINT3" type="continuous">
+    <axis xyz="-1.0 0.0 0.0"/>
+    <!--<origin xyz="0.0 0.0 0.0" rpy="-1.57079632679 0 0" />-->
     <parent link="RightShoulderVirtual2"/>
     <child link="RightArm1"/>
   </joint>
 
   <!-- Right Elbow -->
   <joint name="R_ARM_JOINT4" type="continuous">
-    <origin xyz="0.215 0 0" rpy="0 0 0" />
+    <axis xyz="0.0 0.0 -1.0"/>
+    <origin xyz="0.215 0 0" rpy="0 0 0.0" />
     <parent link="RightArm1"/>
     <child link="RightElbowVirtual"/>
   </joint>
@@ -214,24 +220,30 @@
 
   <!-- Left Shoulder -->
   <joint name="L_ARM_JOINT1" type="continuous">
-    <origin xyz="-0.185 0 1.39" rpy="0 0 0" />
+    <axis xyz="-1.0 0.0 0.0"/>
+    <origin xyz="-0.185 0 0.29" rpy="0.0 0.0 0.0" />
     <parent link="Body"/>
     <child link="LeftShoulderVirtual1"/>
   </joint>
 
   <joint name="L_ARM_JOINT2" type="continuous">
+    <axis xyz="0.0 1.0 0.0"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0 4.71238898038 0" />
     <parent link="LeftShoulderVirtual1"/>
     <child link="LeftShoulderVirtual2"/>
   </joint>
 
   <joint name="L_ARM_JOINT3" type="continuous">
+    <axis xyz="1.0 0.0 0.0"/>
+    <!--<origin xyz="0.0 0.0 0.0" rpy="-1.57079632679 0 0" />-->
     <parent link="LeftShoulderVirtual2"/>
     <child link="LeftArm1"/>
   </joint>
 
   <!-- Left Elbow -->
   <joint name="L_ARM_JOINT4" type="continuous">
-    <origin xyz="-0.215 0 0" rpy="0 0 0" />
+    <axis xyz="0.0 0.0 1.0"/>
+    <origin xyz="-0.215 0 0" rpy="0 0 0.0" />
     <parent link="LeftArm1"/>
     <child link="LeftElbowVirtual"/>
   </joint>
@@ -262,7 +274,7 @@
 
   <!-- Neck -->
   <joint name="NECK_JOINT0" type="continuous">
-    <origin xyz="0 0 1.45" rpy="0 0 0" />
+    <origin xyz="0 0 0.35" rpy="0 0 0" />
     <parent link="Body"/>
     <child link="Neck"/>
   </joint>
@@ -280,23 +292,27 @@
 
   <!-- Right Hip -->
   <joint name="R_LEG_JOINT1" type="continuous">
-    <origin xyz="0.072 0 0.85" rpy="0 0 0" />
+    <axis xyz="-1.0 0.0 0.0"/>
+    <origin xyz="0.072 0 -0.25" rpy="0 0 0" />
     <parent link="Body"/>
     <child link="RightHipVirtual1"/>
   </joint>
 
   <joint name="R_LEG_JOINT2" type="continuous">
+    <axis xyz="0.0 1.0 0.0"/>
     <parent link="RightHipVirtual1"/>
     <child link="RightHipVirtual2"/>
   </joint>
 
   <joint name="R_LEG_JOINT3" type="continuous">
+    <axis xyz="0.0 0.0 1.0"/>
     <parent link="RightHipVirtual2"/>
     <child link="RightLeg1"/>
   </joint>
 
   <!-- Right Knee -->
   <joint name="R_LEG_JOINT4" type="continuous">
+    <axis xyz="-1.0 0.0 0.0"/>
     <origin xyz="0.0 0 -0.3" rpy="0 0 0" />
     <parent link="RightLeg1"/>
     <child link="RightKneeVirtual"/>
@@ -316,23 +332,27 @@
 
   <!-- Left Hip -->
   <joint name="L_LEG_JOINT1" type="continuous">
-    <origin xyz="-0.072 0 0.85" rpy="0 0 0" />
+    <axis xyz="-1.0 0.0 0.0"/>
+    <origin xyz="-0.072 0 -0.25" rpy="0 0 0" />
     <parent link="Body"/>
     <child link="LeftHipVirtual1"/>
   </joint>
 
   <joint name="L_LEG_JOINT2" type="continuous">
+    <axis xyz="0.0 1.0 0.0"/>
     <parent link="LeftHipVirtual1"/>
     <child link="LeftHipVirtual2"/>
   </joint>
 
   <joint name="L_LEG_JOINT3" type="continuous">
+    <axis xyz="0.0 0.0 1.0"/>
     <parent link="LeftHipVirtual2"/>
     <child link="LeftLeg1"/>
   </joint>
 
   <!-- Left Knee -->
   <joint name="L_LEG_JOINT4" type="continuous">
+    <axis xyz="0.0 0.0 -1.0"/>
     <origin xyz="0.0 0 -0.3" rpy="0 0 0" />
     <parent link="LeftLeg1"/>
     <child link="LeftKneeVirtual"/>
