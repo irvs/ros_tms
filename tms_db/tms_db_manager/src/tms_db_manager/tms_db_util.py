@@ -66,3 +66,15 @@ def check_connection(db_host, db_port):
         rospy.loginfo("Error: %s" % str(e))
         rospy.loginfo("Could not connect to mongo server %s:%d" % (db_host, db_port))
         return False
+
+def document_to_msg(document, TYPE):
+    msg = TYPE()
+    _fill_msg(msg,document)
+    return msg
+
+def _fill_msg(msg,dic):
+    for i in dic:
+        if isinstance(dic[i],dict):
+            _fill_msg(getattr(msg,i),dic[i])
+        else:
+            setattr(msg,i,dic[i])
