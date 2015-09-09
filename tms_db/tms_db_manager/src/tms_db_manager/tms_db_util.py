@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 The Original Code is mongodb_store package's util.py
 http://www.ros.org/wiki/mongodb_store
@@ -14,7 +13,6 @@ import json
 import copy
 from bson import json_util
 from bson.objectid import ObjectId
-from datetime import *
 
 def msg_to_document(msg):
     msg_dict = {}
