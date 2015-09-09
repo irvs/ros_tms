@@ -17,13 +17,17 @@ class TmsDbPublisher():
     def __init__(self):
         rospy.init_node("tms_db_publisher")
         rospy.on_shutdown(self.shutdown)
+
         db_host = 'localhost'
         db_port = 27017
         self.is_connected = db_util.check_connection(db_host, db_port);
         if not self.is_connected:
             raise Exception("Problem of connection")
+
         self.collection_list=['data_person','data_robot','data_sensor','data_structure','data_space','data_furniture','data_object']
+
         self.data_pub = rospy.Publisher('db_publisher', TmsdbStamped, queue_size=10)
+
         self.sendDbCurrentInformation()
 
     def sendDbCurrentInformation(self):
