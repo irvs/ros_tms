@@ -8,7 +8,7 @@ from bson import json_util
 from bson.objectid import ObjectId
 from datetime import *
 from tms_msg_db.msg import TmsdbStamped, Tmsdb
-from tms_msg_db.srv import TmsdbGetData
+from tms_msg_db.srv import *
 import tms_db_manager.tms_db_util as db_util
 
 client = pymongo.MongoClient('localhost:27017')
@@ -31,8 +31,10 @@ class TmsDbReader():
 
     def dbReaderSrvCallback(self, req):
         rospy.loginfo("receive the TmsdbGetData!")
+        temp_dbdata = Tmsdb()
 
-
+        # req.
+        return TmsdbGetDataResponse()
         # temp_dbdata = Tmsdb()
         # current_environment_information = TmsdbStamped()
         #
