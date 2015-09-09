@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import genpy
-import pymongo # v2.6.3
+import pymongo # https://api.mongodb.org/python/2.6.3/
 import json
 import copy
 from bson import json_util
