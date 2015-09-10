@@ -114,6 +114,7 @@ void calcForModel01(
   // Calculation of joint angles.
   Eigen::Matrix<T, 3, 1> vec;
   Eigen::Quaternion<T> rot[2];
+  // -*- Invalid calculation -*- 
   //if (1)//req.skeleton.confidence[SpineMid] == 2 &&
   //    //req.skeleton.confidence[SpineBase] == 2 &&
   //    //req.skeleton.confidence[SpineShoulder] == 2 &&
@@ -133,30 +134,35 @@ void calcForModel01(
   //  vec = j[SpineShoulder]-j[SpineMid];
   //  out[kJointName[1]] = atan2(y.dot(vec),x.dot(vec));
   //}
-  if (1)
-    //req.skeleton.confidence[SpineShoulder] == 2 &&
-      //req.skeleton.confidence[ShoulderRight] == 2 &&
-      //req.skeleton.confidence[SpineMid] == 2 &&
-      //req.skeleton.confidence[ElbowRight] == 2 &&
-      //req.skeleton.confidence[WristRight] == 2)
+  // Right Shoulder
+  if (in.confidence[SpineShoulder] == 2 &&
+      in.confidence[ShoulderRight] == 2 &&
+      in.confidence[SpineMid] == 2 &&
+      in.confidence[ElbowRight] == 2)
   {
     // 2:R_ARM_JOINT1
-    x = ((j[SpineMid]-j[SpineShoulder]).cross(j[ShoulderRight]-j[SpineShoulder])).normalized();
-    y = (j[SpineShoulder]-j[SpineMid]).normalized();
-    vec = (j[SpineShoulder]-j[ShoulderRight]).cross(j[ElbowRight]-j[ShoulderRight]);
+    x = (j[SpineMid]-j[SpineShoulder]).normalized();
+    y = ((j[SpineShoulder]-j[ShoulderRight]).cross(j[SpineMid]-j[SpineShoulder])).normalized();
+    vec = j[ElbowRight]-j[ShoulderRight];
     out["R_ARM_JOINT1"] = atan2(y.dot(vec),x.dot(vec));
-    rot[0] = Eigen::AngleAxis<T>(out[kJointName[2]],x.cross(y));
+    rot[0] = Eigen::AngleAxis<T>(out["R_ARM_JOINT1"],x.cross(y));
     // 3:R_ARM_JOINT2
     x = rot[0] * (j[SpineMid]-j[SpineShoulder]).normalized();
     y = rot[0] * (j[SpineShoulder]-j[ShoulderRight]).normalized();
     vec = j[ElbowRight]-j[ShoulderRight];
     out["R_ARM_JOINT2"] = atan2(y.dot(vec),x.dot(vec));
-    rot[1] = Eigen::AngleAxis<T>(out[kJointName[3]],x.cross(y));
+    rot[1] = Eigen::AngleAxis<T>(out["R_ARM_JOINT2"],x.cross(y));
     // 4:R_ARM_JOINT3
     x = rot[1] * rot[0] * (j[ShoulderRight]-j[SpineShoulder]).normalized();
     y = rot[1] * rot[0] * ((j[ShoulderRight]-j[SpineShoulder]).cross(j[SpineMid]-j[SpineShoulder])).normalized();
     vec = (j[WristRight]-j[ElbowRight]).cross(j[ShoulderRight]-j[ElbowRight]);
     out["R_ARM_JOINT3"] = atan2(y.dot(vec),x.dot(vec));
+  }
+  // Right Elbow
+  if (in.confidence[ShoulderRight] == 2 &&
+      in.confidence[ElbowRight] == 2 &&
+      in.confidence[WristRight] == 2)
+  {
     // 5:R_ARM_JOINT4
     z = (j[ShoulderRight]-j[ElbowRight]).cross(j[WristRight]-j[ElbowRight]);
     y = (z.cross(j[ElbowRight]-j[ShoulderRight])).normalized();
@@ -164,11 +170,11 @@ void calcForModel01(
     vec = j[WristRight]-j[ElbowRight];
     out["R_ARM_JOINT4"] = atan2(y.dot(vec),x.dot(vec));
   }
-  if (1)//req.skeleton.confidence[SpineShoulder] == 2 &&
-      //req.skeleton.confidence[ShoulderLeft] == 2 &&
-      //req.skeleton.confidence[SpineMid] == 2 &&
-      //req.skeleton.confidence[ElbowLeft] == 2 &&
-      //req.skeleton.confidence[WristLeft] == 2)
+  // Left Shoulder
+  if (in.confidence[SpineShoulder] == 2 &&
+      in.confidence[ShoulderLeft] == 2 &&
+      in.confidence[SpineMid] == 2 &&
+      in.confidence[ElbowLeft] == 2)
   {
     // 10:L_ARM_JOINT1
     z = j[ShoulderLeft]-j[SpineShoulder];
@@ -176,18 +182,24 @@ void calcForModel01(
     y = (z.cross(j[SpineMid]-j[SpineShoulder])).normalized();
     vec = j[ElbowLeft]-j[ShoulderLeft];
     out["L_ARM_JOINT1"] = atan2(y.dot(vec),x.dot(vec));
-    rot[0] = Eigen::AngleAxis<T>(out[kJointName[10]],x.cross(y));
+    rot[0] = Eigen::AngleAxis<T>(out["L_ARM_JOINT1"],x.cross(y));
     // 11:L_ARM_JOINT2
     x = rot[0] * (j[SpineMid]-j[SpineShoulder]).normalized();
     y = rot[0] * (j[ShoulderLeft]-j[SpineShoulder]).normalized();
     vec = j[ElbowLeft]-j[ShoulderLeft];
     out["L_ARM_JOINT2"] = atan2(y.dot(vec),x.dot(vec));
-    rot[1] = Eigen::AngleAxis<T>(out[kJointName[11]],x.cross(y));
+    rot[1] = Eigen::AngleAxis<T>(out["L_ARM_JOINT2"],x.cross(y));
     // 12:L_ARM_JOINT3
     x = rot[1] * rot[0] * (j[ShoulderLeft]-j[SpineShoulder]).normalized();
     y = rot[1] * rot[0] * ((j[ShoulderLeft]-j[SpineShoulder]).cross(j[SpineMid]-j[SpineShoulder])).normalized();
     vec = (j[ShoulderLeft]-j[ElbowLeft]).cross(j[WristLeft]-j[ElbowLeft]);
     out["L_ARM_JOINT3"] = atan2(y.dot(vec),x.dot(vec));
+  }
+  // Left Elbow
+  if(in.confidence[SpineMid] == 2 &&
+     in.confidence[ElbowLeft] == 2 &&
+     in.confidence[WristLeft] == 2)
+  {
     // 13:L_ARM_JOINT4
     z = (j[ShoulderLeft]-j[ElbowLeft]).cross(j[WristLeft]-j[ElbowLeft]);
     x = (j[ElbowLeft]-j[ShoulderLeft]).normalized();
@@ -195,7 +207,12 @@ void calcForModel01(
     vec = j[WristLeft]-j[ElbowLeft];
     out["L_ARM_JOINT4"] = atan2(y.dot(vec),x.dot(vec));
   }
-  if (1)
+  // Right Hip
+  if (in.confidence[SpineBase] == 2 &&
+      in.confidence[SpineMid] == 2 &&
+      in.confidence[HipRight] == 2 &&
+      in.confidence[HipLeft] == 2 &&
+      in.confidence[ElbowRight] == 2)
   {
     // 20:R_LEG_JOINT1
     z = j[SpineBase]-j[HipRight];
@@ -203,19 +220,25 @@ void calcForModel01(
     y = (z.cross(j[SpineBase]-j[SpineMid])).normalized();
     vec = j[KneeRight]-j[HipRight];
     out["R_LEG_JOINT1"] = atan2(y.dot(vec),x.dot(vec));
-    rot[0] = Eigen::AngleAxis<T>(out[kJointName[20]],x.cross(y));
+    rot[0] = Eigen::AngleAxis<T>(out["R_LEG_JOINT1"],x.cross(y));
     // 21:R_LEG_JOINT2
     z = rot[0] * (j[HipRight]-j[HipLeft]).cross(j[SpineBase]-j[SpineMid]);
     x = rot[0] * (j[SpineBase]-j[SpineMid]).normalized();
     y = (z.cross(j[SpineBase]-j[SpineMid])).normalized();
     vec = j[KneeRight]-j[HipRight];
     out["R_LEG_JOINT2"] = atan2(y.dot(vec),x.dot(vec));
-    rot[1] = Eigen::AngleAxis<T>(out[kJointName[21]],x.cross(y));
+    rot[1] = Eigen::AngleAxis<T>(out["R_LEG_JOINT2"],x.cross(y));
     // 22:R_LEG_JOINT3
     x = rot[1] * rot[0] * (j[HipRight]-j[HipLeft]).normalized();
     y = rot[1] * rot[0] * ((j[HipRight]-j[HipLeft]).cross(j[SpineBase]-j[SpineMid])).normalized();
     vec = (j[HipRight]-j[KneeRight]).cross(j[AnkleRight]-j[KneeRight]);
     out["R_LEG_JOINT3"] = atan2(y.dot(vec),x.dot(vec));
+  }
+  // Right Knee
+  if (in.confidence[HipRight] == 2 &&
+      in.confidence[ElbowRight] == 2 &&
+      in.confidence[AnkleRight] == 2)
+  {
     // 23:R_LEG_JOINT4
     z = (j[AnkleRight]-j[KneeRight]).cross(j[HipRight]-j[KneeRight]);
     x = (j[KneeRight]-j[HipRight]).normalized();
@@ -223,7 +246,12 @@ void calcForModel01(
     vec = j[AnkleRight]-j[KneeRight];
     out["R_LEG_JOINT4"] = atan2(y.dot(vec),x.dot(vec));
   }
-  if (1)
+  // Left Hip
+  if (in.confidence[SpineBase] == 2 &&
+      in.confidence[SpineMid] == 2 &&
+      in.confidence[HipRight] == 2 &&
+      in.confidence[HipLeft] == 2 &&
+      in.confidence[ElbowLeft] == 2)
   {
     // 27:L_LEG_JOINT1
     z = j[HipLeft]-j[SpineBase];
@@ -231,20 +259,26 @@ void calcForModel01(
     y = (z.cross(j[SpineBase]-j[SpineMid])).normalized();
     vec = j[KneeLeft]-j[HipLeft];
     out["L_LEG_JOINT1"] = atan2(y.dot(vec),x.dot(vec));
-    rot[0] = Eigen::AngleAxis<T>(out[kJointName[27]],x.cross(y));
+    rot[0] = Eigen::AngleAxis<T>(out["L_LEG_JOINT1"],x.cross(y));
     // 28:L_LEG_JOINT2
     z = rot[0] * (j[HipRight]-j[HipLeft]).cross(j[SpineBase]-j[SpineMid]);
     x = rot[0] * (j[SpineBase]-j[SpineMid]).normalized();
     y = (z.cross(j[SpineBase]-j[SpineMid])).normalized();
     vec = j[KneeLeft]-j[HipLeft];
     out["L_LEG_JOINT2"] = atan2(y.dot(vec),x.dot(vec));
-    rot[1] = Eigen::AngleAxis<T>(out[kJointName[28]],x.cross(y));
+    rot[1] = Eigen::AngleAxis<T>(out["L_LEG_JOINT2"],x.cross(y));
     // 29:L_LEG_JOINT3
     z = j[HipLeft]-j[KneeLeft];
     x = rot[1] * rot[0] * (j[HipRight]-j[HipLeft]).normalized();
     y = (z.cross(x)).normalized();
     vec = (j[HipLeft]-j[KneeLeft]).cross(j[AnkleLeft]-j[KneeLeft]);
     out["L_LEG_JOINT3"] = atan2(y.dot(vec),x.dot(vec));
+  }
+  // Left Knee
+  if (in.confidence[HipLeft] == 2 &&
+      in.confidence[ElbowLeft] == 2 &&
+      in.confidence[AnkleLeft] == 2)
+  {
     // 30:L_LEG_JOINT4
     z = (j[AnkleLeft]-j[KneeLeft]).cross(j[HipLeft]-j[KneeLeft]);
     x = (j[KneeLeft]-j[HipLeft]).normalized();

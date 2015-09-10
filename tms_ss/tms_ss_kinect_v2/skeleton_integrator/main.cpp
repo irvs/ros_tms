@@ -162,7 +162,7 @@ void SkeletonIntegrator::run()
   {
     std::string topic_name("skeleton_stream_wrapper");
     sub[i] =nh.subscribe(topic_name.append(to_str(array[i])),
-        10,&SkeletonIntegrator::callback, this);
+        1,&SkeletonIntegrator::callback, this);
     std::cout << topic_name << std::endl;
   }
   ros::Publisher pub =

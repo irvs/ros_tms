@@ -74,7 +74,7 @@ SkeletonStatePublisher::~SkeletonStatePublisher()
 void SkeletonStatePublisher::callback(const tms_ss_kinect_v2::SkeletonArray::ConstPtr& msg)
 {
   skeleton = msg->data[user_id_-1];
-  if (skeleton.user_id == user_id_)
+  if (skeleton.user_id+1 == user_id_)
   {
     bFind = true;
   }
@@ -140,10 +140,10 @@ int main(int argc, char **argv)
   std::stringstream description_name_stream;
   description_name_stream << "skeleton_description";
 
-  //if (user_id != 0) // if given user ID.
-  //{
-  //  description_name_stream << user_id;
-  //}
+  if (user_id != 0) // if given user ID.
+  {
+    description_name_stream << user_id;
+  }
   model.initParam(description_name_stream.str());
 
   KDL::Tree tree;
