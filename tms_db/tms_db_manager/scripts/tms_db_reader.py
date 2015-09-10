@@ -27,7 +27,7 @@ class TmsDbReader():
 
         self.collection_list=['data_person','data_robot','data_sensor','data_structure','data_space','data_furniture','data_object']
 
-        self.db_reader_srv = rospy.Service('dbreader', TmsdbGetData, self.dbReaderSrvCallback)
+        self.db_reader_srv = rospy.Service('tms_db_reader', TmsdbGetData, self.dbReaderSrvCallback)
 
     def dbReaderSrvCallback(self, req):
         rospy.loginfo("Received the service call!")
@@ -48,6 +48,17 @@ class TmsDbReader():
                     result = True
                 else:
                     result = False
+            elif req.tmsdb.id != 0:
+                cursor = db['default_data'].find({'id':req.tmsdb.id})
+                if cursor[0]['type'] != '':
+                    collection_name = "data_" + cursor[0]['type']
+                    # print(collection_name)
+                    cursor = db[collection_name].find({'name':req.tmsdb.id})
+                    for doc in cursor:
+                        del doc['_id']
+                        temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
+                        # print(doc)
+                    result = True
             else:
                 result = False
         except:

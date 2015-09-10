@@ -55,7 +55,7 @@ public:
     nh_priv.param("is_debug", is_debug, is_debug);
     //Init target name
     ROS_ASSERT(initDbStatePublisher());
-    data_sub  = nh.subscribe("/tms_db_publisher/db_publisher", 1,  &DbStatePublisher::dbTFCallback, this);
+    data_sub  = nh.subscribe("/tms_db_publisher", 1,  &DbStatePublisher::dbTFCallback, this);
     state_pub = nh.advertise<sensor_msgs::JointState>("/joint_states", 10);
   }
 
