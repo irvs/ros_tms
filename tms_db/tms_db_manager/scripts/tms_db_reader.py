@@ -49,16 +49,14 @@ class TmsDbReader():
                 else:
                     result = False
             elif req.tmsdb.id != 0:
-                cursor = db['default_data'].find({'id':req.tmsdb.id})
-                if cursor[0]['type'] != '':
-                    collection_name = "data_" + cursor[0]['type']
-                    # print(collection_name)
-                    cursor = db[collection_name].find({'name':req.tmsdb.id})
-                    for doc in cursor:
-                        del doc['_id']
-                        temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
-                        # print(doc)
-                    result = True
+                print(req.tmsdb.id)
+                target_id = req.tmsdb.id - 100000
+                cursor = db['default_data'].find({'id':target_id})
+                for doc in cursor:
+                    del doc['_id']
+                    temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
+                    print(doc)
+                result = True
             else:
                 result = False
         except:

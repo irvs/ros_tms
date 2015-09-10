@@ -1,34 +1,36 @@
 <?xml version="1.0"?>
 <package>
   <name>tms_ts_ts</name>
-  <version>1.0.1</version>
-  <license>BSD</license>
+  <version>1.0.2</version>
   <description>The tms_ts_ts package</description>
- 
-  <maintainer email="hashiguchi@irvs.ait.kyushu-u.ac.jp">Yuka Hashiguchi</maintainer>
 
-  <url type="website">http://robotics.ait.kyushu-u.ac.jp/index-e.html</url>
-  <url type="git">https://github.com/irvs/ros_tms</url>
+  <license>BSD</license>
 
+  <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>
+
+  <url type="website">http://irvs.github.io/ros_tms/</url>
+  <url type="repository">https://github.com/irvs/ros_tms</url>
+  <url type="bugtracker">https://github.com/irvs/ros_tms/issues</url>
+
+  <author email="passionvirus@gmail.com">Yoonseok Pyo</author>
   <author email="hashiguchi@irvs.ait.kyushu-u.ac.jp">Yuka Hashiguchi</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>nodelet</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
+  <build_depend>nodelet</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>tms_msg_ts</build_depend>
   <build_depend>tms_msg_db</build_depend>
-  
-  <run_depend>nodelet</run_depend>
+
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
+  <run_depend>nodelet</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>tms_msg_ts</run_depend>
   <run_depend>tms_msg_db</run_depend>
-  
+
   <export>
     <nodelet plugin="${prefix}/nodelet_task_scheduler.xml" />
   </export>
