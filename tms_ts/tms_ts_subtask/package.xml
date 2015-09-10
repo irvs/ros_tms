@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>tms_ts_smach</name>
-  <version>0.0.2</version>
-  <description>The tms_ts_smach package</description>
+  <name>tms_ts_subtask</name>
+  <version>0.0.1</version>
+  <description>The tms_ts_subtask package</description>
 
   <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>
 
@@ -13,17 +13,18 @@
   <url type="bugtracker">https://github.com/irvs/ros_tms/issues</url>
 
   <author email="passionvirus@gmail.com">Yoonseok Pyo</author>
-  <author email="hashiguchi@irvs.ait.kyushu-u.ac.jp">hashiguchi</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>rospy</build_depend>
-  <build_depend>smach</build_depend>
-  <build_depend>smach_ros</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>tms_msg_db</build_depend>
+  <build_depend>tms_msg_ts</build_depend>
 
-  <run_depend>rospy</run_depend>
-  <run_depend>smach</run_depend>
-  <run_depend>smach_ros</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>tms_msg_db</run_depend>
+  <run_depend>tms_msg_ts</run_depend>
 
   <export>
   </export>
