@@ -14,7 +14,7 @@ void tms_ts_nodelet::ROS_TMS_TS::onInit() {
 	ros::NodeHandle& private_nh = getPrivateNodeHandle();
 	service = private_nh.advertiseService("tms_ts", &ROS_TMS_TS::tsCallback, this);
 	// for connecting to ROSTMS_DB task,subtask
-	db_reader_client = nh.serviceClient<tms_msg_db::TmsdbGetData>("tms_db_reader/dbreader");
+	db_reader_client = nh.serviceClient<tms_msg_db::TmsdbGetData>("tms_db_reader");
 }
 
 std::string tms_ts_nodelet::ROS_TMS_TS::rosCheckTime(boost::posix_time::ptime time)
