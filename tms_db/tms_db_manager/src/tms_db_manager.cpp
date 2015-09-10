@@ -36,12 +36,12 @@ private:
   ros::NodeHandle nh;
   ros::NodeHandle nh_priv;
   // ROS Timer
-  ros::Timer update_timer;  
+  ros::Timer update_timer;
   ros::Timer remove_timer;
   // ROS Parameters:
   double update_time;
   bool is_debug;
-  // MySQL structures 
+  // MySQL structures
   // https://dev.mysql.com/doc/refman/5.6/en/c-api-data-structures.html
   MYSQL     *connector;
   MYSQL_RES *result;
@@ -56,7 +56,7 @@ private:
 
 //------------------------------------------------------------------------------
 public:
-  DbManager() : 
+  DbManager() :
     nh_priv("~"),
     dbhost("192.168.4.170"),
     dbuser("root"),
@@ -73,13 +73,13 @@ public:
     //TimerEvent
     update_timer = nh.createTimer(ros::Duration(update_time), &DbManager::manageDataCallback, this);
     remove_timer = nh.createTimer(ros::Duration(12*60*60), &DbManager::removeForeverDataCallback, this);
-  }  
+  }
 
   //----------------------------------------------------------------------------
   ~DbManager()
   {
     ROS_ASSERT(shutdownDbManager());
-  } 
+  }
 
 //------------------------------------------------------------------------------
 private:
@@ -87,9 +87,9 @@ private:
   {
     ROS_INFO("tms_db_manager : Init OK!\n");
 
-    //Connection to a MySQL database 
+    //Connection to a MySQL database
     connector = mysql_init(NULL);
-    if (!mysql_real_connect(connector, dbhost.c_str(), dbuser.c_str(), dbpass.c_str(), dbname.c_str(), 3306, NULL, CLIENT_MULTI_STATEMENTS)) 
+    if (!mysql_real_connect(connector, dbhost.c_str(), dbuser.c_str(), dbpass.c_str(), dbname.c_str(), 3306, NULL, CLIENT_MULTI_STATEMENTS))
     {
       fprintf(stderr, "%s\n", mysql_error(connector));
       return false;
@@ -110,7 +110,7 @@ private:
 
   //----------------------------------------------------------------------------
   bool getIdList(string temp_type, string *idList)
-  {  
+  {
     // Search the id information using type information in ID table
     char select_query[1024];
     sprintf(select_query, "SELECT id FROM rostmsdb.id WHERE type='%s'", temp_type.c_str());
@@ -148,7 +148,7 @@ private:
     {
       ROS_ERROR("%s", mysql_error(connector));
       ROS_ERROR("DB write error!");
-    } 
+    }
 
     //------------------------------------------------------------------------
     // Delete old data in history_data table
@@ -162,7 +162,7 @@ private:
     {
       ROS_ERROR("%s", mysql_error(connector));
       ROS_ERROR("DB write error!");
-    } 
+    }
 
     return true;
   }
@@ -173,7 +173,7 @@ private:
     nh_priv.getParam("is_debug", is_debug);
 
     if(is_debug) ROS_INFO("manageDataCallback triggered");
-    
+
     storeBackupData();
   }
 
@@ -186,7 +186,7 @@ private:
 
     char delete_query[1024];
 
-    ros::Time update_period = ros::Time::now() + ros::Duration(9*60*60) - ros::Duration(14*24*60*60); // 24day (GMT +9)
+    ros::Time update_period = ros::Time::now() + ros::Duration(9*60*60) - ros::Duration(14*24*60*60); // 14day (GMT +9)
     string iso_update_period = boost::posix_time::to_iso_extended_string(update_period.toBoost());
 
     //------------------------------------------------------------------------
