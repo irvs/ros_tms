@@ -2,6 +2,9 @@
 #include <string>
 #include <sstream>
 
+#include <boost/thread.hpp>
+#include <boost/bind.hpp>
+
 #include <Eigen/Eigen>
 
 #include <ros/ros.h>
@@ -10,6 +13,7 @@
 
 #include <unistd.h>
 
+//-----------------------------------------------------------------------------
 template <class T>
 std::string to_str(const T& t)
 {
@@ -18,6 +22,7 @@ std::string to_str(const T& t)
   return ss.str();
 }
 
+//-----------------------------------------------------------------------------
 inline tms_ss_kinect_v2::Skeleton initialize_skeleton()
 {
 	tms_ss_kinect_v2::Skeleton ret;
@@ -39,6 +44,7 @@ inline tms_ss_kinect_v2::Skeleton initialize_skeleton()
   return ret;
 }
 
+//-----------------------------------------------------------------------------
 class SkeletonIntegrator
 {
   public:
@@ -49,11 +55,13 @@ class SkeletonIntegrator
     void run();
   private:
     ros::NodeHandle nh;
-    ros::Publisher* ppub;
     std::vector<int> array;
     tms_ss_kinect_v2::SkeletonArray skeletons;
+
+    void listenSkeletonStream();
 };
 
+//-----------------------------------------------------------------------------
 SkeletonIntegrator::SkeletonIntegrator(const std::vector<int> &camera) :
   array(camera)
 {
@@ -65,11 +73,13 @@ SkeletonIntegrator::SkeletonIntegrator(const std::vector<int> &camera) :
   return;
 }
 
+//-----------------------------------------------------------------------------
 SkeletonIntegrator::~SkeletonIntegrator()
 {
   return;
 }
 
+//-----------------------------------------------------------------------------
 void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper::ConstPtr& msg)
 {
   ROS_INFO("Received skeleton from camera %d", msg->camera_number);
@@ -88,7 +98,7 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
       camera_posture.rotation.z);
 
   tms_ss_kinect_v2::Skeleton integrated_skeleton;
-	integrated_skeleton.user_id = skeleton.user_id;
+	integrated_skeleton.user_id = skeleton.user_id+(msg->camera_number-1)*6;
   integrated_skeleton.position.resize(25);
   integrated_skeleton.orientation.resize(25);
   integrated_skeleton.confidence.resize(25);
@@ -115,7 +125,7 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
     integrated_skeleton.confidence[i] = skeleton.confidence[i];
   }
 	// Temporary 
-	skeletons.data.resize(6);
+	skeletons.data.resize(12);
 	skeletons.data[integrated_skeleton.user_id] = integrated_skeleton;
   //for (int i = 0; i < skeletons.data.size(); i++)
   //{
@@ -149,30 +159,53 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
 	{
 		std::cout << " skeletons is detected." << std::endl;
 	}
-  ppub->publish(skeletons);
 
   return;
 }
 
+//-----------------------------------------------------------------------------
 void SkeletonIntegrator::run()
 {
+  ros::Rate loop_late(10);
+
+  static boost::thread thread_listener(
+      boost::bind(&SkeletonIntegrator::listenSkeletonStream, this));
+
+  ros::Publisher pub =
+    nh.advertise<tms_ss_kinect_v2::SkeletonArray>(
+        "integrated_skeleton_stream", 1);
+
+  while (ros::ok())
+  {
+    pub.publish(skeletons);
+    ros::spinOnce();
+    loop_late.sleep();
+  }
+
+  return;
+}
+
+//-----------------------------------------------------------------------------
+void SkeletonIntegrator::listenSkeletonStream()
+{
+  ros::Rate loop_late(10);
   std::vector<ros::Subscriber> sub(array.size());
+
   std::cout << "Subscribe ===" << std::endl;
   for (int i=0; i < array[i]; i++)
   {
     std::string topic_name("skeleton_stream_wrapper");
-    sub[i] =nh.subscribe(topic_name.append(to_str(array[i])),
+    sub[i] =nh.subscribe(topic_name.append(to_str<int>(array[i])),
         1,&SkeletonIntegrator::callback, this);
     std::cout << topic_name << std::endl;
   }
-  ros::Publisher pub =
-    nh.advertise<tms_ss_kinect_v2::SkeletonArray>(
-        "integrated_skeleton_stream", 1);
-  ppub = &pub;
+
   ros::spin();
+
   return;
 }
 
+//-----------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
   int option;

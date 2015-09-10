@@ -1069,6 +1069,912 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Body:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Head:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftArm1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftArm2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftElbowVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftFoot:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftHand1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftHipVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftHipVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftKneeVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftLeg1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftLeg2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftShoulderVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftShoulderVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftWristVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Link Tree Style: Links in Alphabetic Order
+        Neck:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        NeckVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightArm1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightArm2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightElbowVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightFoot:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightHand1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightHipVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightHipVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightKneeVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightLeg1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightLeg2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightShoulderVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightShoulderVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightWristVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+      Name: RobotModel
+      Robot Description: skeleton_description7
+      TF Prefix: skeleton7
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Body:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Head:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftArm1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftArm2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftElbowVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftFoot:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftHand1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftHipVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftHipVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftKneeVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftLeg1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftLeg2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftShoulderVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftShoulderVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftWristVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Link Tree Style: Links in Alphabetic Order
+        Neck:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        NeckVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightArm1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightArm2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightElbowVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightFoot:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightHand1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightHipVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightHipVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightKneeVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightLeg1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightLeg2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightShoulderVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightShoulderVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightWristVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+      Name: RobotModel
+      Robot Description: skeleton_description8
+      TF Prefix: skeleton8
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Body:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Head:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftArm1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftArm2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftElbowVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftFoot:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftHand1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftHipVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftHipVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftKneeVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftLeg1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftLeg2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftShoulderVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftShoulderVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftWristVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Link Tree Style: Links in Alphabetic Order
+        Neck:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        NeckVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightArm1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightArm2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightElbowVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightFoot:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightHand1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightHipVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightHipVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightKneeVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightLeg1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightLeg2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightShoulderVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightShoulderVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightWristVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+      Name: RobotModel
+      Robot Description: skeleton_description9
+      TF Prefix: skeleton9
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Body:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Head:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftArm1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftArm2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftElbowVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftFoot:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftHand1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftHipVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftHipVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftKneeVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftLeg1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftLeg2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftShoulderVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftShoulderVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftWristVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Link Tree Style: Links in Alphabetic Order
+        Neck:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        NeckVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightArm1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightArm2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightElbowVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightFoot:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightHand1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightHipVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightHipVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightKneeVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightLeg1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightLeg2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightShoulderVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightShoulderVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightWristVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+      Name: RobotModel
+      Robot Description: skeleton_description10
+      TF Prefix: skeleton10
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Body:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Head:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftArm1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftArm2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftElbowVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftFoot:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftHand1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftHipVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftHipVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftKneeVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftLeg1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftLeg2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftShoulderVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftShoulderVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftWristVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Link Tree Style: Links in Alphabetic Order
+        Neck:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        NeckVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightArm1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightArm2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightElbowVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightFoot:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightHand1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightHipVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightHipVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightKneeVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightLeg1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightLeg2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightShoulderVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightShoulderVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightWristVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+      Name: RobotModel
+      Robot Description: skeleton_description11
+      TF Prefix: skeleton11
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Body:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Head:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftArm1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftArm2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftElbowVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftFoot:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftHand1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftHipVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftHipVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftKneeVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftLeg1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftLeg2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LeftShoulderVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftShoulderVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        LeftWristVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Link Tree Style: Links in Alphabetic Order
+        Neck:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        NeckVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightArm1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightArm2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightElbowVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightFoot:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightHand1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightHipVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightHipVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightKneeVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightLeg1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightLeg2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        RightShoulderVirtual1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightShoulderVirtual2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        RightWristVirtual:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+      Name: RobotModel
+      Robot Description: skeleton_description12
+      TF Prefix: skeleton12
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48

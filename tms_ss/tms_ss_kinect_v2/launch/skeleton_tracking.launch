@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
   <!-- Make skeleton streams -->
-  <node name="skeleton_integrator" pkg="tms_ss_kinect_v2" args="1" type="skeleton_integrator"/>
+  <node name="skeleton_integrator" pkg="tms_ss_kinect_v2" args="1 2" type="skeleton_integrator"/>
 
   <param name="robot_description"
          command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/environments_standalone.urdf.xacro'" />
@@ -10,18 +10,30 @@
 
   <!-- For visualize skeleton in rViz -->
   <!--<param name="skeleton_description" textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>-->
-  <param name="skeleton_description1" textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
-  <param name="skeleton_description2" textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
-  <param name="skeleton_description3" textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
-  <param name="skeleton_description4" textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
-  <param name="skeleton_description5" textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
-  <param name="skeleton_description6" textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
-  <node name="skeleton_state_publisher01" pkg="tms_ss_kinect_v2" args="1" type="skeleton_state_publisher"/>
-  <node name="skeleton_state_publisher02" pkg="tms_ss_kinect_v2" args="2" type="skeleton_state_publisher"/>
-  <node name="skeleton_state_publisher03" pkg="tms_ss_kinect_v2" args="3" type="skeleton_state_publisher"/>
-  <node name="skeleton_state_publisher04" pkg="tms_ss_kinect_v2" args="4" type="skeleton_state_publisher"/>
-  <node name="skeleton_state_publisher05" pkg="tms_ss_kinect_v2" args="5" type="skeleton_state_publisher"/>
-  <node name="skeleton_state_publisher06" pkg="tms_ss_kinect_v2" args="6" type="skeleton_state_publisher"/>
+  <param name="skeleton_description1"  textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description2"  textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description3"  textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description4"  textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description5"  textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description6"  textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description7"  textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description8"  textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description9"  textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description10" textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description11" textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description12" textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
+  <node name="skeleton_state_publisher01" pkg="tms_ss_kinect_v2" args="1"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher02" pkg="tms_ss_kinect_v2" args="2"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher03" pkg="tms_ss_kinect_v2" args="3"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher04" pkg="tms_ss_kinect_v2" args="4"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher05" pkg="tms_ss_kinect_v2" args="5"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher06" pkg="tms_ss_kinect_v2" args="6"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher07" pkg="tms_ss_kinect_v2" args="7"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher08" pkg="tms_ss_kinect_v2" args="8"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher09" pkg="tms_ss_kinect_v2" args="9"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher10" pkg="tms_ss_kinect_v2" args="10" type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher11" pkg="tms_ss_kinect_v2" args="11" type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher12" pkg="tms_ss_kinect_v2" args="12" type="skeleton_state_publisher"/>
   <!--<node name="rviz" pkg="rviz" type="rviz" respawn="true"/>-->
   <node name="rviz" pkg="rviz" type="rviz"
     args="-d $(find rostms_description)/rviz_config/skeleton_watching.rviz" respawn="true"/>
