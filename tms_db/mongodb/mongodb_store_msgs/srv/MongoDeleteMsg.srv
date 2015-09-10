@@ -1,5 +1,0 @@
-string database
-string collection
-string document_id 
----
-bool success
