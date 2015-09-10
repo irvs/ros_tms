@@ -30,27 +30,36 @@ class TmsDbReader():
         self.db_reader_srv = rospy.Service('dbreader', TmsdbGetData, self.dbReaderSrvCallback)
 
     def dbReaderSrvCallback(self, req):
-        rospy.loginfo("receive the TmsdbGetData!")
+        rospy.loginfo("Received the service call!")
         temp_dbdata = Tmsdb()
+        result = False
 
-        # req.
-        return TmsdbGetDataResponse()
-        # temp_dbdata = Tmsdb()
-        # current_environment_information = TmsdbStamped()
-        #
-        # for collection_name in self.collection_list:
-        #     cursor = db[collection_name].find({'state':1})
-        #     # print(collection_name)
-        #     # print(cursor.count())
-        #     for doc in cursor:
-        #         del doc['_id']
-        #         temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
-        #         current_environment_information.tmsdb.append(temp_dbdata)
-        #
-        #     # rospy.loginfo("send db data!")
-        #     self.data_pub.publish(current_environment_information)
+        try:
+            if req.tmsdb.name != "":
+                cursor = db['default_data'].find({'name':req.tmsdb.name})
+                if cursor[0]['type'] != '':
+                    collection_name = "data_" + cursor[0]['type']
+                    # print(collection_name)
+                    cursor = db[collection_name].find({'name':req.tmsdb.name})
+                    for doc in cursor:
+                        del doc['_id']
+                        temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
+                        # print(doc)
+                    result = True
+                else:
+                    result = False
+            else:
+                result = False
+        except:
+            result = False
 
+        ret = TmsdbGetDataResponse()
 
+        if result == False:
+            temp_dbdata.note = "Wrong request! Try to check the target type and name"
+
+        ret.tmsdb.append(temp_dbdata)
+        return ret
 
     def shutdown(self):
         rospy.loginfo("Stopping the node")
