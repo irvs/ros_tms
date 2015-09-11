@@ -11,7 +11,11 @@
 #include <tms_ss_kinect_v2/SkeletonArray.h>
 #include <tms_ss_kinect_v2/SkeletonStreamWrapper.h>
 
+#include "../calc_joint_angles/for_model01.h"
+
 #include <unistd.h>
+
+#define MAX_USERS 12
 
 //-----------------------------------------------------------------------------
 template <class T>
@@ -25,8 +29,8 @@ std::string to_str(const T& t)
 //-----------------------------------------------------------------------------
 inline tms_ss_kinect_v2::Skeleton initialize_skeleton()
 {
-	tms_ss_kinect_v2::Skeleton ret;
-	ret.user_id = -1;
+  tms_ss_kinect_v2::Skeleton ret;
+  ret.user_id = -1;
   ret.position.resize(25);
   ret.orientation.resize(25);
   ret.confidence.resize(25);
@@ -57,19 +61,25 @@ class SkeletonIntegrator
     ros::NodeHandle nh;
     std::vector<int> array;
     tms_ss_kinect_v2::SkeletonArray skeletons;
+    int new_user_;
+    int tracked_skeleton_num_;
+    int tracking_validity[MAX_USERS];
 
     void listenSkeletonStream();
 };
 
 //-----------------------------------------------------------------------------
 SkeletonIntegrator::SkeletonIntegrator(const std::vector<int> &camera) :
-  array(camera)
+  array(camera),
+  new_user_(0),
+  tracked_skeleton_num_(0)
 {
-	skeletons.data.resize(6);
-	for (int i = 0; i < 6; i++)
-	{
-		skeletons.data[i] = initialize_skeleton();
-	}
+  skeletons.data.resize(MAX_USERS);
+  for (int i = 0; i < MAX_USERS; i++)
+  {
+    skeletons.data[i] = initialize_skeleton();
+    tracking_validity[i] = 0;
+  }
   return;
 }
 
@@ -87,6 +97,7 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
   tms_ss_kinect_v2::Skeleton skeleton = msg->skeleton;
   tms_ss_kinect_v2::CameraPosture camera_posture = msg->camera_posture;
 
+  // Transform to world coordinate
   Eigen::Vector3f translation(
       camera_posture.translation.x,
       camera_posture.translation.y,
@@ -98,7 +109,7 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
       camera_posture.rotation.z);
 
   tms_ss_kinect_v2::Skeleton integrated_skeleton;
-	integrated_skeleton.user_id = skeleton.user_id+(msg->camera_number-1)*6;
+  integrated_skeleton.user_id = 0;
   integrated_skeleton.position.resize(25);
   integrated_skeleton.orientation.resize(25);
   integrated_skeleton.confidence.resize(25);
@@ -124,41 +135,46 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
     integrated_skeleton.orientation[i].z = ori.z();
     integrated_skeleton.confidence[i] = skeleton.confidence[i];
   }
-	// Temporary 
-	skeletons.data.resize(12);
-	skeletons.data[integrated_skeleton.user_id] = integrated_skeleton;
-  //for (int i = 0; i < skeletons.data.size(); i++)
-  //{
-  //  //Eigen::Vector3f v1(
-  //  //    integrated_skeleton.position[0].x,
-  //  //    integrated_skeleton.position[0].y,
-  //  //    integrated_skeleton.position[0].z);
-  //  //Eigen::Vector3f v2(
-  //  //    skeletons.data[i].position[0].x,
-  //  //    skeletons.data[i].position[0].y,
-  //  //    skeletons.data[i].position[0].z);
-  //  //if ((v1-v2).norm() < 0.3)
-  //  //{
-  //  //  already_detect = true;
-  //  //  skeletons.data[i] = integrated_skeleton;
-  //  //}
-  //  //std::cout << (v1-v2).norm() << std::endl;
-  //}
-  //if (!already_detect)
-  //{
-  //  skeletons.data.push_back(integrated_skeleton);
-  //}
-	
-	int skeleton_num = skeletons.data.size();
-	std::cout << skeletons.data.size();
-	if (skeleton_num > 1)
-	{
-		std::cout << " skeletons are detected." << std::endl;
-	}
-	else
-	{
-		std::cout << " skeletons is detected." << std::endl;
-	}
+
+  // identify received skeleton
+  bool already_detect = false;
+  for (int i = 0; i < skeletons.data.size(); i++)
+  {
+    Eigen::Vector3f v1(
+        integrated_skeleton.position[SpineMid].x,
+        integrated_skeleton.position[SpineMid].y,
+        integrated_skeleton.position[SpineMid].z);
+    Eigen::Vector3f v2(
+        skeletons.data[i].position[SpineMid].x,
+        skeletons.data[i].position[SpineMid].y,
+        skeletons.data[i].position[SpineMid].z);
+    if ((v1-v2).norm() < 0.3)
+    {
+      int user_id = skeletons.data[i].user_id;
+      integrated_skeleton.user_id =  user_id;
+      skeletons.data[i] = integrated_skeleton;
+      tracking_validity[i] = 10;  // set validity count
+      already_detect = true;
+    }
+    std::cout << (v1-v2).norm() << std::endl;
+  }
+  if (!already_detect)
+  {
+    integrated_skeleton.user_id = tracked_skeleton_num_;
+    skeletons.data[new_user_] = integrated_skeleton;
+    tracking_validity[new_user_] = 10;  // set validity count
+    new_user_ = (new_user_ + 1) % MAX_USERS;
+    tracked_skeleton_num_++;
+  }
+
+  // eliminate invalid skeletons
+  for (int i = 0; i < MAX_USERS; i++)
+  {
+    if (tracking_validity[i] == 0)
+    {
+      skeletons.data[i] = initialize_skeleton();
+    }
+  }
 
   return;
 }
@@ -178,6 +194,13 @@ void SkeletonIntegrator::run()
   while (ros::ok())
   {
     pub.publish(skeletons);
+    for (int i = 0; i<MAX_USERS; i++)
+    {
+      if (tracking_validity[i] > 0)
+      {
+        tracking_validity[i]--;
+      }
+    }
     ros::spinOnce();
     loop_late.sleep();
   }

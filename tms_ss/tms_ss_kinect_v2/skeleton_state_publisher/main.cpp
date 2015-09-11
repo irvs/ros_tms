@@ -20,7 +20,7 @@ class SkeletonStatePublisher : public robot_state_publisher::RobotStatePublisher
   public:
     tf::TransformBroadcaster broadcaster;
 
-    SkeletonStatePublisher(const KDL::Tree& tree, int user_id=0);
+    SkeletonStatePublisher(const KDL::Tree& tree, int assigned_number=0);
     ~SkeletonStatePublisher();
 
     void run();
@@ -35,7 +35,7 @@ class SkeletonStatePublisher : public robot_state_publisher::RobotStatePublisher
 
     std::map<std::string, double> joint_states;
     tms_ss_kinect_v2::Skeleton skeleton;
-    int user_id_;
+    int assigned_number_;
     std::string tf_prefix_;
     bool bFind;
 
@@ -43,16 +43,16 @@ class SkeletonStatePublisher : public robot_state_publisher::RobotStatePublisher
 };
 
 //------------------------------------------------------------------------------
-SkeletonStatePublisher::SkeletonStatePublisher(const KDL::Tree& tree, int user_id) :
+SkeletonStatePublisher::SkeletonStatePublisher(const KDL::Tree& tree, int assigned_number) :
   robot_state_publisher::RobotStatePublisher(tree),
-  user_id_(user_id),
+  assigned_number_(assigned_number),
   bFind(false),
   tf_prefix_("")
 {
-  if (user_id != 0)
+  if (assigned_number != 0)
   {
     std::stringstream ss;
-    ss << "skeleton" << user_id_;
+    ss << "skeleton" << assigned_number_;
     tf_prefix_ = ss.str();
   }
 
@@ -73,8 +73,8 @@ SkeletonStatePublisher::~SkeletonStatePublisher()
 //------------------------------------------------------------------------------
 void SkeletonStatePublisher::callback(const tms_ss_kinect_v2::SkeletonArray::ConstPtr& msg)
 {
-  skeleton = msg->data[user_id_-1];
-  if (skeleton.user_id+1 == user_id_)
+  skeleton = msg->data[assigned_number_-1];
+  if (skeleton.user_id+1 > 0)
   {
     bFind = true;
   }
@@ -89,23 +89,26 @@ void SkeletonStatePublisher::run()
   while (nh.ok())
   {
     ros::Time time = ros::Time::now() + sleeper;
-
-    for (int j=0; j<kJointDoF; j++)
-    {
-      joint_states[kJointName[j]] = 0.0;
-    }
     /* v Testing v */
 
     ros::spinOnce();
+
+    Eigen::Vector3d pos;
+    Eigen::Quaterniond rot;
     if (bFind)
     {
-      Eigen::Vector3d pos;
-      Eigen::Quaterniond rot;
-
       calcForModel01<double>(skeleton, pos, rot, joint_states);
-
       tf::Quaternion q(rot.x(), rot.y(), rot.z(), rot.w());
       transform_.setData(tf::Transform(q, tf::Vector3(pos[0],pos[1],pos[2])));
+    }
+    else
+    {
+      for (int j=0; j<kJointDoF; j++)
+      {
+        joint_states[kJointName[j]] = 0.0;
+      }
+      tf::Quaternion q(0.0, 0.0, 0.0, 1.0);
+      transform_.setData(tf::Transform(q, tf::Vector3(0.0,0.0,0.0)));
     }
 
     /* ^ Testing ^ */
@@ -128,10 +131,10 @@ void SkeletonStatePublisher::send(ros::Time time)
 //------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
-  int user_id = 0;
+  int assigned_number = 0;
   if (argc > 1)
   {
-    user_id = atoi(argv[1]);
+    assigned_number = atoi(argv[1]);
   }
 
   ros::init(argc, argv, "skeleton_state_publisher");
@@ -140,9 +143,9 @@ int main(int argc, char **argv)
   std::stringstream description_name_stream;
   description_name_stream << "skeleton_description";
 
-  if (user_id != 0) // if given user ID.
+  if (assigned_number != 0) // if given user ID.
   {
-    description_name_stream << user_id;
+    description_name_stream << assigned_number;
   }
   model.initParam(description_name_stream.str());
 
@@ -153,7 +156,7 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  SkeletonStatePublisher obj(tree, user_id);
+  SkeletonStatePublisher obj(tree, assigned_number);
 
   obj.run();
 
