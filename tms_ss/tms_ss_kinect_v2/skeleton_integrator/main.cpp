@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <iomanip>
 
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
@@ -66,6 +67,9 @@ class SkeletonIntegrator
     int tracking_validity[MAX_USERS];
 
     void listenSkeletonStream();
+
+    // For Debug
+    void showStatus();
 };
 
 //-----------------------------------------------------------------------------
@@ -155,25 +159,19 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
       skeletons.data[i] = integrated_skeleton;
       tracking_validity[i] = 10;  // set validity count
       already_detect = true;
+      break;
     }
-    std::cout << (v1-v2).norm() << std::endl;
   }
   if (!already_detect)
   {
     integrated_skeleton.user_id = tracked_skeleton_num_;
     skeletons.data[new_user_] = integrated_skeleton;
     tracking_validity[new_user_] = 10;  // set validity count
-    new_user_ = (new_user_ + 1) % MAX_USERS;
-    tracked_skeleton_num_++;
-  }
-
-  // eliminate invalid skeletons
-  for (int i = 0; i < MAX_USERS; i++)
-  {
-    if (tracking_validity[i] == 0)
+    for (int i=0; i < MAX_USERS && skeletons.data[(new_user_+i)%MAX_USERS].user_id >= 0; i++)
     {
-      skeletons.data[i] = initialize_skeleton();
+      new_user_ = (new_user_ + i+1) % MAX_USERS;
     }
+    tracked_skeleton_num_++;
   }
 
   return;
@@ -196,11 +194,20 @@ void SkeletonIntegrator::run()
     pub.publish(skeletons);
     for (int i = 0; i<MAX_USERS; i++)
     {
+      // decrease validity of skeleton
       if (tracking_validity[i] > 0)
       {
         tracking_validity[i]--;
       }
+
+      // eliminate invalid skeletons
+      if (tracking_validity[i] == 0)
+      {
+        skeletons.data[i] = initialize_skeleton();
+      }
     }
+
+    showStatus();
     ros::spinOnce();
     loop_late.sleep();
   }
@@ -225,6 +232,30 @@ void SkeletonIntegrator::listenSkeletonStream()
 
   ros::spin();
 
+  return;
+}
+
+//-----------------------------------------------------------------------------
+void SkeletonIntegrator::showStatus()
+{
+  std::stringstream ss;
+  ss.fill(' ');
+
+  ss << "New user: " << new_user_ << std::endl << std::endl;
+
+  ss << "User ID" << std::endl;
+  for (int i = 0; i < MAX_USERS; i++) { ss << "|" << std::setw(5) << i; }
+  ss << "|" << std::endl;
+  for (int i = 0; i < MAX_USERS; i++) { ss << "|" << std::setw(5) << skeletons.data[i].user_id; }
+  ss << "|" << std::endl << std::endl;;
+
+  ss << "Validity table" << std::endl;
+  for (int i = 0; i < MAX_USERS; i++) { ss << "|" << std::setw(2) << i; }
+  ss << "|" << std::endl;
+  for (int i = 0; i < MAX_USERS; i++) { ss << "|" << std::setw(2) << tracking_validity[i]; }
+  ss << "|" << std::endl;
+
+  ROS_INFO("%s", ss.str().c_str());
   return;
 }
 
