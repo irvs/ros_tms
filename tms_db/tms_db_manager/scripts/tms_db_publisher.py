@@ -24,7 +24,7 @@ class TmsDbPublisher():
         if not self.is_connected:
             raise Exception("Problem of connection")
 
-        self.collection_list=['data_person','data_robot','data_sensor','data_structure','data_space','data_furniture','data_object']
+        self.collection_list=['person','robot','sensor','structure','space','furniture','object']
 
         self.data_pub = rospy.Publisher('tms_db_publisher', TmsdbStamped, queue_size=10)
 
