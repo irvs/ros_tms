@@ -121,6 +121,7 @@ bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string& r
 			rp_srv.request.start_pos.roll = 0.0; // srv.response.tmsdb[0].rr
 			rp_srv.request.start_pos.pitch = 0.0; // srv.response.tmsdb[0].rp
 			rp_srv.request.start_pos.yaw = srv.response.tmsdb[0].ry; // srv.response.tmsdb[0].ry
+            ROS_INFO("current position %f, %f", rp_srv.request.start_pos.x, rp_srv.request.start_pos.y);
 			// set odom for production version
 			if (type == true && (robot_id == 2002 || robot_id == 2003)) {
 				ROS_INFO("setOdom");
@@ -357,7 +358,7 @@ bool tms_rp::TmsRpSubtask::update_obj(int id, double x, double y, double z,
 //------------------------------------------------------------------------------
 // Subtask functions that is started in a thread
 bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
-	ROS_INFO("type:%u,robotID:%d,arg%f", sd.type, sd.robot_id, sd.v_arg.at(0));
+    ROS_INFO("type: %u, robotID: %d, arg: %f, arg_type %d", sd.type, sd.robot_id, sd.v_arg.at(0), sd.arg_type);
 	tms_msg_db::TmsdbGetData srv;
 	tms_msg_rp::rps_voronoi_path_planning rp_srv;
 	tms_msg_ts::ts_state_control s_srv;
@@ -390,7 +391,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 			std::vector<std::string> v_etcdata;
 			v_etcdata.clear();
 			boost::split(v_etcdata, etcdata, boost::is_any_of(";"));
-
+            ROS_INFO("robot name = %s", robot_name.c_str());
 			int i = 0;
 			while (robot_name != v_etcdata.at(i)) {
 				i += 2;
