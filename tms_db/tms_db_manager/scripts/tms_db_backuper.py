@@ -32,19 +32,19 @@ class TmsDbBackuper():
         update_period = str(datetime.utcfromtimestamp(nowtime.to_sec()))
         # print(update_period)
 
-        cursor = db.history_data.find({'time':{'$lt':update_period}})
+        cursor = db.history.find({'time':{'$lt':update_period}})
         # print(cursor.count())
         for doc in cursor:
-            db.backup_data.insert(doc)
+            db.backup.insert(doc)
 
-        db.history_data.remove({'time':{'$lt':update_period}})
+        db.history.remove({'time':{'$lt':update_period}})
 
     def removeForeverDataCallback(self, event):
         # GMT +9hour - 14day
         nowtime = rospy.Time.now() + rospy.Duration(9*60*60) - rospy.Duration(14*24*60*60)
         update_period = str(datetime.utcfromtimestamp(nowtime.to_sec()))
         # print(update_period)
-        db.backup_data.remove({'time':{'$lt':update_period}})
+        db.backup.remove({'time':{'$lt':update_period}})
 
     def shutdown(self):
         rospy.loginfo("Stopping the node")
@@ -57,5 +57,5 @@ if __name__ == '__main__':
         rospy.loginfo("tms_db_backuper node terminated.")
 
 # test mongo Shell
-# db.getCollection('history_data').find({'time':{ $lt: "2015-09-01 15:05:34.596954"}}).count()
-# db.getCollection('history_data').find().sort({'time':-1}) e.g. 1 for ascending and -1 for descending.
+# db.getCollection('history').find({'time':{ $lt: "2015-09-01 15:05:34.596954"}}).count()
+# db.getCollection('history').find().sort({'time':-1}) e.g. 1 for ascending and -1 for descending.

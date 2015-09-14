@@ -583,7 +583,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd) {
 				    			else if (i==4) send_rc_exception(0);
 			    			}
 			    		} else {
-			    			if (sd.robot_id == 2002) {
+                            if (sd.robot_id == 2002) {
 			    				sleep(0.7);
 			    			} else if (sd.robot_id == 2003) {
 			    				ROS_INFO("Please use ID 2002 when smartpal5's simulation");
