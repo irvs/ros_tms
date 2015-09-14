@@ -31,6 +31,7 @@ class TmsDbReader():
 
     def dbReaderSrvCallback(self, req):
         rospy.loginfo("Received the service call!")
+        rospy.loginfo(req)
         temp_dbdata = Tmsdb()
         result = False
 
@@ -50,13 +51,22 @@ class TmsDbReader():
                     result = False
             elif req.tmsdb.id != 0:
                 print(req.tmsdb.id)
-                target_id = req.tmsdb.id - 100000
-                cursor = db['default_data'].find({'id':target_id})
-                for doc in cursor:
-                    del doc['_id']
-                    temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
-                    print(doc)
-                result = True
+                if (req.tmsdb.id > 2000) and (req.tmsdb.id < 3000):
+                    target_id = req.tmsdb.id
+                    cursor = db['data_robot'].find({'id':target_id, 'sensor':3005})
+                    for doc in cursor:
+                        del doc['_id']
+                        temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
+                        print(doc)
+                    result = True
+                else:
+                    target_id = req.tmsdb.id - 100000
+                    cursor = db['default_data'].find({'id':target_id})
+                    for doc in cursor:
+                        del doc['_id']
+                        temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
+                        print(doc)
+                    result = True
             else:
                 result = False
         except:
