@@ -196,7 +196,7 @@ namespace tms_rp
         }
       }
 
-      ROS_INFO("Calculate voronoi_ path...");
+      ROS_INFO("Calculate voronoi_path...");
 
       res.success = setCollisionArea(using_map, collision_threshold, res.message);
       if(!res.success)
