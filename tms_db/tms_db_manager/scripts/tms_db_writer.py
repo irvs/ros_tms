@@ -30,9 +30,9 @@ class TmsDbWriter():
         for tmsdb in msg.tmsdb:
             try:
                 doc = db_util.msg_to_document(tmsdb)
-                # store into db of history_data
-                # rospy.loginfo("store into db of history_data")
-                db.history_data.insert(doc)
+                # store into db of history
+                # rospy.loginfo("store into db of history")
+                db.history.insert(doc)
                 # store into db of data_xxx
                 category="data_" + doc['type']
                 # print(category)
@@ -52,7 +52,7 @@ class TmsDbWriter():
                 print "ServiceException: %s"%e
 
     def writeInitData(self):
-        cursor = db.default_data.find({"type": "furniture"})
+        cursor = db.default.find({"type": "furniture"})
         for doc in cursor:
             # print(doc['name'])
             result = db['data_furniture'].update(
@@ -61,7 +61,7 @@ class TmsDbWriter():
                 upsert=True
             )
             # print(result)
-        cursor = db.default_data.find({"type": "robot"})
+        cursor = db.default.find({"type": "robot"})
         for doc in cursor:
             # print(doc['name'])
             result = db['data_robot'].update(
