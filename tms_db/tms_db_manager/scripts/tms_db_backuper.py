@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*- 
 import rospy
 import genpy
 import pymongo # https://api.mongodb.org/python/2.6.3/

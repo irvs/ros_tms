@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import rospy
 import genpy
 import pymongo # https://api.mongodb.org/python/2.6.3/
@@ -25,14 +26,13 @@ class TmsDbReader():
         if not self.is_connected:
             raise Exception("Problem of connection")
 
-        self.collection_list=['data_person','data_robot','data_sensor','data_structure','data_space','data_furniture','data_object']
-
         self.db_reader_srv = rospy.Service('tms_db_reader', TmsdbGetData, self.dbReaderSrvCallback)
 
     def dbReaderSrvCallback(self, req):
         rospy.loginfo("Received the service call!")
         rospy.loginfo(req)
         temp_dbdata = Tmsdb()
+        TmsdbGetData()
         result = False
 
         mode = 0;
@@ -74,7 +74,7 @@ class TmsDbReader():
             mode = MODE_ID_IDTABLE
         elif (req.tmsdb.id != 0) and (req.tmsdb.id != sid) and (req.tmsdb.type == '') and (req.tmsdb.sensor == 0) and (req.tmsdb.place == 0):
             mode = MODE_ID
-        elif (req.tmsdb.id != 0) and (req.tmsdb.id != sid) and (req.tmsdb.type = '') and (req.tmsdb.sensor != 0) and (req.tmsdb.place == 0):
+        elif (req.tmsdb.id != 0) and (req.tmsdb.id != sid) and (req.tmsdb.type == '') and (req.tmsdb.sensor != 0) and (req.tmsdb.place == 0):
             mode = MODE_ID_SENSOR
         elif (req.tmsdb.id == sid) and (req.tmsdb.type != ''):
             mode = MODE_TYPE_IDTABLE
@@ -103,72 +103,105 @@ class TmsDbReader():
 
         #  Search the ID, type, etc infomation in ID table
         if (mode == MODE_NAME) or (mode == MODE_NAME_SENSOR):
-            cursor = db['default_data'].find({'name':req.tmsdb.name})
-            if cursor[0]['type'] != '':
-                collection_name = "data_" + cursor[0]['type']
-                # print(collection_name)
-                cursor = db[collection_name].find({'name':req.tmsdb.name})
+            cursor = db.default.find({'name':req.tmsdb.name})
+            temp_type  = cursor[0]['type'];
+            temp_id    = cursor[0]['id'];
+            temp_place = cursor[0]['place'];
+
+        # Search the type, name, etc infomation in ID table
+        if(mode == MODE_ID) or (mode == MODE_ID_SENSOR) or (mode == MODE_HIERARCHY):
+            cursor = db.default.find({'id':req.tmsdb.id})
+            temp_type  = cursor[0]['type'];
+            temp_name  = cursor[0]['name'];
+            temp_place = cursor[0]['place'];
+
+        # Search only using the place tag
+        if mode == MODE_PLACE :
+            ret = TmsdbGetDataResponse()
+            cursor = db.now.find({'place':req.tmsdb.place})
+            if cursor.count() == 0:
+                temp_dbdata.note = "Wrong request! Try to check the place tag!";
+                ret.tmsdb.append(temp_dbdata)
+                return ret
+            else:
                 for doc in cursor:
                     del doc['_id']
                     temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
-                    # print(doc)
+                    ret.tmsdb.append(temp_dbdata)
+                return ret
 
-          sprintf(select_query, "SELECT type,id,place FROM rostmsdb.id WHERE name=\"%s\";", req.tmsdb.name.c_str());
-          if(is_debug) ROS_INFO("%s\n", select_query);
-          mysql_query(connector, select_query);
-          result  = mysql_use_result(connector);
-          row     = mysql_fetch_row(result);
-          if(is_debug) ROS_INFO("%s,%s\n",row[0],row[1]);
-          temp_type  = row[0];
-          temp_id    = atoi(row[1]);
-          temp_place = atoi(row[2]);
-          mysql_free_result(result);
-        }
+        if mode == MODE_HIERARCHY:
+            loop_end_tag = False;
+            temp_place = req.tmsdb.id;
 
-        try:
-            if req.tmsdb.name != "":
-                cursor = db['default_data'].find({'name':req.tmsdb.name})
-                if cursor[0]['type'] != '':
-                    collection_name = "data_" + cursor[0]['type']
-                    # print(collection_name)
-                    cursor = db[collection_name].find({'name':req.tmsdb.name})
-                    for doc in cursor:
-                        del doc['_id']
-                        temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
-                        # print(doc)
-                    result = True
+            while temp_place != 0:
+                cursor = db.now.find({'id':temp_place}).sort({'time':-1})
+                if cursor.count() == 0:
+                    temp_dbdata.note = "Wrong request! Try to check the target ID, place info!";
+                    ret.tmsdb.append(temp_dbdata)
+                    return ret
                 else:
-                    result = False
-            elif req.tmsdb.id != 0:
-                print(req.tmsdb.id)
-                if (req.tmsdb.id > 2000) and (req.tmsdb.id < 3000):
-                    target_id = req.tmsdb.id
-                    cursor = db['data_robot'].find({'id':target_id, 'sensor':3005})
                     for doc in cursor:
                         del doc['_id']
                         temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
-                        print(doc)
-                    result = True
+                        ret.tmsdb.append(temp_dbdata)
+
+                if loop_end_tag:
+                    break
+
+                temp_id = temp_dbdata.place;
+                cursor = db.default.find({'id':temp_id})
+                temp_type  = cursor[0]['type'];
+                temp_name  = cursor[0]['name'];
+                temp_place = cursor[0]['place'];
+
+                if temp_id == temp_place:
+                    loop_end_tag = True;
                 else:
-                    target_id = req.tmsdb.id - 100000
-                    cursor = db['default_data'].find({'id':target_id})
-                    for doc in cursor:
-                        del doc['_id']
-                        temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
-                        print(doc)
-                    result = True
-            else:
-                result = False
-        except:
-            result = False
+                    loop_end_tag = False;
+
+                temp_place = temp_id;
+
+            return ret
+
+        if mode == MODE_ALL:
+            cursor = db.default.find()
+        elif mode == MODE_TAG_IDTABLE:
+            cursor = db.default.find({'tag':{'$regex': req.tmsdb.tag}})
+        elif mode == MODE_NAME_IDTABLE:
+            cursor = db.default.find({'name':req.tmsdb.name})
+        elif mode == MODE_NAME:
+            cursor = db.now.find({'name':req.tmsdb.name})
+        elif mode == MODE_NAME_SENSOR:
+            cursor = db.now.find({'name':req.tmsdb.name, 'sensor':req.tmsdb.sensor})
+        elif mode == MODE_ID_IDTABLE:
+            cursor = db.default.find({'id':req.tmsdb.id})
+        elif mode == MODE_ID:
+            cursor = db.now.find({'id':req.tmsdb.id})
+        elif mode == MODE_ID_SENSOR:
+            cursor = db.now.find({'id':req.tmsdb.id, 'sensor':req.tmsdb.sensor})
+        elif mode == MODE_TYPE_IDTABLE:
+            cursor = db.default.find({'type':req.tmsdb.type})
+        elif mode == MODE_TYPE:
+            cursor = db.now.find({'type':req.tmsdb.type})
+        elif mode == MODE_TYPE_SENSOR:
+            cursor = db.now.find({'sensor':req.tmsdb.sensor})
+        elif mode == MODE_PLACE_IDTABLE:
+            cursor = db.default.find({'place':req.tmsdb.place})
+        elif mode == MODE_PLACE_TYPE:
+            cursor = db.now.find({'place':req.tmsdb.place})
 
         ret = TmsdbGetDataResponse()
-
-        if result == False:
-            temp_dbdata.note = "Wrong request! Try to check the target type and name"
-
-        ret.tmsdb.append(temp_dbdata)
-        return ret
+        if cursor.count() == 0:
+            temp_dbdata.note = "Wrong request! Try to check the command";
+            ret.tmsdb.append(temp_dbdata)
+            return ret
+        else:
+            for doc in cursor:
+                del doc['_id']
+                temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
+                ret.tmsdb.append(temp_dbdata)
+            return ret
 
     def shutdown(self):
         rospy.loginfo("Stopping the node")
