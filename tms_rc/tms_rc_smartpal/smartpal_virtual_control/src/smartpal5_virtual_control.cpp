@@ -81,9 +81,9 @@ ros::Publisher pose_publisher;
 //------------------------------------------------------------------------------
 //double g_x = 4900.0;
 //double g_y = 1650.0;
-double g_x = 5500.0;
-double g_y = 500.0;
-double g_t = 180.0;
+double g_x = 3;
+double g_y = 4;
+double g_t = 0;
 double g_jR[7] = {0.0,-10.0,0.0,0.0,0.0,0.0,0.0};
 double g_jL[7] = {0.0,10.0,0.0,0.0,0.0,0.0,0.0};
 
@@ -135,26 +135,26 @@ double g_o_state = 1;
 
 //------------------------------------------------------------------------------
 int8_t SyncObj(double r_x, double r_y, double r_ry, double r_state,
-		double o_id, double o_x, double o_y, double o_z, double o_rr, double o_rp, double o_ry, double o_place, double o_state)
+    double o_id, double o_x, double o_y, double o_z, double o_rr, double o_rp, double o_ry, double o_place, double o_state)
 {
   bool ret = true;
   grasping = true;
 
   if (r_x != -1) {
-	  g_x = r_x; // mm
-	  g_x2 = r_x; // mm
+    g_x = r_x; // mm
+    g_x2 = r_x; // mm
   }
   if (r_y != -1) {
-	  g_y = r_y; // mm
-	  g_y2 = r_y; // mm
+    g_y = r_y; // mm
+    g_y2 = r_y; // mm
   }
   if (r_ry != -1) {
-	  g_t = r_ry; // deg
-	  g_t2 = r_ry; // deg
+    g_t = r_ry; // deg
+    g_t2 = r_ry; // deg
   }
   if (r_state != -1) {
-	  g_r_state = r_state;
-	  g_r_state2 = r_state;
+    g_r_state = r_state;
+    g_r_state2 = r_state;
   }
 
   if (o_id != -1) g_oid = (int)o_id;
@@ -174,80 +174,80 @@ int8_t SyncObj(double r_x, double r_y, double r_ry, double r_state,
   ret ? printf("Success\n") : printf("Failure\n");
 
   if(ret) {
-	  grasping = false;
-	  return  SUCCESS;
+    grasping = false;
+    return  SUCCESS;
   }
   else    return  FAILURE;
 }
 
 //------------------------------------------------------------------------------
 int8_t CalcBackground(double r2_x, double r2_y, double r2_ry, double o_x, double o_y, double o_z,
-		double o_rr, double o_rp, double o_ry, double r2_wh, double r2_wl, double r2_j0, double r2_j1,
-		double r2_j2, double r2_j3, double r2_j4, double r2_j5, double r2_j6, double r2_gR) {
-	bool ret = true;
-	grasping = true;
+    double o_rr, double o_rp, double o_ry, double r2_wh, double r2_wl, double r2_j0, double r2_j1,
+    double r2_j2, double r2_j3, double r2_j4, double r2_j5, double r2_j6, double r2_gR) {
+  bool ret = true;
+  grasping = true;
 
-	g_x2 = r2_x; // mm
-	g_y2 = r2_y; // mm
-	g_t2 = r2_ry; // deg
+  g_x2 = r2_x; // mm
+  g_y2 = r2_y; // mm
+  g_t2 = r2_ry; // deg
 
-	if (o_x != -1) g_ox = o_x;
-	if (o_y != -1) g_oy = o_y;
-	if (o_z != -1) g_oz = o_z;
-	if (o_rr != -1) g_orr = o_rr;
-	if (o_rp != -1) g_orp = o_rp;
-	if (o_ry != -1) g_ory = o_ry;
+  if (o_x != -1) g_ox = o_x;
+  if (o_y != -1) g_oy = o_y;
+  if (o_z != -1) g_oz = o_z;
+  if (o_rr != -1) g_orr = o_rr;
+  if (o_rp != -1) g_orp = o_rp;
+  if (o_ry != -1) g_ory = o_ry;
 
-	if (r2_wh != -1) {
-		g_lumba_high2 = r2_wh;
-		g_lumba_high = r2_wh;
-	}
-	if (r2_wl != -1) {
-		g_lumba_low2 = r2_wl;
-		g_lumba_low = r2_wl;
-	}
-	if (r2_j0 != -1) {
-		g_jR2[0] = r2_j0;
-		g_jR[0] = r2_j0;
-	}
-	if (r2_j1 != -1) {
-		g_jR2[1] = r2_j1;
-		g_jR[1] = r2_j1;
-	}
-	if (r2_j2 != -1) {
-		g_jR2[2] = r2_j2;
-		g_jR[2] = r2_j2;
-	}
-	if (r2_j3 != -1) {
-		g_jR2[3] = r2_j3;
-		g_jR[3] = r2_j3;
-	}
-	if (r2_j4 != -1) {
-		g_jR2[4] = r2_j4;
-		g_jR[4] = r2_j4;
-	}
-	if (r2_j5 != -1) {
-		g_jR2[5] = r2_j5;
-		g_jR[5] = r2_j5;
-	}
-	if (r2_j6 != -1) {
-		g_jR2[6] = r2_j6;
-		g_jR[6] = r2_j6;
-	}
+  if (r2_wh != -1) {
+    g_lumba_high2 = r2_wh;
+    g_lumba_high = r2_wh;
+  }
+  if (r2_wl != -1) {
+    g_lumba_low2 = r2_wl;
+    g_lumba_low = r2_wl;
+  }
+  if (r2_j0 != -1) {
+    g_jR2[0] = r2_j0;
+    g_jR[0] = r2_j0;
+  }
+  if (r2_j1 != -1) {
+    g_jR2[1] = r2_j1;
+    g_jR[1] = r2_j1;
+  }
+  if (r2_j2 != -1) {
+    g_jR2[2] = r2_j2;
+    g_jR[2] = r2_j2;
+  }
+  if (r2_j3 != -1) {
+    g_jR2[3] = r2_j3;
+    g_jR[3] = r2_j3;
+  }
+  if (r2_j4 != -1) {
+    g_jR2[4] = r2_j4;
+    g_jR[4] = r2_j4;
+  }
+  if (r2_j5 != -1) {
+    g_jR2[5] = r2_j5;
+    g_jR[5] = r2_j5;
+  }
+  if (r2_j6 != -1) {
+    g_jR2[6] = r2_j6;
+    g_jR[6] = r2_j6;
+  }
 
-	if (r2_gR != -1) {
-		g_gripper_right2 = r2_gR;
-		g_gripper_right = r2_gR;
-	}
+  if (r2_gR != -1) {
+    g_gripper_right2 = r2_gR;
+    g_gripper_right = r2_gR;
+  }
 
-	printf("CalcBackground result: %0.1fmm, %0.1fmm, %0.1fdeg\n ",g_x2, g_y2, g_t2);
-	ret ? printf("Success\n") : printf("Failure\n");
+  printf("CalcBackground result: %0.1fmm, %0.1fmm, %0.1fdeg\n ",g_x2, g_y2, g_t2);
+  ret ? printf("Success\n") : printf("Failure\n");
 
-	if(ret) {
-		grasping = false;
-		return  SUCCESS;
-	}
-	else    return  FAILURE;
+  if(ret) {
+    grasping = false;
+    return  SUCCESS;
+  }
+  else    return  FAILURE;
 }
 
 //------------------------------------------------------------------------------
@@ -360,13 +360,13 @@ int8_t ArmSetJointAcc(int8_t RL, double acc_ms)
   {
     g_joint_acceleration = acc_ms;
     ret = SUCCESS;
-    printf("armSetJointAcc R result: SUCCESS"); 
+    printf("armSetJointAcc R result: SUCCESS");
   }
   else if(RL==ArmL)
   {
-    g_joint_acceleration = acc_ms;        
+    g_joint_acceleration = acc_ms;
     ret = SUCCESS;
-    printf("armSetJointAcc L result: SUCCESSSUCCESS"); 
+    printf("armSetJointAcc L result: SUCCESSSUCCESS");
   }
   else
   {
@@ -389,7 +389,7 @@ int8_t ArmMoveJointAbs(int8_t RL, double *joint_deg, double vel_degps)
   // J5  -120   ~ +120   : init  0
   // J6   -15.5 ~  +44   : init  0
   // J7   -89.5 ~  +59   : init  0
-  
+
   g_joint_velocity = vel_degps;    // Velocity (deg/s): init=10
 
   if(RL==ArmR)
@@ -542,10 +542,10 @@ bool robotControl(tms_msg_rc::rc_robot_control::Request  &req,
             case	6: res.result = SUCCESS; break; //stop
             case	7: res.result = SUCCESS; break; //setodom for sp5_controller
             case	8: res.result = SyncObj(req.arg[0],req.arg[1],req.arg[2],req.arg[3],req.arg[4],req.arg[5],
-            		req.arg[6],req.arg[7],req.arg[8],req.arg[9],req.arg[10],req.arg[11],req.arg[12]); break;
+                req.arg[6],req.arg[7],req.arg[8],req.arg[9],req.arg[10],req.arg[11],req.arg[12]); break;
             case	9: res.result = CalcBackground(req.arg[0],req.arg[1],req.arg[2],req.arg[3],req.arg[4],
-            		req.arg[5],req.arg[6],req.arg[7],req.arg[8],req.arg[9],req.arg[10],req.arg[11],
-            		req.arg[12],req.arg[13],req.arg[14],req.arg[15],req.arg[16],req.arg[17],req.arg[18]); break;
+                req.arg[5],req.arg[6],req.arg[7],req.arg[8],req.arg[9],req.arg[10],req.arg[11],
+                req.arg[12],req.arg[13],req.arg[14],req.arg[15],req.arg[16],req.arg[17],req.arg[18]); break;
             default:   res.result = SRV_CMD_ERR; break;
         }
         break;
@@ -678,149 +678,149 @@ bool robotControl(tms_msg_rc::rc_robot_control::Request  &req,
         break;
     //--------------------------------------------------------------------------
     default:res.result = SRV_UNIT_ERR; break;
-	}
-	return true;
+  }
+  return true;
 }
 
 //------------------------------------------------------------------------------
 void RobotDataUpdate() { // for smartpal5_1 計算用モデル
-	ros::Rate loop_rate(10); // 10Hz frequency (0.1 sec)
+  ros::Rate loop_rate(10); // 10Hz frequency (0.1 sec)
 
-	while (ros::ok()) {
-		ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
-		double secs = now.toSec();
-		//ROS_INFO("r1|Time:%f,x:%f,y:%f,ry:%f", secs,g_x,g_y,g_t);
+  while (ros::ok()) {
+    ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+    double secs = now.toSec();
+    //ROS_INFO("r1|Time:%f,x:%f,y:%f,ry:%f", secs,g_x,g_y,g_t);
 
-		tms_msg_db::TmsdbStamped db_msg;
-		tms_msg_db::Tmsdb current_pos_data;
+    tms_msg_db::TmsdbStamped db_msg;
+    tms_msg_db::Tmsdb current_pos_data;
 
-		db_msg.header.frame_id  = "/world";
-		db_msg.header.stamp     = now;
+    db_msg.header.frame_id  = "/world";
+    db_msg.header.stamp     = now;
 
-		current_pos_data.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
-		current_pos_data.id      = 2002;
-		current_pos_data.x       = g_x;
-		current_pos_data.y       = g_y;
-		current_pos_data.z       = 0.0;
-		current_pos_data.rr      = 0.0;
-		current_pos_data.rp      = 0.0;
-		current_pos_data.ry      = g_t;
-		current_pos_data.place   = 5001;
-		current_pos_data.sensor  = 3005;
-		current_pos_data.state   = g_r_state;
+    current_pos_data.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
+    current_pos_data.id      = 2002;
+    current_pos_data.x       = g_x;
+    current_pos_data.y       = g_y;
+    current_pos_data.z       = 0.0;
+    current_pos_data.rr      = 0.0;
+    current_pos_data.rp      = 0.0;
+    current_pos_data.ry      = g_t;
+    current_pos_data.place   = 5001;
+    current_pos_data.sensor  = 3005;
+    current_pos_data.state   = g_r_state;
 
-		std::stringstream ss;
-		ss << g_lumba_high << ";" << g_lumba_low << ";";
-		for (int i=0; i<7; i++) {
-			ss << g_jR[i] << ";";
-		}
-		ss << g_gripper_right << ";";
-		for (int i=0; i<7; i++) {
-			ss << g_jL[i] << ";";
-		}
-		ss << g_gripper_left;
+    std::stringstream ss;
+    ss << g_lumba_high << ";" << g_lumba_low << ";";
+    for (int i=0; i<7; i++) {
+      ss << g_jR[i] << ";";
+    }
+    ss << g_gripper_right << ";";
+    for (int i=0; i<7; i++) {
+      ss << g_jL[i] << ";";
+    }
+    ss << g_gripper_left;
 
-		// joint information of smartpal5
-		// lumba_low, lumba_high, jR[0]...[6], gripper_right, jL[0]...[6], gripper_left
-		current_pos_data.joint = ss.str();
+    // joint information of smartpal5
+    // lumba_low, lumba_high, jR[0]...[6], gripper_right, jL[0]...[6], gripper_left
+    current_pos_data.joint = ss.str();
 
-		db_msg.tmsdb.push_back(current_pos_data);
-		pose_publisher.publish(db_msg);
+    db_msg.tmsdb.push_back(current_pos_data);
+    pose_publisher.publish(db_msg);
 
-		ros::spinOnce();
-		loop_rate.sleep();
-	}
+    ros::spinOnce();
+    loop_rate.sleep();
+  }
 }
 
 //------------------------------------------------------------------------------
 void RobotDataUpdate2() { // for smartpal5_2 表示用モデル
-	ros::Rate loop_rate(10); // 10Hz frequency (0.1 sec)
+  ros::Rate loop_rate(10); // 10Hz frequency (0.1 sec)
 
-	while (ros::ok()) {
-	//	if (grasping == true) {
-			// DBの主キーがtimeなので，RobotDataUpdataとかぶらないように人為的に0.0005秒プラス
-			ros::Time now = ros::Time::now() + ros::Duration(9*60*60) + ros::Duration(0.0005); // GMT +9
-			double secs = now.toSec();
-			//ROS_INFO("r2|Time:%f,x:%f,y:%f,ry:%f", secs,g_x2,g_y2,g_t2);
+  while (ros::ok()) {
+  //	if (grasping == true) {
+      // DBの主キーがtimeなので，RobotDataUpdataとかぶらないように人為的に0.0005秒プラス
+      ros::Time now = ros::Time::now() + ros::Duration(9*60*60) + ros::Duration(0.0005); // GMT +9
+      double secs = now.toSec();
+      //ROS_INFO("r2|Time:%f,x:%f,y:%f,ry:%f", secs,g_x2,g_y2,g_t2);
 
-			tms_msg_db::TmsdbStamped db_msg;
-			tms_msg_db::Tmsdb current_pos_data;
+      tms_msg_db::TmsdbStamped db_msg;
+      tms_msg_db::Tmsdb current_pos_data;
 
-			db_msg.header.frame_id  = "/world";
-			db_msg.header.stamp     = now;
+      db_msg.header.frame_id  = "/world";
+      db_msg.header.stamp     = now;
 
-			current_pos_data.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
-			current_pos_data.id      = 2003;
-			current_pos_data.x       = g_x2;
-			current_pos_data.y       = g_y2;
-			current_pos_data.z       = 0.0;
-			current_pos_data.rr      = 0.0;
-			current_pos_data.rp      = 0.0;
-			current_pos_data.ry      = g_t2;
-			current_pos_data.place   = 5001;
-			current_pos_data.sensor  = 3005;
-			current_pos_data.state   = g_r_state2;
+      current_pos_data.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
+      current_pos_data.id      = 2003;
+      current_pos_data.x       = g_x;
+      current_pos_data.y       = g_y;
+      current_pos_data.z       = 0.0;
+      current_pos_data.rr      = 0.0;
+      current_pos_data.rp      = 0.0;
+      current_pos_data.ry      = g_t;
+      current_pos_data.place   = 5001;
+      current_pos_data.sensor  = 3005;
+      current_pos_data.state   = g_r_state;
 
-			std::stringstream ss;
-			ss << g_lumba_high2 << ";" << g_lumba_low2 << ";";
-			for (int i=0; i<7; i++) {
-				ss << g_jR2[i] << ";";
-			}
-			ss << g_gripper_right2 << ";";
-			for (int i=0; i<7; i++) {
-				ss << g_jL2[i] << ";";
-			}
-			ss << g_gripper_left2;
+      std::stringstream ss;
+      ss << g_lumba_high << ";" << g_lumba_low << ";";
+      for (int i=0; i<7; i++) {
+        ss << g_jR[i] << ";";
+      }
+      ss << g_gripper_right << ";";
+      for (int i=0; i<7; i++) {
+        ss << g_jL[i] << ";";
+      }
+      ss << g_gripper_left;
 
-			// joint information of smartpal5
-			// lumba_low, lumba_high, jR[0]...[6], gripper_right, jL[0]...[6], gripper_left
-			current_pos_data.joint = ss.str();
+      // joint information of smartpal5
+      // lumba_low, lumba_high, jR[0]...[6], gripper_right, jL[0]...[6], gripper_left
+      current_pos_data.joint = ss.str();
 
-			db_msg.tmsdb.push_back(current_pos_data);
-			pose_publisher.publish(db_msg);
+      db_msg.tmsdb.push_back(current_pos_data);
+      pose_publisher.publish(db_msg);
 
-			ros::spinOnce();
-			loop_rate.sleep();
+      ros::spinOnce();
+      loop_rate.sleep();
 
 //		}
-	}
+  }
 }
 
 //------------------------------------------------------------------------------
 void ObjectDataUpdate() {
-		ros::Rate loop_rate(10); // 10Hz frequency (0.1 sec)
+    ros::Rate loop_rate(10); // 10Hz frequency (0.1 sec)
 
-		while (ros::ok()) {
-			if (grasping == true) {
-				//ros::Time now = ros::Time::now() + ros::Duration(9*60*60) + ros::Duration(0.0005); // GMT +9
-				ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
-				double secs = now.toSec();
-				//ROS_INFO("o|Time:%f,x:%f,y:%f,z:%f,rr:%f,rp:%f,ry:%f\n", secs,g_ox,g_oy,g_oz,g_orr,g_orp,g_ory);
+    while (ros::ok()) {
+      if (grasping == true) {
+        //ros::Time now = ros::Time::now() + ros::Duration(9*60*60) + ros::Duration(0.0005); // GMT +9
+        ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+        double secs = now.toSec();
+        //ROS_INFO("o|Time:%f,x:%f,y:%f,z:%f,rr:%f,rp:%f,ry:%f\n", secs,g_ox,g_oy,g_oz,g_orr,g_orp,g_ory);
 
-				tms_msg_db::TmsdbStamped db_msg;
-				tms_msg_db::Tmsdb current_pos_data;
+        tms_msg_db::TmsdbStamped db_msg;
+        tms_msg_db::Tmsdb current_pos_data;
 
-				db_msg.header.frame_id  = "/world";
-				db_msg.header.stamp     = now;
+        db_msg.header.frame_id  = "/world";
+        db_msg.header.stamp     = now;
 
-				current_pos_data.time  = boost::posix_time::to_iso_extended_string(now.toBoost());
-				current_pos_data.id    = g_oid;
-				current_pos_data.x = g_ox; // m -> mm
-				current_pos_data.y = g_oy;
-				current_pos_data.z = g_oz;
-				current_pos_data.rr = g_orr;
-				current_pos_data.rp = g_orp;
-				current_pos_data.ry = g_ory;
-				current_pos_data.place = 2002;
-				current_pos_data.sensor = 3005;
-				current_pos_data.probability = 1.0;
-				current_pos_data.state = 2;
+        current_pos_data.time  = boost::posix_time::to_iso_extended_string(now.toBoost());
+        current_pos_data.id    = g_oid;
+        current_pos_data.x = g_ox; // m -> mm
+        current_pos_data.y = g_oy;
+        current_pos_data.z = g_oz;
+        current_pos_data.rr = g_orr;
+        current_pos_data.rp = g_orp;
+        current_pos_data.ry = g_ory;
+        current_pos_data.place = 2002;
+        current_pos_data.sensor = 3005;
+        current_pos_data.probability = 1.0;
+        current_pos_data.state = 2;
 
-				db_msg.tmsdb.push_back(current_pos_data);
+        db_msg.tmsdb.push_back(current_pos_data);
 
-				pose_publisher.publish(db_msg);
-			}
-		}
+        pose_publisher.publish(db_msg);
+      }
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -836,12 +836,12 @@ int main(int argc, char **argv)
   printf("Virtual SmartPal initialization has been completed.\n\n");
 
   // スレッド処理でロボット情報の更新と物体情報の更新を同時に行う
-  boost::thread thr_rdu(&RobotDataUpdate);
+//  boost::thread thr_rdu(&RobotDataUpdate);
   boost::thread thr_rdu2(&RobotDataUpdate2);
   boost::thread thr_odu(&ObjectDataUpdate);
 
   // スレッドの終了を待つ
-  thr_rdu.join();
+//  thr_rdu.join();
   thr_rdu2.join();
   thr_odu.join();
 

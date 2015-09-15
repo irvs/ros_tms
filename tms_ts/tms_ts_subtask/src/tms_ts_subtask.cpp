@@ -633,20 +633,20 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
             arg[0] = rp_srv.response.VoronoiPath[i].x;
             arg[1] = rp_srv.response.VoronoiPath[i].y;
             arg[2] = rp_srv.response.VoronoiPath[i].th;
-            ROS_INFO("arg0:%f,1:%f,2:%f", arg[0],arg[1],arg[2]);
+            ROS_INFO("type:%d, arg0: %f,1: %f,2: %f", sd.type, arg[0],arg[1],arg[2]);
             // fix over 180 deg bug
 
             if (sd.type)
             {
-              if (((rp_srv.response.VoronoiPath[i-1].th>90    && rp_srv.response.VoronoiPath[i-1].th<=180) &&
-                   (rp_srv.response.VoronoiPath[i].th>=-180   && rp_srv.response.VoronoiPath[i].th<0)) ||
-                  ((rp_srv.response.VoronoiPath[i].th>0       && rp_srv.response.VoronoiPath[i].th<=180) &&
-                   (rp_srv.response.VoronoiPath[i-1].th>=-180 && rp_srv.response.VoronoiPath[i-1].th<-90)))
+              if (((rp_srv.response.VoronoiPath[i-1].th>HALF_PI    && rp_srv.response.VoronoiPath[i-1].th<=PI) &&
+                   (rp_srv.response.VoronoiPath[i].th>=-PI   && rp_srv.response.VoronoiPath[i].th<0)) ||
+                  ((rp_srv.response.VoronoiPath[i].th>0       && rp_srv.response.VoronoiPath[i].th<=PI) &&
+                   (rp_srv.response.VoronoiPath[i-1].th>=-PI && rp_srv.response.VoronoiPath[i-1].th<-HALF_PI)))
               {
                 double g_ang = rp_srv.response.VoronoiPath[i].th - rp_srv.response.VoronoiPath[i-1].th;
 
-                if (g_ang > 180) g_ang = g_ang - 360;
-                else if (g_ang < -180) g_ang = g_ang + 360;
+                if (g_ang > PI) g_ang = g_ang - 2*PI;
+                else if (g_ang < -PI) g_ang = g_ang + 2*PI;
 
                 double tmp_arg[3] = {0.0, 0.0, g_ang};
 
@@ -850,7 +850,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
 
           if (sd.robot_id == 2005 && !sd.type)
           {
-            rp_srv.request.start_pos.th+=90;
+            rp_srv.request.start_pos.th+=PI;
           }
 
           error_x = fabs(rp_srv.request.start_pos.x - rp_srv.request.goal_pos.x);
@@ -859,11 +859,11 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
           error_dis = distance(rp_srv.request.start_pos.x, rp_srv.request.start_pos.y,
           rp_srv.request.goal_pos.x, rp_srv.request.goal_pos.y);
 
-          if (error_th > 180.0) error_th = error_th - 360.0;
-          else if (error_th < -180.0) error_th = error_th + 360.0;
+          if (error_th > PI) error_th = error_th - 2*PI;
+          else if (error_th < -PI) error_th = error_th + 2*PI;
 
           ROS_INFO("error_x:%f,error_y:%f,error_th:%f, error_dis:%f", error_x, error_y, error_th, error_dis);
-          if (error_x<=10 && error_y<=10 && (error_th>=-3 && error_th<=3))
+          if (error_x<=0.01 && error_y<=0.01 && (error_th>=-0.05 && error_th<=0.05))
           {
             ROS_INFO("finish");
             break; // dis_error:10mm, ang_error:3deg
