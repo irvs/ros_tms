@@ -55,41 +55,44 @@
 #define CMD_MOVE_ABS            15
 #define CMD_MOVE_REL            16
 
+#define PI      3.14159265 // 180
+#define HALF_PI 1.57079633 // 90
+
 namespace tms_rp {
 
 class TmsRpSubtask
 {
  public:
-	TmsRpSubtask();
-	static TmsRpSubtask* instance();
-	virtual ~TmsRpSubtask();
+  TmsRpSubtask();
+  static TmsRpSubtask* instance();
+  virtual ~TmsRpSubtask();
 
-	double distance(double x1, double y1, double x2, double y2);
-	std::string DoubleToString(double number);
-	void send_rc_exception(int error_type);
-	bool get_robot_pos(bool type, int robot_id, std::string& robot_name, tms_msg_rp::rps_voronoi_path_planning& rp_srv);
-	bool subtask(tms_msg_rp::rp_cmd::Request &req,tms_msg_rp::rp_cmd::Response &res);
-	bool sp5_control(bool type, int unit, int cmd, int arg_size, double* arg);
+  double distance(double x1, double y1, double x2, double y2);
+  std::string DoubleToString(double number);
+  void send_rc_exception(int error_type);
+  bool get_robot_pos(bool type, int robot_id, std::string& robot_name, tms_msg_rp::rps_voronoi_path_planning& rp_srv);
+  bool subtask(tms_msg_rp::rp_cmd::Request &req,tms_msg_rp::rp_cmd::Response &res);
+  bool sp5_control(bool type, int unit, int cmd, int arg_size, double* arg);
 //	bool kxp_control(bool type, int unit, int cmd, int arg_size, double* arg);
 //	void sensingCallback(const tms_msg_ss::ods_person_dt::ConstPtr& msg);
 
  private:
-	ros::NodeHandle nh1;
+  ros::NodeHandle nh1;
 
-	uint32_t sid_;
-	struct SubtaskData {
-		bool type;
-		int robot_id;
-		int arg_type;
-		std::vector<double> v_arg;
-	};
+  uint32_t sid_;
+  struct SubtaskData {
+    bool type;
+    int robot_id;
+    int arg_type;
+    std::vector<double> v_arg;
+  };
 
-	bool update_obj(int id, double x, double y, double z, double rr, double rp,
-			double ry, int place, int sensor, int state, std::string note);
+  bool update_obj(int id, double x, double y, double z, double rr, double rp,
+      double ry, int place, int sensor, int state, std::string note);
 //	bool kxp_set_odom(void);
 
-	// for thread
-	bool move(SubtaskData sd); // 9001
+  // for thread
+  bool move(SubtaskData sd); // 9001
 //	bool grasp(SubtaskData sd); // 9002
 //	bool give(SubtaskData sd); // 9003
 //	bool open_ref(void);  // 9004
@@ -97,10 +100,10 @@ class TmsRpSubtask
 //	bool random_move(void); // 9006
 //	bool sensing(void); // 9007
 
-	ros::ServiceServer rp_subtask_server;
-	ros::ServiceClient get_data_client_;
-	ros::ServiceClient sp5_control_client_;
-	ros::ServiceClient sp5_virtual_control_client;
+  ros::ServiceServer rp_subtask_server;
+  ros::ServiceClient get_data_client_;
+  ros::ServiceClient sp5_control_client_;
+  ros::ServiceClient sp5_virtual_control_client;
 //	ros::ServiceClient kxp_virtual_control_client;
 //	ros::ServiceClient kxp_mbase_client;
 //	ros::ServiceClient v_kxp_mbase_client;
@@ -111,12 +114,12 @@ class TmsRpSubtask
 //	ros::ServiceClient kobuki_actual_control_client;
 //	ros::ServiceClient mkun_virtual_control_client;
 //	ros::ServiceClient mkun_control_client;
-	ros::ServiceClient voronoi_path_planning_client_;
-	ros::ServiceClient give_obj_client;
+  ros::ServiceClient voronoi_path_planning_client_;
+  ros::ServiceClient give_obj_client;
 //	ros::ServiceClient refrigerator_client;
-	ros::ServiceClient state_client;
+  ros::ServiceClient state_client;
 
-	ros::Publisher db_pub;
+  ros::Publisher db_pub;
 //	ros::Publisher kobuki_sound;
 //	ros::Publisher kobuki_motorpower;
 //	ros::Subscriber sensing_sub;
