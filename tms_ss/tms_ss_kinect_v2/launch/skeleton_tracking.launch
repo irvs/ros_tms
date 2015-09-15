@@ -3,13 +3,23 @@
   <!-- Make skeleton streams -->
   <node name="skeleton_integrator" pkg="tms_ss_kinect_v2" args="1 2" type="skeleton_integrator"/>
 
+  <!-- For visualize furnitures in rViz -->
   <param name="robot_description"
          command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/environments_standalone.urdf.xacro'" />
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
   <node name="tms_db_state_publisher" pkg="tms_db_state_publisher" type="tms_db_state_publisher"/>
 
+  <!-- For visualize kinect in rViz -->
+  <param name="kinect_description1"  textfile="$(find tms_ss_kinect_v2)/urdf/kinect_v2.urdf"/>
+  <param name="kinect_description2"  textfile="$(find tms_ss_kinect_v2)/urdf/kinect_v2.urdf"/>
+  <node name="kinect_state_publisher01" pkg="tms_ss_kinect_v2" args="1"  type="kinect_state_publisher"/>
+  <node name="kinect_state_publisher02" pkg="tms_ss_kinect_v2" args="2"  type="kinect_state_publisher"/>
+
+  <!-- For visualize box in rViz -->
+  <param name="box_description"  textfile="$(find tms_ss_kinect_v2)/urdf/checker_box.urdf"/>
+  <node name="box_state_publisher" pkg="tms_ss_kinect_v2" type="box_state_publisher"/>
+
   <!-- For visualize skeleton in rViz -->
-  <!--<param name="skeleton_description" textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>-->
   <param name="skeleton_description1"  textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
   <param name="skeleton_description2"  textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>
   <param name="skeleton_description3"  textfile="$(find tms_ss_kinect_v2)/urdf/skeleton.urdf"/>

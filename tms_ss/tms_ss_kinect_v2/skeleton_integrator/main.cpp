@@ -96,8 +96,6 @@ SkeletonIntegrator::~SkeletonIntegrator()
 //-----------------------------------------------------------------------------
 void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper::ConstPtr& msg)
 {
-  ROS_INFO("Received skeleton from camera %d", msg->camera_number);
-
   tms_ss_kinect_v2::Skeleton skeleton = msg->skeleton;
   tms_ss_kinect_v2::CameraPosture camera_posture = msg->camera_posture;
 
@@ -111,6 +109,22 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
       camera_posture.rotation.x,
       camera_posture.rotation.y,
       camera_posture.rotation.z);
+
+  Eigen::Matrix3f rot_mat = rotation.matrix();
+  ROS_INFO("Camera %d status:\n  \
+      Position in world:\n    \
+      (%3.4f, %3.4f, %3.4f)\n  \
+      Rotation in world:\n    \
+      x-axis (%3.4f, %3.4f, %3.4f)\n    \
+      y-axis (%3.4f, %3.4f, %3.4f)\n    \
+      z-axis (%3.4f, %3.4f, %3.4f)\n\
+      \n",
+        msg->camera_number,
+        translation[0], translation[1], translation[2],
+        rot_mat(0, 0), rot_mat(1, 0), rot_mat(2, 0),
+        rot_mat(0, 1), rot_mat(1, 1), rot_mat(2, 1),
+        rot_mat(0, 2), rot_mat(1, 2), rot_mat(2, 2));
+
 
   tms_ss_kinect_v2::Skeleton integrated_skeleton;
   integrated_skeleton.user_id = 0;
