@@ -705,6 +705,8 @@ void RobotDataUpdate()
 
     current_pos_data.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
     current_pos_data.id      = 2003; // smartpal5_2
+    current_pos_data.name    = "smartpal5_2";
+    current_pos_data.type    = "robot";
     current_pos_data.x       = g_x;
     current_pos_data.y       = g_y;
     current_pos_data.z       = 0.0;
