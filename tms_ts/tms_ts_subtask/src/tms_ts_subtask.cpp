@@ -78,19 +78,19 @@ void tms_rp::TmsRpSubtask::send_rc_exception(int error_type)
     case 1:
       rc_s_srv.request.error_msg = "RC exception. Cannot move vehicle";
       break;
-        case 2:
+    case 2:
       rc_s_srv.request.error_msg = "RC exception. Cannot move right arm";
       break;
-        case 3:
+    case 3:
       rc_s_srv.request.error_msg = "RC exception. Cannot move lumba";
       break;
-        case 4:
+    case 4:
       rc_s_srv.request.error_msg = "RC exception. Cannot move right gripper";
       break;
-        case 5:
+    case 5:
       rc_s_srv.request.error_msg = "RC exception. Cannot run command sync obj";
       break;
-        case 6:
+    case 6:
       rc_s_srv.request.error_msg = "RC exception. Cannot run command calc background";
       break;
   }
@@ -423,6 +423,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
 
   if (sd.type == false)
     srv.request.tmsdb.sensor = 3005;
+
   if (sd.arg_type == -1) // move (x,y,th)
   {
     rp_srv.request.goal_pos.x = sd.v_arg.at(1);

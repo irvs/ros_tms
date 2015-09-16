@@ -1,6 +1,6 @@
 ///-----------------------------------------------------------------------------
 /// @FileName smartpal5_virtual_control.cpp
-/// @Date 2014.06.18 / 2013.09.09
+/// @Date 2015.09.16 / 2013.09.09
 /// @author Yoonseok Pyo and Yuka Hashiguchi
 ///-----------------------------------------------------------------------------
 #include <ros/ros.h>
@@ -11,7 +11,6 @@
 #include <sstream>
 #include <boost/thread.hpp>
 
-//------------------------------------------------------------------------------
 //#define OFF       0
 #define ON          1
 
@@ -78,14 +77,11 @@
 
 ros::Publisher pose_publisher;
 
-//------------------------------------------------------------------------------
-//double g_x = 4900.0;
-//double g_y = 1650.0;
-double g_x = 3;
-double g_y = 4;
-double g_t = 0;
-double g_jR[7] = {0.0,-10.0,0.0,0.0,0.0,0.0,0.0};
-double g_jL[7] = {0.0,10.0,0.0,0.0,0.0,0.0,0.0};
+double g_x = 3.0;
+double g_y = 4.0;
+double g_t = 0.0;
+double g_jR[7] = {0.0,-10.0,0.0,0.0,0.0,0.0,0.0}; // TODO: degree to rad
+double g_jL[7] = {0.0,10.0,0.0,0.0,0.0,0.0,0.0};  // TODO: degree to rad
 
 double g_gripper_right = -10.0;
 double g_gripper_left  = -10.0;
@@ -95,17 +91,14 @@ double g_lumba_low  = 0.0;
 
 double g_r_state = 1;
 
-//------------------------------------------------------------------------------
-//double g_x2 = 4900.0;
-//double g_y2 = 1650.0;
-double g_x2 = 5500.0;
-double g_y2 = 500.0;
-double g_t2 = 180.0;
-double g_jR2[7] = {0.0,-10.0,0.0,0.0,0.0,0.0,0.0};
-double g_jL2[7] = {0.0,10.0,0.0,0.0,0.0,0.0,0.0};
+double g_x2 = 0.0;
+double g_y2 = 0.0;
+double g_t2 = 0.0;
+double g_jR2[7] = {0.0,-10.0,0.0,0.0,0.0,0.0,0.0}; // TODO: degree to rad
+double g_jL2[7] = {0.0,10.0,0.0,0.0,0.0,0.0,0.0};  // TODO: degree to rad
 
-double g_gripper_right2 = -10.0;
-double g_gripper_left2  = -10.0;
+double g_gripper_right2 = -10.0; // TODO: degree to rad
+double g_gripper_left2  = -10.0; // TODO: degree to rad
 
 double g_lumba_high2 = 0.0;
 double g_lumba_low2  = 0.0;
@@ -113,15 +106,14 @@ double g_lumba_low2  = 0.0;
 double g_r_state2 = 1;
 
 
-double g_vehicle_velocity_t = 100.0;  // Velocity of translation (mm/s)
-double g_vehicle_velocity_r = 1000.0; // Velocity of rotation   (deg/s)
+double g_vehicle_velocity_t = 100.0;  // Velocity of translation (now mm/s)
+double g_vehicle_velocity_r = 1000.0; // Velocity of rotation   (now deg/s)
 
-double g_joint_velocity     = 10.0; // Velocity (deg/s)
-double g_joint_acceleration = 10.0; // Acceleration (deg/s^2)
+double g_joint_velocity     = 10.0; // Velocity (now deg/s)
+double g_joint_acceleration = 10.0; // Acceleration (now deg/s^2)
 
 bool grasping = false;
 
-//------------------------------------------------------------------------------
 int g_oid;
 double g_ox;
 double g_oy;
@@ -133,201 +125,222 @@ double g_ory;
 double g_place;
 double g_o_state = 1;
 
-//------------------------------------------------------------------------------
 int8_t SyncObj(double r_x, double r_y, double r_ry, double r_state,
-    double o_id, double o_x, double o_y, double o_z, double o_rr, double o_rp, double o_ry, double o_place, double o_state)
+  double o_id, double o_x, double o_y, double o_z, double o_rr, double o_rp, double o_ry, double o_place, double o_state)
 {
   bool ret = true;
   grasping = true;
 
-  if (r_x != -1) {
-    g_x = r_x; // mm
-    g_x2 = r_x; // mm
+  if (r_x != -1)
+  {
+    g_x  = r_x; // m
+    g_x2 = r_x; // m
   }
-  if (r_y != -1) {
-    g_y = r_y; // mm
-    g_y2 = r_y; // mm
+
+  if (r_y != -1)
+  {
+    g_y  = r_y; // m
+    g_y2 = r_y; // m
   }
-  if (r_ry != -1) {
-    g_t = r_ry; // deg
-    g_t2 = r_ry; // deg
+
+  if (r_ry != -1)
+  {
+    g_t  = r_ry; // rad
+    g_t2 = r_ry; // rad
   }
-  if (r_state != -1) {
+
+  if (r_state != -1)
+  {
     g_r_state = r_state;
     g_r_state2 = r_state;
   }
 
   if (o_id != -1) g_oid = (int)o_id;
-  if (o_x != -1) g_ox = o_x;
-  if (o_y != -1) g_oy = o_y;
-  if (o_z != -1) g_oz = o_z;
+  if (o_x  != -1) g_ox  = o_x;
+  if (o_y  != -1) g_oy  = o_y;
+  if (o_z  != -1) g_oz  = o_z;
   if (o_rr != -1) g_orr = o_rr;
   if (o_rp != -1) g_orp = o_rp;
   if (o_ry != -1) g_ory = o_ry;
 
-  if (o_place != -1) g_place = o_place;
+  if (o_place != -1) g_place   = o_place;
   if (o_state != -1) g_o_state = o_state;
 
-  printf("SyncObj result: %0.1fmm, %0.1fmm, %0.1fdeg, %f\n ",g_x, g_y, g_t, g_r_state);
-  printf("SyncObj result: %d, %0.1fmm, %0.1fmm, %0.1fmm, %0.1fdeg, %0.1fdeg, %0.1fdeg\n",g_oid, g_ox, g_oy, g_oz, g_orr, g_orp, g_ory);
+  printf("SyncObj result: %0.1fmm, %0.1fmm, %0.1frad, %f\n ",g_x, g_y, g_t, g_r_state);
+  printf("SyncObj result: %d, %0.1fmm, %0.1fmm, %0.1fmm, %0.1frad, %0.1fdeg, %0.1fdeg\n",g_oid, g_ox, g_oy, g_oz, g_orr, g_orp, g_ory);
   printf("SyncObj result: %0.1f, %0.1f\n ",g_place, g_o_state);
   ret ? printf("Success\n") : printf("Failure\n");
 
-  if(ret) {
+  if(ret)
+  {
     grasping = false;
     return  SUCCESS;
   }
   else    return  FAILURE;
 }
 
-//------------------------------------------------------------------------------
-int8_t CalcBackground(double r2_x, double r2_y, double r2_ry, double o_x, double o_y, double o_z,
-    double o_rr, double o_rp, double o_ry, double r2_wh, double r2_wl, double r2_j0, double r2_j1,
-    double r2_j2, double r2_j3, double r2_j4, double r2_j5, double r2_j6, double r2_gR) {
+int8_t CalcBackground(double r2_x, double r2_y, double r2_ry,
+  double o_x, double o_y, double o_z, double o_rr, double o_rp, double o_ry,
+  double r2_wh, double r2_wl, double r2_j0, double r2_j1, double r2_j2,
+  double r2_j3, double r2_j4, double r2_j5, double r2_j6, double r2_gR)
+{
   bool ret = true;
   grasping = true;
 
-  g_x2 = r2_x; // mm
-  g_y2 = r2_y; // mm
-  g_t2 = r2_ry; // deg
+  g_x2 = r2_x;  // m
+  g_y2 = r2_y;  // m
+  g_t2 = r2_ry; // rad
 
-  if (o_x != -1) g_ox = o_x;
-  if (o_y != -1) g_oy = o_y;
-  if (o_z != -1) g_oz = o_z;
+  if (o_x  != -1) g_ox  = o_x;
+  if (o_y  != -1) g_oy  = o_y;
+  if (o_z  != -1) g_oz  = o_z;
   if (o_rr != -1) g_orr = o_rr;
   if (o_rp != -1) g_orp = o_rp;
   if (o_ry != -1) g_ory = o_ry;
 
-  if (r2_wh != -1) {
+  if (r2_wh != -1)
+  {
     g_lumba_high2 = r2_wh;
-    g_lumba_high = r2_wh;
+    g_lumba_high  = r2_wh;
   }
-  if (r2_wl != -1) {
+
+  if (r2_wl != -1)
+  {
     g_lumba_low2 = r2_wl;
-    g_lumba_low = r2_wl;
+    g_lumba_low  = r2_wl;
   }
-  if (r2_j0 != -1) {
+
+  if (r2_j0 != -1)
+  {
     g_jR2[0] = r2_j0;
-    g_jR[0] = r2_j0;
+    g_jR[0]  = r2_j0;
   }
-  if (r2_j1 != -1) {
+
+  if (r2_j1 != -1)
+  {
     g_jR2[1] = r2_j1;
-    g_jR[1] = r2_j1;
+    g_jR[1]  = r2_j1;
   }
-  if (r2_j2 != -1) {
+
+  if (r2_j2 != -1)
+  {
     g_jR2[2] = r2_j2;
-    g_jR[2] = r2_j2;
+    g_jR[2]  = r2_j2;
   }
-  if (r2_j3 != -1) {
+
+  if (r2_j3 != -1)
+  {
     g_jR2[3] = r2_j3;
-    g_jR[3] = r2_j3;
+    g_jR[3]  = r2_j3;
   }
-  if (r2_j4 != -1) {
+
+  if (r2_j4 != -1)
+  {
     g_jR2[4] = r2_j4;
-    g_jR[4] = r2_j4;
+    g_jR[4]  = r2_j4;
   }
-  if (r2_j5 != -1) {
+
+  if (r2_j5 != -1)
+  {
     g_jR2[5] = r2_j5;
-    g_jR[5] = r2_j5;
+    g_jR[5]  = r2_j5;
   }
-  if (r2_j6 != -1) {
+
+  if (r2_j6 != -1)
+  {
     g_jR2[6] = r2_j6;
-    g_jR[6] = r2_j6;
+    g_jR[6]  = r2_j6;
   }
 
-  if (r2_gR != -1) {
+  if (r2_gR != -1)
+  {
     g_gripper_right2 = r2_gR;
-    g_gripper_right = r2_gR;
+    g_gripper_right  = r2_gR;
   }
 
-  printf("CalcBackground result: %0.1fmm, %0.1fmm, %0.1fdeg\n ",g_x2, g_y2, g_t2);
+  printf("CalcBackground result: %0.1fm, %0.1fm, %0.1frad\n ",g_x2, g_y2, g_t2);
   ret ? printf("Success\n") : printf("Failure\n");
 
-  if(ret) {
+  if(ret)
+  {
     grasping = false;
     return  SUCCESS;
   }
   else    return  FAILURE;
 }
 
-//------------------------------------------------------------------------------
-int8_t VehicleGetPos(double *x_mm, double *y_mm, double *theta_deg)
+int8_t VehicleGetPos(double *x_m, double *y_m, double *theta_rad)
 {
-  *x_mm = g_x;
-  *y_mm = g_y;
-  *theta_deg = g_t;
+  *x_m = g_x;
+  *y_m = g_y;
+  *theta_rad = g_t;
 
   bool ret = true;
 
-  printf("vehicleGetPose result: %0.1fmm, %0.1fmm, %0.1fdeg ",*x_mm, *y_mm, *theta_deg);
+  printf("vehicleGetPose result: %0.1fm, %0.1fm, %0.1frad ",*x_m, *y_m, *theta_rad);
   ret ? printf("Success\n") : printf("Failure\n");
 
   if(ret) return  SUCCESS;
   else    return  FAILURE;
 }
 
-//------------------------------------------------------------------------------
-int8_t VehicleSetPos(double x_mm, double y_mm, double theta_deg)
+int8_t VehicleSetPos(double x_m, double y_m, double theta_rad)
 {
   bool ret = true;
 
-  printf("vehicleSetPose(%0.1fmm, %0.1fmm, %0.1fdeg) result:",x_mm, y_mm, theta_deg);
+  printf("vehicleSetPose(%0.1fm, %0.1fm, %0.1frad) result:",x_m, y_m, theta_rad);
   ret ? printf("Success\n") : printf("Failure\n");
 
   if(ret) return  SUCCESS;
   else    return  FAILURE;
 }
 
-//------------------------------------------------------------------------------
-int8_t VehicleSetVel(double velT_mmps, double velR_degps)
+int8_t VehicleSetVel(double velT_mps, double velR_radps)
 {
   // Init Value : translation = 100(mm/s),  rotation =10(deg/s)
   // Max  Value : translation = 1000(mm/s), rotation =100(deg/s)
-  g_vehicle_velocity_t = velT_mmps;     // Velocity of translation (mm/s)
-  g_vehicle_velocity_r = velR_degps;    // Velocity of rotation   (deg/s)
+  g_vehicle_velocity_t = velT_mps;      // Velocity of translation (m/s)
+  g_vehicle_velocity_r = velR_radps;    // Velocity of rotation   (rad/s)
 
   bool ret =  true;
 
-  printf("vehicleSetVel(%0.1fmm/s, %0.1fdeg/s) result:",g_vehicle_velocity_t, g_vehicle_velocity_r);
+  printf("vehicleSetVel(%0.1fm/s, %0.1frad/s) result:",g_vehicle_velocity_t, g_vehicle_velocity_r);
   ret ? printf("Success\n") : printf("Failure\n");
 
   if(ret) return  SUCCESS;
   else    return  FAILURE;
 }
 
-//------------------------------------------------------------------------------
-int8_t VehicleMoveLinearAbs(double x_mm, double y_mm, double theta_deg)
+int8_t VehicleMoveLinearAbs(double x_m, double y_m, double theta_rad)
 {
   bool ret = true;
 
-  g_x = x_mm;
-  g_y = y_mm;
-  g_t = theta_deg;
+  g_x = x_m;
+  g_y = y_m;
+  g_t = theta_rad;
 
-  printf("vehicleMoveLinearAbs(%0.1fmm, %0.1fmm, %0.1fdeg) result:",g_x, g_y, g_t);
+  printf("vehicleMoveLinearAbs(%0.1fm, %0.1fm, %0.1frad) result:",g_x, g_y, g_t);
   ret ? printf("Success\n") : printf("Failure\n");
 
   if(ret) return  SUCCESS;
   else    return  FAILURE;
 }
 
-//------------------------------------------------------------------------------
-int8_t VehicleMoveLinearAbs2(double x_mm, double y_mm, double theta_deg)
+int8_t VehicleMoveLinearAbs2(double x_m, double y_m, double theta_rad)
 {
   bool ret = true;
 
-  g_x2 = x_mm;
-  g_y2 = y_mm;
-  g_t2 = theta_deg;
+  g_x2 = x_m;
+  g_y2 = y_m;
+  g_t2 = theta_rad;
 
-  printf("vehicleMoveLinearAbs2(%0.1fmm, %0.1fmm, %0.1fdeg) result:",g_x2, g_y2, g_t2);
+  printf("vehicleMoveLinearAbs2(%0.1fm, %0.1fm, %0.1frad) result:",g_x2, g_y2, g_t2);
   ret ? printf("Success\n") : printf("Failure\n");
 
   if(ret) return  SUCCESS;
   else    return  FAILURE;
 }
 
-//------------------------------------------------------------------------------
 int8_t ArmGetPos(int8_t RL, double frameID, double *posdata)
 {
   int8_t ret = SUCCESS;
@@ -351,20 +364,19 @@ int8_t ArmGetPos(int8_t RL, double frameID, double *posdata)
   return ret;
 }
 
-//------------------------------------------------------------------------------
-int8_t ArmSetJointAcc(int8_t RL, double acc_ms)
+int8_t ArmSetJointAcc(int8_t RL, double acc_mps2)
 {
   int8_t ret;
 
   if(RL==ArmR)
   {
-    g_joint_acceleration = acc_ms;
+    g_joint_acceleration = acc_mps2;
     ret = SUCCESS;
     printf("armSetJointAcc R result: SUCCESS");
   }
   else if(RL==ArmL)
   {
-    g_joint_acceleration = acc_ms;
+    g_joint_acceleration = acc_mps2;
     ret = SUCCESS;
     printf("armSetJointAcc L result: SUCCESSSUCCESS");
   }
@@ -377,8 +389,7 @@ int8_t ArmSetJointAcc(int8_t RL, double acc_ms)
   return ret;
 }
 
-//------------------------------------------------------------------------------
-int8_t ArmMoveJointAbs(int8_t RL, double *joint_deg, double vel_degps)
+int8_t ArmMoveJointAbs(int8_t RL, double *joint_rad, double vel_radps)
 {
   int8_t ret;
 
@@ -390,11 +401,11 @@ int8_t ArmMoveJointAbs(int8_t RL, double *joint_deg, double vel_degps)
   // J6   -15.5 ~  +44   : init  0
   // J7   -89.5 ~  +59   : init  0
 
-  g_joint_velocity = vel_degps;    // Velocity (deg/s): init=10
+  g_joint_velocity = vel_radps;    // Velocity (rad/s): init= (but now 10 deg/s)
 
   if(RL==ArmR)
   {
-    for(int i=0; i<7; i++) g_jR[i] = joint_deg[i];
+    for(int i=0; i<7; i++) g_jR[i] = joint_rad[i];
 
     ret = SUCCESS;
     printf("armMoveJointAbs R ( ");
@@ -403,7 +414,7 @@ int8_t ArmMoveJointAbs(int8_t RL, double *joint_deg, double vel_degps)
   }
   else if(RL==ArmL)
   {
-    for(int i=0; i<7; i++) g_jL[i] = joint_deg[i];
+    for(int i=0; i<7; i++) g_jL[i] = joint_rad[i];
 
     ret = SUCCESS;
     printf("armMoveJointAbs L ( ");
@@ -419,7 +430,6 @@ int8_t ArmMoveJointAbs(int8_t RL, double *joint_deg, double vel_degps)
   return ret;
 }
 
-//------------------------------------------------------------------------------
 int8_t GripperGetPos(int8_t RL, double *pos)
 {
   bool ret;
@@ -448,8 +458,7 @@ int8_t GripperGetPos(int8_t RL, double *pos)
   else    return  FAILURE;
 }
 
-//------------------------------------------------------------------------------
-int8_t GripperMoveAbs(int8_t RL, double j_deg, double vel_degps, double acc_degps2)
+int8_t GripperMoveAbs(int8_t RL, double j_rad, double vel_radps, double acc_radps2)
 {
   bool ret;
 
@@ -457,16 +466,16 @@ int8_t GripperMoveAbs(int8_t RL, double j_deg, double vel_degps, double acc_degp
 
   if(RL==GripperR)
   {
-    g_gripper_right = j_deg;
+    g_gripper_right = j_rad;
     ret = true;
-    printf("gripperMoveAbs R ( %0.1f ): ", j_deg);
+    printf("gripperMoveAbs R ( %0.1f ): ", j_rad);
     ret ? printf("Success\n") : printf("Failure\n");
   }
   else if(RL==GripperL)
   {
-    g_gripper_left = j_deg;
+    g_gripper_left = j_rad;
     ret = true;
-    printf("gripperMoveAbs L ( %0.1f ): ", j_deg);
+    printf("gripperMoveAbs L ( %0.1f ): ", j_rad);
     ret ? printf("Success\n") : printf("Failure\n");
   }
   else
@@ -479,105 +488,102 @@ int8_t GripperMoveAbs(int8_t RL, double j_deg, double vel_degps, double acc_degp
   else    return  FAILURE;
 }
 
-//------------------------------------------------------------------------------
-int8_t LumbaGetPos(double *low_deg, double *high_deg)
+int8_t LumbaGetPos(double *low_rad, double *high_rad)
 {
-  *low_deg  = g_lumba_high;
-  *high_deg = g_lumba_low;
+  *low_rad  = g_lumba_high;
+  *high_rad = g_lumba_low;
 
   bool ret = true;
 
-  printf("lumbaGetPos result: %0.1fdeg, %0.1fdeg ",*low_deg, *high_deg);
+  printf("lumbaGetPos result: %0.1frad, %0.1frad ",*low_rad, *high_rad);
   ret ? printf("Success\n") : printf("Failure\n");
 
   if(ret) return  SUCCESS;
   else    return  FAILURE;
 }
 
-//------------------------------------------------------------------------------
-int8_t LumbaMoveCooperative(double z_deg, double vel_degps, double acc_degps2)
+int8_t LumbaMoveCooperative(double z_rad, double vel_radps, double acc_radps2)
 {
-  g_lumba_high = 4*z_deg/3;
-  g_lumba_low = -z_deg/3;
+  g_lumba_high = 4*z_rad/3;
+  g_lumba_low = -z_rad/3;
 
   bool ret = true;
 
-  printf("lumbaMoveCooperative(%0.1fdeg, %0.1fdeg/s, %0.1fdeg/s^2) result:",z_deg, vel_degps, acc_degps2);
+  printf("lumbaMoveCooperative(%0.1frad, %0.1frad/s, %0.1frdad/s^2) result:",z_rad, vel_radps, acc_radps2);
   ret ? printf("Success\n") : printf("Failure\n");
 
   if(ret) return  SUCCESS;
   else    return  FAILURE;
 }
 
-//------------------------------------------------------------------------------
-int8_t LumbaMove(double low_deg, double high_deg, double vel_degps, double acc_degps2)
+int8_t LumbaMove(double low_rad, double high_rad, double vel_radps, double acc_radps2)
 {
-  g_lumba_high = high_deg;
-  g_lumba_low = low_deg;
+  g_lumba_high = high_rad;
+  g_lumba_low  = low_rad;
 
   bool ret = true;
 
-  printf("lumbaMove(%0.1fdeg, %0.1fdeg, %0.1fdeg/s, %0.1fdeg/s^2) result:",low_deg, high_deg, vel_degps, acc_degps2);
+  printf("lumbaMove(%0.1frad, %0.1frad, %0.1frad/s, %0.1frad/s^2) result:",low_rad, high_rad, vel_radps, acc_radps2);
   ret ? printf("Success\n") : printf("Failure\n");
 
   if(ret) return  SUCCESS;
   else    return  FAILURE;
 }
 
-//------------------------------------------------------------------------------
 bool robotControl(tms_msg_rc::rc_robot_control::Request  &req,
                   tms_msg_rc::rc_robot_control::Response &res)
 {
   switch(req.unit)
   {
-  //----------------------------------------------------------------------------
     case	0: // all
-        switch(req.cmd) {
-            case	0: res.result = SUCCESS; break; //clearAlarm
-            case	1: res.result = SUCCESS; break; //setPower
-            case	2: res.result = SUCCESS; break; //setServo
-            case	3: res.result = SUCCESS; break; //pause
-            case	4: res.result = SUCCESS; break; //resume
-            case	5: res.result = SUCCESS; break; //abort
-            case	6: res.result = SUCCESS; break; //stop
-            case	7: res.result = SUCCESS; break; //setodom for sp5_controller
-            case	8: res.result = SyncObj(req.arg[0],req.arg[1],req.arg[2],req.arg[3],req.arg[4],req.arg[5],
-                req.arg[6],req.arg[7],req.arg[8],req.arg[9],req.arg[10],req.arg[11],req.arg[12]); break;
-            case	9: res.result = CalcBackground(req.arg[0],req.arg[1],req.arg[2],req.arg[3],req.arg[4],
-                req.arg[5],req.arg[6],req.arg[7],req.arg[8],req.arg[9],req.arg[10],req.arg[11],
-                req.arg[12],req.arg[13],req.arg[14],req.arg[15],req.arg[16],req.arg[17],req.arg[18]); break;
-            default:   res.result = SRV_CMD_ERR; break;
-        }
-        break;
+      switch(req.cmd)
+      {
+        case	0: res.result = SUCCESS; break; //clearAlarm
+        case	1: res.result = SUCCESS; break; //setPower
+        case	2: res.result = SUCCESS; break; //setServo
+        case	3: res.result = SUCCESS; break; //pause
+        case	4: res.result = SUCCESS; break; //resume
+        case	5: res.result = SUCCESS; break; //abort
+        case	6: res.result = SUCCESS; break; //stop
+        case	7: res.result = SUCCESS; break; //setodom for sp5_controller
+        case	8: res.result = SyncObj(req.arg[0],req.arg[1],req.arg[2],req.arg[3],req.arg[4],req.arg[5],
+            req.arg[6],req.arg[7],req.arg[8],req.arg[9],req.arg[10],req.arg[11],req.arg[12]); break;
+        case	9: res.result = CalcBackground(req.arg[0],req.arg[1],req.arg[2],req.arg[3],req.arg[4],
+            req.arg[5],req.arg[6],req.arg[7],req.arg[8],req.arg[9],req.arg[10],req.arg[11],
+            req.arg[12],req.arg[13],req.arg[14],req.arg[15],req.arg[16],req.arg[17],req.arg[18]); break;
+        default:   res.result = SRV_CMD_ERR; break;
+      }
+      break;
     //--------------------------------------------------------------------------
     case	1: // vehicle
-        switch(req.cmd) {
-            case 0: res.result = SUCCESS; break;
-            case 1: res.result = SUCCESS; break;
-            case 2: res.result = SUCCESS; break;
-            case 3: res.result = SUCCESS; break;
-            case 4: res.result = SUCCESS; break;
-            case 6: res.result = SUCCESS; break;
-            case 7: res.result = SUCCESS; break;
-            case 8: res.val.resize(3); res.result = VehicleGetPos(&res.val[0],&res.val[1],&res.val[2]); break;
-            case 9: res.result = VehicleSetPos(req.arg[0],req.arg[1],req.arg[2]); break;
-            case 10:res.result = VehicleSetVel(req.arg[0],req.arg[1]); break;
-            case 11:res.result = SUCCESS; break;
-            case 15:res.result = VehicleMoveLinearAbs(req.arg[0],req.arg[1],req.arg[2]); break;
-            case 16:res.result = VehicleMoveLinearAbs2(req.arg[0],req.arg[1],req.arg[2]); break;
-            case 17:res.result = SUCCESS; break;
-            case 18:res.result = SUCCESS; break;
-            case 19:res.result = SUCCESS; break;
-            case 20:res.result = SUCCESS; break;
-            case 25:res.result = SUCCESS; break;
-            case 26:res.result = SUCCESS; break;
-            default:res.result = SRV_CMD_ERR; break;
-        }
-        break;
+      switch(req.cmd)
+      {
+        case 0: res.result = SUCCESS; break;
+        case 1: res.result = SUCCESS; break;
+        case 2: res.result = SUCCESS; break;
+        case 3: res.result = SUCCESS; break;
+        case 4: res.result = SUCCESS; break;
+        case 6: res.result = SUCCESS; break;
+        case 7: res.result = SUCCESS; break;
+        case 8: res.val.resize(3); res.result = VehicleGetPos(&res.val[0],&res.val[1],&res.val[2]); break;
+        case 9: res.result = VehicleSetPos(req.arg[0],req.arg[1],req.arg[2]); break;
+        case 10:res.result = VehicleSetVel(req.arg[0],req.arg[1]); break;
+        case 11:res.result = SUCCESS; break;
+        case 15:res.result = VehicleMoveLinearAbs(req.arg[0],req.arg[1],req.arg[2]); break;
+        case 16:res.result = VehicleMoveLinearAbs2(req.arg[0],req.arg[1],req.arg[2]); break;
+        case 17:res.result = SUCCESS; break;
+        case 18:res.result = SUCCESS; break;
+        case 19:res.result = SUCCESS; break;
+        case 20:res.result = SUCCESS; break;
+        case 25:res.result = SUCCESS; break;
+        case 26:res.result = SUCCESS; break;
+        default:res.result = SRV_CMD_ERR; break;
+      }
+      break;
     //--------------------------------------------------------------------------
     case	2: // ArmR
-        switch(req.cmd)
-        {
+      switch(req.cmd)
+      {
         case 0: res.result = SUCCESS; break;
         case 1: res.result = SUCCESS; break;
         case 2: res.result = SUCCESS; break;
@@ -594,12 +600,12 @@ bool robotControl(tms_msg_rc::rc_robot_control::Request  &req,
         case 17:res.result = SUCCESS; break;
         case 18:res.result = SUCCESS; break;
         default:res.result = SRV_CMD_ERR; break;
-        }
-        break;
+      }
+      break;
     //--------------------------------------------------------------------------
     case	3: // ArmL
-        switch(req.cmd)
-        {
+      switch(req.cmd)
+      {
         case 0: res.result = SUCCESS; break;
         case 1: res.result = SUCCESS; break;
         case 2: res.result = SUCCESS; break;
@@ -616,12 +622,12 @@ bool robotControl(tms_msg_rc::rc_robot_control::Request  &req,
         case 17:res.result = SUCCESS; break;
         case 18:res.result = SUCCESS; break;
         default:res.result = SRV_CMD_ERR; break;
-        }
-        break;
+      }
+      break;
     //--------------------------------------------------------------------------
     case	4: // GripperR
-        switch(req.cmd)
-        {
+      switch(req.cmd)
+      {
         case 0: res.result = SUCCESS; break;
         case 1: res.result = SUCCESS; break;
         case 2: res.result = SUCCESS; break;
@@ -633,12 +639,12 @@ bool robotControl(tms_msg_rc::rc_robot_control::Request  &req,
         case 8: res.val.resize(1); res.result = GripperGetPos(ArmR,&res.val[0]); break;
         case 15:res.result = GripperMoveAbs(ArmR,req.arg[0],req.arg[1],req.arg[2]); break;
         default:res.result = SRV_CMD_ERR; break;
-        }
-        break;
+      }
+      break;
     //--------------------------------------------------------------------------
     case	5: // GripperL
-        switch(req.cmd)
-        {
+      switch(req.cmd)
+      {
         case 0: res.result = SUCCESS; break;
         case 1: res.result = SUCCESS; break;
         case 2: res.result = SUCCESS; break;
@@ -650,12 +656,12 @@ bool robotControl(tms_msg_rc::rc_robot_control::Request  &req,
         case 8: res.val.resize(1); res.result = GripperGetPos(ArmL,&res.val[0]); break;
         case 15:res.result = GripperMoveAbs(ArmL,req.arg[0],req.arg[1],req.arg[2]); break;
         default:res.result = SRV_CMD_ERR; break;
-        }
-        break;
+      }
+      break;
     //--------------------------------------------------------------------------
     case	6: // Waist
-        switch(req.cmd)
-        {
+      switch(req.cmd)
+      {
         case 0: res.result = SUCCESS; break;
         case 1: res.result = SUCCESS; break;
         case 2: res.result = SUCCESS; break;
@@ -670,12 +676,12 @@ bool robotControl(tms_msg_rc::rc_robot_control::Request  &req,
         case 17:res.result = SUCCESS; break;
         case 18:res.result = SUCCESS; break;
         default:res.result = SRV_CMD_ERR; break;
-        }
-        break;
+      }
+      break;
     //--------------------------------------------------------------------------
     case	7: // CC
-        res.result = SRV_UNIT_ERR; break;
-        break;
+      res.result = SRV_UNIT_ERR; break;
+      break;
     //--------------------------------------------------------------------------
     default:res.result = SRV_UNIT_ERR; break;
   }
@@ -683,22 +689,24 @@ bool robotControl(tms_msg_rc::rc_robot_control::Request  &req,
 }
 
 //------------------------------------------------------------------------------
-void RobotDataUpdate() { // for smartpal5_1 計算用モデル
+void RobotDataUpdate()
+{
   ros::Rate loop_rate(10); // 10Hz frequency (0.1 sec)
 
-  while (ros::ok()) {
+  while (ros::ok())
+  {
     ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
-    double secs = now.toSec();
-    //ROS_INFO("r1|Time:%f,x:%f,y:%f,ry:%f", secs,g_x,g_y,g_t);
 
     tms_msg_db::TmsdbStamped db_msg;
     tms_msg_db::Tmsdb current_pos_data;
 
-    db_msg.header.frame_id  = "/world";
-    db_msg.header.stamp     = now;
+    db_msg.header.frame_id   = "/world";
+    db_msg.header.stamp      = now;
 
     current_pos_data.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
-    current_pos_data.id      = 2002;
+    current_pos_data.id      = 2003; // smartpal5_2
+    current_pos_data.name    = "smartpal5_2";
+    current_pos_data.type    = "robot";
     current_pos_data.x       = g_x;
     current_pos_data.y       = g_y;
     current_pos_data.z       = 0.0;
@@ -711,11 +719,15 @@ void RobotDataUpdate() { // for smartpal5_1 計算用モデル
 
     std::stringstream ss;
     ss << g_lumba_high << ";" << g_lumba_low << ";";
-    for (int i=0; i<7; i++) {
+
+    for (int i=0; i<7; i++)
+    {
       ss << g_jR[i] << ";";
     }
     ss << g_gripper_right << ";";
-    for (int i=0; i<7; i++) {
+
+    for (int i=0; i<7; i++)
+    {
       ss << g_jL[i] << ";";
     }
     ss << g_gripper_left;
@@ -732,16 +744,15 @@ void RobotDataUpdate() { // for smartpal5_1 計算用モデル
   }
 }
 
-//------------------------------------------------------------------------------
-void RobotDataUpdate2() { // for smartpal5_2 表示用モデル
+void ObjectDataUpdate()
+{
   ros::Rate loop_rate(10); // 10Hz frequency (0.1 sec)
 
-  while (ros::ok()) {
-  //	if (grasping == true) {
-      // DBの主キーがtimeなので，RobotDataUpdataとかぶらないように人為的に0.0005秒プラス
-      ros::Time now = ros::Time::now() + ros::Duration(9*60*60) + ros::Duration(0.0005); // GMT +9
-      double secs = now.toSec();
-      //ROS_INFO("r2|Time:%f,x:%f,y:%f,ry:%f", secs,g_x2,g_y2,g_t2);
+  while (ros::ok())
+  {
+    if (grasping == true)
+    {
+      ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 
       tms_msg_db::TmsdbStamped db_msg;
       tms_msg_db::Tmsdb current_pos_data;
@@ -749,102 +760,40 @@ void RobotDataUpdate2() { // for smartpal5_2 表示用モデル
       db_msg.header.frame_id  = "/world";
       db_msg.header.stamp     = now;
 
-      current_pos_data.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
-      current_pos_data.id      = 2003;
-      current_pos_data.x       = g_x;
-      current_pos_data.y       = g_y;
-      current_pos_data.z       = 0.0;
-      current_pos_data.rr      = 0.0;
-      current_pos_data.rp      = 0.0;
-      current_pos_data.ry      = g_t;
-      current_pos_data.place   = 5001;
-      current_pos_data.sensor  = 3005;
-      current_pos_data.state   = g_r_state;
-
-      std::stringstream ss;
-      ss << g_lumba_high << ";" << g_lumba_low << ";";
-      for (int i=0; i<7; i++) {
-        ss << g_jR[i] << ";";
-      }
-      ss << g_gripper_right << ";";
-      for (int i=0; i<7; i++) {
-        ss << g_jL[i] << ";";
-      }
-      ss << g_gripper_left;
-
-      // joint information of smartpal5
-      // lumba_low, lumba_high, jR[0]...[6], gripper_right, jL[0]...[6], gripper_left
-      current_pos_data.joint = ss.str();
+      current_pos_data.time   = boost::posix_time::to_iso_extended_string(now.toBoost());
+      current_pos_data.id     = g_oid;
+      current_pos_data.x      = g_ox;
+      current_pos_data.y      = g_oy;
+      current_pos_data.z      = g_oz;
+      current_pos_data.rr     = g_orr;
+      current_pos_data.rp     = g_orp;
+      current_pos_data.ry     = g_ory;
+      current_pos_data.place  = 2002;
+      current_pos_data.sensor = 3005;
+      current_pos_data.probability = 1.0;
+      current_pos_data.state = 2;
 
       db_msg.tmsdb.push_back(current_pos_data);
+
       pose_publisher.publish(db_msg);
-
-      ros::spinOnce();
-      loop_rate.sleep();
-
-//		}
+    }
   }
 }
 
-//------------------------------------------------------------------------------
-void ObjectDataUpdate() {
-    ros::Rate loop_rate(10); // 10Hz frequency (0.1 sec)
-
-    while (ros::ok()) {
-      if (grasping == true) {
-        //ros::Time now = ros::Time::now() + ros::Duration(9*60*60) + ros::Duration(0.0005); // GMT +9
-        ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
-        double secs = now.toSec();
-        //ROS_INFO("o|Time:%f,x:%f,y:%f,z:%f,rr:%f,rp:%f,ry:%f\n", secs,g_ox,g_oy,g_oz,g_orr,g_orp,g_ory);
-
-        tms_msg_db::TmsdbStamped db_msg;
-        tms_msg_db::Tmsdb current_pos_data;
-
-        db_msg.header.frame_id  = "/world";
-        db_msg.header.stamp     = now;
-
-        current_pos_data.time  = boost::posix_time::to_iso_extended_string(now.toBoost());
-        current_pos_data.id    = g_oid;
-        current_pos_data.x = g_ox; // m -> mm
-        current_pos_data.y = g_oy;
-        current_pos_data.z = g_oz;
-        current_pos_data.rr = g_orr;
-        current_pos_data.rp = g_orp;
-        current_pos_data.ry = g_ory;
-        current_pos_data.place = 2002;
-        current_pos_data.sensor = 3005;
-        current_pos_data.probability = 1.0;
-        current_pos_data.state = 2;
-
-        db_msg.tmsdb.push_back(current_pos_data);
-
-        pose_publisher.publish(db_msg);
-      }
-    }
-}
-
-//------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
-  //--------------------------------------------------------------------------
   ros::init(argc, argv, "smartpal5_virtual_control");
   ros::NodeHandle nh;
   ros::ServiceServer service    = nh.advertiseService("sp5_virtual_control", robotControl);
   pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
 
-  // smartpal initialize
   printf("Virtual SmartPal initialization has been completed.\n\n");
 
-  // スレッド処理でロボット情報の更新と物体情報の更新を同時に行う
-//  boost::thread thr_rdu(&RobotDataUpdate);
-  boost::thread thr_rdu2(&RobotDataUpdate2);
+  boost::thread thr_rdu(&RobotDataUpdate);
   boost::thread thr_odu(&ObjectDataUpdate);
 
-  // スレッドの終了を待つ
-//  thr_rdu.join();
-  thr_rdu2.join();
+  thr_rdu.join();
   thr_odu.join();
 
   return(0);
 }
-//------------------------------------------------------------------------------
