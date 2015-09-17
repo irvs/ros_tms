@@ -1,1 +1,0 @@
-{ "options" : { "create" : "rostmsdb.history_data" }, "indexes" : [ { "v" : 1, "key" : { "_id" : 1 }, "ns" : "rostmsdb.history_data", "name" : "_id_" } ] }

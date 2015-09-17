@@ -1,1 +1,0 @@
-{ "options" : { "create" : "data_structure" }, "indexes" : [ { "v" : 1, "key" : { "_id" : 1 }, "ns" : "rostmsdb.data_structure", "name" : "_id_" } ] }
