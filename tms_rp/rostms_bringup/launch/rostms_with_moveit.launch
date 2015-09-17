@@ -33,7 +33,7 @@
   </include>
 
   <!-- Run Rviz and load the default config to see the state of the move_group node -->
-  <include file="$(find rostms_moveit_config)/launch/moveit_rviz.launch">
+  <include file="$(find rostms_bringup)/launch/rviz.launch">
     <arg name="config" value="true"/>
     <arg name="debug" value="$(arg debug)"/>
   </include>
