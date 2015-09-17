@@ -80,25 +80,22 @@ ros::Publisher pose_publisher;
 double g_x = 3.0;
 double g_y = 4.0;
 double g_t = 0.0;
-double g_jR[7] = {0.0,-10.0,0.0,0.0,0.0,0.0,0.0}; // TODO: degree to rad
-double g_jL[7] = {0.0,10.0,0.0,0.0,0.0,0.0,0.0};  // TODO: degree to rad
+double g_jR[7] = {0.0,-0.08,0.0,0.0,0.0,0.0,0.0};
+double g_jL[7] = {0.0,0.08,0.0,0.0,0.0,0.0,0.0};
 
-double g_gripper_right = -10.0;
-double g_gripper_left  = -10.0;
+double g_gripper_right = -0.3;
+double g_gripper_left  =  0.3;
 
 double g_lumba_high = 0.0;
 double g_lumba_low  = 0.0;
 
 double g_r_state = 1;
 
-double g_x2 = 0.0;
-double g_y2 = 0.0;
-double g_t2 = 0.0;
-double g_jR2[7] = {0.0,-10.0,0.0,0.0,0.0,0.0,0.0}; // TODO: degree to rad
-double g_jL2[7] = {0.0,10.0,0.0,0.0,0.0,0.0,0.0};  // TODO: degree to rad
+double g_jR2[7] = {0.0,-0.08,0.0,0.0,0.0,0.0,0.0};
+double g_jL2[7] = {0.0,0.08,0.0,0.0,0.0,0.0,0.0};
 
-double g_gripper_right2 = -10.0; // TODO: degree to rad
-double g_gripper_left2  = -10.0; // TODO: degree to rad
+double g_gripper_right2 = -0.3;
+double g_gripper_left2  =  0.3;
 
 double g_lumba_high2 = 0.0;
 double g_lumba_low2  = 0.0;
