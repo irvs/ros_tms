@@ -1,1 +1,0 @@
-{ "options" : { "create" : "data_person" }, "indexes" : [ { "v" : 1, "key" : { "_id" : 1 }, "ns" : "rostmsdb.data_person", "name" : "_id_" } ] }

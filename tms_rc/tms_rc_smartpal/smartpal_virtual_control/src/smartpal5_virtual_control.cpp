@@ -80,31 +80,16 @@ ros::Publisher pose_publisher;
 double g_x = 3.0;
 double g_y = 4.0;
 double g_t = 0.0;
-double g_jR[7] = {0.0,-10.0,0.0,0.0,0.0,0.0,0.0}; // TODO: degree to rad
-double g_jL[7] = {0.0,10.0,0.0,0.0,0.0,0.0,0.0};  // TODO: degree to rad
+double g_jR[7] = {0.0,-0.08,0.0,0.0,0.0,0.0,0.0};
+double g_jL[7] = {0.0,0.08,0.0,0.0,0.0,0.0,0.0};
 
-double g_gripper_right = -10.0;
-double g_gripper_left  = -10.0;
+double g_gripper_right = -0.3;
+double g_gripper_left  =  0.3;
 
 double g_lumba_high = 0.0;
 double g_lumba_low  = 0.0;
 
 double g_r_state = 1;
-
-double g_x2 = 0.0;
-double g_y2 = 0.0;
-double g_t2 = 0.0;
-double g_jR2[7] = {0.0,-10.0,0.0,0.0,0.0,0.0,0.0}; // TODO: degree to rad
-double g_jL2[7] = {0.0,10.0,0.0,0.0,0.0,0.0,0.0};  // TODO: degree to rad
-
-double g_gripper_right2 = -10.0; // TODO: degree to rad
-double g_gripper_left2  = -10.0; // TODO: degree to rad
-
-double g_lumba_high2 = 0.0;
-double g_lumba_low2  = 0.0;
-
-double g_r_state2 = 1;
-
 
 double g_vehicle_velocity_t = 100.0;  // Velocity of translation (now mm/s)
 double g_vehicle_velocity_r = 1000.0; // Velocity of rotation   (now deg/s)
@@ -134,25 +119,21 @@ int8_t SyncObj(double r_x, double r_y, double r_ry, double r_state,
   if (r_x != -1)
   {
     g_x  = r_x; // m
-    g_x2 = r_x; // m
   }
 
   if (r_y != -1)
   {
     g_y  = r_y; // m
-    g_y2 = r_y; // m
   }
 
   if (r_ry != -1)
   {
     g_t  = r_ry; // rad
-    g_t2 = r_ry; // rad
   }
 
   if (r_state != -1)
   {
     g_r_state = r_state;
-    g_r_state2 = r_state;
   }
 
   if (o_id != -1) g_oid = (int)o_id;
@@ -187,79 +168,79 @@ int8_t CalcBackground(double r2_x, double r2_y, double r2_ry,
   bool ret = true;
   grasping = true;
 
-  g_x2 = r2_x;  // m
-  g_y2 = r2_y;  // m
-  g_t2 = r2_ry; // rad
-
-  if (o_x  != -1) g_ox  = o_x;
-  if (o_y  != -1) g_oy  = o_y;
-  if (o_z  != -1) g_oz  = o_z;
-  if (o_rr != -1) g_orr = o_rr;
-  if (o_rp != -1) g_orp = o_rp;
-  if (o_ry != -1) g_ory = o_ry;
-
-  if (r2_wh != -1)
-  {
-    g_lumba_high2 = r2_wh;
-    g_lumba_high  = r2_wh;
-  }
-
-  if (r2_wl != -1)
-  {
-    g_lumba_low2 = r2_wl;
-    g_lumba_low  = r2_wl;
-  }
-
-  if (r2_j0 != -1)
-  {
-    g_jR2[0] = r2_j0;
-    g_jR[0]  = r2_j0;
-  }
-
-  if (r2_j1 != -1)
-  {
-    g_jR2[1] = r2_j1;
-    g_jR[1]  = r2_j1;
-  }
-
-  if (r2_j2 != -1)
-  {
-    g_jR2[2] = r2_j2;
-    g_jR[2]  = r2_j2;
-  }
-
-  if (r2_j3 != -1)
-  {
-    g_jR2[3] = r2_j3;
-    g_jR[3]  = r2_j3;
-  }
-
-  if (r2_j4 != -1)
-  {
-    g_jR2[4] = r2_j4;
-    g_jR[4]  = r2_j4;
-  }
-
-  if (r2_j5 != -1)
-  {
-    g_jR2[5] = r2_j5;
-    g_jR[5]  = r2_j5;
-  }
-
-  if (r2_j6 != -1)
-  {
-    g_jR2[6] = r2_j6;
-    g_jR[6]  = r2_j6;
-  }
-
-  if (r2_gR != -1)
-  {
-    g_gripper_right2 = r2_gR;
-    g_gripper_right  = r2_gR;
-  }
-
-  printf("CalcBackground result: %0.1fm, %0.1fm, %0.1frad\n ",g_x2, g_y2, g_t2);
-  ret ? printf("Success\n") : printf("Failure\n");
+  // g_x2 = r2_x;  // m
+  // g_y2 = r2_y;  // m
+  // g_t2 = r2_ry; // rad
+  //
+  // if (o_x  != -1) g_ox  = o_x;
+  // if (o_y  != -1) g_oy  = o_y;
+  // if (o_z  != -1) g_oz  = o_z;
+  // if (o_rr != -1) g_orr = o_rr;
+  // if (o_rp != -1) g_orp = o_rp;
+  // if (o_ry != -1) g_ory = o_ry;
+  //
+  // if (r2_wh != -1)
+  // {
+  //   g_lumba_high2 = r2_wh;
+  //   g_lumba_high  = r2_wh;
+  // }
+  //
+  // if (r2_wl != -1)
+  // {
+  //   g_lumba_low2 = r2_wl;
+  //   g_lumba_low  = r2_wl;
+  // }
+  //
+  // if (r2_j0 != -1)
+  // {
+  //   g_jR2[0] = r2_j0;
+  //   g_jR[0]  = r2_j0;
+  // }
+  //
+  // if (r2_j1 != -1)
+  // {
+  //   g_jR2[1] = r2_j1;
+  //   g_jR[1]  = r2_j1;
+  // }
+  //
+  // if (r2_j2 != -1)
+  // {
+  //   g_jR2[2] = r2_j2;
+  //   g_jR[2]  = r2_j2;
+  // }
+  //
+  // if (r2_j3 != -1)
+  // {
+  //   g_jR2[3] = r2_j3;
+  //   g_jR[3]  = r2_j3;
+  // }
+  //
+  // if (r2_j4 != -1)
+  // {
+  //   g_jR2[4] = r2_j4;
+  //   g_jR[4]  = r2_j4;
+  // }
+  //
+  // if (r2_j5 != -1)
+  // {
+  //   g_jR2[5] = r2_j5;
+  //   g_jR[5]  = r2_j5;
+  // }
+  //
+  // if (r2_j6 != -1)
+  // {
+  //   g_jR2[6] = r2_j6;
+  //   g_jR[6]  = r2_j6;
+  // }
+  //
+  // if (r2_gR != -1)
+  // {
+  //   g_gripper_right2 = r2_gR;
+  //   g_gripper_right  = r2_gR;
+  // }
+  //
+  // printf("CalcBackground result: %0.1fm, %0.1fm, %0.1frad\n ",g_x2, g_y2, g_t2);
+  // ret ? printf("Success\n") : printf("Failure\n");
 
   if(ret)
   {
@@ -320,21 +301,6 @@ int8_t VehicleMoveLinearAbs(double x_m, double y_m, double theta_rad)
   g_t = theta_rad;
 
   printf("vehicleMoveLinearAbs(%0.1fm, %0.1fm, %0.1frad) result:",g_x, g_y, g_t);
-  ret ? printf("Success\n") : printf("Failure\n");
-
-  if(ret) return  SUCCESS;
-  else    return  FAILURE;
-}
-
-int8_t VehicleMoveLinearAbs2(double x_m, double y_m, double theta_rad)
-{
-  bool ret = true;
-
-  g_x2 = x_m;
-  g_y2 = y_m;
-  g_t2 = theta_rad;
-
-  printf("vehicleMoveLinearAbs2(%0.1fm, %0.1fm, %0.1frad) result:",g_x2, g_y2, g_t2);
   ret ? printf("Success\n") : printf("Failure\n");
 
   if(ret) return  SUCCESS;
@@ -570,7 +536,7 @@ bool robotControl(tms_msg_rc::rc_robot_control::Request  &req,
         case 10:res.result = VehicleSetVel(req.arg[0],req.arg[1]); break;
         case 11:res.result = SUCCESS; break;
         case 15:res.result = VehicleMoveLinearAbs(req.arg[0],req.arg[1],req.arg[2]); break;
-        case 16:res.result = VehicleMoveLinearAbs2(req.arg[0],req.arg[1],req.arg[2]); break;
+        case 16:res.result = SUCCESS; break;
         case 17:res.result = SUCCESS; break;
         case 18:res.result = SUCCESS; break;
         case 19:res.result = SUCCESS; break;
