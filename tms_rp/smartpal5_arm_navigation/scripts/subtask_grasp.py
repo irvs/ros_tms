@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-    moveit_pick_and_place_demo.py - Version 0.1.1 2015-08-26
+    grasp.py - Version 0.0.1 2015-09-18
 
     Command the gripper to grasp a target object and move it to a new location, all
     while avoiding simulated obstacles.
@@ -28,10 +28,11 @@ from geometry_msgs.msg import PoseStamped, Pose
 from moveit_commander import MoveGroupCommander, PlanningSceneInterface
 from moveit_msgs.msg import PlanningScene, ObjectColor
 from moveit_msgs.msg import Grasp, GripperTranslation, MoveItErrorCodes
-
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from tf.transformations import quaternion_from_euler
 from copy import deepcopy
+from tms_msg_db.msg import TmsdbStamped, Tmsdb
+from tms_msg_db.srv import *
 
 GROUP_NAME_ARM = 'l_arm'
 GROUP_NAME_GRIPPER = 'l_gripper'
@@ -48,31 +49,43 @@ GRIPPER_EFFORT = [1.0]
 
 REFERENCE_FRAME = 'world_link'
 
-class MoveItDemo:
+class SubTaskGrasp:
     def __init__(self):
         # Initialize the move_group API
         moveit_commander.roscpp_initialize(sys.argv)
+        rospy.init_node('subtask_grasp')
+        rospy.on_shutdown(self.shutdown)
 
-        rospy.init_node('moveit_pick_and_place_demo')
+        temp_dbdata = Tmsdb()
+        target = Tmsdb()
+
+        temp_dbdata.name = 'chipstar_red'
+
+        rospy.wait_for_service('tms_db_reader')
+        try:
+            tms_db_reader = rospy.ServiceProxy('tms_db_reader', TmsdbGetData)
+            res = tms_db_reader(temp_dbdata)
+            target = res.tmsdb[0]
+        except rospy.ServiceException, e:
+            print "Service call failed: %s"%e
+            self.shutdown()
+
+        print(target.name)
 
         # Use the planning scene object to add or remove objects
         scene = PlanningSceneInterface()
 
         # Create a scene publisher to push changes to the scene
         self.scene_pub = rospy.Publisher('planning_scene', PlanningScene)
-
         # Create a publisher for displaying gripper poses
         self.gripper_pose_pub = rospy.Publisher('gripper_pose', PoseStamped)
-
         # Create a dictionary to hold object colors
         self.colors = dict()
 
         # Initialize the move group for the right arm
         arm = MoveGroupCommander(GROUP_NAME_ARM)
-
         # Initialize the move group for the right gripper
         gripper = MoveGroupCommander(GROUP_NAME_GRIPPER)
-
         # Get the name of the end-effector link
         end_effector_link = arm.get_end_effector_link()
 
@@ -85,110 +98,52 @@ class MoveItDemo:
 
         # Set the right arm reference frame
         arm.set_pose_reference_frame(REFERENCE_FRAME)
-
         # Allow 5 seconds per planning attempt
         arm.set_planning_time(5)
-
         # Set a limit on the number of pick attempts before bailing
         max_pick_attempts = 5
-
         # Set a limit on the number of place attempts
         max_place_attempts = 5
-
         # Give the scene a chance to catch up
         rospy.sleep(2)
 
-        # Give each of the scene objects a unique name
-        table_id = 'table'
-        target_id = 'target'
-
-        # Remove leftover objects from a previous run
-        scene.remove_world_object(table_id)
-        scene.remove_world_object(target_id)
-
-        # Remove any attached objects from a previous session
-        scene.remove_attached_object(GRIPPER_FRAME, target_id)
-
-        # Give the scene a chance to catch up
-        rospy.sleep(1)
+        scene.remove_attached_object(GRIPPER_FRAME, target.name)
 
         # Start the arm in the "resting" pose stored in the SRDF file
         arm.set_named_target('l_arm_init')
         arm.go()
-
+        print('test1')
         # Open the gripper to the neutral position
         gripper.set_joint_value_target(GRIPPER_NEUTRAL)
         gripper.go()
 
         rospy.sleep(1)
-
-        # Set the height of the table off the ground
-        table_ground = 0.65
-
-        # Set the dimensions of the scene objects [l, w, h]
-        table_size = [0.2, 0.7, 0.01]
-
-        # Set the target size [l, w, h]
-        target_size = [0.03, 0.03, 0.12]
-
-        # Add a table top and two boxes to the scene
-        table_pose = PoseStamped()
-        table_pose.header.frame_id = REFERENCE_FRAME
-        table_pose.pose.position.x = 0.35
-        table_pose.pose.position.y = 0.0
-        table_pose.pose.position.z = table_ground + table_size[2] / 2.0
-        table_pose.pose.orientation.w = 1.0
-
-        scene.add_box(table_id, table_pose, table_size)
-
-        # Set the target pose in between the boxes and on the table
+        print('test2')
+        # Set the support surface name to the table object
+        # arm.set_support_surface_name(table_id)
+        target_id = target.name
+        target_size = [(target.offset_x*2), (target.offset_y*2), (target.offset_z*2)]
         target_pose = PoseStamped()
         target_pose.header.frame_id = REFERENCE_FRAME
-        target_pose.pose.position.x = 0.35
-        target_pose.pose.position.y = 0.2
-        target_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0
-        q = quaternion_from_euler(0, 0, -1.57079633)
+        target_pose.pose.position.x = target.x
+        target_pose.pose.position.y = target.y
+        target_pose.pose.position.z = target.z + target.offset_z
+        q = quaternion_from_euler(target.rr, target.rp, target.ry)
         target_pose.pose.orientation.x = q[0]
         target_pose.pose.orientation.y = q[1]
         target_pose.pose.orientation.z = q[2]
         target_pose.pose.orientation.w = q[3]
-
-        # Add the target object to the scene
-        scene.add_box(target_id, target_pose, target_size)
-
-        # Make the table red and the boxes orange
-        self.setColor(table_id, 0.8, 0, 0, 1.0)
-
-        # Make the target yellow
-        self.setColor(target_id, 0.9, 0.9, 0, 1.0)
-
-        # Send the colors to the planning scene
-        self.sendColors()
-
-        # Set the support surface name to the table object
-        arm.set_support_surface_name(table_id)
-
-        # Specify a pose to place the target after being picked up
-        place_pose = PoseStamped()
-        place_pose.header.frame_id = REFERENCE_FRAME
-        place_pose.pose.position.x = 0.35
-        place_pose.pose.position.y = 0.3
-        place_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0
-        q = quaternion_from_euler(0, 0, -1.57079633)
-        place_pose.pose.orientation.x = q[0]
-        place_pose.pose.orientation.y = q[1]
-        place_pose.pose.orientation.z = q[2]
-        place_pose.pose.orientation.w = q[3]
-
+        print('test2-1')
         # Initialize the grasp pose to the target pose
         grasp_pose = target_pose
-
+        print('test2-2')
         # Shift the grasp pose by half the width of the target to center it
+        grasp_pose.pose.position.x -= target_size[0] / 2.0
         grasp_pose.pose.position.y -= target_size[1] / 2.0
-
+        print('test2-3')
         # Generate a list of grasps
         grasps = self.make_grasps(grasp_pose, [target_id])
-
+        print('test3')
         # Publish the grasp poses so they can be viewed in RViz
         for grasp in grasps:
             self.gripper_pose_pub.publish(grasp.grasp_pose)
@@ -197,7 +152,7 @@ class MoveItDemo:
         # Track success/failure and number of attempts for pick operation
         result = None
         n_attempts = 0
-
+        print('test4')
         # Repeat until we succeed or run out of attempts
         while result != MoveItErrorCodes.SUCCESS and n_attempts < max_pick_attempts:
             n_attempts += 1
@@ -206,26 +161,7 @@ class MoveItDemo:
             rospy.sleep(0.2)
 
         # If the pick was successful, attempt the place operation
-        if result == MoveItErrorCodes.SUCCESS:
-            result = None
-            n_attempts = 0
-
-            # Generate valid place poses
-            places = self.make_places(place_pose)
-
-            # Repeat until we succeed or run out of attempts
-            while result != MoveItErrorCodes.SUCCESS and n_attempts < max_place_attempts:
-                n_attempts += 1
-                rospy.loginfo("Place attempt: " +  str(n_attempts))
-                for place in places:
-                    result = arm.place(target_id, place)
-                    if result == MoveItErrorCodes.SUCCESS:
-                        break
-                rospy.sleep(0.2)
-
-            if result != MoveItErrorCodes.SUCCESS:
-                rospy.loginfo("Place operation failed after " + str(n_attempts) + " attempts.")
-        else:
+        if result != MoveItErrorCodes.SUCCESS:
             rospy.loginfo("Pick operation failed after " + str(n_attempts) + " attempts.")
 
         # Return the arm to the "resting" pose stored in the SRDF file
@@ -233,15 +169,13 @@ class MoveItDemo:
         arm.go()
 
         # Open the gripper to the neutral position
-        gripper.set_joint_value_target(GRIPPER_NEUTRAL)
-        gripper.go()
+        # gripper.set_joint_value_target(GRIPPER_NEUTRAL)
+        # gripper.go()
 
         rospy.sleep(1)
 
-        # Shut down MoveIt cleanly
+        # Shut down MoveIt cleanly and exit the script
         moveit_commander.roscpp_shutdown()
-
-        # Exit the script
         moveit_commander.os._exit(0)
 
     # Get the gripper posture as a JointTrajectory
@@ -317,15 +251,9 @@ class MoveItDemo:
         for y in yaw_vals:
             for p in pitch_vals:
                 # Create a quaternion from the Euler angles
-                # q = quaternion_from_euler(0, p, y)
+                q = quaternion_from_euler(0, p, y)
 
                 # # Set the grasp pose orientation accordingly
-                # g.grasp_pose.pose.orientation.x = q[0]
-                # g.grasp_pose.pose.orientation.y = q[1]
-                # g.grasp_pose.pose.orientation.z = q[2]
-                # g.grasp_pose.pose.orientation.w = q[3]
-
-                q = quaternion_from_euler(0, 0, -1.57079633)
                 g.grasp_pose.pose.orientation.x = q[0]
                 g.grasp_pose.pose.orientation.y = q[1]
                 g.grasp_pose.pose.orientation.z = q[2]
@@ -432,5 +360,11 @@ class MoveItDemo:
         # Publish the scene diff
         self.scene_pub.publish(p)
 
+    def shutdown(self):
+        rospy.loginfo("Stopping the node")
+
 if __name__ == "__main__":
-    MoveItDemo()
+    try:
+        SubTaskGrasp()
+    except rospy.ROSInterruptException:
+        rospy.loginfo("subtask_grasp node terminated.")
