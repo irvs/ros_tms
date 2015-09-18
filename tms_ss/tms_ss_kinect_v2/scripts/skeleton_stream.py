@@ -188,8 +188,8 @@ class SkeletonStream:
             if ip_addr[0] == NETWORK_SETTING.IP_LIST[self.camera_id-1]:
                 print('-----')
                 self.__setFromJSONToSkeleton(json_str)
-                rospy.loginfo('\n-----\nSending skeleton {0}\n  FaceState: {1}'
-                              .format(self.data.user_id, self.face_state))
+                rospy.loginfo('\n-----\nSending skeleton {0}\n  Camera: {1}\n  FaceState: {2}'
+                              .format(self.data.user_id, self.camera_id, self.face_state))
                 data_wrapper = SkeletonStreamWrapper()
                 data_wrapper.camera_number = self.camera_id
                 data_wrapper.skeleton = self.data
