@@ -43,12 +43,12 @@ class ObjectSetting:
         scene.remove_world_object(target_id)
         scene.remove_attached_object("l_end_effector_link", target_id)
 
-        target_size = [0.066, 0.066, 0.14]
+        target_size = [(res.tmsdb[0].offset_x*2), (res.tmsdb[0].offset_y*2), (res.tmsdb[0].offset_z*2)]
         target_pose = PoseStamped()
         target_pose.header.frame_id = REFERENCE_FRAME
         target_pose.pose.position.x = res.tmsdb[0].x
         target_pose.pose.position.y = res.tmsdb[0].y
-        target_pose.pose.position.z = res.tmsdb[0].z
+        target_pose.pose.position.z = res.tmsdb[0].z + res.tmsdb[0].offset_z
         q = quaternion_from_euler(res.tmsdb[0].rr, res.tmsdb[0].rp, res.tmsdb[0].ry)
         target_pose.pose.orientation.x = q[0]
         target_pose.pose.orientation.y = q[1]
