@@ -117,6 +117,12 @@ class SkeletonStream:
             'HandTipRight',
             'ThumbRight'
         )
+        # FaceState for front descrimination
+        static_facestate_names = (
+            'FaceState_NotDetected',
+            'FaceState_Inferred',
+            'FaceState_Detected'
+        )
         obj = json.loads(json_str)
         self.data = Skeleton()
         self.data.user_id = obj['id']
@@ -130,6 +136,7 @@ class SkeletonStream:
                         joint['CameraSpacePoint']['Z']))
             self.data.orientation.append(
                 Quaternion(0, 0, 0, 1))
+            self.face_state = obj['FaceState']
         if obj['CameraParam'] is not None:
             print('Received camera parameters')
             self.camera = CameraPosture()
@@ -147,8 +154,8 @@ class SkeletonStream:
             if self.gotOffset:
                 T_old = T
                 R_old = R
-                print(self.offsetT)
-                print(q_toMat(self.offsetR))
+                # print(self.offsetT)
+                # print(q_toMat(self.offsetR))
                 T = np.dot(q_toMat(self.offsetR), T_old) + self.offsetT
                 R = q_mul(self.offsetR, R_old)
             self.camera.translation.x = T[0]
@@ -181,11 +188,12 @@ class SkeletonStream:
             if ip_addr[0] == NETWORK_SETTING.IP_LIST[self.camera_id-1]:
                 print('-----')
                 self.__setFromJSONToSkeleton(json_str)
-                rospy.loginfo('Sending skeleton {0}'
-                              .format(self.data.user_id))
+                rospy.loginfo('\n-----\nSending skeleton {0}\n  FaceState: {1}'
+                              .format(self.data.user_id, self.face_state))
                 data_wrapper = SkeletonStreamWrapper()
                 data_wrapper.camera_number = self.camera_id
                 data_wrapper.skeleton = self.data
+                data_wrapper.face_state = int(self.face_state)
                 self.pub_skeleton.publish(self.data)
                 if self.camera is not None:
                     data_wrapper.camera_posture = self.camera

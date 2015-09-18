@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
   <!-- Make skeleton streams -->
-  <node name="skeleton_integrator" pkg="tms_ss_kinect_v2" args="1 2" type="skeleton_integrator"/>
+  <node name="skeleton_integrator" pkg="tms_ss_kinect_v2" args="1 2 8" type="skeleton_integrator"/>
 
   <!-- For visualize furnitures in rViz -->
   <param name="robot_description"
@@ -12,8 +12,10 @@
   <!-- For visualize kinect in rViz -->
   <param name="kinect_description1"  textfile="$(find tms_ss_kinect_v2)/urdf/kinect_v2.urdf"/>
   <param name="kinect_description2"  textfile="$(find tms_ss_kinect_v2)/urdf/kinect_v2.urdf"/>
+  <param name="kinect_description8"  textfile="$(find tms_ss_kinect_v2)/urdf/kinect_v2.urdf"/>
   <node name="kinect_state_publisher01" pkg="tms_ss_kinect_v2" args="1"  type="kinect_state_publisher"/>
   <node name="kinect_state_publisher02" pkg="tms_ss_kinect_v2" args="2"  type="kinect_state_publisher"/>
+  <node name="kinect_state_publisher08" pkg="tms_ss_kinect_v2" args="8"  type="kinect_state_publisher"/>
 
   <!-- For visualize box in rViz -->
   <param name="box_description"  textfile="$(find tms_ss_kinect_v2)/urdf/checker_box.urdf"/>
