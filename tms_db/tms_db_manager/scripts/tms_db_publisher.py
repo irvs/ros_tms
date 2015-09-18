@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*- 
 import rospy
 import genpy
 import pymongo # https://api.mongodb.org/python/2.6.3/
@@ -24,8 +25,6 @@ class TmsDbPublisher():
         if not self.is_connected:
             raise Exception("Problem of connection")
 
-        self.collection_list=['person','robot','sensor','structure','space','furniture','object']
-
         self.data_pub = rospy.Publisher('tms_db_publisher', TmsdbStamped, queue_size=10)
 
         self.sendDbCurrentInformation()
@@ -37,17 +36,14 @@ class TmsDbPublisher():
             temp_dbdata = Tmsdb()
             current_environment_information = TmsdbStamped()
 
-            for collection_name in self.collection_list:
-                cursor = db[collection_name].find({'state':1})
-                # print(collection_name)
-                # print(cursor.count())
-                for doc in cursor:
-                    del doc['_id']
-                    temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
-                    current_environment_information.tmsdb.append(temp_dbdata)
-
-                # rospy.loginfo("send db data!")
-                self.data_pub.publish(current_environment_information)
+            cursor = db.now.find({'state':1})
+            # print(cursor.count())
+            for doc in cursor:
+                del doc['_id']
+                temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
+                current_environment_information.tmsdb.append(temp_dbdata)
+            # rospy.loginfo("send db data!")
+            self.data_pub.publish(current_environment_information)
 
             rate.sleep()
 

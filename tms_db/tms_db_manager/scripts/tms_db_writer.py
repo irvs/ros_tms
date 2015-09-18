@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*- 
 import rospy
 import genpy
 import pymongo # https://api.mongodb.org/python/2.6.3/
@@ -33,16 +34,13 @@ class TmsDbWriter():
                 # store into db of history
                 # rospy.loginfo("store into db of history")
                 db.history.insert(doc)
-                # store into db of data_xxx
-                category="data_" + doc['type']
-                # print(category)
+                # store into data collection
                 # print(doc['name'])
-                # rospy.loginfo("update into db of " + category)
-                result = db[category].find({"name": doc['name']})
+                result = db.now.find({"name": doc['name']})
                 # print(result.count())
                 if result.count() >= 1:
                     del doc['_id']
-                result = db[category].update(
+                result = db.now.update(
                     {"name": doc['name']},
                     doc,
                     upsert=True
@@ -52,25 +50,16 @@ class TmsDbWriter():
                 print "ServiceException: %s"%e
 
     def writeInitData(self):
-        cursor = db.default.find({"type": "furniture"})
+        cursor = db.default.find({"$or":[{"type": "furniture"}, {"type": "robot"}]})
         for doc in cursor:
             # print(doc['name'])
-            result = db['data_furniture'].update(
+            result = db.now.update(
                 {"name": doc['name']},
                 doc,
                 upsert=True
             )
             # print(result)
-        cursor = db.default.find({"type": "robot"})
-        for doc in cursor:
-            # print(doc['name'])
-            result = db['data_robot'].update(
-                {"name": doc['name']},
-                doc,
-                upsert=True
-            )
-            # print(result)
-        rospy.loginfo("Writed the init data using db of default_data.")
+        rospy.loginfo("Writed the init data using collection of default.")
 
     def shutdown(self):
         rospy.loginfo("Stopping the node")

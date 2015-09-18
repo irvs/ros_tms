@@ -1,1 +1,0 @@
-{ "options" : { "create" : "rostmsdb.default_data" }, "indexes" : [ { "v" : 1, "key" : { "_id" : 1 }, "ns" : "rostmsdb.default_data", "name" : "_id_" } ] }
