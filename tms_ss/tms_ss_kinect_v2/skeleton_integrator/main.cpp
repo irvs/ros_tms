@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <string>
 #include <sstream>
 #include <iomanip>
@@ -65,6 +66,7 @@ class SkeletonIntegrator
     int new_user_;
     int tracked_skeleton_num_;
     int tracking_validity[MAX_USERS];
+    std::map<int, bool> bFrontCamera[MAX_USERS];  // [camera_id, is_front?]
 
     void listenSkeletonStream();
 
@@ -169,14 +171,31 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
     if ((v1-v2).norm() < 0.3)
     {
       int user_id = skeletons.data[i].user_id;
-      integrated_skeleton.user_id =  user_id;
-      skeletons.data[i] = integrated_skeleton;
+      integrated_skeleton.user_id = user_id;
+      if (msg->face_state == 2)  // Front descrimination
+      {
+        skeletons.data[i] = integrated_skeleton;
+      }
+      else
+      {
+        Eigen::Vector3d translation(
+          integrated_skeleton.position[SpineMid].x - skeletons.data[i].position[SpineMid].x,
+          integrated_skeleton.position[SpineMid].y - skeletons.data[i].position[SpineMid].y,
+          integrated_skeleton.position[SpineMid].z - skeletons.data[i].position[SpineMid].z);
+        for (std::vector<geometry_msgs::Vector3>::iterator it = skeletons.data[i].position.begin();
+            it != skeletons.data[i].position.end(); it++)
+        {
+          it->x += translation[0];
+          it->y += translation[1];
+          it->z += translation[2];
+        }
+      }
       tracking_validity[i] = 10;  // set validity count
       already_detect = true;
       break;
     }
   }
-  if (!already_detect)
+  if (!already_detect && msg->face_state == 2)
   {
     integrated_skeleton.user_id = tracked_skeleton_num_;
     skeletons.data[new_user_] = integrated_skeleton;
@@ -208,7 +227,7 @@ void SkeletonIntegrator::run()
     pub.publish(skeletons);
     for (int i = 0; i<MAX_USERS; i++)
     {
-      // decrease validity of skeleton
+      // decrease validity of skeleton whenever publish
       if (tracking_validity[i] > 0)
       {
         tracking_validity[i]--;
