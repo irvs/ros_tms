@@ -81,7 +81,7 @@ double g_x = 3.0;
 double g_y = 4.0;
 double g_t = 0.0;
 double g_jR[7] = {0.0,-0.08,0.0,0.0,0.0,0.0,0.0};
-double g_jL[7] = {0.0,0.08,0.0,0.0,0.0,0.0,0.0};
+double g_jL[7] = {0.0, 0.08,0.0,0.0,0.0,0.0,0.0};
 
 double g_gripper_right = -0.3;
 double g_gripper_left  =  0.3;
