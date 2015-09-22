@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-    grasp.py - Version 0.0.1 2015-09-18
+    subtask_grasp.py - Version 0.0.2 2015-09-20
 
     Command the gripper to grasp a target object and move it to a new location, all
     while avoiding simulated obstacles.
@@ -33,18 +33,16 @@ from tf.transformations import quaternion_from_euler
 from copy import deepcopy
 from tms_msg_db.msg import TmsdbStamped, Tmsdb
 from tms_msg_db.srv import *
+from tms_msg_rp.srv import *
 
 GROUP_NAME_ARM = 'l_arm'
 GROUP_NAME_GRIPPER = 'l_gripper'
 
 GRIPPER_FRAME = 'l_end_effector_link'
-
 GRIPPER_OPEN = [-1.0]
-GRIPPER_CLOSED = [-0.3]
+GRIPPER_CLOSED = [-0.7]
 GRIPPER_NEUTRAL = [0.0]
-
 GRIPPER_JOINT_NAMES = ['l_gripper_thumb_joint']
-
 GRIPPER_EFFORT = [1.0]
 
 REFERENCE_FRAME = 'world_link'
@@ -56,10 +54,16 @@ class SubTaskGrasp:
         rospy.init_node('subtask_grasp')
         rospy.on_shutdown(self.shutdown)
 
+        self.grasp_srv = rospy.Service('subtask_grasp', rp_grasp, self.graspSrvCallback)
+
+    def graspSrvCallback(self, req):
+        rospy.loginfo("Received the service call!")
+        rospy.loginfo(req)
+
         temp_dbdata = Tmsdb()
         target = Tmsdb()
 
-        temp_dbdata.name = 'chipstar_red'
+        temp_dbdata.id = req.object_id
 
         rospy.wait_for_service('tms_db_reader')
         try:
@@ -107,40 +111,45 @@ class SubTaskGrasp:
         # Give the scene a chance to catch up
         rospy.sleep(2)
 
-        scene.remove_attached_object(GRIPPER_FRAME, target.name)
+        target_id = 'chipstar_red'
+        scene.remove_world_object(target_id)
+        scene.remove_attached_object(GRIPPER_FRAME, target_id)
 
-        # Start the arm in the "resting" pose stored in the SRDF file
+        rospy.sleep(1)
+
         arm.set_named_target('l_arm_init')
         arm.go()
-        print('test1')
-        # Open the gripper to the neutral position
         gripper.set_joint_value_target(GRIPPER_NEUTRAL)
         gripper.go()
 
         rospy.sleep(1)
-        print('test2')
-        # Set the support surface name to the table object
-        # arm.set_support_surface_name(table_id)
-        target_id = target.name
-        target_size = [(target.offset_x*2), (target.offset_y*2), (target.offset_z*2)]
+
+        # target_size = [(target.offset_x*2), (target.offset_y*2), (target.offset_z*2)]
+        target_size = [0.03, 0.03, 0.12]
         target_pose = PoseStamped()
         target_pose.header.frame_id = REFERENCE_FRAME
         target_pose.pose.position.x = target.x
         target_pose.pose.position.y = target.y
         target_pose.pose.position.z = target.z + target.offset_z
-        q = quaternion_from_euler(target.rr, target.rp, target.ry)
+        # q = quaternion_from_euler(target.rr, target.rp, target.ry)
+        q = quaternion_from_euler(0, 0, 0)
         target_pose.pose.orientation.x = q[0]
         target_pose.pose.orientation.y = q[1]
         target_pose.pose.orientation.z = q[2]
         target_pose.pose.orientation.w = q[3]
+
+        scene.add_box(target_id, target_pose, target_size)
+
+        rospy.sleep(2)
+
         print('test2-1')
         # Initialize the grasp pose to the target pose
         grasp_pose = target_pose
-        print('test2-2')
+
         # Shift the grasp pose by half the width of the target to center it
-        grasp_pose.pose.position.x -= target_size[0] / 2.0
+        grasp_pose.pose.position.x -= target_size[0] / 2.0 -0.01
         grasp_pose.pose.position.y -= target_size[1] / 2.0
-        print('test2-3')
+
         # Generate a list of grasps
         grasps = self.make_grasps(grasp_pose, [target_id])
         print('test3')
@@ -159,24 +168,19 @@ class SubTaskGrasp:
             rospy.loginfo("Pick attempt: " +  str(n_attempts))
             result = arm.pick(target_id, grasps)
             rospy.sleep(0.2)
+            if result != MoveItErrorCodes.SUCCESS:
+                scene.remove_attached_object(GRIPPER_FRAME, target_id)
 
+        ret = rp_graspResponse()
         # If the pick was successful, attempt the place operation
-        if result != MoveItErrorCodes.SUCCESS:
+        if result == MoveItErrorCodes.SUCCESS:
+            rospy.loginfo("Success the pick operation")
+            ret.result = True
+        else:
             rospy.loginfo("Pick operation failed after " + str(n_attempts) + " attempts.")
+            ret.result = False
 
-        # Return the arm to the "resting" pose stored in the SRDF file
-        arm.set_named_target('l_arm_init')
-        arm.go()
-
-        # Open the gripper to the neutral position
-        # gripper.set_joint_value_target(GRIPPER_NEUTRAL)
-        # gripper.go()
-
-        rospy.sleep(1)
-
-        # Shut down MoveIt cleanly and exit the script
-        moveit_commander.roscpp_shutdown()
-        moveit_commander.os._exit(0)
+        return ret
 
     # Get the gripper posture as a JointTrajectory
     def make_gripper_posture(self, joint_positions):
@@ -232,7 +236,7 @@ class SubTaskGrasp:
         g.grasp_posture = self.make_gripper_posture(GRIPPER_CLOSED)
 
         # Set the approach and retreat parameters as desired
-        g.pre_grasp_approach = self.make_gripper_translation(0.01, 0.2, [0.0, 1.0, 0.0])
+        g.pre_grasp_approach = self.make_gripper_translation(0.1, 0.2, [0.0, 1.0, 0.0])
         g.post_grasp_retreat = self.make_gripper_translation(0.1, 0.2, [0.0, 0.0, 1.0])
 
         # Set the first grasp pose to the input pose
@@ -328,43 +332,15 @@ class SubTaskGrasp:
         # Return the list
         return places
 
-    # Set the color of an object
-    def setColor(self, name, r, g, b, a = 0.9):
-        # Initialize a MoveIt color object
-        color = ObjectColor()
-
-        # Set the id to the name given as an argument
-        color.id = name
-
-        # Set the rgb and alpha values given as input
-        color.color.r = r
-        color.color.g = g
-        color.color.b = b
-        color.color.a = a
-
-        # Update the global color dictionary
-        self.colors[name] = color
-
-    # Actually send the colors to MoveIt!
-    def sendColors(self):
-        # Initialize a planning scene object
-        p = PlanningScene()
-
-        # Need to publish a planning scene diff
-        p.is_diff = True
-
-        # Append the colors from the global color dictionary
-        for color in self.colors.values():
-            p.object_colors.append(color)
-
-        # Publish the scene diff
-        self.scene_pub.publish(p)
-
     def shutdown(self):
         rospy.loginfo("Stopping the node")
+        # Shut down MoveIt cleanly and exit the script
+        moveit_commander.roscpp_shutdown()
+        moveit_commander.os._exit(0)
 
 if __name__ == "__main__":
     try:
         SubTaskGrasp()
+        rospy.spin()
     except rospy.ROSInterruptException:
         rospy.loginfo("subtask_grasp node terminated.")
