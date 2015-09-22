@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <queue>
+
 #include <string>
 #include <sstream>
 #include <iomanip>
@@ -66,7 +68,7 @@ class SkeletonIntegrator
     int new_user_;
     int tracked_skeleton_num_;
     int tracking_validity[MAX_USERS];
-    std::map<int, bool> bFrontCamera[MAX_USERS];  // [camera_id, is_front?]
+    std::vector<std::map<int, bool> > bFaceStateTable;  // [user_index, [camera_id, is_front?]]
 
     void listenSkeletonStream();
 
@@ -81,10 +83,15 @@ SkeletonIntegrator::SkeletonIntegrator(const std::vector<int> &camera) :
   tracked_skeleton_num_(0)
 {
   skeletons.data.resize(MAX_USERS);
+  bFaceStateTable.resize(MAX_USERS);
   for (int i = 0; i < MAX_USERS; i++)
   {
     skeletons.data[i] = initialize_skeleton();
     tracking_validity[i] = 0;
+    for (std::vector<int>::iterator it = array.begin(); it != array.end(); it++)
+    {
+      bFaceStateTable[i][*it] = false;
+    }
   }
   return;
 }
@@ -157,6 +164,7 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
   }
 
   // identify received skeleton
+  int index, user_id;
   bool already_detect = false;
   for (int i = 0; i < skeletons.data.size(); i++)
   {
@@ -170,42 +178,93 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
         skeletons.data[i].position[SpineMid].z);
     if ((v1-v2).norm() < 0.3)
     {
-      int user_id = skeletons.data[i].user_id;
-      integrated_skeleton.user_id = user_id;
-      if (msg->face_state == 2)  // Front descrimination
-      {
-        skeletons.data[i] = integrated_skeleton;
-      }
-      else
-      {
-        Eigen::Vector3d translation(
-          integrated_skeleton.position[SpineMid].x - skeletons.data[i].position[SpineMid].x,
-          integrated_skeleton.position[SpineMid].y - skeletons.data[i].position[SpineMid].y,
-          integrated_skeleton.position[SpineMid].z - skeletons.data[i].position[SpineMid].z);
-        for (std::vector<geometry_msgs::Vector3>::iterator it = skeletons.data[i].position.begin();
-            it != skeletons.data[i].position.end(); it++)
-        {
-          it->x += translation[0];
-          it->y += translation[1];
-          it->z += translation[2];
-        }
-      }
-      tracking_validity[i] = 10;  // set validity count
+      index = i;
+      user_id = skeletons.data[i].user_id;
       already_detect = true;
       break;
     }
   }
-  if (!already_detect && msg->face_state == 2)
+  if (!already_detect)
   {
-    integrated_skeleton.user_id = tracked_skeleton_num_;
-    skeletons.data[new_user_] = integrated_skeleton;
-    tracking_validity[new_user_] = 10;  // set validity count
+    index = new_user_;
+    user_id = tracked_skeleton_num_;
     for (int i=0; i < MAX_USERS && skeletons.data[(new_user_+i)%MAX_USERS].user_id >= 0; i++)
     {
       new_user_ = (new_user_ + i+1) % MAX_USERS;
     }
     tracked_skeleton_num_++;
   }
+
+  // Update skeleton state
+  bool &table_ref = bFaceStateTable[index][msg->camera_number];
+  integrated_skeleton.user_id = user_id;
+  if (msg->face_state == 2)
+  {
+    // Log face state and storage as valid skeleton
+    table_ref = true;
+  }
+  else
+  {
+    if (table_ref)
+    {
+      Eigen::Quaternionf skeleton_rotation(
+          integrated_skeleton.orientation[SpineBase].w,
+          integrated_skeleton.orientation[SpineBase].x,
+          integrated_skeleton.orientation[SpineBase].y,
+          integrated_skeleton.orientation[SpineBase].z);
+      Eigen::Vector3f skeleton_direction_cam;
+      Eigen::Vector3f camera_direction_cam;
+      // Calculate skeleton direction (front is y)
+      Eigen::Vector3f tmp_x(
+          skeleton.position[HipRight].x - skeleton.position[HipLeft].x,
+          skeleton.position[HipRight].y - skeleton.position[HipLeft].y,
+          skeleton.position[HipRight].z - skeleton.position[HipLeft].z);
+      Eigen::Vector3f tmp_z(
+          skeleton.position[SpineMid].x - skeleton.position[SpineBase].x,
+          skeleton.position[SpineMid].y - skeleton.position[SpineBase].y,
+          skeleton.position[SpineMid].z - skeleton.position[SpineBase].z);
+      skeleton_direction_cam = (tmp_z.cross(tmp_x)).normalized();
+      camera_direction_cam = Eigen::Vector3f::UnitZ();
+      // Check that skeleton is facing the camera
+      if (skeleton_direction_cam.dot(camera_direction_cam) < cos(150*M_PI/180))
+      {
+        // storage as valid skeleton
+      }
+      else
+      {
+        table_ref = false;
+        // Allow only move
+        const tms_ss_kinect_v2::Skeleton& last_state = skeletons.data[index];
+        Eigen::Vector3d translation(
+            integrated_skeleton.position[SpineMid].x - last_state.position[SpineMid].x,
+            integrated_skeleton.position[SpineMid].y - last_state.position[SpineMid].y,
+            integrated_skeleton.position[SpineMid].z - last_state.position[SpineMid].z);
+        for (int i = 0; i < integrated_skeleton.position.size(); i++)
+        {
+          integrated_skeleton.position[i].x = last_state.position[i].x + translation[0];
+          integrated_skeleton.position[i].y = last_state.position[i].y + translation[1];
+          integrated_skeleton.position[i].z = last_state.position[i].z + translation[2];
+        }
+      }
+    }
+    else
+    {
+      // Allow only move
+      const tms_ss_kinect_v2::Skeleton& last_state = skeletons.data[index];
+      Eigen::Vector3d translation(
+          integrated_skeleton.position[SpineMid].x - last_state.position[SpineMid].x,
+          integrated_skeleton.position[SpineMid].y - last_state.position[SpineMid].y,
+          integrated_skeleton.position[SpineMid].z - last_state.position[SpineMid].z);
+      for (int i = 0; i < integrated_skeleton.position.size(); i++)
+      {
+        integrated_skeleton.position[i].x = last_state.position[i].x + translation[0];
+        integrated_skeleton.position[i].y = last_state.position[i].y + translation[1];
+        integrated_skeleton.position[i].z = last_state.position[i].z + translation[2];
+      }
+    }
+  }
+  skeletons.data[index] = integrated_skeleton;
+  tracking_validity[index] = 10;  // reflesh validity
 
   return;
 }
@@ -286,7 +345,26 @@ void SkeletonIntegrator::showStatus()
   for (int i = 0; i < MAX_USERS; i++) { ss << "|" << std::setw(2) << i; }
   ss << "|" << std::endl;
   for (int i = 0; i < MAX_USERS; i++) { ss << "|" << std::setw(2) << tracking_validity[i]; }
-  ss << "|" << std::endl;
+  ss << "|" << std::endl << std::endl;
+
+  ss << "Face state table" << std::endl;
+  for (std::vector<int>::iterator it = array.begin(); it != array.end(); it++)
+  {
+    if (*it == 0) {continue;}
+    ss << "|" << std::setw(2) << *it <<  "|";
+    for (int i = 0; i < MAX_USERS; i++)
+    {
+      if (bFaceStateTable[i][*it])
+      {
+        ss << "T|";
+      }
+      else
+      {
+        ss << "F|";
+      }
+    }
+    ss << std::endl;
+  }
 
   ROS_INFO("%s", ss.str().c_str());
   return;
