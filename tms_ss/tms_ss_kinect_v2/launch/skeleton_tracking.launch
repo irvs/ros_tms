@@ -48,5 +48,5 @@
   <node name="skeleton_state_publisher12" pkg="tms_ss_kinect_v2" args="12" type="skeleton_state_publisher"/>
   <!--<node name="rviz" pkg="rviz" type="rviz" respawn="true"/>-->
   <node name="rviz" pkg="rviz" type="rviz"
-    args="-d $(find rostms_description)/rviz_config/skeleton_watching.rviz" respawn="true"/>
+    args="-d $(find rostms_description)/rviz_config/skeleton_watching.rviz" respawn="false"/>
 </launch>

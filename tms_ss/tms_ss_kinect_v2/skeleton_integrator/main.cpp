@@ -226,7 +226,7 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
       skeleton_direction_cam = (tmp_z.cross(tmp_x)).normalized();
       camera_direction_cam = Eigen::Vector3f::UnitZ();
       // Check that skeleton is facing the camera
-      if (skeleton_direction_cam.dot(camera_direction_cam) < cos(150*M_PI/180))
+      if (skeleton_direction_cam.dot(camera_direction_cam) < cos(120*M_PI/180))
       {
         // storage as valid skeleton
       }
@@ -296,6 +296,10 @@ void SkeletonIntegrator::run()
       if (tracking_validity[i] == 0)
       {
         skeletons.data[i] = initialize_skeleton();
+        for (std::vector<int>::iterator camera_id = array.begin(); camera_id != array.end(); camera_id++)
+        {
+          bFaceStateTable[i][*camera_id] = false;
+        }
       }
     }
 
