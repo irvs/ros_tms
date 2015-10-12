@@ -49,6 +49,11 @@ add_message_files(
   tracking_clusters_data.msg
 
   Sensor.msg
+
+  Skeleton.msg
+  SkeletonArray.msg
+  CameraPosture.msg
+  SkeletonStreamWrapper.msg
 )
 
 add_service_files(

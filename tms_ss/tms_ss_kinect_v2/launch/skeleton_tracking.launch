@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Make skeleton streams -->
+  <node name="skeleton_integrator" pkg="tms_ss_kinect_v2" args="1 2 8" type="skeleton_integrator"/>
+
+  <!-- For visualize furnitures in rViz -->
+  <param name="robot_description"
+         command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/environments_standalone.urdf.xacro'" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+  <node name="tms_db_state_publisher" pkg="tms_db_state_publisher" type="tms_db_state_publisher"/>
+
+  <!-- For visualize kinect in rViz -->
+  <param name="kinect_description1"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
+  <param name="kinect_description2"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
+  <param name="kinect_description8"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
+  <node name="kinect_state_publisher01" pkg="skeleton_description" args="1"  type="kinect_state_publisher"/>
+  <node name="kinect_state_publisher02" pkg="skeleton_description" args="2"  type="kinect_state_publisher"/>
+  <node name="kinect_state_publisher08" pkg="skeleton_description" args="8"  type="kinect_state_publisher"/>
+
+  <!-- For visualize box in rViz -->
+  <param name="box_description"  textfile="$(find skeleton_description)/urdf/checker_box.urdf"/>
+  <node name="box_state_publisher" pkg="skeleton_description" type="box_state_publisher"/>
+
+  <!-- For visualize skeleton in rViz -->
+  <param name="skeleton_description1"  textfile="$(find skeleton_description)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description2"  textfile="$(find skeleton_description)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description3"  textfile="$(find skeleton_description)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description4"  textfile="$(find skeleton_description)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description5"  textfile="$(find skeleton_description)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description6"  textfile="$(find skeleton_description)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description7"  textfile="$(find skeleton_description)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description8"  textfile="$(find skeleton_description)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description9"  textfile="$(find skeleton_description)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description10" textfile="$(find skeleton_description)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description11" textfile="$(find skeleton_description)/urdf/skeleton.urdf"/>
+  <param name="skeleton_description12" textfile="$(find skeleton_description)/urdf/skeleton.urdf"/>
+  <node name="skeleton_state_publisher01" pkg="skeleton_description" args="1"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher02" pkg="skeleton_description" args="2"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher03" pkg="skeleton_description" args="3"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher04" pkg="skeleton_description" args="4"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher05" pkg="skeleton_description" args="5"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher06" pkg="skeleton_description" args="6"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher07" pkg="skeleton_description" args="7"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher08" pkg="skeleton_description" args="8"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher09" pkg="skeleton_description" args="9"  type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher10" pkg="skeleton_description" args="10" type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher11" pkg="skeleton_description" args="11" type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher12" pkg="skeleton_description" args="12" type="skeleton_state_publisher"/>
+  <!--<node name="rviz" pkg="rviz" type="rviz" respawn="true"/>-->
+  <node name="rviz" pkg="rviz" type="rviz"
+    args="-d $(find rostms_description)/rviz_config/skeleton_watching.rviz" respawn="false"/>
+</launch>
