@@ -73,7 +73,7 @@
   </link>
 
   <!-- Lumbar -->
-  <joint name="lumbar_lower_joint" type="revolute">
+  <joint name="lumbar_lower_joint" type="fixed">
     <parent link="base_link"/>
   	<child link="lumbar_lower_link"/>
   	<origin xyz="0 0 0.4365" rpy="-1.57075 0 0"/>
@@ -102,7 +102,7 @@
   	</inertial>
   </link>
 
-  <joint name="lumbar_upper_joint" type="revolute">
+  <joint name="lumbar_upper_joint" type="fixed">
   	<parent link="lumbar_lower_link"/>
   	<child link="lumbar_upper_link"/>
   	<origin xyz="0 -0.21 0" rpy="0 0 0"/>
