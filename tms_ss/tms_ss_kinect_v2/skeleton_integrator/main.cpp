@@ -15,7 +15,7 @@
 #include <tms_ss_kinect_v2/SkeletonArray.h>
 #include <tms_ss_kinect_v2/SkeletonStreamWrapper.h>
 
-#include "../calc_joint_angles/for_model01.h"
+#include <for_model01.h>
 
 #include <unistd.h>
 

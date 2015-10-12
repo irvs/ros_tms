@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 
-<robot name="Kinect_v2">
-  <link name="base_link">
+<robot name="CheckerBox">
+  <link name="Box">
     <visual>
       <geometry>
-        <mesh filename="package://tms_ss_kinect_v2/model/kinect_v2/kinect_v2.dae"/>
+        <mesh filename="package://skeleton_description/model/checker_box/checker_box.dae"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
     </visual>

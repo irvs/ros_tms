@@ -6,7 +6,7 @@
   <link name="Body" >
     <visual>
       <geometry>
-        <mesh filename="package://tms_ss_kinect_v2/model/male/Body.dae"/>
+        <mesh filename="package://skeleton_description/model/male/Body.dae"/>
       </geometry>
       <origin xyz="0 0 0.0" rpy="0 0 0" />
       <!--<origin xyz="0 0 1.1" rpy="0 0 0" />-->
@@ -16,7 +16,7 @@
   <link name="Neck" >
     <visual>
       <geometry>
-        <mesh filename="package://tms_ss_kinect_v2/model/male/Neck.dae"/>
+        <mesh filename="package://skeleton_description/model/male/Neck.dae"/>
       </geometry>
       <origin xyz="0 0 0.0" rpy="0 0 0" />
     </visual>
@@ -25,7 +25,7 @@
   <link name="Head" >
     <visual>
       <geometry>
-        <mesh filename="package://tms_ss_kinect_v2/model/male/Head.dae"/>
+        <mesh filename="package://skeleton_description/model/male/Head.dae"/>
       </geometry>
       <origin xyz="0 0 0.0" rpy="0 0 0" />
     </visual>
@@ -34,7 +34,7 @@
   <link name="RightArm1" >
     <visual>
       <geometry>
-        <mesh filename="package://tms_ss_kinect_v2/model/male/RightArm1.dae"/>
+        <mesh filename="package://skeleton_description/model/male/RightArm1.dae"/>
       </geometry>
       <origin xyz="0 0 0.0" rpy="0 0 0" />
     </visual>
@@ -43,7 +43,7 @@
   <link name="RightArm2" >
     <visual>
       <geometry>
-        <mesh filename="package://tms_ss_kinect_v2/model/male/RightArm2.dae"/>
+        <mesh filename="package://skeleton_description/model/male/RightArm2.dae"/>
       </geometry>
       <origin xyz="0 0 0.0" rpy="0 0 0" />
     </visual>
@@ -52,7 +52,7 @@
   <link name="RightHand1" >
     <visual>
       <geometry>
-        <mesh filename="package://tms_ss_kinect_v2/model/male/RightHand1.dae"/>
+        <mesh filename="package://skeleton_description/model/male/RightHand1.dae"/>
       </geometry>
       <origin xyz="0 0 0.0" rpy="0 0 0" />
     </visual>
@@ -61,7 +61,7 @@
   <link name="LeftArm1" >
     <visual>
       <geometry>
-        <mesh filename="package://tms_ss_kinect_v2/model/male/LeftArm1.dae"/>
+        <mesh filename="package://skeleton_description/model/male/LeftArm1.dae"/>
       </geometry>
       <origin xyz="0 0 0.0" rpy="0 0 0" />
     </visual>
@@ -70,7 +70,7 @@
   <link name="LeftArm2" >
     <visual>
       <geometry>
-        <mesh filename="package://tms_ss_kinect_v2/model/male/LeftArm2.dae"/>
+        <mesh filename="package://skeleton_description/model/male/LeftArm2.dae"/>
       </geometry>
       <origin xyz="0 0 0.0" rpy="0 0 0" />
     </visual>
@@ -79,7 +79,7 @@
   <link name="LeftHand1" >
     <visual>
       <geometry>
-        <mesh filename="package://tms_ss_kinect_v2/model/male/LeftHand1.dae"/>
+        <mesh filename="package://skeleton_description/model/male/LeftHand1.dae"/>
       </geometry>
       <origin xyz="0 0 0.0" rpy="0 0 0" />
     </visual>
@@ -88,7 +88,7 @@
   <link name="RightLeg1" >
     <visual>
       <geometry>
-        <mesh filename="package://tms_ss_kinect_v2/model/male/RightLeg1.dae"/>
+        <mesh filename="package://skeleton_description/model/male/RightLeg1.dae"/>
       </geometry>
       <origin xyz="0 0 0.0" rpy="0 0 0" />
     </visual>
@@ -97,7 +97,7 @@
   <link name="RightLeg2" >
     <visual>
       <geometry>
-        <mesh filename="package://tms_ss_kinect_v2/model/male/RightLeg2.dae"/>
+        <mesh filename="package://skeleton_description/model/male/RightLeg2.dae"/>
       </geometry>
       <origin xyz="0 0 0.0" rpy="0 0 0" />
     </visual>
@@ -106,7 +106,7 @@
   <link name="RightFoot" >
     <visual>
       <geometry>
-        <mesh filename="package://tms_ss_kinect_v2/model/male/RightFoot.dae"/>
+        <mesh filename="package://skeleton_description/model/male/RightFoot.dae"/>
       </geometry>
       <origin xyz="0 0 0.0" rpy="0 0 0" />
     </visual>
@@ -115,7 +115,7 @@
   <link name="LeftLeg1" >
     <visual>
       <geometry>
-        <mesh filename="package://tms_ss_kinect_v2/model/male/LeftLeg1.dae"/>
+        <mesh filename="package://skeleton_description/model/male/LeftLeg1.dae"/>
       </geometry>
       <origin xyz="0 0 0.0" rpy="0 0 0" />
     </visual>
@@ -124,7 +124,7 @@
   <link name="LeftLeg2" >
     <visual>
       <geometry>
-        <mesh filename="package://tms_ss_kinect_v2/model/male/LeftLeg2.dae"/>
+        <mesh filename="package://skeleton_description/model/male/LeftLeg2.dae"/>
       </geometry>
       <origin xyz="0 0 0.0" rpy="0 0 0" />
     </visual>
@@ -133,7 +133,7 @@
   <link name="LeftFoot" >
     <visual>
       <geometry>
-        <mesh filename="package://tms_ss_kinect_v2/model/male/LeftFoot.dae"/>
+        <mesh filename="package://skeleton_description/model/male/LeftFoot.dae"/>
       </geometry>
       <origin xyz="0 0 0.0" rpy="0 0 0" />
     </visual>
