@@ -10,6 +10,9 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <sstream>
 #include <boost/thread.hpp>
+#include <boost/algorithm/string.hpp>
+#include <moveit_msgs/DisplayTrajectory.h>
+
 
 //#define OFF       0
 #define ON          1
@@ -76,6 +79,7 @@
 #define CMD_move                15
 
 ros::Publisher pose_publisher;
+ros::Subscriber arm_data_sub;
 
 double g_x = 3.0;
 double g_y = 4.0;
@@ -718,6 +722,7 @@ void ObjectDataUpdate()
   {
     if (grasping == true)
     {
+      ROS_INFO("grasping=true");
       ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 
       tms_msg_db::TmsdbStamped db_msg;
@@ -746,12 +751,28 @@ void ObjectDataUpdate()
   }
 }
 
+void armCallback(const moveit_msgs::DisplayTrajectory& msg)
+{
+  for(int i=0;i<7;i++)
+  {
+    g_jL[i]=msg.trajectory[msg.trajectory.size()-1].joint_trajectory.points[msg.trajectory[msg.trajectory.size()-1].joint_trajectory.points.size()-1].positions[i];
+    ROS_INFO("g_jL[%d]=%f",i,g_jL[i]);
+  }
+  if(msg.trajectory.size()>1)
+  {
+    g_gripper_left=msg.trajectory[msg.trajectory.size()-2].joint_trajectory.points[msg.trajectory[msg.trajectory.size()-2].joint_trajectory.points.size()-1].positions[0];
+    ROS_INFO("gripper_left=%f",g_gripper_left);
+  }
+}
+
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "smartpal5_virtual_control");
   ros::NodeHandle nh;
   ros::ServiceServer service    = nh.advertiseService("sp5_virtual_control", robotControl);
   pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
+  arm_data_sub = nh.subscribe("/move_group/display_planned_path", 1, &armCallback);
+
 
   printf("Virtual SmartPal initialization has been completed.\n\n");
 

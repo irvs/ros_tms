@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+
 #define UNIT_ALL                0
 #define UNIT_VEHICLE            1
 #define UNIT_ARM_R              2
@@ -95,7 +96,7 @@ class TmsRpSubtask
   // for thread
   bool move(SubtaskData sd); // 9001
   bool grasp(SubtaskData sd); // 9002
-//	bool give(SubtaskData sd); // 9003
+  bool give(SubtaskData sd); // 9003
 //	bool open_ref(void);  // 9004
 //	bool close_ref(void); // 9005
 //	bool random_move(void); // 9006

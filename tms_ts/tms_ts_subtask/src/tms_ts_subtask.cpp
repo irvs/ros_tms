@@ -215,7 +215,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
     case 9003: // give
     {
       ROS_INFO("[tms_rp]give command\n");
-      // boost::thread gi_th(boost::bind(&TmsRpSubtask::give, this, sd));
+      boost::thread gi_th(boost::bind(&TmsRpSubtask::give, this, sd));
        break;
     }
     case 9004: // open the refrigerator
@@ -1014,8 +1014,8 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
             return false;
           }
 
-  //        sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_REL, 3, arg);
-  //        update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], arg[11], 3005, arg[12], "");
+          //sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_REL, 3, arg);
+          // update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], arg[11], 3005, arg[12], "");
         }
         else
         {
@@ -1090,8 +1090,8 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
   return true;
 }
 
-//bool tms_rp::TmsRpSubtask::give(SubtaskData sd)
-//{
+bool tms_rp::TmsRpSubtask::give(SubtaskData sd)
+{
 //  tms_msg_rp::rps_voronoi_path_planning rp_srv;
 //  tms_msg_ts::ts_state_control s_srv;
 //  s_srv.request.type = 1; // for subtask state update;
@@ -1373,7 +1373,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
 //  s_srv.request.state = 1;
 //  state_client.call(s_srv);
 //  return true;
-//}
+}
 
 //bool tms_rp::TmsRpSubtask::open_ref(void) {
 //	tms_msg_rs::rs_home_appliances ref_srv;

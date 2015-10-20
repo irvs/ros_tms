@@ -116,7 +116,7 @@ public class TmsUrSanmoku extends RosActivity implements View.OnClickListener,
 SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 
 	public TmsUrSanmoku() {
-		super("tms_ur_sanmoku","tms_ur_sanmoku", URI.create("http://192.168.4.170:11311/"));
+		super("tms_ur_sanmoku","tms_ur_sanmoku", URI.create("http://192.168.4.106:11311/"));
 		Log.v("ROS", "Const");
 	}
 
@@ -1016,7 +1016,7 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 			debugLog("numOfF:" + data.getFurnitureArray().size() + "**" + "nowid:" + data.getFurnitureArray().get(fIndex).getId());
 
 
-			if(detectingObjs.size()!=0){//探索物がある
+			if(detectingObjs.size()!=0){//探索物���ある
 				ArrayList<TmsdbObject> innerObjs = new ArrayList<TmsdbObject>();
 
 				LayoutInflater inflater 

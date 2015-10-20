@@ -30,7 +30,7 @@ public class TmsUrRefrigerator extends RosActivity implements View.OnClickListen
      * Default constructor
      */
     public TmsUrRefrigerator() {
-        super("fridge control", "fridge control", URI.create("http://192.168.4.170:11311"));
+        super("fridge control", "fridge control", URI.create("http://192.168.4.106:11311"));
     }
 
     @Override

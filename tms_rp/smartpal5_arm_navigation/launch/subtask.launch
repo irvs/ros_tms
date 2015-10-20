@@ -1,5 +1,5 @@
 <launch>
   <group ns="smartpal">
-    <node pkg="smartpal5_arm_navigation" type="grasp.py" name="grasp" />
+    <node pkg="smartpal5_arm_navigation" type="subtask_grasp.py" name="subtask_grasp" />
   </group>
 </launch>

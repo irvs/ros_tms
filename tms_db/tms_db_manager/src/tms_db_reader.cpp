@@ -76,7 +76,7 @@ private:
 public:
   DbReader() : 
     nh_priv("~"),
-    dbhost("192.168.4.170"),
+    dbhost("192.168.4.106"),
     dbuser("root"),
     dbpass("tmsdb"),
     dbname("rostmsdb"),

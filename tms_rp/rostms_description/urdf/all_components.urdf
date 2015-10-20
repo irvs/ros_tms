@@ -574,6 +574,49 @@
       <origin rpy="0 0 0" xyz="0. 0. 0.3"/>
     </collision>
   </link>
+  <!-- object -->
+  <link name="chipstar_red_x_link"/>
+  <joint name="chipstar_red_x_joint" type="prismatic">
+    <parent link="world_link"/>
+    <child link="chipstar_red_x_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+  </joint>
+  <link name="chipstar_red_y_link"/>
+  <joint name="chipstar_red_y_joint" type="prismatic">
+    <parent link="chipstar_red_x_link"/>
+    <child link="chipstar_red_y_link"/>
+    <origin rpy="0 0 1.57079633" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+  </joint>
+  <link name="chipstar_red_z_link"/>
+  <joint name="chipstar_red_z_joint" type="prismatic">
+    <parent link="chipstar_red_y_link"/>
+    <child link="chipstar_red_z_link"/>
+    <origin rpy="0 -1.57079633 0" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="3." velocity="0.5"/>
+  </joint>
+  <joint name="chipstar_red_yaw_joint" type="continuous">
+    <parent link="chipstar_red_z_link"/>
+    <child link="chipstar_red_link"/>
+    <origin rpy="0 1.57079633 0" xyz="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <link name="chipstar_red_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/chipstar_red.dae"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0. 0. 0."/>
+    </visual>
+  <collision>
+      <geometry>
+        <cylinder length="0.001" radius="0.001"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0. 0. 0."/>
+    </collision>
+  </link>
+
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <!-- Base, Vehicle -->
   <link name="smartpal5_link"/>
@@ -814,7 +857,8 @@
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
     </inertial>
   </link>
-  <joint name="l_arm_j5_joint" type="revolute">
+  <joint name="l_a
+    rm_j5_joint" type="revolute">
     <parent link="l_arm_j4_link"/>
     <child link="l_arm_j5_link"/>
     <origin rpy="1.57075 0 0" xyz="-0.02 0.0 0.0"/>

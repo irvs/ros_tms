@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset>
+    <contributor>
+      <author>Blender User</author>
+      <authoring_tool>Blender 2.76.0 commit date:2015-09-30, commit time:16:05, hash:fb78f6d</authoring_tool>
+    </contributor>
+    <created>2015-10-09T18:44:41</created>
+    <modified>2015-10-09T18:44:41</modified>
+    <unit name="millimeter" meter="0.001"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_cameras>
+    <camera id="Camera-camera" name="Camera">
+      <optics>
+        <technique_common>
+          <perspective>
+            <xfov sid="xfov">49.13434</xfov>
+            <aspect_ratio>1.777778</aspect_ratio>
+            <znear sid="znear">0.1</znear>
+            <zfar sid="zfar">100</zfar>
+          </perspective>
+        </technique_common>
+      </optics>
+      <extra>
+        <technique profile="blender">
+          <YF_dofdist>0</YF_dofdist>
+          <shiftx>0</shiftx>
+          <shifty>0</shifty>
+        </technique>
+      </extra>
+    </camera>
+  </library_cameras>
+  <library_lights>
+    <light id="Lamp-light" name="Lamp">
+      <technique_common>
+        <point>
+          <color sid="color">1 1 1</color>
+          <constant_attenuation>1</constant_attenuation>
+          <linear_attenuation>0</linear_attenuation>
+          <quadratic_attenuation>0.00111109</quadratic_attenuation>
+        </point>
+      </technique_common>
+      <extra>
+        <technique profile="blender">
+          <adapt_thresh>0.000999987</adapt_thresh>
+          <area_shape>1</area_shape>
+          <area_size>0.1</area_size>
+          <area_sizey>0.1</area_sizey>
+          <area_sizez>1</area_sizez>
+          <atm_distance_factor>1</atm_distance_factor>
+          <atm_extinction_factor>1</atm_extinction_factor>
+          <atm_turbidity>2</atm_turbidity>
+          <att1>0</att1>
+          <att2>1</att2>
+          <backscattered_light>1</backscattered_light>
+          <bias>1</bias>
+          <blue>1</blue>
+          <buffers>1</buffers>
+          <bufflag>0</bufflag>
+          <bufsize>2880</bufsize>
+          <buftype>2</buftype>
+          <clipend>30.002</clipend>
+          <clipsta>1.000799</clipsta>
+          <compressthresh>0.04999995</compressthresh>
+          <dist sid="blender_dist">29.99998</dist>
+          <energy sid="blender_energy">1</energy>
+          <falloff_type>2</falloff_type>
+          <filtertype>0</filtertype>
+          <flag>0</flag>
+          <gamma sid="blender_gamma">1</gamma>
+          <green>1</green>
+          <halo_intensity sid="blnder_halo_intensity">1</halo_intensity>
+          <horizon_brightness>1</horizon_brightness>
+          <mode>8192</mode>
+          <ray_samp>1</ray_samp>
+          <ray_samp_method>1</ray_samp_method>
+          <ray_samp_type>0</ray_samp_type>
+          <ray_sampy>1</ray_sampy>
+          <ray_sampz>1</ray_sampz>
+          <red>1</red>
+          <samp>3</samp>
+          <shadhalostep>0</shadhalostep>
+          <shadow_b sid="blender_shadow_b">0</shadow_b>
+          <shadow_g sid="blender_shadow_g">0</shadow_g>
+          <shadow_r sid="blender_shadow_r">0</shadow_r>
+          <sky_colorspace>0</sky_colorspace>
+          <sky_exposure>1</sky_exposure>
+          <skyblendfac>1</skyblendfac>
+          <skyblendtype>1</skyblendtype>
+          <soft>3</soft>
+          <spotblend>0.15</spotblend>
+          <spotsize>75</spotsize>
+          <spread>1</spread>
+          <sun_brightness>1</sun_brightness>
+          <sun_effect_type>0</sun_effect_type>
+          <sun_intensity>1</sun_intensity>
+          <sun_size>1</sun_size>
+          <type>0</type>
+        </technique>
+      </extra>
+    </light>
+  </library_lights>
+  <library_images/>
+  <library_geometries>
+    <geometry id="Chipstar_Red_001-mesh" name="Chipstar Red.001">
+      <mesh>
+        <source id="Chipstar_Red_001-mesh-positions">
+          <float_array id="Chipstar_Red_001-mesh-positions-array" count="240">-31.86076 10.35077 0 31.86076 10.35077 0 33.5 0 0 33.5 0 130 -33.5 0 0 31.86076 -10.35077 0 31.86039 -10.35207 130 -27.103 19.68926 0 27.103 19.68926 0 31.86039 10.35207 130 -19.69192 27.10092 0 19.69192 27.10092 0 27.10207 19.69081 130 -10.35281 31.85977 0 10.35281 31.85977 0 19.69081 27.10207 130 0 33.49961 0 10.35207 31.86039 130 0 33.5 130 -10.35207 31.86039 130 -19.69081 27.10207 130 -27.10207 19.69081 130 -31.86039 10.35207 130 -31.86076 -10.35077 0 -33.5 0 130 27.103 -19.68926 0 -27.103 -19.68926 0 -31.86039 -10.35207 130 19.69192 -27.10092 0 -19.69192 -27.10092 0 -27.10207 -19.69081 130 10.35281 -31.85977 0 -10.35281 -31.85977 0 -19.69081 -27.10207 130 0 -33.49961 0 -10.35207 -31.86039 130 0 -33.5 130 10.35207 -31.86039 130 19.69081 -27.10207 130 27.10207 -19.69081 130 36 0 130 34.23803 -11.12461 130 34.23803 11.12461 130 29.12461 21.16027 130 21.16027 29.12461 130 11.12461 34.23803 130 -11.12461 34.23803 130 -21.16027 29.12461 130 -29.12461 21.16027 130 -34.23803 11.12461 130 -36 0 130 -34.23803 -11.12461 130 -29.12461 -21.16027 130 -21.16027 -29.12461 130 -11.12461 -34.23803 130 11.12461 -34.23803 130 21.16027 -29.12461 130 29.12461 -21.16027 130 36 0 143.5 34.23803 -11.12461 143.5 34.23803 11.12461 143.5 29.12461 21.16027 143.5 21.16027 29.12461 143.5 0 36 130 11.12461 34.23803 143.5 0 36 143.5 -11.12461 34.23803 143.5 -21.16027 29.12461 143.5 -29.12461 21.16027 143.5 -34.23803 11.12461 143.5 -36 0 143.5 -34.23803 -11.12461 143.5 -29.12461 -21.16027 143.5 -21.16027 -29.12461 143.5 0 -36 130 -11.12461 -34.23803 143.5 0 -36 143.5 11.12461 -34.23803 143.5 21.16027 -29.12461 143.5 29.12461 -21.16027 143.5</float_array>
+          <technique_common>
+            <accessor source="#Chipstar_Red_001-mesh-positions-array" count="80" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Chipstar_Red_001-mesh-normals">
+          <float_array id="Chipstar_Red_001-mesh-normals-array" count="270">0 0 -1 0.9876908 0.156419 0 0.9876908 -0.1564196 1.23902e-6 0.9876884 -0.1564341 0 0.891023 0.453958 -2.00467e-6 0.9876884 0.1564348 1.23886e-6 0.7071346 0.707079 -3.38197e-6 0.8910066 0.4539905 9.40695e-7 0.4540162 0.8909935 -4.03133e-6 0.707107 0.7071067 -2.01577e-7 0.1564447 0.9876868 -3.85209e-6 0.4539906 0.8910066 -1.61262e-6 -0.1564447 0.9876868 -3.00104e-6 0.1564344 0.9876884 -3.04606e-6 -0.4540163 0.8909934 -1.65733e-6 -0.1564344 0.9876884 -3.89716e-6 -0.7071348 0.7070788 -2.01575e-7 -0.4539905 0.8910067 -3.98675e-6 -0.891023 0.453958 9.29538e-7 -0.7071068 0.7071068 -3.38202e-6 -0.9876908 0.1564196 1.23902e-6 -0.8910067 0.4539905 -1.99338e-6 -0.9876908 -0.156419 0 -0.9876884 0.1564341 0 -0.891023 -0.453958 -2.00467e-6 -0.9876884 -0.1564348 1.23886e-6 -0.7071346 -0.707079 -3.38197e-6 -0.8910066 -0.4539905 9.40695e-7 -0.4540162 -0.8909935 -4.03133e-6 -0.707107 -0.7071067 -2.01577e-7 -0.1564447 -0.9876868 -3.85209e-6 -0.4539906 -0.8910066 -1.61262e-6 0.1564447 -0.9876868 -3.00104e-6 -0.1564344 -0.9876884 -3.04606e-6 0.4540163 -0.8909934 -1.65733e-6 0.1564344 -0.9876884 -3.89716e-6 0.7071348 -0.7070788 -2.01575e-7 0.4539905 -0.8910067 -3.98675e-6 0.891023 -0.453958 9.29538e-7 0.7071068 -0.7071068 -3.38202e-6 0.8910067 -0.4539905 -1.99338e-6 9.43351e-6 0 -1 0 0 -1 8.7784e-6 0 -1 -8.7784e-6 0 -1 -4.71675e-6 0 -1 4.38919e-6 0 -1 2.1946e-6 0 -1 4.71675e-6 0 -1 -2.1946e-6 0 -1 -2.1946e-6 0 -1 6.5838e-6 0 -1 -9.43351e-6 0 -1 -8.7784e-6 0 -1 8.7784e-6 0 -1 -4.38919e-6 0 -1 -2.1946e-6 0 -1 2.1946e-6 0 -1 2.1946e-6 0 -1 -6.5838e-6 0 -1 0.9876884 0.1564344 0 0.9876883 -0.1564351 0 0.9876885 -0.1564341 0 0.8910067 0.4539902 0 0.9876883 0.1564349 0 0.7071066 0.707107 0 0.4539901 0.8910068 0 0.1564346 0.9876884 0 0.4539908 0.8910065 0 -0.1564346 0.9876884 0 -0.4539902 0.8910067 0 -0.7071066 0.707107 0 -0.4539907 0.8910065 0 -0.8910067 0.4539902 0 -0.9876883 0.1564351 0 -0.9876884 -0.1564344 0 -0.9876885 0.1564341 0 -0.8910067 -0.4539902 0 -0.9876883 -0.1564349 0 -0.7071066 -0.707107 0 -0.4539901 -0.8910068 0 -0.1564346 -0.9876884 0 -0.4539908 -0.8910065 0 0.1564346 -0.9876884 0 0.4539902 -0.8910067 0 0.7071066 -0.707107 0 0.4539907 -0.8910065 0 0.8910067 -0.4539902 0 0 0 1 0 0 1</float_array>
+          <technique_common>
+            <accessor source="#Chipstar_Red_001-mesh-normals-array" count="90" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="Chipstar_Red_001-mesh-vertices">
+          <input semantic="POSITION" source="#Chipstar_Red_001-mesh-positions"/>
+        </vertices>
+        <polylist count="156">
+          <input semantic="VERTEX" source="#Chipstar_Red_001-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Chipstar_Red_001-mesh-normals" offset="1"/>
+          <vcount>3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 </vcount>
+          <p>0 0 1 0 2 0 3 1 2 1 1 1 4 0 0 0 2 0 5 0 4 0 2 0 6 2 5 2 2 2 6 3 2 3 3 3 7 0 8 0 1 0 9 4 1 4 8 4 0 0 7 0 1 0 9 5 3 5 1 5 10 0 11 0 8 0 12 6 8 6 11 6 7 0 10 0 8 0 12 7 9 7 8 7 13 0 14 0 11 0 15 8 11 8 14 8 10 0 13 0 11 0 15 9 12 9 11 9 13 0 16 0 14 0 17 10 14 10 16 10 17 11 15 11 14 11 18 12 16 12 13 12 18 13 17 13 16 13 19 14 13 14 10 14 19 15 18 15 13 15 20 16 10 16 7 16 20 17 19 17 10 17 21 18 7 18 0 18 21 19 20 19 7 19 22 20 0 20 4 20 22 21 21 21 0 21 5 0 23 0 4 0 24 22 4 22 23 22 24 23 22 23 4 23 25 0 26 0 23 0 27 24 23 24 26 24 5 0 25 0 23 0 27 25 24 25 23 25 28 0 29 0 26 0 30 26 26 26 29 26 25 0 28 0 26 0 30 27 27 27 26 27 31 0 32 0 29 0 33 28 29 28 32 28 28 0 31 0 29 0 33 29 30 29 29 29 31 0 34 0 32 0 35 30 32 30 34 30 35 31 33 31 32 31 36 32 34 32 31 32 36 33 35 33 34 33 37 34 31 34 28 34 37 35 36 35 31 35 38 36 28 36 25 36 38 37 37 37 28 37 39 38 25 38 5 38 39 39 38 39 25 39 6 40 39 40 5 40 40 0 3 0 9 0 41 41 6 41 3 41 41 42 3 42 40 42 42 0 9 0 12 0 42 43 40 43 9 43 43 0 12 0 15 0 43 44 42 44 12 44 44 45 15 45 17 45 44 46 43 46 15 46 45 0 17 0 18 0 45 47 44 47 17 47 46 0 18 0 19 0 46 0 45 0 18 0 47 48 19 48 20 48 47 49 46 49 19 49 48 0 20 0 21 0 48 50 47 50 20 50 49 0 21 0 22 0 49 51 48 51 21 51 49 52 22 52 24 52 50 0 24 0 27 0 50 0 49 0 24 0 51 0 27 0 30 0 51 53 50 53 27 53 52 0 30 0 33 0 52 54 51 54 30 54 53 48 33 48 35 48 53 55 52 55 33 55 54 0 35 0 36 0 54 56 53 56 35 56 55 0 36 0 37 0 55 0 54 0 36 0 56 45 37 45 38 45 56 57 55 57 37 57 57 0 38 0 39 0 57 58 56 58 38 58 41 0 39 0 6 0 41 59 57 59 39 59 58 60 40 60 42 60 59 61 41 61 40 61 59 62 40 62 58 62 60 63 42 63 43 63 60 64 58 64 42 64 61 65 43 65 44 65 60 63 43 63 61 63 62 66 44 66 45 66 61 65 44 65 62 65 46 0 63 0 45 0 64 67 45 67 63 67 62 68 45 68 64 68 65 69 63 69 46 69 64 67 63 67 65 67 66 70 46 70 47 70 65 69 46 69 66 69 67 71 47 71 48 71 66 72 47 72 67 72 68 73 48 73 49 73 67 71 48 71 68 71 69 74 49 74 50 74 68 73 49 73 69 73 70 75 50 75 51 75 69 76 50 76 70 76 71 77 51 77 52 77 70 78 51 78 71 78 72 79 52 79 53 79 71 77 52 77 72 77 73 80 53 80 54 80 72 79 53 79 73 79 55 0 74 0 54 0 75 81 54 81 74 81 73 82 54 82 75 82 76 83 74 83 55 83 75 81 74 81 76 81 77 84 55 84 56 84 76 83 55 83 77 83 78 85 56 85 57 85 77 86 56 86 78 86 79 87 57 87 41 87 78 85 57 85 79 85 79 87 41 87 59 87 71 88 59 88 58 88 70 88 71 88 58 88 60 89 70 89 58 89 72 88 79 88 59 88 71 88 72 88 59 88 73 88 78 88 79 88 72 88 73 88 79 88 75 88 77 88 78 88 73 88 75 88 78 88 75 88 76 88 77 88 60 88 69 88 70 88 61 88 68 88 69 88 60 88 61 88 69 88 62 88 67 88 68 88 61 88 62 88 68 88 64 88 66 88 67 88 62 88 64 88 67 88 64 88 65 88 66 88</p>
+        </polylist>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_controllers/>
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="Camera" name="Camera" type="NODE">
+        <matrix sid="transform">0.6858805 -0.3173701 0.6548619 7.481132 0.7276338 0.3124686 -0.6106656 -6.50764 -0.01081678 0.8953432 0.4452454 5.343665 0 0 0 1</matrix>
+        <instance_camera url="#Camera-camera"/>
+      </node>
+      <node id="Lamp" name="Lamp" type="NODE">
+        <matrix sid="transform">-0.2908646 -0.7711008 0.5663932 4.076245 0.9551712 -0.1998834 0.2183912 1.005454 -0.05518906 0.6045247 0.7946723 5.903862 0 0 0 1</matrix>
+        <instance_light url="#Lamp-light"/>
+      </node>
+      <node id="Chipstar_Red" name="Chipstar_Red" type="NODE">
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+        <instance_geometry url="#Chipstar_Red_001-mesh" name="Chipstar_Red"/>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Scene"/>
+  </scene>
+</COLLADA>

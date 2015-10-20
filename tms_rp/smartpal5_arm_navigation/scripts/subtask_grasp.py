@@ -39,7 +39,7 @@ GROUP_NAME_ARM = 'l_arm'
 GROUP_NAME_GRIPPER = 'l_gripper'
 
 GRIPPER_FRAME = 'l_end_effector_link'
-GRIPPER_OPEN = [-1.0]
+GRIPPER_OPEN = [-1.5]#[-1.0]
 GRIPPER_CLOSED = [-0.7]
 GRIPPER_NEUTRAL = [0.0]
 GRIPPER_JOINT_NAMES = ['l_gripper_thumb_joint']
@@ -105,9 +105,9 @@ class SubTaskGrasp:
         # Allow 5 seconds per planning attempt
         arm.set_planning_time(5)
         # Set a limit on the number of pick attempts before bailing
-        max_pick_attempts = 5
+        max_pick_attempts =15
         # Set a limit on the number of place attempts
-        max_place_attempts = 5
+        max_place_attempts = 15
         # Give the scene a chance to catch up
         rospy.sleep(2)
 
@@ -125,12 +125,13 @@ class SubTaskGrasp:
         rospy.sleep(1)
 
         # target_size = [(target.offset_x*2), (target.offset_y*2), (target.offset_z*2)]
-        target_size = [0.03, 0.03, 0.12]
+        #target_size = [0.03, 0.03, 0.12]
+        target_size = [0.066, 0.066, 0.14]
         target_pose = PoseStamped()
         target_pose.header.frame_id = REFERENCE_FRAME
         target_pose.pose.position.x = target.x
         target_pose.pose.position.y = target.y
-        target_pose.pose.position.z = target.z + target.offset_z
+        target_pose.pose.position.z = target.z + target.offset_z + 0.01
         # q = quaternion_from_euler(target.rr, target.rp, target.ry)
         q = quaternion_from_euler(0, 0, 0)
         target_pose.pose.orientation.x = q[0]
@@ -142,13 +143,18 @@ class SubTaskGrasp:
 
         rospy.sleep(2)
 
+        print(target_pose.pose.position.x)
+        print(target_pose.pose.position.y)
+        print(target_pose.pose.position.z)
+
         print('test2-1')
         # Initialize the grasp pose to the target pose
         grasp_pose = target_pose
 
         # Shift the grasp pose by half the width of the target to center it
-        grasp_pose.pose.position.x -= target_size[0] / 2.0 -0.01
+        grasp_pose.pose.position.x -= target_size[0] / 2.0 + 0.01
         grasp_pose.pose.position.y -= target_size[1] / 2.0
+
 
         # Generate a list of grasps
         grasps = self.make_grasps(grasp_pose, [target_id])
@@ -167,9 +173,13 @@ class SubTaskGrasp:
             n_attempts += 1
             rospy.loginfo("Pick attempt: " +  str(n_attempts))
             result = arm.pick(target_id, grasps)
+            print(result)
             rospy.sleep(0.2)
             if result != MoveItErrorCodes.SUCCESS:
                 scene.remove_attached_object(GRIPPER_FRAME, target_id)
+
+        scene.remove_attached_object(GRIPPER_FRAME, target_id)
+        scene.remove_world_object(target_id)
 
         ret = rp_graspResponse()
         # If the pick was successful, attempt the place operation
@@ -243,7 +253,7 @@ class SubTaskGrasp:
         g.grasp_pose = initial_pose_stamped
 
         # Pitch angles to try
-        pitch_vals = [0, 0.1, -0.1, 0.2, -0.2, 0.3, -0.3]
+        pitch_vals = [0, 0.1, -0.1, 0.2, -0.2, 0.4, -0.4]
 
         # Yaw angles to try
         yaw_vals = [0]
