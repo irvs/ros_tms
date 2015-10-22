@@ -5,7 +5,7 @@
 #include <map>
 #include <Eigen/Eigen>
 
-#include <tms_ss_kinect_v2/Skeleton.h>
+#include <tms_msg_ss/Skeleton.h>
 
 typedef enum {
   SpineBase,
@@ -78,7 +78,7 @@ const int kJointDoF = 29;
 
 template <class T>
 void calcForModel01(
-    const tms_ss_kinect_v2::Skeleton &in,
+    const tms_msg_ss::Skeleton &in,
     Eigen::Matrix<T, 3, 1> &position,
     Eigen::Quaternion<T> &rotation,
     std::map<std::string, T> &out)
