@@ -126,7 +126,7 @@ class SubTaskGrasp:
 
         # target_size = [(target.offset_x*2), (target.offset_y*2), (target.offset_z*2)]
         #target_size = [0.03, 0.03, 0.12]
-        target_size = [0.066, 0.066, 0.14]
+        target_size = [0.07, 0.07, 0.14]
         target_pose = PoseStamped()
         target_pose.header.frame_id = REFERENCE_FRAME
         target_pose.pose.position.x = target.x

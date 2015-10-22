@@ -1006,6 +1006,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
           if (subtask_grasp_client.call(srv))
           {
             ROS_INFO("Successed to get grasp poses");
+            nh1.setParam("/sp5_grasping_object_id",sd.arg_type);
           }
           else
           {

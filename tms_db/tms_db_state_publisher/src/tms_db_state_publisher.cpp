@@ -114,31 +114,33 @@ private:
           posX = msg->tmsdb[i].x;
           posY = msg->tmsdb[i].y;
           rotY = msg->tmsdb[i].ry;
-          double g_jR[7];
-          double g_jL[7];
-          double g_gripper_right;
-          double g_gripper_left;
+          double g_jR[7] = {0.0,-0.08,0.0,0.0,0.0,0.0,0.0};
+          double g_jL[7] = {0.0, 0.08,0.0,0.0,0.0,0.0,0.0};
+          double g_gripper_right = -0.3;
+          double g_gripper_left = 0.3;
 
-          std::vector<std::string> v_joint;
-          v_joint.clear();
-          boost::split(v_joint,joint,boost::is_any_of(";"));
-          std::stringstream ss;
-          for(int i=0;i<7;i++){
+          if(joint!=""){
+            std::vector<std::string> v_joint;
+            v_joint.clear();
+            boost::split(v_joint,joint,boost::is_any_of(";"));
+            std::stringstream ss;
+            for(int i=0;i<7;i++){
+              ss.clear();
+              ss << v_joint.at(2+i);
+              ss >> g_jR[i];
+            }
             ss.clear();
-            ss << v_joint.at(2+i);
-            ss >> g_jR[i];
-          }
-          ss.clear();
-          ss << v_joint.at(9);
-          ss >> g_gripper_right;
-          for(int i=0;i<7;i++){
+            ss << v_joint.at(9);
+            ss >> g_gripper_right;
+            for(int i=0;i<7;i++){
+              ss.clear();
+              ss << v_joint.at(10+i);
+              ss >> g_jL[i];
+            }
             ss.clear();
-            ss << v_joint.at(10+i);
-            ss >> g_jL[i];
+            ss << v_joint.at(17);
+            ss >> g_gripper_left;
           }
-          ss.clear();
-          ss << v_joint.at(17);
-          ss >> g_gripper_left;
 
           state_data.header.stamp = ros::Time::now();
           state_data.name.push_back("smartpal5_x_joint");
@@ -375,27 +377,14 @@ private:
 
       if(id==7001) //chipstar_red
       {
-        if(state!=0)
+        int grasping_id=0;
+        nh.getParam("/sp5_grasping_object_id",grasping_id);
+        if((state==1&&grasping_id!=7001)||(state==2&&grasping_id==7001))
         {
           posX = msg->tmsdb[i].x;
           posY = msg->tmsdb[i].y;
           posZ = msg->tmsdb[i].z;
           rotY = msg->tmsdb[i].ry;
-
-          // if(place>6000 && place<7000)
-          // {
-          //   tms_msg_db::TmsdbGetData srv;
-          //   srv.request.tmsdb.id = place;
-          //   if(get_data_client_.call(srv))
-          //   {
-          //     posX += srv.response.tmsdb[0].x;
-          //     posY += srv.response.tmsdb[0].y;
-          //   }
-          //   else
-          //   {
-          //     return;
-          //   }
-          // }
 
           if(posX == 0.0 && posY == 0.0)
           {

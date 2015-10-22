@@ -12,7 +12,9 @@
 #include <boost/thread.hpp>
 #include <boost/algorithm/string.hpp>
 #include <moveit_msgs/DisplayTrajectory.h>
-
+#include <boost/bind.hpp>
+#include <geometry_msgs/TransformStamped.h>
+#include <tf/transform_listener.h>
 
 //#define OFF       0
 #define ON          1
@@ -714,15 +716,46 @@ void RobotDataUpdate()
   }
 }
 
-void ObjectDataUpdate()
+void ObjectDataUpdate(ros::NodeHandle *nh1)
 {
   ros::Rate loop_rate(10); // 10Hz frequency (0.1 sec)
 
+  tf::StampedTransform transform;
+  tf::TransformListener listener;
+
   while (ros::ok())
   {
-    if (grasping == true)
+    int grasping_id=0;
+    nh1->getParam("/sp5_grasping_object_id",grasping_id);
+    if (grasping_id != 0)
     {
-      ROS_INFO("grasping=true");
+      g_oid = grasping_id;
+
+      geometry_msgs::TransformStamped msg;
+
+      std::string target_frame("/world_link");
+      std::string source_frame("/l_end_effector_link");
+      try{
+        ros::Time now = ros::Time::now();
+        listener.waitForTransform(target_frame,source_frame,now,ros::Duration(5.0));
+        listener.lookupTransform(target_frame,source_frame,now,transform);
+      }
+      catch(tf::TransformException ex){
+        ROS_ERROR("%s",ex.what());
+      }
+      tf::transformStampedTFToMsg(transform,msg);
+
+      double gripper_x = msg.transform.translation.x;
+      double gripper_y = msg.transform.translation.y;
+      double gripper_z = msg.transform.translation.z;
+
+      double offset = 0.035;
+      double offset_z = 0.07;
+
+      g_ox = gripper_x + offset * sin(g_t);
+      g_oy = gripper_y - offset * cos(g_t);
+      g_oz = gripper_z - offset_z;
+
       ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 
       tms_msg_db::TmsdbStamped db_msg;
@@ -739,7 +772,7 @@ void ObjectDataUpdate()
       current_pos_data.rr     = g_orr;
       current_pos_data.rp     = g_orp;
       current_pos_data.ry     = g_ory;
-      current_pos_data.place  = 2002;
+      current_pos_data.place  = 2003;
       current_pos_data.sensor = 3005;
       current_pos_data.probability = 1.0;
       current_pos_data.state = 2;
@@ -747,6 +780,9 @@ void ObjectDataUpdate()
       db_msg.tmsdb.push_back(current_pos_data);
 
       pose_publisher.publish(db_msg);
+
+      ros::spinOnce();
+      loop_rate.sleep();
     }
   }
 }
@@ -773,11 +809,13 @@ int main(int argc, char **argv)
   pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
   arm_data_sub = nh.subscribe("/move_group/display_planned_path", 1, &armCallback);
 
+  nh.setParam("/sp5_grasping_object_id",0); //0 is not grasping
+
 
   printf("Virtual SmartPal initialization has been completed.\n\n");
 
   boost::thread thr_rdu(&RobotDataUpdate);
-  boost::thread thr_odu(&ObjectDataUpdate);
+  boost::thread thr_odu(boost::bind(&ObjectDataUpdate, &nh));
 
   thr_rdu.join();
   thr_odu.join();
