@@ -15,6 +15,7 @@
 #include <boost/bind.hpp>
 #include <geometry_msgs/TransformStamped.h>
 #include <tf/transform_listener.h>
+#include <tms_msg_db/TmsdbGetData.h>
 
 //#define OFF       0
 #define ON          1
@@ -723,63 +724,78 @@ void ObjectDataUpdate(ros::NodeHandle *nh1)
   tf::StampedTransform transform;
   tf::TransformListener listener;
 
+  ros::ServiceClient get_data_client_ = nh1->serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
+
+  const int sid_ = 100000;
+
   while (ros::ok())
   {
     int grasping_id=0;
     nh1->getParam("/sp5_grasping_object_id",grasping_id);
     if (grasping_id != 0)
     {
-      g_oid = grasping_id;
+      tms_msg_db::TmsdbGetData srv;
+      srv.request.tmsdb.id = grasping_id + sid_;
 
-      geometry_msgs::TransformStamped msg;
+      if(get_data_client_.call(srv))
+      {
+        g_oid = grasping_id;
 
-      std::string target_frame("/world_link");
-      std::string source_frame("/l_end_effector_link");
-      try{
-        ros::Time now = ros::Time::now();
-        listener.waitForTransform(target_frame,source_frame,now,ros::Duration(5.0));
-        listener.lookupTransform(target_frame,source_frame,now,transform);
+        geometry_msgs::TransformStamped msg;
+
+        std::string target_frame("/world_link");
+        std::string source_frame("/l_end_effector_link");
+        try{
+          ros::Time now = ros::Time::now();
+          listener.waitForTransform(target_frame,source_frame,now,ros::Duration(5.0));
+          listener.lookupTransform(target_frame,source_frame,now,transform);
+        }
+        catch(tf::TransformException ex){
+          ROS_ERROR("%s",ex.what());
+        }
+        tf::transformStampedTFToMsg(transform,msg);
+
+        double gripper_x = msg.transform.translation.x;
+        double gripper_y = msg.transform.translation.y;
+        double gripper_z = msg.transform.translation.z;
+
+        double offset = srv.response.tmsdb[0].offset_x;
+        double offset_z = srv.response.tmsdb[0].offset_z;
+
+        g_ox = gripper_x + offset * sin(g_t);
+        g_oy = gripper_y - offset * cos(g_t);
+        g_oz = gripper_z - offset_z;
+
+        ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+
+        tms_msg_db::TmsdbStamped db_msg;
+        tms_msg_db::Tmsdb current_pos_data;
+
+        db_msg.header.frame_id  = "/world";
+        db_msg.header.stamp     = now;
+
+        current_pos_data.time   = boost::posix_time::to_iso_extended_string(now.toBoost());
+        current_pos_data.id     = g_oid;
+        current_pos_data.name   = srv.response.tmsdb[0].name;
+        current_pos_data.type   = srv.response.tmsdb[0].type;
+        current_pos_data.x      = g_ox;
+        current_pos_data.y      = g_oy;
+        current_pos_data.z      = g_oz;
+        current_pos_data.rr     = g_orr;
+        current_pos_data.rp     = g_orp;
+        current_pos_data.ry     = g_ory;
+        current_pos_data.place  = 2003;
+        current_pos_data.sensor = 3005;
+        current_pos_data.probability = 1.0;
+        current_pos_data.state = 2;
+
+        db_msg.tmsdb.push_back(current_pos_data);
+
+        pose_publisher.publish(db_msg);
       }
-      catch(tf::TransformException ex){
-        ROS_ERROR("%s",ex.what());
+      else{
+        ROS_ERROR("failed to get data");
       }
-      tf::transformStampedTFToMsg(transform,msg);
-
-      double gripper_x = msg.transform.translation.x;
-      double gripper_y = msg.transform.translation.y;
-      double gripper_z = msg.transform.translation.z;
-
-      double offset = 0.035;
-      double offset_z = 0.07;
-
-      g_ox = gripper_x + offset * sin(g_t);
-      g_oy = gripper_y - offset * cos(g_t);
-      g_oz = gripper_z - offset_z;
-
-      ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
-
-      tms_msg_db::TmsdbStamped db_msg;
-      tms_msg_db::Tmsdb current_pos_data;
-
-      db_msg.header.frame_id  = "/world";
-      db_msg.header.stamp     = now;
-
-      current_pos_data.time   = boost::posix_time::to_iso_extended_string(now.toBoost());
-      current_pos_data.id     = g_oid;
-      current_pos_data.x      = g_ox;
-      current_pos_data.y      = g_oy;
-      current_pos_data.z      = g_oz;
-      current_pos_data.rr     = g_orr;
-      current_pos_data.rp     = g_orp;
-      current_pos_data.ry     = g_ory;
-      current_pos_data.place  = 2003;
-      current_pos_data.sensor = 3005;
-      current_pos_data.probability = 1.0;
-      current_pos_data.state = 2;
-
-      db_msg.tmsdb.push_back(current_pos_data);
-
-      pose_publisher.publish(db_msg);
 
       ros::spinOnce();
       loop_rate.sleep();
