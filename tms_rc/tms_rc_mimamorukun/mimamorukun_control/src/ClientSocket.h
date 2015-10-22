@@ -5,21 +5,18 @@
 
 #include "Socket.h"
 
-
-class ClientSocket : private Socket
-{
+class ClientSocket : private Socket {
  public:
+  ClientSocket(std::string host, int port);
+  virtual ~ClientSocket() {};
+  void init(std::string host, int port);
 
-  ClientSocket ( std::string host, int port );
-  virtual ~ClientSocket(){};
-  void init(std::string host, int port );
+  const ClientSocket& operator<<(const std::string&) const;
+  const ClientSocket& operator>>(std::string&) const;
 
-  const ClientSocket& operator << ( const std::string& ) const;
-  const ClientSocket& operator >> ( std::string& ) const;
  private:
- 	std::string hostIP_s;
-    int port;
+  std::string hostIP_s;
+  int port;
 };
-
 
 #endif
