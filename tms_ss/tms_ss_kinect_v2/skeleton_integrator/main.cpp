@@ -12,8 +12,8 @@
 #include <Eigen/Eigen>
 
 #include <ros/ros.h>
-#include <tms_ss_kinect_v2/SkeletonArray.h>
-#include <tms_ss_kinect_v2/SkeletonStreamWrapper.h>
+#include <tms_msg_ss/SkeletonArray.h>
+#include <tms_msg_ss/SkeletonStreamWrapper.h>
 
 #include <for_model01.h>
 
@@ -31,9 +31,9 @@ std::string to_str(const T& t)
 }
 
 //-----------------------------------------------------------------------------
-inline tms_ss_kinect_v2::Skeleton initialize_skeleton()
+inline tms_msg_ss::Skeleton initialize_skeleton()
 {
-  tms_ss_kinect_v2::Skeleton ret;
+  tms_msg_ss::Skeleton ret;
   ret.user_id = -1;
   ret.position.resize(25);
   ret.orientation.resize(25);
@@ -59,12 +59,12 @@ class SkeletonIntegrator
     SkeletonIntegrator(const std::vector<int>& camera);
     ~SkeletonIntegrator();
 
-    void callback(const tms_ss_kinect_v2::SkeletonStreamWrapper::ConstPtr& msg);
+    void callback(const tms_msg_ss::SkeletonStreamWrapper::ConstPtr& msg);
     void run();
   private:
     ros::NodeHandle nh;
     std::vector<int> array;
-    tms_ss_kinect_v2::SkeletonArray skeletons;
+    tms_msg_ss::SkeletonArray skeletons;
     int new_user_;
     int tracked_skeleton_num_;
     int tracking_validity[MAX_USERS];
@@ -103,10 +103,10 @@ SkeletonIntegrator::~SkeletonIntegrator()
 }
 
 //-----------------------------------------------------------------------------
-void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper::ConstPtr& msg)
+void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::ConstPtr& msg)
 {
-  tms_ss_kinect_v2::Skeleton skeleton = msg->skeleton;
-  tms_ss_kinect_v2::CameraPosture camera_posture = msg->camera_posture;
+  tms_msg_ss::Skeleton skeleton = msg->skeleton;
+  tms_msg_ss::CameraPosture camera_posture = msg->camera_posture;
 
   // Transform to world coordinate
   Eigen::Vector3f translation(
@@ -135,7 +135,7 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
         rot_mat(0, 2), rot_mat(1, 2), rot_mat(2, 2));
 
 
-  tms_ss_kinect_v2::Skeleton integrated_skeleton;
+  tms_msg_ss::Skeleton integrated_skeleton;
   integrated_skeleton.user_id = 0;
   integrated_skeleton.position.resize(25);
   integrated_skeleton.orientation.resize(25);
@@ -234,7 +234,7 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
       {
         table_ref = false;
         // Allow only move
-        const tms_ss_kinect_v2::Skeleton& last_state = skeletons.data[index];
+        const tms_msg_ss::Skeleton& last_state = skeletons.data[index];
         Eigen::Vector3d translation(
             integrated_skeleton.position[SpineMid].x - last_state.position[SpineMid].x,
             integrated_skeleton.position[SpineMid].y - last_state.position[SpineMid].y,
@@ -250,7 +250,7 @@ void SkeletonIntegrator::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper:
     else
     {
       // Allow only move
-      const tms_ss_kinect_v2::Skeleton& last_state = skeletons.data[index];
+      const tms_msg_ss::Skeleton& last_state = skeletons.data[index];
       Eigen::Vector3d translation(
           integrated_skeleton.position[SpineMid].x - last_state.position[SpineMid].x,
           integrated_skeleton.position[SpineMid].y - last_state.position[SpineMid].y,
@@ -278,7 +278,7 @@ void SkeletonIntegrator::run()
       boost::bind(&SkeletonIntegrator::listenSkeletonStream, this));
 
   ros::Publisher pub =
-    nh.advertise<tms_ss_kinect_v2::SkeletonArray>(
+    nh.advertise<tms_msg_ss::SkeletonArray>(
         "integrated_skeleton_stream", 1);
 
   while (ros::ok())

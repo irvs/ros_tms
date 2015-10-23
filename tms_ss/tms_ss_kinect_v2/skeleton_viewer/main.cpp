@@ -5,9 +5,9 @@
 
 #include <ros/ros.h>
 #include <visualization_msgs/MarkerArray.h>
-#include <tms_ss_kinect_v2/SkeletonArray.h>
-#include <tms_ss_kinect_v2/CameraPosture.h>
-#include <tms_ss_kinect_v2/SkeletonStreamWrapper.h>
+#include <tms_msg_ss/SkeletonArray.h>
+#include <tms_msg_ss/CameraPosture.h>
+#include <tms_msg_ss/SkeletonStreamWrapper.h>
 
 static const float marker_color[][3] = { // BGR
   {1.0f, 0, 0},
@@ -23,7 +23,7 @@ class SkeletonViewer
   public:
     SkeletonViewer();
     ~SkeletonViewer();
-    void callback_skeleton(const tms_ss_kinect_v2::SkeletonArray::ConstPtr& msg);
+    void callback_skeleton(const tms_msg_ss::SkeletonArray::ConstPtr& msg);
     void run();
   private:
     ros::NodeHandle _nh;
@@ -58,12 +58,12 @@ std::string to_str(const T& t)
   return ss.str();
 }
 
-void SkeletonViewer::callback_skeleton(const tms_ss_kinect_v2::SkeletonArray::ConstPtr& msg)
+void SkeletonViewer::callback_skeleton(const tms_msg_ss::SkeletonArray::ConstPtr& msg)
 {
   visualization_msgs::MarkerArray marker_array;
   for (int j = 0; j < msg->data.size(); j++)
   {
-    tms_ss_kinect_v2::Skeleton skeleton = msg->data[j];
+    tms_msg_ss::Skeleton skeleton = msg->data[j];
     ROS_INFO("Received skeleton %d", skeleton.user_id);
 
     uint32_t shape = visualization_msgs::Marker::SPHERE;

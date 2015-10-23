@@ -14,9 +14,9 @@ import numpy as np
 # ROS dependency
 import rospy
 from geometry_msgs.msg import Vector3, Quaternion
-from tms_ss_kinect_v2.msg import Skeleton
-from tms_ss_kinect_v2.msg import CameraPosture
-from tms_ss_kinect_v2.msg import SkeletonStreamWrapper
+from tms_msg_ss.msg import Skeleton
+from tms_msg_ss.msg import CameraPosture
+from tms_msg_ss.msg import SkeletonStreamWrapper
 
 import OffsetManager
 import NETWORK_SETTING

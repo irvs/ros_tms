@@ -11,7 +11,7 @@
 #include <robot_state_publisher/robot_state_publisher.h>
 
 #include <tms_msg_ss/vicon_data.h>
-#include <tms_ss_kinect_v2/SkeletonArray.h>
+#include <tms_msg_ss/SkeletonArray.h>
 
 //------------------------------------------------------------------------------
 class BoxStatePublisher : public robot_state_publisher::RobotStatePublisher
