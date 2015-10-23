@@ -12,7 +12,7 @@
 #include <tf_conversions/tf_kdl.h>
 #include <robot_state_publisher/robot_state_publisher.h>
 
-#include <tms_ss_kinect_v2/SkeletonStreamWrapper.h>
+#include <tms_msg_ss/SkeletonStreamWrapper.h>
 
 //------------------------------------------------------------------------------
 class KinectStatePublisher : public robot_state_publisher::RobotStatePublisher
@@ -39,7 +39,7 @@ class KinectStatePublisher : public robot_state_publisher::RobotStatePublisher
     Eigen::Vector3d pos;
     Eigen::Quaterniond rot;
 
-    void callback(const tms_ss_kinect_v2::SkeletonStreamWrapper::ConstPtr& msg);
+    void callback(const tms_msg_ss::SkeletonStreamWrapper::ConstPtr& msg);
 };
 
 //------------------------------------------------------------------------------
@@ -76,12 +76,12 @@ KinectStatePublisher::~KinectStatePublisher()
 }
 
 //------------------------------------------------------------------------------
-void KinectStatePublisher::callback(const tms_ss_kinect_v2::SkeletonStreamWrapper::ConstPtr& msg)
+void KinectStatePublisher::callback(const tms_msg_ss::SkeletonStreamWrapper::ConstPtr& msg)
 {
   if (msg->camera_number == assigned_number_)
   {
     ROS_INFO("kinect%d: Received posture.", assigned_number_);
-    tms_ss_kinect_v2::CameraPosture camera_posture = msg->camera_posture;
+    tms_msg_ss::CameraPosture camera_posture = msg->camera_posture;
     rot = Eigen::Quaterniond(
         camera_posture.rotation.w,
         camera_posture.rotation.x,
