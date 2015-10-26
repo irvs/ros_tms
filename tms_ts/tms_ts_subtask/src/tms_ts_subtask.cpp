@@ -25,6 +25,7 @@ tms_rp::TmsRpSubtask::TmsRpSubtask()
   sp5_control_client_           = nh1.serviceClient<tms_msg_rc::rc_robot_control>("sp5_control");
   sp5_virtual_control_client    = nh1.serviceClient<tms_msg_rc::rc_robot_control>("sp5_virtual_control");
   subtask_grasp_client          = nh1.serviceClient<tms_msg_rp::rp_grasp>("subtask_grasp");
+  subtask_release_client        = nh1.serviceClient<tms_msg_rp::rp_release>("subtask_release");
 
   //  kxp_virtual_control_client    = nh1.serviceClient<tms_msg_rc::rc_robot_control>("kxp_virtual_control");
 //  kxp_mbase_client              = nh1.serviceClient<tms_msg_rc::tms_rc_pmove>("pmove");
@@ -212,10 +213,10 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
         boost::thread gr_th(boost::bind(&TmsRpSubtask::grasp, this, sd));
       break;
     }
-    case 9003: // give
+    case 9003: // release
     {
-      ROS_INFO("[tms_rp]give command\n");
-      boost::thread gi_th(boost::bind(&TmsRpSubtask::give, this, sd));
+      ROS_INFO("[tms_rp]release command\n");
+      boost::thread re_th(boost::bind(&TmsRpSubtask::release, this, sd));
        break;
     }
     case 9004: // open the refrigerator
@@ -1091,289 +1092,77 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
   return true;
 }
 
-bool tms_rp::TmsRpSubtask::give(SubtaskData sd)
+bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
 {
-//  tms_msg_rp::rps_voronoi_path_planning rp_srv;
-//  tms_msg_ts::ts_state_control s_srv;
-//  s_srv.request.type = 1; // for subtask state update;
-//  s_srv.request.state = 0;
-//  int sensor_id = 3001;
-//  if (sd.type == false) sensor_id = 3005;
+  tms_msg_ts::ts_state_control s_srv;
+  s_srv.request.type = 1; // for subtask state update;
+  s_srv.request.state = 0;
 
-//  nh1.setParam("grasping", 1); // switching model for display
+  int object_id = 0;
 
-//  // call service for give_obj_planning
-//  tms_msg_rp::rps_goal_planning gop_srv;
-//  gop_srv.request.robot_id = sd.robot_id;
-//  gop_srv.request.target_id = sd.arg_type; // person's ID
-//  ROS_INFO("robot_id:%d, person_id:%d\n",gop_srv.request.robot_id, gop_srv.request.target_id);
+  // SET ROBOT
+  switch(sd.robot_id)
+  {
+    case 2003:
+      ROS_INFO("ID:%d is selected", sd.robot_id);
+      nh1.getParam("/sp5_grasping_object_id",object_id);
+      ROS_INFO("object_id is %d",object_id);
+      break;
+    default:
+      ROS_ERROR("An illegal robot id");
+      return false;
+  }
 
-//  double goal_arg[19] = {-1,-1,-1,-1,-1,-1,0,0,90,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
-//  double goal_joint[18];
+  tms_msg_rp::rp_release srv;
+  srv.request.object_id  = object_id;
 
-//  if (give_obj_client.call(gop_srv)) {
-//  if (!gop_srv.response.goal_pos.empty()) {
-//  goal_arg[0] = gop_srv.response.goal_pos[0].x;
-//  goal_arg[1] = gop_srv.response.goal_pos[0].y;
-//  goal_arg[2] = gop_srv.response.goal_pos[0].th;
-//  ROS_INFO("goal_rx:%fmm,goal_ry:%fmm,goal_rth:%fdeg", goal_arg[0], goal_arg[1], goal_arg[2]);
-//  goal_arg[3] = gop_srv.response.target_pos.x;
-//  goal_arg[4] = gop_srv.response.target_pos.y;
-//  goal_arg[5] = gop_srv.response.target_pos.z;
-//  ROS_INFO("goal_ox:%fmm,goal_oy:%fmm,goal_oth:%fdeg", goal_arg[3], goal_arg[4], goal_arg[5]);
-//  }
-//  // robot's joint angles(j0~j17)
-//  if (!gop_srv.response.joint_angle_array.empty()) {
-//  for (int j=0; j<gop_srv.response.joint_angle_array.at(0).joint_angle.size(); j++)
-//  goal_joint[j] = gop_srv.response.joint_angle_array.at(0).joint_angle.at(j);
-//  for (int j=0; j<9; j++) {
-//  goal_arg[j+9] = goal_joint[j];
-//  ROS_INFO("goal_joint[%d]=%f", j+9, goal_arg[j+9]);
-//  }
-//  }
-//  } else {
-//  s_srv.request.error_msg = "Failed to call give_object_service";
-//  state_client.call(s_srv);
-//  return false;
-//  }
+  srv.request.x = 11.76;//9.35;
+  srv.request.y = 1.42; //5.65;
+  srv.request.z = 0.9 + 0.07; //1.1;
+  srv.request.roll = 0;
+  srv.request.pitch = 0;
+  srv.request.yaw = 0;
 
-//  // move base
-//  rp_srv.request.robot_id = sd.robot_id;
-//  std::string robot_name("");
-//  for (int cnt=0; cnt<5; cnt++) {
-//  if(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv))
-//  break;
-//  }
+  if (object_id != 0)
+  {
+    switch (sd.robot_id)
+    {
+      case 2002: // for smartpal simulation
+      {
 
-//  rp_srv.request.goal_pos.x = goal_arg[0];
-//  rp_srv.request.goal_pos.y = goal_arg[1];
-//  rp_srv.request.goal_pos.th = goal_arg[2];
+      }
+      case 2003:
+      {
+        if (sd.type == false)
+        {
+          if (subtask_release_client.call(srv))
+          {
+            ROS_INFO("Successed to get place poses");
+            nh1.setParam("/sp5_grasping_object_id",0);
+          }
+          else
+          {
+            s_srv.request.error_msg = "Unsupported robot in release function";
+            state_client.call(s_srv);
+            return false;
+          }
+        }
+        else
+        {
+        }
+        break;
+      }
+      default:
+        s_srv.request.error_msg = "Unsupported robot in grasp function";
+        state_client.call(s_srv);
+        return false;
+    }
+  }
 
-//  int i = 1;
-//  double arg[13];
-//  if (voronoi_path_planning_client_.call(rp_srv)) {
-//  if (!rp_srv.response.VoronoiPath.empty()) {
-//  grasp::PlanBase *pb = grasp::PlanBase::instance();
-//  callSynchronously(bind(&grasp::PlanBase::setGraspingState,pb,grasp::PlanBase::GRASPING));
-
-//  cnoid::Vector3 position;
-//  cnoid::Vector3 rotation;
-//  while(1) {
-//  arg[0] = rp_srv.response.VoronoiPath[i].x;
-//  arg[1] = rp_srv.response.VoronoiPath[i].y;
-//  arg[2] = rp_srv.response.VoronoiPath[i].th;
-
-//  if (sd.robot_id == 2002 || sd.robot_id == 2003) {
-//  if (sd.type) {
-//  if (((rp_srv.response.VoronoiPath[i-1].th>90 && rp_srv.response.VoronoiPath[i-1].th<=180) &&
-//  (rp_srv.response.VoronoiPath[i].th>=-180 && rp_srv.response.VoronoiPath[i].th<0)) ||
-//  ((rp_srv.response.VoronoiPath[i].th>0 && rp_srv.response.VoronoiPath[i].th<=180) &&
-//  (rp_srv.response.VoronoiPath[i-1].th>=-180 && rp_srv.response.VoronoiPath[i-1].th<-90))) {
-//  double g_ang = rp_srv.response.VoronoiPath[i].th - rp_srv.response.VoronoiPath[i-1].th;
-//  if (g_ang > 180) g_ang = g_ang - 360;
-//  else if (g_ang < -180) g_ang = g_ang + 360;
-//  double tmp_arg[3] = {0.0, 0.0, g_ang};
-//  ROS_INFO("goal_ang=%f", g_ang);
-//  if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_REL, 3, tmp_arg)) {
-//  return false;
-//  }
-//  } else {
-//  if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg)) {
-//  send_rc_exception(1);
-//  return false;
-//  }
-//  }
-//  } else {
-//  if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg)) {
-//  send_rc_exception(1);
-//  return false;
-//  }
-//  sleep(1.0);
-//  }
-//  if (sd.type == true) {
-//  if (!sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg)) send_rc_exception(0);
-//  } else {
-//  sleep(0.7);
-//  }
-//  } else if (sd.robot_id == 2006) {
-//  if (sd.type == true) {
-//  tms_msg_rc::tms_rc_pmove move_srv;
-//  double dis = distance(rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
-//  rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
-//  double ang = rp_srv.response.VoronoiPath[i].th - rp_srv.response.VoronoiPath[i-1].th;
-//  if (ang > 180.0) ang = ang - 360.0;
-//  else if (ang < -180.0) ang = ang + 360.0;
-//  ROS_INFO("voronoi[%d]:(%f,%f,%f), voronoi[%d]:(%f,%f,%f)",i-1, rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
-//  rp_srv.response.VoronoiPath[i-1].th, i, rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y, rp_srv.response.VoronoiPath[i].th);
-//  if (dis != 0) {
-//  ROS_INFO("cmd1:%f", dis);
-//  move_srv.request.command = 1;
-//  move_srv.request.pdist = dis;
-//  if(kxp_mbase_client.call(move_srv)) {
-//  kxp_set_odom();
-//  } else {
-//  ROS_ERROR("Failed to call service kxp_pioneer_control");
-//  return false;
-//  }
-//  }
-//  if (ang != 0){
-//  ROS_INFO("cmd2:%f", ang);
-//  move_srv.request.command = 2;
-//  move_srv.request.pangle = ang;
-//  if (kxp_mbase_client.call(move_srv)) {
-//  kxp_set_odom();
-//  } else {
-//  ROS_ERROR("Failed to call service kxp_katana_control");
-//  return false;
-//  }
-//  }
-//  } else {
-//  tms_msg_rc::tms_rc_pmove kxp_srv;
-//  kxp_srv.request.w_x = arg[0];
-//  kxp_srv.request.w_y = arg[1];
-//  kxp_srv.request.w_th = arg[2];
-//  if (v_kxp_mbase_client.call(kxp_srv)) ROS_INFO("result: %d", kxp_srv.response.success);
-//  else                  ROS_ERROR("Failed to call service kxp_mbase");
-//  sleep(0.7);
-//  }
-//  }
-
-//  pb->bodyItemRobot()->body()->calcForwardKinematics();
-//  rotation = grasp::rpyFromRot(pb->fingers(0)->tip->R()*(pb->targetArmFinger->objectPalmRot));
-//  position = pb->fingers(0)->tip->p()+pb->fingers(0)->tip->R()*pb->targetArmFinger->objectPalmPos;
-
-//  ROS_INFO("robot_x=%f,y=%f,z=%f", arg[0], arg[1], arg[2]);
-//  ROS_INFO("object_x=%f,y=%f,z=%f,rr=%f,rp=%f,ry=%f\n", position(0), position(1), position(2), rad2deg(rotation(0)), rad2deg(rotation(1)), rad2deg(rotation(2)));
-
-//  tms_msg_db::TmsdbGetData name_srv;
-//  name_srv.request.tmsdb.name = pb->targetObject->bodyItemObject->name();
-//  get_data_client_.call(name_srv);
-//  arg[3] = 2; // robot_state
-//  arg[4] = (double)name_srv.response.tmsdb[0].id; // obj_id
-//  arg[5] = position(0)*1000; // m -> mm;
-//  arg[6] = position(1)*1000;
-//  arg[7] = position(2)*1000;
-//  arg[8] = rad2deg(rotation(0));
-//  arg[9] = rad2deg(rotation(1));
-//  arg[10] = rad2deg(rotation(2));
-//  arg[11] = sd.robot_id;
-//  arg[12] = 2; // obj_state
-
-//  if (sd.robot_id == 2002 || sd.robot_id == 2003) {
-//  if (sd.type == false) {
-//  sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_REL, 3, arg);
-//  }
-//  } else if (sd.robot_id == 2006) {
-//  if (sd.type == false) {
-//  kxp_control(sd.type, UNIT_ALL, CMD_SYNC_OBJ, 13, arg);
-//  }
-//  }
-
-//  std::string s_note("");
-//  for (int c=0; c<3; c++) {
-//  s_note += DoubleToString(arg[c]);
-//  if (c != 2)
-//  s_note += ";";
-//  }
-//  ROS_INFO("note=%s", s_note.c_str());
-//  update_obj(arg[4], arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], arg[11], sensor_id, arg[12], s_note);
-//  i++;
-//  if (i==2 && rp_srv.response.VoronoiPath.size()==2) i++;
-//  // Update Robot Path Planning
-//  if (i == 3) {
-//  sleep(1);
-//  for (int cnt=0; cnt<5; cnt++) {
-//  if(get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv))
-//  break;
-//  }
-
-//  // end determination
-//  double error_x, error_y, error_th;
-//  error_x = fabs(rp_srv.request.start_pos.x - rp_srv.request.goal_pos.x);
-//  error_y = fabs(rp_srv.request.start_pos.y - rp_srv.request.goal_pos.y);
-//  error_th = fabs(rp_srv.request.start_pos.th - rp_srv.request.goal_pos.th);
-//  if (error_th > 180.0) error_th = error_th - 360.0;
-//  else if (error_th < -180.0) error_th = error_th + 360.0;
-//  ROS_INFO("error_x:%f,error_y:%f,error_th:%f", error_x, error_y, error_th);
-//  if (error_x<=10 && error_y<=10 && (error_th>=-3 && error_th<=3)) {
-//  ROS_INFO("finish");
-//  break; // dis_error:10mm, ang_error:3deg
-//  }
-//  rp_srv.response.VoronoiPath.clear();
-//  voronoi_path_planning_client_.call(rp_srv);
-//  if (rp_srv.response.VoronoiPath.empty()) {
-//  s_srv.request.error_msg = "Planned path is empty";
-//  state_client.call(s_srv);
-//  return false;
-//  }
-//  i = 1;
-//  }
-//  }
-//  } else {
-//  s_srv.request.error_msg = "Update planned path is empty";
-//  state_client.call(s_srv);
-//  return false;
-//  }
-//  } else {
-//  s_srv.request.error_msg = "Failed to call service /rps_voronoi_path_planning";
-//  state_client.call(s_srv);
-//  return false;
-//  }
-//  // move joint
-//  if (sd.robot_id == 2002 || sd.robot_id == 2003) {
-//  double sp5give_arg[12] = {goal_arg[10], goal_arg[9], 10.0, 10.0,
-//  goal_arg[11], goal_arg[12], goal_arg[13], goal_arg[14], goal_arg[15], goal_arg[16], goal_arg[17], 10.0}; //degree
-//  // send command to RC
-//  if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5give_arg)) {
-//  send_rc_exception(3);
-//  return false;
-//  }
-//  if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5give_arg+4)) {
-//  send_rc_exception(2);
-//  return false;
-//  }
-//  // update object pos
-//  update_obj(arg[4], goal_arg[3], goal_arg[4], goal_arg[5], 0, 0, 90, arg[11], sensor_id, arg[12], "");
-
-//  // give object
-//  //		double openG_arg[3] = {-40,7,7};
-//  //		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, openG_arg)) {
-//  //			send_rc_exception(4);
-//  //			return false;
-//  //		}
-//  //		// transition initial posture
-//  //		if (!sp5_control(sd.type, UNIT_LUMBA, CMD_MOVE_REL, 4, sp5arm_init_arg)) {
-//  //			send_rc_exception(3);
-//  //			return false;
-//  //		}
-//  //		if (!sp5_control(sd.type, UNIT_GRIPPER_R, CMD_MOVE_ABS, 3, sp5arm_init_arg+12)) {
-//  //			send_rc_exception(4);
-//  //			return false;
-//  //		}
-//  //		if (!sp5_control(sd.type, UNIT_ARM_R, CMD_MOVE_ABS , 8, sp5arm_init_arg+4)) {
-//  //			send_rc_exception(2);
-//  //			return false;
-//  //		}
-//  } else if (sd.robot_id == 2006) {
-//  double give_pose[7] = {0.0, 0.0, 0.0, 46.8, 0.0, 24.0, 24.0};
-//  tms_msg_rc::katana_pos_array katana_srv;
-//  tms_msg_rc::katana_pos argument;
-//  katana_srv.request.pose_array.clear();
-//  argument.pose.clear();
-//  for (int j=0; j<7; j++)
-//  argument.pose.push_back(give_pose[j]);
-//  katana_srv.request.pose_array.push_back(argument);
-
-//  if (sd.type == true) katana_client.call(katana_srv);
-//  else v_katana_client.call(katana_srv);
-//  //		update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], arg[11], 3001, arg[12], "");
-//  }
-//  nh1.setParam("grasping", 0);
-
-//  //	apprise TS_control of succeeding subtask execution
-//  s_srv.request.state = 1;
-//  state_client.call(s_srv);
-//  return true;
+  //	apprise TS_control of succeeding subtask execution
+  s_srv.request.state = 1;
+  state_client.call(s_srv);
+  return true;
 }
 
 //bool tms_rp::TmsRpSubtask::open_ref(void) {

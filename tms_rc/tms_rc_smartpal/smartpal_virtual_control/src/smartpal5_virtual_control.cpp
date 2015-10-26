@@ -16,6 +16,7 @@
 #include <geometry_msgs/TransformStamped.h>
 #include <tf/transform_listener.h>
 #include <tms_msg_db/TmsdbGetData.h>
+#include <sensor_msgs/JointState.h>
 
 //#define OFF       0
 #define ON          1
@@ -728,12 +729,16 @@ void ObjectDataUpdate(ros::NodeHandle *nh1)
 
   const int sid_ = 100000;
 
+  int last_grasp_id = 0;
+
   while (ros::ok())
   {
-    int grasping_id=0;
+    int grasping_id = 0;
     nh1->getParam("/sp5_grasping_object_id",grasping_id);
     if (grasping_id != 0)
     {
+      last_grasp_id = grasping_id;
+
       tms_msg_db::TmsdbGetData srv;
       srv.request.tmsdb.id = grasping_id + sid_;
 
@@ -784,6 +789,9 @@ void ObjectDataUpdate(ros::NodeHandle *nh1)
         current_pos_data.rr     = g_orr;
         current_pos_data.rp     = g_orp;
         current_pos_data.ry     = g_ory;
+        current_pos_data.offset_x = srv.response.tmsdb[0].offset_x;
+        current_pos_data.offset_y = srv.response.tmsdb[0].offset_y;
+        current_pos_data.offset_z = srv.response.tmsdb[0].offset_z;
         current_pos_data.place  = 2003;
         current_pos_data.sensor = 3005;
         current_pos_data.probability = 1.0;
@@ -796,24 +804,69 @@ void ObjectDataUpdate(ros::NodeHandle *nh1)
       else{
         ROS_ERROR("failed to get data");
       }
+    }
+    else if(grasping_id == 0 && last_grasp_id != 0){
+      tms_msg_db::TmsdbGetData srv;
+      srv.request.tmsdb.id = last_grasp_id + sid_;
 
+      if(get_data_client_.call(srv))
+      {
+        g_oid = last_grasp_id;
+
+        ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+
+        tms_msg_db::TmsdbStamped db_msg;
+        tms_msg_db::Tmsdb current_pos_data;
+
+        db_msg.header.frame_id  = "/world";
+        db_msg.header.stamp     = now;
+
+        current_pos_data.time   = boost::posix_time::to_iso_extended_string(now.toBoost());
+        current_pos_data.id     = g_oid;
+        current_pos_data.name   = srv.response.tmsdb[0].name;
+        current_pos_data.type   = srv.response.tmsdb[0].type;
+        current_pos_data.x      = g_ox;
+        current_pos_data.y      = g_oy;
+        current_pos_data.z      = g_oz;
+        current_pos_data.rr     = g_orr;
+        current_pos_data.rp     = g_orp;
+        current_pos_data.ry     = g_ory;
+        current_pos_data.offset_x = srv.response.tmsdb[0].offset_x;
+        current_pos_data.offset_y = srv.response.tmsdb[0].offset_y;
+        current_pos_data.offset_z = srv.response.tmsdb[0].offset_z;
+        current_pos_data.place  = 2003;
+        current_pos_data.sensor = 3005;
+        current_pos_data.probability = 1.0;
+        current_pos_data.state = 1;
+
+        db_msg.tmsdb.push_back(current_pos_data);
+
+        pose_publisher.publish(db_msg);
+
+        last_grasp_id = 0;
+      }
+      else{
+        ROS_ERROR("failed to get data");
+      }
+    }
       ros::spinOnce();
       loop_rate.sleep();
-    }
   }
 }
 
-void armCallback(const moveit_msgs::DisplayTrajectory& msg)
+void armCallback(const sensor_msgs::JointState& msg)
 {
-  for(int i=0;i<7;i++)
+  if(msg.name[0] == "l_gripper_thumb_joint")
   {
-    g_jL[i]=msg.trajectory[msg.trajectory.size()-1].joint_trajectory.points[msg.trajectory[msg.trajectory.size()-1].joint_trajectory.points.size()-1].positions[i];
-    ROS_INFO("g_jL[%d]=%f",i,g_jL[i]);
-  }
-  if(msg.trajectory.size()>1)
-  {
-    g_gripper_left=msg.trajectory[msg.trajectory.size()-2].joint_trajectory.points[msg.trajectory[msg.trajectory.size()-2].joint_trajectory.points.size()-1].positions[0];
+    g_gripper_left = msg.position[0];
     ROS_INFO("gripper_left=%f",g_gripper_left);
+  }
+  else{
+    for(int i=0;i<7;i++)
+    {
+      g_jL[i] = msg.position[i];
+      ROS_INFO("g_jL[%d]=%f",i,g_jL[i]);
+    }
   }
 }
 
@@ -823,10 +876,9 @@ int main(int argc, char **argv)
   ros::NodeHandle nh;
   ros::ServiceServer service    = nh.advertiseService("sp5_virtual_control", robotControl);
   pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
-  arm_data_sub = nh.subscribe("/move_group/display_planned_path", 1, &armCallback);
+  arm_data_sub = nh.subscribe("/move_group/fake_controller_joint_states",1,&armCallback);
 
   nh.setParam("/sp5_grasping_object_id",0); //0 is not grasping
-
 
   printf("Virtual SmartPal initialization has been completed.\n\n");
 

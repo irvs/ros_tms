@@ -6,6 +6,7 @@
 #include <tms_msg_rp/rp_cmd.h>
 #include <tms_msg_rp/rp_arrow.h>
 #include <tms_msg_rp/rp_grasp.h>
+#include <tms_msg_rp/rp_release.h>
 #include <tms_msg_rp/rps_voronoi_path_planning.h>
 #include <tms_msg_rp/rps_goal_planning.h>
 #include <tms_msg_rp/rps_joint_angle.h>
@@ -96,7 +97,7 @@ class TmsRpSubtask
   // for thread
   bool move(SubtaskData sd); // 9001
   bool grasp(SubtaskData sd); // 9002
-  bool give(SubtaskData sd); // 9003
+  bool release(SubtaskData sd); // 9003
 //	bool open_ref(void);  // 9004
 //	bool close_ref(void); // 9005
 //	bool random_move(void); // 9006
@@ -106,7 +107,8 @@ class TmsRpSubtask
   ros::ServiceClient get_data_client_;
   ros::ServiceClient sp5_control_client_;
   ros::ServiceClient sp5_virtual_control_client;
-  ros::ServiceClient  subtask_grasp_client;
+  ros::ServiceClient subtask_grasp_client;
+  ros::ServiceClient subtask_release_client;
 //	ros::ServiceClient kxp_virtual_control_client;
 //	ros::ServiceClient kxp_mbase_client;
 //	ros::ServiceClient v_kxp_mbase_client;
