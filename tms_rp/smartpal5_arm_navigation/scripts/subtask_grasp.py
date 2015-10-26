@@ -105,13 +105,13 @@ class SubTaskGrasp:
         # Allow 5 seconds per planning attempt
         arm.set_planning_time(5)
         # Set a limit on the number of pick attempts before bailing
-        max_pick_attempts = 15
+        max_pick_attempts = 10
         # Set a limit on the number of place attempts
-        max_place_attempts = 15
+        max_place_attempts = 10
         # Give the scene a chance to catch up
         rospy.sleep(2)
 
-        target_id = target.name #'chipstar_red'
+        target_id = str(req.object_id) #target.name #'chipstar_red'
         scene.remove_world_object(target_id)
         scene.remove_attached_object(GRIPPER_FRAME, target_id)
 
@@ -177,9 +177,6 @@ class SubTaskGrasp:
             rospy.sleep(0.2)
             if result != MoveItErrorCodes.SUCCESS:
                 scene.remove_attached_object(GRIPPER_FRAME, target_id)
-
-        # scene.remove_attached_object(GRIPPER_FRAME, target_id)
-        # scene.remove_world_object(target_id)
 
         ret = rp_graspResponse()
         # If the pick was successful, attempt the place operation

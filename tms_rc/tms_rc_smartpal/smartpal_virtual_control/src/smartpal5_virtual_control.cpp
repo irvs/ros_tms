@@ -17,6 +17,9 @@
 #include <tf/transform_listener.h>
 #include <tms_msg_db/TmsdbGetData.h>
 #include <sensor_msgs/JointState.h>
+#include <moveit_msgs/PlanningScene.h>
+#include <stdlib.h>
+#include <tf/transform_datatypes.h>
 
 //#define OFF       0
 #define ON          1
@@ -84,6 +87,13 @@
 
 ros::Publisher pose_publisher;
 ros::Subscriber arm_data_sub;
+ros::Subscriber object_data_sub;
+ros::ServiceClient get_data_client_;
+
+tf::StampedTransform *transform;
+tf::TransformListener *listener;
+
+const int sid_ = 100000;
 
 double g_x = 3.0;
 double g_y = 4.0;
@@ -106,6 +116,7 @@ double g_joint_velocity     = 10.0; // Velocity (now deg/s)
 double g_joint_acceleration = 10.0; // Acceleration (now deg/s^2)
 
 bool grasping = false;
+bool is_grasp = false;
 
 int g_oid;
 double g_ox;
@@ -718,141 +729,141 @@ void RobotDataUpdate()
   }
 }
 
-void ObjectDataUpdate(ros::NodeHandle *nh1)
-{
-  ros::Rate loop_rate(10); // 10Hz frequency (0.1 sec)
-
-  tf::StampedTransform transform;
-  tf::TransformListener listener;
-
-  ros::ServiceClient get_data_client_ = nh1->serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
-
-  const int sid_ = 100000;
-
-  int last_grasp_id = 0;
-
-  while (ros::ok())
-  {
-    int grasping_id = 0;
-    nh1->getParam("/sp5_grasping_object_id",grasping_id);
-    if (grasping_id != 0)
-    {
-      last_grasp_id = grasping_id;
-
-      tms_msg_db::TmsdbGetData srv;
-      srv.request.tmsdb.id = grasping_id + sid_;
-
-      if(get_data_client_.call(srv))
-      {
-        g_oid = grasping_id;
-
-        geometry_msgs::TransformStamped msg;
-
-        std::string target_frame("/world_link");
-        std::string source_frame("/l_end_effector_link");
-        try{
-          ros::Time now = ros::Time::now();
-          listener.waitForTransform(target_frame,source_frame,now,ros::Duration(5.0));
-          listener.lookupTransform(target_frame,source_frame,now,transform);
-        }
-        catch(tf::TransformException ex){
-          ROS_ERROR("%s",ex.what());
-        }
-        tf::transformStampedTFToMsg(transform,msg);
-
-        double gripper_x = msg.transform.translation.x;
-        double gripper_y = msg.transform.translation.y;
-        double gripper_z = msg.transform.translation.z;
-
-        double offset = srv.response.tmsdb[0].offset_x;
-        double offset_z = srv.response.tmsdb[0].offset_z;
-
-        g_ox = gripper_x + offset * sin(g_t);
-        g_oy = gripper_y - offset * cos(g_t);
-        g_oz = gripper_z - offset_z;
-
-        ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
-
-        tms_msg_db::TmsdbStamped db_msg;
-        tms_msg_db::Tmsdb current_pos_data;
-
-        db_msg.header.frame_id  = "/world";
-        db_msg.header.stamp     = now;
-
-        current_pos_data.time   = boost::posix_time::to_iso_extended_string(now.toBoost());
-        current_pos_data.id     = g_oid;
-        current_pos_data.name   = srv.response.tmsdb[0].name;
-        current_pos_data.type   = srv.response.tmsdb[0].type;
-        current_pos_data.x      = g_ox;
-        current_pos_data.y      = g_oy;
-        current_pos_data.z      = g_oz;
-        current_pos_data.rr     = g_orr;
-        current_pos_data.rp     = g_orp;
-        current_pos_data.ry     = g_ory;
-        current_pos_data.offset_x = srv.response.tmsdb[0].offset_x;
-        current_pos_data.offset_y = srv.response.tmsdb[0].offset_y;
-        current_pos_data.offset_z = srv.response.tmsdb[0].offset_z;
-        current_pos_data.place  = 2003;
-        current_pos_data.sensor = 3005;
-        current_pos_data.probability = 1.0;
-        current_pos_data.state = 2;
-
-        db_msg.tmsdb.push_back(current_pos_data);
-
-        pose_publisher.publish(db_msg);
-      }
-      else{
-        ROS_ERROR("failed to get data");
-      }
-    }
-    else if(grasping_id == 0 && last_grasp_id != 0){
-      tms_msg_db::TmsdbGetData srv;
-      srv.request.tmsdb.id = last_grasp_id + sid_;
-
-      if(get_data_client_.call(srv))
-      {
-        g_oid = last_grasp_id;
-
-        ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
-
-        tms_msg_db::TmsdbStamped db_msg;
-        tms_msg_db::Tmsdb current_pos_data;
-
-        db_msg.header.frame_id  = "/world";
-        db_msg.header.stamp     = now;
-
-        current_pos_data.time   = boost::posix_time::to_iso_extended_string(now.toBoost());
-        current_pos_data.id     = g_oid;
-        current_pos_data.name   = srv.response.tmsdb[0].name;
-        current_pos_data.type   = srv.response.tmsdb[0].type;
-        current_pos_data.x      = g_ox;
-        current_pos_data.y      = g_oy;
-        current_pos_data.z      = g_oz;
-        current_pos_data.rr     = g_orr;
-        current_pos_data.rp     = g_orp;
-        current_pos_data.ry     = g_ory;
-        current_pos_data.offset_x = srv.response.tmsdb[0].offset_x;
-        current_pos_data.offset_y = srv.response.tmsdb[0].offset_y;
-        current_pos_data.offset_z = srv.response.tmsdb[0].offset_z;
-        current_pos_data.place  = 2003;
-        current_pos_data.sensor = 3005;
-        current_pos_data.probability = 1.0;
-        current_pos_data.state = 1;
-
-        db_msg.tmsdb.push_back(current_pos_data);
-
-        pose_publisher.publish(db_msg);
-
-        last_grasp_id = 0;
-      }
-      else{
-        ROS_ERROR("failed to get data");
-      }
-    }
-      ros::spinOnce();
-      loop_rate.sleep();
-  }
-}
+// void ObjectDataUpdate(ros::NodeHandle *nh1)
+// {
+//   ros::Rate loop_rate(10); // 10Hz frequency (0.1 sec)
+//
+//   tf::StampedTransform transform;
+//   tf::TransformListener listener;
+//
+//   ros::ServiceClient get_data_client_ = nh1->serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
+//
+//   const int sid_ = 100000;
+//
+//   int last_grasp_id = 0;
+//
+//   while (ros::ok())
+//   {
+//     int grasping_id = 0;
+//     nh1->getParam("/sp5_grasping_object_id",grasping_id);
+//     if (grasping_id != 0)
+//     {
+//       last_grasp_id = grasping_id;
+//
+//       tms_msg_db::TmsdbGetData srv;
+//       srv.request.tmsdb.id = grasping_id + sid_;
+//
+//       if(get_data_client_.call(srv))
+//       {
+//         g_oid = grasping_id;
+//
+//         geometry_msgs::TransformStamped msg;
+//
+//         std::string target_frame("/world_link");
+//         std::string source_frame("/l_end_effector_link");
+//         try{
+//           ros::Time now = ros::Time::now();
+//           listener.waitForTransform(target_frame,source_frame,now,ros::Duration(5.0));
+//           listener.lookupTransform(target_frame,source_frame,now,transform);
+//         }
+//         catch(tf::TransformException ex){
+//           ROS_ERROR("%s",ex.what());
+//         }
+//         tf::transformStampedTFToMsg(transform,msg);
+//
+//         double gripper_x = msg.transform.translation.x;
+//         double gripper_y = msg.transform.translation.y;
+//         double gripper_z = msg.transform.translation.z;
+//
+//         double offset = srv.response.tmsdb[0].offset_x;
+//         double offset_z = srv.response.tmsdb[0].offset_z;
+//
+//         g_ox = gripper_x + offset * sin(g_t);
+//         g_oy = gripper_y - offset * cos(g_t);
+//         g_oz = gripper_z - offset_z;
+//
+//         ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+//
+//         tms_msg_db::TmsdbStamped db_msg;
+//         tms_msg_db::Tmsdb current_pos_data;
+//
+//         db_msg.header.frame_id  = "/world";
+//         db_msg.header.stamp     = now;
+//
+//         current_pos_data.time   = boost::posix_time::to_iso_extended_string(now.toBoost());
+//         current_pos_data.id     = g_oid;
+//         current_pos_data.name   = srv.response.tmsdb[0].name;
+//         current_pos_data.type   = srv.response.tmsdb[0].type;
+//         current_pos_data.x      = g_ox;
+//         current_pos_data.y      = g_oy;
+//         current_pos_data.z      = g_oz;
+//         current_pos_data.rr     = g_orr;
+//         current_pos_data.rp     = g_orp;
+//         current_pos_data.ry     = g_ory;
+//         current_pos_data.offset_x = srv.response.tmsdb[0].offset_x;
+//         current_pos_data.offset_y = srv.response.tmsdb[0].offset_y;
+//         current_pos_data.offset_z = srv.response.tmsdb[0].offset_z;
+//         current_pos_data.place  = 2003;
+//         current_pos_data.sensor = 3005;
+//         current_pos_data.probability = 1.0;
+//         current_pos_data.state = 2;
+//
+//         db_msg.tmsdb.push_back(current_pos_data);
+//
+//         pose_publisher.publish(db_msg);
+//       }
+//       else{
+//         ROS_ERROR("failed to get data");
+//       }
+//     }
+//     else if(grasping_id == 0 && last_grasp_id != 0){
+//       tms_msg_db::TmsdbGetData srv;
+//       srv.request.tmsdb.id = last_grasp_id + sid_;
+//
+//       if(get_data_client_.call(srv))
+//       {
+//         g_oid = last_grasp_id;
+//
+//         ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+//
+//         tms_msg_db::TmsdbStamped db_msg;
+//         tms_msg_db::Tmsdb current_pos_data;
+//
+//         db_msg.header.frame_id  = "/world";
+//         db_msg.header.stamp     = now;
+//
+//         current_pos_data.time   = boost::posix_time::to_iso_extended_string(now.toBoost());
+//         current_pos_data.id     = g_oid;
+//         current_pos_data.name   = srv.response.tmsdb[0].name;
+//         current_pos_data.type   = srv.response.tmsdb[0].type;
+//         current_pos_data.x      = g_ox;
+//         current_pos_data.y      = g_oy;
+//         current_pos_data.z      = g_oz;
+//         current_pos_data.rr     = g_orr;
+//         current_pos_data.rp     = g_orp;
+//         current_pos_data.ry     = g_ory;
+//         current_pos_data.offset_x = srv.response.tmsdb[0].offset_x;
+//         current_pos_data.offset_y = srv.response.tmsdb[0].offset_y;
+//         current_pos_data.offset_z = srv.response.tmsdb[0].offset_z;
+//         current_pos_data.place  = 5002;
+//         current_pos_data.sensor = 3005;
+//         current_pos_data.probability = 1.0;
+//         current_pos_data.state = 1;
+//
+//         db_msg.tmsdb.push_back(current_pos_data);
+//
+//         pose_publisher.publish(db_msg);
+//
+//         last_grasp_id = 0;
+//       }
+//       else{
+//         ROS_ERROR("failed to get data");
+//       }
+//     }
+//       ros::spinOnce();
+//       loop_rate.sleep();
+//   }
+// }
 
 void armCallback(const sensor_msgs::JointState& msg)
 {
@@ -870,23 +881,162 @@ void armCallback(const sensor_msgs::JointState& msg)
   }
 }
 
+void ObjectDataUpdate2(const moveit_msgs::PlanningScene& msg)
+{
+  ROS_INFO("called");
+  if(msg.robot_state.attached_collision_objects.size() != 0){ // grasped" object
+  ROS_INFO("a");
+    int object_id = atoi(msg.robot_state.attached_collision_objects[0].object.id.c_str());
+    ROS_INFO("id:%d",object_id);
+
+    g_oid = object_id;
+
+    geometry_msgs::TransformStamped ts_msg;
+
+    std::string target_frame("/world_link");
+    std::string source_frame("/l_end_effector_link");
+    try{
+      ros::Time now = ros::Time::now();
+      listener->waitForTransform(target_frame,source_frame,now,ros::Duration(5.0));
+      listener->lookupTransform(target_frame,source_frame,now,*transform);
+    }
+    catch(tf::TransformException ex){
+      ROS_ERROR("%s",ex.what());
+    }
+    tf::transformStampedTFToMsg(*transform,ts_msg);
+
+    double gripper_x = ts_msg.transform.translation.x;
+    double gripper_y = ts_msg.transform.translation.y;
+    double gripper_z = ts_msg.transform.translation.z;
+
+    double gripper_rr,gripper_rp,gripper_ry;
+    tf::Quaternion q(ts_msg.transform.rotation.x,ts_msg.transform.rotation.y,ts_msg.transform.rotation.z,ts_msg.transform.rotation.w);
+    tf::Matrix3x3 m(q);
+    m.getRPY(gripper_rr,gripper_rp,gripper_ry);
+
+    double offset_x = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.x;
+    double offset_y = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.y;
+    double offset_z = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.z;
+
+    g_ox = gripper_x + offset_x * cos(gripper_ry) - offset_y * sin(gripper_ry);
+    g_oy = gripper_y + offset_y * cos(gripper_ry) + offset_x * sin(gripper_ry);
+    g_oz = gripper_z + offset_z;
+
+    tms_msg_db::TmsdbGetData srv;
+    srv.request.tmsdb.id = object_id + sid_;
+
+    if(get_data_client_.call(srv)){
+      g_oz -= srv.response.tmsdb[0].offset_z;
+
+      ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+
+      tms_msg_db::TmsdbStamped db_msg;
+      tms_msg_db::Tmsdb current_pos_data;
+
+      db_msg.header.frame_id  = "/world";
+      db_msg.header.stamp     = now;
+
+      current_pos_data.time   = boost::posix_time::to_iso_extended_string(now.toBoost());
+      current_pos_data.id     = g_oid;
+      current_pos_data.name   = srv.response.tmsdb[0].name;
+      current_pos_data.type   = srv.response.tmsdb[0].type;
+      current_pos_data.x      = g_ox;
+      current_pos_data.y      = g_oy;
+      current_pos_data.z      = g_oz;
+      current_pos_data.rr     = g_orr;
+      current_pos_data.rp     = g_orp;
+      current_pos_data.ry     = g_ory;
+      current_pos_data.offset_x = srv.response.tmsdb[0].offset_x;
+      current_pos_data.offset_y = srv.response.tmsdb[0].offset_y;
+      current_pos_data.offset_z = srv.response.tmsdb[0].offset_z;
+      current_pos_data.place  = 2003;
+      current_pos_data.sensor = 3005;
+      current_pos_data.probability = 1.0;
+      current_pos_data.state = 2;
+
+      db_msg.tmsdb.push_back(current_pos_data);
+      pose_publisher.publish(db_msg);
+
+      is_grasp = true;
+    }
+    else{
+      ROS_ERROR("failed to get data");
+    }
+  }
+  if(is_grasp == true && msg.world.collision_objects.size() != 0 && msg.world.collision_objects[0].primitive_poses.size() != 0){ // released object
+    is_grasp = false;
+    int object_id = atoi(msg.world.collision_objects[0].id.c_str());
+
+    ROS_INFO("id:%d",object_id);
+
+    g_oid = object_id;
+    g_ox = msg.world.collision_objects[0].primitive_poses[0].position.x;
+    g_oy = msg.world.collision_objects[0].primitive_poses[0].position.y;
+    g_oz = msg.world.collision_objects[0].primitive_poses[0].position.z;
+
+    tms_msg_db::TmsdbGetData srv;
+    srv.request.tmsdb.id = object_id + sid_;
+
+    if(get_data_client_.call(srv)){
+      g_oz -= srv.response.tmsdb[0].offset_z;
+
+      ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+
+      tms_msg_db::TmsdbStamped db_msg;
+      tms_msg_db::Tmsdb current_pos_data;
+
+      db_msg.header.frame_id  = "/world";
+      db_msg.header.stamp     = now;
+
+      current_pos_data.time   = boost::posix_time::to_iso_extended_string(now.toBoost());
+      current_pos_data.id     = g_oid;
+      current_pos_data.name   = srv.response.tmsdb[0].name;
+      current_pos_data.type   = srv.response.tmsdb[0].type;
+      current_pos_data.x      = g_ox;
+      current_pos_data.y      = g_oy;
+      current_pos_data.z      = g_oz;
+      current_pos_data.rr     = g_orr;
+      current_pos_data.rp     = g_orp;
+      current_pos_data.ry     = g_ory;
+      current_pos_data.offset_x = srv.response.tmsdb[0].offset_x;
+      current_pos_data.offset_y = srv.response.tmsdb[0].offset_y;
+      current_pos_data.offset_z = srv.response.tmsdb[0].offset_z;
+      current_pos_data.place  = 5002;
+      current_pos_data.sensor = 3005;
+      current_pos_data.probability = 1.0;
+      current_pos_data.state = 1;
+
+      db_msg.tmsdb.push_back(current_pos_data);
+      pose_publisher.publish(db_msg);
+    }
+    else{
+      ROS_ERROR("failed to get data");
+    }
+  }
+}
+
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "smartpal5_virtual_control");
   ros::NodeHandle nh;
+  transform = new tf::StampedTransform;
+  listener = new tf::TransformListener;
   ros::ServiceServer service    = nh.advertiseService("sp5_virtual_control", robotControl);
   pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
   arm_data_sub = nh.subscribe("/move_group/fake_controller_joint_states",1,&armCallback);
-
-  nh.setParam("/sp5_grasping_object_id",0); //0 is not grasping
+  object_data_sub = nh.subscribe("/move_group/monitored_planning_scene",1,&ObjectDataUpdate2);
+  get_data_client_ = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
 
   printf("Virtual SmartPal initialization has been completed.\n\n");
 
   boost::thread thr_rdu(&RobotDataUpdate);
-  boost::thread thr_odu(boost::bind(&ObjectDataUpdate, &nh));
+  // boost::thread thr_odu(boost::bind(&ObjectDataUpdate, &nh));
 
   thr_rdu.join();
-  thr_odu.join();
+  // thr_odu.join();
+
+  delete transform;
+  delete listener;
 
   return(0);
 }

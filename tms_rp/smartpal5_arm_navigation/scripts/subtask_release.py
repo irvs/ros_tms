@@ -55,11 +55,6 @@ class SubTaskRelease:
 
         print(target.name)
 
-        # Use the planning scene object to add or remove objects
-        #scene = PlanningSceneInterface()
-
-        # Create a scene publisher to push changes to the scene
-        #self.scene_pub = rospy.Publisher('planning_scene', PlanningScene)
         # Create a publisher for displaying gripper poses
         self.gripper_pose_pub = rospy.Publisher('gripper_pose', PoseStamped)
         # Create a dictionary to hold object colors
@@ -84,21 +79,16 @@ class SubTaskRelease:
         # Allow 5 seconds per planning attempt
         arm.set_planning_time(5)
         # Set a limit on the number of pick attempts before bailing
-        max_pick_attempts = 15
+        max_pick_attempts = 10
         # Set a limit on the number of place attempts
-        max_place_attempts = 20
+        max_place_attempts = 10
         # Give the scene a chance to catch up
         rospy.sleep(2)
 
-        target_id = target.name #'chipstar_red'
-        #scene.remove_world_object(target_id)
-        #scene.remove_attached_object(GRIPPER_FRAME, target_id)
+        target_id = str(req.object_id)
 
         rospy.sleep(1)
 
-        # target_size = [(target.offset_x*2), (target.offset_y*2), (target.offset_z*2)]
-        #target_size = [0.03, 0.03, 0.12]
-        #target_size = [0.07, 0.07, 0.14]
         target_pose = PoseStamped()
         target_pose.header.frame_id = REFERENCE_FRAME
         target_pose.pose.position.x = req.x
@@ -110,10 +100,6 @@ class SubTaskRelease:
         target_pose.pose.orientation.y = q[1]
         target_pose.pose.orientation.z = q[2]
         target_pose.pose.orientation.w = q[3]
-
-        #scene.add_box(target_id, target_pose, target_size)
-
-        #rospy.sleep(2)
 
         print(target_pose.pose.position.x)
         print(target_pose.pose.position.y)
@@ -128,12 +114,6 @@ class SubTaskRelease:
 
         # Generate a list of grasps
         places = self.make_places(place_pose)
-
-        #print('test3')
-        # Publish the grasp poses so they can be viewed in RViz
-        #for place in places:
-            #self.gripper_pose_pub.publish(grasp.grasp_pose)
-            #rospy.sleep(0.2)
 
         # Track success/failure and number of attempts for pick operation
         result = None

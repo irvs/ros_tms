@@ -1007,7 +1007,6 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
           if (subtask_grasp_client.call(srv))
           {
             ROS_INFO("Successed to get grasp poses");
-            nh1.setParam("/sp5_grasping_object_id",sd.arg_type);
           }
           else
           {
@@ -1098,15 +1097,11 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
   s_srv.request.type = 1; // for subtask state update;
   s_srv.request.state = 0;
 
-  int object_id = 0;
-
   // SET ROBOT
   switch(sd.robot_id)
   {
     case 2003:
       ROS_INFO("ID:%d is selected", sd.robot_id);
-      nh1.getParam("/sp5_grasping_object_id",object_id);
-      ROS_INFO("object_id is %d",object_id);
       break;
     default:
       ROS_ERROR("An illegal robot id");
@@ -1114,7 +1109,7 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
   }
 
   tms_msg_rp::rp_release srv;
-  srv.request.object_id  = object_id;
+  srv.request.object_id  = 7001;
 
   srv.request.x = 11.76;//9.35;
   srv.request.y = 1.42; //5.65;
@@ -1123,41 +1118,38 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
   srv.request.pitch = 0;
   srv.request.yaw = 0;
 
-  if (object_id != 0)
+  switch (sd.robot_id)
   {
-    switch (sd.robot_id)
+    case 2002: // for smartpal simulation
     {
-      case 2002: // for smartpal simulation
-      {
 
-      }
-      case 2003:
+    }
+    case 2003:
+    {
+      if (sd.type == false)
       {
-        if (sd.type == false)
+        if (subtask_release_client.call(srv))
         {
-          if (subtask_release_client.call(srv))
-          {
-            ROS_INFO("Successed to get place poses");
-            nh1.setParam("/sp5_grasping_object_id",0);
-          }
-          else
-          {
-            s_srv.request.error_msg = "Unsupported robot in release function";
-            state_client.call(s_srv);
-            return false;
-          }
+          ROS_INFO("Successed to get place poses");
         }
         else
         {
+          s_srv.request.error_msg = "Unsupported robot in release function";
+          state_client.call(s_srv);
+          return false;
         }
-        break;
       }
-      default:
-        s_srv.request.error_msg = "Unsupported robot in grasp function";
-        state_client.call(s_srv);
-        return false;
+      else
+      {
+      }
+      break;
     }
+    default:
+    s_srv.request.error_msg = "Unsupported robot in release function";
+    state_client.call(s_srv);
+    return false;
   }
+
 
   //	apprise TS_control of succeeding subtask execution
   s_srv.request.state = 1;

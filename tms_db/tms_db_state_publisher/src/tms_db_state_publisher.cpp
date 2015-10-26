@@ -377,9 +377,7 @@ private:
 
       if(id==7001) //chipstar_red
       {
-        int grasping_id=0;
-        nh.getParam("/sp5_grasping_object_id",grasping_id);
-        if((state==1&&grasping_id!=7001)||(state==2&&grasping_id==7001))
+        if(state != 0)
         {
           posX = msg->tmsdb[i].x;
           posY = msg->tmsdb[i].y;
