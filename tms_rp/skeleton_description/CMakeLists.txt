@@ -21,7 +21,6 @@ catkin_package(
     roscpp
     rospy
     cmake_modules
-    #tms_msg_ss
 )
 
 ###################
@@ -35,12 +34,12 @@ include_directories(
 
 add_executable(skeleton_state_publisher skeleton_state_publisher/main.cpp)
 target_link_libraries(skeleton_state_publisher ${catkin_LIBRARIES})
-add_dependencies(skeleton_state_publisher tms_ss_kinect_v2_generate_messages_cpp)
+add_dependencies(skeleton_state_publisher tms_msg_ss_generate_messages_cpp)
 
 add_executable(kinect_state_publisher kinect_state_publisher/main.cpp)
 target_link_libraries(kinect_state_publisher ${catkin_LIBRARIES})
-add_dependencies(kinect_state_publisher tms_ss_kinect_v2_generate_messages_cpp)
+add_dependencies(kinect_state_publisher tms_msg_ss_generate_messages_cpp)
 
 add_executable(box_state_publisher box_state_publisher/main.cpp)
 target_link_libraries(box_state_publisher ${catkin_LIBRARIES})
-add_dependencies(box_state_publisher tms_ss_kinect_v2_generate_messages_cpp)
+add_dependencies(box_state_publisher tms_msg_ss_generate_messages_cpp)

@@ -10,7 +10,7 @@
 #include <tf_conversions/tf_kdl.h>
 #include <robot_state_publisher/robot_state_publisher.h>
 
-#include <tms_ss_kinect_v2/SkeletonArray.h>
+#include <tms_msg_ss/SkeletonArray.h>
 
 #include "../calc_joint_angles/for_model01.h"
 
@@ -34,12 +34,12 @@ class SkeletonStatePublisher : public robot_state_publisher::RobotStatePublisher
     tf::StampedTransform transform_;
 
     std::map<std::string, double> joint_states;
-    tms_ss_kinect_v2::Skeleton skeleton;
+    tms_msg_ss::Skeleton skeleton;
     int assigned_number_;
     std::string tf_prefix_;
     bool bFind;
 
-    void callback(const tms_ss_kinect_v2::SkeletonArray::ConstPtr& msg);
+    void callback(const tms_msg_ss::SkeletonArray::ConstPtr& msg);
 };
 
 //------------------------------------------------------------------------------
@@ -71,7 +71,7 @@ SkeletonStatePublisher::~SkeletonStatePublisher()
 }
 
 //------------------------------------------------------------------------------
-void SkeletonStatePublisher::callback(const tms_ss_kinect_v2::SkeletonArray::ConstPtr& msg)
+void SkeletonStatePublisher::callback(const tms_msg_ss::SkeletonArray::ConstPtr& msg)
 {
   skeleton = msg->data[assigned_number_-1];
   if (skeleton.user_id+1 > 0)
