@@ -27,6 +27,8 @@
 #include <tms_msg_rc/rc_robot_control.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <tf/tf.h>
+#include <visualization_msgs/Marker.h>
+#include <visualization_msgs/MarkerArray.h>
 
 #include "kalman-Ndof.hpp"
 
@@ -317,10 +319,21 @@ bool receiveGoalPose(tms_msg_rc::rc_robot_control::Request &req,
 //   // spinWheel(/*cmd_vel->linear.x,cmd_vel->angular.z*/);
 // }
 
+bool is_human_detected = false;
+void HumanTrackerCallback(const visualization_msgs::MarkerArray::ConstPtr &arg){
+  is_human_detected = !arg->markers.empty();
+}
+
 void receiveJoy(const sensor_msgs::Joy::ConstPtr &joy) {
   // ROS_INFO("Rrecieve joy");
-  mchn_pose.tgtTwist.linear.x = joy->axes[1] * 300;   // 600;
-  mchn_pose.tgtTwist.angular.z = joy->axes[3] * 0.7;  // 1;
+  if(is_human_detected){
+    ROS_INFO("human detected!!");
+    mchn_pose.tgtTwist.linear.x =  0.0;
+    mchn_pose.tgtTwist.angular.z =  0.0;
+  }else{
+    mchn_pose.tgtTwist.linear.x = joy->axes[1] * 300;   // 600;
+    mchn_pose.tgtTwist.angular.z = joy->axes[3] * 0.7;  // 1;
+  }
 }
 
 bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/) {
@@ -449,6 +462,9 @@ int main(int argc, char **argv) {
   s_Kp_ = boost::lexical_cast<string>(Kp_);
   s_Ki_ = boost::lexical_cast<string>(Ki_);
   s_Kd_ = boost::lexical_cast<string>(Kd_);
+
+  ros::NodeHandle nh;
+  ros::Subscriber sub = nh.subscribe("/visualization_marker_array", 100, HumanTrackerCallback);
 
   try {
     string reply;
