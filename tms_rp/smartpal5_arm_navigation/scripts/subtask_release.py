@@ -26,6 +26,8 @@ GRIPPER_EFFORT = [1.0]
 
 REFERENCE_FRAME = 'world_link'
 
+INIT_ARM_VALUE = [0.0, 0.08,0.0,0.0,0.0,0.0,0.0]
+
 class SubTaskRelease:
     def __init__(self):
         # Initialize the move_group API
@@ -129,6 +131,11 @@ class SubTaskRelease:
                 if result == MoveItErrorCodes.SUCCESS:
                     break
             rospy.sleep(0.2)
+
+        gripper.set_joint_value_target(GRIPPER_NEUTRAL)
+        gripper.go()
+        arm.set_joint_value_target(INIT_ARM_VALUE)
+        arm.go()
 
         ret = rp_releaseResponse()
         # If the pick was successful, attempt the place operation

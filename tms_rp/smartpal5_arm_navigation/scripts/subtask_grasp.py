@@ -47,6 +47,9 @@ GRIPPER_EFFORT = [1.0]
 
 REFERENCE_FRAME = 'world_link'
 
+INIT_ARM_VALUE = [0.0, 0.08,0.0,0.0,0.0,0.0,0.0]
+GRASP_ARM_VALUE = [0.0, 0.2,0.0,0.0,0.0,0.0,0.0]
+
 class SubTaskGrasp:
     def __init__(self):
         # Initialize the move_group API
@@ -111,7 +114,7 @@ class SubTaskGrasp:
         # Give the scene a chance to catch up
         rospy.sleep(2)
 
-        target_id = str(req.object_id) #target.name #'chipstar_red'
+        target_id = str(req.object_id)
         scene.remove_world_object(target_id)
         scene.remove_attached_object(GRIPPER_FRAME, target_id)
 
@@ -177,6 +180,10 @@ class SubTaskGrasp:
             rospy.sleep(0.2)
             if result != MoveItErrorCodes.SUCCESS:
                 scene.remove_attached_object(GRIPPER_FRAME, target_id)
+
+        #arm.set_pose_target(start_pose,GRIPPER_FRAME)
+        arm.set_joint_value_target(GRASP_ARM_VALUE)
+        arm.go()
 
         ret = rp_graspResponse()
         # If the pick was successful, attempt the place operation
