@@ -74,6 +74,8 @@ const char* kJointName[] = {
   //"L_LEG_JOINT7",
 };
 
+const int kModel01BaseLink = SpineMid;
+
 const int kJointDoF = 29;
 
 template <class T>

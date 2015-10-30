@@ -14,6 +14,8 @@
 
 #include "../calc_joint_angles/for_model01.h"
 
+#define GMT 9 * 60 * 60  // GMT: Tokyo +9
+
 //------------------------------------------------------------------------------
 class SkeletonStatePublisher : public robot_state_publisher::RobotStatePublisher
 {
@@ -88,7 +90,7 @@ void SkeletonStatePublisher::run()
   ros::Duration sleeper(0.1);
   while (nh.ok())
   {
-    ros::Time time = ros::Time::now() + sleeper;
+    ros::Time time = ros::Time::now() + ros::Duration(GMT) + sleeper;
     /* v Testing v */
 
     ros::spinOnce();
