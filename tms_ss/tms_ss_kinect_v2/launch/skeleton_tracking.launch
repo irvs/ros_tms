@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <launch>
   <!-- Make skeleton streams -->
-  <node name="skeleton_integrator" pkg="tms_ss_kinect_v2" args="1 2 8" type="skeleton_integrator"/>
+  <!--<node name="skeleton_stream" pkg="tms_ss_kienct_v2" args="1 2 9 10" type="skeleton_stream.py"/>-->
+  <node name="skeleton_integrator" pkg="tms_ss_kinect_v2" args="1 2 8 9 10" type="skeleton_integrator"/>
 
   <!-- For visualize furnitures in rViz -->
   <param name="robot_description"
@@ -13,9 +14,13 @@
   <param name="kinect_description1"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
   <param name="kinect_description2"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
   <param name="kinect_description8"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
+  <param name="kinect_description9"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
+  <param name="kinect_description10"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
   <node name="kinect_state_publisher01" pkg="skeleton_description" args="1"  type="kinect_state_publisher"/>
   <node name="kinect_state_publisher02" pkg="skeleton_description" args="2"  type="kinect_state_publisher"/>
   <node name="kinect_state_publisher08" pkg="skeleton_description" args="8"  type="kinect_state_publisher"/>
+  <node name="kinect_state_publisher09" pkg="skeleton_description" args="9"  type="kinect_state_publisher"/>
+  <node name="kinect_state_publisher10" pkg="skeleton_description" args="10"  type="kinect_state_publisher"/>
 
   <!-- For visualize box in rViz -->
   <param name="box_description"  textfile="$(find skeleton_description)/urdf/checker_box.urdf"/>

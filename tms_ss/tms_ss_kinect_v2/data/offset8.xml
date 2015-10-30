@@ -1,14 +1,14 @@
 <?xml version="1.0" ?>
 <extrinsic_parameter>
   <translation>
-    <param name="tx">7.78227686336</param>
-    <param name="ty">1.58671676057</param>
-    <param name="tz">0.0341507115814</param>
+    <param name="tx">7.51036401536</param>
+    <param name="ty">2.07195267784</param>
+    <param name="tz">0.0340718078747</param>
   </translation>
   <rotation>
-    <param name="qx">-0.00633180709589</param>
-    <param name="qy">-0.0098739339573</param>
-    <param name="qz">-0.719124060991</param>
-    <param name="qw">0.694782698799</param>
+    <param name="qx">-0.000611177652574</param>
+    <param name="qy">0.00328582813488</param>
+    <param name="qz">-0.00666825893329</param>
+    <param name="qw">0.999972181672</param>
   </rotation>
 </extrinsic_parameter>
