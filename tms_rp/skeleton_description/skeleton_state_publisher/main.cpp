@@ -14,151 +14,156 @@
 
 #include "../calc_joint_angles/for_model01.h"
 
-#define GMT 9 * 60 * 60  // GMT: Tokyo +9
+#define PARENT_LINK "world_link"
+#define CHILD_LINK "Body"
+const ros::Duration GMT(9 * 60 * 60);  // GMT: Tokyo +9 [sec]
 
 //------------------------------------------------------------------------------
-class SkeletonStatePublisher : public robot_state_publisher::RobotStatePublisher
+class SkeletonsStatePublisher
 {
   public:
-    tf::TransformBroadcaster broadcaster;
+    tf::TransformBroadcaster broadcaster_;
 
-    SkeletonStatePublisher(const KDL::Tree& tree, int assigned_number=0);
-    ~SkeletonStatePublisher();
+    SkeletonsStatePublisher(ros::NodeHandle& nh, const std::vector<KDL::Tree>& kdl_forest);
+    ~SkeletonsStatePublisher();
 
     void run();
     void send(ros::Time time);
 
   private:
-    ros::NodeHandle nh;
-    ros::Subscriber data_sub;
-    ros::Publisher state_pub;
-    sensor_msgs::JointState state_data;
-    tf::StampedTransform transform_;
+    ros::NodeHandle nh_;
+    ros::Subscriber data_sub_;
 
-    std::map<std::string, double> joint_states;
-    tms_msg_ss::Skeleton skeleton;
-    int assigned_number_;
-    std::string tf_prefix_;
-    bool bFind;
+    std::vector<robot_state_publisher::RobotStatePublisher> state_pubs_;  // Publish tf tree
+    std::vector<tf::StampedTransform> transforms_;  // Position & Rotation
+    std::vector<std::map<std::string, double> >  joint_states;  // Posture
+
+    bool usingDB_;
 
     void callback(const tms_msg_ss::SkeletonArray::ConstPtr& msg);
 };
 
 //------------------------------------------------------------------------------
-SkeletonStatePublisher::SkeletonStatePublisher(const KDL::Tree& tree, int assigned_number) :
-  robot_state_publisher::RobotStatePublisher(tree),
-  assigned_number_(assigned_number),
-  bFind(false),
-  tf_prefix_("")
+SkeletonsStatePublisher::SkeletonsStatePublisher(
+    ros::NodeHandle& nh,
+    const std::vector<KDL::Tree>& kdl_forest) :
+  nh_(nh),
+  usingDB_(false)
 {
-  if (assigned_number != 0)
-  {
-    std::stringstream ss;
-    ss << "skeleton" << assigned_number_;
-    tf_prefix_ = ss.str();
-  }
+  data_sub_ = nh_.subscribe("integrated_skeleton_stream", 1,
+      &SkeletonsStatePublisher::callback, this);
 
-  data_sub = nh.subscribe("integrated_skeleton_stream", 1,
-      &SkeletonStatePublisher::callback, this);
-  transform_ = tf::StampedTransform(
+  ros::Time now = ros::Time::now() + GMT;
+  for (int i = 0; i < kdl_forest.size(); i++)
+  {
+    state_pubs_.push_back(robot_state_publisher::RobotStatePublisher(kdl_forest[i]));
+
+    std::stringstream tf_prefix;
+    tf_prefix << "skeleton" << i+1;
+    transforms_.push_back(tf::StampedTransform(
       tf::Transform(tf::Quaternion(0.0,0.0,0.0,1.0), tf::Vector3(0.0,0.0,0.0)),
-      ros::Time::now(), "world_link", tf::resolve(tf_prefix_,"Body"));
-  return;
-}
-
-//------------------------------------------------------------------------------
-SkeletonStatePublisher::~SkeletonStatePublisher()
-{
-  return;
-}
-
-//------------------------------------------------------------------------------
-void SkeletonStatePublisher::callback(const tms_msg_ss::SkeletonArray::ConstPtr& msg)
-{
-  skeleton = msg->data[assigned_number_-1];
-  if (skeleton.user_id+1 > 0)
-  {
-    bFind = true;
+      now, PARENT_LINK, tf::resolve(tf_prefix.str(), CHILD_LINK)));
+    std::map<std::string, double> tmp;
   }
+  joint_states.resize(kdl_forest.size());
 
   return;
 }
 
 //------------------------------------------------------------------------------
-void SkeletonStatePublisher::run()
+SkeletonsStatePublisher::~SkeletonsStatePublisher()
 {
-  ros::Duration sleeper(0.1);
-  while (nh.ok())
+  return;
+}
+
+//------------------------------------------------------------------------------
+void SkeletonsStatePublisher::callback(const tms_msg_ss::SkeletonArray::ConstPtr& msg)
+{
+  for (int i=0; i < msg->data.size(); i++)
   {
-    ros::Time time = ros::Time::now() + ros::Duration(GMT) + sleeper;
-    /* v Testing v */
-
-    ros::spinOnce();
-
     Eigen::Vector3d pos;
     Eigen::Quaterniond rot;
-    if (bFind)
+    if (msg->data[i].user_id < 0)  // ID < 0 means invalid data.
     {
-      calcForModel01<double>(skeleton, pos, rot, joint_states);
-      tf::Quaternion q(rot.x(), rot.y(), rot.z(), rot.w());
-      transform_.setData(tf::Transform(q, tf::Vector3(pos[0],pos[1],pos[2])));
+      // Set data to disappear from environment
+      for (int j=0; j < kJointDoF; j++)
+      {
+        joint_states[i][kJointName[j]] = 0.0;
+      }
+      transforms_[i].setData(tf::Transform(
+            tf::Quaternion(0.0,0.0,0.0,1.0),
+            tf::Vector3(0.0,0.0,0.0)));
     }
     else
     {
-      for (int j=0; j<kJointDoF; j++)
-      {
-        joint_states[kJointName[j]] = 0.0;
-      }
-      tf::Quaternion q(0.0, 0.0, 0.0, 1.0);
-      transform_.setData(tf::Transform(q, tf::Vector3(0.0,0.0,0.0)));
+      // Set data for drawing into environment
+      calcForModel01<double>(msg->data[i], pos, rot, joint_states[i]);
+      transforms_[i].setData(tf::Transform(
+            tf::Quaternion(rot.x(), rot.y(), rot.z(), rot.w()),
+            tf::Vector3(pos[0],pos[1],pos[2])));
     }
-
-    /* ^ Testing ^ */
-    this->send(time);
-    bFind = false;
-    sleeper.sleep();
   }
+
+  this->send(ros::Time::now()+GMT);
+
   return;
 }
 
 //------------------------------------------------------------------------------
-void SkeletonStatePublisher::send(ros::Time time)
+void SkeletonsStatePublisher::run()
 {
-  transform_.stamp_ = time;
-  broadcaster.sendTransform(transform_);
-  this->publishTransforms(joint_states, time, tf_prefix_);
+  ros::spin();
+  return;
+}
+
+//------------------------------------------------------------------------------
+void SkeletonsStatePublisher::send(ros::Time time)
+{
+  for (int i=0; i<transforms_.size(); i++)
+  {
+    transforms_[i].stamp_ = time;
+    std::stringstream tf_prefix;
+    tf_prefix << "skeleton" << i+1;
+    broadcaster_.sendTransform(transforms_[i]);
+    state_pubs_[i].publishTransforms(joint_states[i], time, tf_prefix.str());
+  }
   return;
 }
 
 //------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
-  int assigned_number = 0;
-  if (argc > 1)
-  {
-    assigned_number = atoi(argv[1]);
-  }
-
   ros::init(argc, argv, "skeleton_state_publisher");
 
-  urdf::Model model;
-  std::stringstream description_name_stream;
-  description_name_stream << "skeleton_description";
-
-  if (assigned_number != 0) // if given user ID.
+  // Get input from ros params
+  ros::NodeHandle nh;
+  int num_of_skeletons = 0;
+  if (nh.getParam("num_of_skeletons", num_of_skeletons))
   {
-    description_name_stream << assigned_number;
-  }
-  model.initParam(description_name_stream.str());
-
-  KDL::Tree tree;
-  if (!kdl_parser::treeFromUrdfModel(model, tree))
-  {
-    ROS_ERROR("Failed to extract kdl tree from xml robot description");
-    return -1;
+    ROS_INFO("SkeletonsStatePublisher: Get the number of skeletons -> %d", num_of_skeletons);
   }
 
-  SkeletonStatePublisher obj(tree, assigned_number);
+  // Load models
+  std::vector<KDL::Tree> kdl_forest;
+  const std::string base_description_name("skeleton_description");
+
+  kdl_forest.resize((num_of_skeletons == 0 ? 1 : num_of_skeletons));
+  for (int i=0; i < num_of_skeletons; i++)
+  {
+    urdf::Model model;
+    std::stringstream description_name_stream;
+    description_name_stream << base_description_name << i+1;
+    model.initParam(description_name_stream.str());
+    if (!kdl_parser::treeFromUrdfModel(model, kdl_forest[i]))
+    {
+      ROS_ERROR("SkeletonsStatePublisher: Failed to extract kdl tree from xml robot description.\
+          (model %d)", i+1);
+      return -2;
+    }
+  }
+
+  // Run
+  SkeletonsStatePublisher obj(nh, kdl_forest);
 
   obj.run();
 
