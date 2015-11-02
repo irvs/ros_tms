@@ -1113,7 +1113,7 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
 
   srv.request.x = 11.76;//9.35;
   srv.request.y = 1.42; //5.65;
-  srv.request.z = 0.9 + 0.07; //1.1;
+  srv.request.z = 0.9; //1.1;
   srv.request.roll = 0;
   srv.request.pitch = 0;
   srv.request.yaw = 0;

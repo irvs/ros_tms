@@ -592,11 +592,25 @@
     <origin rpy="0 -1.57079633 0" xyz="0 0 0"/>
     <limit effort="1000.0" lower="0." upper="3." velocity="0.5"/>
   </joint>
+  <link name="chipstar_red_yaw_link"/>
   <joint name="chipstar_red_yaw_joint" type="continuous">
     <parent link="chipstar_red_z_link"/>
-    <child link="chipstar_red_link"/>
-    <origin rpy="0 1.57079633 0" xyz="0 0 0"/>
+    <child link="chipstar_red_yaw_link"/>
+    <origin rpy="-1.57079633 0 -1.57079633" xyz="0 0 0"/>
     <axis xyz="0 0 1"/>
+  </joint>
+  <link name="chipstar_red_pitch_link"/>
+  <joint name="chipstar_red_pitch_joint" type="continuous">
+    <parent link="chipstar_red_yaw_link"/>
+    <child link="chipstar_red_pitch_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+  <joint name="chipstar_red_roll_joint" type="continuous">
+    <parent link="chipstar_red_pitch_link"/>
+    <child link="chipstar_red_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="1 0 0"/>
   </joint>
   <link name="chipstar_red_link">
     <visual>
@@ -605,12 +619,6 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0. 0. 0."/>
     </visual>
-  <collision>
-      <geometry>
-        <cylinder length="0.001" radius="0.001"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0. 0. 0."/>
-    </collision>
   </link>
 
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->

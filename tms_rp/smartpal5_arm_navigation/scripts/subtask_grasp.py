@@ -134,7 +134,7 @@ class SubTaskGrasp:
         target_pose.header.frame_id = REFERENCE_FRAME
         target_pose.pose.position.x = target.x
         target_pose.pose.position.y = target.y
-        target_pose.pose.position.z = target.z + target.offset_z + 0.01
+        target_pose.pose.position.z = target.z + 0.01
         # q = quaternion_from_euler(target.rr, target.rp, target.ry)
         q = quaternion_from_euler(0, 0, 0)
         target_pose.pose.orientation.x = q[0]

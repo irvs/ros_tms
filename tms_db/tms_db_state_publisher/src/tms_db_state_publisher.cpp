@@ -92,7 +92,7 @@ private:
   void dbTFCallback(const tms_msg_db::TmsdbStamped::ConstPtr& msg)
   {
     uint32_t id, oID, sensor, state, place;
-    double posX,posY,posZ,rotY;
+    double posX,posY,posZ,rotR,rotP,rotY;
     sensor_msgs::JointState state_data;
     std::string joint;
 
@@ -382,6 +382,8 @@ private:
           posX = msg->tmsdb[i].x;
           posY = msg->tmsdb[i].y;
           posZ = msg->tmsdb[i].z;
+          rotR = msg->tmsdb[i].rr;
+          rotP = msg->tmsdb[i].rp;
           rotY = msg->tmsdb[i].ry;
 
           if(posX == 0.0 && posY == 0.0)
@@ -395,10 +397,14 @@ private:
             state_data.name.push_back("chipstar_red_y_joint");
             state_data.name.push_back("chipstar_red_z_joint");
             state_data.name.push_back("chipstar_red_yaw_joint");
+            state_data.name.push_back("chipstar_red_pitch_joint");
+            state_data.name.push_back("chipstar_red_roll_joint");
             state_data.position.push_back(posX);
             state_data.position.push_back(posY);
             state_data.position.push_back(posZ);
             state_data.position.push_back(rotY);
+            state_data.position.push_back(rotP);
+            state_data.position.push_back(rotR);
           }
         }
       }

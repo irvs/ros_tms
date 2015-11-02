@@ -748,47 +748,38 @@ void armCallback(const sensor_msgs::JointState& msg)
 
 void ObjectDataUpdate(const moveit_msgs::PlanningScene& msg)
 {
-  if(msg.robot_state.attached_collision_objects.size() != 0){ // grasped" object
+  if(msg.robot_state.attached_collision_objects.size() != 0){ // grasped object
     int object_id = atoi(msg.robot_state.attached_collision_objects[0].object.id.c_str());
 
     g_oid = object_id;
 
-    geometry_msgs::TransformStamped ts_msg;
+    geometry_msgs::PoseStamped pose,pose2;
+    pose.header.frame_id = "/l_end_effector_link";
+    pose.pose.position.x = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.x;
+    pose.pose.position.y = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.y;
+    pose.pose.position.z = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.z;
 
-    std::string target_frame("/world_link");
-    std::string source_frame("/l_end_effector_link");
-    try{
-      ros::Time now = ros::Time::now();
-      listener->waitForTransform(target_frame,source_frame,now,ros::Duration(5.0));
-      listener->lookupTransform(target_frame,source_frame,now,*transform);
-    }
-    catch(tf::TransformException ex){
-      ROS_ERROR("%s",ex.what());
-    }
-    tf::transformStampedTFToMsg(*transform,ts_msg);
+    pose.pose.orientation.x = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.x;
+    pose.pose.orientation.y = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.y;
+    pose.pose.orientation.z = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.z;
+    pose.pose.orientation.w = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.w;
 
-    double gripper_x = ts_msg.transform.translation.x;
-    double gripper_y = ts_msg.transform.translation.y;
-    double gripper_z = ts_msg.transform.translation.z;
+    listener->transformPose("/world_link",pose,pose2);
 
-    double gripper_rr,gripper_rp,gripper_ry;
-    tf::Quaternion q(ts_msg.transform.rotation.x,ts_msg.transform.rotation.y,ts_msg.transform.rotation.z,ts_msg.transform.rotation.w);
-    tf::Matrix3x3 m(q);
-    m.getRPY(gripper_rr,gripper_rp,gripper_ry);
+    g_ox = pose2.pose.position.x;
+    g_oy = pose2.pose.position.y;
+    g_oz = pose2.pose.position.z;
+    tf::Quaternion q2(pose2.pose.orientation.x,pose2.pose.orientation.y,pose2.pose.orientation.z,pose2.pose.orientation.w);
+    tf::Matrix3x3 m2(q2);
+    m2.getRPY(g_orr,g_orp,g_ory);
 
-    double offset_x = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.x;
-    double offset_y = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.y;
-    double offset_z = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.z;
-
-    g_ox = gripper_x + offset_x * cos(gripper_ry) - offset_y * sin(gripper_ry);
-    g_oy = gripper_y + offset_y * cos(gripper_ry) + offset_x * sin(gripper_ry);
-    g_oz = gripper_z + offset_z;
+    ROS_INFO("object_rot:(%f,%f,%f)",g_orr,g_orp,g_ory);
 
     tms_msg_db::TmsdbGetData srv;
     srv.request.tmsdb.id = object_id + sid_;
 
     if(get_data_client_.call(srv)){
-      g_oz -= srv.response.tmsdb[0].offset_z;
+      // g_oz -= srv.response.tmsdb[0].offset_z;
 
       ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 
@@ -839,7 +830,7 @@ void ObjectDataUpdate(const moveit_msgs::PlanningScene& msg)
     srv.request.tmsdb.id = object_id + sid_;
 
     if(get_data_client_.call(srv)){
-      g_oz -= srv.response.tmsdb[0].offset_z;
+      // g_oz -= srv.response.tmsdb[0].offset_z;
 
       ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 
@@ -885,7 +876,7 @@ int main(int argc, char **argv)
 
   transform = new tf::StampedTransform;
   listener = new tf::TransformListener;
-  
+
   ros::ServiceServer service    = nh.advertiseService("sp5_virtual_control", robotControl);
   pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
   arm_data_sub = nh.subscribe("/move_group/fake_controller_joint_states",1,&armCallback);
