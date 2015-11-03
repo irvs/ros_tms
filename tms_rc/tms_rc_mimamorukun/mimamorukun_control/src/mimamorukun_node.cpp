@@ -1,34 +1,15 @@
-//------------------------------------------------------------------------------
-// FileName : mimamorukun_automatic_control.cpp
-// Date     : 2015.01.30
-// author   : Akio Shigekane
-//------------------------------------------------------------------------------
-// 2014. 9.23        adjust scale of speed
-// 2014.11.01        adjust wheel spin PID constants
-// 2014.11.07        included to ROT_TMS project
-// 2015.01.30        fork from mimamorukun_manual_control
-// 2015.02.01        fork from mimamorukun_automatic_control
 #include <ros/ros.h>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Twist.h>
-#include <geometry_msgs/Point.h>
 #include <geometry_msgs/Pose2D.h>
+#include <geometry_msgs/PoseStamped.h>
 
 #include "ClientSocket.h"
 #include "SocketException.h"
 #include <iostream>
 #include <string>
 
-#include <sensor_msgs/Joy.h>
-#include <tms_msg_db/TmsdbGetData.h>
-#include <tms_msg_db/TmsdbStamped.h>
-#include <tms_msg_db/Tmsdb.h>
-#include <tms_msg_rc/rc_robot_control.h>
-#include <geometry_msgs/PoseStamped.h>
 #include <tf/tf.h>
-
-#include "kalman-Ndof.hpp"
 
 #define ROS_RATE 10
 
@@ -40,25 +21,11 @@ const int SPEED_MAX = 32767;
 const float DIST_PER_PULSE = 0.552486;  // mm par pulse
 const int WHEEL_DIST = 570;             // 533;
 
-long int ENC_L = 0;
-long int ENC_R = 0;
-int POS_X = 0;
-int POS_Y = 0;
+// long int ENC_L = 0;
+// long int ENC_R = 0;
 
-double TURN_KP;
-double SPD_KP;
-int ARV_DIST;
-
-/*double joy_cmd_spd = 0.0;
-double joy_cmd_turn = 0.0;*/
-
-ros::ServiceClient db_client;
-ros::Publisher db_pub;
-
-pthread_t thread_vicon;
 pthread_t thread_odom;
 pthread_t thread_pub;
-pthread_mutex_t mutex_update_kalman = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_socket = PTHREAD_MUTEX_INITIALIZER;
 
 class MachinePose_s {
@@ -66,62 +33,27 @@ class MachinePose_s {
  public:
   MachinePose_s() {
     ROS_DEBUG("In Mimamorukun Constructor");
-    this->pos_vicon.x = 0.0;
-    this->pos_vicon.y = 0.0;
-    this->pos_vicon.theta = 0.0;
     this->pos_odom.x = 0.0;
     this->pos_odom.y = 0.0;
     this->pos_odom.theta = 0.0;
-    this->pos_fusioned.x = 0.0;
-    this->pos_fusioned.y = 0.0;
-    this->pos_fusioned.theta = 0.0;
     this->vel_odom.x = 0.0;
     this->vel_odom.y = 0.0;
     this->vel_odom.theta = 0.0;
-    this->vel_vicon.x = 0.0;
-    this->vel_vicon.y = 0.0;
-    this->vel_vicon.theta = 0.0;
-    this->vel_fusioned.x = 0.0;
-    this->vel_fusioned.y = 0.0;
-    this->vel_fusioned.theta = 0.0;
-    kalman = new Kalman(6, 3, 3);
   };
-  ~MachinePose_s() {
-    delete kalman;
-  };
+  ~MachinePose_s() {};
   void updateOdom();
-  void updateVicon();
-  void updateCompFilter();
   bool goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/);
   bool postPose();
-  geometry_msgs::Pose2D tgtPose;
   geometry_msgs::Twist tgtTwist;
   geometry_msgs::Pose2D pos_odom;
-  geometry_msgs::Pose2D pos_vicon;
-  geometry_msgs::Pose2D pos_fusioned;
-  /*    geometry_msgs::Twist    vel_odom;
-      geometry_msgs::Twist    vel_vicon;
-      geometry_msgs::Twist    vel_fusioned;*/
+  // geometry_msgs::PoseStamped pos_odom;
+  // geometry_msgs::Twist    vel_odom;
   geometry_msgs::Pose2D vel_odom;
-  geometry_msgs::Pose2D vel_vicon;
-  geometry_msgs::Pose2D vel_fusioned;
 
   void setCurrentPosition(geometry_msgs::Pose2D pose);
   geometry_msgs::Pose2D getCurrentPosition();
-  double getCurrentPositionX();
-  double getCurrentPositionY();
-  double getCurrentTheta();
-  double getCurrentVelocityX();
-  double getCurrentVelocityY();
-  double getCurrentOmega();
   // bool goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/);
 
-  Kalman *kalman;
-  enum InfoType {
-    VELOCITY,
-    POSISION
-  };
-  geometry_msgs::Pose2D UpdatePosition(geometry_msgs::Pose2D tpose, InfoType Info);
 } mchn_pose;
 
 int Dist2Pulse(int dist) { return ((float)dist) / DIST_PER_PULSE; }
@@ -150,33 +82,9 @@ double nomalizeAng(double rad) {
   return rad;
 }
 
-void MachinePose_s::updateVicon() {
-  tms_msg_db::TmsdbGetData srv;
-  srv.request.tmsdb.id = 2007;
-  srv.request.tmsdb.sensor = 3001;
-  if (!db_client.call(srv)) {
-    ROS_ERROR("Failed to get vicon data from DB via tms_db_reader");
-  } else if (srv.response.tmsdb.empty()) {
-    ROS_ERROR("DB response empty");
-  } else {
-    boost::posix_time::ptime set_time =
-        boost::posix_time::time_from_string(srv.response.tmsdb[0].time);
-    ros::Time ros_now = ros::Time::now() + ros::Duration(9 * 60 * 60);
-    boost::posix_time::ptime now = ros_now.toBoost();
-    // cout << "time:" << now-set_time << "\n";
-    // cout << "3sec:" << boost::posix_time::time_duration(0,0,3,0) << "\n";
-    if (boost::posix_time::time_duration(0, 0, 3, 0) >
-        now - set_time) {  // check if data is fresh (in last 3sec)
-      this->pos_vicon.x = srv.response.tmsdb[0].x;
-      this->pos_vicon.y = srv.response.tmsdb[0].y;
-      this->pos_vicon.theta = Deg2Rad(srv.response.tmsdb[0].ry);
-    }
-  }
-  return;
-}
-
 void MachinePose_s::updateOdom() {
   // update Encoder value
+  long int ENC_L, ENC_R;
   long int tmpENC_L = 0;
   long int tmpENC_R = 0;
   string reply;
@@ -257,146 +165,9 @@ void spinWheel(/*double arg_speed, double arg_theta*/) {
   // cout << "Response:" << reply << "   ";
 }
 
-// void receiveGoalPose(const geometry_msgs::Pose2D::ConstPtr& cmd_pose){
-//     mchn_pose.tgtPose = *cmd_pose;
-// }
-
-bool receiveGoalPose(tms_msg_rc::rc_robot_control::Request &req,
-                     tms_msg_rc::rc_robot_control::Response &res) {
-  if (1 != req.unit) {  // Is not vicle unit
-    res.result = 0;     // SRV_UNIT_ERR;
-    return true;
-  }
-  if (15 != req.cmd) {
-    res.result = 0;  // SRV_CMD_ERR;
-    return true;
-  }
-  mchn_pose.tgtPose.x = req.arg[0];
-  mchn_pose.tgtPose.y = req.arg[1];
-  mchn_pose.tgtPose.theta = Deg2Rad(req.arg[2]);
-  // while(! mchn_pose.goPose()){
-  //     ROS_INFO("doing goPose");
-  // }
-  // ros::Rate r(4);
-  ros::Rate r(ROS_RATE);
-  while (ros::ok()) {
-    ROS_DEBUG("doing goPose");
-    printf("pos x:%4.2lf y:%4.2lf th:%4.2lf     \n", mchn_pose.pos_vicon.x, mchn_pose.pos_vicon.y,
-           Rad2Deg(mchn_pose.pos_vicon.theta));
-    printf("tgt x:%4.2lf y:%4.2lf th:%4.2lf     ", mchn_pose.tgtPose.x, mchn_pose.tgtPose.y,
-           Rad2Deg(mchn_pose.tgtPose.theta));
-    bool isArrived = mchn_pose.goPose();
-    mchn_pose.updateVicon();
-    spinWheel();
-    mchn_pose.postPose();
-    if (isArrived) break;
-    r.sleep();
-  }
-  // while(1){
-  //     // printf("in moving loop");
-  //     ros::Duration(0.1).sleep();
-  //     printf("doing goPose");
-  //     ROS_INFO("pos x:%4.2lf y:%4.2lf th:%4.2lf     ",
-  //         mchn_pose.pos_vicon.x,
-  //         mchn_pose.pos_vicon.y,
-  //         Rad2Deg(mchn_pose.pos_vicon.theta));
-  //     printf("tgt x:%4.2lf y:%4.2lf th:%4.2lf     ",
-  //         mchn_pose.tgtPose.x,
-  //         mchn_pose.tgtPose.y,
-  //         Rad2Deg(mchn_pose.tgtPose.theta));
-  //     bool isArrived = mchn_pose.goPose();
-  //     mchn_pose.updateVicon();
-  //     spinWheel();
-  //     if(isArrived) break;
-  //  }
-  return true;
-}
-
-// void receiveCmdVel(const geometry_msgs::Twist::ConstPtr &cmd_vel) {
-//   mchn_pose.tgtTwist = *cmd_vel;
-//   // spinWheel(/*cmd_vel->linear.x,cmd_vel->angular.z*/);
-// }
-
-void receiveJoy(const sensor_msgs::Joy::ConstPtr &joy) {
-  // ROS_INFO("Rrecieve joy");
-  mchn_pose.tgtTwist.linear.x = joy->axes[1] * 300;   // 600;
-  mchn_pose.tgtTwist.angular.z = joy->axes[3] * 0.7;  // 1;
-}
-
-bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/) {
-  // original PID feedback on error of Angle and Distance
-  const double KPang = TURN_KP;  // 1.0;
-  const double KDang = 0;
-  const double KPdist = SPD_KP;  // 2.0;
-  const double KDdist = 0;
-  bool ret = false;
-
-  double errorX = this->tgtPose.x - this->pos_vicon.x;
-  double errorY = this->tgtPose.y - this->pos_vicon.y;
-  double targetT = atan2(errorY, errorX);
-
-  double theta = this->pos_vicon.theta;
-  double errorNX = errorX * cos(-theta) - errorY * sin(-theta);
-  // double errorNY = errorX * sin(-theta) +  errorY * cos(-theta);
-  double errorNT = nomalizeAng(targetT - theta);
-
-  if (this->tgtPose.x == 0.0 && this->tgtPose.y == 0.0) {  // mokutekiti
-    errorNX /*= errorNY */ = errorNT = 0.0;
-  }
-  double tmp_spd = KPdist * errorNX;
-  double tmp_turn = KPang * Rad2Deg(errorNT);
-  tmp_spd = Limit(tmp_spd, 100, -100);
-  tmp_turn = Limit(tmp_turn, 30, -30);
-  double distance = sqrt(sqr(errorX) + sqr(errorY));
-  printf("spd:%+8.2lf turn:%+4.1lf", tmp_spd, tmp_turn);
-  if (distance <= ARV_DIST /* && 60>fabs(Rad2Deg(errorNT))*/) {
-    this->tgtTwist.angular.z = 0;
-    this->tgtTwist.linear.x = 0;
-    return true;
-  } else {
-    this->tgtTwist.angular.z = Deg2Rad(tmp_turn);
-    this->tgtTwist.linear.x = tmp_spd;
-    return false;
-  }
-}
-
-bool MachinePose_s::postPose() {
-  // @todo publish pose data
-  /*    tms_msg_db::TmsdbStamped db_msg;
-      tms_msg_db::Tmsdb tmpData;
-      ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
-      db_msg.header.frame_id  = "/world";
-      db_msg.header.stamp     = now;
-      tmpData.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
-      tmpData.id      = 2007;                     //mimamorukun ID
-      tmpData.x       = this->getCurrentPositionX();
-      tmpData.y       = this->getCurrentPositionY();
-      tmpData.z       = 0;
-      tmpData.rr      = Rad2Deg(0.0);
-      tmpData.rp      = Rad2Deg(0.0);
-      tmpData.ry      = Rad2Deg(this->getCurrentTheta());
-      tmpData.place   = 5001;
-      tmpData.sensor  = 3501;     //kalman_filter
-      tmpData.state   = 1;
-
-      db_msg.tmsdb.push_back(tmpData);
-      db_pub.publish(db_msg);
-      printf("@postPose x:%lf y:%lf",this->getCurrentPositionX(),this->getCurrentPositionY());*/
-  return true;
-}
-
-void *vicon_update(void *ptr) {
-  // ros::Rate r(30);
-  ros::Rate r(ROS_RATE);
-  while (ros::ok()) {
-    mchn_pose.updateVicon();
-    if (1000 < mchn_pose.pos_vicon.x && 1000 < mchn_pose.pos_vicon.y) {
-      pthread_mutex_lock(&mutex_update_kalman);
-      mchn_pose.UpdatePosition(mchn_pose.pos_vicon, MachinePose_s::POSISION);
-      pthread_mutex_unlock(&mutex_update_kalman);
-    }
-    r.sleep();
-  }
+void receiveCmdVel(const geometry_msgs::Twist::ConstPtr &cmd_vel) {
+  mchn_pose.tgtTwist = *cmd_vel;
+  // spinWheel(/*cmd_vel->linear.x,cmd_vel->angular.z*/);
 }
 
 void *odom_update(void *ptr) {
@@ -404,26 +175,28 @@ void *odom_update(void *ptr) {
   ros::Rate r(ROS_RATE);
   while (ros::ok()) {
     mchn_pose.updateOdom();
-    pthread_mutex_lock(&mutex_update_kalman);
-    mchn_pose.UpdatePosition(mchn_pose.vel_odom, MachinePose_s::VELOCITY);
-    pthread_mutex_unlock(&mutex_update_kalman);
     r.sleep();
   }
 }
 
-void *publish_pose(void *ptr) {
+void *publish_odom(void *ptr) {
   static ros::NodeHandle nh("~");
-  static ros::Publisher pub = nh.advertise<geometry_msgs::PoseStamped>("kalman_pose", 1);
-  geometry_msgs::PoseStamped p;
-  p.header.frame_id = "/odom";
-  p.pose.position.z = 0;
+  // static ros::Publisher pub = nh.advertise<geometry_msgs::PoseStamped>("kalman_pose", 1);
+  static ros::Publisher pub = nh.advertise<nav_msgs::Odometry>("odom", 1);
+  nav_msgs::Odometry odom;
+  odom.header.frame_id = "/odom";
+  odom.child_frame_id = "/base_link_footprint";
+  odom.pose.pose.position.z = 0.0;
   ros::Rate r(ROS_RATE);
   while (ros::ok()) {
-    p.pose.position.x = mchn_pose.pos_vicon.x;
-    p.pose.position.y = mchn_pose.pos_vicon.y;
-    p.pose.orientation = tf::createQuaternionMsgFromYaw(mchn_pose.pos_vicon.theta);
-    p.header.stamp = ros::Time::now();
-    pub.publish(p);
+    odom.pose.pose.position.x = mchn_pose.pos_odom.x;
+    odom.pose.pose.position.y = mchn_pose.pos_odom.y;
+    odom.header.stamp = ros::Time::now();
+    odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(mchn_pose.pos_odom.theta);
+    odom.twist.twist.linear.x = 0.0;
+    odom.twist.twist.linear.y = 0.0;
+    odom.twist.twist.angular.z = 0.0;
+    pub.publish(odom);
     r.sleep();
   }
 }
@@ -441,9 +214,6 @@ int main(int argc, char **argv) {
   nh_param.param<int>("spin_Kp", Kp_, 4800);
   nh_param.param<int>("spin_Ki", Ki_, /*30*/ 100);
   nh_param.param<int>("spin_Kd", Kd_, 40000);
-  nh_param.param<double>("spd_Kp", SPD_KP, 2.0);
-  nh_param.param<double>("turn_Kp", TURN_KP, 1.0);
-  nh_param.param<int>("arv_dist", ARV_DIST, 200);
   // acces like "mimamorukun_controller/spd_Kp"
   client_socket.init(tmp_ip, 54300);
   s_Kp_ = boost::lexical_cast<string>(Kp_);
@@ -468,195 +238,30 @@ int main(int argc, char **argv) {
     cout << "Exception was caught:" << e.description() << "\n";
   }
 
-  db_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
-  // db_pub    = nh2.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data", 10);
-  // ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Twist>("/cmd_vel", 1,
-  // receiveCmdVel);
-  ros::Subscriber cmd_vel_sub = n.subscribe<sensor_msgs::Joy>("/joy", 1, receiveJoy);
-  // ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Pose2D>("/mkun_goal_pose", 1,
-  // receiveGoalPose);
-  ros::ServiceServer service = n.advertiseService("mkun_goal_pose", receiveGoalPose);
-  /*    ros::Time current_time, last_time;
-      current_time    = ros::Time::now();
-      last_time       = ros::Time::now();*/
-
-  mchn_pose.updateVicon();
-  printf("initial val  x:%4.2lf y:%4.2lf th:%4.2lf\n\r", mchn_pose.pos_vicon.x,
-         mchn_pose.pos_vicon.y, Rad2Deg(mchn_pose.pos_vicon.theta));
-  mchn_pose.setCurrentPosition(mchn_pose.pos_vicon);
-
-  if (pthread_create(&thread_vicon, NULL, vicon_update, NULL)) {
-    cout << "error creating thread." << endl;
-    abort();
-  }
+  // mchn_pose.updateVicon();
+  printf("initial val  x:%4.2lf y:%4.2lf th:%4.2lf\n\r", mchn_pose.pos_odom.x, mchn_pose.pos_odom.y,
+         Rad2Deg(mchn_pose.pos_odom.theta));
+  // mchn_pose.setCurrentPosition(mchn_pose.pos_vicon);
 
   if (pthread_create(&thread_odom, NULL, odom_update, NULL)) {
     cout << "error creating thread." << endl;
     abort();
   }
 
-  if (pthread_create(&thread_pub, NULL, publish_pose, NULL)) {
+  if (pthread_create(&thread_pub, NULL, publish_odom, NULL)) {
     cout << "error creating thread." << endl;
     abort();
   }
 
   ros::Rate r(ROS_RATE);
   while (n.ok()) {
-    spinWheel(/*joy_cmd_spd,joy_cmd_turn*/);
-
-    //        mchn_pose.goPose();
-    // mchn_pose.goPose2();
-
-    ROS_INFO("x:%4.2lf y:%4.2lf th:%4.2lf", mchn_pose.pos_fusioned.x, mchn_pose.pos_fusioned.y,
-             Rad2Deg(mchn_pose.pos_fusioned.theta));
-    /*        ROS_INFO("x:%4.2lf y:%4.2lf th:%4.2lf",
-                mchn_pose.pos_odom.x,
-                  mchn_pose.pos_odom.y,
-                Rad2Deg(mchn_pose.pos_odom.theta));*/
-    /*        last_time = current_time;
-            current_time = ros::Time::now();*/
+    spinWheel();
     ros::spinOnce();
-    mchn_pose.postPose();
     r.sleep();
   }
   return (0);
 }
 
 /*****************************************************************************************************/
-geometry_msgs::Pose2D MachinePose_s::UpdatePosition(geometry_msgs::Pose2D tpose,
-                                                    MachinePose_s::InfoType Info) {
-  static int count = 0;
-  static double posA[6][6];  // 位置の状態行列
-  static double velA[6][6];  // 速度の状態行列
-  static double posC[3][6];  // 位置の観測行列
-  static double velC[3][6];  // 速度の観測行列
-  // Kalman kalman(6,3,3); //状態、観測、入力変数。順にn,m,l
 
-  if (kalman == NULL) return pos_fusioned;
-
-  if (count == 0) {
-    // 初期化 (システム雑音，観測雑音，積分時間)
-    kalman->init(0.1, 0.1, 1.0);
-    kalman->setX(0, pos_fusioned.x);
-    kalman->setX(1, pos_fusioned.y);
-    kalman->setX(2, pos_fusioned.theta);
-    memset(posA, 0, sizeof(posA));
-    memset(velA, 0, sizeof(velA));
-    memset(posC, 0, sizeof(posC));
-    memset(velC, 0, sizeof(velC));
-
-    for (int i = 0; i < 6; i++) posA[i][i] = 1.0;
-    for (int i = 0; i < 6; i++) velA[i][i] = 1.0;
-    for (int i = 0; i < 3; i++) velA[i][i + 3] = 1.0;
-    for (int i = 0; i < 3; i++) posC[i][i] = 1.0;
-    for (int i = 0; i < 3; i++) velC[i][i + 3] = 1.0;
-  }
-
-  // 観測値のセット
-  double obs[3] = {tpose.x, tpose.y, tpose.theta};
-  double input[3] = {0, 0, 0};
-
-  switch (Info) {
-    case MachinePose_s::POSISION:
-      // 位置を観測する場合
-      kalman->setA((double *)&posA);
-      kalman->setC((double *)&posC);
-      break;
-    case MachinePose_s::VELOCITY:
-      // 速度を観測する場合
-      kalman->setA((double *)&velA);
-      kalman->setC((double *)&velC);
-      break;
-  }
-
-  // カルマンフィルタの計算　→　答えは　getX(i) で得られる
-  kalman->update(obs, input);
-
-  pos_fusioned.x = kalman->getX(0);
-  pos_fusioned.y = kalman->getX(1);
-  pos_fusioned.theta = nomalizeAng(kalman->getX(2));
-  vel_fusioned.x = kalman->getX(3);
-  vel_fusioned.y = kalman->getX(4);
-  vel_fusioned.theta = nomalizeAng(kalman->getX(5));
-  // printf("f_vel_x:%f \n",vel_fusioned.x );
-  count++;
-
-  return pos_fusioned;
-}
-
-void MachinePose_s::setCurrentPosition(geometry_msgs::Pose2D pose) { pos_fusioned = pose; }
-
-geometry_msgs::Pose2D MachinePose_s::getCurrentPosition() { return pos_fusioned; }
-
-double MachinePose_s::getCurrentPositionX() { return pos_fusioned.x; }
-
-double MachinePose_s::getCurrentPositionY() { return pos_fusioned.y; }
-
-double MachinePose_s::getCurrentTheta() { return pos_fusioned.theta; }
-
-double MachinePose_s::getCurrentVelocityX() { return vel_fusioned.x; }
-
-double MachinePose_s::getCurrentVelocityY() { return vel_fusioned.y; }
-
-double MachinePose_s::getCurrentOmega() { return vel_fusioned.theta; }
-
-// bool MachinePose_s::goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/) {
-//     /* Kanayama, Y.; Kimura, Y.; Miyazaki, F.; Noguchi, T.; ,
-//     "A stable tracking control method for an autonomous mobile robot," Robotics and Automation,
-//     1990.
-//     Proceedings., 1990 IEEE International Conference on , vol., no., pp.384-389 vol.1, 13-18 May
-//     1990 */
-//
-//     double dirVel = 250.0;
-//     double dirOmega = 0.0;
-//
-//     double Kx = 0.0001;  // 0.01;
-//     double Ky = 1.5e-6;
-//     double Kt = 0.1;
-//
-//     double gain = 3.0;  // 0.1;
-//
-//     double targetX = this->tgtPose.x;
-//     double targetY = this->tgtPose.y;
-//     double errorX = targetX - this->getCurrentPositionX();
-//     double errorY = targetY - this->getCurrentPositionY();
-//     double targetT = atan2(errorY, errorX);
-//     double theta = this->getCurrentTheta();
-//
-//     double errorNX = errorX * cos(theta) + errorY * sin(theta);
-//     double errorNY = -errorX * sin(theta) + errorY * cos(theta);
-//     double errorNT = targetT - theta;
-//
-//     double vel = sqrt(sqr(this->getCurrentVelocityX()) + sqr(this->getCurrentVelocityY()));
-//     double omega = this->getCurrentOmega();
-//     double mu1 = -Kx * errorNX;
-//     double mu2 = -Ky * errorNY * dirVel - Kt * sin(errorNT);
-//     double u1 = fabs(dirVel * cos(errorNT)) - mu1;
-//     double u2 = dirOmega - mu2;
-//
-//     bool ret = false;
-//
-//     if (this->tgtPose.x == 0.0 && this->tgtPose.y == 0.0) {  // mokutekiti
-//         u1 = u2 = 0;
-//     }
-//
-//     double tmp_spd = u1 * gain;
-//     double tmp_turn = Rad2Deg(u2) * gain;
-//     tmp_spd = Limit(tmp_spd, 100, -100);
-//     tmp_turn = Limit(tmp_turn, 30, -30);
-//     double distance = sqrt(sqr(errorX) + sqr(errorY));
-//     if (distance <= 200) {
-//         tmp_spd = 0.0;
-//     }
-//     printf("spd:%+8.2lf turn:%+4.1lf", tmp_spd, tmp_turn);
-//     printf("spd:%+8.2lf turn:%+4.1lf", tmp_spd, tmp_turn);
-//     if (distance <= 200 /* && 60>fabs(Rad2Deg(errorNT))*/) {
-//         this->tgtTwist.angular.z = 0;
-//         this->tgtTwist.linear.x = 0;
-//         return true;
-//     } else {
-//         this->tgtTwist.angular.z = Deg2Rad(tmp_turn);
-//         this->tgtTwist.linear.x = tmp_spd;
-//         return false;
-//     }
-// }
+void MachinePose_s::setCurrentPosition(geometry_msgs::Pose2D pose) { pos_odom = pose; }
