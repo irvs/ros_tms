@@ -10,7 +10,6 @@ find_package(catkin REQUIRED COMPONENTS
 )
 find_package(Eigen REQUIRED)
 
-
 ###################################
 ## catkin specific configuration ##
 ###################################
