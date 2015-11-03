@@ -77,7 +77,7 @@ public:
 
   DbPublisher() :
     nh_priv("~"),
-    dbhost("192.168.4.106"),
+    dbhost("192.168.4.170"),
     dbuser("root"),
     dbpass("tmsdb"),
     dbname("rostmsdb"),

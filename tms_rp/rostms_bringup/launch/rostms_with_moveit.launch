@@ -22,6 +22,10 @@
 
   <node name="tms_db_state_publisher" pkg="tms_db_state_publisher" type="tms_db_state_publisher" output="screen"/>
 
+
+  <param name="skeleton_description1"  textfile="$(find skeleton_description)/urdf/skeleton.urdf"/>
+  <node name="skeleton_state_publisher01" pkg="skeleton_description" args="1"  type="skeleton_state_publisher"/>
+
   <!-- Given the published joint states, publish tf for the robot links -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true"/>
 

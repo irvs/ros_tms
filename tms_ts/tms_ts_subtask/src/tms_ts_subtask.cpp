@@ -512,6 +512,33 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
       return false;
     }
   }
+  else if (sd.arg_type > 1000 && sd.arg_type < 2000) //person
+  {
+    ROS_INFO("person ID:%d",sd.arg_type);
+    if(get_data_client_.call(srv))
+    {
+      double person_x = srv.response.tmsdb[0].x;
+      double person_y = srv.response.tmsdb[0].y;
+      double person_yaw = srv.response.tmsdb[0].ry + 1.570796;
+      ROS_INFO("x=%f y=%f ry=%f",person_x,person_y,person_yaw);
+
+      rp_srv.request.goal_pos.x = person_x + 1.0 * cos(person_yaw);
+      rp_srv.request.goal_pos.y = person_y + 1.0 * sin(person_yaw);
+
+      if(person_yaw>0) rp_srv.request.goal_pos.th = person_yaw - 3.141592;
+      else rp_srv.request.goal_pos.th = person_yaw + 3.141592;
+
+      rp_srv.request.goal_pos.z = 0.0;
+      rp_srv.request.goal_pos.roll = 0.0;
+      rp_srv.request.goal_pos.pitch = 0.0;
+      rp_srv.request.goal_pos.yaw = 0.0;
+    }
+    else{
+      s_srv.request.error_msg = "Failed to get data";
+      state_client.call(s_srv);
+      return false;
+    }
+  }
   else if (sd.arg_type > 7000 && sd.arg_type < 8000) // ObjectID
   {
     ROS_INFO("Argument IDtype is Object%d!\n", sd.arg_type);
@@ -1006,7 +1033,8 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
 
           if (subtask_grasp_client.call(srv))
           {
-            ROS_INFO("Successed to get grasp poses");
+            nh1.setParam("/sp5_grasping_object_id",sd.arg_type);
+            ROS_INFO("Successed to get grasp poses ID:%d",sd.arg_type);
           }
           else
           {
@@ -1093,30 +1121,59 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
 
 bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
 {
+  tms_msg_db::TmsdbGetData db_srv;
   tms_msg_ts::ts_state_control s_srv;
   s_srv.request.type = 1; // for subtask state update;
   s_srv.request.state = 0;
+
+  tms_msg_rp::rp_release srv;
+  int grasping_id = 0;
 
   // SET ROBOT
   switch(sd.robot_id)
   {
     case 2003:
       ROS_INFO("ID:%d is selected", sd.robot_id);
+      nh1.getParam("/sp5_grasping_object_id",grasping_id);
+      ROS_INFO("grasping_id is %d",grasping_id);
       break;
     default:
       ROS_ERROR("An illegal robot id");
       return false;
   }
 
-  tms_msg_rp::rp_release srv;
-  srv.request.object_id  = 7001;
 
-  srv.request.x = 11.76;//9.35;
-  srv.request.y = 1.42; //5.65;
-  srv.request.z = 0.9; //1.1;
-  srv.request.roll = 0;
-  srv.request.pitch = 0;
-  srv.request.yaw = 0;
+  if(sd.arg_type > 1000 && sd.arg_type < 2000) //person
+  {
+    db_srv.request.tmsdb.id = sd.robot_id;
+    db_srv.request.tmsdb.sensor = 3001;
+    if(sd.type == false)
+      db_srv.request.tmsdb.sensor = 3005;
+
+    if(get_data_client_.call(db_srv))
+    {
+      double robot_x = db_srv.response.tmsdb[0].x;
+      double robot_y = db_srv.response.tmsdb[0].y;
+      double robot_yaw = db_srv.response.tmsdb[0].ry;
+
+      srv.request.object_id  = grasping_id;
+
+      srv.request.x = robot_x + 0.55 * cos(robot_yaw) - 0.2 * sin(robot_yaw);
+      srv.request.y = robot_y + 0.55 * sin(robot_yaw) + 0.2 * cos(robot_yaw);
+      srv.request.z = 0.88;
+      srv.request.roll = 0;
+      srv.request.pitch = 0;
+      srv.request.yaw = 0;
+      ROS_INFO("goal(%f,%f,%f)",srv.request.x,srv.request.y,srv.request.z);
+    }
+    else{
+      ROS_ERROR("failed to get data");
+      return false;
+    }
+  }
+  else{
+    ROS_ERROR("An illigal user id");
+  }
 
   switch (sd.robot_id)
   {

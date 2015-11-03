@@ -77,7 +77,7 @@ public class TmsUrMimamorukun extends RosActivity
     public static final int ORIENTATION_SETTING = 1;
 
     //ros nodes
-    private static URI master_uri = URI.create("http://192.168.4.106:11311");
+    private static URI master_uri = URI.create("http://192.168.4.170:11311");
     private rp_cmd_client rp_cmd_client;
     private db_reader_client db_reader_client;
 

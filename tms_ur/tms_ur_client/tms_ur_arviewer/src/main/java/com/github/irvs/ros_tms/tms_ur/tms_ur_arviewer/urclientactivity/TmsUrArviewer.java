@@ -110,7 +110,7 @@ public class TmsUrArviewer extends RosActivity implements View.OnClickListener,
 SurfaceHolder.Callback , SensorEventListener/*,min3d.interfaces.ISceneController*/ {
 
 	public TmsUrArviewer() {
-		super("tms_ur_arviewer","tms_ur_arviewer", URI.create("http://192.168.4.106:11311/"));
+		super("tms_ur_arviewer","tms_ur_arviewer", URI.create("http://192.168.4.170:11311/"));
 		Log.v("ROS", "Const");
 	}
 
@@ -119,7 +119,7 @@ SurfaceHolder.Callback , SensorEventListener/*,min3d.interfaces.ISceneController
 	private static String FTPIP,FTPUSR,FTPPASS;
 
 	private final int UID = 1;
-	private final String FIP = "192.168.4.106";
+	private final String FIP = "192.168.4.170";
 	private final String FU = "rtsftp";
 	private final String FP = "tmsftp";
 	@SuppressLint("SdCardPath")

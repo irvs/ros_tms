@@ -14,6 +14,7 @@
 #include <tms_msg_db/Tmsdb.h>
 #include <tms_msg_db/TmsdbGetData.h>
 #include <sensor_msgs/JointState.h>
+#include <tms_msg_ss/SkeletonArray.h>
 
 //include for std
 #include <stdio.h>
@@ -48,6 +49,7 @@ private:
   ros::Subscriber data_sub;
   // ROS Topic Publisher
   ros::Publisher  state_pub;
+  ros::Publisher  skeleton_pub;
 
   ros::ServiceClient get_data_client_;
 
@@ -64,6 +66,7 @@ public:
     data_sub  = nh.subscribe("/tms_db_publisher", 1,  &DbStatePublisher::dbTFCallback, this);
     state_pub = nh.advertise<sensor_msgs::JointState>("/joint_states", 10);
     get_data_client_ = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
+    skeleton_pub = nh.advertise<tms_msg_ss::SkeletonArray>("integrated_skeleton_stream", 1);
   }
 
   //----------------------------------------------------------------------------
@@ -374,6 +377,44 @@ private:
           }
         }
       }
+
+      // if (id==1001) //person
+      // {
+      //   if (state==1)
+      //   {
+      //     posX = msg->tmsdb[i].x;
+      //     posY = msg->tmsdb[i].y;
+      //     rotY = msg->tmsdb[i].ry;
+      //
+      //     if(posX == 0.0 && posY == 0.0)
+      //     {
+      //       continue;
+      //     }
+      //     else
+      //     {
+      //       // tms_msg_ss::SkeletonArray skeletons;
+      //       // skeletons.data.resize(1);
+      //       // skeletons.data[0].user_id = 1001;
+      //       // skeletons.data[0].position.resize(25);
+      //       // skeletons.data[0].orientation.resize(25);
+      //       // skeletons.data[0].confidence.resize(25);
+      //       // for(int i=0; i<25; i++)
+      //       // {
+      //       //   skeletons.data[0].position[i].x = 0.0;
+      //       //   skeletons.data[0].position[i].y = 0.0;
+      //       //   skeletons.data[0].position[i].z = 0.0;
+      //       //   skeletons.data[0].orientation[i].w = 1.0;
+      //       //   skeletons.data[0].orientation[i].x = 0.0;
+      //       //   skeletons.data[0].orientation[i].y = 0.0;
+      //       //   skeletons.data[0].orientation[i].z = 0.0;
+      //       //   skeletons.data[0].confidence[i] = 0;
+      //       // }
+      //       // skeletons.data[0].position[0].x = posX;
+      //       // skeletons.data[0].position[0].y = posY;
+      //       // skeleton_pub.publish(skeletons);
+      //     }
+      //   }
+      // }
 
       if(id==7001) //chipstar_red
       {

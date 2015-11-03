@@ -46,7 +46,7 @@ public class MainActivity extends RosActivity implements View.OnClickListener {
 	private static String FTPIP,FTPUSR,FTPPASS;
 
 	private final int UID = 1;
-	private final String FIP = "192.168.4.106";
+	private final String FIP = "192.168.4.170";
 	private final String FU = "rtsftp";
 	private final String FP = "tmsftp";
 	@SuppressLint("SdCardPath")
@@ -66,7 +66,7 @@ public class MainActivity extends RosActivity implements View.OnClickListener {
 	private Popup popup;
 
 	public MainActivity() {
-		super("tms_ur_dbbrowser", "tms_ur_dbbrowser", URI.create("http://192.168.4.106:11311/"));
+		super("tms_ur_dbbrowser", "tms_ur_dbbrowser", URI.create("http://192.168.4.170:11311/"));
 	}
 
 	private TmsdbGetDataNode data;
