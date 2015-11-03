@@ -33,24 +33,29 @@ class MachinePose_s {
  public:
   MachinePose_s() {
     ROS_DEBUG("In Mimamorukun Constructor");
-    this->pos_odom.x = 0.0;
-    this->pos_odom.y = 0.0;
-    this->pos_odom.theta = 0.0;
-    this->vel_odom.x = 0.0;
-    this->vel_odom.y = 0.0;
-    this->vel_odom.theta = 0.0;
+    m_Odom.header.frame_id = "/odom";
+    m_Odom.child_frame_id = "/base_link_footprint";
+    m_Odom.pose.pose.position.z = 0.0;
+    // this->pos_odom.x = 0.0;
+    // this->pos_odom.y = 0.0;
+    // this->pos_odom.theta = 0.0;
+    // this->vel_odom.x = 0.0;
+    // this->vel_odom.y = 0.0;
+    // this->vel_odom.theta = 0.0;
   };
   ~MachinePose_s() {};
   void updateOdom();
   bool goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/);
   bool postPose();
+  nav_msgs::Odometry m_Odom;
   geometry_msgs::Twist tgtTwist;
-  geometry_msgs::Pose2D pos_odom;
+  // geometry_msgs::Pose2D pos_odom;
   // geometry_msgs::PoseStamped pos_odom;
   // geometry_msgs::Twist    vel_odom;
-  geometry_msgs::Pose2D vel_odom;
+  // geometry_msgs::Pose2D vel_odom;
 
-  void setCurrentPosition(geometry_msgs::Pose2D pose);
+  // void setCurrentPosition(geometry_msgs::Pose2D pose);
+  void setCurrentPosition(geometry_msgs::Pose pose);
   geometry_msgs::Pose2D getCurrentPosition();
   // bool goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/);
 
@@ -119,17 +124,33 @@ void MachinePose_s::updateOdom() {
   double POS_SIGMA = (dL_R - dL_L) / WHEEL_DIST;
   double dL = (dL_R + dL_L) * 0.50000;
 
-  double dX = dL * cos(mchn_pose.pos_odom.theta + POS_SIGMA);  // X,Yの前回からの移動量計算
-  double dY = dL * sin(mchn_pose.pos_odom.theta + POS_SIGMA);
+  // double dX = dL * cos(mchn_pose.pos_odom.theta + POS_SIGMA);  // X,Yの前回からの移動量計算
+  // double dY = dL * sin(mchn_pose.pos_odom.theta + POS_SIGMA);
+  double dX =
+      dL * cos(tf::getYaw(m_Odom.pose.pose.orientation) + POS_SIGMA);  // X,Yの前回からの移動量計算
+  double dY = dL * sin(tf::getYaw(m_Odom.pose.pose.orientation) + POS_SIGMA);
   ENC_R_old = ENC_R;  //前回のエンコーダーの値を記録
   ENC_L_old = ENC_L;
-  mchn_pose.pos_odom.x += dX;
-  mchn_pose.pos_odom.y += dY;
-  mchn_pose.pos_odom.theta += POS_SIGMA;
-  mchn_pose.pos_odom.theta = nomalizeAng(mchn_pose.pos_odom.theta);
-  mchn_pose.vel_odom.x = dX;
-  mchn_pose.vel_odom.y = dY;
-  mchn_pose.vel_odom.theta = POS_SIGMA;
+  // mchn_pose.pos_odom.x += dX;
+  // mchn_pose.pos_odom.y += dY;
+  // mchn_pose.pos_odom.theta += POS_SIGMA;
+  // mchn_pose.pos_odom.theta = nomalizeAng(mchn_pose.pos_odom.theta);
+  // mchn_pose.vel_odom.x = dX;
+  // mchn_pose.vel_odom.y = dY;
+  // mchn_pose.vel_odom.theta = POS_SIGMA;
+  m_Odom.pose.pose.position.x += MM2M(dX);
+  m_Odom.pose.pose.position.y += MM2M(dY);
+  // m_Odom.pose.pose.orientation += POS_SIGMA;
+  // m_Odom.pos_odom.theta = nomalizeAng(mchn_pose.pos_odom.theta);
+  tf::Quaternion q1;
+  tf::quaternionMsgToTF(m_Odom.pose.pose.orientation, q1);
+  tf::Quaternion q2;
+  tf::quaternionMsgToTF(tf::createQuaternionMsgFromYaw(POS_SIGMA), q2);
+  q1 += q2;
+  tf::quaternionTFToMsg(q1, m_Odom.pose.pose.orientation);
+  m_Odom.twist.twist.linear.x = MM2M(dL) / (double)ROS_RATE;
+  m_Odom.twist.twist.linear.y = 0.0;
+  m_Odom.twist.twist.angular.z = POS_SIGMA;
   return;
 }
 
@@ -140,7 +161,7 @@ void MachinePose_s::updateOdom() {
  *   arg_theta: CCW turn speed  [radian/sec]
  * ----------------------------------*/
 void spinWheel(/*double arg_speed, double arg_theta*/) {
-  double arg_speed = mchn_pose.tgtTwist.linear.x;
+  double arg_speed = M2MM(mchn_pose.tgtTwist.linear.x);
   double arg_theta = mchn_pose.tgtTwist.angular.z;
   // ROS_INFO("X:%4.2f   Theta:%4.2f",arg_speed,arg_theta);
   double val_L = -Dist2Pulse(arg_speed) + Dist2Pulse((WHEEL_DIST / 2) * arg_theta);
@@ -183,20 +204,21 @@ void *publish_odom(void *ptr) {
   static ros::NodeHandle nh("~");
   // static ros::Publisher pub = nh.advertise<geometry_msgs::PoseStamped>("kalman_pose", 1);
   static ros::Publisher pub = nh.advertise<nav_msgs::Odometry>("odom", 1);
-  nav_msgs::Odometry odom;
-  odom.header.frame_id = "/odom";
-  odom.child_frame_id = "/base_link_footprint";
-  odom.pose.pose.position.z = 0.0;
+  // nav_msgs::Odometry tmp_odom;
+  // tmp_odom.header.frame_id = "/odom";
+  // tmp_odom.child_frame_id = "/base_link_footprint";
+  // tmp_odom.pose.pose.position.z = 0.0;
   ros::Rate r(ROS_RATE);
   while (ros::ok()) {
-    odom.pose.pose.position.x = mchn_pose.pos_odom.x;
-    odom.pose.pose.position.y = mchn_pose.pos_odom.y;
-    odom.header.stamp = ros::Time::now();
-    odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(mchn_pose.pos_odom.theta);
-    odom.twist.twist.linear.x = 0.0;
-    odom.twist.twist.linear.y = 0.0;
-    odom.twist.twist.angular.z = 0.0;
-    pub.publish(odom);
+    // tmp_odom.pose.pose.position.x = mchn_pose.pos_odom.x;
+    // tmp_odom.pose.pose.position.y = mchn_pose.pos_odom.y;
+    // tmp_odom.header.stamp = ros::Time::now();
+    // tmp_odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(mchn_pose.pos_odom.theta);
+    // tmp_odom.twist.twist.linear.x = 0.0;
+    // tmp_odom.twist.twist.linear.y = 0.0;
+    // tmp_odom.twist.twist.angular.z = 0.0;
+    // pub.publish(tmp_odom);
+    pub.publish(mchn_pose.m_Odom);
     r.sleep();
   }
 }
@@ -239,8 +261,12 @@ int main(int argc, char **argv) {
   }
 
   // mchn_pose.updateVicon();
-  printf("initial val  x:%4.2lf y:%4.2lf th:%4.2lf\n\r", mchn_pose.pos_odom.x, mchn_pose.pos_odom.y,
-         Rad2Deg(mchn_pose.pos_odom.theta));
+  // printf("initial val  x:%4.2lf y:%4.2lf th:%4.2lf\n\r", mchn_pose.pos_odom.x,
+  // mchn_pose.pos_odom.y,
+  //        Rad2Deg(mchn_pose.pos_odom.theta));
+  printf("initial val  x:%4.2lf y:%4.2lf th:%4.2lf\n\r", mchn_pose.m_Odom.pose.pose.position.x,
+         mchn_pose.m_Odom.pose.pose.position.y,
+         Rad2Deg(tf::getYaw(mchn_pose.m_Odom.pose.pose.orientation)));
   // mchn_pose.setCurrentPosition(mchn_pose.pos_vicon);
 
   if (pthread_create(&thread_odom, NULL, odom_update, NULL)) {
@@ -264,4 +290,8 @@ int main(int argc, char **argv) {
 
 /*****************************************************************************************************/
 
-void MachinePose_s::setCurrentPosition(geometry_msgs::Pose2D pose) { pos_odom = pose; }
+// void MachinePose_s::setCurrentPosition(geometry_msgs::Pose2D pose) { pos_odom = pose; }
+void MachinePose_s::setCurrentPosition(geometry_msgs::Pose pose) {
+  m_Odom.pose.pose = pose;
+  // pos_odom = pose;
+}
