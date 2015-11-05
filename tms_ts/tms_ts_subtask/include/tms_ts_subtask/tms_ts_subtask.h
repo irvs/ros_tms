@@ -5,8 +5,9 @@
 #include <tms_msg_ts/ts_state_control.h>
 #include <tms_msg_rp/rp_cmd.h>
 #include <tms_msg_rp/rp_arrow.h>
-#include <tms_msg_rp/rp_grasp.h>
-#include <tms_msg_rp/rp_release.h>
+#include <tms_msg_rp/rp_pick.h>
+#include <tms_msg_rp/rp_place.h>
+#include <tms_msg_rp/rp_arm_move.h>
 #include <tms_msg_rp/rps_voronoi_path_planning.h>
 #include <tms_msg_rp/rps_goal_planning.h>
 #include <tms_msg_rp/rps_joint_angle.h>
@@ -58,6 +59,15 @@
 #define CMD_MOVE_ABS            15
 #define CMD_MOVE_REL            16
 
+#define NEUTRAL                 0
+#define ARM_NEUTRAL             1
+#define ARM_GRASPING            2
+#define ARM_PRESENT             3
+
+#define GRIPPER_NEUTRAL         100
+#define GRIPPER_OPEN            101
+#define GRIPPER_CLOSE           102
+
 #define PI      3.14159265 // 180
 #define HALF_PI 1.57079633 // 90
 
@@ -107,8 +117,9 @@ class TmsRpSubtask
   ros::ServiceClient get_data_client_;
   ros::ServiceClient sp5_control_client_;
   ros::ServiceClient sp5_virtual_control_client;
-  ros::ServiceClient subtask_grasp_client;
-  ros::ServiceClient subtask_release_client;
+  ros::ServiceClient subtask_pick_client;
+  ros::ServiceClient subtask_place_client;
+  ros::ServiceClient subtask_arm_move_client;
 //	ros::ServiceClient kxp_virtual_control_client;
 //	ros::ServiceClient kxp_mbase_client;
 //	ros::ServiceClient v_kxp_mbase_client;

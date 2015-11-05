@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-    subtask_grasp.py - Version 0.0.2 2015-09-20
+    subtask_pick.py - Version 0.0.2 2015-09-20
 
     Command the gripper to grasp a target object and move it to a new location, all
     while avoiding simulated obstacles.
@@ -50,16 +50,16 @@ REFERENCE_FRAME = 'world_link'
 INIT_ARM_VALUE = [0.0, 0.08,0.0,0.0,0.0,0.0,0.0]
 GRASP_ARM_VALUE = [0.0, 0.2,0.0,0.0,0.0,0.0,0.0]
 
-class SubTaskGrasp:
+class SubTaskPick:
     def __init__(self):
         # Initialize the move_group API
         moveit_commander.roscpp_initialize(sys.argv)
-        rospy.init_node('subtask_grasp')
+        rospy.init_node('subtask_pick')
         rospy.on_shutdown(self.shutdown)
 
-        self.grasp_srv = rospy.Service('subtask_grasp', rp_grasp, self.graspSrvCallback)
+        self.pick_srv = rospy.Service('subtask_pick', rp_pick, self.pickSrvCallback)
 
-    def graspSrvCallback(self, req):
+    def pickSrvCallback(self, req):
         rospy.loginfo("Received the service call!")
         rospy.loginfo(req)
 
@@ -109,8 +109,6 @@ class SubTaskGrasp:
         arm.set_planning_time(5)
         # Set a limit on the number of pick attempts before bailing
         max_pick_attempts = 10
-        # Set a limit on the number of place attempts
-        max_place_attempts = 10
         # Give the scene a chance to catch up
         rospy.sleep(2)
 
@@ -150,7 +148,6 @@ class SubTaskGrasp:
         print(target_pose.pose.position.y)
         print(target_pose.pose.position.z)
 
-        print('test2-1')
         # Initialize the grasp pose to the target pose
         grasp_pose = target_pose
 
@@ -161,7 +158,6 @@ class SubTaskGrasp:
 
         # Generate a list of grasps
         grasps = self.make_grasps(grasp_pose, [target_id])
-        print('test3')
         # Publish the grasp poses so they can be viewed in RViz
         for grasp in grasps:
             self.gripper_pose_pub.publish(grasp.grasp_pose)
@@ -170,7 +166,6 @@ class SubTaskGrasp:
         # Track success/failure and number of attempts for pick operation
         result = None
         n_attempts = 0
-        print('test4')
         # Repeat until we succeed or run out of attempts
         while result != MoveItErrorCodes.SUCCESS and n_attempts < max_pick_attempts:
             n_attempts += 1
@@ -181,11 +176,7 @@ class SubTaskGrasp:
             if result != MoveItErrorCodes.SUCCESS:
                 scene.remove_attached_object(GRIPPER_FRAME, target_id)
 
-        #arm.set_pose_target(start_pose,GRIPPER_FRAME)
-        arm.set_joint_value_target(GRASP_ARM_VALUE)
-        arm.go()
-
-        ret = rp_graspResponse()
+        ret = rp_pickResponse()
         # If the pick was successful, attempt the place operation
         if result == MoveItErrorCodes.SUCCESS:
             rospy.loginfo("Success the pick operation")
@@ -295,57 +286,6 @@ class SubTaskGrasp:
         # Return the list
         return grasps
 
-    # Generate a list of possible place poses
-    def make_places(self, init_pose):
-        # Initialize the place location as a PoseStamped message
-        place = PoseStamped()
-
-        # Start with the input place pose
-        place = init_pose
-
-        # A list of x shifts (meters) to try
-        x_vals = [0, 0.005, 0.01, 0.015, -0.005, -0.01, -0.015]
-
-        # A list of y shifts (meters) to try
-        y_vals = [0, 0.005, 0.01, 0.015, -0.005, -0.01, -0.015]
-
-        pitch_vals = [0]
-
-        # A list of yaw angles to try
-        yaw_vals = [0]
-
-        # A list to hold the places
-        places = []
-
-        # Generate a place pose for each angle and translation
-        for y in yaw_vals:
-            for p in pitch_vals:
-                for y in y_vals:
-                    for x in x_vals:
-                        place.pose.position.x = init_pose.pose.position.x + x
-                        place.pose.position.y = init_pose.pose.position.y + y
-
-                        # Create a quaternion from the Euler angles
-                        # q = quaternion_from_euler(0, p, y)
-
-                        # # Set the place pose orientation accordingly
-                        # place.pose.orientation.x = q[0]
-                        # place.pose.orientation.y = q[1]
-                        # place.pose.orientation.z = q[2]
-                        # place.pose.orientation.w = q[3]
-
-                        q = quaternion_from_euler(0, 0, -1.57079633)
-                        place.pose.orientation.x = q[0]
-                        place.pose.orientation.y = q[1]
-                        place.pose.orientation.z = q[2]
-                        place.pose.orientation.w = q[3]
-
-                        # Append this place pose to the list
-                        places.append(deepcopy(place))
-
-        # Return the list
-        return places
-
     def shutdown(self):
         rospy.loginfo("Stopping the node")
         # Shut down MoveIt cleanly and exit the script
@@ -354,7 +294,7 @@ class SubTaskGrasp:
 
 if __name__ == "__main__":
     try:
-        SubTaskGrasp()
+        SubTaskPick()
         rospy.spin()
     except rospy.ROSInterruptException:
-        rospy.loginfo("subtask_grasp node terminated.")
+        rospy.loginfo("subtask_pick node terminated.")

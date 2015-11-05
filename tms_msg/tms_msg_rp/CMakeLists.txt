@@ -36,8 +36,9 @@ add_service_files(
   action.srv
   rp_cmd.srv
   rp_action.srv
-  rp_release.srv
-  rp_grasp.srv
+  rp_place.srv
+  rp_pick.srv
+  rp_arm_move.srv
   rp_move.srv
   rp_take.srv
   rp_arrow.srv
