@@ -4,19 +4,21 @@
   <arg name="num_of_skeletons" default="12"/>
   <arg name="host_name" default="192.168.4.157"/>
   <arg name="using_numbers" default="1 2 8 9 10"/>
+  <arg name="using_db" default="true"/>
 
   <!-- Make skeleton streams -->
   <!--<node name="skeleton_stream" pkg="tms_ss_kinect_v2" args="$(arg host_name) $(arg using_numbers)" type="skeleton_stream.py"/>-->
   <node name="skeleton_integrator" pkg="tms_ss_kinect_v2" args="$(arg using_numbers)" type="skeleton_integrator"/>
+  <param name="using_db" value="$(arg using_db)"/>
   <node name="skeleton_db_stream" pkg="tms_ss_kinect_v2" type="skeleton_db_stream"/>
 
   <!-- For visualize furnitures in rViz -->
-  <group ns="tmp">
+  <!--<group ns="tmp">-->
     <param name="robot_description"
            command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/environments_standalone.urdf.xacro'" />
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
     <node name="tms_db_state_publisher" pkg="tms_db_state_publisher" type="tms_db_state_publisher"/>
-  </group>
+  <!--</group>-->
 
   <!-- For visualize kinect in rViz -->
   <param name="kinect_description1"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>

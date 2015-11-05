@@ -6,7 +6,7 @@ Panels:
       Expanded:
         - /RobotModel1/Links1
       Splitter Ratio: 0.5
-    Tree Height: 775
+    Tree Height: 359
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -64,6 +64,15 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
         bed_link:
           Alpha: 1
           Show Axes: false
@@ -84,11 +93,53 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        camera_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
         carpet_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        chair_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        chair_x_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        chair_y_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        chipstar_red_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        chipstar_red_pitch_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        chipstar_red_x_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        chipstar_red_y_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        chipstar_red_yaw_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        chipstar_red_z_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         drawer_link:
           Alpha: 1
           Show Axes: false
@@ -104,16 +155,203 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        l_arm_j1_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        l_arm_j2_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        l_arm_j3_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        l_arm_j4_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        l_arm_j5_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        l_arm_j6_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        l_arm_j7_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        l_end_effector_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        l_gripper_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        l_gripper_thumb_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        lumbar_lower_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        lumbar_upper_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        meeting_chair1_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        meeting_chair1_x_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        meeting_chair1_y_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        meeting_chair2_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        meeting_chair2_x_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        meeting_chair2_y_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        meeting_chair3_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        meeting_chair3_x_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        meeting_chair3_y_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        meeting_chair4_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        meeting_chair4_x_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        meeting_chair4_y_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         meeting_table_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        r_arm_j1_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        r_arm_j2_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        r_arm_j3_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        r_arm_j4_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        r_arm_j5_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        r_arm_j6_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        r_arm_j7_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        r_end_effector_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        r_gripper_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        r_gripper_thumb_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
         recorder_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        refrigerator_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        refrigerator_x_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        refrigerator_y_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        smartpal5_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        smartpal5_x_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        smartpal5_y_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         sofa_link:
           Alpha: 1
           Show Axes: false
@@ -144,6 +382,19 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        wagon_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: false
+        wagon_x_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        wagon_y_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         wardrobe_link:
           Alpha: 1
           Show Axes: false
@@ -2126,7 +2377,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 10.4032
+      Distance: 11.6516
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1

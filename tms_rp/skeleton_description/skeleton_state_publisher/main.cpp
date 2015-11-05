@@ -11,11 +11,14 @@
 #include <robot_state_publisher/robot_state_publisher.h>
 
 #include <tms_msg_ss/SkeletonArray.h>
+#include <tms_msg_db/TmsdbStamped.h>
 
+#include "picojson.h"
 #include "../calc_joint_angles/for_model01.h"
 
 #define PARENT_LINK "world_link"
 #define CHILD_LINK "Body"
+
 const ros::Duration GMT(9 * 60 * 60);  // GMT: Tokyo +9 [sec]
 
 //------------------------------------------------------------------------------
@@ -24,7 +27,10 @@ class SkeletonsStatePublisher
   public:
     tf::TransformBroadcaster broadcaster_;
 
-    SkeletonsStatePublisher(ros::NodeHandle& nh, const std::vector<KDL::Tree>& kdl_forest);
+    SkeletonsStatePublisher(
+        ros::NodeHandle& nh,
+        const std::vector<KDL::Tree>& kdl_forest,
+        const bool& usingDB=false);
     ~SkeletonsStatePublisher();
 
     void run();
@@ -40,18 +46,28 @@ class SkeletonsStatePublisher
 
     bool usingDB_;
 
+    // Switch on whether use database.
     void callback(const tms_msg_ss::SkeletonArray::ConstPtr& msg);
+    void callback2(const tms_msg_db::TmsdbStamped::ConstPtr& msg);
 };
 
 //------------------------------------------------------------------------------
 SkeletonsStatePublisher::SkeletonsStatePublisher(
     ros::NodeHandle& nh,
-    const std::vector<KDL::Tree>& kdl_forest) :
+    const std::vector<KDL::Tree>& kdl_forest,
+    const bool& usingDB) :
   nh_(nh),
-  usingDB_(false)
+  usingDB_(usingDB)
 {
-  data_sub_ = nh_.subscribe("integrated_skeleton_stream", 1,
-      &SkeletonsStatePublisher::callback, this);
+  if (usingDB_)
+  {
+    data_sub_ = nh_.subscribe("/tms_db_publisher", 1,
+        &SkeletonsStatePublisher::callback2, this);
+  }
+  else{
+    data_sub_ = nh_.subscribe("integrated_skeleton_stream", 1,
+        &SkeletonsStatePublisher::callback, this);
+  }
 
   ros::Time now = ros::Time::now() + GMT;
   for (int i = 0; i < kdl_forest.size(); i++)
@@ -110,6 +126,40 @@ void SkeletonsStatePublisher::callback(const tms_msg_ss::SkeletonArray::ConstPtr
 }
 
 //------------------------------------------------------------------------------
+void SkeletonsStatePublisher::callback2(const tms_msg_db::TmsdbStamped::ConstPtr& msg)
+{
+  for (int32_t i=0; i < msg->tmsdb.size(); i++)
+  {
+    const int32_t human_id_start = 1006;
+    if (msg->tmsdb[i].id >= human_id_start &&
+        msg->tmsdb[i].id < human_id_start+state_pubs_.size())
+    {
+      const tms_msg_db::Tmsdb &skeleton_db_data = msg->tmsdb[i];
+
+      Eigen::Vector3d pos;
+      Eigen::Quaterniond rot;
+      picojson::value val;
+      std::string err = picojson::parse(val, skeleton_db_data.etcdata);
+      if (!err.empty())
+      {
+        tf::Quaternion q;
+        q.setRPY(skeleton_db_data.rr, skeleton_db_data.rp, skeleton_db_data.ry);
+        transforms_[i].setData(tf::Transform(
+              q, tf::Vector3(skeleton_db_data.x, skeleton_db_data.y, skeleton_db_data.z)));
+      }
+      else
+      {
+        ROS_ERROR("skeleton_state_publisher: Got invalid data. Check DB data.");
+      }
+    }
+  }
+
+  this->send(ros::Time::now()+GMT);
+
+  return;
+}
+
+//------------------------------------------------------------------------------
 void SkeletonsStatePublisher::run()
 {
   ros::spin();
@@ -142,6 +192,14 @@ int main(int argc, char **argv)
   {
     ROS_INFO("SkeletonsStatePublisher: Get the number of skeletons -> %d", num_of_skeletons);
   }
+  bool usingDB = false;
+  if (nh.getParam("using_db", usingDB))
+  {
+    if (usingDB)
+    {
+      ROS_INFO("SkeletonsStatePublisher: Get data from DB.");
+    }
+  }
 
   // Load models
   std::vector<KDL::Tree> kdl_forest;
@@ -163,7 +221,7 @@ int main(int argc, char **argv)
   }
 
   // Run
-  SkeletonsStatePublisher obj(nh, kdl_forest);
+  SkeletonsStatePublisher obj(nh, kdl_forest, usingDB);
 
   obj.run();
 
