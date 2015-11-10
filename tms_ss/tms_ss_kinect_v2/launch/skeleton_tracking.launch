@@ -10,6 +10,7 @@
   <!--<node name="skeleton_stream" pkg="tms_ss_kinect_v2" args="$(arg host_name) $(arg using_numbers)" type="skeleton_stream.py"/>-->
   <node name="skeleton_integrator" pkg="tms_ss_kinect_v2" args="$(arg using_numbers)" type="skeleton_integrator"/>
   <param name="using_db" value="$(arg using_db)"/>
+  <!--<node name="skeleton_db_stream" pkg="tms_ss_kinect_v2" type="skeleton_db_stream" output="screen"/>-->
   <node name="skeleton_db_stream" pkg="tms_ss_kinect_v2" type="skeleton_db_stream"/>
 
   <!-- For visualize furnitures in rViz -->

@@ -111,6 +111,7 @@ void SkeletonDBStream::callback(const tms_msg_ss::SkeletonArray::ConstPtr& msg)
     //data.tag
 
     db_msg.tmsdb.push_back(data);
+    ROS_INFO("Sending data to DB %d", data.id);
   }
 
   db_pub_.publish(db_msg);
@@ -122,11 +123,11 @@ std::string SkeletonDBStream::makeJSONofJointAngles(std::map<std::string, double
 {
   std::stringstream json;
   json << "{";
-  for (int i = 0; i < data.size(); i++)
+  for (int i = 0; i < kJointDoF; i++)
   {
     const std::string joint_name(kJointName[i]);
     json << "\"" << joint_name << "\":" << data[joint_name]
-    << (i == data.size() ? "":",");
+    << (i == kJointDoF-1 ? "":",");
   }
   json << "}";
   return json.str();

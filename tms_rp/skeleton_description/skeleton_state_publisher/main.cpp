@@ -138,19 +138,23 @@ void SkeletonsStatePublisher::callback2(const tms_msg_db::TmsdbStamped::ConstPtr
 
       Eigen::Vector3d pos;
       Eigen::Quaterniond rot;
+
+      // JSON parsing
       picojson::value val;
-      std::string err = picojson::parse(val, skeleton_db_data.etcdata);
-      if (!err.empty())
+      picojson::parse(val, skeleton_db_data.etcdata);
+      picojson::object& json_obj = val.get<picojson::object>();
+      ROS_INFO("------\nstorage_prace: %d\nid: %d\nposition: %f, %f, %f\n\
+          ----------------------------\n",
+          i, skeleton_db_data.id, skeleton_db_data.x, skeleton_db_data.y, skeleton_db_data.z);
+      for (int j = 0; j < kJointDoF; j++)
       {
-        tf::Quaternion q;
-        q.setRPY(skeleton_db_data.rr, skeleton_db_data.rp, skeleton_db_data.ry);
-        transforms_[i].setData(tf::Transform(
-              q, tf::Vector3(skeleton_db_data.x, skeleton_db_data.y, skeleton_db_data.z)));
+        joint_states[i][kJointName[j]] = json_obj[kJointName[j]].get<double>();
       }
-      else
-      {
-        ROS_ERROR("skeleton_state_publisher: Got invalid data. Check DB data.");
-      }
+
+      tf::Quaternion q;
+      q.setRPY(skeleton_db_data.rr, skeleton_db_data.rp, skeleton_db_data.ry);
+      transforms_[i].setData(tf::Transform(
+            q, tf::Vector3(skeleton_db_data.x, skeleton_db_data.y, skeleton_db_data.z)));
     }
   }
 

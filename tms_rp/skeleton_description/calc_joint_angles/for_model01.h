@@ -1,6 +1,8 @@
 #ifndef _CALC_JOINT_ANGLES_H_
 #define _CALC_JOINT_ANGLES_H_
 
+#include <math.h>
+
 #include <vector>
 #include <map>
 #include <Eigen/Eigen>
@@ -76,10 +78,11 @@ const char* kJointName[] = {
 
 const int kModel01BaseLink = SpineMid;
 
+// Keep consistency with kJointName
 const int kJointDoF = 29;
 
 template <class T>
-void calcForModel01(
+int calcForModel01(
     const tms_msg_ss::Skeleton &in,
     Eigen::Matrix<T, 3, 1> &position,
     Eigen::Quaternion<T> &rotation,
@@ -94,7 +97,7 @@ void calcForModel01(
     {
       out[kJointName[j]] = 0.0;
     }
-    return;
+    return -1;
   }
   else
   {
@@ -117,14 +120,28 @@ void calcForModel01(
     Eigen::Matrix<T, 3, 1> x,y,z;
     y = ((j[SpineMid]-j[SpineBase]).cross(j[HipRight]-j[HipLeft])).normalized();
     z = (j[SpineMid]-j[SpineBase]).normalized();
-    x = y.cross(z);
+    x = (y.cross(z)).normalized();
     Eigen::Matrix<T, 3, 3> mat;
     mat <<
       x[0], y[0], z[0],
       x[1], y[1], z[1],
       x[2], y[2], z[2];
-    //rotation = Eigen::Matrix<T,3,3>(mat.inverse());
+
     rotation = mat;
+
+    // Avoiding Error : I don't know why this error happens.
+    if ( isnan(rotation.x()) )
+    {
+      // It happens when gets same j[SpinMid], j[SpineBase], j[HipRight] and j[HipLeft]
+      rotation = Eigen::Quaternion<T>(0.0, 0.0, 0.0, 1.0);
+    }
+
+    // Initialize
+    for (int i=0; i < kJointDoF; i++)
+    {
+      out[kJointName[i]] = 0.0;
+    }
+
 
     // Calculation of joint angles.
     Eigen::Matrix<T, 3, 1> vec;
@@ -301,9 +318,13 @@ void calcForModel01(
       vec = j[AnkleLeft]-j[KneeLeft];
       out["L_LEG_JOINT4"] = atan2(y.dot(vec),x.dot(vec));
     }
+    for (int i=0; i < kJointDoF; i++)
+    {
+      out[kJointName[i]] = (isnan(out[kJointName[i]]) ? 0.0 : out[kJointName[i]]);
+    }
   }
 
-  return;
+  return 0;
 }
 
 #endif //_CALC_JOINT_ANGLES_H_
