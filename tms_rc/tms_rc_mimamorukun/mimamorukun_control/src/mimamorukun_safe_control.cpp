@@ -322,6 +322,10 @@ bool receiveGoalPose(tms_msg_rc::rc_robot_control::Request &req,
 bool is_human_detected = false;
 void HumanTrackerCallback(const visualization_msgs::MarkerArray::ConstPtr &arg){
   is_human_detected = !arg->markers.empty();
+  if(is_human_detected){
+    mchn_pose.tgtTwist.linear.x =  0.0;
+    mchn_pose.tgtTwist.angular.z =  0.0;
+  }
 }
 
 void receiveJoy(const sensor_msgs::Joy::ConstPtr &joy) {
