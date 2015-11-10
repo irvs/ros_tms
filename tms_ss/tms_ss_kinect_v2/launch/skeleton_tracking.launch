@@ -51,7 +51,7 @@
   <param name="skeleton_description11" textfile="$(find skeleton_description)/urdf/skeleton.urdf"/>
   <param name="skeleton_description12" textfile="$(find skeleton_description)/urdf/skeleton.urdf"/>
   <param name="num_of_skeletons" value="$(arg num_of_skeletons)"/>
-  <node name="skeleton_state_publisher" pkg="skeleton_description" type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher" pkg="skeleton_description" type="skeleton_state_publisher" output="screen"/>
   <node name="rviz" pkg="rviz" type="rviz"
     args="-d $(find rostms_description)/rviz_config/skeleton_watching.rviz" respawn="true"/>
 </launch>

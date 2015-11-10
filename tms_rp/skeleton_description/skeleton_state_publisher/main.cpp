@@ -79,9 +79,9 @@ SkeletonsStatePublisher::SkeletonsStatePublisher(
     transforms_.push_back(tf::StampedTransform(
       tf::Transform(tf::Quaternion(0.0,0.0,0.0,1.0), tf::Vector3(0.0,0.0,0.0)),
       now, PARENT_LINK, tf::resolve(tf_prefix.str(), CHILD_LINK)));
-    std::map<std::string, double> tmp;
+    std::map<std::string, double> joint_state;
+    joint_states.push_back(joint_state);
   }
-  joint_states.resize(kdl_forest.size());
 
   return;
 }
@@ -135,6 +135,7 @@ void SkeletonsStatePublisher::callback2(const tms_msg_db::TmsdbStamped::ConstPtr
         msg->tmsdb[i].id < human_id_start+state_pubs_.size())
     {
       const tms_msg_db::Tmsdb &skeleton_db_data = msg->tmsdb[i];
+      const int ref = msg->tmsdb[i].id - human_id_start;
 
       Eigen::Vector3d pos;
       Eigen::Quaterniond rot;
@@ -143,17 +144,18 @@ void SkeletonsStatePublisher::callback2(const tms_msg_db::TmsdbStamped::ConstPtr
       picojson::value val;
       picojson::parse(val, skeleton_db_data.etcdata);
       picojson::object& json_obj = val.get<picojson::object>();
-      ROS_INFO("------\nstorage_prace: %d\nid: %d\nposition: %f, %f, %f\n\
-          ----------------------------\n",
-          i, skeleton_db_data.id, skeleton_db_data.x, skeleton_db_data.y, skeleton_db_data.z);
+      ROS_INFO("------\nstorage_prace: %d\nid: %d\nposition: %f, %f, %f\nrpy: %f, %f, %f\n\
+          ---------------------------------\n",
+          i, skeleton_db_data.id, skeleton_db_data.x, skeleton_db_data.y, skeleton_db_data.z,
+          skeleton_db_data.rr, skeleton_db_data.rp, skeleton_db_data.ry);
       for (int j = 0; j < kJointDoF; j++)
       {
-        joint_states[i][kJointName[j]] = json_obj[kJointName[j]].get<double>();
+        joint_states[ref][kJointName[j]] = json_obj[kJointName[j]].get<double>();
       }
 
       tf::Quaternion q;
       q.setRPY(skeleton_db_data.rr, skeleton_db_data.rp, skeleton_db_data.ry);
-      transforms_[i].setData(tf::Transform(
+      transforms_[ref].setData(tf::Transform(
             q, tf::Vector3(skeleton_db_data.x, skeleton_db_data.y, skeleton_db_data.z)));
     }
   }
