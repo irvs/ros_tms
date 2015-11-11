@@ -437,7 +437,7 @@ int main(int argc, char **argv) {
   string s_Kp_, s_Ki_, s_Kd_;
   ros::NodeHandle nh_param("~");
   string tmp_ip;
-  nh_param.param<string>("IP_ADDR", tmp_ip, "192.168.11.99");
+  nh_param.param<string>("IP_ADDR", tmp_ip, "");
   nh_param.param<int>("spin_Kp", Kp_, 4800);
   nh_param.param<int>("spin_Ki", Ki_, /*30*/ 100);
   nh_param.param<int>("spin_Kd", Kd_, 40000);

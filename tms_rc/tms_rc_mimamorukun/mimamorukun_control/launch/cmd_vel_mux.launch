@@ -1,0 +1,16 @@
+<!--
+  YOCS Velocity Multiplexer launcher
+  -->
+
+<launch>
+  <!-- <arg name="nodelet_manager_name"  default="nodelet_manager"/> -->
+  <arg name="config_file"           default="$(find tms_rc_mimamorukun_control)/param/cmd_vel_mux.yaml"/>
+
+  <!-- <node pkg="nodelet" type="nodelet" name="yocs_cmd_vel_mux" -->
+        <!-- args="load yocs_cmd_vel_mux/CmdVelMuxNodelet $(arg nodelet_manager_name)"> -->
+  <node pkg="nodelet" type="nodelet" name="mimamorukun_cmd_vel_mux"
+        args="standalone yocs_cmd_vel_mux/CmdVelMuxNodelet">
+    <param name="yaml_cfg_file" value="$(arg config_file)"/>
+    <remap from="/mimamorukun_cmd_vel_mux/output/cmd_vel" to="/cmd_vel"/>
+  </node>
+</launch>
