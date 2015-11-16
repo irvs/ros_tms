@@ -99,7 +99,7 @@ void MachinePose_s::updateOdom() {
   pthread_mutex_unlock(&mutex_socket);
   ROS_DEBUG_STREAM("@GP raw:" << reply);
   sscanf(reply.c_str(), "@GP1,%ld@GP2,%ld", &tmpENC_L, &tmpENC_R);
-  ROS_DEBUG_STREAM("tmpENC_L:" << tmpENC_L << "    tmpENC_R:" << tmpENC_R);
+  // ROS_DEBUG_STREAM("tmpENC_L:" << tmpENC_L << "    tmpENC_R:" << tmpENC_R);
   if (tmpENC_L > ENC_MAX / 2)
     ENC_L = tmpENC_L - (ENC_MAX + 1);
   else
@@ -168,7 +168,7 @@ void spinWheel(/*double arg_speed, double arg_theta*/) {
   double val_R = Dist2Pulse(arg_speed) + Dist2Pulse((WHEEL_DIST / 2) * arg_theta);
   val_L = (int)Limit(val_L, (double)SPEED_MAX, (double)-SPEED_MAX);
   val_R = (int)Limit(val_R, (double)SPEED_MAX, (double)-SPEED_MAX);
-  printf("val_L:%2.f   val_R:%2.f", val_L, val_R);
+  ROS_DEBUG("val_L:%2.f   val_R:%2.f", val_L, val_R);
 
   string cmd_L = boost::lexical_cast<string>(val_L);
   string cmd_R = boost::lexical_cast<string>(val_R);
@@ -187,6 +187,7 @@ void spinWheel(/*double arg_speed, double arg_theta*/) {
 }
 
 void receiveCmdVel(const geometry_msgs::Twist::ConstPtr &cmd_vel) {
+  // ROS_DEBUG("receive /cmd_vel");
   mchn_pose.tgtTwist = *cmd_vel;
   // spinWheel(/*cmd_vel->linear.x,cmd_vel->angular.z*/);
 }
@@ -231,6 +232,9 @@ int main(int argc, char **argv) {
   int Kp_, Ki_, Kd_;
   string s_Kp_, s_Ki_, s_Kd_;
   ros::NodeHandle nh_param("~");
+
+  ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Twist>("/cmd_vel", 10, receiveCmdVel);
+
   string tmp_ip;
   nh_param.param<string>("IP_ADDR", tmp_ip, "192.168.11.99");
   nh_param.param<int>("spin_Kp", Kp_, 4800);
