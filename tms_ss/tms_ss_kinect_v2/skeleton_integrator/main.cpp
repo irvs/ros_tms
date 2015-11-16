@@ -413,7 +413,7 @@ int main(int argc, char **argv)
   }
 
   int camera_num = cameraID_array.size();
-  if (camera_num <= 0 || camera_num >= 7)
+  if (camera_num <= 0 || camera_num >= 10)
   {
     std::cout << "Maybe given invalid input." << std::endl;
     return -2;
