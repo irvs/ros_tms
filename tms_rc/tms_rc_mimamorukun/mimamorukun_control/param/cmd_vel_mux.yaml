@@ -13,7 +13,6 @@
 #   short_desc:     Short description (optional)
 
 subscribers:
-    short_desc:  "Navigation stack controller"
   - name:        "Onboard joystick"
     topic:       "input/joystick"
     timeout:     0.1
