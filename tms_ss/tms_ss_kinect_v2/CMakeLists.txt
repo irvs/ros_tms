@@ -5,11 +5,10 @@ project(tms_ss_kinect_v2)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
-  cmake_modules
+  tf
   skeleton_description
 )
 find_package(Eigen REQUIRED)
-
 
 ###################################
 ## catkin specific configuration ##
@@ -18,6 +17,7 @@ catkin_package(
   CATKIN_DEPENDS
     roscpp
     rospy
+    tf
     cmake_modules
 )
 
@@ -36,3 +36,7 @@ add_dependencies(skeleton_viewer tms_msg_ss_generate_messages_cpp)
 add_executable(skeleton_integrator skeleton_integrator/main.cpp)
 target_link_libraries(skeleton_integrator ${catkin_LIBRARIES})
 add_dependencies(skeleton_integrator tms_msg_ss_generate_messages_cpp)
+
+add_executable(skeleton_db_stream skeleton_db_stream/main.cpp)
+target_link_libraries(skeleton_db_stream ${catkin_LIBRARIES})
+add_dependencies(skeleton_db_stream tms_msg_ss_generate_messages_cpp)
