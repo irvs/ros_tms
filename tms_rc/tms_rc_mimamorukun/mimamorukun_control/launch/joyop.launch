@@ -5,34 +5,35 @@
  -->
 
 <launch>
-  <arg name="linear_axis"         default="1"/>
-	<arg name="angular_axis"        default="0"/>
-	<arg name="linear_scale"        default="1.0"/>
-	<arg name="angular_scale"       default="1.0"/>
-	<arg name="deadman_button"      default="4"/>
-	<arg name="enable_button"       default="0"/>
-	<arg name="disable_button"      default="1"/>
-	<arg name="spin_frequency"      default="10"/>
-	<arg name="joy_topic_name"      default="joy"/>
-	<arg name="cmd_vel_topic_name"  default="/mimamorukun_cmd_vel_mux/input/joystick"/>
-	<arg name="enable_topic_name"   default="enable"/>
-	<arg name="disable_topic_name"  default="disable"/>
+  <arg  default="1" name="linear_axis"/>
+  <arg  default="0" name="angular_axis"/>
+  <arg  default="1.0" name="linear_scale"/>
+  <arg  default="1.0" name="angular_scale"/>
+  <arg  default="4" name="deadman_button"/>
+  <arg  default="0" name="enable_button"/>
+  <arg  default="1" name="disable_button"/>
+  <arg  default="10" name="spin_frequency"/>
+  <arg  default="joy" name="joy_topic_name"/>
+  <arg  default="cmd_vel_mux/input/joystick" name="cmd_vel_topic_name"/>
+  <arg  default="enable" name="enable_topic_name"/>
+  <arg  default="disable" name="disable_topic_name"/>
+  <group ns="mimamorukun">
+    <node name="yocs_joyop" output="screen" pkg="yocs_joyop" type="joyop">
+      <param  name="linear_axis" value="$(arg linear_axis)"/>
+      <param  name="angular_axis" value="$(arg angular_axis)"/>
+      <param  name="linear_scale" value="$(arg linear_scale)"/>
+      <param  name="angular_scale" value="$(arg angular_scale)"/>
+      <param  name="deadman_button" value="$(arg deadman_button)"/>
+      <param  name="enable_button" value="$(arg enable_button)"/>
+      <param  name="disable_button" value="$(arg disable_button)"/>
+      <param  name="spin_frequency" value="$(arg spin_frequency)"/>
+      <remap  from="joy" to="$(arg joy_topic_name)"/>
+      <remap  from="yocs_joyop/cmd_vel" to="$(arg cmd_vel_topic_name)"/>
+      <remap  from="yocs_joyop/enable" to="$(arg enable_topic_name)"/>
+      <remap  from="yocs_joyop/disable" to="$(arg disable_topic_name)"/>
+    </node>
 
-  <node pkg="yocs_joyop" type="joyop" name="yocs_joyop" output="screen">
-    <param name="linear_axis"         value="$(arg linear_axis)"/>
-    <param name="angular_axis"        value="$(arg angular_axis)"/>
-    <param name="linear_scale"        value="$(arg linear_scale)"/>
-    <param name="angular_scale"       value="$(arg angular_scale)"/>
-    <param name="deadman_button"      value="$(arg deadman_button)"/>
-    <param name="enable_button"       value="$(arg enable_button)"/>
-    <param name="disable_button"      value="$(arg disable_button)"/>
-    <param name="spin_frequency"      value="$(arg spin_frequency)"/>
-    <remap from="joy"                 to="$(arg joy_topic_name)"/>
-    <remap from="yocs_joyop/cmd_vel"  to="$(arg cmd_vel_topic_name)"/>
-    <remap from="yocs_joyop/enable"   to="$(arg enable_topic_name)"/>
-    <remap from="yocs_joyop/disable"  to="$(arg disable_topic_name)"/>
-  </node>
-
-  <!--- ROS joystick driver -->
-  <node pkg="joy" type="joy_node" name="joystick" output="screen"/>
+<!--- ROS joystick driver -->
+    <node  name="joystick" output="screen" pkg="joy" type="joy_node"/>
+  </group>
 </launch>

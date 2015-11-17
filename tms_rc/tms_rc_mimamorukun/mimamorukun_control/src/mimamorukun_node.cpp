@@ -35,7 +35,13 @@ class MachinePose_s {
     ROS_DEBUG("In Mimamorukun Constructor");
     m_Odom.header.frame_id = "/odom";
     m_Odom.child_frame_id = "/base_link_footprint";
+    m_Odom.pose.pose.position.x = 0.0;
+    m_Odom.pose.pose.position.y = 0.0;
     m_Odom.pose.pose.position.z = 0.0;
+    m_Odom.pose.pose.orientation.x = 0.0;
+    m_Odom.pose.pose.orientation.y = 0.0;
+    m_Odom.pose.pose.orientation.z = 1.0;
+    m_Odom.pose.pose.orientation.w = 0.0;
     // this->pos_odom.x = 0.0;
     // this->pos_odom.y = 0.0;
     // this->pos_odom.theta = 0.0;
@@ -146,8 +152,8 @@ void MachinePose_s::updateOdom() {
   tf::quaternionMsgToTF(m_Odom.pose.pose.orientation, q1);
   tf::Quaternion q2;
   tf::quaternionMsgToTF(tf::createQuaternionMsgFromYaw(POS_SIGMA), q2);
-  q1 += q2;
-  tf::quaternionTFToMsg(q1, m_Odom.pose.pose.orientation);
+  q1 *= q2;
+  tf::quaternionTFToMsg(q1.normalized(), m_Odom.pose.pose.orientation);
   m_Odom.twist.twist.linear.x = MM2M(dL) / (double)ROS_RATE;
   m_Odom.twist.twist.linear.y = 0.0;
   m_Odom.twist.twist.angular.z = POS_SIGMA;
@@ -233,7 +239,7 @@ int main(int argc, char **argv) {
   string s_Kp_, s_Ki_, s_Kd_;
   ros::NodeHandle nh_param("~");
 
-  ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Twist>("/cmd_vel", 10, receiveCmdVel);
+  ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Twist>("cmd_vel", 10, receiveCmdVel);
 
   string tmp_ip;
   nh_param.param<string>("IP_ADDR", tmp_ip, "192.168.11.99");
@@ -268,9 +274,9 @@ int main(int argc, char **argv) {
   // printf("initial val  x:%4.2lf y:%4.2lf th:%4.2lf\n\r", mchn_pose.pos_odom.x,
   // mchn_pose.pos_odom.y,
   //        Rad2Deg(mchn_pose.pos_odom.theta));
-  printf("initial val  x:%4.2lf y:%4.2lf th:%4.2lf\n\r", mchn_pose.m_Odom.pose.pose.position.x,
-         mchn_pose.m_Odom.pose.pose.position.y,
-         Rad2Deg(tf::getYaw(mchn_pose.m_Odom.pose.pose.orientation)));
+  // printf("initial val  x:%4.2lf y:%4.2lf th:%4.2lf\n\r", mchn_pose.m_Odom.pose.pose.position.x,
+  //        mchn_pose.m_Odom.pose.pose.position.y,
+  //        Rad2Deg(tf::getYaw(mchn_pose.m_Odom.pose.pose.orientation)));
   // mchn_pose.setCurrentPosition(mchn_pose.pos_vicon);
 
   if (pthread_create(&thread_odom, NULL, odom_update, NULL)) {
