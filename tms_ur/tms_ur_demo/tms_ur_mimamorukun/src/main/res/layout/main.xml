@@ -192,12 +192,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
-                <!-- /tms_db_reader/dbreader connection -->
+                <!-- /tms_db_reader connection -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:text="\n/tms_db_reader/dbreader"/>
+                    android:text="\n/tms_db_reader"/>
 
                 <TextView
                     android:id="@+id/dbreader_status"

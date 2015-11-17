@@ -62,7 +62,8 @@
 #define NEUTRAL                 0
 #define ARM_NEUTRAL             1
 #define ARM_GRASPING            2
-#define ARM_PRESENT             3
+#define ARM_GIVE                3
+#define ARM_GIVE_END            4
 
 #define GRIPPER_NEUTRAL         100
 #define GRIPPER_OPEN            101

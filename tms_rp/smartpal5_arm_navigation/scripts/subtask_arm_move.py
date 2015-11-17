@@ -25,8 +25,8 @@ REFERENCE_FRAME = 'world_link'
 NEUTRAL = 0
 ARM_NEUTRAL = 1
 ARM_GRASPING = 2
-ARM_PRESENT = 3
-ARM_PRESENTED = 4
+ARM_GIVE = 3
+ARM_GIVE_END = 4
 
 GRIPPER_NEUTRAL = 100
 GRIPPER_OPEN = 101
@@ -34,8 +34,8 @@ GRIPPER_CLOSE = 102
 
 ARM_NEUTRAL_VAL = [0.0, 0.08,0.0,0.0,0.0,0.0,0.0]
 ARM_GRASPING_VAL = [0.0, 0.2,0.0,0.0,0.0,0.0,0.0]
-ARM_PRESENT_VAL = [0.65,0.08,0.0,0.93,0.0,0.0,0.0]
-ARM_PRESENTED_VAL = [0.65,0.5,0.0,0.93,0.0,0.0,0.0]
+ARM_GIVE_VAL = [0.65,0.08,0.0,0.93,0.0,0.0,0.0]
+ARM_GIVE_END_VAL = [0.65,0.5,0.0,0.93,0.0,0.0,0.0]
 
 GRIPPER_NEUTRAL_VAL = [0.0]
 GRIPPER_OPEN_VAL = [-1.0]
@@ -74,8 +74,11 @@ class SubTaskArmMove:
         elif req.move_id == ARM_GRASPING:
             arm.set_joint_value_target(ARM_GRASPING_VAL)
             result = arm.go()
-        elif req.move_id == ARM_PRESENT:
-            arm.set_joint_value_target(ARM_PRESENT_VAL)
+        elif req.move_id == ARM_GIVE:
+            arm.set_joint_value_target(ARM_GIVE_VAL)
+            result = arm.go()
+        elif req.move_id == ARM_GIVE_END:
+            arm.set_joint_value_target(ARM_GIVE_END_VAL)
             result = arm.go()
         elif req.move_id == GRIPPER_NEUTRAL:
             gripper.set_joint_value_target(GRIPPER_NEUTRAL_VAL)

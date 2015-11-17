@@ -28,6 +28,7 @@ public class TagAnalyzer {
 		if(key.length() > 0) { 
 			for(net.reduls.sanmoku.Morpheme e : net.reduls.sanmoku.Tagger.parse(key)) {
 				net.reduls.sanmoku.FeatureEx fe = new net.reduls.sanmoku.FeatureEx(e);
+				Log.v("e",fe.reading);
 				if(e.feature.indexOf("名詞")==0||e.feature.indexOf("形容詞")==0){
 					dst.add(fe.reading);
 				}
@@ -65,56 +66,64 @@ public class TagAnalyzer {
 	//dummy
 	public static ArrayList<String> tagAnalyzer(Context con, ArrayList<String> segments){
 		ArrayList<String> tags = new ArrayList<String>();
+		String pre_seg = "";
 
 		for(String seg : segments){
+			Log.v("TAG",seg);
 
 			if(seg.equals("ノミモノ")
 					||seg.equals("ノム")
 					||seg.equals("ノド")){
-				tags.add("drink");
+				tags.add("object:drink");
 			}
 			else if(seg.equals("オカシ")||
 					seg.equals("オヤツ")||
 					seg.equals("オナカ")||
 					seg.equals("タベル")||
 					seg.equals("タベモノ")){
-				tags.add("snack");
+				tags.add("object:snack");
 			}
 			else if(seg.equals("オチャ")){
-				tags.add("tea");
+				tags.add("object:tea");
 			}
 			else if(seg.equals("コップ")||
 					seg.equals("カップ")){
-				tags.add("cup");
+				tags.add("objcet:cup");
 			}
 			else if(seg.equals("アカ")||
 					seg.equals("アカイ")||
 					seg.equals("アカイロ")){
-				tags.add("red");
+				tags.add("object:red");
 			}
 			else if(seg.equals("アオ")||
 					seg.equals("アオイ")||
 					seg.equals("アオイロ")){
-				tags.add("blue");
+				tags.add("object:blue");
 			}
 			else if(seg.equals("ミドリ")||
 					seg.equals("ミドリイロ")){
-				tags.add("green");
+				tags.add("object:green");
 			}
 			else if(seg.equals("シロ")||
 					seg.equals("シロイ")||
 					seg.equals("シロイロ")){
-				tags.add("white");
+				tags.add("object:white");
 			}
             else if(seg.equals("クロ")||
                 seg.equals("クロイ")||
                 seg.equals("クロイロ")){
-                tags.add("black");
+                tags.add("object:black");
             }
             else if(seg.equals("ヨム")||
                 seg.equals("ホン")){
-                tags.add("book");
+                tags.add("object:book");
             }
+			else if((pre_seg.equals("モツ")&&seg.equals("クル"))||
+					seg.equals("トル")){
+				tags.add("task:get");
+			}
+
+			pre_seg = seg;
 
         }
 

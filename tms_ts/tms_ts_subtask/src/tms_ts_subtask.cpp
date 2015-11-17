@@ -1195,14 +1195,14 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
         if (sd.type == false)
         {
           tms_msg_rp::rp_arm_move srv;
-          srv.request.move_id = ARM_PRESENT;
+          srv.request.move_id = ARM_GIVE;
           if (subtask_arm_move_client.call(srv))
           {
-            ROS_INFO("Successed arm_move(present)");
+            ROS_INFO("Successed arm_move(give)");
           }
           else
           {
-            s_srv.request.error_msg = "failed arm_move(present)";
+            s_srv.request.error_msg = "failed arm_move(give)";
             state_client.call(s_srv);
             return false;
           }
@@ -1225,6 +1225,18 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
           }
 
           sleep(1);
+
+          srv.request.move_id = ARM_GIVE_END;
+          if(subtask_arm_move_client.call(srv))
+          {
+            ROS_INFO("Successed arm_move(give_end)");
+          }
+          else
+          {
+            s_srv.request.error_msg = "failed arm_move(give_end)";
+            state_client.call(s_srv);
+            return false;
+          }
 
           srv.request.move_id = NEUTRAL;
           if (subtask_arm_move_client.call(srv))

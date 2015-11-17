@@ -116,7 +116,7 @@ public class TmsUrSanmoku extends RosActivity implements View.OnClickListener,
 SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 
 	public TmsUrSanmoku() {
-		super("tms_ur_sanmoku","tms_ur_sanmoku", URI.create("http://192.168.4.170:11311/"));
+		super("tms_ur_sanmoku", "tms_ur_sanmoku", URI.create("http://192.168.4.106:11311/"));
 		Log.v("ROS", "Const");
 	}
 
@@ -1089,6 +1089,7 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 
 					for(String string : segs){
 						results.add(string);
+						Log.v("TAG",string);
 					}
 					return results;
 				};
@@ -1096,96 +1097,172 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 				protected void onPostExecute(ArrayList<String> result){
 					dialog.dismiss();
 					isdetecting = true;
-					Log.v("msql", "dialog_dismiss");
-					//TMSにアクセス
 					if(result.size()!=0){
-						Log.v("msql", result.get(0));
-						data.sendTag(result.get(0));
-						ArrayList<TmsdbObject> objs = new ArrayList<TmsdbObject>();
-						if(data.getObjectArray() != null){
-							for(TmsdbObject object : data.getObjectArray()){
-								boolean flag = true;
-								for(int i=1;i<result.size();i++){
-									if(object.getTag().indexOf(result.get(i))==-1) flag = false;
+						ArrayList<String> tasks = new ArrayList<String>();
+						ArrayList<String> robots = new ArrayList<String>();
+						ArrayList<String> objects = new ArrayList<String>();
+						ArrayList<String> users = new ArrayList<String>();
+						ArrayList<String> places = new ArrayList<String>();
+						for(int i=0;i<result.size();i++){
+							String[] split_str = result.get(i).split(":",0);
+							if(split_str[0].equals("task")){
+								tasks.add(split_str[1]);
+							}else if(split_str[0].equals("robot")){
+								robots.add(split_str[1]);
+							}else if(split_str[0].equals("object")){
+								objects.add(split_str[1]);
+							}else if(split_str[0].equals("user")){
+								users.add(split_str[1]);
+							}else if(split_str[0].equals("place")){
+								places.add(split_str[1]);
+							}
+						}
+
+						if(tasks.size()!=0){ //命令発行
+							int task_id,robot_id,object_id,user_id,place_id;
+							data.sendTag(tasks.get(0));
+							task_id = data.getObjectArray().get(0).getId();
+							Log.v("TASK","task:" + data.getObjectArray().get(0).getName() + " id:" + task_id);
+
+							if(robots.size()!=0){
+								data.sendTag(robots.get(0));
+								robot_id = data.getObjectArray().get(0).getId();
+								Log.v("TASK","robot:" + data.getObjectArray().get(0).getName() + " id:" + robot_id);
+							}else{
+								robot_id = 2003;
+								Log.v("TASK","robot:" + "smart_pal5_2(default)" + " id:" + robot_id);
+							}
+
+							if(users.size()!=0){
+								data.sendTag(users.get(0));
+								user_id = data.getObjectArray().get(0).getId();
+								Log.v("TASK","user:" + data.getObjectArray().get(0).getName() + " id:" + user_id);
+							}else{
+								user_id = 1001;
+								Log.v("TASK","user:" + "YOU(default)" + " id:" + user_id);
+							}
+
+							if(places.size()!=0){
+								data.sendTag(places.get(0));
+								place_id = data.getObjectArray().get(0).getId();
+								Log.v("TASK","place:" + data.getObjectArray().get(0).getName() + " id:" + place_id);
+							}else{
+								place_id = 0;
+								Log.v("TASK","place:" + "none(default)" + " id:" + place_id);
+							}
+
+							if(objects.size()!=0){
+								data.sendTag(objects.get(0));
+								ArrayList<TmsdbObject>objs = new ArrayList<TmsdbObject>();
+								if(data.getObjectArray() != null){
+									for(TmsdbObject object : data.getObjectArray()){
+										boolean flag = true;
+										for(int i=1; i<objects.size(); i++){
+											if(object.getTag().indexOf(objects.get(i))==-1) flag = false;
+										}
+										if(flag == true) objs.add(object);
+									}
 								}
-								if(flag == true) objs.add(object);
+								object_id = objs.get(0).getId();
+								Log.v("TASK","object:" + data.getObjectArray().get(0).getName() + " id:" + object_id);
+							}else{
+								object_id = 0;
+								Log.v("TASK","object:" + "none(default)" + " id:" + object_id);
 							}
-						}
 
-						for(int i=0;i<objs.size();i++){
-							Log.v("msql", objs.get(i).getName() + ":" + objs.get(i).getPlace());
-						}
+							data.sendCommand(task_id,robot_id,user_id,place_id,object_id);
 
-						//この時点でobjsの中は複数タグをand検索した物品情報になる
-						//ここからobjs.getIdでdata_objectから実際のobject情報を取得
-						detectingObjs = null;
-						detectingObjs = new ArrayList<TmsdbObject>();
-						for(TmsdbObject object:objs){
-							data.sendInfo(object);
-							if(data.getObject() != null) detectingObjs.add(new TmsdbObject(data.getObject()));
-						}
+							sublayout.removeAllViews();
+						}else{ //物品検索
+							if(objects.size()!=0){
+								Log.v("DB", objects.get(0));
 
-						if(detectingObjs.size()!=0){
-							for(int i=0;i<detectingObjs.size();i++){
-								Log.v("msql", detectingObjs.get(i).getName() + ":" + detectingObjs.get(i).getPlace());
-							}
-						}
+								//defaultコレクションからのデータ取得
+								data.sendTag(objects.get(0));
+								ArrayList<TmsdbObject> objs = new ArrayList<TmsdbObject>();
+								if(data.getObjectArray() != null){
+									for(TmsdbObject object : data.getObjectArray()){
+										boolean flag = true;
+										for(int i=1; i<objects.size(); i++){
+											if(object.getTag().indexOf(objects.get(i))==-1) flag = false;
+										}
+										if(flag == true) objs.add(object);
+									}
+								}
+								for(int i=0;i<objs.size();i++) {
+									Log.v("DB", objs.get(i).getName() + ":" + objs.get(i).getPlace());
+								}
 
-						//detectingObjsのplaceで家具を取得
-						objs.clear();
-						for(TmsdbObject object: detectingObjs){
-							if(object.getPlace()!=0){
-								TmsdbObject to = new TmsdbObject();
-								to.setId(object.getPlace());
-								data.sendInfo(to);
+								//nowコレクションからのデータ取得
+								detectingObjs = null;
+								detectingObjs = new ArrayList<TmsdbObject>();
+								for(TmsdbObject object:objs){
+									data.sendInfo(object);
+									if(data.getObject() != null) detectingObjs.add(new TmsdbObject(data.getObject()));
+								}
 
-								Log.v("msql","objsSize:" + objs.size());
-								if(objs.size()==0) objs.add(new TmsdbObject(data.getObject()));
+								if(detectingObjs.size()!=0){
+									for(int i=0;i<detectingObjs.size();i++){
+										Log.v("DB",detectingObjs.get(i).getName() + ":" + detectingObjs.get(i).getPlace());
+									}
+								}
+
+								//detectingObjsのplaceで家具を取得
+								objs.clear();
+								for(TmsdbObject object: detectingObjs){
+									if(object.getPlace()!=0){
+										TmsdbObject to = new TmsdbObject();
+										to.setId(object.getPlace());
+										data.sendInfo(to);
+
+										Log.v("DB","objsSize:" + objs.size());
+										if(objs.size()==0) objs.add(new TmsdbObject(data.getObject()));
+										else{
+											boolean flag = true;
+
+											for(TmsdbObject obj:objs){
+												if(data.getObject().getId() == obj.getId()) flag = false;
+											}
+
+											if(flag) objs.add(new TmsdbObject(data.getObject()));
+										}
+									}
+								}
+								//objsに家具情報格納完了
+								String str = "";
+								LayoutInflater inflater
+										= LayoutInflater.from(com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.urclientactivity.TmsUrSanmoku.this);
+								View view = null;
+								if(objs.size()==0){
+									view = inflater.inflate(R.layout.systemanswernoobj,null);
+									TextView tv = (TextView)view.findViewById(R.id.txtSysAnswer);
+									str = "お探しの物品は現在切らしています";
+									tv.setText(str);
+								}
 								else{
-									boolean flag = true;
+									view = inflater.inflate(R.layout.systemanswer,null);
+									ListView lv = (ListView)view.findViewById(R.id.listview);
+
+									TmsdbObjectListAdapter adapter = new TmsdbObjectListAdapter(com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.urclientactivity.TmsUrSanmoku.this, 0, objs, savePath + saveDir);
+									lv.setAdapter(adapter);
+
+									str += "お探しの物品は、";
 
 									for(TmsdbObject obj:objs){
-										if(data.getObject().getId() == obj.getId()) flag = false;
+										str += obj.getName() + "、";
 									}
 
-									if(flag) objs.add(new TmsdbObject(data.getObject()));
+									str += "に、あります";
+
 								}
+
+								sublayout.removeAllViews();
+								sublayout.addView(view);
+								speechText(str);
+								isdetecting = false;
 							}
 						}
-						//objsに家具情報格納完了
-						String str = "";
-						LayoutInflater inflater 
-						= LayoutInflater.from(com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.urclientactivity.TmsUrSanmoku.this);
-						View view = null;
-						if(objs.size()==0){
-							view = inflater.inflate(R.layout.systemanswernoobj,null);
-							TextView tv = (TextView)view.findViewById(R.id.txtSysAnswer);
-							str = "お探しの物品は現在切らしています";
-							tv.setText(str);
-						}
-						else{
-							view = inflater.inflate(R.layout.systemanswer,null);
-							ListView lv = (ListView)view.findViewById(R.id.listview);
-
-							TmsdbObjectListAdapter adapter = new TmsdbObjectListAdapter(com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.urclientactivity.TmsUrSanmoku.this, 0, objs, savePath + saveDir);
-							lv.setAdapter(adapter);
-
-							str += "お探しの物品は、";
-
-							for(TmsdbObject obj:objs){
-								str += obj.getName() + "、";
-							}
-
-							str += "に、あります";
-
-						}
-
-						sublayout.removeAllViews();
-						sublayout.addView(view);
-						speechText(str);
-						isdetecting = false;
 					}
-
 				}
 			};
 

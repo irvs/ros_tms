@@ -19,10 +19,14 @@ import tms_msg_db.Tmsdb;
 import tms_msg_db.TmsdbGetData;
 import tms_msg_db.TmsdbGetDataRequest;
 import tms_msg_db.TmsdbGetDataResponse;
+import tms_msg_ts.ts_req;
+import tms_msg_ts.ts_reqRequest;
+import tms_msg_ts.ts_reqResponse;
 
 public class TmsdbGetDataNode extends AbstractNodeMain {
 
 	private ServiceClient<TmsdbGetDataRequest,TmsdbGetDataResponse> srvClient;
+	private ServiceClient<ts_reqRequest, ts_reqResponse> tms_ts_client;
 
 	private static final String className = "TmsdbGetDataNode";
 	private int isCalled = 0;
@@ -73,10 +77,11 @@ public class TmsdbGetDataNode extends AbstractNodeMain {
 	@Override
 	public void onStart(final ConnectedNode connectedNode) {
 		try {
-			srvClient = connectedNode.newServiceClient("/tms_db_reader/dbreader",TmsdbGetData._TYPE);
+			srvClient = connectedNode.newServiceClient("/tms_db_reader",TmsdbGetData._TYPE);
+			tms_ts_client = connectedNode.newServiceClient("/tms_ts_master", ts_req._TYPE);
 		} catch (ServiceNotFoundException e) {
 			throw new RosRuntimeException(e);
-		}   
+		}
 	}
 
 	//家具情報を取得(AR用)
@@ -109,7 +114,7 @@ public class TmsdbGetDataNode extends AbstractNodeMain {
 			}
 		});
 		Log.v(className, "wait");
-		while(isCalled!=1 && cnt<10){  
+		while(isCalled!=1 && cnt<10){
 			try {
 				Thread.sleep(500);  // 500ms * 10 = 5sec
 			} catch (InterruptedException e){}
@@ -139,7 +144,7 @@ public class TmsdbGetDataNode extends AbstractNodeMain {
 			}
 		});
 		Log.v(className, "wait");
-		while(isCalled!=1 && cnt<10){  
+		while(isCalled!=1 && cnt<10){
 			try {
 				Thread.sleep(500);  // 500ms * 10 = 5sec
 			} catch (InterruptedException e){}
@@ -150,7 +155,7 @@ public class TmsdbGetDataNode extends AbstractNodeMain {
 	}
 
 
-	//idを送信することで詳細データを取得
+	//idを送信することで詳細データを取得(nowコレクション)
 	//格納先はobj
 	public int sendInfo(TmsdbObject data){
 		if(data.getId() == 0){
@@ -160,7 +165,9 @@ public class TmsdbGetDataNode extends AbstractNodeMain {
 		Log.v(className, "getInfo");
 		int cnt = 0;
 		result = 0;
-		isCalled = 0;
+		isCalled = 0;//
+//						//この時点でobjsの中は複数タグをand検索した物品情報になる
+//
 		TmsdbGetDataRequest request = srvClient.newMessage();
 		request.getTmsdb().setId(data.getId());
 		srvClient.call(request, new ServiceResponseListener<TmsdbGetDataResponse>(){
@@ -190,7 +197,7 @@ public class TmsdbGetDataNode extends AbstractNodeMain {
 			}
 		});
 		Log.v(className, "wait");
-		while(isCalled!=1 && cnt<10){  
+		while(isCalled!=1 && cnt<10){
 			try {
 				Thread.sleep(500);  // 500ms * 10 = 5sec
 			} catch (InterruptedException e){}
@@ -234,7 +241,7 @@ public class TmsdbGetDataNode extends AbstractNodeMain {
 			}
 		});
 		Log.v(className, "wait");
-		while(isCalled!=1 && cnt<10){  
+		while(isCalled!=1 && cnt<10){
 			try {
 				Thread.sleep(500);  // 500ms * 10 = 5sec
 			} catch (InterruptedException e){}
@@ -244,7 +251,7 @@ public class TmsdbGetDataNode extends AbstractNodeMain {
 		return result;
 	}
 
-	//String tagを送るとそのタグの入った物品情報を取ってきてobjectsに格納
+	//String tagを送るとそのタグの入った物品情報を取ってきてobjectsに格納(defaultコレクション)
 	public int sendTag(String tag){
 		Log.v(className, "getBelongObject");
 		int cnt = 0;
@@ -259,7 +266,7 @@ public class TmsdbGetDataNode extends AbstractNodeMain {
 			public void onSuccess(TmsdbGetDataResponse response) {
 				Log.v(className, "onSuccess");
 				isCalled = 1;
-				if(response.getTmsdb().size()!=0){
+				if(response.getTmsdb().size()!=0){//String tagを送るとそのタグの入った物品情報を取ってきてobjectsに格納
 					for(Tmsdb tmsdb:response.getTmsdb()){
 						//							if(tmsdb.getState()==1){
 						objects.add(new TmsdbObject(tmsdb));
@@ -275,7 +282,7 @@ public class TmsdbGetDataNode extends AbstractNodeMain {
 			}
 		});
 		Log.v(className, "wait");
-		while(isCalled!=1 && cnt<10){  
+		while(isCalled!=1 && cnt<10){
 			try {
 				Thread.sleep(500);  // 500ms * 10 = 5sec
 			} catch (InterruptedException e){}
@@ -285,5 +292,31 @@ public class TmsdbGetDataNode extends AbstractNodeMain {
 		return 1;
 	}
 
+	public int sendCommand(int t_id,int r_id,int u_id,int p_id,int o_id){
+		if(!(t_id>8000&&t_id<9000)){
+			Log.v("TASK","invalid task_id:" + t_id);
+			return 0;
+		}
+		ts_reqRequest req = tms_ts_client.newMessage();
+		req.setRostime(0);
+		req.setTaskId(t_id);
+		req.setRobotId(r_id);
+		req.setUserId(u_id);
+		req.setPlaceId(p_id);
+		req.setObjectId(o_id);
+		req.setPriority(0);
 
+		tms_ts_client.call(req, new ServiceResponseListener<ts_reqResponse>(){
+			@Override
+			public void onSuccess(ts_reqResponse response){
+				Log.v("TASK","success");
+			}
+			@Override
+			public void onFailure(RemoteException e){
+				Log.v("TASK","Failure");
+				throw new RosRuntimeException(e);
+			}
+		});
+		return 1;
+	}
 }
