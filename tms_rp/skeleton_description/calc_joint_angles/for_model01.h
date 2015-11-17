@@ -92,7 +92,7 @@ int calcForModel01(
   {
     // Set data to disappear from environment
     position = Eigen::Matrix<T, 3, 1>(0.0, 0.0, 0.0);
-    rotation = Eigen::Quaternion<T>(0.0, 0.0, 0.0, 1.0);
+    rotation = Eigen::Quaternion<T>(1.0, 0.0, 0.0, 0.0);
     for (int j=0; j < kJointDoF; j++)
     {
       out[kJointName[j]] = 0.0;
@@ -133,7 +133,7 @@ int calcForModel01(
     if ( isnan(rotation.x()) )
     {
       // It happens when gets same j[SpinMid], j[SpineBase], j[HipRight] and j[HipLeft]
-      rotation = Eigen::Quaternion<T>(0.0, 0.0, 0.0, 1.0);
+      rotation = Eigen::Quaternion<T>(1.0, 0.0, 0.0, 0.0);
     }
 
     // Initialize
