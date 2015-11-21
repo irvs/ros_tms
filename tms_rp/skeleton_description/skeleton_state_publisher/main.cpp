@@ -29,8 +29,7 @@ class SkeletonsStatePublisher
 
     SkeletonsStatePublisher(
         ros::NodeHandle& nh,
-        const std::vector<KDL::Tree> kdl_forest,
-        const std::vector<urdf::Model> human_models,
+        const std::vector<KDL::Tree>& kdl_forest,
         const bool& usingDB=false);
     ~SkeletonsStatePublisher();
 
@@ -55,8 +54,7 @@ class SkeletonsStatePublisher
 //------------------------------------------------------------------------------
 SkeletonsStatePublisher::SkeletonsStatePublisher(
     ros::NodeHandle& nh,
-    const std::vector<KDL::Tree> kdl_forest,
-    const std::vector<urdf::Model> human_models,
+    const std::vector<KDL::Tree>& kdl_forest,
     const bool& usingDB) :
   nh_(nh),
   usingDB_(usingDB)
@@ -74,8 +72,7 @@ SkeletonsStatePublisher::SkeletonsStatePublisher(
   ros::Time now = ros::Time::now() + GMT;
   for (int i = 0; i < kdl_forest.size(); i++)
   {
-    robot_state_publisher::RobotStatePublisher state_pub(kdl_forest[i], human_models[i]);
-    //state_pubs_.push_back(state_pub);
+    state_pubs_.push_back(robot_state_publisher::RobotStatePublisher(kdl_forest[i]));
 
     std::stringstream tf_prefix;
     tf_prefix << "skeleton" << i+1;
@@ -212,7 +209,6 @@ int main(int argc, char **argv)
 
   // Load models
   std::vector<KDL::Tree> kdl_forest;
-  std::vector<urdf::Model> human_models;
   const std::string base_description_name("skeleton_description");
 
   kdl_forest.resize((num_of_skeletons == 0 ? 1 : num_of_skeletons));
@@ -228,11 +224,10 @@ int main(int argc, char **argv)
           (model %d)", i+1);
       return -2;
     }
-    human_models.push_back(model);
   }
 
   // Run
-  SkeletonsStatePublisher obj(nh, kdl_forest, human_models, usingDB);
+  SkeletonsStatePublisher obj(nh, kdl_forest, usingDB);
 
   obj.run();
 
