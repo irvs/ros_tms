@@ -3,6 +3,7 @@ project(tms_rc_katana)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  tms_msg_rc
 )
 
 ###################################

@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(tms_rc_smartpal_tagreader)
 
-find_package(catkin REQUIRED COMPONENTS roscpp)
+find_package(catkin REQUIRED COMPONENTS roscpp tms_msg_rc)
 
 catkin_package(
    #INCLUDE_DIRS include
-   CATKIN_DEPENDS message_runtime
+   CATKIN_DEPENDS message_runtime 
 )
 
 include_directories(
