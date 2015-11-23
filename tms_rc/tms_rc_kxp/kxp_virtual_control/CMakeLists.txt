@@ -4,6 +4,7 @@ project(tms_rc_kxp_virtual_control)
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   roscpp
+  tms_msg_rc
 )
 
 ###################################

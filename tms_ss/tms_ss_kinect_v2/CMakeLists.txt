@@ -7,6 +7,8 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   tf
   skeleton_description
+  tms_msg_ss
+  tms_msg_db
 )
 find_package(Eigen REQUIRED)
 

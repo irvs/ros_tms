@@ -10,7 +10,6 @@
   <!--<node name="skeleton_stream" pkg="tms_ss_kinect_v2" args="$(arg host_name) $(arg using_numbers)" type="skeleton_stream.py"/>-->
   <param name="using_numbers" value="$(arg using_numbers)"/>
   <node name="skeleton_integrator" pkg="tms_ss_kinect_v2" args="$(arg using_numbers)" type="skeleton_integrator" output="screen"/>
-  <!--<node name="skeleton_integrator" pkg="tms_ss_kinect_v2" args="$(arg using_numbers)" type="skeleton_integrator"/>-->
   <param name="using_db" value="$(arg using_db)"/>
   <node name="skeleton_db_stream" pkg="tms_ss_kinect_v2" type="skeleton_db_stream"/>
 
@@ -32,15 +31,7 @@
   <param name="kinect_description7"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
   <param name="kinect_description8"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
   <param name="kinect_description9"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
-  <node name="kinect_state_publisher01" pkg="skeleton_description" args="1"  type="kinect_state_publisher"/>
-  <node name="kinect_state_publisher02" pkg="skeleton_description" args="2"  type="kinect_state_publisher"/>
-  <node name="kinect_state_publisher03" pkg="skeleton_description" args="3"  type="kinect_state_publisher"/>
-  <node name="kinect_state_publisher04" pkg="skeleton_description" args="4"  type="kinect_state_publisher"/>
-  <node name="kinect_state_publisher05" pkg="skeleton_description" args="5"  type="kinect_state_publisher"/>
-  <node name="kinect_state_publisher06" pkg="skeleton_description" args="6"  type="kinect_state_publisher"/>
-  <node name="kinect_state_publisher07" pkg="skeleton_description" args="7"  type="kinect_state_publisher"/>
-  <node name="kinect_state_publisher08" pkg="skeleton_description" args="8"  type="kinect_state_publisher"/>
-  <node name="kinect_state_publisher09" pkg="skeleton_description" args="9"  type="kinect_state_publisher"/>
+  <node name="kinect_state_publisher" pkg="skeleton_description" type="kinect_state_publisher"/>
 
   <!-- For visualize box in rViz -->
   <param name="box_description"  textfile="$(find skeleton_description)/urdf/checker_box.urdf"/>
@@ -61,6 +52,4 @@
   <param name="skeleton_description12" textfile="$(find skeleton_description)/urdf/skeleton.urdf"/>
   <param name="num_of_skeletons" value="$(arg num_of_skeletons)"/>
   <node name="skeleton_state_publisher" pkg="skeleton_description" type="skeleton_state_publisher"/>
-  <node name="rviz" pkg="rviz" type="rviz"
-    args="-d $(find rostms_description)/rviz_config/skeleton_watching.rviz" respawn="true"/>
 </launch>
