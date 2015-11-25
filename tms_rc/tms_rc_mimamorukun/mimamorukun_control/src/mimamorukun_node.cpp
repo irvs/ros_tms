@@ -34,7 +34,7 @@ class MachinePose_s {
   MachinePose_s() {
     ROS_DEBUG("In Mimamorukun Constructor");
     m_Odom.header.frame_id = "/odom";
-    m_Odom.child_frame_id = "/base_link_footprint";
+    m_Odom.child_frame_id = "/base_footprint";
     m_Odom.pose.pose.position.x = 0.0;
     m_Odom.pose.pose.position.y = 0.0;
     m_Odom.pose.pose.position.z = 0.0;
@@ -213,7 +213,7 @@ void *publish_odom(void *ptr) {
   static ros::Publisher pub = nh.advertise<nav_msgs::Odometry>("odom", 1);
   // nav_msgs::Odometry tmp_odom;
   // tmp_odom.header.frame_id = "/odom";
-  // tmp_odom.child_frame_id = "/base_link_footprint";
+  // tmp_odom.child_frame_id = "/base_footprint";
   // tmp_odom.pose.pose.position.z = 0.0;
   ros::Rate r(ROS_RATE);
   while (ros::ok()) {
