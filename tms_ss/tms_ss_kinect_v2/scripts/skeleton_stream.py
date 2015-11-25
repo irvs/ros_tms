@@ -21,7 +21,8 @@ from tms_msg_ss.msg import SkeletonStreamWrapper
 import OffsetManager
 import NETWORK_SETTING
 
-
+# -----------------------------------------------------------------------------
+# Calculation of quaternion
 def q_mul(a, b):
     c = np.array([
         a[3]*b[0] + a[0]*b[3] + a[1]*b[2] - a[2]*b[1],
@@ -59,12 +60,14 @@ class SkeletonStream:
     process_list = []
     sock = None
 
+    # -------------------------------------------------------------------------
     def __init__(self, index):
         self.camera_id = index+1
         self.port = NETWORK_SETTING.PORT
         self.bufsize = 16383
         self.gotOffset = False
 
+    # -------------------------------------------------------------------------
     def __getOffset(self):
         try:
             offset = OffsetManager.OffsetManager(self.camera_id-1)
@@ -88,6 +91,7 @@ class SkeletonStream:
             print('camera ' + str(self.camera_id) +
                   ': Failed to read offset data')
 
+    # -------------------------------------------------------------------------
     def __setFromJSONToSkeleton(self, json_str):
         # Joint names for kinect v2 SDK
         static_joint_name = (
@@ -166,20 +170,21 @@ class SkeletonStream:
             self.camera.rotation.z = R[2]
             self.camera.rotation.w = R[3]
 
+    # -------------------------------------------------------------------------
     def run(self):
         # Getting offset
         self.__getOffset()
         # Getting skeleton and camera posture
         self.pub_skeleton = rospy.Publisher('skeleton_stream' +
                                             str(self.camera_id),
-                                            Skeleton, queue_size=10)
+                                            Skeleton, queue_size=1)
         self.pub_camera = rospy.Publisher('camera_posture' +
                                           str(self.camera_id),
-                                          CameraPosture, queue_size=10)
+                                          CameraPosture, queue_size=1)
         self.pub_wrapper = rospy.Publisher('skeleton_stream_wrapper' +
                                            str(self.camera_id),
                                            SkeletonStreamWrapper,
-                                           queue_size=10)
+                                           queue_size=1)
         rospy.init_node('skeleton_stream_bridge' + str(self.camera_id))
         self.freqency = rospy.Rate(10)
 
@@ -224,17 +229,13 @@ if __name__ == '__main__':
                     pid_list.append(os.fork())
                     if pid_list[-1] == 0:
                         obj = SkeletonStream(i)
-                        print('Receive from: {0}'
-                              .format(NETWORK_SETTING.IP_LIST[i]))
-                        print('Host IP: {0}'
-                              .format(localhost))
-                        print('Port: {0}'
-                              .format(NETWORK_SETTING.PORT))
                         obj.run()
                 os.wait()
             except:
                 print('Failed to bind socket')
                 closing(SkeletonStream.sock)
+                for pid in pid_list:
+                    os.kill(pid, 9)
 
     except rospy.ROSInterruptException:
         pass

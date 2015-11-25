@@ -25,8 +25,6 @@
 #include <tms_msg_db/TmsdbStamped.h>
 #include <tms_msg_db/Tmsdb.h>
 #include <tms_msg_rc/rc_robot_control.h>
-#include <geometry_msgs/PoseStamped.h>
-#include <tf/tf.h>
 
 #include "kalman-Ndof.hpp"
 
@@ -57,7 +55,6 @@ ros::Publisher db_pub;
 
 pthread_t thread_vicon;
 pthread_t thread_odom;
-pthread_t thread_pub;
 pthread_mutex_t mutex_update_kalman = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_socket = PTHREAD_MUTEX_INITIALIZER;
 
@@ -312,10 +309,10 @@ bool receiveGoalPose(tms_msg_rc::rc_robot_control::Request &req,
   return true;
 }
 
-// void receiveCmdVel(const geometry_msgs::Twist::ConstPtr &cmd_vel) {
-//   mchn_pose.tgtTwist = *cmd_vel;
-//   // spinWheel(/*cmd_vel->linear.x,cmd_vel->angular.z*/);
-// }
+void receiveCmdVel(const geometry_msgs::Twist::ConstPtr &cmd_vel) {
+  mchn_pose.tgtTwist = *cmd_vel;
+  // spinWheel(/*cmd_vel->linear.x,cmd_vel->angular.z*/);
+}
 
 void receiveJoy(const sensor_msgs::Joy::ConstPtr &joy) {
   // ROS_INFO("Rrecieve joy");
@@ -411,23 +408,6 @@ void *odom_update(void *ptr) {
   }
 }
 
-void *publish_pose(void *ptr) {
-  static ros::NodeHandle nh("~");
-  static ros::Publisher pub = nh.advertise<geometry_msgs::PoseStamped>("kalman_pose", 1);
-  geometry_msgs::PoseStamped p;
-  p.header.frame_id = "/odom";
-  p.pose.position.z = 0;
-  ros::Rate r(ROS_RATE);
-  while (ros::ok()) {
-    p.pose.position.x = mchn_pose.pos_vicon.x;
-    p.pose.position.y = mchn_pose.pos_vicon.y;
-    p.pose.orientation = tf::createQuaternionMsgFromYaw(mchn_pose.pos_vicon.theta);
-    p.header.stamp = ros::Time::now();
-    pub.publish(p);
-    r.sleep();
-  }
-}
-
 int main(int argc, char **argv) {
   ROS_INFO("wc_controller");
   ros::init(argc, argv, "wc_controller");
@@ -491,11 +471,6 @@ int main(int argc, char **argv) {
   }
 
   if (pthread_create(&thread_odom, NULL, odom_update, NULL)) {
-    cout << "error creating thread." << endl;
-    abort();
-  }
-
-  if (pthread_create(&thread_pub, NULL, publish_pose, NULL)) {
     cout << "error creating thread." << endl;
     abort();
   }

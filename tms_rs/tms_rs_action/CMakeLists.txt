@@ -5,6 +5,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp 
   geometry_msgs 
   nav_msgs
+  tms_msg_rs
 )
 
 ###################################

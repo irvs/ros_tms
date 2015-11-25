@@ -7,6 +7,7 @@ project(tms_ss_ods_hshistogram)
 find_package(catkin REQUIRED COMPONENTS
   pcl_ros
   roscpp
+  tms_msg_ss
 )
 
 ## System dependencies are found with CMake's conventions

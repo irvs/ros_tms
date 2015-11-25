@@ -4,6 +4,7 @@ project(tms_rs_greeting_demo)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  tms_msg_rs
 )
 
 ## System dependencies are found with CMake's conventions

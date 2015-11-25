@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(tms_rc_smartpal_control_test)
 
-find_package(catkin REQUIRED COMPONENTS roscpp)
+find_package(catkin REQUIRED COMPONENTS roscpp tms_msg_rc)
 
 catkin_package()
 

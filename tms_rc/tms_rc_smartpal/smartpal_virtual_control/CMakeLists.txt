@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf 
   geometry_msgs 
   nav_msgs
+  tms_msg_rc
 )
 find_package(Boost REQUIRED COMPONENTS system)
 

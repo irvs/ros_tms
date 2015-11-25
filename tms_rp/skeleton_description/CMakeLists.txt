@@ -5,8 +5,10 @@ project(skeleton_description)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  tf
   cmake_modules
   robot_state_publisher
+  tms_msg_ss
 )
 find_package(Eigen REQUIRED)
 
