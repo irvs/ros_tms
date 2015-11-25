@@ -10,6 +10,7 @@
 #include <string>
 
 #include <tf/tf.h>
+#include <tf/transform_broadcaster.h>
 
 #define ROS_RATE 10
 
@@ -19,13 +20,14 @@ ClientSocket client_socket("", 54300);
 const int ENC_MAX = 3932159;
 const int SPEED_MAX = 32767;
 const float DIST_PER_PULSE = 0.552486;  // mm par pulse
-const int WHEEL_DIST = 570;             // 533;
+const int WHEEL_DIST = 544;
+// const int WHEEL_DIST = 570;             // 533;
+
 
 // long int ENC_L = 0;
 // long int ENC_R = 0;
 
 pthread_t thread_odom;
-pthread_t thread_pub;
 pthread_mutex_t mutex_socket = PTHREAD_MUTEX_INITIALIZER;
 
 class MachinePose_s {
@@ -40,30 +42,17 @@ class MachinePose_s {
     m_Odom.pose.pose.position.z = 0.0;
     m_Odom.pose.pose.orientation.x = 0.0;
     m_Odom.pose.pose.orientation.y = 0.0;
-    m_Odom.pose.pose.orientation.z = 1.0;
-    m_Odom.pose.pose.orientation.w = 0.0;
-    // this->pos_odom.x = 0.0;
-    // this->pos_odom.y = 0.0;
-    // this->pos_odom.theta = 0.0;
-    // this->vel_odom.x = 0.0;
-    // this->vel_odom.y = 0.0;
-    // this->vel_odom.theta = 0.0;
+    m_Odom.pose.pose.orientation.z = 0.0;
+    m_Odom.pose.pose.orientation.w = 1.0;
   };
   ~MachinePose_s() {};
   void updateOdom();
-  bool goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/);
   bool postPose();
   nav_msgs::Odometry m_Odom;
   geometry_msgs::Twist tgtTwist;
-  // geometry_msgs::Pose2D pos_odom;
-  // geometry_msgs::PoseStamped pos_odom;
-  // geometry_msgs::Twist    vel_odom;
-  // geometry_msgs::Pose2D vel_odom;
 
-  // void setCurrentPosition(geometry_msgs::Pose2D pose);
   void setCurrentPosition(geometry_msgs::Pose pose);
   geometry_msgs::Pose2D getCurrentPosition();
-  // bool goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/);
 
 } mchn_pose;
 
@@ -137,17 +126,9 @@ void MachinePose_s::updateOdom() {
   double dY = dL * sin(tf::getYaw(m_Odom.pose.pose.orientation) + POS_SIGMA);
   ENC_R_old = ENC_R;  //前回のエンコーダーの値を記録
   ENC_L_old = ENC_L;
-  // mchn_pose.pos_odom.x += dX;
-  // mchn_pose.pos_odom.y += dY;
-  // mchn_pose.pos_odom.theta += POS_SIGMA;
-  // mchn_pose.pos_odom.theta = nomalizeAng(mchn_pose.pos_odom.theta);
-  // mchn_pose.vel_odom.x = dX;
-  // mchn_pose.vel_odom.y = dY;
-  // mchn_pose.vel_odom.theta = POS_SIGMA;
   m_Odom.pose.pose.position.x += MM2M(dX);
   m_Odom.pose.pose.position.y += MM2M(dY);
-  // m_Odom.pose.pose.orientation += POS_SIGMA;
-  // m_Odom.pos_odom.theta = nomalizeAng(mchn_pose.pos_odom.theta);
+
   tf::Quaternion q1;
   tf::quaternionMsgToTF(m_Odom.pose.pose.orientation, q1);
   tf::Quaternion q2;
@@ -198,34 +179,34 @@ void receiveCmdVel(const geometry_msgs::Twist::ConstPtr &cmd_vel) {
   // spinWheel(/*cmd_vel->linear.x,cmd_vel->angular.z*/);
 }
 
+void pub_tf(){
+  static tf::TransformBroadcaster broadcaster;
+  geometry_msgs::TransformStamped ts;
+  ts.header.frame_id = mchn_pose.m_Odom.header.frame_id;
+  ts.child_frame_id = mchn_pose.m_Odom.child_frame_id;
+  ts.header.stamp = ros::Time::now();
+  ts.transform.translation.x = mchn_pose.m_Odom.pose.pose.position.x;
+  ts.transform.translation.y = mchn_pose.m_Odom.pose.pose.position.y;
+  ts.transform.translation.z = mchn_pose.m_Odom.pose.pose.position.z;
+  // ts.transform.translation.x = pose.x();
+  // ts.transform.translation.y = pose.y();
+  // ts.transform.translation.z = 0.0;
+  ts.transform.rotation = mchn_pose.m_Odom.pose.pose.orientation;
+  broadcaster.sendTransform(ts);
+}
+
+void pub_odom(){
+  static ros::NodeHandle nh;
+  static ros::Publisher pub = nh.advertise<nav_msgs::Odometry>("odom", 100);
+  pub.publish(mchn_pose.m_Odom);
+}
+
 void *odom_update(void *ptr) {
-  // ros::Rate r(30);
   ros::Rate r(ROS_RATE);
   while (ros::ok()) {
     mchn_pose.updateOdom();
-    r.sleep();
-  }
-}
-
-void *publish_odom(void *ptr) {
-  static ros::NodeHandle nh("~");
-  // static ros::Publisher pub = nh.advertise<geometry_msgs::PoseStamped>("kalman_pose", 1);
-  static ros::Publisher pub = nh.advertise<nav_msgs::Odometry>("odom", 1);
-  // nav_msgs::Odometry tmp_odom;
-  // tmp_odom.header.frame_id = "/odom";
-  // tmp_odom.child_frame_id = "/base_footprint";
-  // tmp_odom.pose.pose.position.z = 0.0;
-  ros::Rate r(ROS_RATE);
-  while (ros::ok()) {
-    // tmp_odom.pose.pose.position.x = mchn_pose.pos_odom.x;
-    // tmp_odom.pose.pose.position.y = mchn_pose.pos_odom.y;
-    // tmp_odom.header.stamp = ros::Time::now();
-    // tmp_odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(mchn_pose.pos_odom.theta);
-    // tmp_odom.twist.twist.linear.x = 0.0;
-    // tmp_odom.twist.twist.linear.y = 0.0;
-    // tmp_odom.twist.twist.angular.z = 0.0;
-    // pub.publish(tmp_odom);
-    pub.publish(mchn_pose.m_Odom);
+    pub_odom();
+    pub_tf();
     r.sleep();
   }
 }
@@ -284,11 +265,6 @@ int main(int argc, char **argv) {
     abort();
   }
 
-  if (pthread_create(&thread_pub, NULL, publish_odom, NULL)) {
-    cout << "error creating thread." << endl;
-    abort();
-  }
-
   ros::Rate r(ROS_RATE);
   while (n.ok()) {
     spinWheel();
@@ -297,8 +273,6 @@ int main(int argc, char **argv) {
   }
   return (0);
 }
-
-/*****************************************************************************************************/
 
 // void MachinePose_s::setCurrentPosition(geometry_msgs::Pose2D pose) { pos_odom = pose; }
 void MachinePose_s::setCurrentPosition(geometry_msgs::Pose pose) {

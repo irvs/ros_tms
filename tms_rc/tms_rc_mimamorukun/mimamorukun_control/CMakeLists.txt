@@ -4,6 +4,8 @@ project(tms_rc_mimamorukun_control)
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   roscpp
+  nav_msgs
+  tf
 )
 
 ###################################
@@ -12,8 +14,9 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES kobuki_virtual_control
-  CATKIN_DEPENDS geometry_msgs roscpp tms_msg_db tms_msg_rc
+  CATKIN_DEPENDS geometry_msgs roscpp tms_msg_db tms_msg_rc nav_msgs
   DEPENDS system_lib
+  CATKIN_DEPENDS tf
 )
 
 ###########
