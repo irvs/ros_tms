@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
              roscpp
              std_msgs
              cv_bridge
+             tms_msg_ss
              )
 
 ###################################

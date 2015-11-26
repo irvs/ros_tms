@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   kobuki_msgs
   roscpp
   std_msgs
+  tms_msg_rc
 )
 
 ###################################

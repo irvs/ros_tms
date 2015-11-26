@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(tms_ts_ts)
 
-find_package(catkin REQUIRED COMPONENTS nodelet roscpp rospy std_msgs)
+find_package(catkin REQUIRED COMPONENTS nodelet roscpp rospy std_msgs tms_msg_ts nodelet)
 find_package(Boost REQUIRED COMPONENTS system)
-find_package(catkin REQUIRED COMPONENTS nodelet)
 
 ###################################
 ## catkin specific configuration ##
@@ -11,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS nodelet)
 catkin_package(
    INCLUDE_DIRS include
    LIBRARIES tms_ts_nodelet
-   CATKIN_DEPENDS roscpp nodelet
+   CATKIN_DEPENDS roscpp nodelet tms_msg_ts
 #  DEPENDS system_lib
 )
 

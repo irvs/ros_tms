@@ -6,6 +6,7 @@ find_package(catkin REQUIRED
   roslib
   std_msgs
   visualization_msgs
+  tms_msg_db
 )
 
 ## System dependencies are found with CMake's conventions

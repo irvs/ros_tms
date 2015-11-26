@@ -3,6 +3,7 @@ project(tms_rc_smartpal_tts)
 find_package(catkin REQUIRED COMPONENTS 
   roscpp 
   std_msgs
+  tms_msg_rc
 )
 
 ###################################
