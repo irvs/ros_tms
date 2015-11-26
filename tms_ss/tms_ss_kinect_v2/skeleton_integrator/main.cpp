@@ -278,8 +278,9 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
   }
 
   // Choose better data
-  if (msg->camera_number == storage_evaluation[index].first ||
-      dot_skeleton_camera <= storage_evaluation[index].second)
+  if ((msg->camera_number == storage_evaluation[index].first ||
+      dot_skeleton_camera <= storage_evaluation[index].second) &&
+      table_ref)
   {
     out.data[index] = integrated_skeleton;
     tracking_validity[index] = 15;  // reflesh validity

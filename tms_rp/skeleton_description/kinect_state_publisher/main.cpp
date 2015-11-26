@@ -89,7 +89,7 @@ KinectStatePublisher::~KinectStatePublisher()
 //------------------------------------------------------------------------------
 void KinectStatePublisher::callback(const tms_msg_ss::SkeletonStreamWrapper::ConstPtr& msg)
 {
-	int camera_num = (int)msg->camera_number;
+	int camera_num = (int)msg->camera_number-1;
 
 	ROS_INFO("kinect%d: Received posture.", camera_num);
 
