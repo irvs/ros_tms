@@ -64,11 +64,13 @@ class SkeletonIntegrator
     void run();
   private:
     ros::NodeHandle& nh_;
-    std::vector<int> array;
+    std::vector<int> array;  // using camera's id array
     tms_msg_ss::SkeletonArray out;
     int tracked_skeleton_num_;
     int tracking_validity[MAX_USERS];
+
     std::vector<std::map<int, bool> > bFaceStateTable;  // [user_index, [camera_id, is_front?]]
+    std::vector<std::pair<int, float> > storage_evaluation;  // [user_index, [camera_id, value]]
 
     void listenSkeletonStream();
 
@@ -92,6 +94,7 @@ SkeletonIntegrator::SkeletonIntegrator(const std::vector<int> &camera, ros::Node
     {
       bFaceStateTable[i][*it] = false;
     }
+    storage_evaluation.push_back(std::pair<int, float>(-1, 1));
   }
   return;
 }
@@ -205,6 +208,22 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
   // Update skeleton state
   bool &table_ref = bFaceStateTable[index][msg->camera_number];
   integrated_skeleton.user_id = user_id;
+
+  // Calculate skeleton direction (front is y)
+  Eigen::Vector3f tmp_x(
+      skeleton.position[HipRight].x - skeleton.position[HipLeft].x,
+      skeleton.position[HipRight].y - skeleton.position[HipLeft].y,
+      skeleton.position[HipRight].z - skeleton.position[HipLeft].z);
+  Eigen::Vector3f tmp_z(
+      skeleton.position[SpineMid].x - skeleton.position[SpineBase].x,
+      skeleton.position[SpineMid].y - skeleton.position[SpineBase].y,
+      skeleton.position[SpineMid].z - skeleton.position[SpineBase].z);
+  Eigen::Vector3f skeleton_direction_cam;
+  Eigen::Vector3f camera_direction_cam;
+  skeleton_direction_cam = (tmp_z.cross(tmp_x)).normalized();
+  camera_direction_cam = Eigen::Vector3f::UnitZ();
+  float dot_skeleton_camera = skeleton_direction_cam.dot(camera_direction_cam);
+
   if (msg->face_state == 2)
   {
     // Log face state and storage as valid skeleton
@@ -219,21 +238,8 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
           integrated_skeleton.orientation[SpineBase].x,
           integrated_skeleton.orientation[SpineBase].y,
           integrated_skeleton.orientation[SpineBase].z);
-      Eigen::Vector3f skeleton_direction_cam;
-      Eigen::Vector3f camera_direction_cam;
-      // Calculate skeleton direction (front is y)
-      Eigen::Vector3f tmp_x(
-          skeleton.position[HipRight].x - skeleton.position[HipLeft].x,
-          skeleton.position[HipRight].y - skeleton.position[HipLeft].y,
-          skeleton.position[HipRight].z - skeleton.position[HipLeft].z);
-      Eigen::Vector3f tmp_z(
-          skeleton.position[SpineMid].x - skeleton.position[SpineBase].x,
-          skeleton.position[SpineMid].y - skeleton.position[SpineBase].y,
-          skeleton.position[SpineMid].z - skeleton.position[SpineBase].z);
-      skeleton_direction_cam = (tmp_z.cross(tmp_x)).normalized();
-      camera_direction_cam = Eigen::Vector3f::UnitZ();
       // Check that skeleton is facing the camera
-      if (skeleton_direction_cam.dot(camera_direction_cam) <= cos(FRONT_ANGLE_RANGE*M_PI/180))
+      if (dot_skeleton_camera <= cos(FRONT_ANGLE_RANGE*M_PI/180))
       {
         // storage as valid skeleton
       }
@@ -270,8 +276,17 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
       }
     }
   }
-  out.data[index] = integrated_skeleton;
-  tracking_validity[index] = 15;  // reflesh validity
+
+  // Choose better data
+  if (msg->camera_number == storage_evaluation[index].first ||
+      dot_skeleton_camera <= storage_evaluation[index].second)
+  {
+    out.data[index] = integrated_skeleton;
+    tracking_validity[index] = 15;  // reflesh validity
+    // Update evaluation
+    storage_evaluation[index].first = msg->camera_number;
+    storage_evaluation[index].second = dot_skeleton_camera;
+  }
 
   return;
 }
