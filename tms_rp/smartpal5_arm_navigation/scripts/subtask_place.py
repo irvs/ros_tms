@@ -56,6 +56,8 @@ class SubTaskPlace:
 
         print(target.name)
 
+        scene = PlanningSceneInterface()
+
         # Create a publisher for displaying gripper poses
         self.gripper_pose_pub = rospy.Publisher('gripper_pose', PoseStamped)
         # Create a dictionary to hold object colors
@@ -69,8 +71,8 @@ class SubTaskPlace:
         end_effector_link = arm.get_end_effector_link()
 
         # Allow some leeway in position (meters) and orientation (radians)
-        arm.set_goal_position_tolerance(0.05)
-        arm.set_goal_orientation_tolerance(0.1)
+        arm.set_goal_position_tolerance(0.1)
+        arm.set_goal_orientation_tolerance(0.2)
 
         # Allow replanning to increase the odds of a solution
         arm.allow_replanning(True)
@@ -103,6 +105,10 @@ class SubTaskPlace:
         print(target_pose.pose.position.x)
         print(target_pose.pose.position.y)
         print(target_pose.pose.position.z)
+        print(target_pose.pose.orientation.x)
+        print(target_pose.pose.orientation.y)
+        print(target_pose.pose.orientation.z)
+        print(target_pose.pose.orientation.w)
 
         # Initialize the grasp pose to the target pose
         place_pose = target_pose
@@ -121,7 +127,9 @@ class SubTaskPlace:
                 print(result)
                 if result == MoveItErrorCodes.SUCCESS:
                     break
-            rospy.sleep(0.2)
+            # rospy.sleep(0.2)
+
+        scene.remove_world_object(str(req.object_id))
 
         ret = rp_placeResponse()
         # If the pick was successful, attempt the place operation
@@ -143,44 +151,35 @@ class SubTaskPlace:
         place = init_pose
 
         # A list of x shifts (meters) to try
-        x_vals = [0, 0.005, 0.01, 0.015, -0.005, -0.01, -0.015]
+        x_vals = [0, 0.01, 0.02, -0.01, -0.02]
 
         # A list of y shifts (meters) to try
-        y_vals = [0, 0.005, 0.01, 0.015, -0.005, -0.01, -0.015]
+        y_vals = [0, 0.01, 0.02, -0.01, -0.02]
 
-        pitch_vals = [0]
+        roll_vals = [0]#,1.57079632,-1.57079632,3.14159265]
+
+        pitch_vals = [0]#,1.57079632,-1.57079632,3.14159265]
 
         # A list of yaw angles to try
-        yaw_vals = [0]
+        yaw_vals = [0]#,1.57079632,-1.57079632,3.14159265]
 
         # A list to hold the places
         places = []
 
         # Generate a place pose for each angle and translation
-        for y in yaw_vals:
-            for p in pitch_vals:
-                for y in y_vals:
-                    for x in x_vals:
-                        place.pose.position.x = init_pose.pose.position.x + x
-                        place.pose.position.y = init_pose.pose.position.y + y
+        for y in y_vals:
+            for x in x_vals:
+                place.pose.position.x = init_pose.pose.position.x + x
+                place.pose.position.y = init_pose.pose.position.y + y
 
-                        # Create a quaternion from the Euler angles
-                        # q = quaternion_from_euler(0, p, y)
+                # q = quaternion_from_euler(0, p, yaw)
+                # place.pose.orientation.x = init_pose.pose.orientation.x
+                # place.pose.orientation.y = init_pose.pose.orientation.y
+                # place.pose.orientation.z = init_pose.pose.orientation.z
+                # place.pose.orientation.w = init_pose.pose.orientation.w
 
-                        # # Set the place pose orientation accordingly
-                        # place.pose.orientation.x = q[0]
-                        # place.pose.orientation.y = q[1]
-                        # place.pose.orientation.z = q[2]
-                        # place.pose.orientation.w = q[3]
-
-                        q = quaternion_from_euler(0, p, y)
-                        place.pose.orientation.x = q[0]
-                        place.pose.orientation.y = q[1]
-                        place.pose.orientation.z = q[2]
-                        place.pose.orientation.w = q[3]
-
-                        # Append this place pose to the list
-                        places.append(deepcopy(place))
+                # Append this place pose to the list
+                places.append(deepcopy(place))
 
         # Return the list
         return places

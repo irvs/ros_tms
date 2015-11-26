@@ -86,43 +86,43 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 15 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="apache_xmlrpc_common-0.2.1" level="project" />
-    <orderEntry type="library" exported="" name="rosgraph_msgs-1.11.1" level="project" />
-    <orderEntry type="library" exported="" name="dnsjava-2.1.1" level="project" />
+    <orderEntry type="library" exported="" name="std_msgs-0.5.9" level="project" />
+    <orderEntry type="library" exported="" name="tms_msg_db-1.0.2" level="project" />
+    <orderEntry type="library" exported="" name="apache_xmlrpc_client-0.2.1" level="project" />
+    <orderEntry type="library" exported="" name="ws-commons-util-1.0.1" level="project" />
+    <orderEntry type="library" exported="" name="support-v4-21.0.3" level="project" />
+    <orderEntry type="library" exported="" name="nav_msgs-1.11.7" level="project" />
+    <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.httpclient-3.1.0" level="project" />
+    <orderEntry type="library" exported="" name="actionlib_msgs-1.11.7" level="project" />
+    <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.io-1.4.0" level="project" />
+    <orderEntry type="library" exported="" name="apache_xmlrpc_server-0.2.1" level="project" />
     <orderEntry type="library" exported="" name="rosjava_test_msgs-0.2.1" level="project" />
-    <orderEntry type="library" exported="" name="visualization_msgs-1.11.7" level="project" />
-    <orderEntry type="library" exported="" name="commons-pool-1.6" level="project" />
+    <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.logging-1.1.1" level="project" />
     <orderEntry type="library" exported="" name="geometry_msgs-1.11.7" level="project" />
+    <orderEntry type="library" exported="" name="apache_xmlrpc_common-0.2.1" level="project" />
+    <orderEntry type="library" exported="" name="tms_msg_ts-1.0.2" level="project" />
+    <orderEntry type="library" exported="" name="gradle_plugins-0.2.1" level="project" />
+    <orderEntry type="library" exported="" name="tf2_msgs-0.5.9" level="project" />
+    <orderEntry type="library" exported="" name="guava-12.0" level="project" />
+    <orderEntry type="library" exported="" name="jsr305-1.3.9" level="project" />
+    <orderEntry type="library" exported="" name="android_10-0.2.0" level="project" />
+    <orderEntry type="library" exported="" name="commons-pool-1.6" level="project" />
+    <orderEntry type="library" exported="" name="netty-3.5.2.Final" level="project" />
+    <orderEntry type="library" exported="" name="rosjava-0.2.1" level="project" />
+    <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.codec-1.3.0" level="project" />
+    <orderEntry type="library" exported="" name="visualization_msgs-1.11.7" level="project" />
     <orderEntry type="library" exported="" name="message_generation-0.2.1" level="project" />
+    <orderEntry type="library" exported="" name="dnsjava-2.1.1" level="project" />
     <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.net-2.0.0" level="project" />
     <orderEntry type="library" exported="" name="rosjava_geometry-0.2.1" level="project" />
-    <orderEntry type="library" exported="" name="nyartoolkitandroid" level="project" />
-    <orderEntry type="library" exported="" name="jsr305-1.3.9" level="project" />
-    <orderEntry type="library" exported="" name="rosjava-0.2.1" level="project" />
-    <orderEntry type="library" exported="" name="nav_msgs-1.11.7" level="project" />
-    <orderEntry type="library" exported="" name="sensor_msgs-1.11.7" level="project" />
-    <orderEntry type="library" exported="" name="android_10-0.2.0" level="project" />
-    <orderEntry type="library" exported="" name="android_15-0.2.0" level="project" />
-    <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.codec-1.3.0" level="project" />
-    <orderEntry type="library" exported="" name="mysql-connector-java-5.1.34-bin" level="project" />
-    <orderEntry type="library" exported="" name="support-v4-21.0.3" level="project" />
-    <orderEntry type="library" exported="" name="apache_xmlrpc_client-0.2.1" level="project" />
-    <orderEntry type="library" exported="" name="guava-12.0" level="project" />
-    <orderEntry type="library" exported="" name="tms_msg_db-1.0.2" level="project" />
-    <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.logging-1.1.1" level="project" />
-    <orderEntry type="library" exported="" name="ws-commons-util-1.0.1" level="project" />
-    <orderEntry type="library" exported="" name="apache_xmlrpc_server-0.2.1" level="project" />
-    <orderEntry type="library" exported="" name="gradle_plugins-0.2.1" level="project" />
-    <orderEntry type="library" exported="" name="tms_msg_ts-1.0.2" level="project" />
-    <orderEntry type="library" exported="" name="std_msgs-0.5.9" level="project" />
     <orderEntry type="library" exported="" name="sanmoku-feature-ex-0.0.1" level="project" />
-    <orderEntry type="library" exported="" name="tf2_msgs-0.5.9" level="project" />
-    <orderEntry type="library" exported="" name="actionlib_msgs-1.11.7" level="project" />
+    <orderEntry type="library" exported="" name="mysql-connector-java-5.1.34-bin" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-21.0.3" level="project" />
-    <orderEntry type="library" exported="" name="netty-3.5.2.Final" level="project" />
-    <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.io-1.4.0" level="project" />
-    <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.lang-2.4.0" level="project" />
+    <orderEntry type="library" exported="" name="rosgraph_msgs-1.11.1" level="project" />
+    <orderEntry type="library" exported="" name="nyartoolkitandroid" level="project" />
     <orderEntry type="library" exported="" name="diagnostic_msgs-1.11.7" level="project" />
-    <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.httpclient-3.1.0" level="project" />
+    <orderEntry type="library" exported="" name="android_15-0.2.0" level="project" />
+    <orderEntry type="library" exported="" name="sensor_msgs-1.11.7" level="project" />
+    <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.lang-2.4.0" level="project" />
   </component>
 </module>

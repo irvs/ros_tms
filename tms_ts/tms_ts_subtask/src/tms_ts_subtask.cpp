@@ -1034,7 +1034,6 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
 
           if (subtask_pick_client.call(srv))
           {
-            nh1.setParam("/sp5_grasping_object_id",sd.arg_type);
             ROS_INFO("Successed to get grasp poses ID:%d",sd.arg_type);
           }
           else
@@ -1148,42 +1147,50 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
   {
     case 2003:
       ROS_INFO("ID:%d is selected", sd.robot_id);
-      nh1.getParam("/sp5_grasping_object_id",grasping_id);
-      ROS_INFO("grasping_id is %d",grasping_id);
       break;
     default:
       ROS_ERROR("An illegal robot id");
       return false;
   }
 
+  db_srv.request.tmsdb.id = sd.robot_id;
+
+  if(get_data_client_.call(db_srv)){
+    std::string note = db_srv.response.tmsdb[0].note;
+    ROS_INFO("note = %s",note.c_str());
+    std::vector<std::string> v_note;
+    v_note.clear();
+    boost::split(v_note,note,boost::is_any_of(";"));
+
+    for(int i=0;i<v_note.size(); i++)
+    {
+      std::vector<std::string> v_v_note;
+      v_v_note.clear();
+      boost::split(v_v_note,v_note.at(i),boost::is_any_of("="));
+      if(v_v_note.at(0)=="grasping"){
+        std::stringstream ss;
+        ss << v_v_note.at(1);
+        ss >> grasping_id;
+        ROS_INFO("grasping_id:%d",grasping_id);
+        break;
+      }
+    }
+
+    if(grasping_id==0){
+      s_srv.request.error_msg = "cannot found grasping_id";
+      state_client.call(s_srv);
+      return false;
+    }
+  }
+  else{
+    s_srv.request.error_msg = "failed get object id";
+    state_client.call(s_srv);
+    return false;
+  }
+
 
   if(sd.arg_type > 1000 && sd.arg_type < 2000) //person
   {
-    // db_srv.request.tmsdb.id = sd.robot_id;
-    // db_srv.request.tmsdb.sensor = 3001;
-    // if(sd.type == false)
-    //   db_srv.request.tmsdb.sensor = 3005;
-    //
-    // if(get_data_client_.call(db_srv))
-    // {
-    //   double robot_x = db_srv.response.tmsdb[0].x;
-    //   double robot_y = db_srv.response.tmsdb[0].y;
-    //   double robot_yaw = db_srv.response.tmsdb[0].ry;
-    //
-    //   srv.request.object_id  = grasping_id;
-    //
-    //   srv.request.x = robot_x + 0.55 * cos(robot_yaw) - 0.2 * sin(robot_yaw);
-    //   srv.request.y = robot_y + 0.55 * sin(robot_yaw) + 0.2 * cos(robot_yaw);
-    //   srv.request.z = 0.88;
-    //   srv.request.roll = 0;
-    //   srv.request.pitch = 0;
-    //   srv.request.yaw = 0;
-    //   ROS_INFO("goal(%f,%f,%f)",srv.request.x,srv.request.y,srv.request.z);
-    // }
-    // else{
-    //   ROS_ERROR("failed to get data");
-    //   return false;
-    // }
     switch (sd.robot_id)
     {
       case 2002: // for smartpal simulation
@@ -1215,7 +1222,6 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
           if (subtask_arm_move_client.call(srv))
           {
             ROS_INFO("Successed arm_move(gripper_open)");
-            nh1.setParam("/sp5_grasping_object_id",0);
           }
           else
           {
@@ -1259,6 +1265,48 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
       s_srv.request.error_msg = "Unsupported robot in release function";
       state_client.call(s_srv);
       return false;
+    }
+  }
+  else if(sd.arg_type>6000&&sd.arg_type<7000){
+    switch(sd.robot_id){
+      case 2002:
+      {
+
+      }
+      case 2003:
+      {
+        tms_msg_rp::rp_place srv;
+        srv.request.object_id = 7001;
+        srv.request.x = 11.75;
+        srv.request.y = 3.45;
+        srv.request.z = 0.88;
+        srv.request.roll = 0.0;
+        srv.request.pitch = 0.0;
+        srv.request.yaw = 1.57079632;
+        if(subtask_place_client.call(srv))
+        {
+          ROS_INFO("Successed place action");
+        }
+        else{
+          s_srv.request.error_msg = "failed place action";
+          state_client.call(s_srv);
+          return false;
+        }
+
+        tms_msg_rp::rp_arm_move am_srv;
+        am_srv.request.move_id = NEUTRAL;
+
+        if (subtask_arm_move_client.call(am_srv))
+        {
+          ROS_INFO("Successed arm_move(neutral)");
+        }
+        else
+        {
+          s_srv.request.error_msg = "failed arm_move(neutral)";
+          state_client.call(s_srv);
+          return false;
+        }
+      }
     }
   }
   else{

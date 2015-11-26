@@ -118,6 +118,8 @@ double g_joint_acceleration = 10.0; // Acceleration (now deg/s^2)
 bool grasping = false;
 bool is_grasp = false;
 
+int grasping_object_id = 0;
+
 int g_oid;
 double g_ox;
 double g_oy;
@@ -721,6 +723,11 @@ void RobotDataUpdate()
     // lumba_low, lumba_high, jR[0]...[6], gripper_right, jL[0]...[6], gripper_left
     current_pos_data.joint = ss.str();
 
+    std::stringstream ss2;
+    ss2 << "grasping=" << grasping_object_id;
+
+    current_pos_data.note = ss2.str();
+
     db_msg.tmsdb.push_back(current_pos_data);
     pose_publisher.publish(db_msg);
 
@@ -811,6 +818,7 @@ void ObjectDataUpdate(const moveit_msgs::PlanningScene& msg)
       pose_publisher.publish(db_msg);
 
       is_grasp = true;
+      grasping_object_id = g_oid;
       printf("grasped object id:%d (%0.1f,%0.1f,%0.1f)\n",g_oid,g_ox,g_oy,g_oz);
     }
     else{
@@ -819,6 +827,8 @@ void ObjectDataUpdate(const moveit_msgs::PlanningScene& msg)
   }
   if(is_grasp == true && msg.world.collision_objects.size() != 0 && msg.world.collision_objects[0].primitive_poses.size() != 0){ // released object
     is_grasp = false;
+    grasping_object_id = 0;
+
     int object_id = atoi(msg.world.collision_objects[0].id.c_str());
 
     g_oid = object_id;
