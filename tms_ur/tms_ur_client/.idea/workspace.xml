@@ -145,8 +145,34 @@
             <entry file="file://$PROJECT_DIR$/tms_ur_sanmoku/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_sanmoku/urclientactivity/TmsUrSanmoku.java">
               <provider selected="true" editor-type-id="text-editor">
                 <state vertical-scroll-proportion="0.0">
-                  <caret line="1182" column="32" selection-start-line="1182" selection-start-column="32" selection-end-line="1182" selection-end-column="32" />
-                  <folding />
+                  <caret line="1178" column="0" selection-start-line="1178" selection-start-column="0" selection-end-line="1178" selection-end-column="0" />
+                  <folding>
+                    <element signature="e#0#39383#0" expanded="false" />
+                    <element signature="imports" expanded="false" />
+                    <element signature="e#13675#13688#0" expanded="false" />
+                    <element signature="e#17450#18292#0" expanded="false" />
+                    <element signature="e#18291#18292#0" expanded="false" />
+                    <element signature="e#18328#18701#0" expanded="false" />
+                    <element signature="e#18700#18701#0" expanded="false" />
+                    <element signature="e#19217#19244#1" expanded="false" />
+                    <element signature="e#24832#25202#0" expanded="false" />
+                    <element signature="e#25201#25202#0" expanded="false" />
+                    <element signature="e#25932#25933#0" expanded="false" />
+                    <element signature="e#25965#25966#0" expanded="false" />
+                    <element signature="e#26639#26682#0" expanded="false" />
+                    <element signature="e#26688#26734#0" expanded="false" />
+                    <element signature="e#28510#28511#0" expanded="false" />
+                    <element signature="e#28541#28542#0" expanded="false" />
+                    <element signature="e#29734#29747#0" expanded="false" />
+                    <element signature="e#31772#31780#0" expanded="false" />
+                    <element signature="e#32433#32441#0" expanded="false" />
+                    <element signature="e#32491#32499#0" expanded="false" />
+                    <element signature="e#32550#32558#0" expanded="false" />
+                    <element signature="e#32607#32615#0" expanded="false" />
+                    <element signature="e#32665#32673#0" expanded="false" />
+                    <element signature="e#34578#34591#0" expanded="false" />
+                    <element signature="e#35495#35508#0" expanded="false" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -154,9 +180,11 @@
           <file leaf-file-name="TagAnalyzer.java" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tms_ur_sanmoku/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_sanmoku/tag/TagAnalyzer.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="1.1816193">
-                  <caret line="105" column="13" selection-start-line="105" selection-start-column="13" selection-end-line="105" selection-end-column="13" />
-                  <folding />
+                <state vertical-scroll-proportion="0.2425107">
+                  <caret line="101" column="13" selection-start-line="101" selection-start-column="13" selection-end-line="101" selection-end-column="13" />
+                  <folding>
+                    <element signature="imports" expanded="false" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -202,7 +230,7 @@
           <file leaf-file-name="TmsdbGetDataNode.java" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tms_ur_sanmoku/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_sanmoku/srv/TmsdbGetDataNode.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.6367615">
+                <state vertical-scroll-proportion="0.40082645">
                   <caret line="287" column="39" selection-start-line="287" selection-start-column="39" selection-end-line="287" selection-end-column="39" />
                   <folding>
                     <element signature="imports" expanded="false" />
@@ -2397,10 +2425,10 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/tms_ur_sanmoku/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_sanmoku/tag/TagAnalyzer.java" />
         <option value="$PROJECT_DIR$/tms_ur_sanmoku/build.gradle" />
         <option value="$PROJECT_DIR$/tms_ur_sanmoku/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_sanmoku/srv/TmsdbGetDataNode.java" />
         <option value="$PROJECT_DIR$/tms_ur_sanmoku/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_sanmoku/urclientactivity/TmsUrSanmoku.java" />
+        <option value="$PROJECT_DIR$/tms_ur_sanmoku/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_sanmoku/tag/TagAnalyzer.java" />
       </list>
     </option>
   </component>
@@ -2418,10 +2446,10 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="65" />
+    <option name="x" value="1665" />
     <option name="y" value="-4" />
-    <option name="width" value="1535" />
-    <option name="height" value="904" />
+    <option name="width" value="1215" />
+    <option name="height" value="1028" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -2449,6 +2477,17 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="AndroidView">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tms_ur_client" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -2824,18 +2863,7 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="AndroidView">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tms_ur_client" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
       <pane id="Scratches" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -3133,14 +3161,14 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="65" y="-4" width="1535" height="904" extended-state="7" />
-    <editor active="false" />
+    <frame x="1665" y="-4" width="1215" height="1028" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32990867" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3610013" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.14609286" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32953465" sideWeight="0.5002764" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -3153,7 +3181,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32904884" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.040857334" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.0400682" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32845744" sideWeight="0.4997236" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -3177,6 +3205,11 @@
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/../.." />
+    </ignored-roots>
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -3623,16 +3656,44 @@
     <entry file="file://$PROJECT_DIR$/tms_ur_sanmoku/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_sanmoku/urclientactivity/TmsUrSanmoku.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="1182" column="32" selection-start-line="1182" selection-start-column="32" selection-end-line="1182" selection-end-column="32" />
-          <folding />
+          <caret line="1178" column="0" selection-start-line="1178" selection-start-column="0" selection-end-line="1178" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#39383#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#13675#13688#0" expanded="false" />
+            <element signature="e#17450#18292#0" expanded="false" />
+            <element signature="e#18291#18292#0" expanded="false" />
+            <element signature="e#18328#18701#0" expanded="false" />
+            <element signature="e#18700#18701#0" expanded="false" />
+            <element signature="e#19217#19244#1" expanded="false" />
+            <element signature="e#24832#25202#0" expanded="false" />
+            <element signature="e#25201#25202#0" expanded="false" />
+            <element signature="e#25932#25933#0" expanded="false" />
+            <element signature="e#25965#25966#0" expanded="false" />
+            <element signature="e#26639#26682#0" expanded="false" />
+            <element signature="e#26688#26734#0" expanded="false" />
+            <element signature="e#28510#28511#0" expanded="false" />
+            <element signature="e#28541#28542#0" expanded="false" />
+            <element signature="e#29734#29747#0" expanded="false" />
+            <element signature="e#31772#31780#0" expanded="false" />
+            <element signature="e#32433#32441#0" expanded="false" />
+            <element signature="e#32491#32499#0" expanded="false" />
+            <element signature="e#32550#32558#0" expanded="false" />
+            <element signature="e#32607#32615#0" expanded="false" />
+            <element signature="e#32665#32673#0" expanded="false" />
+            <element signature="e#34578#34591#0" expanded="false" />
+            <element signature="e#35495#35508#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tms_ur_sanmoku/src/main/java/com/github/irvs/ros_tms/tms_ur/tms_ur_sanmoku/tag/TagAnalyzer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.1816193">
-          <caret line="105" column="13" selection-start-line="105" selection-start-column="13" selection-end-line="105" selection-end-column="13" />
-          <folding />
+        <state vertical-scroll-proportion="0.2425107">
+          <caret line="101" column="13" selection-start-line="101" selection-start-column="13" selection-end-line="101" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

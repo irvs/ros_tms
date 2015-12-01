@@ -72,7 +72,7 @@ class SubTaskPlace:
 
         # Allow some leeway in position (meters) and orientation (radians)
         arm.set_goal_position_tolerance(0.1)
-        arm.set_goal_orientation_tolerance(0.2)
+        arm.set_goal_orientation_tolerance(0.3)
 
         # Allow replanning to increase the odds of a solution
         arm.allow_replanning(True)
@@ -156,12 +156,12 @@ class SubTaskPlace:
         # A list of y shifts (meters) to try
         y_vals = [0, 0.01, 0.02, -0.01, -0.02]
 
-        roll_vals = [0]#,1.57079632,-1.57079632,3.14159265]
+        roll_vals = [0]
 
-        pitch_vals = [0]#,1.57079632,-1.57079632,3.14159265]
+        pitch_vals = [0]
 
         # A list of yaw angles to try
-        yaw_vals = [0]#,1.57079632,-1.57079632,3.14159265]
+        yaw_vals = [0]
 
         # A list to hold the places
         places = []

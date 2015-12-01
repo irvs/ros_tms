@@ -938,6 +938,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
 {
   tms_msg_db::TmsdbGetData srv;
   tms_msg_ts::ts_state_control s_srv;
+  tms_msg_db::Tmsdb assign_data;
   s_srv.request.type = 1; // for subtask state update;
   s_srv.request.state = 0;
 
@@ -999,6 +1000,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
         if(get_data_client_.call(srv))
         {
           std::string furniture_name = srv.response.tmsdb[0].name;
+          assign_data = srv.response.tmsdb[0];
         }
       }
     }
@@ -1030,7 +1032,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
         {
           tms_msg_rp::rp_pick srv;
           srv.request.robot_id  = sd.robot_id;
-          srv.request.object_id = sd.arg_type ;
+          srv.request.object_id = sd.arg_type;
 
           if (subtask_pick_client.call(srv))
           {
@@ -1056,6 +1058,51 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
             state_client.call(s_srv);
             return false;
           }
+
+          std::string note = assign_data.note;
+          std::vector<std::string> v_note;
+          v_note.clear();
+          boost::split(v_note,note,boost::is_any_of(";"));
+
+          ROS_INFO("note(before) = %s",note.c_str());
+
+          for(int i=0;i<v_note.size();i+=2)
+          {
+            ROS_INFO("v_note.at(%d) = %s",i,v_note.at(i).c_str());
+            std::stringstream ss;
+            ss << v_note.at(i);
+            int note_id;
+            ss >> note_id;
+
+            if(sd.arg_type == note_id)
+            {
+              v_note.at(i) = "0";
+              break;
+            }
+          }
+
+          std::stringstream assign_note;
+          for(int i=0;i<v_note.size();i++)
+          {
+            assign_note << v_note.at(i);
+            if(i!=v_note.size()-1){
+              assign_note << ";";
+            }
+          }
+
+          ROS_INFO("note(after) = %s",note.c_str());
+
+          ros::Time now = ros::Time::now() + ros::Duration(9*60*60);
+
+          assign_data.time = boost::posix_time::to_iso_extended_string(now.toBoost());
+          assign_data.note = assign_note.str();
+
+          tms_msg_db::TmsdbStamped db_msg;
+          db_msg.header.frame_id = "/world";
+          db_msg.header.stamp = now;
+
+          db_msg.tmsdb.push_back(assign_data);
+          db_pub.publish(db_msg);
 
           //sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_REL, 3, arg);
           // update_obj(sd.arg_type, arg[5], arg[6], arg[7], arg[8], arg[9], arg[10], arg[11], 3005, arg[12], "");
@@ -1267,7 +1314,7 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
       return false;
     }
   }
-  else if(sd.arg_type>6000&&sd.arg_type<7000){
+  else if(sd.arg_type>6000&&sd.arg_type<7000){ //furniture
     switch(sd.robot_id){
       case 2002:
       {
@@ -1275,17 +1322,120 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
       }
       case 2003:
       {
+        tms_msg_db::Tmsdb assign_data;
         tms_msg_rp::rp_place srv;
-        srv.request.object_id = 7001;
-        srv.request.x = 11.75;
-        srv.request.y = 3.45;
-        srv.request.z = 0.88;
+        srv.request.object_id = grasping_id;
         srv.request.roll = 0.0;
         srv.request.pitch = 0.0;
-        srv.request.yaw = 1.57079632;
+
+        db_srv.request.tmsdb.id = grasping_id;
+        double offset_z = 0;
+        if(get_data_client_.call(db_srv))
+        {
+          srv.request.yaw = db_srv.response.tmsdb[0].ry;
+          offset_z = db_srv.response.tmsdb[0].offset_z;
+          ROS_INFO("yaw = %f offset_z =%f",srv.request.yaw,offset_z);
+        }
+        else{
+          s_srv.request.error_msg = "failed get data";
+          state_client.call(s_srv);
+          return false;
+        }
+
+        std::stringstream assign_note;
+        db_srv.request.tmsdb.id = sd.arg_type;
+        if(get_data_client_.call(db_srv))
+        {
+          std::string note = db_srv.response.tmsdb[0].note;
+          assign_data = db_srv.response.tmsdb[0];
+          ROS_INFO("note(before) = %s",note.c_str());
+          std::vector<std::string> v_note;
+          v_note.clear();
+          boost::split(v_note,note,boost::is_any_of(";"));
+
+          for(int i=0;i<v_note.size();i++)
+          {
+            ROS_INFO("v_note[%d]=%s",i,v_note.at(i).c_str());
+          }
+
+          int i = 0;
+          while ("0" != v_note.at(i))
+          {
+            i += 2;
+            if(i >= v_note.size())
+            {
+              s_srv.request.error_msg = "cannot found empty space";
+              state_client.call(s_srv);
+              return false;
+            }
+          }
+
+          std::string notedata = v_note.at(i+1);
+          std::vector<std::string> v_notedata;
+          v_notedata.clear();
+          boost::split(v_notedata,notedata,boost::is_any_of(","));
+
+          if(v_notedata.size() == 3)
+          {
+            std::stringstream ss;
+            double d_x,d_y,d_z;
+
+            ss << v_notedata.at(0);
+            ss >> d_x;
+            srv.request.x = d_x;
+            ROS_INFO("place_x = [%f] ",d_x);
+
+            ss.clear();
+            ss.str("");
+            ss << v_notedata.at(1);
+            ss >> d_y;
+            srv.request.y = d_y;
+            ROS_INFO("place_y = [%f] ",d_y);
+
+            ss.clear();
+            ss.str("");
+            ss << v_notedata.at(2);
+            ss >> d_z;
+            srv.request.z = d_z+offset_z;
+            ROS_INFO("place_z = [%f] ",d_z+offset_z);
+          }
+
+          for(int j=0; j<v_note.size();j++)
+          {
+            if(j==i){
+              assign_note << grasping_id;
+            }else{
+              assign_note << v_note.at(j);
+            }
+
+            if(j!=v_note.size()-1){
+              assign_note << ";";
+            }
+          }
+        }
+        else{
+          s_srv.request.error_msg = "failed get data";
+          state_client.call(s_srv);
+          return false;
+        }
+
         if(subtask_place_client.call(srv))
         {
           ROS_INFO("Successed place action");
+
+          ros::Time now = ros::Time::now() + ros::Duration(9*60*60);
+
+          assign_data.time = boost::posix_time::to_iso_extended_string(now.toBoost());
+          assign_data.note = assign_note.str();
+
+          ROS_INFO("note(after) = %s",assign_note.str().c_str());
+
+          tms_msg_db::TmsdbStamped db_msg;
+          db_msg.header.frame_id = "/world";
+          db_msg.header.stamp    = now;
+
+          db_msg.tmsdb.push_back(assign_data);
+          db_pub.publish(db_msg);
         }
         else{
           s_srv.request.error_msg = "failed place action";

@@ -122,6 +122,12 @@ public class TagAnalyzer {
 					seg.equals("トル")){
 				tags.add("task:get");
 			}
+			else if(seg.equals("オク")){
+				tags.add("task:put");
+			}
+			else if(seg.equals("テーブル")){
+				tags.add("place:table");
+			}
 
 			pre_seg = seg;
 
