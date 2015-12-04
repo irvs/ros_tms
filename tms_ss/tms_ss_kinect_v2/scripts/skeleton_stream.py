@@ -232,7 +232,7 @@ if __name__ == '__main__':
                         obj.run()
                 os.wait()
             except:
-                print('Failed to bind socket')
+                print('Error1: Failed to bind socket')
                 closing(SkeletonStream.sock)
                 for pid in pid_list:
                     os.kill(pid, 9)

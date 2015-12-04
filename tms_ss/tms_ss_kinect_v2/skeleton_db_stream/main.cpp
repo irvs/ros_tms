@@ -105,7 +105,7 @@ void SkeletonDBStream::callback(const tms_msg_ss::SkeletonArray::ConstPtr& msg)
     //data.extfile
     //data.sensor
     //data.probability
-    data.state = 2;
+    data.state = 1;
     //data.state = (msg->data[i].user_id < 0 ? 0 : 2);
     //data.task
     //data.note
