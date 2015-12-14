@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(skeleton_description)
 
+if(CMAKE_COMPILER_IS_GNUCXX)
+    add_definitions(-std=gnu++0x)
+endif()
+
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -22,6 +26,7 @@ catkin_package(
   CATKIN_DEPENDS
     roscpp
     rospy
+    robot_state_publisher
     cmake_modules
 )
 

@@ -70,6 +70,7 @@ SkeletonsStatePublisher::SkeletonsStatePublisher(
   }
 
   ros::Time now = ros::Time::now() + GMT;
+
   for (int i = 0; i < kdl_forest.size(); i++)
   {
     state_pubs_.push_back(robot_state_publisher::RobotStatePublisher(kdl_forest[i]));
