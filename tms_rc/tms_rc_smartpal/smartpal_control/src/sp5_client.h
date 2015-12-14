@@ -80,6 +80,18 @@
 
 using namespace std;
 
+#define PI	3.14159265
+
+inline double rad2deg(double rad)
+{
+      return (180.0 * rad / (PI));
+}
+
+inline double deg2rad(double deg)
+{
+      return (PI * deg / 180.0);
+}
+
 class Client
 {
 public:
@@ -97,18 +109,18 @@ public:
     int8_t vehicleResume();
     int8_t vehicleStop();
     int8_t vehicleGetState();
-    int8_t vehicleGetPos(double *x_mm, double *y_mm, double *theta_deg);
-    int8_t vehicleSetPos(double x_mm, double y_mm, double theta_deg);
-    int8_t vehicleSetVel(double velM_mmps, double velT_degps);
-    int8_t vehicleSetAcc(double accM_mmps2, double accT_mmps2);
-    int8_t vehicleMoveLinearAbs(double x_mm, double y_mm, double theta_deg);
-    int8_t vehicleMoveLinearRel(double x_mm, double y_mm, double theta_deg);
-    int8_t vehicleMoveCruiseAbs(double x_mm, double y_mm);
-    int8_t vehicleMoveCruiseRel(double x_mm, double y_mm);
-    int8_t vehicleMoveContinuousRel(double x_mm, double y_mm, double theta_deg);
-    int8_t vehicleMoveCircularRel(double x_mm, double y_mm, double angle_deg);
+    int8_t vehicleGetPos(double *x_m, double *y_m, double *theta_rad);
+    int8_t vehicleSetPos(double x_m, double y_m, double theta_rad);
+    int8_t vehicleSetVel(double velT_mps, double velR_radps);
+    int8_t vehicleSetAcc(double accT_mps2, double accR_radps2);
+    int8_t vehicleMoveLinearAbs(double x_m, double y_m, double theta_rad);
+    int8_t vehicleMoveLinearRel(double x_m, double y_m, double theta_rad);
+    int8_t vehicleMoveCruiseAbs(double x_m, double y_m);
+    int8_t vehicleMoveCruiseRel(double x_m, double y_m);
+    int8_t vehicleMoveContinuousRel(double x_m, double y_m, double theta_rad);
+    int8_t vehicleMoveCircularRel(double x_m, double y_m, double angle_rad);
     int8_t vehicleSetJogTimeout(double timeout_msec);
-    int8_t vehicleMoveJog(double vx_mmps, double vy_mmps, double vt_degps);
+    int8_t vehicleMoveJog(double vx_mps, double vy_mps, double vt_radps);
 
     //--------------------------------------------------------------------------
     // SmartPal Arm
@@ -128,10 +140,10 @@ public:
     int8_t armSetLinearAcc(int8_t RL, double accT_ms, double accR_ms);
     bool   armIsPowerOn(int8_t RL);
     bool   armIsServoOn(int8_t RL);
-    int8_t armMoveJointAbs(int8_t RL, double *joint_deg, double vel_degps);
-    int8_t armMoveJointRel(int8_t RL, double *joint_deg, double vel_degps);
-    int8_t armMoveLinearAbs(int8_t RL, double cpType, double *cartesianPos, double elbow_deg, double vt_mmps, double vr_degps);
-    int8_t armMoveLinearRel(int8_t RL, double cpType, double *cartesianPos, double elbow_deg, double vt_mmps, double vr_degps);
+    int8_t armMoveJointAbs(int8_t RL, double *joint_rad, double vel_radps);
+    int8_t armMoveJointRel(int8_t RL, double *joint_rad, double vel_radps);
+    int8_t armMoveLinearAbs(int8_t RL, double cpType, double *cartesianPos, double elbow_rad, double vt_mps, double vr_radps);
+    int8_t armMoveLinearRel(int8_t RL, double cpType, double *cartesianPos, double elbow_rad, double vt_mps, double vr_radps);
 
     //--------------------------------------------------------------------------
     // SmartPal Gripper
@@ -143,8 +155,8 @@ public:
     int8_t gripperAbort(int8_t RL);
     int8_t gripperStop(int8_t RL);
     int8_t gripperGetState(int8_t RL);
-    int8_t gripperGetPos(int8_t RL, double *pos);
-    int8_t gripperMoveAbs(int8_t RL, double j_deg, double vel_degps, double acc_degps2);
+    int8_t gripperGetPos(int8_t RL, double *pos_rad);
+    int8_t gripperMoveAbs(int8_t RL, double j_rad, double vel_radps, double acc_radps2);
 
     //--------------------------------------------------------------------------
     // SmartPal Lumba
@@ -156,17 +168,17 @@ public:
     int8_t lumbaAbort();
     int8_t lumbaStop();
     int8_t lumbaGetState();
-    int8_t lumbaGetPos(double *low_deg, double *high_deg);
-    int8_t lumbaMoveCooperative(double z_deg, double vel_degps, double acc_degps2);
-    int8_t lumbaMove(double low_deg, double high_deg, double vel_degps, double acc_degps2);
-    int8_t lumbaMoveLowerAxis (double low_deg, double vel_degps, double acc_degps2);
-    int8_t lumbaMoveUpperAxis (double high_deg, double vel_degps, double acc_degps2);
+    int8_t lumbaGetPos(double *low_rad, double *high_rad);
+    int8_t lumbaMoveCooperative(double z_rad, double vel_radps, double acc_radps2);
+    int8_t lumbaMove(double low_rad, double high_rad, double vel_radps, double acc_radps2);
+    int8_t lumbaMoveLowerAxis (double low_rad, double vel_radps, double acc_radps2);
+    int8_t lumbaMoveUpperAxis (double high_rad, double vel_radps, double acc_radps2);
 
 
 protected:
 	CORBA::ORB_var orb;
 
-    YeRTUnitMobility::mobility_var CommandObj_Vehicle;
+  YeRTUnitMobility::mobility_var CommandObj_Vehicle;
 
 	ArmUnit_var 		CommandObj_ArmR;
 	ArmUnit_var			CommandObj_ArmL;
@@ -186,9 +198,8 @@ protected:
 	char orb_ip[24];
 	char orb_port[8];
 	char context_name[64];
-	
+
 private:
 	bool bInitialize;
 };
 #endif  			// __CLIENT_H__
-

@@ -1120,36 +1120,68 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 
 						if(tasks.size()!=0){ //命令発行
 							int task_id,robot_id,object_id,user_id,place_id;
+
+							String str;
+							LayoutInflater inflater
+									= LayoutInflater.from(com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.urclientactivity.TmsUrSanmoku.this);
+							View view = null;
+							view = inflater.inflate(R.layout.comfirm, null);
+
+							TextView tv = (TextView)view.findViewById(R.id.textView2);
+
 							data.sendTag(tasks.get(0));
 							task_id = data.getObjectArray().get(0).getId();
-							Log.v("TASK","task:" + data.getObjectArray().get(0).getName() + " id:" + task_id);
+							Log.v("TASK", "task:" + data.getObjectArray().get(0).getName() + " id:" + task_id);
+
+							str = "Task : " + data.getObjectArray().get(0).getName();
+							tv.setText(str);
+
+							tv = (TextView)view.findViewById(R.id.textView3);
 
 							if(robots.size()!=0){
 								data.sendTag(robots.get(0));
 								robot_id = data.getObjectArray().get(0).getId();
 								Log.v("TASK","robot:" + data.getObjectArray().get(0).getName() + " id:" + robot_id);
+								str = "Robot : " + data.getObjectArray().get(0).getName();
 							}else{
 								robot_id = 2003;
 								Log.v("TASK","robot:" + "smart_pal5_2(default)" + " id:" + robot_id);
+								str = "Robot : " + "smart_pal5_2";
 							}
 
-							if(users.size()!=0){
-								data.sendTag(users.get(0));
-								user_id = data.getObjectArray().get(0).getId();
-								Log.v("TASK","user:" + data.getObjectArray().get(0).getName() + " id:" + user_id);
-							}else{
-								user_id = 1001;
-								Log.v("TASK","user:" + "YOU(default)" + " id:" + user_id);
-							}
+							tv.setText(str);
+
+							tv = (TextView)view.findViewById(R.id.textView4);
 
 							if(places.size()!=0){
 								data.sendTag(places.get(0));
 								place_id = data.getObjectArray().get(0).getId();
 								Log.v("TASK","place:" + data.getObjectArray().get(0).getName() + " id:" + place_id);
+								str = "Place : " + data.getObjectArray().get(0).getName();
 							}else{
 								place_id = 0;
 								Log.v("TASK","place:" + "none(default)" + " id:" + place_id);
+								str = "Place : " + "none";
 							}
+
+							tv.setText(str);
+
+							tv = (TextView)view.findViewById(R.id.textView5);
+
+							if(users.size()!=0){
+								data.sendTag(users.get(0));
+								user_id = data.getObjectArray().get(0).getId();
+								Log.v("TASK","user:" + data.getObjectArray().get(0).getName() + " id:" + user_id);
+								str = "User : " + data.getObjectArray().get(0).getName();
+							}else{
+								user_id = 1002;
+								Log.v("TASK","user:" + "YOU(default)" + " id:" + user_id);
+								str = "User : " + "person_2_moverio";
+							}
+
+							tv.setText(str);
+
+							tv = (TextView)view.findViewById(R.id.textView6);
 
 							if(objects.size()!=0){
 								data.sendTag(objects.get(0));
@@ -1165,14 +1197,19 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 								}
 								object_id = objs.get(0).getId();
 								Log.v("TASK","object:" + data.getObjectArray().get(0).getName() + " id:" + object_id);
+								str = "Object : " + data.getObjectArray().get(0).getName();
 							}else{
 								object_id = 0;
 								Log.v("TASK","object:" + "none(default)" + " id:" + object_id);
+								str = "Task : " + data.getObjectArray().get(0).getName();
 							}
+
+							tv.setText(str);
 
 							data.sendCommand(task_id,robot_id,user_id,place_id,object_id);
 
 							sublayout.removeAllViews();
+							sublayout.addView(view);
 						}else{ //物品検索
 							if(objects.size()!=0){
 								Log.v("DB", objects.get(0));

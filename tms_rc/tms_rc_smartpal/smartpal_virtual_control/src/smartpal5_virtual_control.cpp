@@ -90,7 +90,6 @@ ros::Subscriber arm_data_sub;
 ros::Subscriber object_data_sub;
 ros::ServiceClient get_data_client_;
 
-tf::StampedTransform *transform;
 tf::TransformListener *listener;
 
 const int sid_ = 100000;
@@ -884,7 +883,6 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "smartpal5_virtual_control");
   ros::NodeHandle nh;
 
-  transform = new tf::StampedTransform;
   listener = new tf::TransformListener;
 
   ros::ServiceServer service    = nh.advertiseService("sp5_virtual_control", robotControl);
@@ -899,7 +897,6 @@ int main(int argc, char **argv)
 
   thr_rdu.join();
 
-  delete transform;
   delete listener;
 
   return(0);

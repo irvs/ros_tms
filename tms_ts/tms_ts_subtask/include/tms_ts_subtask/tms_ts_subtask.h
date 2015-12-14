@@ -55,6 +55,7 @@
 #define SET_ODOM                7
 #define CMD_GETPOSE             8
 #define CMD_SYNC_OBJ            8
+#define CMD_MOVE_TRAJECTORY     8
 #define CMD_CALC_BACKGROUND     9
 #define CMD_MOVE_ABS            15
 #define CMD_MOVE_REL            16
@@ -89,6 +90,7 @@ class TmsRpSubtask
   bool sp5_control(bool type, int unit, int cmd, int arg_size, double* arg);
 //	bool kxp_control(bool type, int unit, int cmd, int arg_size, double* arg);
 //	void sensingCallback(const tms_msg_ss::ods_person_dt::ConstPtr& msg);
+
 
  private:
   ros::NodeHandle nh1;
