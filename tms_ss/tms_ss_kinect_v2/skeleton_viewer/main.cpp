@@ -5,10 +5,12 @@
 
 #include <ros/ros.h>
 #include <visualization_msgs/MarkerArray.h>
+
 #include <tms_msg_ss/SkeletonArray.h>
 #include <tms_msg_ss/CameraPosture.h>
 #include <tms_msg_ss/SkeletonStreamWrapper.h>
 
+// ----------------------------------------------------------------------------
 static const float marker_color[][3] = { // BGR
   {1.0f, 0, 0},
   {0, 1.0f, 0},
@@ -18,6 +20,15 @@ static const float marker_color[][3] = { // BGR
   {0, 1.0f, 1.0f}
 };
 
+template <class T>
+std::string to_str(const T& t)
+{
+  std::stringstream ss;
+  ss << t;
+  return ss.str();
+}
+
+// ----------------------------------------------------------------------------
 class SkeletonViewer
 {
   public:
@@ -35,32 +46,31 @@ class SkeletonViewer
     inline void toWorldPoint(Eigen::Vector3f &vec);
 };
 
+// ----------------------------------------------------------------------------
 SkeletonViewer::SkeletonViewer() :
   gotCameraPosture(false)
 {
 }
 
+// ----------------------------------------------------------------------------
 SkeletonViewer::~SkeletonViewer()
 {
 }
 
+// ----------------------------------------------------------------------------
 inline void SkeletonViewer::toWorldPoint(Eigen::Vector3f &vec)
 {
   vec = this->rotation.matrix() * vec + this->translation;
   return;
 }
 
-template <class T>
-std::string to_str(const T& t)
-{
-  std::stringstream ss;
-  ss << t;
-  return ss.str();
-}
-
+// ----------------------------------------------------------------------------
 void SkeletonViewer::callback_skeleton(const tms_msg_ss::SkeletonArray::ConstPtr& msg)
 {
+	ros::Time now = ros::Time::now();
   visualization_msgs::MarkerArray marker_array;
+
+	// Marker
   for (int j = 0; j < msg->data.size(); j++)
   {
     tms_msg_ss::Skeleton skeleton = msg->data[j];
@@ -71,13 +81,16 @@ void SkeletonViewer::callback_skeleton(const tms_msg_ss::SkeletonArray::ConstPtr
     {
       visualization_msgs::Marker marker;
       marker.header.frame_id = "/world_link";
-      marker.header.stamp = ros::Time::now();
+      marker.header.stamp = now;
       std::string name("skeleton");
       marker.ns = name.append(to_str<int>(j+1));
       marker.id = i;
       marker.type = shape;
       marker.action = visualization_msgs::Marker::ADD;
-      Eigen::Vector3f pos(skeleton.position[i].x, skeleton.position[i].y, skeleton.position[i].z);
+      Eigen::Vector3f pos(
+					skeleton.position[i].x,
+					skeleton.position[i].y,
+					skeleton.position[i].z);
       if (gotCameraPosture)
       {
         this->toWorldPoint(pos);
@@ -105,10 +118,12 @@ void SkeletonViewer::callback_skeleton(const tms_msg_ss::SkeletonArray::ConstPtr
   return;
 }
 
+// ----------------------------------------------------------------------------
 void SkeletonViewer::run()
 {
   ros::Subscriber sub_skeleton =
-    this->_nh.subscribe("integrated_skeleton_stream", 1, &SkeletonViewer::callback_skeleton, this);
+    this->_nh.subscribe("integrated_skeleton_stream", 1,
+				&SkeletonViewer::callback_skeleton, this);
   ros::Publisher marker_pub = _nh.advertise<visualization_msgs::MarkerArray>(
       "skeleton_visualization", 1);
   _pmarker_array_pub = &marker_pub;
@@ -116,6 +131,7 @@ void SkeletonViewer::run()
   return;
 }
 
+// ----------------------------------------------------------------------------
 int main (int argc, char **argv)
 {
   ros::init(argc, argv, "skeleton_viewer");

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Interface -->
+  <arg name="num_of_skeletons" default="12"/>
+
+	<!-- Making stream for debugging -->
+	<node name="test_skeleton_pub" pkg="tms_ss_kinect_v2" type="test_skeleton_pub.py"/>
+
+	<!-- For drawing joint points -->
+	<node name="skeleton_viewer" pkg="tms_ss_kinect_v2" type="skeleton_viewer"/>
+
+  <!-- For visualize skeleton in rViz -->
+  <param name="skeleton_description1"  textfile="$(find skeleton_description)/urdf/skeleton/model_002.urdf"/>
+  <param name="skeleton_description2"  textfile="$(find skeleton_description)/urdf/skeleton/model_002.urdf"/>
+  <param name="skeleton_description3"  textfile="$(find skeleton_description)/urdf/skeleton/model_002.urdf"/>
+  <param name="skeleton_description4"  textfile="$(find skeleton_description)/urdf/skeleton/model_002.urdf"/>
+  <param name="skeleton_description5"  textfile="$(find skeleton_description)/urdf/skeleton/model_002.urdf"/>
+  <param name="skeleton_description6"  textfile="$(find skeleton_description)/urdf/skeleton/model_002.urdf"/>
+  <param name="skeleton_description7"  textfile="$(find skeleton_description)/urdf/skeleton/model_002.urdf"/>
+  <param name="skeleton_description8"  textfile="$(find skeleton_description)/urdf/skeleton/model_002.urdf"/>
+  <param name="skeleton_description9"  textfile="$(find skeleton_description)/urdf/skeleton/model_002.urdf"/>
+  <param name="skeleton_description10" textfile="$(find skeleton_description)/urdf/skeleton/model_002.urdf"/>
+  <param name="skeleton_description11" textfile="$(find skeleton_description)/urdf/skeleton/model_002.urdf"/>
+  <param name="skeleton_description12" textfile="$(find skeleton_description)/urdf/skeleton/model_002.urdf"/>
+  <param name="num_of_skeletons" value="$(arg num_of_skeletons)"/>
+  <param name="using_db" value="false"/>
+  <node name="skeleton_state_publisher" pkg="skeleton_description" type="skeleton_state_publisher"/>
+</launch>
+

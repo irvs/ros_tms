@@ -181,6 +181,13 @@ void SkeletonsStatePublisher::send(ros::Time time)
     transforms_[i].stamp_ = time;
     std::stringstream tf_prefix;
     tf_prefix << "skeleton" << i+1;
+
+		// Add offset to base_link depend on model
+		tf::Quaternion offset_rot;
+		offset_rot.setRPY(0.0, M_PI/2.0, 0.0);
+		//offset_rot.setRPY(0.0, 0.0, 0.0); // For model_001
+		transforms_[i].setRotation(transforms_[i].getRotation()*offset_rot);
+
     broadcaster_.sendTransform(transforms_[i]);
     state_pubs_[i].publishTransforms(joint_states[i], time, tf_prefix.str());
   }
