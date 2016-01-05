@@ -24,6 +24,6 @@
   <param name="skeleton_description12" textfile="$(find skeleton_description)/urdf/skeleton/model_002.urdf"/>
   <param name="num_of_skeletons" value="$(arg num_of_skeletons)"/>
   <param name="using_db" value="false"/>
-  <node name="skeleton_state_publisher" pkg="skeleton_description" type="skeleton_state_publisher"/>
+  <node name="skeleton_state_publisher" pkg="skeleton_description" type="skeleton_state_publisher" output="screen"/>
 </launch>
 

@@ -184,8 +184,7 @@ void SkeletonsStatePublisher::send(ros::Time time)
 
 		// Add offset to base_link depend on model
 		tf::Quaternion offset_rot;
-		offset_rot.setRPY(0.0, M_PI/2.0, 0.0);
-		//offset_rot.setRPY(0.0, 0.0, 0.0); // For model_001
+		offset_rot.setRPY(0.0, 0.0, 0.0);
 		transforms_[i].setRotation(transforms_[i].getRotation()*offset_rot);
 
     broadcaster_.sendTransform(transforms_[i]);
