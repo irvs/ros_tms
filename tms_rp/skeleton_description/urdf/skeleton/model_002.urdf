@@ -64,7 +64,7 @@
       <geometry>
         <mesh filename="package://skeleton_description/model/male/LeftArm1.dae"/>
       </geometry>
-      <origin xyz="0 0 0.0" rpy="0 -1.57079632679 0" />
+			<origin xyz="0 0 0.0" rpy="0 3.14159265359 0" />
     </visual>
   </link>
 
@@ -73,7 +73,7 @@
       <geometry>
         <mesh filename="package://skeleton_description/model/male/LeftArm2.dae"/>
       </geometry>
-			<origin xyz="0 0 0.0" rpy="0 0 0" />
+			<origin xyz="0 0 0.0" rpy="0 3.14159265359 0" />
     </visual>
   </link>
 
@@ -82,7 +82,7 @@
       <geometry>
         <mesh filename="package://skeleton_description/model/male/LeftHand1.dae"/>
       </geometry>
-      <origin xyz="0 0 0.0" rpy="0 0 0" />
+			<origin xyz="0 0 0.0" rpy="0 3.14159265359 0" />
     </visual>
   </link>
 
@@ -244,14 +244,13 @@
 
   <joint name="L_ARM_JOINT2" type="continuous">
     <axis xyz="0.0 1.0 0.0"/>
-    <origin xyz="-0.0 0.0 0.0" rpy="0 4.71238898038 0" />
+    <origin xyz="-0.0 0.0 0.0" rpy="0 0 0" />
     <parent link="LeftShoulderVirtual1"/>
     <child link="LeftShoulderVirtual2"/>
   </joint>
 
   <joint name="L_ARM_JOINT3" type="continuous">
     <axis xyz="1.0 0.0 0.0"/>
-    <!--<origin xyz="-0.0 0.0 0.0" rpy="-1.57079632679 0 0" />-->
     <parent link="LeftShoulderVirtual2"/>
     <child link="LeftArm1"/>
   </joint>
@@ -259,7 +258,7 @@
   <!-- Left Elbow -->
   <joint name="L_ARM_JOINT4" type="continuous">
     <axis xyz="0.0 0.0 1.0"/>
-    <origin xyz="-0 0 -0.215" rpy="0 -1.57079632679 0.0" />
+    <origin xyz="0.215 0 0" rpy="0 0 0" />
     <parent link="LeftArm1"/>
     <child link="LeftElbowVirtual"/>
   </joint>
@@ -271,7 +270,7 @@
 
   <!-- Left Wrist -->
   <joint name="L_ARM_JOINT6" type="continuous">
-    <origin xyz="-0.22 0 0.0" rpy="0 0 0" />
+    <origin xyz="0.22 0 0.0" rpy="0 0 0" />
     <parent link="LeftArm2"/>
     <child link="LeftWristVirtual"/>
   </joint>
