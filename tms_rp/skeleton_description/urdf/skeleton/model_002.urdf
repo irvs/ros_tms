@@ -244,7 +244,7 @@
 
   <joint name="L_ARM_JOINT2" type="continuous">
     <axis xyz="0.0 1.0 0.0"/>
-    <origin xyz="-0.0 0.0 0.0" rpy="0 0 0" />
+    <!--<origin xyz="0.0 0.0 0.0" rpy="0 0 0" />-->
     <parent link="LeftShoulderVirtual1"/>
     <child link="LeftShoulderVirtual2"/>
   </joint>

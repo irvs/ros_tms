@@ -224,8 +224,10 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
   camera_direction_cam = Eigen::Vector3f::UnitZ();
   float dot_skeleton_camera = skeleton_direction_cam.dot(camera_direction_cam);
 
-  if (msg->face_state == 2)
+  //if (msg->face_state == 2)
+  if (1)
   {
+		std::cout << "WARNING: face state is ignored" << std::endl;
     // Log face state and storage as valid skeleton
     table_ref = true;
   }
@@ -407,8 +409,10 @@ int main(int argc, char **argv)
   if (!nh.getParam("using_numbers", using_numbers_str))
   {
     ROS_INFO("SkeletonIntegrator: Need some camera id as arguments. Exiting...");
+		ROS_INFO("%s", using_numbers_str.c_str());
     return -1;
   }
+
 
   std::stringstream ss(using_numbers_str);
   std::string buffer;
