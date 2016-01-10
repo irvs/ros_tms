@@ -167,19 +167,27 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
 				res.result = SUCCESS;
 				if(!trajectory.empty()){
 					for(int t=0;t<trajectory.size();t++){
+						if(trajectory.at(t).move==0){
+							ROS_INFO("trajectory[%d]:armL [%f,%f,%f,%f,%f,%f,%f]",t,trajectory.at(t).j_L[0],trajectory.at(t).j_L[1],trajectory.at(t).j_L[2],trajectory.at(t).j_L[3],trajectory.at(t).j_L[4],trajectory.at(t).j_L[5],trajectory.at(t).j_L[6]);
+						}else if(trajectory.at(t).move==1){
+							ROS_INFO("trajectory[%d]:gripperL %f",t,trajectory.at(t).gripper_left);
+						}
+					}
+					for(int t=0;t<trajectory.size();t++){
+						ROS_INFO("trajectory[%d]",t);
 						if(trajectory.at(t).move==0){ //armL
 							double arg[8] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.175};
 							for(int i=0;i<7;i++){
 								arg[i] = trajectory.at(t).j_L[i];
 							}
-							res.result = smartpal->armMoveJointAbs(ArmL,&req.arg[0],req.arg[7]);
+							res.result = smartpal->armMoveJointAbs(ArmL,&arg[0],arg[7]);
 							// returnのタイミングをロボットの状態がReadyになるまで待機
 							ros::Time begin = ros::Time::now();
 							while(1) {
 								int state = smartpal->armGetState(ArmL);
 								if(state == Busy) {
 									ROS_INFO("armL state : Busy\n");
-									ros::Duration(3.0).sleep();
+									ros::Duration(1.0).sleep();
 								} else if(state == Ready) {
 									ROS_INFO("Succeed to manipulation action(armL).state : Ready\n");
 									res.result = SUCCESS;
@@ -199,10 +207,21 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
 						else if(trajectory.at(t).move==1){ //gripperL
 							double arg[3] = {0.0,0.175,0.175};
 							arg[0] = trajectory.at(t).gripper_left;
-							res.result = smartpal->gripperMoveAbs(ArmL,req.arg[0],req.arg[1],req.arg[2]);
+							res.result = smartpal->gripperMoveAbs(ArmL,arg[0],arg[1],arg[2]);
+							if(res.result != SUCCESS) ROS_ERROR("Failed gripperMove(armL)\n");
+							while(1){
+								if(smartpal->gripperGetState(ArmL)){
+									ROS_INFO("gripperL state : moving");
+									ros::Duration(1.0).sleep();
+								}else{
+									ROS_INFO("gripperL state : ready");
+									break;
+								}
+							}
 						}
 
 						if(res.result != SUCCESS) break;
+						else ROS_INFO("succeed");
 					}
 					trajectory.clear();
 				}
@@ -491,14 +510,14 @@ void armCallback(const sensor_msgs::JointState& msg)
   if(msg.name[0] == "l_gripper_thumb_joint")
   {
 		ai.gripper_left = msg.position[0];
-		ai.move = 0;
+		ai.move = 1;
   }
-  else{
+  else if(msg.name[0] == "l_arm_j1_joint"){
 		for(int i=0;i<7;i++)
     {
-      ai.j_L[i] = msg.position[0];
+      ai.j_L[i] = msg.position[i];
     }
-		ai.move = 1;
+		ai.move = 0;
   }
 	trajectory.push_back(ai);
 }
@@ -529,8 +548,6 @@ void ObjectDataUpdate(const moveit_msgs::PlanningScene& msg)
     tf::Quaternion q2(pose2.pose.orientation.x,pose2.pose.orientation.y,pose2.pose.orientation.z,pose2.pose.orientation.w);
     tf::Matrix3x3 m2(q2);
     m2.getRPY(g_orr,g_orp,g_ory);
-
-    ROS_INFO("object_rot:(%f,%f,%f)",g_orr,g_orp,g_ory);
 
     tms_msg_db::TmsdbGetData srv;
     srv.request.tmsdb.id = object_id + sid_;
@@ -569,7 +586,7 @@ void ObjectDataUpdate(const moveit_msgs::PlanningScene& msg)
 
       is_grasp = true;
       grasping_object_id = g_oid;
-      printf("grasped object id:%d (%0.1f,%0.1f,%0.1f)\n",g_oid,g_ox,g_oy,g_oz);
+
     }
     else{
       ROS_ERROR("failed to get data");
@@ -620,8 +637,6 @@ void ObjectDataUpdate(const moveit_msgs::PlanningScene& msg)
 
       db_msg.tmsdb.push_back(current_pos_data);
       pose_publisher.publish(db_msg);
-
-      printf("released object id:%d (%0.1f,%0.1f,%0.1f)\n",g_oid,g_ox,g_oy,g_oz);
     }
     else{
       ROS_ERROR("failed to get data");

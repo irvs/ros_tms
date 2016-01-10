@@ -118,8 +118,8 @@ private:
           posY = msg->tmsdb[i].y;
           rotY = msg->tmsdb[i].ry;
           double g_jR[7] = {0.0,-0.08,0.0,0.0,0.0,0.0,0.0};
-          double g_jL[7] = {0.0, 0.08,0.0,0.0,0.0,0.0,0.0};
-          double g_gripper_right = -0.3;
+          double g_jL[7] = {0.0,-0.08,0.0,0.0,0.0,0.0,0.0};
+          double g_gripper_right = 0.3;
           double g_gripper_left = 0.3;
 
           if(joint!=""){

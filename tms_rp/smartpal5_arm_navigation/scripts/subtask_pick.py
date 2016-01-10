@@ -47,8 +47,8 @@ GRIPPER_EFFORT = [1.0]
 
 REFERENCE_FRAME = 'world_link'
 
-INIT_ARM_VALUE = [0.0, 0.08,0.0,0.0,0.0,0.0,0.0]
-GRASP_ARM_VALUE = [0.0, 0.2,0.0,0.0,0.0,0.0,0.0]
+INIT_ARM_VALUE = [0.0, -0.08,0.0,0.0,0.0,0.0,0.0]
+GRASP_ARM_VALUE = [0.0, -0.2,0.0,0.0,0.0,0.0,0.0]
 
 class SubTaskPick:
     def __init__(self):

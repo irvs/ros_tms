@@ -174,8 +174,8 @@
     <parent link="l_arm_j1_link"/>
     <child link="l_arm_j2_link"/>
     <origin rpy="1.57075 3.14159 1.57075" xyz="0 0 0"/>
-    <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-0.2443" upper="1.9024" velocity="1.0"/>
+    <axis xyz="0 0 -1"/>
+    <limit effort="100.0" lower="-1.9024" upper="0.2443" velocity="1.0"/>
   </joint>
   <link name="l_arm_j2_link">
     <visual>
@@ -201,7 +201,7 @@
     <parent link="l_arm_j2_link"/>
     <child link="l_arm_j3_link"/>
     <origin rpy="1.57075 1.57075 1.57075" xyz="0 0 0"/>
-    <axis xyz="0 0 1"/>
+    <axis xyz="0 0 -1"/>
     <limit effort="100.0" lower="-2.0769" upper="2.0769" velocity="1.0"/>
   </joint>
   <link name="l_arm_j3_link">
@@ -255,7 +255,7 @@
     <parent link="l_arm_j4_link"/>
     <child link="l_arm_j5_link"/>
     <origin rpy="1.57075 0 0" xyz="-0.02 0.0 0.0"/>
-    <axis xyz="0 0 1"/>
+    <axis xyz="0 0 -1"/>
     <limit effort="100.0" lower="-2.0769" upper="2.0769" velocity="1.0"/>
   </joint>
   <link name="l_arm_j5_link">
@@ -360,7 +360,7 @@
     </inertial>
   </link>
   <joint name="l_end_effector_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0.05 0 0"/>
+    <origin rpy="0 0 0" xyz="0.01 0.11 0"/>
     <parent link="l_gripper_link"/>
     <child link="l_end_effector_link"/>
   </joint>
@@ -433,7 +433,7 @@
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
     </inertial>
   </link>
-  <joint name="r_armj2_joint" type="revolute">
+  <joint name="r_arm_j2_joint" type="revolute">
     <parent link="r_arm_j1_link"/>
     <child link="r_arm_j2_link"/>
     <origin rpy="-1.57075 0 -1.57075" xyz="0 0 0"/>
@@ -572,8 +572,8 @@
     <parent link="r_arm_j6_link"/>
     <child link="r_arm_j7_link"/>
     <origin rpy="1.57075 3.14159 0" xyz="0.0 0.0 0"/>
-    <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-1.0122" upper="1.0" velocity="1.0"/>
+    <axis xyz="0 0 -1"/>
+    <limit effort="100.0" lower="-1.0" upper="1.0122" velocity="1.0"/>
   </joint>
   <link name="r_arm_j7_link">
     <visual>
@@ -623,7 +623,7 @@
     </inertial>
   </link>
   <joint name="r_end_effector_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0.05 0"/>
+    <origin rpy="0 0 0" xyz="0.11 0.01 0"/>
     <parent link="r_gripper_link"/>
     <child link="r_end_effector_link"/>
   </joint>
@@ -645,8 +645,8 @@
     <parent link="r_gripper_link"/>
     <child link="r_gripper_thumb_link"/>
     <origin rpy="0 0 -1.57075" xyz="0.042 0.027 0.0"/>
-    <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-0.1396" upper="1.0122" velocity="1.0"/>
+    <axis xyz="0 0 -1"/>
+    <limit effort="100.0" lower="-1.0122" upper="0.1396" velocity="1.0"/>
   </joint>
   <link name="r_gripper_thumb_link">
     <visual>

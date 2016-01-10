@@ -180,8 +180,8 @@
 		<parent link="l_arm_j1_link"/>
 		<child link="l_arm_j2_link"/>
 		<origin xyz="0 0 0" rpy="1.57075 3.14159 1.57075"/>
-		<axis xyz="0 0 1"/>
-		<limit lower="-0.2443" upper="1.9024" effort="100.0" velocity="1.0"/>
+		<axis xyz="0 0 -1"/>
+		<limit lower="-1.9024" upper="0.2443" effort="100.0" velocity="1.0"/>
 	</joint>
 
 	<link name="l_arm_j2_link">
@@ -209,7 +209,7 @@
 		<parent link="l_arm_j2_link"/>
 		<child link="l_arm_j3_link"/>
 		<origin xyz="0 0 0" rpy="1.57075 1.57075 1.57075"/>
-		<axis xyz="0 0 1"/>
+		<axis xyz="0 0 -1"/>
 		<limit lower="-2.0769" upper="2.0769" effort="100.0" velocity="1.0"/>
 	</joint>
 
@@ -267,7 +267,7 @@
 		<parent link="l_arm_j4_link"/>
 		<child link="l_arm_j5_link"/>
 		<origin xyz="-0.02 0.0 0.0" rpy="1.57075 0 0"/>
-		<axis xyz="0 0 1"/>
+		<axis xyz="0 0 -1"/>
 		<limit lower="-2.0769" upper="2.0769" effort="100.0" velocity="1.0"/>
 	</joint>
 
@@ -608,8 +608,8 @@
 		<parent link="r_arm_j6_link"/>
 		<child link="r_arm_j7_link"/>
 		<origin xyz="0.0 0.0 0" rpy="1.57075 3.14159 0"/>
-		<axis xyz="0 0 1"/>
-		<limit lower="-1.0122" upper="1.0" effort="100.0" velocity="1.0"/>
+		<axis xyz="0 0 -1"/>
+		<limit lower="-1.0" upper="1.0122" effort="100.0" velocity="1.0"/>
 	</joint>
 
 	<link name="r_arm_j7_link">
@@ -687,8 +687,8 @@
 		<parent link="r_gripper_link"/>
 		<child link="r_gripper_thumb_link"/>
 		<origin xyz="0.042 0.027 0.0" rpy="0 0 -1.57075"/>
-		<axis xyz="0 0 1"/>
-		<limit lower="-0.1396" upper="1.0122" effort="100.0" velocity="1.0"/>
+		<axis xyz="0 0 -1"/>
+		<limit lower="-1.0122" upper="0.1396" effort="100.0" velocity="1.0"/>
   </joint>
 
 	<link name="r_gripper_thumb_link">
