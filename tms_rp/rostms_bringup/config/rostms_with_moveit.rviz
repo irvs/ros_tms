@@ -6,7 +6,7 @@ Panels:
       Expanded:
         - /MotionPlanning1
       Splitter Ratio: 0.74256
-    Tree Height: 380
+    Tree Height: 363
   - Class: rviz/Help
     Name: Help
   - Class: rviz/Views
@@ -101,6 +101,31 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
           chair_y_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          chipstar_red_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          chipstar_red_pitch_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          chipstar_red_x_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          chipstar_red_y_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          chipstar_red_yaw_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          chipstar_red_z_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -356,23 +381,6 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
           wagon_y_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          chipstar_red_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          chipstar_red_x_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          chipstar_red_y_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          chipstar_red_z_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -485,6 +493,31 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
+          chipstar_red_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          chipstar_red_pitch_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          chipstar_red_x_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          chipstar_red_y_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          chipstar_red_yaw_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          chipstar_red_z_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
           drawer_link:
             Alpha: 1
             Show Axes: false
@@ -740,23 +773,6 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          chipstar_red_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          chipstar_red_x_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          chipstar_red_y_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          chipstar_red_z_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
           wardrobe_link:
             Alpha: 1
             Show Axes: false
@@ -804,7 +820,7 @@ Visualization Manager:
       Marker Topic: /robot_path_marker
       Name: RobotPath
       Namespaces:
-        robot_path: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -812,7 +828,7 @@ Visualization Manager:
       Marker Topic: /shadow_path_marker
       Name: RobotShadow
       Namespaces:
-        robot_shadow: true
+        {}
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -962,7 +978,7 @@ Visualization Manager:
           Show Trail: false
       Name: RobotModel
       Robot Description: skeleton_description1
-      TF Prefix:
+      TF Prefix: ""
       Update Interval: 0
       Value: true
       Visual Enabled: true
@@ -981,36 +997,36 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 12.0751
+      Distance: 2.68517
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 10.6527
-        Y: 3.12965
-        Z: 4.11912e-06
+        X: -0.180933
+        Y: 0.244209
+        Z: 4.83438e-06
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.739796
+      Pitch: 0.529796
       Target Frame: world_link
       Value: XYOrbit (rviz)
-      Yaw: 6.28314
+      Yaw: 6.18313
     Saved: ~
 Window Geometry:
   Displays:
-    collapsed: false
-  Height: 1056
+    collapsed: true
+  Height: 1026
   Help:
     collapsed: false
-  Hide Left Dock: false
+  Hide Left Dock: true
   Hide Right Dock: false
   Motion Planning:
-    collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000100000000000002b1000003dafc0200000005fb000000100044006900730070006c006100790073010000002800000211000000dd00fffffffb0000000800480065006c00700000000342000000bb0000007600fffffffb0000000a0056006900650077007300000003b0000000b0000000b000fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e0067010000023f000001c3000001ab00ffffff00000490000003da00000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+    collapsed: true
+  QMainWindow State: 000000ff00000000fd0000000100000000000002b1000003bcfc0200000005fb000000100044006900730070006c006100790073000000002800000200000000dd00fffffffb0000000800480065006c00700000000342000000bb0000007600fffffffb0000000a0056006900650077007300000003b0000000b0000000b000fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e0067000000022e000001b6000001ab00ffffff00000690000003bc00000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Views:
     collapsed: false
-  Width: 1863
-  X: 1977
+  Width: 1680
+  X: 1920
   Y: 24

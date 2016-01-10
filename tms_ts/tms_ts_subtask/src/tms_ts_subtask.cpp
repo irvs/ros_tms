@@ -195,7 +195,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 {
   SubtaskData sd;
 //    sd.type = grasp::TmsRpBar::production_version_;
-  sd.type = false; //sim = false , real = true
+  sd.type = true; //sim = false , real = true
   sd.robot_id = req.robot_id;
   sd.arg_type = (int)req.arg.at(0);
   sd.v_arg.clear();
@@ -548,6 +548,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
     ROS_INFO("Argument IDtype is Object%d!\n", sd.arg_type);
     if(get_data_client_.call(srv))
     {
+      ROS_INFO("place is %d\n",srv.response.tmsdb[0].place);
       if (srv.response.tmsdb[0].place > 6000 && srv.response.tmsdb[0].place < 7000)
       {
         srv.request.tmsdb.id = srv.response.tmsdb[0].place + sid_;

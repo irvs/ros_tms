@@ -110,7 +110,7 @@ private:
       place   = msg->tmsdb[i].place;
       joint   = msg->tmsdb[i].joint;
 
-      if (id==2003) // smartpal5-2
+      if (id==2003 && sensor==3003) // smartpal5-2
       {
         if (state==1)
         {
