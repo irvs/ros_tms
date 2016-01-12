@@ -182,7 +182,7 @@
 
   <!-- Right Shoulder -->
   <joint name="R_ARM_JOINT1" type="continuous">
-    <axis xyz="-1.0 0.0 0.0"/>
+    <axis xyz="0.0 0.0 1.0"/>
     <origin xyz="-0.29 0 0.185" rpy="0 0 0" />
     <parent link="Body"/>
     <child link="RightShoulderVirtual1"/>
@@ -196,7 +196,7 @@
   </joint>
 
   <joint name="R_ARM_JOINT3" type="continuous">
-    <axis xyz="-1.0 0.0 0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
     <!--<origin xyz="-0.0 0.0 0.0" rpy="-1.57079632679 0 0" />-->
     <parent link="RightShoulderVirtual2"/>
     <child link="RightArm1"/>
@@ -204,7 +204,7 @@
 
   <!-- Right Elbow -->
   <joint name="R_ARM_JOINT4" type="continuous">
-    <axis xyz="0.0 0.0 -1.0"/>
+    <axis xyz="0.0 0.0 1.0"/>
     <origin xyz="0 0 0.215" rpy="0 -1.57079632679 0.0" />
     <parent link="RightArm1"/>
     <child link="RightElbowVirtual"/>
@@ -307,7 +307,7 @@
 
   <!-- Right Hip -->
   <joint name="R_LEG_JOINT1" type="continuous">
-    <axis xyz="-1.0 0.0 0.0"/>
+    <axis xyz="0.0 0.0 1.0"/>
     <origin xyz="0.25 0 0.072" rpy="0 0 0" />
     <parent link="Body"/>
     <child link="RightHipVirtual1"/>
@@ -320,14 +320,14 @@
   </joint>
 
   <joint name="R_LEG_JOINT3" type="continuous">
-    <axis xyz="0.0 0.0 1.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
     <parent link="RightHipVirtual2"/>
     <child link="RightLeg1"/>
   </joint>
 
   <!-- Right Knee -->
   <joint name="R_LEG_JOINT4" type="continuous">
-    <axis xyz="-1.0 0.0 0.0"/>
+    <axis xyz="0.0 0.0 1.0"/>
     <origin xyz="0.3 0 0.0" rpy="0 0 0" />
     <parent link="RightLeg1"/>
     <child link="RightKneeVirtual"/>
@@ -347,7 +347,7 @@
 
   <!-- Left Hip -->
   <joint name="L_LEG_JOINT1" type="continuous">
-    <axis xyz="-1.0 0.0 0.0"/>
+    <axis xyz="0.0 0.0 1.0"/>
     <origin xyz="0.25 0 -0.072" rpy="0 0 0" />
     <parent link="Body"/>
     <child link="LeftHipVirtual1"/>
@@ -360,14 +360,14 @@
   </joint>
 
   <joint name="L_LEG_JOINT3" type="continuous">
-    <axis xyz="0.0 0.0 1.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
     <parent link="LeftHipVirtual2"/>
     <child link="LeftLeg1"/>
   </joint>
 
   <!-- Left Knee -->
   <joint name="L_LEG_JOINT4" type="continuous">
-    <axis xyz="-1.0 0.0 0.0"/>
+    <axis xyz="0.0 0.0 1.0"/>
     <origin xyz="0.3 0 0.0" rpy="0 0 0" />
     <parent link="LeftLeg1"/>
     <child link="LeftKneeVirtual"/>

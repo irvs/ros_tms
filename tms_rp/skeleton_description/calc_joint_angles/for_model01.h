@@ -57,7 +57,7 @@ const char* kJointName[] = {
   "L_ARM_JOINT6",
   "L_ARM_JOINT7",
   //"L_ARM_JOINT8",
-  "NECK_JOINTARM0",
+  "NECK_JOINT0",
   "NECK_JOINT1",
   "NECK_JOINT2",
   "R_LEG_JOINT1", // right hip flexion and extension
