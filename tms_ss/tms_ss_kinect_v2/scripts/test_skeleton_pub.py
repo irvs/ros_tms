@@ -17,7 +17,7 @@ JOINT_NAME = (
     'HandLeft',
     'ShoulderRight',
     'ElbowRight',
-    'WaistRight',
+    'WristRight',
     'HandRight',
     'HipLeft',
     'KneeLeft',

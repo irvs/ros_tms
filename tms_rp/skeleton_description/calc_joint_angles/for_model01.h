@@ -20,7 +20,7 @@ typedef enum {
   HandLeft,
   ShoulderRight,
   ElbowRight,
-  WaistRight, // WaistRight
+  WristRight, // WristRight
   HandRight,
   HipLeft,
   KneeLeft,
@@ -286,7 +286,7 @@ int calcForModel01(
         Eigen::Matrix<T, 1, 3>::Zero(), 1.0;
 
       // Right arm cross forearm, R_acf
-      R_acf = (j[ElbowRight]-j[ShoulderRight]).cross((j[WaistRight]-j[ShoulderRight]));
+      R_acf = (j[ElbowRight]-j[ShoulderRight]).cross((j[WristRight]-j[ShoulderRight]));
       ROS_INFO ("R_acf: %f %f %f\n", R_acf(0), R_acf(1), R_acf(2));
 
 //      if (abs(R_acf(0)) > 0.000001 ||
@@ -312,7 +312,7 @@ int calcForModel01(
     // Right Elbow
     if (in.confidence[ShoulderRight] == 2 &&
         in.confidence[ElbowRight] == 2 &&
-        in.confidence[WaistRight] == 2)
+        in.confidence[WristRight] == 2)
     {
       //// Calculation elbow flexion/extension, Teta_ER
       // transformation matrix from SR2 to ER
@@ -324,7 +324,7 @@ int calcForModel01(
         rot_SR2toER, temp_vec3,
         Eigen::Matrix<T,1,3>::Zero(), 1.0;
 
-      temp_vec3 = rot_SR2toER * rot_SRtoSR2 * rot_SMtoSR * rot_WtoSM * (j[WaistRight]-j[ElbowRight]);
+      temp_vec3 = rot_SR2toER * rot_SRtoSR2 * rot_SMtoSR * rot_WtoSM * (j[WristRight]-j[ElbowRight]);
 //      std::cout << temp_vec3 << std::endl;
 
       Teta_ER = atan2(temp_vec3(1),temp_vec3(0));

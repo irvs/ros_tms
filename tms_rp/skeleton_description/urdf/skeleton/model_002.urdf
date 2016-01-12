@@ -190,14 +190,13 @@
 
   <joint name="R_ARM_JOINT2" type="continuous">
     <axis xyz="0.0 1.0 0.0"/>
-    <origin xyz="-0.0 0.0 0.0" rpy="0 1.57079632679 0" />
+    <origin xyz="-0.0 0.0 0.0" rpy="0 0 0" />
     <parent link="RightShoulderVirtual1"/>
     <child link="RightShoulderVirtual2"/>
   </joint>
 
   <joint name="R_ARM_JOINT3" type="continuous">
     <axis xyz="1.0 0.0 0.0"/>
-    <!--<origin xyz="-0.0 0.0 0.0" rpy="-1.57079632679 0 0" />-->
     <parent link="RightShoulderVirtual2"/>
     <child link="RightArm1"/>
   </joint>
@@ -205,7 +204,7 @@
   <!-- Right Elbow -->
   <joint name="R_ARM_JOINT4" type="continuous">
     <axis xyz="0.0 0.0 1.0"/>
-    <origin xyz="0 0 0.215" rpy="0 -1.57079632679 0.0" />
+    <origin xyz="0.215 0 0" rpy="0 0 0" />
     <parent link="RightArm1"/>
     <child link="RightElbowVirtual"/>
   </joint>
