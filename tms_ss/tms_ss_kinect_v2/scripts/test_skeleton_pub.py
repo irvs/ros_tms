@@ -17,7 +17,7 @@ JOINT_NAME = (
     'HandLeft',
     'ShoulderRight',
     'ElbowRight',
-    'WristRight',
+    'WaistRight',
     'HandRight',
     'HipLeft',
     'KneeLeft',
@@ -40,23 +40,23 @@ INPUT_JOINT_DATA = ((
     (0.0, 0.0, 1.3), #SpineMid
     (0.0, 0.0, 1.7), #Neck
     (0.0, 0.04, 1.8), #Head
-    (-0.3, 0.0, 1.6), #ShoulderLeft
+    (-0.2, 0.0, 1.6), #ShoulderLeft
 #    (-0.3, 0.0, 1.3),
-    (-0.3-(0.3*1.41432), 0.3, 1.3), #ElbowLeft
-    (-0.3, 0.0, 1.0), #WristLeft
-    (-0.3, 0.0, 0.9), #HandLeft
-    (0.3, 0.0, 1.6), #ShoulderRight
-    (0.3, 0.0, 1.3), #ElbowRight
-    (0.3, 0.0, 1.0), #WristRight
-    (0.3, 0.0, 0.9), #HandRight
-    (-0.2, 0.0, 1.0), #HipLeft
-    (-0.2, 0.0, 0.5), #KneeLeft
-    (-0.2, 0.0, 0.0), #AnkleLeft
-    (-0.2, 0.1, 0.0), #FootLeft
-    (0.2, 0.0, 1.0), #HipRight
-    (0.2, 0.0, 0.5), #KneeRight
-    (0.2, 0.0, 0.0), #AnkleRight
-    (0.2, 0.1, 0.0), #FootRight
+    (-0.4, -0.0, 1.6), #ElbowLeft
+    (-0.6, -0.0, 1.6), #WristLeft
+    (-0.0, 0.0, 0.0), #HandLeft
+    (0.2, 0.0, 1.6), #ShoulderRight
+    (0.4, 0.0, 1.6), #ElbowRight
+    (0.6, 0.0, 1.6), #WristRight
+    (0.0, 0.0, 0.0), #HandRight
+    (-0.1, 0.0, 1.0), #HipLeft
+    (-0.1, 0.0, 0.7), #KneeLeft
+    (-0.1, 0.0, 0.3), #AnkleLeft
+    (-0.1, 0.1, 0.3), #FootLeft
+    (0.1, 0.0, 1.0), #HipRight
+    (0.1, 0.0, 0.7), #KneeRight
+    (0.1, 0.0, 0.3), #AnkleRight
+    (0.1, 0.1, 0.3), #FootRight
     (0.0, 0.0, 1.6), #SpineShoulder
     (0.0, 0.0, 0.0), #HandTipLeft
     (0.0, 0.0, 0.0), #ThumpLeft
