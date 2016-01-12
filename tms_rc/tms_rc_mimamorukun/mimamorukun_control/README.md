@@ -7,7 +7,13 @@ roslaunch tms_rc_mimamorukun_control minimal.launch
 This node serve
 * Subcrive topic for control **velocity**
 * Publish topics for **odometry** and **tf** information
+
 You must launch this file first at all.
+
+If you want to change IP address and port setting, you must modify minimal.launch.
+You can check IP address and port setting by connecting usb to Mbed(micro controller) in robot.
+
+
 ---
 ### Joystick control
 ```
