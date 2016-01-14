@@ -224,8 +224,7 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
   camera_direction_cam = Eigen::Vector3f::UnitZ();
   float dot_skeleton_camera = skeleton_direction_cam.dot(camera_direction_cam);
 
-  //if (msg->face_state == 2)
-  if (1)
+  if (msg->face_state == 2)
   {
 		std::cout << "WARNING: face state is ignored" << std::endl;
     // Log face state and storage as valid skeleton

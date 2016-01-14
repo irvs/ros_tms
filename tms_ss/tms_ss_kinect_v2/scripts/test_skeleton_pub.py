@@ -54,7 +54,7 @@ INPUT_JOINT_DATA = ((
     (-0.1, 0.0, 0.3), #AnkleLeft
     (-0.1, 0.1, 0.3), #FootLeft
     (0.1, 0.0, 1.0), #HipRight
-    (0.1, 0.0, 0.7), #KneeRight
+    (0.1, 0.2, 0.7), #KneeRight
     (0.1, 0.0, 0.3), #AnkleRight
     (0.1, 0.1, 0.3), #FootRight
     (0.0, 0.0, 1.6), #SpineShoulder

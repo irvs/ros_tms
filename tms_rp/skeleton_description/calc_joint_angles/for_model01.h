@@ -177,10 +177,10 @@ int calcForModel01(
     T_WtoSM << rot_WtoSM, temp_vec3, Eigen::Matrix<T,1,3>::Zero(), 1;
 
     // Left Arm
-    if (in.confidence[SpineShoulder] == 2 &&
-        in.confidence[ShoulderLeft] == 2 &&
-        in.confidence[SpineMid] == 2 &&
-        in.confidence[ElbowLeft] == 2)
+    if (in.confidence[SpineShoulder] >= 1 &&
+        in.confidence[ShoulderLeft] >= 1 &&
+        in.confidence[SpineMid] >= 1 &&
+        in.confidence[ElbowLeft] >= 1)
     {
       //// Calculation arm_L flexion/extention, Teta_SL and arm_L abductioin/adduction, Phi_SL
       // transformation matrix from SM point to SL point (translation only)
@@ -232,9 +232,9 @@ int calcForModel01(
     }
 
     // Left Elbow
-    if (in.confidence[ShoulderLeft] == 2 &&
-        in.confidence[ElbowLeft] == 2 &&
-        in.confidence[WristLeft] == 2)
+    if (in.confidence[ShoulderLeft] >= 1 &&
+        in.confidence[ElbowLeft] >= 1 &&
+        in.confidence[WristLeft] >= 1)
     {
       //// Calculation elbow flexion/extension, Teta_EL
       // transformation matrix from SL2 to EL
@@ -255,10 +255,10 @@ int calcForModel01(
     }
 
     // Right Arm
-    if (in.confidence[SpineShoulder] == 2 &&
-        in.confidence[ShoulderRight] == 2 &&
-        in.confidence[SpineMid] == 2 &&
-        in.confidence[ElbowRight] == 2)
+    if (in.confidence[SpineShoulder] >= 1 &&
+        in.confidence[ShoulderRight] >= 1 &&
+        in.confidence[SpineMid] >= 1 &&
+        in.confidence[ElbowRight] >= 1)
     {
       //// Calculation arm_R flexion/extention, Teta_SR and arm_R abductioin/adduction, Phi_SR
       // transformation matrix from SM point to SR point (translation only)
@@ -310,9 +310,9 @@ int calcForModel01(
     }
 
     // Right Elbow
-    if (in.confidence[ShoulderRight] == 2 &&
-        in.confidence[ElbowRight] == 2 &&
-        in.confidence[WristRight] == 2)
+    if (in.confidence[ShoulderRight] >= 1 &&
+        in.confidence[ElbowRight] >= 1 &&
+        in.confidence[WristRight] >= 1)
     {
       //// Calculation elbow flexion/extension, Teta_ER
       // transformation matrix from SR2 to ER
@@ -334,10 +334,10 @@ int calcForModel01(
 
 
     // Left Leg
-    if (in.confidence[SpineBase] == 2 &&
-        in.confidence[HipLeft] == 2 &&
-        in.confidence[SpineMid] == 2 &&
-        in.confidence[KneeLeft] == 2)
+    if (in.confidence[SpineBase] >= 1 &&
+        in.confidence[HipLeft] >= 1 &&
+        in.confidence[SpineMid] >= 1 &&
+        in.confidence[KneeLeft] >= 1)
     {
       //// Calculation Leg_L flexion/extention, Teta_HL and Leg_L abductioin/adduction, Phi_HL
       // transformation matrix from SM point to SL point (translation only)
@@ -376,7 +376,7 @@ int calcForModel01(
       {
 	// thigh cross shank in HL2 frame, L_tcs
         L_tcs = rot_HLtoHL2*rot_SMtoHL*rot_WtoSM*L_tcs;
-        Teta_HL2 = atan2(L_tcs(2),L_tcs(1)) - M_PI/2.0;
+        Teta_HL2 = atan2(L_tcs(2),L_tcs(1)) + M_PI/2.0;
         out["L_LEG_JOINT3"] = Teta_HL2;
         ROS_INFO("L-LEG Lateral/Medial: %f, (%f)\n", Teta_HL2*180/M_PI, L_tcs(0));
       }
@@ -389,9 +389,9 @@ int calcForModel01(
     }
 
     // Left Knee
-    if (in.confidence[HipLeft] == 2 &&
-        in.confidence[KneeLeft] == 2 &&
-        in.confidence[AnkleLeft] == 2)
+    if (in.confidence[HipLeft] >= 1 &&
+        in.confidence[KneeLeft] >= 1 &&
+        in.confidence[AnkleLeft] >= 1)
     {
       //// Calculation knee flexion/extension, Teta_KL
       // transformation matrix from HL2 to KL
@@ -412,10 +412,10 @@ int calcForModel01(
     }
 
     // Right Leg
-    if (in.confidence[SpineBase] == 2 &&
-        in.confidence[HipRight] == 2 &&
-        in.confidence[SpineMid] == 2 &&
-        in.confidence[KneeRight] == 2)
+    if (in.confidence[SpineBase] >= 1 &&
+        in.confidence[HipRight] >= 1 &&
+        in.confidence[SpineMid] >= 1 &&
+        in.confidence[KneeRight] >= 1)
     {
       //// Calculation leg_R flexion/extention, Teta_HR and leg_R abductioin/adduction, Phi_HR
       // transformation matrix from SM point to SR point (translation only)
@@ -454,7 +454,7 @@ int calcForModel01(
       {
 	// thigh cross shank in HR2 frame, R_tcs
         R_tcs = rot_HRtoHR2*rot_SMtoHR*rot_WtoSM*R_tcs;
-        Teta_HR2 = atan2(R_tcs(2),R_tcs(1)) - M_PI/2.0;
+        Teta_HR2 = atan2(R_tcs(2),R_tcs(1)) + M_PI/2.0; //edit
         out["R_LEG_JOINT3"] = Teta_HR2;
         ROS_INFO("R-LEG Lateral/Medial: %f, (%f)\n", Teta_HR2*180/M_PI, R_tcs[0]);
       }
@@ -467,9 +467,9 @@ int calcForModel01(
     }
 
     // Right Knee
-    if (in.confidence[HipRight] == 2 &&
-        in.confidence[KneeRight] == 2 &&
-        in.confidence[AnkleRight] == 2)
+    if (in.confidence[HipRight] >= 1 &&
+        in.confidence[KneeRight] >= 1 &&
+        in.confidence[AnkleRight] >= 1)
     {
       //// Calculation knee flexion/extension, Teta_KR
       // transformation matrix from HR2 to KR
