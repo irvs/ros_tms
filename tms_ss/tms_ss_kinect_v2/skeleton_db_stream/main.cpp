@@ -11,7 +11,7 @@
 #include <tms_msg_ss/SkeletonArray.h>
 #include <tms_msg_db/TmsdbStamped.h>
 
-#include "for_model01.h"
+#include "for_model02.h"
 
 #define SKELETON_ID 1006
 

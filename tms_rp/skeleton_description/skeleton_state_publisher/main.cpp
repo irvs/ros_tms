@@ -14,7 +14,7 @@
 #include <tms_msg_db/TmsdbStamped.h>
 
 #include "picojson.h"
-#include "../calc_joint_angles/for_model01.h"
+#include "../calc_joint_angles/for_model02.h"
 
 #define PARENT_LINK "world_link"
 #define CHILD_LINK "Body"

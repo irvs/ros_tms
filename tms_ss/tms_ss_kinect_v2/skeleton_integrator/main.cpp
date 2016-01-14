@@ -15,7 +15,7 @@
 #include <tms_msg_ss/SkeletonArray.h>
 #include <tms_msg_ss/SkeletonStreamWrapper.h>
 
-#include <for_model01.h>
+#include <for_model02.h>
 
 #define MAX_USERS 12
 
