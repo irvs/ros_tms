@@ -64,7 +64,8 @@ SkeletonsStatePublisher::SkeletonsStatePublisher(
     data_sub_ = nh_.subscribe("/tms_db_publisher", 1,
         &SkeletonsStatePublisher::callback2, this);
   }
-  else{
+  else 
+	{
     data_sub_ = nh_.subscribe("integrated_skeleton_stream", 1,
         &SkeletonsStatePublisher::callback, this);
   }

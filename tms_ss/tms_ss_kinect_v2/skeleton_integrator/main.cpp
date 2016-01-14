@@ -139,6 +139,7 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
 
 
   tms_msg_ss::Skeleton integrated_skeleton;
+	integrated_skeleton.header = msg->header;
   integrated_skeleton.user_id = 0;
   integrated_skeleton.position.resize(JOINT_NUM);
   integrated_skeleton.orientation.resize(JOINT_NUM);

@@ -196,6 +196,8 @@ class SkeletonStream:
                 rospy.loginfo('\n-----\nSending skeleton {0}\n  Camera: {1}\n  FaceState: {2}'
                               .format(self.data.user_id, self.camera_id, self.face_state))
                 data_wrapper = SkeletonStreamWrapper()
+                data_wrapper.header.stamp = rospy.Time.now()
+                data_wrapper.header.frame_id = 'world_link'
                 data_wrapper.camera_number = self.camera_id
                 data_wrapper.skeleton = self.data
                 data_wrapper.face_state = int(self.face_state)
