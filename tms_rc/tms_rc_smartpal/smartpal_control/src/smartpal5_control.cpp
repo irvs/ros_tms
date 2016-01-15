@@ -194,6 +194,8 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
 									break;
 								} else {
 									ROS_ERROR("Failed to get collect armL status:%d\n", state);
+									ros::Duration(1.0).sleep();
+									smartpal->armClearAlarm(ArmL);
 								}
 								ros::Time now = ros::Time::now();
 								// Time out
@@ -708,6 +710,9 @@ int main(int argc, char **argv)
   smartpal->gripperSetServo(GripperR, ON);
   smartpal->gripperSetServo(GripperL, ON);
   smartpal->lumbaSetServo(ON);
+
+	smartpal->armGetSoftLimit(ArmL);
+
 
   ros::Time tNow;
   ros::Rate loop_rate(10); // 10Hz frequency (0.1 sec)

@@ -32,8 +32,9 @@ GRIPPER_NEUTRAL = 100
 GRIPPER_OPEN = 101
 GRIPPER_CLOSE = 102
 
-ARM_NEUTRAL_VAL = [0.0, -0.08,0.0,0.0,0.0,0.0,0.0]
-ARM_GRASPING_VAL = [0.0, -0.2,0.0,0.0,0.0,0.0,0.0]
+ARM_NEUTRAL_VAL = [0.0, -0.17,0.0,0.0,0.0,0.0,0.0]
+ARM_GRASPING_VAL = [0.84,-1.31,-0.73,0.65,1.13,-0.24,0.55]
+ARM_GRASPING2_VAL = [0.0, -0.2,0.0,0.0,0.0,0.0,0.0]
 ARM_GIVE_VAL = [0.65,-0.08,0.0,0.93,0.0,0.0,0.0]
 ARM_GIVE_END_VAL = [0.65,-0.5,0.0,0.93,0.0,0.0,0.0]
 
@@ -73,6 +74,8 @@ class SubTaskArmMove:
             result = arm.go()
         elif req.move_id == ARM_GRASPING:
             arm.set_joint_value_target(ARM_GRASPING_VAL)
+            result = arm.go()
+            arm.set_joint_value_target(ARM_GRASPING2_VAL)
             result = arm.go()
         elif req.move_id == ARM_GIVE:
             arm.set_joint_value_target(ARM_GIVE_VAL)

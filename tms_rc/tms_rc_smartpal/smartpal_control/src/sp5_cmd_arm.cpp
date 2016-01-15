@@ -671,3 +671,30 @@ int8_t Client::armMoveLinearRel(int8_t RL, double cpType, double *cartesianPos, 
     return ret;
 }
 //------------------------------------------------------------------------------
+
+int8_t Client::armGetSoftLimit(int8_t RL){
+  	int8_t ret;
+    ArmLimitSeq_var limit;
+
+    if(RL==ArmR)
+    {
+  	  ret = CommandObj_ArmR -> getJointSoftLimit(limit);
+      printf("right arm\n");
+    }
+    else if(RL==ArmL)
+    {
+      ret = CommandObj_ArmL -> getJointSoftLimit(limit);
+      printf("left arm\n");
+    }
+    else
+    {
+      return RL_ERR;
+    }
+
+    for(int i=0;i<7;i++){
+      printf("j%d:[%f~%f] ",i+1,limit[i].lower,limit[i].upper);
+    }
+    printf("\n");
+
+    return ret;
+}

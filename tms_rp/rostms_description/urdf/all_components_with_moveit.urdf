@@ -821,7 +821,7 @@
     <child link="l_arm_j1_link"/>
     <origin rpy="3.14159 0 0" xyz="-0.025 -0.480 0.200"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-0.7679" upper="3.1066" velocity="1.0"/>
+    <limit effort="100.0" lower="-0.76" upper="3.12" velocity="1.0"/>
   </joint>
   <link name="l_arm_j1_link">
     <visual>
@@ -848,7 +848,7 @@
     <child link="l_arm_j2_link"/>
     <origin rpy="1.57075 3.14159 1.57075" xyz="0 0 0"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="100.0" lower="-1.9024" upper="0.2443" velocity="1.0"/>
+    <limit effort="100.0" lower="-1.8" upper="0.21" velocity="1.0"/>
   </joint>
   <link name="l_arm_j2_link">
     <visual>
@@ -875,7 +875,7 @@
     <child link="l_arm_j3_link"/>
     <origin rpy="1.57075 1.57075 1.57075" xyz="0 0 0"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="100.0" lower="-2.0769" upper="2.0769" velocity="1.0"/>
+    <limit effort="100.0" lower="-2.0" upper="2.0" velocity="1.0"/>
   </joint>
   <link name="l_arm_j3_link">
     <visual>
@@ -902,7 +902,7 @@
     <child link="l_arm_j4_link"/>
     <origin rpy="-1.57075 0 3.14159" xyz="-0.02 0.0 0.25"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-0.0174" upper="2.2514" velocity="1.0"/>
+    <limit effort="100.0" lower="-0.0" upper="2.2" velocity="1.0"/>
   </joint>
   <link name="l_arm_j4_link">
     <visual>
@@ -929,7 +929,7 @@
     <child link="l_arm_j5_link"/>
     <origin rpy="1.57075 0 0" xyz="-0.02 0.0 0.0"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="100.0" lower="-2.0769" upper="2.0769" velocity="1.0"/>
+    <limit effort="100.0" lower="-2.0" upper="2.0" velocity="1.0"/>
   </joint>
   <link name="l_arm_j5_link">
     <visual>
@@ -956,7 +956,7 @@
     <child link="l_arm_j6_link"/>
     <origin rpy="-1.57075 1.57075 0" xyz="0.0 0.0 0.28"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-0.2617" upper="0.7504" velocity="1.0"/>
+    <limit effort="100.0" lower="-0.25" upper="0.75" velocity="1.0"/>
   </joint>
   <link name="l_arm_j6_link">
     <visual>
@@ -983,7 +983,7 @@
     <child link="l_arm_j7_link"/>
     <origin rpy="1.57075 3.14159 0" xyz="0.0 0.0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="0" upper="0.5" velocity="1.0"/>
+    <limit effort="100.0" lower="-1.5" upper="0.8" velocity="1.0"/>
   </joint>
   <link name="l_arm_j7_link">
     <visual>
@@ -1084,7 +1084,7 @@
     <child link="r_arm_j1_link"/>
     <origin rpy="3.14159 0 0" xyz="-0.025 -0.480 -0.200"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-0.7679" upper="3.1066" velocity="1.0"/>
+    <limit effort="100.0" lower="-0.76" upper="3.12" velocity="1.0"/>
   </joint>
   <link name="r_arm_j1_link">
     <visual>
@@ -1111,7 +1111,7 @@
     <child link="r_arm_j2_link"/>
     <origin rpy="-1.57075 0 -1.57075" xyz="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-1.9024" upper="0.2443" velocity="1.0"/>
+    <limit effort="100.0" lower="-1.8" upper="0.21" velocity="1.0"/>
   </joint>
   <link name="r_arm_j2_link">
     <visual>
@@ -1138,7 +1138,7 @@
     <child link="r_arm_j3_link"/>
     <origin rpy="1.57075 1.57075 1.57075" xyz="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-2.0769" upper="2.0769" velocity="1.0"/>
+    <limit effort="100.0" lower="-2.0" upper="2.0" velocity="1.0"/>
   </joint>
   <link name="r_arm_j3_link">
     <visual>
@@ -1165,7 +1165,7 @@
     <child link="r_arm_j4_link"/>
     <origin rpy="-1.57075 0 3.14159" xyz="-0.02 0.0 0.25"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-0.0174" upper="2.2514" velocity="1.0"/>
+    <limit effort="100.0" lower="-0.0" upper="2.2" velocity="1.0"/>
   </joint>
   <link name="r_arm_j4_link">
     <visual>
@@ -1192,7 +1192,7 @@
     <child link="r_arm_j5_link"/>
     <origin rpy="1.57075 0 0" xyz="-0.02 0.0 0.0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-2.0769" upper="2.0769" velocity="1.0"/>
+    <limit effort="100.0" lower="-2.0" upper="2.0" velocity="1.0"/>
   </joint>
   <link name="r_arm_j5_link">
     <visual>
@@ -1219,7 +1219,7 @@
     <child link="r_arm_j6_link"/>
     <origin rpy="-1.57075 1.57075 0" xyz="0.0 0.0 0.28"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-0.2617" upper="0.7504" velocity="1.0"/>
+    <limit effort="100.0" lower="-0.25" upper="0.75" velocity="1.0"/>
   </joint>
   <link name="r_arm_j6_link">
     <visual>
@@ -1246,7 +1246,7 @@
     <child link="r_arm_j7_link"/>
     <origin rpy="1.57075 3.14159 0" xyz="0.0 0.0 0"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="100.0" lower="-1.0" upper="1.0122" velocity="1.0"/>
+    <limit effort="100.0" lower="-1.5" upper="0.8" velocity="1.0"/>
   </joint>
   <link name="r_arm_j7_link">
     <visual>

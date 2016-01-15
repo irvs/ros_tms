@@ -144,6 +144,7 @@ public:
     int8_t armMoveJointRel(int8_t RL, double *joint_rad, double vel_radps);
     int8_t armMoveLinearAbs(int8_t RL, double cpType, double *cartesianPos, double elbow_rad, double vt_mps, double vr_radps);
     int8_t armMoveLinearRel(int8_t RL, double cpType, double *cartesianPos, double elbow_rad, double vt_mps, double vr_radps);
+    int8_t armGetSoftLimit(int8_t RL);
 
     //--------------------------------------------------------------------------
     // SmartPal Gripper

@@ -40,14 +40,14 @@ GROUP_NAME_GRIPPER = 'l_gripper'
 
 GRIPPER_FRAME = 'l_end_effector_link'
 GRIPPER_OPEN = [-1.0]
-GRIPPER_CLOSED = [-0.7]
-GRIPPER_NEUTRAL = [0.0]
+GRIPPER_CLOSED = [-0.65]
+GRIPPER_NEUTRAL = [-0.2]
 GRIPPER_JOINT_NAMES = ['l_gripper_thumb_joint']
 GRIPPER_EFFORT = [1.0]
 
 REFERENCE_FRAME = 'world_link'
 
-INIT_ARM_VALUE = [0.0, -0.08,0.0,0.0,0.0,0.0,0.0]
+INIT_ARM_VALUE = [0.0, -0.17,0.0,0.0,0.0,0.0,0.0]
 GRASP_ARM_VALUE = [0.0, -0.2,0.0,0.0,0.0,0.0,0.0]
 
 class SubTaskPick:
