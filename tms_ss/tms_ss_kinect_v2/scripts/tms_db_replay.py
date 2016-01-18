@@ -32,7 +32,6 @@ class TmsDbReplayer():
     def sendDbHistoryInformation(self):
         # Input
         id_array = range(1006, 1019)
-        rate = rospy.Rate(100)
         d1 = datetime.now()-timedelta(days=4,hours=0)
         d2 = d1+timedelta(days=0,hours=1,minutes=0)
         t1 = 'ISODate('+d1.isoformat()+')'
@@ -46,6 +45,7 @@ class TmsDbReplayer():
         db.history.create_index([('time', pymongo.ASCENDING), ('id', pymongo.ASCENDING)])
 
         # Publish data
+        rate = rospy.Rate(100)  # [Hz] : Keep consistence with db_publisher
         rospy.loginfo('Start to publish data.')
         prev_time = d1
         t_delta = timedelta(milliseconds=10*play_speed)
@@ -54,7 +54,8 @@ class TmsDbReplayer():
             t1 = 'ISODate('+prev_time.isoformat()+')'
             t2 = 'ISODate('+curr_time.isoformat()+')'
             rospy.loginfo('from {0} to {1}'.format(t1,t2))
-            cursor = db.history.find({'id':{'$gte':1006, '$lte':1018}, 'time':{'$gte':t1,'$lt':t2}, 'state':1})
+
+            cursor = db.history.find({'$or':[json.loads('{"id":'+str(x)+'}') for x in id_array], 'time':{'$gte':t1,'$lt':t2}, 'state':1})
             for doc in cursor:
                 del doc['_id']
                 temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
