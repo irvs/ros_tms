@@ -30,18 +30,30 @@ class TmsDbReplayer():
         self.sendDbHistoryInformation()
 
     def sendDbHistoryInformation(self):
-        rate = rospy.Rate(100) # 100hz
+        rate = rospy.Rate(10)
 
         while not rospy.is_shutdown():
             temp_dbdata = Tmsdb()
             object_information = TmsdbStamped()
 
-            cursor = db.history.find({'id':{'$gte':1006, '$lte':1018}, 'state':1})
+            d = datetime.now()-timedelta(days=3,hours=11);
+            t1 = 'ISODate('+d.isoformat()+')'
+            t2 = 'ISODate('+(d+timedelta(days=0,hours=1,minutes=0)).isoformat()+')'
+            rospy.loginfo('Extracting data: from {0} to {1}'.format(t1,t2))
+            cursor = db.history.find({'id':{'$gte':1006, '$lte':1018}, 'time':{'$gte':t1,'$lt':t2}, 'state':1}).sort('time')
+            cursor_size = cursor.count()  # I don't know why this sequence needs much time.
+            rospy.loginfo('Arranging data ...:')
+            prog_count = 0
             for doc in cursor:
                 del doc['_id']
                 temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
                 object_information.tmsdb.append(temp_dbdata)
+                if len(object_information.tmsdb) >= cursor_size/10 * prog_count:
+                    rospy.loginfo('Progress:[{0}%]'.format(prog_count*10))
+                    prog_count += 1
+            rospy.loginfo('Start to publish data.')
             self.data_pub.publish(object_information)
+            rospy.loginfo('Finish publishing data.')
 
             rate.sleep()
 

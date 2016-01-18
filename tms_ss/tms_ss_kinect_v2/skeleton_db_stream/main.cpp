@@ -82,9 +82,13 @@ void SkeletonDBStream::callback(const tms_msg_ss::SkeletonArray::ConstPtr& msg)
     double rr, rp, ry;
     tf::Matrix3x3(tf::Quaternion(quat.x(),quat.y(),quat.z(),quat.w())).getRPY(rr,rp,ry);
 
+		// Time string
+		std::stringstream time_stream;
+		time_stream << "ISODate(" << boost::posix_time::to_iso_extended_string(now.toBoost()) << ")";
+
     // set data for DB
     // ref: ~/catkin_ws/src/ros_tms/tms_msg/tms_msg_db
-    data.time = boost::posix_time::to_iso_extended_string(now.toBoost());
+    data.time = time_stream.str();
     //data.type
     data.id = SKELETON_ID + i;
     data.name = data_name.str();
