@@ -36,9 +36,16 @@ class TmsDbReplayer():
             temp_dbdata = Tmsdb()
             object_information = TmsdbStamped()
 
-            cursor = db.history.find(
-                    {'id':{'$gte':1006, '$lte':1018}, 'time':{'$lte':'ISODate(2016-01-15T00:00:00.000Z)'}, 'state':1})
+            d = datetime.now()-timedelta(days=3,hours=11);
+            t1 = 'ISODate('+d.isoformat()+')'
+            t2 = 'ISODate('+(d+timedelta(days=0,hours=1,minutes=0)).isoformat()+')'
+            print(t1)
+            #print(db.history.ensure_index({'id':1,'time':1}))
+            #cursor = db.history.find({'id':{'$gte':1006, '$lte':1018}, 'time':{'$gte':t1,'$lt':t2}, 'state':1}).sort('time')
+            cursor = db.history.find({'id':{'$gte':1006, '$lte':1018}, 'time':{'$gte':t1,'$lt':t2}, 'state':1})
             for doc in cursor:
+                #if not rospy.is_shutdown():
+                #    print(doc)
                 del doc['_id']
                 temp_dbdata = db_util.document_to_msg(doc, Tmsdb)
                 object_information.tmsdb.append(temp_dbdata)
