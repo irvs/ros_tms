@@ -25,16 +25,16 @@ class TmsDbReplayer():
         if not self.is_connected:
             raise Exception("Problem of connection")
 
-        self.sendDbHistoryInformation(range(1006, 1019), 'tms_db_replayer', '2016-01-18T04:00:00', '2016-01-18T05:00:00', 600)
+        self.sendDbHistoryInformation(range(1006, 1019), 600)
 
-    def sendDbHistoryInformation(self, id_array, topic_name, start_date, end_date, play_speed):
+    def sendDbHistoryInformation(self, id_array, start_date, end_date, play_speed):
         # Input
-        d1 = datetime.strptime(start_date, '%Y-%m-%dT%H:%M:%S')
-        d2 = datetime.strptime(end_date, '%Y-%m-%dT%H:%M:%S')
+        d1 = datetime.now()-timedelta(days=4,hours=0)
+        d2 = d1+timedelta(days=0,hours=1,minutes=0)
         t1 = 'ISODate('+d1.isoformat()+')'
         t2 = 'ISODate('+d2.isoformat()+')'
 
-        self.data_pub = rospy.Publisher(topic_name, TmsdbStamped, queue_size=10)
+        self.data_pub = rospy.Publisher('tms_db_replayer', TmsdbStamped, queue_size=10)
 
         # Extract data from DB
         temp_dbdata = Tmsdb()
