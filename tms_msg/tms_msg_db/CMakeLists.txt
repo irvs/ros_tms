@@ -26,6 +26,7 @@ add_message_files(
 add_service_files(
   FILES
   TmsdbGetData.srv
+	TmsdbCallReplayer.srv
   tmsdb_get_furnitures_info.srv
   tmsdb_get_movable_furnitures_info.srv
   tmsdb_get_objects_info.srv
