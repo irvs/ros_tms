@@ -5,21 +5,20 @@
   <arg name="host_name" default="192.168.4.170"/>
   <arg name="using_numbers" default="1 2 3 4 5 6 7 8 9"/>
   <arg name="using_db" default="true"/>
+  <arg name="using_db_history" default="history"/>
 
   <!-- Make skeleton streams -->
   <!--<node name="skeleton_stream" pkg="tms_ss_kinect_v2" args="$(arg host_name) $(arg using_numbers)" type="skeleton_stream.py"/>-->
   <param name="using_numbers" value="$(arg using_numbers)"/>
   <node name="skeleton_integrator" pkg="tms_ss_kinect_v2" args="$(arg using_numbers)" type="skeleton_integrator" output="screen"/>
   <param name="using_db" value="$(arg using_db)"/>
+  <param name="using_db_history" value="$(arg using_db_history)"/>
   <node name="skeleton_db_stream" pkg="tms_ss_kinect_v2" type="skeleton_db_stream"/>
 
   <!-- For visualize furnitures in rViz -->
-  <!--<group ns="tmp">-->
-    <param name="robot_description"
-           command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/environments_standalone.urdf.xacro'" />
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
-    <!--<node name="tms_db_state_publisher" pkg="tms_db_state_publisher" type="tms_db_state_publisher"/>-->
-  <!--</group>-->
+	<param name="robot_description"
+				 command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/environments_standalone.urdf.xacro'" />
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
 
   <!-- For visualize kinect in rViz -->
   <param name="kinect_description1"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>

@@ -30,7 +30,8 @@ class SkeletonsStatePublisher
     SkeletonsStatePublisher(
         ros::NodeHandle& nh,
         const std::vector<KDL::Tree>& kdl_forest,
-        const bool& usingDB=false);
+        const bool& usingDB=false,
+        const bool& usingHistoryData=false);
     ~SkeletonsStatePublisher();
 
     void run();
@@ -44,6 +45,7 @@ class SkeletonsStatePublisher
     std::vector<tf::StampedTransform> transforms_;  // Position & Rotation
     std::vector<std::map<std::string, double> >  joint_states;  // Posture
 
+    bool usingHistoryData_;
     bool usingDB_;
 
     // Switch on whether use database.
@@ -55,11 +57,18 @@ class SkeletonsStatePublisher
 SkeletonsStatePublisher::SkeletonsStatePublisher(
     ros::NodeHandle& nh,
     const std::vector<KDL::Tree>& kdl_forest,
-    const bool& usingDB) :
+    const bool& usingDB,
+		const bool& usingHistoryData) :
   nh_(nh),
-  usingDB_(usingDB)
+  usingDB_(usingDB),
+  usingHistoryData_(usingHistoryData)
 {
-  if (usingDB_)
+  if (usingHistoryData_)
+  {
+    data_sub_ = nh_.subscribe("/tms_db_replayer", 1,
+        &SkeletonsStatePublisher::callback2, this);
+  }
+	else if (usingDB_)
   {
     data_sub_ = nh_.subscribe("/tms_db_publisher", 1,
         &SkeletonsStatePublisher::callback2, this);
@@ -206,6 +215,15 @@ int main(int argc, char **argv)
   {
     ROS_INFO("SkeletonsStatePublisher: Get the number of skeletons -> %d", num_of_skeletons);
   }
+
+  bool usingHistoryData = false;
+  if (nh.getParam("using_db_history", usingHistoryData))
+  {
+    if (usingHistoryData)
+    {
+      ROS_INFO("SkeletonsStatePublisher: Get history data from DB.");
+    }
+  }
   bool usingDB = false;
   if (nh.getParam("using_db", usingDB))
   {
@@ -235,7 +253,7 @@ int main(int argc, char **argv)
   }
 
   // Run
-  SkeletonsStatePublisher obj(nh, kdl_forest, usingDB);
+  SkeletonsStatePublisher obj(nh, kdl_forest, usingDB, usingHistoryData);
 
   obj.run();
 

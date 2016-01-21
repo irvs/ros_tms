@@ -2212,18 +2212,7 @@ Visualization Manager:
       Marker Topic: /skeleton_visualization
       Name: MarkerArray
       Namespaces:
-        skeleton1: true
-        skeleton10: true
-        skeleton11: true
-        skeleton12: true
-        skeleton2: true
-        skeleton3: true
-        skeleton4: true
-        skeleton5: true
-        skeleton6: true
-        skeleton7: true
-        skeleton8: true
-        skeleton9: true
+        {}
       Queue Size: 100
       Value: true
   Enabled: true
@@ -2250,22 +2239,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 15.3959
+      Distance: 9.96251
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 8.53539
-        Y: 3.89465
-        Z: 0.283755
+        X: 8.471
+        Y: 3.41984
+        Z: -0.44673
       Name: Current View
       Near Clip Distance: 0.01
       Pitch: 1.5698
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.73819
+      Yaw: 4.7132
     Saved: ~
 Window Geometry:
   Displays:
