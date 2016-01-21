@@ -177,10 +177,10 @@ int calcForModel01(
     T_WtoSM << rot_WtoSM, temp_vec3, Eigen::Matrix<T,1,3>::Zero(), 1;
 
     // Left Arm
-    if (in.confidence[SpineShoulder] >= 1 &&
-        in.confidence[ShoulderLeft] >= 1 &&
-        in.confidence[SpineMid] >= 1 &&
-        in.confidence[ElbowLeft] >= 1)
+    if (in.confidence[SpineShoulder] >= 2 &&
+        in.confidence[ShoulderLeft] >= 2 &&
+        in.confidence[SpineMid] >= 2 &&
+        in.confidence[ElbowLeft] >= 2)
     {
       //// Calculation arm_L flexion/extention, Teta_SL and arm_L abductioin/adduction, Phi_SL
       // transformation matrix from SM point to SL point (translation only)
@@ -191,12 +191,10 @@ int calcForModel01(
       // Arm Flexion and Extension, Teta_SL
       temp_vec3 = rot_SMtoSL*rot_WtoSM*(j[ElbowLeft]-j[ShoulderLeft]);
       Teta_SL = atan2(temp_vec3(1), temp_vec3(0));
-      out["L_ARM_JOINT1"] = Teta_SL;
       ROS_INFO("L-ARM Flex/Exten: %f\n", Teta_SL*180/M_PI);
 
       // Arm Abduction and Adduction, Phi_SL
       Phi_SL = atan2(-temp_vec3(2),sqrt(pow(temp_vec3(0), 2.0)+pow(temp_vec3(1), 2.0)));
-      out["L_ARM_JOINT2"] = Phi_SL;
       ROS_INFO("L-ARM Abduct/Adduct: %f\n", Phi_SL*180/M_PI);
 
       //// Calculation arm_L lateral/Medial rotation, Teta_SL2
@@ -211,30 +209,37 @@ int calcForModel01(
       L_acf = (j[ElbowLeft]-j[ShoulderLeft]).cross((j[WristLeft]-j[ShoulderLeft]));
       ROS_INFO ("L_acf: %f %f %f\n", L_acf(0), L_acf(1), L_acf(2));
 
-//      if (abs(L_acf(0)) > 0.000001 ||
-//	  abs(L_acf(1)) > 0.000001 || 	         
-//	  abs(L_acf(2)) > 0.000001   )
-
       if (L_acf != Eigen::Matrix<T, 3, 1>::Zero())
       {
-	// arm cross forearm in SL2 frame, L_acf
-        L_acf = rot_SLtoSL2*rot_SMtoSL*rot_WtoSM*L_acf;
-        Teta_SL2 = atan2(L_acf(2),L_acf(1)) - M_PI/2.0;
-        out["L_ARM_JOINT3"] = Teta_SL2;
-        ROS_INFO("L-ARM Lateral/Medial: %f, (%f)\n", Teta_SL2*180/M_PI, L_acf[0]);
+	L_acf(0) = abs(L_acf(0));
+	L_acf(1) = abs(L_acf(1));
+	L_acf(2) = abs(L_acf(2));      	
+	if (L_acf(0) > 0.000001 ||
+	    L_acf(1) > 0.000001 || 	         
+	    L_acf(2) > 0.000001   )
+	{
+		// arm cross forearm in SL2 frame, L_acf
+        	L_acf = rot_SLtoSL2*rot_SMtoSL*rot_WtoSM*L_acf;
+        	Teta_SL2 = atan2(L_acf(2),L_acf(1)) - M_PI/2.0;
+        	ROS_INFO("L-ARM Lateral/Medial: %f\n", Teta_SL2*180/M_PI);
+	}
+	else
+	{
+		Teta_SL2 = 0;
+        	ROS_INFO("L-ARM Lateral/Medial (zero cross): %f\n", Teta_SL2);
+	}
       }
       else
       {
         Teta_SL2 = 0;
-        out["L_ARM_JOINT3"] = Teta_SL2;
         ROS_INFO("L-ARM Lateral/Medial (zero cross): %f\n", Teta_SL2);
       }
     }
 
     // Left Elbow
-    if (in.confidence[ShoulderLeft] >= 1 &&
-        in.confidence[ElbowLeft] >= 1 &&
-        in.confidence[WristLeft] >= 1)
+    if (in.confidence[ShoulderLeft] >= 2 &&
+        in.confidence[ElbowLeft] >= 2 &&
+        in.confidence[WristLeft] >= 2)
     {
       //// Calculation elbow flexion/extension, Teta_EL
       // transformation matrix from SL2 to EL
@@ -250,15 +255,67 @@ int calcForModel01(
 //      std::cout << temp_vec3 << std::endl;
 
       Teta_EL = atan2(temp_vec3(1),temp_vec3(0));
-      out["L_ARM_JOINT4"] = Teta_EL;
       ROS_INFO("L-Elbow: %f\n", Teta_EL*180/M_PI);
     }
 
+// check left arm flexion/extention for impossible movement (lower than -60 and over 180)
+      if (Teta_SL < -M_PI/3)
+      { 
+	if (Teta_SL >= -M_PI/2) // quandrant (+x,-y) 
+	{
+      	  Teta_SL = -M_PI/3;
+	  ROS_INFO("(MAX ARM EXTENSION)");
+	}
+	else // quandrant (-x,-y)
+	{
+	  Teta_SL = M_PI;
+	  ROS_INFO("(MAX ARM FLEXION)");
+	}
+      }
+      out["L_ARM_JOINT1"] = Teta_SL;
+      
+// check left arm abduction/adduction for impossible movement 
+      // check for impossible movement (less than -45)
+      if (Phi_SL < -M_PI/4)
+      {
+	Phi_SL = -M_PI/4;
+	ROS_INFO("(MAX ARM ADDUCTION)");
+      }
+      out["L_ARM_JOINT2"] = Phi_SL;
+
+// check left arm lateral/medial rotation for impossible movement (lower than -40 and over 40)
+      	if (Teta_SL2 < -M_PI*2/9)
+      	{
+      	  Teta_SL2 = -M_PI*2/9;
+	  ROS_INFO("(MAX ARM MEDIAL)");	
+      	}
+      	if (Teta_SL2 > M_PI*2/9)
+      	{
+	  Teta_SL2 = M_PI*2/9;
+	  ROS_INFO("(MAX ARM LATERAL)");
+      	}
+        out["L_ARM_JOINT3"] = Teta_SL2;
+
+// check left elbow for impossible movement (lower than 0 and over 150)
+      if (Teta_EL < 0)
+      {
+      	Teta_EL = 0;
+	ROS_INFO("(MAX ELBOW EXTENSION)");
+      }
+      if (Teta_EL > M_PI*5/6)
+      {
+	Teta_EL = M_PI*5/6;
+	ROS_INFO("(MAX ELBOW FLEXION)");
+      }
+      out["L_ARM_JOINT4"] = Teta_EL;
+
+
+
     // Right Arm
-    if (in.confidence[SpineShoulder] >= 1 &&
-        in.confidence[ShoulderRight] >= 1 &&
-        in.confidence[SpineMid] >= 1 &&
-        in.confidence[ElbowRight] >= 1)
+    if (in.confidence[SpineShoulder] >= 2 &&
+        in.confidence[ShoulderRight] >= 2 &&
+        in.confidence[SpineMid] >= 2 &&
+        in.confidence[ElbowRight] >= 2)
     {
       //// Calculation arm_R flexion/extention, Teta_SR and arm_R abductioin/adduction, Phi_SR
       // transformation matrix from SM point to SR point (translation only)
@@ -269,12 +326,10 @@ int calcForModel01(
       // Arm Flexion and Extension, Teta_SR
       temp_vec3 = rot_SMtoSR*rot_WtoSM*(j[ElbowRight]-j[ShoulderRight]);
       Teta_SR = atan2(temp_vec3(1), temp_vec3(0));
-      out["R_ARM_JOINT1"] = Teta_SR;
       ROS_INFO("R-ARM Flex/Exten: %f\n", Teta_SR*180/M_PI);
 
       // Arm Abduction and Adduction, Phi_SR
       Phi_SR = atan2(-temp_vec3(2),sqrt(pow(temp_vec3(0), 2.0)+pow(temp_vec3(1), 2.0)));
-      out["R_ARM_JOINT2"] = Phi_SR;
       ROS_INFO("R-ARM Abduct/Adduct: %f\n", Phi_SR*180/M_PI);
 
       //// Calculation arm_R lateral/Medial rotation, Teta_SR2
@@ -289,30 +344,38 @@ int calcForModel01(
       R_acf = (j[ElbowRight]-j[ShoulderRight]).cross((j[WristRight]-j[ShoulderRight]));
       ROS_INFO ("R_acf: %f %f %f\n", R_acf(0), R_acf(1), R_acf(2));
 
-//      if (abs(R_acf(0)) > 0.000001 ||
-//	  abs(R_acf(1)) > 0.000001 || 	         
-//	  abs(R_acf(2)) > 0.000001   )
-
       if (R_acf != Eigen::Matrix<T, 3, 1>::Zero())
       {
-	// arm cross forearm in SR2 frame, R_acf
-        R_acf = rot_SRtoSR2*rot_SMtoSR*rot_WtoSM*R_acf;
-        Teta_SR2 = atan2(R_acf(2),R_acf(1)) - M_PI/2.0;
-        out["R_ARM_JOINT3"] = Teta_SR2;
-        ROS_INFO("R-ARM Lateral/Medial: %f, (%f)\n", Teta_SR2*180/M_PI, R_acf[0]);
+	R_acf(0) = abs(R_acf(0));
+	R_acf(1) = abs(R_acf(1));
+	R_acf(2) = abs(R_acf(2));      	
+	
+	if (R_acf(0) > 0.000001 ||
+	    R_acf(1) > 0.000001 || 	         
+	    R_acf(2) > 0.000001   )
+	{
+		// arm cross forearm in SR2 frame, R_acf
+	        R_acf = rot_SRtoSR2*rot_SMtoSR*rot_WtoSM*R_acf;
+	        Teta_SR2 = atan2(R_acf(2),R_acf(1)) - M_PI/2.0;
+	        ROS_INFO("R-ARM Lateral/Medial: %f\n", Teta_SR2*180/M_PI);
+	}
+	else
+      	{
+        	Teta_SR2 = 0;
+        	ROS_INFO("R-ARM Lateral/Medial (zero cross): %f\n", Teta_SR2);
+      	}
       }
       else
       {
         Teta_SR2 = 0;
-        out["R_ARM_JOINT3"] = Teta_SR2;
         ROS_INFO("R-ARM Lateral/Medial (zero cross): %f\n", Teta_SR2);
       }
     }
 
     // Right Elbow
-    if (in.confidence[ShoulderRight] >= 1 &&
-        in.confidence[ElbowRight] >= 1 &&
-        in.confidence[WristRight] >= 1)
+    if (in.confidence[ShoulderRight] >= 2 &&
+        in.confidence[ElbowRight] >= 2 &&
+        in.confidence[WristRight] >= 2)
     {
       //// Calculation elbow flexion/extension, Teta_ER
       // transformation matrix from SR2 to ER
@@ -328,16 +391,65 @@ int calcForModel01(
 //      std::cout << temp_vec3 << std::endl;
 
       Teta_ER = atan2(temp_vec3(1),temp_vec3(0));
-      out["R_ARM_JOINT4"] = Teta_ER;
       ROS_INFO("R-Elbow: %f\n", Teta_ER*180/M_PI);
     }
 
+// check right arm flexion/extention for impossible movement (lower than -60 and over 180)
+      if (Teta_SR < -M_PI/3)
+      { 
+	if (Teta_SR >= -M_PI/2) // quandrant (+x,-y) 
+	{
+      	  Teta_SR = -M_PI/3;
+	  ROS_INFO("(MAX ARM EXTENSION)");
+	}
+	else // quandrant (-x,-y)
+	{
+	  Teta_SR = M_PI;
+	  ROS_INFO("(MAX ARM FLEXION)");
+	}
+      }
+      out["R_ARM_JOINT1"] = Teta_SR;
+      
+// check right arm abduction/adduction for impossible movement 
+      // check for impossible movement (more than 45)
+      if (Phi_SR > M_PI/4)
+      {
+	Phi_SR = M_PI/4;
+	ROS_INFO("(MAX ARM ADDUCTION)");
+      }
+      out["R_ARM_JOINT2"] = Phi_SR;
+
+// check right arm lateral/medial rotation for impossible movement (lower than -40 and over 40)
+      	if (Teta_SR2 < -M_PI*2/9)
+      	{
+      	  Teta_SR2 = -M_PI*2/9;
+	  ROS_INFO("(MAX ARM MEDIAL)");	
+      	}
+      	if (Teta_SR2 > M_PI*2/9)
+      	{
+	  Teta_SR2 = M_PI*2/9;
+	  ROS_INFO("(MAX ARM LATERAL)");
+      	}
+        out["R_ARM_JOINT3"] = Teta_SR2;
+
+// check left elbow for impossible movement (lower than 0 and over 150)
+      if (Teta_ER < 0)
+      {
+      	Teta_ER = 0;
+	ROS_INFO("(MAX ELBOW EXTENSION)");
+      }
+      if (Teta_ER > M_PI*5/6)
+      {
+	Teta_ER = M_PI*5/6;
+	ROS_INFO("(MAX ELBOW FLEXION)");
+      }
+      out["R_ARM_JOINT4"] = Teta_ER;
 
     // Left Leg
-    if (in.confidence[SpineBase] >= 1 &&
-        in.confidence[HipLeft] >= 1 &&
-        in.confidence[SpineMid] >= 1 &&
-        in.confidence[KneeLeft] >= 1)
+    if (in.confidence[SpineBase] >= 2 &&
+        in.confidence[HipLeft] >= 2 &&
+        in.confidence[SpineMid] >= 2 &&
+        in.confidence[KneeLeft] >= 2)
     {
       //// Calculation Leg_L flexion/extention, Teta_HL and Leg_L abductioin/adduction, Phi_HL
       // transformation matrix from SM point to SL point (translation only)
@@ -348,12 +460,10 @@ int calcForModel01(
       // Left Leg Flexion and Extension, Teta_HL
       temp_vec3 = rot_SMtoHL*rot_WtoSM*(j[KneeLeft]-j[HipLeft]);
       Teta_HL = atan2(temp_vec3(1), temp_vec3(0));
-      out["L_LEG_JOINT1"] = Teta_HL;
       ROS_INFO("L-LEG Flex/Exten: %f\n", Teta_HL*180/M_PI);
 
       // Left Leg Abduction and Adduction, Phi_HL
       Phi_HL = atan2(-temp_vec3(2),sqrt(pow(temp_vec3(0), 2.0)+pow(temp_vec3(1), 2.0)));
-      out["L_LEG_JOINT2"] = Phi_HL;
       ROS_INFO("L-LEG Abduct/Adduct: %f\n", Phi_HL*180/M_PI);
 
       //// Calculation leg_L lateral/Medial rotation, Teta_HL2
@@ -368,30 +478,38 @@ int calcForModel01(
       L_tcs = (j[KneeLeft]-j[HipLeft]).cross((j[AnkleLeft]-j[HipLeft]));
       ROS_INFO ("L_tcs: %f %f %f\n", L_tcs(0), L_tcs(1), L_tcs(2));
 
-//      if (abs(L_tcs(0)) > 0.000001 ||
-//	  abs(L_tcs(1)) > 0.000001 || 	         
-//	  abs(L_tcs(2)) > 0.000001   )
-
       if (L_tcs != Eigen::Matrix<T, 3, 1>::Zero())
       {
-	// thigh cross shank in HL2 frame, L_tcs
-        L_tcs = rot_HLtoHL2*rot_SMtoHL*rot_WtoSM*L_tcs;
-        Teta_HL2 = atan2(L_tcs(2),L_tcs(1)) + M_PI/2.0;
-        out["L_LEG_JOINT3"] = Teta_HL2;
-        ROS_INFO("L-LEG Lateral/Medial: %f, (%f)\n", Teta_HL2*180/M_PI, L_tcs(0));
+	L_tcs(0) = abs(L_tcs(0));
+	L_tcs(1) = abs(L_tcs(1));
+	L_tcs(2) = abs(L_tcs(2));      	
+	
+	if (L_tcs(0) > 0.000001 ||
+	    L_tcs(1) > 0.000001 || 	         
+	    L_tcs(2) > 0.000001   )
+	{
+		// thigh cross shank in HL2 frame, L_tcs
+        	L_tcs = rot_HLtoHL2*rot_SMtoHL*rot_WtoSM*L_tcs;
+        	Teta_HL2 = atan2(L_tcs(2),L_tcs(1)) + M_PI/2.0;
+        	ROS_INFO("L-LEG Lateral/Medial: %f\n", Teta_HL2*180/M_PI);
+	}
+	else
+	{
+        	Teta_HL2 = 0;
+        	ROS_INFO("L-LEG Lateral/Medial (zero cross): %f\n", Teta_HL2);
+      	}
       }
       else
       {
         Teta_HL2 = 0;
-        out["L_LEG_JOINT3"] = Teta_HL2;
         ROS_INFO("L-LEG Lateral/Medial (zero cross): %f\n", Teta_HL2);
       }
     }
 
     // Left Knee
-    if (in.confidence[HipLeft] >= 1 &&
-        in.confidence[KneeLeft] >= 1 &&
-        in.confidence[AnkleLeft] >= 1)
+    if (in.confidence[HipLeft] >= 2 &&
+        in.confidence[KneeLeft] >= 2 &&
+        in.confidence[AnkleLeft] >= 2)
     {
       //// Calculation knee flexion/extension, Teta_KL
       // transformation matrix from HL2 to KL
@@ -407,15 +525,74 @@ int calcForModel01(
 //      std::cout << temp_vec3 << std::endl;
 
       Teta_KL = atan2(temp_vec3(1),temp_vec3(0));
-      out["L_LEG_JOINT4"] = Teta_KL;
       ROS_INFO("L-KNEE: %f\n", Teta_KL*180/M_PI);
+
     }
 
+      // check for impossible movement (lower than -30 and over 130)
+      if (Teta_HL < -M_PI/6)
+      { 
+	Teta_HL = -M_PI/6;
+	ROS_INFO("(MAX LEFT LEG EXTENSION)");
+      }
+
+      if (Teta_HL > M_PI*13/18)
+      { 
+	Teta_HL = M_PI*13/18;
+	ROS_INFO("(MAX LEFT LEG FLEXION)");
+      }
+      out["L_LEG_JOINT1"] = Teta_HL;
+
+      // check for impossible movement (lower than -30 and over 45)
+      if (Phi_HL < -M_PI/6)
+      {
+      	Phi_HL = -M_PI/6;	
+	ROS_INFO("(MAX LEFT LEG ABDUCTION)");
+      }
+      if (Phi_HL > M_PI/4)
+      {
+	Phi_HL = M_PI/4;
+	ROS_INFO("(MAX LEFT LEG ADDUCTION)");
+      }
+      out["L_LEG_JOINT2"] = Phi_HL;
+
+      // check for impossible movement (lower than -40 and over 40)
+      if (Teta_HL2 < -M_PI*2/9)
+      {
+        Teta_HL2 = -M_PI*2/9;	
+	ROS_INFO("(MAX LEFT LEG LATERAL)");
+      }
+      if (Teta_HL2 == M_PI ||
+	  Teta_HL2 == -M_PI)
+      {
+	Teta_HL2 = 0;
+	ROS_INFO("(180 Degree)");
+      }
+      if (Teta_HL2 > M_PI*2/9)
+      {
+	Teta_HL2 = M_PI*2/9;
+	ROS_INFO("(MAX LEFT LEG MEDIAL)");
+      }
+      out["L_LEG_JOINT3"] = Teta_HL2;
+
+     // check for impossible movement (lower than -130 and over 15)
+      if (Teta_KL < -M_PI*13/18)
+      {
+      	Teta_KL = -M_PI*13/18;
+	ROS_INFO("(MAX LEFT KNEE EXTENSION)");	
+      }
+      if (Teta_KL > M_PI/12)
+      {
+	Teta_KL = M_PI/12;
+	ROS_INFO("(MAX LEFT KNEE FLEXION)");
+      }
+      out["L_LEG_JOINT4"] = Teta_KL;
+
     // Right Leg
-    if (in.confidence[SpineBase] >= 1 &&
-        in.confidence[HipRight] >= 1 &&
-        in.confidence[SpineMid] >= 1 &&
-        in.confidence[KneeRight] >= 1)
+    if (in.confidence[SpineBase] >= 2 &&
+        in.confidence[HipRight] >= 2 &&
+        in.confidence[SpineMid] >= 2 &&
+        in.confidence[KneeRight] >= 2)
     {
       //// Calculation leg_R flexion/extention, Teta_HR and leg_R abductioin/adduction, Phi_HR
       // transformation matrix from SM point to SR point (translation only)
@@ -426,12 +603,10 @@ int calcForModel01(
       // Right Leg Flexion and Extension, Teta_HR
       temp_vec3 = rot_SMtoHR*rot_WtoSM*(j[KneeRight]-j[HipRight]);
       Teta_HR = atan2(temp_vec3(1), temp_vec3(0));
-      out["R_LEG_JOINT1"] = Teta_HR;
       ROS_INFO("R-LEG Flex/Exten: %f\n", Teta_HR*180/M_PI);
 
       // Right Leg Abduction and Adduction, Phi_HR
       Phi_HR = atan2(-temp_vec3(2),sqrt(pow(temp_vec3(0), 2.0)+pow(temp_vec3(1), 2.0)));
-      out["R_LEG_JOINT2"] = Phi_HR;
       ROS_INFO("R-LEG Abduct/Adduct: %f\n", Phi_HR*180/M_PI);
 
       //// Calculation leg_R lateral/Medial rotation, Teta_HR2
@@ -452,24 +627,36 @@ int calcForModel01(
 
       if (R_tcs != Eigen::Matrix<T, 3, 1>::Zero())
       {
-	// thigh cross shank in HR2 frame, R_tcs
-        R_tcs = rot_HRtoHR2*rot_SMtoHR*rot_WtoSM*R_tcs;
-        Teta_HR2 = atan2(R_tcs(2),R_tcs(1)) + M_PI/2.0; //edit
-        out["R_LEG_JOINT3"] = Teta_HR2;
-        ROS_INFO("R-LEG Lateral/Medial: %f, (%f)\n", Teta_HR2*180/M_PI, R_tcs[0]);
+ 	R_tcs(0) = abs(R_tcs(0));
+	R_tcs(1) = abs(R_tcs(1));
+	R_tcs(2) = abs(R_tcs(2));      	
+	
+	if (R_tcs(0) > 0.000001 ||
+	    R_tcs(1) > 0.000001 || 	         
+	    R_tcs(2) > 0.000001   )
+	{	
+		// thigh cross shank in HR2 frame, R_tcs
+        	R_tcs = rot_HRtoHR2*rot_SMtoHR*rot_WtoSM*R_tcs;
+        	Teta_HR2 = atan2(R_tcs(2),R_tcs(1)) + M_PI/2.0; //edit
+        	ROS_INFO("R-LEG Lateral/Medial: %f\n", Teta_HR2*180/M_PI);
+	}
+      	else
+      	{
+        	Teta_HR2 = 0;
+        	ROS_INFO("R-LEG Lateral/Medial (zero cross): %f\n", Teta_HR2);
+      	}
       }
       else
       {
         Teta_HR2 = 0;
-        out["R_LEG_JOINT3"] = Teta_HR2;
         ROS_INFO("R-LEG Lateral/Medial (zero cross): %f\n", Teta_HR2);
       }
     }
 
     // Right Knee
-    if (in.confidence[HipRight] >= 1 &&
-        in.confidence[KneeRight] >= 1 &&
-        in.confidence[AnkleRight] >= 1)
+    if (in.confidence[HipRight] >= 2 &&
+        in.confidence[KneeRight] >= 2 &&
+        in.confidence[AnkleRight] >= 2)
     {
       //// Calculation knee flexion/extension, Teta_KR
       // transformation matrix from HR2 to KR
@@ -485,9 +672,65 @@ int calcForModel01(
 //      std::cout << temp_vec3 << std::endl;
 
       Teta_KR = atan2(temp_vec3(1),temp_vec3(0));
-      out["R_LEG_JOINT4"] = Teta_KR;
       ROS_INFO("R-Knee: %f\n", Teta_KR*180/M_PI);
     }
+
+      // check for impossible movement (lower than -30 and over 130)
+      if (Teta_HR < -M_PI/6)
+      { 
+	Teta_HR = -M_PI/6;
+	ROS_INFO("(MAX RIGHT LEG EXTENSION)");
+      }
+
+      if (Teta_HR > M_PI*13/18)
+      { 
+	Teta_HR = M_PI*13/18;
+	ROS_INFO("(MAX RIGHT LEG FLEXION)");
+      }
+      out["R_LEG_JOINT1"] = Teta_HR;
+
+      // check for impossible movement (lower than -45 and over 30)
+      if (Phi_HR < -M_PI/4)
+      {
+      	Phi_HR = -M_PI/4;	
+	ROS_INFO("(MAX RIGHT LEg ABDUCTION)");
+      }
+      if (Phi_HR > M_PI/6)
+      {
+	Phi_HR = M_PI/6;
+	ROS_INFO("(MAX RIGHT LEG ADDUCTION)");
+      }
+      out["R_LEG_JOINT2"] = Phi_HR;
+
+      if (Teta_HR2 < -M_PI*2/9)
+      {
+        Teta_HR2 = -M_PI*2/9;	
+	ROS_INFO("(MAX RIGHT LEG LATERAL)");
+      }
+      if (Teta_HR2 == M_PI ||
+	  Teta_HR2 == -M_PI)
+      {
+	Teta_HR2 = 0;
+	ROS_INFO("(180 Degree)");
+      }
+      if (Teta_HR2 > M_PI*2/9)
+      {
+	Teta_HR2 = M_PI*2/9;
+	ROS_INFO("(MAX RIGHT LEG MEDIAL)");
+      }
+      out["R_LEG_JOINT3"] = Teta_HR2;
+
+      if (Teta_KR < -M_PI*13/18)
+      {
+      	Teta_KR = -M_PI*13/18;
+	ROS_INFO("(MAX RIGHT KNEE EXTENSION)");	
+      }
+      if (Teta_KR > M_PI/12)
+      {
+	Teta_KR = M_PI/12;
+	ROS_INFO("(MAX RIGHT KNEE FLEXION)");
+      }
+      out["R_LEG_JOINT4"] = Teta_KR;
 
     for (int i=0; i < kJointDoF; i++)
     {
