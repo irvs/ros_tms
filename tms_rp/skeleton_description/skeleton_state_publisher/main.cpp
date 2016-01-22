@@ -65,7 +65,7 @@ SkeletonsStatePublisher::SkeletonsStatePublisher(
 {
   if (usingHistoryData_)
   {
-    data_sub_ = nh_.subscribe("/tms_db_replayer", 1,
+    data_sub_ = nh_.subscribe("/skeleton_history_stream", 1,
         &SkeletonsStatePublisher::callback2, this);
   }
 	else if (usingDB_)
