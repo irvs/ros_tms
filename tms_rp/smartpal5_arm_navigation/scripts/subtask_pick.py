@@ -40,7 +40,7 @@ GROUP_NAME_GRIPPER = 'l_gripper'
 
 GRIPPER_FRAME = 'l_end_effector_link'
 GRIPPER_OPEN = [-1.0]
-GRIPPER_CLOSED = [-0.65]
+GRIPPER_CLOSED = [-0.7]
 GRIPPER_NEUTRAL = [-0.2]
 GRIPPER_JOINT_NAMES = ['l_gripper_thumb_joint']
 GRIPPER_EFFORT = [1.0]
@@ -110,7 +110,7 @@ class SubTaskPick:
         # Set a limit on the number of pick attempts before bailing
         max_pick_attempts = 10
         # Give the scene a chance to catch up
-        rospy.sleep(2)
+        rospy.sleep(1)
 
         target_id = str(req.object_id)
         scene.remove_world_object(target_id)
@@ -142,7 +142,7 @@ class SubTaskPick:
 
         scene.add_box(target_id, target_pose, target_size)
 
-        rospy.sleep(2)
+        rospy.sleep(1)
 
         print(target_pose.pose.position.x)
         print(target_pose.pose.position.y)
@@ -161,7 +161,7 @@ class SubTaskPick:
         # Publish the grasp poses so they can be viewed in RViz
         for grasp in grasps:
             self.gripper_pose_pub.publish(grasp.grasp_pose)
-            rospy.sleep(0.2)
+            rospy.sleep(0.05)
 
         # Track success/failure and number of attempts for pick operation
         result = None
@@ -172,7 +172,7 @@ class SubTaskPick:
             rospy.loginfo("Pick attempt: " +  str(n_attempts))
             result = arm.pick(target_id, grasps)
             print(result)
-            rospy.sleep(0.2)
+            rospy.sleep(0.05)
             if result != MoveItErrorCodes.SUCCESS:
                 scene.remove_attached_object(GRIPPER_FRAME, target_id)
 

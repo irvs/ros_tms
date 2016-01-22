@@ -116,7 +116,7 @@ public class TmsUrSanmoku extends RosActivity implements View.OnClickListener,
 SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 
 	public TmsUrSanmoku() {
-		super("tms_ur_sanmoku", "tms_ur_sanmoku", URI.create("http://192.168.4.106:11311/"));
+		super("tms_ur_sanmoku", "tms_ur_sanmoku", URI.create("http://192.168.4.170:11311/"));
 		Log.v("ROS", "Const");
 	}
 

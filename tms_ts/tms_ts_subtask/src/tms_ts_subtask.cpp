@@ -83,13 +83,13 @@ void tms_rp::TmsRpSubtask::send_rc_exception(int error_type)
       rc_s_srv.request.error_msg = "RC exception. Cannot move vehicle";
       break;
     case 2:
-      rc_s_srv.request.error_msg = "RC exception. Cannot move right arm";
+      rc_s_srv.request.error_msg = "RC exception. Cannot move left arm";
       break;
     case 3:
       rc_s_srv.request.error_msg = "RC exception. Cannot move lumba";
       break;
     case 4:
-      rc_s_srv.request.error_msg = "RC exception. Cannot move right gripper";
+      rc_s_srv.request.error_msg = "RC exception. Cannot move left gripper";
       break;
     case 5:
       rc_s_srv.request.error_msg = "RC exception. Cannot run command sync obj";
@@ -523,7 +523,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
     {
       double person_x = srv.response.tmsdb[0].x;
       double person_y = srv.response.tmsdb[0].y;
-      double person_yaw = srv.response.tmsdb[0].ry + 1.570796;
+      double person_yaw = srv.response.tmsdb[0].ry;// + 1.570796;
       ROS_INFO("x=%f y=%f ry=%f",person_x,person_y,person_yaw);
 
       rp_srv.request.goal_pos.x = person_x + 1.0 * cos(person_yaw);
@@ -1035,6 +1035,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
         tms_msg_rp::rp_pick srv;
         srv.request.robot_id  = sd.robot_id;
         srv.request.object_id = sd.arg_type;
+        double arg[8] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.175};
 
         if (subtask_pick_client.call(srv))
         {
@@ -1049,35 +1050,84 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
 
         if(sd.type){
           sleep(0.5);
-          double arg[1] = {0.0};
+          arg[0] = 0.0;
           if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
             send_rc_exception(7);
             return false;
           }
         }
 
-        tms_msg_rp::rp_arm_move srv2;
-        srv2.request.move_id = ARM_GRASPING;
+        // tms_msg_rp::rp_arm_move srv2;
+        // srv2.request.move_id = ARM_GRASPING;
+        //
+        // if (subtask_arm_move_client.call(srv2))
+        // {
+        //   ROS_INFO("Successed arm_move(grasping)");
+        // }
+        // else
+        // {
+        //   s_srv.request.error_msg = "failed arm_move(grasping)";
+        //   state_client.call(s_srv);
+        //   return false;
+        // }
+        //
+        // if(sd.type){
+        //   sleep(0.5);
+        //   double arg[1] = {0.0};
+        //   if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
+        //     send_rc_exception(7);
+        //     return false;
+        //   }
+        // }
+        //
+        // srv2.request.move_id = ARM_NEUTRAL;
+        //
+        // if (subtask_arm_move_client.call(srv2))
+        // {
+        //   ROS_INFO("Successed arm_move(neutral)");
+        // }
+        // else
+        // {
+        //   s_srv.request.error_msg = "failed arm_move(neutral)";
+        //   state_client.call(s_srv);
+        //   return false;
+        // }
+        //
+        // if(sd.type){
+        //   sleep(0.5);
+        //   double arg[1] = {0.0};
+        //   if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
+        //     send_rc_exception(7);
+        //     return false;
+        //   }
+        // }
 
-        if (subtask_arm_move_client.call(srv2))
-        {
-          ROS_INFO("Successed arm_move(grasping)");
-        }
-        else
-        {
-          s_srv.request.error_msg = "failed arm_move(grasping)";
-          state_client.call(s_srv);
+        arg[0]=0.0;
+        arg[1]=-1.4;
+        arg[2]=0.0;
+        arg[3]=0.0;
+        arg[4]=0.0;
+        arg[5]=0.0;
+        arg[6]=0.0;
+        arg[7]=0.175;
+        if(!sp5_control(sd.type, UNIT_ARM_L, CMD_MOVE_ABS, 8, arg)){
+          send_rc_exception(2);
           return false;
         }
 
-        if(sd.type){
-          sleep(0.5);
-          double arg[1] = {0.0};
-          if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
-            send_rc_exception(7);
-            return false;
-          }
+        arg[0]=0.0;
+        arg[1]=-0.17;
+        arg[2]=0.0;
+        arg[3]=0.0;
+        arg[4]=0.0;
+        arg[5]=0.0;
+        arg[6]=0.0;
+        arg[7]=0.175;
+        if(!sp5_control(sd.type, UNIT_ARM_L, CMD_MOVE_ABS, 8, arg)){
+          send_rc_exception(2);
+          return false;
         }
+
 
         std::string note = assign_data.note;
         std::vector<std::string> v_note;
@@ -1162,6 +1212,10 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
 
   db_srv.request.tmsdb.id = sd.robot_id;
 
+  db_srv.request.tmsdb.sensor = 3003;
+  if(sd.type == false) db_srv.request.tmsdb.sensor = 3001;
+
+
   if(get_data_client_.call(db_srv)){
     std::string note = db_srv.response.tmsdb[0].note;
     ROS_INFO("note = %s",note.c_str());
@@ -1208,94 +1262,140 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
       {
         if (1)
         {
-          tms_msg_rp::rp_arm_move srv;
-          srv.request.move_id = ARM_GIVE;
-          if (subtask_arm_move_client.call(srv))
-          {
-            ROS_INFO("Successed arm_move(give)");
-          }
-          else
-          {
-            s_srv.request.error_msg = "failed arm_move(give)";
-            state_client.call(s_srv);
+          double arg[8];
+          arg[0]=0.0;
+          arg[1]=-0.1;
+          arg[2]=0.0;
+          arg[3]=1.5707;
+          arg[4]=0.0;
+          arg[5]=0.0;
+          arg[6]=0.0;
+          arg[7]=0.175;
+          if(!sp5_control(sd.type, UNIT_ARM_L, CMD_MOVE_ABS, 8, arg)){
+            send_rc_exception(2);
             return false;
           }
 
-          //wait
-          sleep(1);
+          sleep(2);
 
-          if(sd.type){
-            double arg[1] = {0.0};
-            if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
-              send_rc_exception(7);
-              return false;
-            }
-          }
-
-          srv.request.move_id = GRIPPER_OPEN;
-          srv.request.object_id = grasping_id;
-          if (subtask_arm_move_client.call(srv))
-          {
-            ROS_INFO("Successed arm_move(gripper_open)");
-          }
-          else
-          {
-            s_srv.request.error_msg = "failed arm_move(gripper_open)";
-            state_client.call(s_srv);
+          arg[0]=-1.0;
+          arg[1]=0.175;
+          arg[2]=0.175;
+          if(!sp5_control(sd.type, UNIT_GRIPPER_L, CMD_MOVE_ABS, 3, arg)){
+            send_rc_exception(4);
             return false;
           }
 
           sleep(1);
 
-          if(sd.type){
-            double arg[1] = {0.0};
-            if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
-              send_rc_exception(7);
-              return false;
-            }
-          }
-
-          srv.request.move_id = ARM_GIVE_END;
-          if(subtask_arm_move_client.call(srv))
-          {
-            ROS_INFO("Successed arm_move(give_end)");
-          }
-          else
-          {
-            s_srv.request.error_msg = "failed arm_move(give_end)";
-            state_client.call(s_srv);
+          arg[0]=-0.2;
+          arg[1]=0.175;
+          arg[2]=0.175;
+          if(!sp5_control(sd.type, UNIT_GRIPPER_L, CMD_MOVE_ABS, 3, arg)){
+            send_rc_exception(4);
             return false;
           }
 
-          if(sd.type){
-            sleep(0.5);
-            double arg[1] = {0.0};
-            if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
-              send_rc_exception(7);
-              return false;
-            }
-          }
-
-          srv.request.move_id = NEUTRAL;
-          if (subtask_arm_move_client.call(srv))
-          {
-            ROS_INFO("Successed arm_move(neutral)");
-          }
-          else
-          {
-            s_srv.request.error_msg = "failed arm_move(neutral)";
-            state_client.call(s_srv);
+          arg[0]=0.0;
+          arg[1]=-0.17;
+          arg[2]=0.0;
+          arg[3]=0.0;
+          arg[4]=0.0;
+          arg[5]=0.0;
+          arg[6]=0.0;
+          arg[7]=0.175;
+          if(!sp5_control(sd.type, UNIT_ARM_L, CMD_MOVE_ABS, 8, arg)){
+            send_rc_exception(2);
             return false;
           }
-
-          if(sd.type){
-            sleep(0.5);
-            double arg[1] = {0.0};
-            if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
-              send_rc_exception(7);
-              return false;
-            }
-          }
+          // tms_msg_rp::rp_arm_move srv;
+          // srv.request.move_id = ARM_SERVING;
+          // if (subtask_arm_move_client.call(srv))
+          // {
+          //   ROS_INFO("Successed arm_move(serving)");
+          // }
+          // else
+          // {
+          //   s_srv.request.error_msg = "failed arm_move(serving)";
+          //   state_client.call(s_srv);
+          //   return false;
+          // }
+          //
+          // //wait
+          // sleep(1);
+          //
+          // if(sd.type){
+          //   double arg[1] = {0.0};
+          //   if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
+          //     send_rc_exception(7);
+          //     return false;
+          //   }
+          // }
+          //
+          // srv.request.move_id = GRIPPER_OPEN;
+          // srv.request.object_id = grasping_id;
+          // if (subtask_arm_move_client.call(srv))
+          // {
+          //   ROS_INFO("Successed arm_move(gripper_open)");
+          // }
+          // else
+          // {
+          //   s_srv.request.error_msg = "failed arm_move(gripper_open)";
+          //   state_client.call(s_srv);
+          //   return false;
+          // }
+          //
+          // sleep(1);
+          //
+          // if(sd.type){
+          //   double arg[1] = {0.0};
+          //   if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
+          //     send_rc_exception(7);
+          //     return false;
+          //   }
+          // }
+          // //
+          // // srv.request.move_id = ARM_GIVE_END;
+          // // if(subtask_arm_move_client.call(srv))
+          // // {
+          // //   ROS_INFO("Successed arm_move(give_end)");
+          // // }
+          // // else
+          // // {
+          // //   s_srv.request.error_msg = "failed arm_move(give_end)";
+          // //   state_client.call(s_srv);
+          // //   return false;
+          // // }
+          // //
+          // // if(sd.type){
+          // //   sleep(0.5);
+          // //   double arg[1] = {0.0};
+          // //   if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
+          // //     send_rc_exception(7);
+          // //     return false;
+          // //   }
+          // // }
+          //
+          // srv.request.move_id = NEUTRAL;
+          // if (subtask_arm_move_client.call(srv))
+          // {
+          //   ROS_INFO("Successed arm_move(neutral)");
+          // }
+          // else
+          // {
+          //   s_srv.request.error_msg = "failed arm_move(neutral)";
+          //   state_client.call(s_srv);
+          //   return false;
+          // }
+          //
+          // if(sd.type){
+          //   sleep(0.5);
+          //   double arg[1] = {0.0};
+          //   if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
+          //     send_rc_exception(7);
+          //     return false;
+          //   }
+          // }
         }
         else
         {

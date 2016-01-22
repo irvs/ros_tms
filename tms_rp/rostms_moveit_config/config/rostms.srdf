@@ -50,6 +50,42 @@
         <joint name="l_arm_j6_joint" value="0" />
         <joint name="l_arm_j7_joint" value="0" />
     </group_state>
+    <group_state name="l_arm_grasping" group="l_arm">
+        <joint name="l_arm_j1_joint" value="0.0" />
+        <joint name="l_arm_j2_joint" value="-1.5" />
+        <joint name="l_arm_j3_joint" value="0.0" />
+        <joint name="l_arm_j4_joint" value="0.0" />
+        <joint name="l_arm_j5_joint" value="0.0" />
+        <joint name="l_arm_j6_joint" value="0.0" />
+        <joint name="l_arm_j7_joint" value="0.0" />
+    </group_state>
+    <group_state name="l_arm_grasping2" group="l_arm">
+        <joint name="l_arm_j1_joint" value="0" />
+        <joint name="l_arm_j2_joint" value="-0.2" />
+        <joint name="l_arm_j3_joint" value="0" />
+        <joint name="l_arm_j4_joint" value="0" />
+        <joint name="l_arm_j5_joint" value="0" />
+        <joint name="l_arm_j6_joint" value="0" />
+        <joint name="l_arm_j7_joint" value="0" />
+    </group_state>
+    <group_state name="l_arm_give" group="l_arm">
+        <joint name="l_arm_j1_joint" value="0.65" />
+        <joint name="l_arm_j2_joint" value="-0.1" />
+        <joint name="l_arm_j3_joint" value="0" />
+        <joint name="l_arm_j4_joint" value="0.93" />
+        <joint name="l_arm_j5_joint" value="0" />
+        <joint name="l_arm_j6_joint" value="0" />
+        <joint name="l_arm_j7_joint" value="0" />
+    </group_state>
+    <group_state name="l_arm_give_end" group="l_arm">
+        <joint name="l_arm_j1_joint" value="0.65" />
+        <joint name="l_arm_j2_joint" value="-0.5" />
+        <joint name="l_arm_j3_joint" value="0" />
+        <joint name="l_arm_j4_joint" value="0.93" />
+        <joint name="l_arm_j5_joint" value="0" />
+        <joint name="l_arm_j6_joint" value="0" />
+        <joint name="l_arm_j7_joint" value="0" />
+    </group_state>
     <group_state name="l_arm_serving_pose" group="l_arm">
         <joint name="l_arm_j1_joint" value="0" />
         <joint name="l_arm_j2_joint" value="-0.17" />
