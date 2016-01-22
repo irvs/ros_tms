@@ -35,19 +35,11 @@ class TmsDbReplayer():
     def handleCallReplayer(self, req):
         rospy.loginfo('Received calling')
 
-        self.request_id = range(1006, 1019)
-        self.topic_name = 'tms_db_replayer'
-        self.start_date = '2016-01-18T04:00:00'
-        self.end_date = '2016-01-18T05:00:00'
-        self.play_speed = 60
-
-        #self.request_id = req.request_id
-        #self.topic_name = req.topic_name
-        ##self.start_date = req.start_date
-        ##self.end_date = req.end_date
-        #self.start_date = datetime.fromtimestamp(req.start_date/1e3)
-        #self.end_date = datetime.fromtimestamp(req.end_date/1e3)
-        #self.play_speed = req.play_speed
+        self.request_id = req.request_id
+        self.topic_name = req.topic_name
+        self.start_date = req.start_date
+        self.end_date = req.end_date
+        self.play_speed = req.play_speed
 
         thread = threading.Thread(target=self.sendDbHistoryInformation)
         self.thread_list.append(thread)

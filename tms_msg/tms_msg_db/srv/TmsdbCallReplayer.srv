@@ -1,7 +1,7 @@
 int32[]  	request_id
 string    topic_name
-time      start_date
-time      end_date
+string    start_date
+string    end_date
 int32     play_speed
 ---
 int32     result
