@@ -5,7 +5,7 @@
   <license>BSD</license>
   <description>The tms_ss_fss_exe package</description>
  
-  <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>
+  <>Yoonseok Pyo</maintainer>
 
   <url type="website">http://robotics.ait.kyushu-u.ac.jp/index-e.html</url>
   <url type="git">https://github.com/irvs/ros_tms</url>

@@ -4,8 +4,8 @@
   <version>1.0.2</version>
   <license>BSD</license>
   <description>The tms_rc_smartpal_virtual_control package</description>
- 
-  <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>
+
+  <maintainer email="sakamoto@irvs.ait.kyushu-u.ac.jp">Junya Sakamoto</maintainer>
 
   <url type="website">http://robotics.ait.kyushu-u.ac.jp/index-e.html</url>
   <url type="git">https://github.com/irvs/ros_tms</url>
@@ -28,7 +28,7 @@
   <run_depend>tms_msg_db</run_depend>
   <run_depend>tms_msg_rc</run_depend>
   <run_depend>message_runtime</run_depend>
-  
+
   <export>
   </export>
 </package>
