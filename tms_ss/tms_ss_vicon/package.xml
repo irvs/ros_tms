@@ -4,7 +4,7 @@
   <version>0.2.0</version>
   <description>The tms_ss_vicon package</description>
 
-  <>Yoonseok Pyo</maintainer>
+  <maintainer email="sakamoto@irvs.ait.kyushu-u.ac.jp">Junya Sakamoto</maintainer>
 
   <license>BSD</license>
 
