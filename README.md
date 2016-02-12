@@ -17,7 +17,8 @@
 * maintainer :
 
  Akihiro Kawamura(kawamura at ait.kyushu-u.ac.jp)
-Junya Sakamoto (sakamoto at irvs.ait.kyushu-u.ac.jp)
+
+ Junya Sakamoto (sakamoto at irvs.ait.kyushu-u.ac.jp)
 
 * developer :
 
