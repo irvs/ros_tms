@@ -1,11 +1,10 @@
 # ROS-TMS
 * It is a service robot system with an informationally structured environment referred to the ROS-TMS. This system enables the integration of various data from distributed sensors, as well as storage of these data in an on-line database and the planning of the service motion of a robot using real-time information about the surroundings.
 
-# Wiki page
-* https://github.com/irvs/ros_tms/wiki
-
-# Web page
-* http://irvs.github.io/ros_tms/
+# Reference information
+* Wiki > https://github.com/irvs/ros_tms/wiki
+* Web > http://irvs.github.io/ros_tms
+* Paper > Yoonseok Pyo, Kouhei Nakashima, Shunya Kuwahata, Ryo Kurazume, Tokuo Tsuji, Ken’ichi Morooka, Tsutomu Hasegawa, Service robot system with an informationally structured environment, Robotics and Autonomous Systems, Volume 74, Part A, December 2015, Pages 148-165, ISSN 0921-8890, http://dx.doi.org/10.1016/j.robot.2015.07.010.
 
 # Version and developer information
 * date : 2016.02.12 (since 2012.5.1 ROS-TMS / since 2005.11.1 TMS)
