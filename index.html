@@ -19,7 +19,7 @@
   <header>
     <div class="inner">
       <h1>ROS-TMS</h1>
-      <h2>It is a service robot system with an informationally structured environment referred to the ROS-TMS.This system enables the integration of various data from distributed sensors, as well as storage of these data in an on-line database and the planning of the service motion of a robot using real-time information about the surroundings.</h2>
+      <h2>Informationally Structured Environment Platform for Service Robot</h1>
       <a class="button" href="https://github.com/irvs/ros_tms"><small>View project on</small> GitHub</a>
     </div>
   </header>
@@ -28,84 +28,149 @@
     <div class="inner clearfix">
       <section id="main-content">
 
+        <h2>ROS-TMS</h2>
+        <p>It is a service robot system with an informationally structured environment referred to the ROS-TMS*.This system enables the integration of various data from distributed sensors, as well as storage of these data in an on-line database and the planning of the service motion of a robot using real-time information about the surroundings.</p>
 
-        <h3><a class="anchor" href="#page1" id="page1"><span class="octicon octicon-link"></span></a>
-            環境情報構造化
-        </h3>
-        <p>日常生活環境でロボットが人間と共生して働くためには，ロボットに搭載された機能だけで複雑な周囲状況を認識するのではなく， 環境側にセンサネットワークや様々な情報を格納したマーカを配置して，ロボットの作業を支援する仕組みの構築が不可欠です．そこで，この仕組みを実現する環境情報構造化プラットフォームの研究開発を行っています．</p>
-        <img src="images/robottown_concept.png">
+        <p><a href="http://dx.doi.org/10.1016/j.robot.2015.07.010">[*] Yoonseok Pyo, Kouhei Nakashima, Shunya Kuwahata, Ryo Kurazume, Tokuo Tsuji, Ken’ichi Morooka, Tsutomu Hasegawa, Service robot system with an informationally structured environment, Robotics and Autonomous Systems, Volume 74, Part A, December 2015, Pages 148-165, ISSN 0921-8890</a></p>
 
+        <h2>Informationally Structured Environment</h2>
+        <p>The emerging synthesis of information technology (IT), network technology (NT), and robot technology (RT) is one of the most promising approaches to realize a safe, secure, and comfortable society for the next generation. Human-centered systems require, in particular, sophisticated physical and information services which are based on sensor networks, ubiquitous computing, and intelligent artifacts. Information resources and the accessibility within an environment are essential for people and for robots. The environment surrounding people and robots should have a structured platform for gathering, storing, transforming, and providing information. Such an environment is called informationally structured space. (by IEEE Symposium on Robotic Intelligence in Informationally Structured Space) </p>
 
-        <h3><a class="anchor" href="#page1" id="page1"><span class="octicon octicon-link"></span></a>
-            タウンマネジメントシステム（TMS）
-        </h3>
-        <p>情報構造化環境では，人やロボット，日用品の位置情報などを取得できます．さらに，ロボットが状況に対応して自動的にサービスを実行するためには，収集した情報を解釈し，適切なサービスを選択・実行する必要があります．また，大規模化するシステムに対応するため，センサや処理アルゴリズムをネットワーク化し，目的ごとに構成を組み替えられるものである必要もあります．これらの要件を満たしたTMSアーキテクチャを設計・開発し，実世界で生活支援サービスを提供するための研究を行っています．</p>
-        <img src="images/tms.jpg">
+        <p>A considerable number of studies have been performed in the area of informationally structured environments/spaces to provide human-centric intelligent services. Informationally structured environments are referred to variously as home automation systems, smart homes, ubiquitous robotics, kukanchi, and intelligent environments/spaces, depending on the field of research and the professional experience of the researcher. But the common key point is not changed, the common idea in assistive environments consists of gathering information about people's activities together with their surroundings in a way that an intelligent decision system can support the persons for improvement of the quality of life. In this thesis, we focus on informationally structured environment platform for service robot, which can be available to assist people in their daily activities and environments.</p>
 
-        <h4>環境情報構造化に基づくサービスロボット実現のためのセンサ情報ネットワークの開発</h4>
-        <p>環境側に分散配置された様々なセンサや処理アルゴリズムをネットワーク化し，目的ごとに構成を組み変えて必要な情報を取得，処理するとともに，結果をクラウド型データベースに格納します．その環境情報をサービスロボットに提供するシステムを開発しています． </p>
-        <img src="images/system.png">
+        <img src="images/room.png">
 
-        <h4>情報構造化アーキテクチャの構築</h4>
-        <p>ロボットの動作を支援するための環境である情報構造化環境では，環境にセンサを配置することで，人，ロボット，日用品の位置情報，環境地図などを取得することができます． さらに，ロボットが適切な生活支援サービスを実行するためには，集めた情報を統合・解釈し，環境内の状況を推定する必要があります． このように，情報構造化アーキテクチャの要件を明らかにし，実世界で生活支援サービスを提供する仕組みを構築するために研究を行っています． </p>
-        <table width="90%">
-          <tbody>
-            <tr>
-              <th class="bg" width="50%">日用品の物品管理サービス</th>
-              <th class="bg" width="50%">倒れた人の検出･警告サービス</th>
-            </tr>
-            <tr>
-              <td align="center"><img src="images/an_1.png" alt="photo" height="150"><br></td>
-              <td align="center"><img src="images/an_2.png" alt="photo" height="150"><br></td>
-            </tr>
-          </tbody>
-        </table>
+        <h2>Concept of ROS-TMS</h2>
+        <p>The ROS-TMS in Informationally Structured Environment (ISE) can be considered to be a robotic implementation of Cyber Physical System (CPS) which has been receiving much attention in recent years. CPS is a framework to develop an efficient and affluent society by solving various issues in real world utilizing a great amount of computer resources in cyber world. In recent years, the concept of IoT (Internet of Things), which connects all the objects and machines through the internet and controls them efficiently, has been becoming very popular. Besides, the CPS is to forecast an ideal world based on a wealth of sensory information obtained through IoT and huge computer power in cyber world, and plan and execute optimum strategies for realizing the ideal physical world. In order to implement the CPS, the ROS-TMS has three primary components, i.e., real world, database, and cyber world components. A distributed sensing system senses events occurring in the real world, such as user behavior or user requests, and the current situation of the real world, such as the positions of objects, humans, and robots. The gathered information is then stored in the database. Appropriate service commands are planned using the environmental information in the database and simulated carefully in the cyber world using simulators, such as Choreonoid and Gazebo. Finally, service tasks are assigned to service robots in the real world.</p>
 
-        <h3><a class="anchor" href="#page1" id="page1"><span class="octicon octicon-link"></span></a>
-            生活支援ロボットの行動動作計画
-        </h3>
-        <p>情報構造化された環境において，ワゴンを押して物品運搬を行うための動作計画を行っています．人に物品を手渡す位置や，ワゴンを押して移動するための経路の計画を行い，実機で検証します． </p>
-        <img src="images/kn_1.png" alt="photo"><br>
-        <iframe src="https://docs.google.com/file/d/0ByyF7QlkYfbUTmp3dzhHNjZjekk/preview" height="400" width="600"></iframe>
+        <img src="images/concept.png">
 
-        <h3><a class="anchor" href="#page1" id="page1"><span class="octicon octicon-link"></span></a>
-            Intelligent cabinet system
-        </h3>
-        <p>The cabinets installed in the room are equipped with RFID readers and load cells to detect the types and positions of the objects in the cabinet.
-        Every object in the environment has an RFID tag containing a unique ID that identifies it.
-        This ID is used to retrieve the attributes of the object, such as its name and location in the database.
-        Using the RFID readers, we can detect the presence of a new object inside the cabinet.
-        In addition, the load cell information allows us to determine its exact position inside the cabinet.
-        An example of object detection in the intelligent cabinet is shown in below figure.
+        <h2>Functions implemented in the ROS-TMS</h2>
+        <p>
+          <ul style="list-style-type:disc">
+            <li>Communication with sensors, robots, and databases</li>
+            <li>Storage, revision, backup, and retrieval of real-time information in an environment</li>
+            <li>Storage, revision, backup, and retrieval of real-time information in an environment</li>
+            <li>Maintenance and providing information according to individual IDs assigned to each object and robot</li>
+            <li>Notification of the occurrence of particular predefined events, such as accidents</li>
+            <li>Task schedule function for multiple robots and sensors</li>
+            <li>Human-system interaction for user requests</li>
+            <li>Real-time task planning for service robots</li>
+          </ul>
         </p>
-        <iframe src="https://docs.google.com/file/d/0ByyF7QlkYfbUdE5uZFlpd09YWTA/preview" height="400" width="600"></iframe>
 
-        <h3><a class="anchor" href="#page1" id="page1"><span class="octicon octicon-link"></span></a>
-          Object detection system
-        </h3>
-        <p>If neither the FSS nor the ICS is available for detecting objects such as those placed on a desk, the object detection system using a RGB-D camera on a robot is provided in this platform as shown in below figure.
-        In this system, a newly appeared object or movement of an object is detected as a change in the environment. </p>
-        <table width="90%">
-          <tbody>
-            <tr><th class="bg" width="100%">本棚内の変化検出</th></tr>
-            <tr><td align="center"><img src="images/sk.png" alt="photo" height="250"><br></td></tr>
-          </tbody>
-        </table>
-
-        <h3><a class="anchor" href="#page1" id="page1"><span class="octicon octicon-link"></span></a>
-          Floor sensing system (FSS)
-        </h3>
-        <p>The current platform is equipped with a floor sensing system to detect objects on the floor and people walking around.
-        This sensing systems is composed of a laser range finder located on one side of the room and a mirror installed along another side of the room.
-        This configuration allows a reduction of dead angles of the LRF and is more robust against occlusions.
-        An example of object detection using this system is shown in below.
-        People tracking is performed by first applying static background subtraction and then extracting clusters in the remainder of the measurements.
-        Clusters are later tracked by matching profiles of cluster corresponding to legs and extending the motion using the accelerations of the legs.
-        Moreover, this system can measure the poses of the robot and movable furniture such as a wagon using tags, which have encoded reflection patterns optically identified by the LRF.
-
+        <h2>Features of ROS-TMS</h2>
+        <p>
+          <ul style="list-style-type:disc">
+            <li><b>Modularity</b>: The ROS-TMS consists of 73 packages categorized into 11 groups and 151 processing nodes. Re-configuration of structures, for instance adding or removing modules such as sensors, actuators, and robots, is simple and straightforward owing to the high flexibility of the ROS architecture.</li>
+            <li><b>Scalability</b>: The ROS-TMS is designed to have high scalability so that it can handle not only a single room but also a building and a town.</li>
+            <li><b>Diversity</b>: The ROS-TMS supports a variety of sensors and robots. For instance, Vicon MX (Vicon Motion Systems Ltd.), TopUrg (Hokuyo Automatic), Velodyne 32e (Velodyne Lidar), and Oculus Rift (Oculus VR) are installed in the developed informationally structured platform  for positioning and human-system interaction. SmartPal-IV and V (Yaskawa Electric Corp.), AR Drone (Parrot), TurtleBot2 (Yujin Robot Co., Ltd.), a wheelchair robot, and a mobile robot with a 5-DOF manipulator are also provided in order to accomplish a variety of service tasks.</li>
+            <li><b>Safety</b>: Data gathered from the real world is used to perform simulations in the cyber world in order to evaluate the safety and efficiency of designed tasks. According to the simulation results, proper service plans are designed and provided by service robots in the real world.</li>
+            <li><b>Privacy protection</b>: One important restriction in our intelligent environment is to install a small number of sensors to avoid interfering with the daily activity of people and to reduce the invasion of their privacy as far as possible. For this reason, we do not install conventional cameras in the environment. Although the robots are equipped with several cameras, these cameras are only used in certain restricted scenarios.</li>
+            <li><b>Efficiency</b>: Sensors installed in an environment can be shared with robots and tasks, and thus we do not need to equip individual robots with numerous sensors. In addition, most sensors are processed by low-cost single-board computers in the proposed system. This concept has an advantage especially for the system consisting of multiple robots since robots can share the resources in the environment. Currently, the cost of a distributed sensor network may be higher than the cost of a single robot. However, we believe that distributed sensor network (or Internet of Things, IoT) will become a standard facility in our society in the near future, and the cost of a sensor network will be greatly reduced since all the devices will be designed to be connected each other.</li>
+          </ul>
         </p>
-        <iframe src="https://docs.google.com/file/d/0ByyF7QlkYfbUeEJjQlBZbzZtenM/preview" height="400" width="600"></iframe><br>
-        <img src="images/kku_2.png" alt="photo"><br>
+
+        <h2>Architecture of ROM-TMS</h2>
+        <p>The below figure shows the overall architecture of ROM-TMS. This system is composed of five components: <b>user</b>, <b>sensor</b>, <b>robot</b>, <b>task</b>, and <b>data</b>. These components are also composed of sub-modules, such as the <b>User Request</b> sub-module for the user component, the <b>Sensor Driver</b> sub-module, the <b>Sensing System</b> and <b>State Analyzer</b> sub-modules for the sensor component, the <b>Robot Controller, the <b>Robot Motion Planning</b>, and the <b>Robot Service</b> sub-modules for the robot component, the <b>Task Scheduler</b> sub-module for the task component, and the <b>Database</b> sub-module for the data component. Brief explanations of each node group are presented below.</p>
+
+        <img src="images/architecture.png">
+
+        <h2>Database (TMS-DB)</h2>
+        <p>TMS-DB is composed of the database, DB_Writer, which writes the information, DB_Reader, which performs information readout, and DB_manager, which manages the stored data. Implementation of the database itself is performed using MySQL or MongoDB, and, currently, information is stored as follows:</p>
+
+        <p>
+          <ul style="list-style-type:disc">
+            <li>Registered information about the robots, such as their shape and appearance</li>
+            <li>Information related to the sensors embedded in the environment
+            <li>Static environment information, such as maps</li>
+            <li>Dynamic information, such as the calculated position of moving objects</li>
+            <li>Task information classified by robot services</li>
+          </ul>
+        </p>
+
+        <h2>User Request (TMS-UR)</h2>
+        <p>TMS-UR can receive service requests from users using remote controllers, smartphones, and tablets, as well as other portable devices. The below figure shows some examples of TMS-UR including a smartphone, a tablet, and wearable glasses. For example, when a user calls a robot, the user request is corrected by TMS-UR and sent to TMS-TS. Then the requested task is executed by the robot using some modules such as TMS-RP.</p>
+
+        <img src="images/ur.png">
+
+        <p>Examples of TMS-UR: (a) Object search system using a smartphone, (b) Navigation system for a wheelchair robot using a tablet, (c and d) a smart glasses (Moverio, Epson) to display object information using AR technology.</p>
+
+        <h2>Task Scheduler (TMS-TS)</h2>
+        <p>The task scheduler (TMS-TS) manages the execution of service tasks such as start, suspension, resuming, and rescheduling if an error occurs. For example, when a task is requested by a user, the task scheduler accesses to the database, and obtains the sequence of subtasks for the desired task. Then the scheduler plans the timing of execution of each subtask and produces input scripts for a task-execution machine. The task-execution machine issues a sequence of commands to the robot controller module (TMS-RC) and execute subtasks appropriately.</p>
+
+        <iframe width="640" height="360" src="https://www.youtube.com/embed/oy1HlT8fh3w" frameborder="0" allowfullscreen></iframe>
+        <p>Example of TMS-TS</p>
+
+        <h2>Sensor Driver (TMS-SD)</h2>
+        <p>TMS-SD is a package for obtaining raw data from the sensor. We use various sensors, such as an LRF, an RGB-D camera, a USB camera, a Velodyne LiDAR sensor, and a Vicon motion capture.</p>
+
+        <img src="images/sensors.png">
+
+        <h2>Sensing System (TMS-SS)</h2>
+        <p>By interpreting the data acquired from various environment sensors, more precise information concerning the environment can be obtained. TMS-SS consists of a floor sensing system (FSS) for detecting objects on the floor using a laser range finder, an intelligent cabinet system (ICS) to detect the type and position of objects through RFID tag readers and load cells on the cabinet, motion tracking using Xtion and Kinect, location tracking of moving objects using a Vicon camera, and object detection using RGB-D cameras mounted on robots (ODS).</p>
+
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/2cATgSHOVtc" frameborder="0" allowfullscreen></iframe>
+
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/YwaHt_jbZ-s" frameborder="0" allowfullscreen></iframe>
+        <p>Examples of TMS-SS: floor sensing system (FSS), intelligent cabinet system (ICS)</p>
+
+        <h2>State Analyzer (TMS-SA)</h2>
+        <p>Based on information acquired from TMS-DB, there are nodes that perform task command generation, estimation of the current state, and detection. The results of these estimations are then transmitted to TMS-TS as execution requests for robot services. We have implemented an object tracking system that maintains a record of the objects that have been moved/placed by people. TMS-SA detects when a person removes objects from the intelligent cabinet and estimates which objects have a probability to be left unmoved based on the walking trajectories of people.</p>
+
+        <h2>Robot Motion Planning (TMS-RP)</h2>
+        <p>Robots can perform operation planning in order to successfully avoid obstacles based on information acquired from TMS-DB. Furthermore, the output is converted into primitive behaviors for the robots, such as moving, grasping, and giving. Robot services can be then provided according to the service behavior descriptions based on the combination of the features mentioned above.</p>
+
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/4VtDHWiN0as" frameborder="0" allowfullscreen></iframe>
+        <p>Example of TMS-RP</p>
+
+        <h2>Robot Service (TMS-RS)</h2>
+        <p>TMS-RS consists of a node group to perform services that do not require motion programming, such as tuning in on a TV, opening a door, and capturing an image.</p>
+
+        <h2>Robot Controller (TMS-RC)</h2>
+        <p>TMS-RC contains nodes to control the robots using a planned path. We use robots such as SmartPal-IV and V (Yaskawa Electric), Turtlebot2, Kobuki, a wheelchair robot, and custom robots.</p>
+
+        <img src="images/robots.png">
+
+        <h2>Our experimental environment</h2>
+        <img src="images/environments.png">
+        <p>Various environments managed by ROS-TMS: (a) Room A(4mx4m, 18 packages, 32 processing nodes), (b) Room B(8mx4.5m, 52 packages, 93 processing nodes), (c) Room C(15mx8m, 73 packages, 151 processing nodes)</p>
+
+        <h2>Reference information</h2>
+        <p>
+          <ul style="list-style-type:disc">
+            <li>Wiki > <a href="https://github.com/irvs/ros_tms/wiki">https://github.com/irvs/ros_tms/wiki</a></li>
+            <li>Web > <a href="http://irvs.github.io/ros_tms">http://irvs.github.io/ros_tms</a></li>
+       </ul>
+      </p>
+
+        <h2>Version and developer information</h2>
+        <p>
+          <ul style="list-style-type:disc">
+           <li>date : 2016.02.12 (since 2012.5.1 ROS-TMS / since 2005.11.1 TMS)</li>
+           <li>current version : 4.0.1 (2016.02.12)</li>
+           <li>director : Prof. Ryo Kurazume,  Assistant Prof. Akihiro Kawamura</li>
+           <li>maintainer :</li>
+
+           <p>Akihiro Kawamura (kawamura at ait.kyushu-u.ac.jp)</p>
+
+           <p>Junya Sakamoto (sakamoto at irvs.ait.kyushu-u.ac.jp)</p>
+
+           <li>developer :</li>
+
+           <p> 2016 : Yuta Watanabe, Akio Shigekane, Daisuke Inada, Kazuto Nakashima, Yuta Horikawa, Junya Sakamoto</p>
+
+            <p>2015 : Yoonseok Pyo, Masatomo Onishi, Yuta Watanabe, Akio Shigekane, Daisuke Inada, Kazuto Nakashima, Yuta Horikawa, Junya Sakamoto</p>
+
+            <p>2014 : Yoonseok Pyo, Yuka Hashiguchi, Tetsuro Oishi, Kazuya Suginohara, Kazuto Nakashima, Yuta Watanabe, Daisuke Inada, Akio Shigekane, Tokuo Tsuji, Omar Alaoui</p>
+
+            <p>2013 : Yoonseok Pyo, Akihiro Nagata, Shunya Kuwahata, Kouhei Nakashima, Kazuya Kusaka, Yuka Hashiguchi, Tetsuro Oishi, Kazuya Suginohara, Tokuo Tsuji</p>
+
+            <p>2012 : Yoonseok Pyo, Masahide Tanaka, Akihiro Nagata, Tokuo Tsuji</p>
+        </ul>
+        </p>
+
+        &copy; <a href="http://robotics.ait.kyushu-u.ac.jp/index-e.html">KURAZUME Lab., Kyushu University</a>
 
 <!--         <pre>
           <code>
