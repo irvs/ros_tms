@@ -5,14 +5,14 @@
   <license>BSD</license>
   <description>tms_ss_ods_correspondence_estimation package</description>
 
-  <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>
+  <maintainer email="sakamoto@irvs.ait.kyushu-u.ac.jp">Junya Sakamoto</maintainer>
 
   <url type="website">http://robotics.ait.kyushu-u.ac.jp/index-e.html</url>
   <url type="git">https://github.com/irvs/ros_tms</url>
-  
+
   <author email="kuwahata@irvs.ait.kyushu-u.ac.jp">Shunya Kuwahata</author>
   <author email="passionvirus@gmail.com">Yoonseok Pyo</author>
-  
+
   <buildtool_depend>catkin</buildtool_depend>
 
   <build_depend>pcl_ros</build_depend>

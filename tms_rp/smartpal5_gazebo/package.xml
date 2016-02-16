@@ -5,7 +5,7 @@
   <license>BSD</license>
   <description>The smartpal5_gazebo package</description>
 
-  <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>
+  <maintainer email="sakamoto@irvs.ait.kyushu-u.ac.jp">Junya Sakamoto</maintainer>
 
   <url type="website">http://irvs.github.io/ros_tms/</url>
   <url type="repository">https://github.com/irvs/ros_tms</url>

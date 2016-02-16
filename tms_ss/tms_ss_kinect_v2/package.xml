@@ -4,7 +4,12 @@
   <version>0.0.1</version>
   <description>The tms_ss_kinect_v2 package</description>
 
-  <maintainer email="onishi@irvs.ait.kyushu-u.ac.jp">Onishi</maintainer>
+  <maintainer email="sakamoto@irvs.ait.kyushu-u.ac.jp">Junya Sakamoto</maintainer>
+
+  <url type="website">http://robotics.ait.kyushu-u.ac.jp/index-e.html</url>
+  <url type="git">https://github.com/irvs/ros_tms</url>
+
+  <author email="onishi@irvs.ait.kyushu-u.ac.jp">Onishi</author>
 
   <license>TODO</license>
   <buildtool_depend>catkin</buildtool_depend>
