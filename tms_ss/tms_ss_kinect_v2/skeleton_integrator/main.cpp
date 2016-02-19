@@ -418,6 +418,7 @@ int main(int argc, char **argv)
     return -1;
   }
 
+	int result;
 	bool ignore_face_state = false;
 	while((result=getopt(argc,argv,"f"))!=-1){
 		switch(result){
