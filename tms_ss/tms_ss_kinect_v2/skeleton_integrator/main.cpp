@@ -1,3 +1,5 @@
+#include <unistd.h>
+
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -19,6 +21,7 @@
 
 #define MAX_USERS 12
 
+#define SKELETON_LIFE_TIME 15
 #define IDENTIFY_RANGE 0.5  // [m]
 #define FRONT_ANGLE_RANGE 130  // [deg]
 
@@ -57,7 +60,7 @@ inline tms_msg_ss::Skeleton initialize_skeleton()
 class SkeletonIntegrator
 {
   public:
-    SkeletonIntegrator(const std::vector<int>& camera, ros::NodeHandle& nh);
+    SkeletonIntegrator(const std::vector<int>& camera, ros::NodeHandle& nh, bool ignore_face_state=false);
     ~SkeletonIntegrator();
 
     void callback(const tms_msg_ss::SkeletonStreamWrapper::ConstPtr& msg);
@@ -75,13 +78,15 @@ class SkeletonIntegrator
     void listenSkeletonStream();
 
     // For Debug
+		bool ignore_face_state_;
     void showStatus();
 };
 
 //-----------------------------------------------------------------------------
-SkeletonIntegrator::SkeletonIntegrator(const std::vector<int> &camera, ros::NodeHandle& nh) :
+SkeletonIntegrator::SkeletonIntegrator(const std::vector<int> &camera, ros::NodeHandle& nh, bool ignore_face_state) :
   array(camera),
   tracked_skeleton_num_(0),
+	ignore_face_state_(ignore_face_state),
   nh_(nh)
 {
   out.data.resize(MAX_USERS);
@@ -225,7 +230,7 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
   camera_direction_cam = Eigen::Vector3f::UnitZ();
   float dot_skeleton_camera = skeleton_direction_cam.dot(camera_direction_cam);
 
-  if (msg->face_state == 2)
+  if (msg->face_state == 2 || ignore_face_state_)
   {
 		std::cout << "WARNING: face state is ignored" << std::endl;
     // Log face state and storage as valid skeleton
@@ -285,7 +290,7 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
       table_ref)
   {
     out.data[index] = integrated_skeleton;
-    tracking_validity[index] = 15;  // reflesh validity
+    tracking_validity[index] = SKELETON_LIFE_TIME;  // reflesh validity
     // Update evaluation
     storage_evaluation[index].first = msg->camera_number;
     storage_evaluation[index].second = dot_skeleton_camera;
@@ -413,6 +418,14 @@ int main(int argc, char **argv)
     return -1;
   }
 
+	bool ignore_face_state = false;
+	while((result=getopt(argc,argv,"f"))!=-1){
+		switch(result){
+			case 'f':
+				ignore_face_state = true;
+				break;
+		}
+	} 
 
   std::stringstream ss(using_numbers_str);
   std::string buffer;
