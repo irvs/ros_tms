@@ -42,3 +42,8 @@ add_dependencies(skeleton_integrator tms_msg_ss_generate_messages_cpp)
 add_executable(skeleton_db_stream skeleton_db_stream/main.cpp)
 target_link_libraries(skeleton_db_stream ${catkin_LIBRARIES})
 add_dependencies(skeleton_db_stream tms_msg_ss_generate_messages_cpp)
+
+# Test programs
+add_executable(calc_accuracy_front_judgment test_programs/calc_accuracy_front_judgment/main.cpp)
+target_link_libraries(calc_accuracy_front_judgment ${catkin_LIBRARIES})
+add_dependencies(calc_accuracy_front_judgment tms_msg_ss_generate_messages_cpp)

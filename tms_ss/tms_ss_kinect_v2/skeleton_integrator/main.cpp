@@ -208,7 +208,8 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
       ROS_INFO("SkeletonIntegrator: Data buffer is full. Discarding data.");
       return;
     }
-    tracked_skeleton_num_++;
+    if (tracked_skeleton_num_ != std::numeric_limits<int>::max()) {tracked_skeleton_num_++;}
+		else { ROS_WARN("Skeleton counter reached limit."); }
   }
 
   // Update skeleton state
@@ -435,7 +436,7 @@ int main(int argc, char **argv)
     cameraID_array.push_back(atoi(buffer.c_str()));
   }
 
-  SkeletonIntegrator integrator(cameraID_array, nh);
+  SkeletonIntegrator integrator(cameraID_array, nh, ignore_face_state);
 
   integrator.run();
 
