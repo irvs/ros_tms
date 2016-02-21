@@ -83,6 +83,51 @@ const int kModel01BaseLink = SpineMid;
 const int kJointDoF = 29;
 
 // -----------------------------------------------------------------------------
+template <class T>
+void convertStructureToVector(
+		const tms_msg_ss::Skeleton &in,
+		std::vector<Eigen::Matrix<T,3,1> > &out)
+{
+	out.resize(JOINT_NUM);
+	for (int i=0; i<JOINT_NUM; i++)
+	{
+		out[i] = Eigen::Matrix<T, 3, 1>(
+				in.position[i].x,
+				in.position[i].y,
+				in.position[i].z);
+	}
+	return;
+}
+
+// -----------------------------------------------------------------------------
+template <class T>
+inline void makePositionVector(
+		const std::vector<Eigen::Matrix<T,3,1> > &joint_array,
+		Eigen::Matrix<T, 3, 1> &position)
+{
+	position = joint_array[SpineMid];
+	return;
+}
+
+// -----------------------------------------------------------------------------
+template <class T>
+inline void makeOrientationQuaternion(
+		const std::vector<Eigen::Matrix<T,3,1> > &joint_array,
+		Eigen::Quaternion<T> &orientation)
+{
+	Eigen::Matrix<T, 3, 1> x,y,z;
+	x = (joint_array[SpineBase]-joint_array[SpineMid]).normalized();
+	y = ((joint_array[SpineShoulder]-joint_array[ShoulderLeft]).cross(x)).normalized();
+	z = (x.cross(y));
+	Eigen::Matrix<T, 3, 3> mat;
+	mat <<  
+		x[0], y[0], z[0],
+		x[1], y[1], z[1],
+		x[2], y[2], z[2];
+
+	orientation = mat;
+	return;
+}
 
 // -----------------------------------------------------------------------------
 	template <class T>

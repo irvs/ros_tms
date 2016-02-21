@@ -4,9 +4,10 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /RobotModel1/Links1
+        - /Marker1
+        - /Marker2
       Splitter Ratio: 0.5
-    Tree Height: 359
+    Tree Height: 775
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -59,7 +60,7 @@ Visualization Manager:
       Collision Enabled: false
       Enabled: true
       Links:
-        All Links Enabled: false
+        All Links Enabled: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
@@ -73,7 +74,7 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
+          Value: true
         bsen_room_link:
           Alpha: 1
           Show Axes: false
@@ -2215,6 +2216,22 @@ Visualization Manager:
         {}
       Queue Size: 100
       Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /skeleton_orientation
+      Name: Marker
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /skeleton_orientation_ground_truth
+      Name: Marker
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -2239,22 +2256,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 3.79488
+      Distance: 6.1705
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 8.52225
-        Y: 2.77115
-        Z: 0.746864
+        X: 6.46606
+        Y: 3.36852
+        Z: -0.257579
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.294797
+      Pitch: 0.434797
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.61818
+      Yaw: 5.72817
     Saved: ~
 Window Geometry:
   Displays:
