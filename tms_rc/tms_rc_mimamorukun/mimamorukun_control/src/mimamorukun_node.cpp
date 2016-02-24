@@ -136,9 +136,9 @@ void MachinePose_s::updateOdom() {
   tf::quaternionMsgToTF(tf::createQuaternionMsgFromYaw(POS_SIGMA), q2);
   q1 *= q2;
   tf::quaternionTFToMsg(q1.normalized(), m_Odom.pose.pose.orientation);
-  m_Odom.twist.twist.linear.x = MM2M(dL) / (double)ROS_RATE;
+  m_Odom.twist.twist.linear.x = MM2M(dL) * (double)ROS_RATE;
   m_Odom.twist.twist.linear.y = 0.0;
-  m_Odom.twist.twist.angular.z = POS_SIGMA;
+  m_Odom.twist.twist.angular.z = POS_SIGMA * (double)ROS_RATE;
 
   m_Odom.twist.covariance.at(0) = sqr(0.05 * m_Odom.twist.twist.linear.x);
   m_Odom.twist.covariance.at(7) = sqr(0.01);
@@ -152,7 +152,6 @@ void MachinePose_s::updateOdom() {
   m_Odom.pose.covariance.at(21) = 1000000;
   m_Odom.pose.covariance.at(28) = 1000000;
   m_Odom.pose.covariance.at(35) += sqr(POS_SIGMA*0.05);
-
   return;
 }
 
