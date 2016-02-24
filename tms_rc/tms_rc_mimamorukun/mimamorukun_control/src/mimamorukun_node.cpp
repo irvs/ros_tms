@@ -21,6 +21,7 @@ const int ENC_MAX = 3932159;
 const int SPEED_MAX = 32767;
 const float DIST_PER_PULSE = 0.552486;  // mm par pulse
 const int WHEEL_DIST = 544;
+bool is_publish_tf;
 // const int WHEEL_DIST = 570;             // 533;
 
 
@@ -220,7 +221,9 @@ void *odom_update(void *ptr) {
   while (ros::ok()) {
     mchn_pose.updateOdom();
     pub_odom();
-    pub_tf();
+    if(is_publish_tf){
+      pub_tf();
+    }
     r.sleep();
   }
 }
@@ -246,6 +249,7 @@ int main(int argc, char **argv) {
   s_Kp_ = boost::lexical_cast<string>(Kp_);
   s_Ki_ = boost::lexical_cast<string>(Ki_);
   s_Kd_ = boost::lexical_cast<string>(Kd_);
+  nh_param.param<bool>("publish_tf", is_publish_tf, true);
 
   try {
     string reply;
