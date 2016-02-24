@@ -21,6 +21,7 @@ const int ENC_MAX = 3932159;
 const int SPEED_MAX = 32767;
 const float DIST_PER_PULSE = 0.552486;  // mm par pulse
 const int WHEEL_DIST = 544;
+bool is_publish_tf;
 // const int WHEEL_DIST = 570;             // 533;
 
 
@@ -136,9 +137,9 @@ void MachinePose_s::updateOdom() {
   tf::quaternionMsgToTF(tf::createQuaternionMsgFromYaw(POS_SIGMA), q2);
   q1 *= q2;
   tf::quaternionTFToMsg(q1.normalized(), m_Odom.pose.pose.orientation);
-  m_Odom.twist.twist.linear.x = MM2M(dL) / (double)ROS_RATE;
+  m_Odom.twist.twist.linear.x = MM2M(dL) * (double)ROS_RATE;
   m_Odom.twist.twist.linear.y = 0.0;
-  m_Odom.twist.twist.angular.z = POS_SIGMA;
+  m_Odom.twist.twist.angular.z = POS_SIGMA * (double)ROS_RATE;
 
   m_Odom.twist.covariance.at(0) = sqr(0.05 * m_Odom.twist.twist.linear.x);
   m_Odom.twist.covariance.at(7) = sqr(0.01);
@@ -152,7 +153,6 @@ void MachinePose_s::updateOdom() {
   m_Odom.pose.covariance.at(21) = 1000000;
   m_Odom.pose.covariance.at(28) = 1000000;
   m_Odom.pose.covariance.at(35) += sqr(POS_SIGMA*0.05);
-
   return;
 }
 
@@ -221,7 +221,9 @@ void *odom_update(void *ptr) {
   while (ros::ok()) {
     mchn_pose.updateOdom();
     pub_odom();
-    pub_tf();
+    if(is_publish_tf){
+      pub_tf();
+    }
     r.sleep();
   }
 }
@@ -247,6 +249,7 @@ int main(int argc, char **argv) {
   s_Kp_ = boost::lexical_cast<string>(Kp_);
   s_Ki_ = boost::lexical_cast<string>(Ki_);
   s_Kd_ = boost::lexical_cast<string>(Kd_);
+  nh_param.param<bool>("publish_tf", is_publish_tf, true);
 
   try {
     string reply;

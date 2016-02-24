@@ -1,7 +1,7 @@
 <launch>
 <group ns="mimamorukun">
 <!-- gmapping -->
-<include file="$(find tms_rc_mimamorukun_control)/launch/includes/gmapping.launch.xml"/>
+<include file="$(find tms_rc_mimamorukun_control)/launch/deprecated/includes/gmapping.launch.xml"/>
 
 <!-- コストマップ -->
 <node name="costmap_node" pkg="costmap_2d" type="costmap_2d_node">
