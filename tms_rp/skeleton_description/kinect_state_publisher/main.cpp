@@ -89,9 +89,14 @@ KinectStatePublisher::~KinectStatePublisher()
 //------------------------------------------------------------------------------
 void KinectStatePublisher::callback(const tms_msg_ss::SkeletonStreamWrapper::ConstPtr& msg)
 {
-	int index = (int)msg->camera_number-1;
+	int camera_number = (int)msg->camera_number;
 
-	ROS_INFO("kinect%d: Received posture.", index+1);
+	ROS_INFO("kinect%d: Received posture.", camera_number);
+
+	int index;
+	for (index = 0;
+			index < cameraID_array_.size() && camera_number != cameraID_array_[index];
+			index++) { }
 
 	tms_msg_ss::CameraPosture camera_posture = msg->camera_posture;
 	rot_[index] = Eigen::Quaterniond(
