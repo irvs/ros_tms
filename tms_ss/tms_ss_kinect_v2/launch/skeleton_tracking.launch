@@ -2,9 +2,9 @@
 <launch>
   <!-- Interface -->
   <arg name="num_of_skeletons" default="12"/>
-  <arg name="host_name" default="192.168.4.170"/>
-	<arg name="using_numbers" default="1 2 3 4 5 6 7 8 9"/>
-	<!--<arg name="using_numbers" default="1 4"/>-->
+	<!--<arg name="host_name" default="192.168.4.169"/>-->
+	<!--<arg name="using_numbers" default="1 2 3 4 5 6 7 8 9"/>-->
+	<arg name="using_numbers" default="10 11 12"/>
   <arg name="using_db" default="true"/>
   <arg name="using_db_history" default="history"/>
 
@@ -17,10 +17,11 @@
   <node name="skeleton_db_stream" pkg="tms_ss_kinect_v2" type="skeleton_db_stream"/>
 
   <!-- For visualize furnitures in rViz -->
+	<!--
 	<param name="robot_description"
 				 command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/environments_standalone.urdf.xacro'" />
 	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
-
+	-->
   <!-- For visualize kinect in rViz -->
   <param name="kinect_description1"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
   <param name="kinect_description2"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
@@ -31,6 +32,9 @@
   <param name="kinect_description7"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
   <param name="kinect_description8"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
   <param name="kinect_description9"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
+  <param name="kinect_description10"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
+  <param name="kinect_description11"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
+  <param name="kinect_description12"  textfile="$(find skeleton_description)/urdf/kinect_v2.urdf"/>
   <node name="kinect_state_publisher" pkg="skeleton_description" type="kinect_state_publisher"/>
 
   <!-- For visualize box in rViz -->
