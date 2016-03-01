@@ -4,8 +4,8 @@
   <version>1.2.1</version>
   <license>BSD</license>
   <description>The tms_dev_viewer package</description>
- 
-  <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>
+
+  <maintainer email="sakamoto@irvs.ait.kyushu-u.ac.jp">Junya Sakamoto</maintainer>
 
   <url type="website">http://robotics.ait.kyushu-u.ac.jp/index-e.html</url>
   <url type="git">https://github.com/irvs/ros_tms</url>
@@ -21,7 +21,7 @@
   <run_depend>roscpp</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>message_runtime</run_depend>
-  
+
   <export>
   </export>
 </package>

@@ -21,6 +21,7 @@ const int ENC_MAX = 3932159;
 const int SPEED_MAX = 32767;
 const float DIST_PER_PULSE = 0.552486;  // mm par pulse
 const int WHEEL_DIST = 544;
+bool is_publish_tf;
 // const int WHEEL_DIST = 570;             // 533;
 
 
@@ -35,8 +36,8 @@ class MachinePose_s {
  public:
   MachinePose_s() {
     ROS_DEBUG("In Mimamorukun Constructor");
-    m_Odom.header.frame_id = "/odom";
-    m_Odom.child_frame_id = "/base_footprint";
+    m_Odom.header.frame_id = "odom";
+    m_Odom.child_frame_id = "base_footprint";
     m_Odom.pose.pose.position.x = 0.0;
     m_Odom.pose.pose.position.y = 0.0;
     m_Odom.pose.pose.position.z = 0.0;
@@ -84,6 +85,7 @@ double nomalizeAng(double rad) {
 
 void MachinePose_s::updateOdom() {
   // update Encoder value
+  m_Odom.header.stamp = ros::Time::now();
   long int ENC_L, ENC_R;
   long int tmpENC_L = 0;
   long int tmpENC_R = 0;
@@ -126,18 +128,31 @@ void MachinePose_s::updateOdom() {
   double dY = dL * sin(tf::getYaw(m_Odom.pose.pose.orientation) + POS_SIGMA);
   ENC_R_old = ENC_R;  //前回のエンコーダーの値を記録
   ENC_L_old = ENC_L;
+
   m_Odom.pose.pose.position.x += MM2M(dX);
   m_Odom.pose.pose.position.y += MM2M(dY);
-
   tf::Quaternion q1;
   tf::quaternionMsgToTF(m_Odom.pose.pose.orientation, q1);
   tf::Quaternion q2;
   tf::quaternionMsgToTF(tf::createQuaternionMsgFromYaw(POS_SIGMA), q2);
   q1 *= q2;
   tf::quaternionTFToMsg(q1.normalized(), m_Odom.pose.pose.orientation);
-  m_Odom.twist.twist.linear.x = MM2M(dL) / (double)ROS_RATE;
+  m_Odom.twist.twist.linear.x = MM2M(dL) * (double)ROS_RATE;
   m_Odom.twist.twist.linear.y = 0.0;
-  m_Odom.twist.twist.angular.z = POS_SIGMA;
+  m_Odom.twist.twist.angular.z = POS_SIGMA * (double)ROS_RATE;
+
+  m_Odom.twist.covariance.at(0) = sqr(0.05 * m_Odom.twist.twist.linear.x);
+  m_Odom.twist.covariance.at(7) = sqr(0.01);
+  m_Odom.twist.covariance.at(14) = 1000000;
+  m_Odom.twist.covariance.at(21) = 1000000;
+  m_Odom.twist.covariance.at(28) = 1000000;
+  m_Odom.twist.covariance.at(35) = sqr(0.05 * POS_SIGMA);
+  m_Odom.pose.covariance.at(0) += sqr(0.05*MM2M(dX));
+  m_Odom.pose.covariance.at(7) += sqr(0.05*MM2M(dY));
+  m_Odom.pose.covariance.at(14) = 1000000;
+  m_Odom.pose.covariance.at(21) = 1000000;
+  m_Odom.pose.covariance.at(28) = 1000000;
+  m_Odom.pose.covariance.at(35) += sqr(POS_SIGMA*0.05);
   return;
 }
 
@@ -206,7 +221,9 @@ void *odom_update(void *ptr) {
   while (ros::ok()) {
     mchn_pose.updateOdom();
     pub_odom();
-    pub_tf();
+    if(is_publish_tf){
+      pub_tf();
+    }
     r.sleep();
   }
 }
@@ -232,6 +249,7 @@ int main(int argc, char **argv) {
   s_Kp_ = boost::lexical_cast<string>(Kp_);
   s_Ki_ = boost::lexical_cast<string>(Ki_);
   s_Kd_ = boost::lexical_cast<string>(Kd_);
+  nh_param.param<bool>("publish_tf", is_publish_tf, true);
 
   try {
     string reply;

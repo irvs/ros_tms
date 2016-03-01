@@ -4,8 +4,8 @@
   <version>2.0.2</version>
   <license>BSD</license>
   <description>The tms_sa_bas_graph package</description>
- 
-  <maintainer email="passionvirus@gmail.com">Yoonseok Pyo</maintainer>
+
+  <maintainer email="sakamoto@irvs.ait.kyushu-u.ac.jp">Junya Sakamoto</maintainer>
 
   <url type="website">http://robotics.ait.kyushu-u.ac.jp/index-e.html</url>
   <url type="git">https://github.com/irvs/ros_tms</url>
@@ -20,7 +20,7 @@
 
   <run_depend>roscpp</run_depend>
   <run_depend>message_runtime</run_depend>
-  
+
   <export>
   </export>
 </package>
