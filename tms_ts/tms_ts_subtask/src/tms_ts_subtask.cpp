@@ -26,8 +26,7 @@ tms_rp::TmsRpSubtask::TmsRpSubtask()
   sp5_virtual_control_client    = nh1.serviceClient<tms_msg_rc::rc_robot_control>("sp5_virtual_control");
   subtask_pick_client          = nh1.serviceClient<tms_msg_rp::rp_pick>("subtask_pick");
   subtask_place_client        = nh1.serviceClient<tms_msg_rp::rp_place>("subtask_place");
-  subtask_arm_move_client     = nh1.serviceClient<tms_msg_rp::rp_arm_move>("subtask_arm_move");
-
+  subtask_release_client        = nh1.serviceClient<tms_msg_rp::rp_release>("subtask_release");
   //  kxp_virtual_control_client    = nh1.serviceClient<tms_msg_rc::rc_robot_control>("kxp_virtual_control");
 //  kxp_mbase_client              = nh1.serviceClient<tms_msg_rc::tms_rc_pmove>("pmove");
 //  v_kxp_mbase_client            = nh1.serviceClient<tms_msg_rc::tms_rc_pmove>("virtual_pmove");
@@ -195,7 +194,9 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
 {
   SubtaskData sd;
 //    sd.type = grasp::TmsRpBar::production_version_;
-  sd.type = true; //sim = false , real = true
+  bool type;
+  nh1.getParam("/is_real",type);
+  sd.type = type; //sim = false , real = true
   sd.robot_id = req.robot_id;
   sd.arg_type = (int)req.arg.at(0);
   sd.v_arg.clear();
@@ -1057,51 +1058,6 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
           }
         }
 
-        // tms_msg_rp::rp_arm_move srv2;
-        // srv2.request.move_id = ARM_GRASPING;
-        //
-        // if (subtask_arm_move_client.call(srv2))
-        // {
-        //   ROS_INFO("Successed arm_move(grasping)");
-        // }
-        // else
-        // {
-        //   s_srv.request.error_msg = "failed arm_move(grasping)";
-        //   state_client.call(s_srv);
-        //   return false;
-        // }
-        //
-        // if(sd.type){
-        //   sleep(0.5);
-        //   double arg[1] = {0.0};
-        //   if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
-        //     send_rc_exception(7);
-        //     return false;
-        //   }
-        // }
-        //
-        // srv2.request.move_id = ARM_NEUTRAL;
-        //
-        // if (subtask_arm_move_client.call(srv2))
-        // {
-        //   ROS_INFO("Successed arm_move(neutral)");
-        // }
-        // else
-        // {
-        //   s_srv.request.error_msg = "failed arm_move(neutral)";
-        //   state_client.call(s_srv);
-        //   return false;
-        // }
-        //
-        // if(sd.type){
-        //   sleep(0.5);
-        //   double arg[1] = {0.0};
-        //   if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
-        //     send_rc_exception(7);
-        //     return false;
-        //   }
-        // }
-
         arg[0]=0.0;
         arg[1]=-1.4;
         arg[2]=0.0;
@@ -1213,7 +1169,7 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
   db_srv.request.tmsdb.id = sd.robot_id;
 
   db_srv.request.tmsdb.sensor = 3003;
-  if(sd.type == false) db_srv.request.tmsdb.sensor = 3001;
+  if(sd.type == false) db_srv.request.tmsdb.sensor = 3005;
 
 
   if(get_data_client_.call(db_srv)){
@@ -1276,13 +1232,15 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
             return false;
           }
 
-          sleep(2);
+          sleep(1);
 
-          arg[0]=-1.0;
-          arg[1]=0.175;
-          arg[2]=0.175;
-          if(!sp5_control(sd.type, UNIT_GRIPPER_L, CMD_MOVE_ABS, 3, arg)){
-            send_rc_exception(4);
+          tms_msg_rp::rp_release srv;
+          srv.request.object_id = grasping_id;
+          if(subtask_release_client.call(srv)){
+            ROS_INFO("Successed release object");
+          }else{
+            s_srv.request.error_msg = "failed release object";
+            state_client.call(s_srv);
             return false;
           }
 
@@ -1308,94 +1266,6 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
             send_rc_exception(2);
             return false;
           }
-          // tms_msg_rp::rp_arm_move srv;
-          // srv.request.move_id = ARM_SERVING;
-          // if (subtask_arm_move_client.call(srv))
-          // {
-          //   ROS_INFO("Successed arm_move(serving)");
-          // }
-          // else
-          // {
-          //   s_srv.request.error_msg = "failed arm_move(serving)";
-          //   state_client.call(s_srv);
-          //   return false;
-          // }
-          //
-          // //wait
-          // sleep(1);
-          //
-          // if(sd.type){
-          //   double arg[1] = {0.0};
-          //   if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
-          //     send_rc_exception(7);
-          //     return false;
-          //   }
-          // }
-          //
-          // srv.request.move_id = GRIPPER_OPEN;
-          // srv.request.object_id = grasping_id;
-          // if (subtask_arm_move_client.call(srv))
-          // {
-          //   ROS_INFO("Successed arm_move(gripper_open)");
-          // }
-          // else
-          // {
-          //   s_srv.request.error_msg = "failed arm_move(gripper_open)";
-          //   state_client.call(s_srv);
-          //   return false;
-          // }
-          //
-          // sleep(1);
-          //
-          // if(sd.type){
-          //   double arg[1] = {0.0};
-          //   if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
-          //     send_rc_exception(7);
-          //     return false;
-          //   }
-          // }
-          // //
-          // // srv.request.move_id = ARM_GIVE_END;
-          // // if(subtask_arm_move_client.call(srv))
-          // // {
-          // //   ROS_INFO("Successed arm_move(give_end)");
-          // // }
-          // // else
-          // // {
-          // //   s_srv.request.error_msg = "failed arm_move(give_end)";
-          // //   state_client.call(s_srv);
-          // //   return false;
-          // // }
-          // //
-          // // if(sd.type){
-          // //   sleep(0.5);
-          // //   double arg[1] = {0.0};
-          // //   if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
-          // //     send_rc_exception(7);
-          // //     return false;
-          // //   }
-          // // }
-          //
-          // srv.request.move_id = NEUTRAL;
-          // if (subtask_arm_move_client.call(srv))
-          // {
-          //   ROS_INFO("Successed arm_move(neutral)");
-          // }
-          // else
-          // {
-          //   s_srv.request.error_msg = "failed arm_move(neutral)";
-          //   state_client.call(s_srv);
-          //   return false;
-          // }
-          //
-          // if(sd.type){
-          //   sleep(0.5);
-          //   double arg[1] = {0.0};
-          //   if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
-          //     send_rc_exception(7);
-          //     return false;
-          //   }
-          // }
         }
         else
         {
@@ -1537,26 +1407,27 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
           return false;
         }
 
+        double arg[8];
+
         if(sd.type){
           sleep(0.5);
-          double arg[1] = {0.0};
+          arg[0] = {0.0};
           if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
             send_rc_exception(7);
             return false;
           }
         }
 
-        tms_msg_rp::rp_arm_move am_srv;
-        am_srv.request.move_id = NEUTRAL;
-
-        if (subtask_arm_move_client.call(am_srv))
-        {
-          ROS_INFO("Successed arm_move(neutral)");
-        }
-        else
-        {
-          s_srv.request.error_msg = "failed arm_move(neutral)";
-          state_client.call(s_srv);
+        arg[0]=0.0;
+        arg[1]=-0.17;
+        arg[2]=0.0;
+        arg[3]=0.0;
+        arg[4]=0.0;
+        arg[5]=0.0;
+        arg[6]=0.0;
+        arg[7]=0.175;
+        if(!sp5_control(sd.type, UNIT_ARM_L, CMD_MOVE_ABS, 8, arg)){
+          send_rc_exception(2);
           return false;
         }
 

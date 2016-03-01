@@ -102,6 +102,9 @@ private:
     if (msg->tmsdb.size()==0)
       return;
 
+    bool type;
+    nh.getParam("/is_real",type);
+
     for (uint32_t i=0; i<msg->tmsdb.size(); i++)
     {
       id      = msg->tmsdb[i].id;
@@ -110,7 +113,7 @@ private:
       place   = msg->tmsdb[i].place;
       joint   = msg->tmsdb[i].joint;
 
-      if (id==2003 && sensor==3003) // smartpal5-2
+      if (id==2003 && ((type==true && sensor==3003)||(type==false && sensor==3005))) // smartpal5-2
       {
         if (state==1)
         {

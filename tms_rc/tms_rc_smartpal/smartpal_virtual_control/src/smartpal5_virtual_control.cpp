@@ -891,6 +891,8 @@ int main(int argc, char **argv)
   object_data_sub = nh.subscribe("/move_group/monitored_planning_scene",1,&ObjectDataUpdate);
   get_data_client_ = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
 
+  nh.setParam("/is_real",false);
+
   printf("Virtual SmartPal initialization has been completed.\n\n");
 
   boost::thread thr_rdu(&RobotDataUpdate);

@@ -659,6 +659,8 @@ int main(int argc, char **argv)
 	ros::Subscriber arm_data_sub = nh.subscribe("/move_group/fake_controller_joint_states",1,&armCallback);
 	object_data_sub = nh.subscribe("/move_group/monitored_planning_scene",1,&ObjectDataUpdate);
 
+	nh.setParam("/is_real",true);
+
 	listener = new tf::TransformListener;
 
   int32_t id_robot = 2003;                 // SmartPal5_2 ID
@@ -705,8 +707,6 @@ int main(int argc, char **argv)
 
   // servo on
   smartpal->vehicleSetServo(ON);
-  smartpal->armSetServo(ArmR, ON);
-  smartpal->armSetServo(ArmL, ON);
   smartpal->gripperSetServo(GripperR, ON);
   smartpal->gripperSetServo(GripperL, ON);
   smartpal->lumbaSetServo(ON);
