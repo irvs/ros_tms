@@ -24,7 +24,6 @@ const int WHEEL_DIST = 544;
 bool is_publish_tf;
 // const int WHEEL_DIST = 570;             // 533;
 
-
 // long int ENC_L = 0;
 // long int ENC_R = 0;
 
@@ -46,7 +45,7 @@ class MachinePose_s {
     m_Odom.pose.pose.orientation.z = 0.0;
     m_Odom.pose.pose.orientation.w = 1.0;
   };
-  ~MachinePose_s() {};
+  ~MachinePose_s(){};
   void updateOdom();
   bool postPose();
   nav_msgs::Odometry m_Odom;
@@ -147,12 +146,12 @@ void MachinePose_s::updateOdom() {
   m_Odom.twist.covariance.at(21) = 1000000;
   m_Odom.twist.covariance.at(28) = 1000000;
   m_Odom.twist.covariance.at(35) = sqr(0.05 * POS_SIGMA);
-  m_Odom.pose.covariance.at(0) += sqr(0.05*MM2M(dX));
-  m_Odom.pose.covariance.at(7) += sqr(0.05*MM2M(dY));
+  m_Odom.pose.covariance.at(0) += sqr(0.05 * MM2M(dX));
+  m_Odom.pose.covariance.at(7) += sqr(0.05 * MM2M(dY));
   m_Odom.pose.covariance.at(14) = 1000000;
   m_Odom.pose.covariance.at(21) = 1000000;
   m_Odom.pose.covariance.at(28) = 1000000;
-  m_Odom.pose.covariance.at(35) += sqr(POS_SIGMA*0.05);
+  m_Odom.pose.covariance.at(35) += sqr(POS_SIGMA * 0.05);
   return;
 }
 
@@ -194,7 +193,7 @@ void receiveCmdVel(const geometry_msgs::Twist::ConstPtr &cmd_vel) {
   // spinWheel(/*cmd_vel->linear.x,cmd_vel->angular.z*/);
 }
 
-void pub_tf(){
+void pub_tf() {
   static tf::TransformBroadcaster broadcaster;
   geometry_msgs::TransformStamped ts;
   ts.header.frame_id = mchn_pose.m_Odom.header.frame_id;
@@ -210,7 +209,7 @@ void pub_tf(){
   broadcaster.sendTransform(ts);
 }
 
-void pub_odom(){
+void pub_odom() {
   static ros::NodeHandle nh;
   static ros::Publisher pub = nh.advertise<nav_msgs::Odometry>("odom", 100);
   pub.publish(mchn_pose.m_Odom);
@@ -221,7 +220,7 @@ void *odom_update(void *ptr) {
   while (ros::ok()) {
     mchn_pose.updateOdom();
     pub_odom();
-    if(is_publish_tf){
+    if (is_publish_tf) {
       pub_tf();
     }
     r.sleep();
@@ -259,13 +258,11 @@ int main(int argc, char **argv) {
       client_socket << "@CR1@CR2@SM1,1@SM2,1@PP1," + s_Kp_ + "@PP2," + s_Kp_ + "@PI1," + s_Ki_ +
                            "@PI2," + s_Ki_ + "@PD1," + s_Kd_ + "@PD2," + s_Kd_;
       client_socket >> reply;
-    }
-    catch (SocketException &) {
+    } catch (SocketException &) {
     }
     cout << "Response:" << reply << "\n";
     ;
-  }
-  catch (SocketException &e) {
+  } catch (SocketException &e) {
     cout << "Exception was caught:" << e.description() << "\n";
   }
 
