@@ -5,7 +5,9 @@
 #include <tms_msg_ts/ts_state_control.h>
 #include <tms_msg_rp/rp_cmd.h>
 #include <tms_msg_rp/rp_arrow.h>
-#include <tms_msg_rp/rp_grasp.h>
+#include <tms_msg_rp/rp_pick.h>
+#include <tms_msg_rp/rp_place.h>
+#include <tms_msg_rp/rp_release.h>
 #include <tms_msg_rp/rps_voronoi_path_planning.h>
 #include <tms_msg_rp/rps_goal_planning.h>
 #include <tms_msg_rp/rps_joint_angle.h>
@@ -32,6 +34,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+
 #define UNIT_ALL                0
 #define UNIT_VEHICLE            1
 #define UNIT_ARM_R              2
@@ -52,9 +55,11 @@
 #define SET_ODOM                7
 #define CMD_GETPOSE             8
 #define CMD_SYNC_OBJ            8
+#define CMD_MOVE_TRAJECTORY     8
 #define CMD_CALC_BACKGROUND     9
 #define CMD_MOVE_ABS            15
 #define CMD_MOVE_REL            16
+
 
 #define PI      3.14159265 // 180
 #define HALF_PI 1.57079633 // 90
@@ -77,6 +82,7 @@ class TmsRpSubtask
 //	bool kxp_control(bool type, int unit, int cmd, int arg_size, double* arg);
 //	void sensingCallback(const tms_msg_ss::ods_person_dt::ConstPtr& msg);
 
+
  private:
   ros::NodeHandle nh1;
 
@@ -95,7 +101,7 @@ class TmsRpSubtask
   // for thread
   bool move(SubtaskData sd); // 9001
   bool grasp(SubtaskData sd); // 9002
-//	bool give(SubtaskData sd); // 9003
+  bool release(SubtaskData sd); // 9003
 //	bool open_ref(void);  // 9004
 //	bool close_ref(void); // 9005
 //	bool random_move(void); // 9006
@@ -105,7 +111,9 @@ class TmsRpSubtask
   ros::ServiceClient get_data_client_;
   ros::ServiceClient sp5_control_client_;
   ros::ServiceClient sp5_virtual_control_client;
-  ros::ServiceClient  subtask_grasp_client;
+  ros::ServiceClient subtask_pick_client;
+  ros::ServiceClient subtask_place_client;
+  ros::ServiceClient subtask_release_client;
 //	ros::ServiceClient kxp_virtual_control_client;
 //	ros::ServiceClient kxp_mbase_client;
 //	ros::ServiceClient v_kxp_mbase_client;

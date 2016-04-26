@@ -73,7 +73,7 @@ public class TmsdbGetDataNode extends AbstractNodeMain {
 	@Override
 	public void onStart(final ConnectedNode connectedNode) {
 		try {
-			srvClient = connectedNode.newServiceClient("/tms_db_reader/dbreader",TmsdbGetData._TYPE);
+			srvClient = connectedNode.newServiceClient("/tms_db_reader",TmsdbGetData._TYPE);
 		} catch (ServiceNotFoundException e) {
 			throw new RosRuntimeException(e);
 		}   

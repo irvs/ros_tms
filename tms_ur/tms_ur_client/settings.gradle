@@ -17,3 +17,4 @@
 include 'tms_ur_dbbrowser'
 include 'tms_ur_arviewer'
 include 'tms_ur_sanmoku'
+include 'tms_ur_commander'

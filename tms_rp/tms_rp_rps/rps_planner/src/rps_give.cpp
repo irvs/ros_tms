@@ -747,7 +747,7 @@ int main(int argc, char **argv) {
 	ros::Subscriber	rps_map_subscriber = n.subscribe("rps_map_data", 1, set_RPS_MAP);
 	ros::ServiceServer service_give_obj_pos = n.advertiseService("rps_give_obj_pos_planning", start_give_obj_pos_planner);
 
-	get_data_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
+	get_data_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
 
 
 	ros::spin();

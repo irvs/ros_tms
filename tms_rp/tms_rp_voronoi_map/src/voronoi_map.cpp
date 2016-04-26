@@ -88,7 +88,7 @@ namespace tms_rp
       nh_priv.param("is_debug", is_debug, is_debug);
       ROS_ASSERT(initTmsRpVoronoiMap());
       // Subscriber for tms_db_data topic
-      get_data_client_ = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
+      get_data_client_ = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
       static_map_pub_  = nh.advertise<tms_msg_rp::rps_map_full>("rps_map_data", 1);
       dynamic_map_pub_ = nh.advertise<tms_msg_rp::rps_map_full>("rps_dynamic_map", 1);
       nonvoronoi_map_marker_pub = nh.advertise<visualization_msgs::Marker>("nonvoronoi_map_marker", 1);

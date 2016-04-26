@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import rospy
 import genpy
 import pymongo # https://api.mongodb.org/python/2.6.3/
@@ -34,14 +34,25 @@ class TmsDbWriter():
                 # store into db of history
                 # rospy.loginfo("store into db of history")
                 db.history.insert(doc)
+                print(doc['id'])
+                #---------------------------------------------------------
+                if doc['name'] == "":
+                    print("nameempty")
+                    if doc['id'] == 2003:
+                        doc['name'] = "smartpal5_2"
+                        print(doc['name'])
+                    if doc['id'] == 1002:
+                        doc['name'] = "person_2_moverio"
+                        print(doc['name'])
+                #---------------------------------------------------------
                 # store into data collection
                 # print(doc['name'])
-                result = db.now.find({"name": doc['name']})
-                # print(result.count())
+                result = db.now.find({"name": doc['name'],"sensor": doc['sensor']})
+                print(result.count())
                 if result.count() >= 1:
                     del doc['_id']
                 result = db.now.update(
-                    {"name": doc['name']},
+                    {"name": doc['name'],"sensor": doc['sensor']},
                     doc,
                     upsert=True
                 )

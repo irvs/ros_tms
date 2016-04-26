@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="sanmoku-feature-ex-0.0.1">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/tms_ur_sanmoku/libs/sanmoku-feature-ex-0.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/tms_ur_commander/libs/sanmoku-feature-ex-0.0.1.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

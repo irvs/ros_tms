@@ -36,7 +36,7 @@ class TmsDbPublisher():
             temp_dbdata = Tmsdb()
             current_environment_information = TmsdbStamped()
 
-            cursor = db.now.find({'state':1})
+            cursor = db.now.find({ '$or' :[{'state':1},{'state':2}]})
             # print(cursor.count())
             for doc in cursor:
                 del doc['_id']

@@ -90,10 +90,10 @@ class MoveItDemo:
         arm.set_planning_time(5)
 
         # Set a limit on the number of pick attempts before bailing
-        max_pick_attempts = 5
+        max_pick_attempts = 15
 
         # Set a limit on the number of place attempts
-        max_place_attempts = 5
+        max_place_attempts = 15
 
         # Give the scene a chance to catch up
         rospy.sleep(2)
@@ -134,8 +134,8 @@ class MoveItDemo:
         # Add a table top and two boxes to the scene
         table_pose = PoseStamped()
         table_pose.header.frame_id = REFERENCE_FRAME
-        table_pose.pose.position.x = 0.35
-        table_pose.pose.position.y = 0.0
+        table_pose.pose.position.x = 3.35
+        table_pose.pose.position.y = 4.0
         table_pose.pose.position.z = table_ground + table_size[2] / 2.0
         table_pose.pose.orientation.w = 1.0
 
@@ -144,8 +144,8 @@ class MoveItDemo:
         # Set the target pose in between the boxes and on the table
         target_pose = PoseStamped()
         target_pose.header.frame_id = REFERENCE_FRAME
-        target_pose.pose.position.x = 0.35
-        target_pose.pose.position.y = 0.2
+        target_pose.pose.position.x = 3.35
+        target_pose.pose.position.y = 4.2
         target_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0
         q = quaternion_from_euler(0, 0, -1.57079633)
         target_pose.pose.orientation.x = q[0]
@@ -171,8 +171,8 @@ class MoveItDemo:
         # Specify a pose to place the target after being picked up
         place_pose = PoseStamped()
         place_pose.header.frame_id = REFERENCE_FRAME
-        place_pose.pose.position.x = 0.35
-        place_pose.pose.position.y = 0.3
+        place_pose.pose.position.x = 3.35
+        place_pose.pose.position.y = 4.3
         place_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0
         q = quaternion_from_euler(0, 0, -1.57079633)
         place_pose.pose.orientation.x = q[0]
@@ -184,7 +184,7 @@ class MoveItDemo:
         grasp_pose = target_pose
 
         # Shift the grasp pose by half the width of the target to center it
-        grasp_pose.pose.position.y -= target_size[1] / 2.0
+        grasp_pose.pose.position.y += target_size[1] / 2.0
 
         # Generate a list of grasps
         grasps = self.make_grasps(grasp_pose, [target_id])
@@ -203,7 +203,11 @@ class MoveItDemo:
             n_attempts += 1
             rospy.loginfo("Pick attempt: " +  str(n_attempts))
             result = arm.pick(target_id, grasps)
+            print('pick result')
+            print(result)
             rospy.sleep(0.2)
+
+        rospy.loginfo("pickend")
 
         # If the pick was successful, attempt the place operation
         if result == MoveItErrorCodes.SUCCESS:
@@ -219,6 +223,8 @@ class MoveItDemo:
                 rospy.loginfo("Place attempt: " +  str(n_attempts))
                 for place in places:
                     result = arm.place(target_id, place)
+                    print('place result')
+                    print(result)
                     if result == MoveItErrorCodes.SUCCESS:
                         break
                 rospy.sleep(0.2)
