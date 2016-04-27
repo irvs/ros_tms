@@ -12,6 +12,10 @@
 #include <tf/tf.h>
 #include <tf/transform_broadcaster.h>
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <tms_msg_db/TmsdbGetData.h>
+#include <tms_msg_db/TmsdbStamped.h>
+#include <tms_msg_db/Tmsdb.h>
 #include "kalman-Ndof.hpp"
 
 #define ROS_RATE 10
@@ -31,6 +35,8 @@ bool is_publish_tf;
 
 pthread_t thread_odom;
 pthread_mutex_t mutex_socket = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex_update_kalman = PTHREAD_MUTEX_INITIALIZER;
+ros::ServiceClient db_client;
 
 class MachinePose_s {
  private:
@@ -57,6 +63,8 @@ class MachinePose_s {
   geometry_msgs::Pose2D getCurrentPosition();
 
   Kalman *kalman;
+  geometry_msgs::Pose2D pos_fusioned;
+  geometry_msgs::Pose2D vel_fusioned;
   enum InfoType { VELOCITY, POSISION };
   geometry_msgs::Pose2D UpdatePosition(geometry_msgs::Pose2D tpose, InfoType Info);
 } mchn_pose;
@@ -85,6 +93,32 @@ double nomalizeAng(double rad) {
     rad = rad + (2 * M_PI);
   }
   return rad;
+}
+
+geometry_msgs::Pose2D updateVicon() {
+  geometry_msgs::Pose2D ret;
+  tms_msg_db::TmsdbGetData srv;
+  srv.request.tmsdb.id = 2007;
+  srv.request.tmsdb.sensor = 3001;
+  if (!db_client.call(srv)) {
+    ROS_ERROR("Failed to get vicon data from DB via tms_db_reader");
+  } else if (srv.response.tmsdb.empty()) {
+    ROS_ERROR("DB response empty");
+  } else {
+    boost::posix_time::ptime set_time =
+        boost::posix_time::time_from_string(srv.response.tmsdb[0].time);
+    ros::Time ros_now = ros::Time::now() + ros::Duration(9 * 60 * 60);
+    boost::posix_time::ptime now = ros_now.toBoost();
+    // cout << "time:" << now-set_time << "\n";
+    // cout << "3sec:" << boost::posix_time::time_duration(0,0,3,0) << "\n";
+    if (boost::posix_time::time_duration(0, 0, 3, 0) >
+        now - set_time) {  // check if data is fresh (in last 3sec)
+      ret.x = srv.response.tmsdb[0].x;
+      ret.y = srv.response.tmsdb[0].y;
+      ret.theta = Deg2Rad(srv.response.tmsdb[0].ry);
+     }
+   }
+  return ret;
 }
 
 void MachinePose_s::updateOdom() {
@@ -224,28 +258,33 @@ void *vicon_update(void *ptr) {
   // ros::Rate r(30);
   ros::Rate r(ROS_RATE);
   while (ros::ok()) {
-    mchn_pose.updateVicon();
-    if (1000 < mchn_pose.pos_vicon.x && 1000 < mchn_pose.pos_vicon.y) {
-      pthread_mutex_lock(&mutex_update_kalman);
-      mchn_pose.UpdatePosition(mchn_pose.pos_vicon, MachinePose_s::POSISION);
-      pthread_mutex_unlock(&mutex_update_kalman);
-    }
+    geometry_msgs::Pose2D pose_vicon = updateVicon();
+
+    pthread_mutex_lock(&mutex_update_kalman);
+    mchn_pose.UpdatePosition(pose_vicon, MachinePose_s::POSISION);
+    pthread_mutex_unlock(&mutex_update_kalman);
     r.sleep();
   }
 }
 
 void *odom_update(void *ptr) {
-  // ros::Rate r(30);
   ros::Rate r(ROS_RATE);
   while (ros::ok()) {
     mchn_pose.updateOdom();
-    pub_odom();
-    if (is_publish_tf) {
-      pub_tf();
-    }
+
+    double yaw = tf::getYaw(mchn_pose.m_Odom.pose.pose.orientation);
+    double speed = mchn_pose.m_Odom.twist.twist.linear.x;
+    geometry_msgs::Pose2D vel;
+    vel.x = speed*cos(yaw);
+    vel.y = speed*sin(yaw);
+    vel.theta = mchn_pose.m_Odom.twist.twist.angular.z;
+
     pthread_mutex_lock(&mutex_update_kalman);
-    mchn_pose.UpdatePosition(mchn_pose.vel_odom, MachinePose_s::VELOCITY);
+    // mchn_pose.UpdatePosition(mchn_pose.vel_odom, MachinePose_s::VELOCITY);
+    mchn_pose.UpdatePosition(vel, MachinePose_s::VELOCITY);
     pthread_mutex_unlock(&mutex_update_kalman);
+
+    pub_odom();
     r.sleep();
   }
 }
@@ -307,6 +346,10 @@ geometry_msgs::Pose2D MachinePose_s::UpdatePosition(geometry_msgs::Pose2D tpose,
   vel_fusioned.theta = nomalizeAng(kalman->getX(5));
   // printf("f_vel_x:%f \n",vel_fusioned.x );
   count++;
+
+  if (is_publish_tf) {
+    pub_tf();
+  }
 
   return pos_fusioned;
 }
