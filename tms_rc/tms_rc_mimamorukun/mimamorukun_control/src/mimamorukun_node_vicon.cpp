@@ -12,6 +12,8 @@
 #include <tf/tf.h>
 #include <tf/transform_broadcaster.h>
 
+#include "kalman-Ndof.hpp"
+
 #define ROS_RATE 10
 
 using namespace std;
@@ -54,6 +56,9 @@ class MachinePose_s {
   void setCurrentPosition(geometry_msgs::Pose pose);
   geometry_msgs::Pose2D getCurrentPosition();
 
+  Kalman *kalman;
+  enum InfoType { VELOCITY, POSISION };
+  geometry_msgs::Pose2D UpdatePosition(geometry_msgs::Pose2D tpose, InfoType Info);
 } mchn_pose;
 
 int Dist2Pulse(int dist) { return ((float)dist) / DIST_PER_PULSE; }
@@ -215,7 +220,22 @@ void pub_odom() {
   pub.publish(mchn_pose.m_Odom);
 }
 
+void *vicon_update(void *ptr) {
+  // ros::Rate r(30);
+  ros::Rate r(ROS_RATE);
+  while (ros::ok()) {
+    mchn_pose.updateVicon();
+    if (1000 < mchn_pose.pos_vicon.x && 1000 < mchn_pose.pos_vicon.y) {
+      pthread_mutex_lock(&mutex_update_kalman);
+      mchn_pose.UpdatePosition(mchn_pose.pos_vicon, MachinePose_s::POSISION);
+      pthread_mutex_unlock(&mutex_update_kalman);
+    }
+    r.sleep();
+  }
+}
+
 void *odom_update(void *ptr) {
+  // ros::Rate r(30);
   ros::Rate r(ROS_RATE);
   while (ros::ok()) {
     mchn_pose.updateOdom();
@@ -223,8 +243,72 @@ void *odom_update(void *ptr) {
     if (is_publish_tf) {
       pub_tf();
     }
+    pthread_mutex_lock(&mutex_update_kalman);
+    mchn_pose.UpdatePosition(mchn_pose.vel_odom, MachinePose_s::VELOCITY);
+    pthread_mutex_unlock(&mutex_update_kalman);
     r.sleep();
   }
+}
+
+geometry_msgs::Pose2D MachinePose_s::UpdatePosition(geometry_msgs::Pose2D tpose,
+                                                    MachinePose_s::InfoType Info) {
+  static int count = 0;
+  static double posA[6][6];  // 位置の状態行列
+  static double velA[6][6];  // 速度の状態行列
+  static double posC[3][6];  // 位置の観測行列
+  static double velC[3][6];  // 速度の観測行列
+  // Kalman kalman(6,3,3); //状態、観測、入力変数。順にn,m,l
+
+  if (kalman == NULL) return pos_fusioned;
+
+  if (count == 0) {
+    // 初期化 (システム雑音，観測雑音，積分時間)
+    kalman->init(0.1, 0.1, 1.0);
+    kalman->setX(0, pos_fusioned.x);
+    kalman->setX(1, pos_fusioned.y);
+    kalman->setX(2, pos_fusioned.theta);
+    memset(posA, 0, sizeof(posA));
+    memset(velA, 0, sizeof(velA));
+    memset(posC, 0, sizeof(posC));
+    memset(velC, 0, sizeof(velC));
+
+    for (int i = 0; i < 6; i++) posA[i][i] = 1.0;
+    for (int i = 0; i < 6; i++) velA[i][i] = 1.0;
+    for (int i = 0; i < 3; i++) velA[i][i + 3] = 1.0;
+    for (int i = 0; i < 3; i++) posC[i][i] = 1.0;
+    for (int i = 0; i < 3; i++) velC[i][i + 3] = 1.0;
+  }
+
+  // 観測値のセット
+  double obs[3] = {tpose.x, tpose.y, tpose.theta};
+  double input[3] = {0, 0, 0};
+
+  switch (Info) {
+    case MachinePose_s::POSISION:
+      // 位置を観測する場合
+      kalman->setA((double *)&posA);
+      kalman->setC((double *)&posC);
+      break;
+    case MachinePose_s::VELOCITY:
+      // 速度を観測する場合
+      kalman->setA((double *)&velA);
+      kalman->setC((double *)&velC);
+      break;
+  }
+
+  // カルマンフィルタの計算　→　答えは　getX(i) で得られる
+  kalman->update(obs, input);
+
+  pos_fusioned.x = kalman->getX(0);
+  pos_fusioned.y = kalman->getX(1);
+  pos_fusioned.theta = nomalizeAng(kalman->getX(2));
+  vel_fusioned.x = kalman->getX(3);
+  vel_fusioned.y = kalman->getX(4);
+  vel_fusioned.theta = nomalizeAng(kalman->getX(5));
+  // printf("f_vel_x:%f \n",vel_fusioned.x );
+  count++;
+
+  return pos_fusioned;
 }
 
 int main(int argc, char **argv) {
