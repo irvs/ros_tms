@@ -75,7 +75,7 @@ NONE = 0
 EXIST = 1
 
 LC_MAX_SENSOR_NUM = 4
-D_COUT = sys.stdout.write
+D_COUT = sys.stdout.write   #デバッグ用アウトプット
 
 
 class CLoadCell(object):
@@ -248,10 +248,11 @@ class CTR3(object):
         return True
 
     # アンテナの電源OFF
-    # TODO: I dont know this method worked correctly
     def __AntennaPowerOFF(self):    # unsigned long num
-        self.__SetAntenna(self.__mActiveAntenna + 1)  # TODO: fix correct serquence
+        # TODO: OFFにできないので使用アンテナを切り替える．ONにしたままだとロードセルのADCにノイズが乗る
+        self.__SetAntenna(self.__mActiveAntenna + 1)
 
+        # TODO: 元のプログラムでは下記の通りだったが，動かない．おそらく動作テストもされてない．
         # self.__mCommand[2] = 0x4E  # コマンド
         # self.__mCommand[3] = 0x02  # データ長
         # self.__mCommand[4] = 0x9E  # コマンド詳細
@@ -508,6 +509,8 @@ def main():
     # init ROS
     rospy.init_node('ibs', anonymous=True)
     db_pub = rospy.Publisher('tms_db_data', TmsdbStamped, queue_size=10)
+
+    # rosparamが設定されてるかチェック
     if not rospy.has_param('~idSensor'):
         print "ros param 'idSensor' isn't exist"
     if not rospy.has_param('~idPlace'):
@@ -520,6 +523,8 @@ def main():
         print "ros param 'loadcell_points/x' isn't exist"
     if not rospy.has_param('~loadcell_points/y'):
         print "ros param 'loadcell_points/y' isn't exist"
+
+    # rosparam取得
     idSensor = rospy.get_param('~idSensor')
     idPlace = rospy.get_param('~idPlace')
     z = rospy.get_param('~z')
@@ -529,6 +534,7 @@ def main():
     xpos0 = rospy.get_param('~loadcell_points/x', (0.0, 1000.0, 0.0, 1000.0))
     ypos0 = rospy.get_param('~loadcell_points/y', (0.0, 0.0, 1000.0, 1000.0))
 
+    # 仮想COMポートへのアクセス権取得
     cmd_chmod = "sudo -S chmod a+rw "+PORT_LC0
     print cmd_chmod+"\n",   subprocess.check_output(cmd_chmod.split(" "))
     cmd_chmod = "sudo -S chmod a+rw "+PORT_TR
@@ -614,4 +620,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-# EOF
