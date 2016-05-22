@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(tms_msg_rp)
 
 find_package(
-  catkin REQUIRED COMPONENTS 
+  catkin REQUIRED COMPONENTS
   std_msgs
   message_generation
 )
@@ -36,8 +36,9 @@ add_service_files(
   action.srv
   rp_cmd.srv
   rp_action.srv
-  rp_give.srv
-  rp_grasp.srv
+  rp_place.srv
+  rp_pick.srv
+  rp_release.srv
   rp_move.srv
   rp_take.srv
   rp_arrow.srv

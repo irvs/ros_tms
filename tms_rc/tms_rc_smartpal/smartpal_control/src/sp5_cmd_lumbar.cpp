@@ -150,23 +150,32 @@ int8_t Client::lumbaGetState()
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::lumbaGetPos(double *low_deg, double *high_deg)
+int8_t Client::lumbaGetPos(double *low_rad, double *high_rad)
 {
     if(!bInitialize) return CORBA_ERR;
 
-    bool ret = CommandObj_Lumbar->getFeedback(*low_deg, *high_deg);
+    double low_deg,high_deg;
+
+    bool ret = CommandObj_Lumbar->getFeedback(low_deg, high_deg);
 
     //printf("lumbaGetPos result: %0.1fdeg, %0.1fdeg ",*low_deg, *high_deg);
     //ret ? printf("Success\n") : printf("Failure\n");
+
+    *low_rad = deg2rad(low_deg);
+    *high_rad = deg2rad(high_deg);
 
     if(ret) return  SUCCESS;
     else    return  FAILURE;
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::lumbaMoveCooperative(double z_deg, double vel_degps, double acc_degps2)
+int8_t Client::lumbaMoveCooperative(double z_rad, double vel_radps, double acc_radps2)
 {
     if(!bInitialize) return CORBA_ERR;
+
+    double z_deg = rad2deg(z_rad);
+    double vel_degps = rad2deg(vel_radps);
+    double acc_degps2 = rad2deg(acc_radps2);
 
     bool ret = CommandObj_Lumbar->moveCooperative(z_deg, vel_degps, acc_degps2);
 
@@ -178,9 +187,14 @@ int8_t Client::lumbaMoveCooperative(double z_deg, double vel_degps, double acc_d
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::lumbaMove(double low_deg, double high_deg, double vel_degps, double acc_degps2)
+int8_t Client::lumbaMove(double low_rad, double high_rad, double vel_radps, double acc_radps2)
 {
     if(!bInitialize) return CORBA_ERR;
+
+    double low_deg = rad2deg(low_rad);
+    double high_deg = rad2deg(high_rad);
+    double vel_degps = rad2deg(vel_radps);
+    double acc_degps2 = rad2deg(acc_radps2);
 
     bool ret = CommandObj_Lumbar->move(low_deg, high_deg, vel_degps, acc_degps2);
 
@@ -192,9 +206,13 @@ int8_t Client::lumbaMove(double low_deg, double high_deg, double vel_degps, doub
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::lumbaMoveLowerAxis (double low_deg, double vel_degps, double acc_degps2)
+int8_t Client::lumbaMoveLowerAxis (double low_rad, double vel_radps, double acc_radps2)
 {
     if(!bInitialize) return CORBA_ERR;
+
+    double low_deg = rad2deg(low_rad);
+    double vel_degps = rad2deg(vel_radps);
+    double acc_degps2 = rad2deg(acc_radps2);
 
     bool ret = CommandObj_Lumbar->moveLowerAxis(low_deg, vel_degps, acc_degps2);
 
@@ -206,9 +224,13 @@ int8_t Client::lumbaMoveLowerAxis (double low_deg, double vel_degps, double acc_
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::lumbaMoveUpperAxis (double high_deg, double vel_degps, double acc_degps2)
+int8_t Client::lumbaMoveUpperAxis (double high_rad, double vel_radps, double acc_radps2)
 {
     if(!bInitialize) return CORBA_ERR;
+
+    double high_deg = rad2deg(high_rad);
+    double vel_degps = rad2deg(vel_radps);
+    double acc_degps2 = rad2deg(acc_radps2);
 
     bool ret = CommandObj_Lumbar->moveUpperAxis(high_deg, vel_degps, acc_degps2);
 

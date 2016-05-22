@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(tms_db_state_publisher)
 
 find_package(catkin REQUIRED COMPONENTS
+  tf
   roscpp
   std_msgs
   sensor_msgs

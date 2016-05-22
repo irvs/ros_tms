@@ -14,6 +14,7 @@
 #include <vicon_stream/client.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -26,6 +27,7 @@
 //------------------------------------------------------------------------------
 using std::string;
 using namespace ViconDataStreamSDK::CPP;
+using namespace boost;
 
 //------------------------------------------------------------------------------
 string Adapt(const Direction::Enum i_Direction)
@@ -294,28 +296,39 @@ private:
         int32_t id = 0;
         tms_msg_db::Tmsdb tmpData;
 
-        if(SubjectName.compare("oculus2") == 0)         id = 1001; // person_1_oculus
-        else if(SubjectName.compare("moverio") == 0)    id = 1002; // person_2_moverio
-        else if(SubjectName.compare("sp4") == 0)        id = 2001;
-        else if(SubjectName.compare("sp5_1") == 0)      id = 2002;
-        else if(SubjectName.compare("sp5_2") == 0)      id = 2003;
-        else if(SubjectName.compare("kobuki") == 0)     id = 2005;
-        else if(SubjectName.compare("kxp") == 0)        id = 2006;
-        else if(SubjectName.compare("wheelchair") == 0){
-          id = 2007;
-          tmpData.name = "wheelchair";
-          tmpData.type = "robot";
-        }
-        else if(SubjectName.compare("ardrone1") == 0)   id = 2008;
-        else if(SubjectName.compare("wagon") == 0)      id = 6018;
-        else id = -1;
+        // if(SubjectName.compare("oculus2") == 0)         id = 1001; // person_1_oculus
+        // else if(SubjectName.compare("moverio") == 0)    id = 1002; // person_2_moverio
+        // else if(SubjectName.compare("sp4") == 0)        id = 2001;
+        // else if(SubjectName.compare("sp5_1") == 0)      id = 2002;
+        // else if(SubjectName.compare("sp5_2") == 0)      id = 2003;
+        // else if(SubjectName.compare("kobuki") == 0)     id = 2005;
+        // else if(SubjectName.compare("kxp") == 0)        id = 2006;
+        // else if(SubjectName.compare("wheelchair") == 0) id = 2007;
+        // else if(SubjectName.compare("ardrone1") == 0)   id = 2008;
+        // else if(SubjectName.compare("wagon") == 0)      id = 6018;
+        // else id = -1;
 
-        if(id != -1)
+        std::string name;
+        std::vector<std::string> v_name;
+        v_name.clear();
+        boost::split(v_name,SubjectName,boost::is_any_of("#"));
+
+        if(v_name.size()==2)
+        {
+          std::stringstream ss;
+          ss << v_name.at(0);
+          ss >> id;
+          name = v_name.at(1).c_str();
+        }
+
+
+        if(id != 0)
         {
           now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 
           tmpData.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
           tmpData.id      = id;
+          tmpData.name    = name;
           // Vicon DataStream SDK: Positions are expressed in millimeters.
           tmpData.x       = pose_msg.translation.x / 1000;
           tmpData.y       = pose_msg.translation.y / 1000;

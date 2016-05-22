@@ -579,6 +579,56 @@
       <origin rpy="0 0 0" xyz="0. 0. 0.3"/>
     </collision>
   </link>
+  <!-- object -->
+  <link name="chipstar_red_x_link"/>
+  <joint name="chipstar_red_x_joint" type="prismatic">
+    <parent link="world_link"/>
+    <child link="chipstar_red_x_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+  </joint>
+  <link name="chipstar_red_y_link"/>
+  <joint name="chipstar_red_y_joint" type="prismatic">
+    <parent link="chipstar_red_x_link"/>
+    <child link="chipstar_red_y_link"/>
+    <origin rpy="0 0 1.57079633" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+  </joint>
+  <link name="chipstar_red_z_link"/>
+  <joint name="chipstar_red_z_joint" type="prismatic">
+    <parent link="chipstar_red_y_link"/>
+    <child link="chipstar_red_z_link"/>
+    <origin rpy="0 -1.57079633 0" xyz="0 0 0"/>
+    <limit effort="1000.0" lower="0." upper="3." velocity="0.5"/>
+  </joint>
+  <link name="chipstar_red_yaw_link"/>
+  <joint name="chipstar_red_yaw_joint" type="continuous">
+    <parent link="chipstar_red_z_link"/>
+    <child link="chipstar_red_yaw_link"/>
+    <origin rpy="-1.57079633 0 -1.57079633" xyz="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <link name="chipstar_red_pitch_link"/>
+  <joint name="chipstar_red_pitch_joint" type="continuous">
+    <parent link="chipstar_red_yaw_link"/>
+    <child link="chipstar_red_pitch_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+  <joint name="chipstar_red_roll_joint" type="continuous">
+    <parent link="chipstar_red_pitch_link"/>
+    <child link="chipstar_red_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="1 0 0"/>
+  </joint>
+  <link name="chipstar_red_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/chipstar_red.dae"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0. 0. 0."/>
+    </visual>
+  </link>
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <!-- ros_control plugin -->
   <gazebo>
@@ -635,7 +685,6 @@
   </gazebo>
   <gazebo reference="r_gripper_thumb_link">
   </gazebo>
-  <xacro:robots_sim/>
   <!-- Base, Vehicle -->
   <link name="smartpal5_link"/>
   <joint name="smartpal5_x_joint" type="prismatic">
@@ -772,7 +821,7 @@
     <child link="l_arm_j1_link"/>
     <origin rpy="3.14159 0 0" xyz="-0.025 -0.480 0.200"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-0.7679" upper="3.1066" velocity="1.0"/>
+    <limit effort="100.0" lower="-0.76" upper="3.12" velocity="1.0"/>
   </joint>
   <link name="l_arm_j1_link">
     <visual>
@@ -798,8 +847,8 @@
     <parent link="l_arm_j1_link"/>
     <child link="l_arm_j2_link"/>
     <origin rpy="1.57075 3.14159 1.57075" xyz="0 0 0"/>
-    <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-0.2443" upper="1.9024" velocity="1.0"/>
+    <axis xyz="0 0 -1"/>
+    <limit effort="100.0" lower="-1.8" upper="0.21" velocity="1.0"/>
   </joint>
   <link name="l_arm_j2_link">
     <visual>
@@ -825,8 +874,8 @@
     <parent link="l_arm_j2_link"/>
     <child link="l_arm_j3_link"/>
     <origin rpy="1.57075 1.57075 1.57075" xyz="0 0 0"/>
-    <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-2.0769" upper="2.0769" velocity="1.0"/>
+    <axis xyz="0 0 -1"/>
+    <limit effort="100.0" lower="-2.0" upper="2.0" velocity="1.0"/>
   </joint>
   <link name="l_arm_j3_link">
     <visual>
@@ -853,7 +902,7 @@
     <child link="l_arm_j4_link"/>
     <origin rpy="-1.57075 0 3.14159" xyz="-0.02 0.0 0.25"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-0.0174" upper="2.2514" velocity="1.0"/>
+    <limit effort="100.0" lower="-0.0" upper="2.2" velocity="1.0"/>
   </joint>
   <link name="l_arm_j4_link">
     <visual>
@@ -879,8 +928,8 @@
     <parent link="l_arm_j4_link"/>
     <child link="l_arm_j5_link"/>
     <origin rpy="1.57075 0 0" xyz="-0.02 0.0 0.0"/>
-    <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-2.0769" upper="2.0769" velocity="1.0"/>
+    <axis xyz="0 0 -1"/>
+    <limit effort="100.0" lower="-2.0" upper="2.0" velocity="1.0"/>
   </joint>
   <link name="l_arm_j5_link">
     <visual>
@@ -907,7 +956,7 @@
     <child link="l_arm_j6_link"/>
     <origin rpy="-1.57075 1.57075 0" xyz="0.0 0.0 0.28"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-0.2617" upper="0.7504" velocity="1.0"/>
+    <limit effort="100.0" lower="-0.25" upper="0.75" velocity="1.0"/>
   </joint>
   <link name="l_arm_j6_link">
     <visual>
@@ -934,7 +983,7 @@
     <child link="l_arm_j7_link"/>
     <origin rpy="1.57075 3.14159 0" xyz="0.0 0.0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="0" upper="0.5" velocity="1.0"/>
+    <limit effort="100.0" lower="-1.5" upper="0.8" velocity="1.0"/>
   </joint>
   <link name="l_arm_j7_link">
     <visual>
@@ -1035,7 +1084,7 @@
     <child link="r_arm_j1_link"/>
     <origin rpy="3.14159 0 0" xyz="-0.025 -0.480 -0.200"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-0.7679" upper="3.1066" velocity="1.0"/>
+    <limit effort="100.0" lower="-0.76" upper="3.12" velocity="1.0"/>
   </joint>
   <link name="r_arm_j1_link">
     <visual>
@@ -1062,7 +1111,7 @@
     <child link="r_arm_j2_link"/>
     <origin rpy="-1.57075 0 -1.57075" xyz="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-1.9024" upper="0.2443" velocity="1.0"/>
+    <limit effort="100.0" lower="-1.8" upper="0.21" velocity="1.0"/>
   </joint>
   <link name="r_arm_j2_link">
     <visual>
@@ -1089,7 +1138,7 @@
     <child link="r_arm_j3_link"/>
     <origin rpy="1.57075 1.57075 1.57075" xyz="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-2.0769" upper="2.0769" velocity="1.0"/>
+    <limit effort="100.0" lower="-2.0" upper="2.0" velocity="1.0"/>
   </joint>
   <link name="r_arm_j3_link">
     <visual>
@@ -1116,7 +1165,7 @@
     <child link="r_arm_j4_link"/>
     <origin rpy="-1.57075 0 3.14159" xyz="-0.02 0.0 0.25"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-0.0174" upper="2.2514" velocity="1.0"/>
+    <limit effort="100.0" lower="-0.0" upper="2.2" velocity="1.0"/>
   </joint>
   <link name="r_arm_j4_link">
     <visual>
@@ -1143,7 +1192,7 @@
     <child link="r_arm_j5_link"/>
     <origin rpy="1.57075 0 0" xyz="-0.02 0.0 0.0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-2.0769" upper="2.0769" velocity="1.0"/>
+    <limit effort="100.0" lower="-2.0" upper="2.0" velocity="1.0"/>
   </joint>
   <link name="r_arm_j5_link">
     <visual>
@@ -1170,7 +1219,7 @@
     <child link="r_arm_j6_link"/>
     <origin rpy="-1.57075 1.57075 0" xyz="0.0 0.0 0.28"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-0.2617" upper="0.7504" velocity="1.0"/>
+    <limit effort="100.0" lower="-0.25" upper="0.75" velocity="1.0"/>
   </joint>
   <link name="r_arm_j6_link">
     <visual>
@@ -1196,8 +1245,8 @@
     <parent link="r_arm_j6_link"/>
     <child link="r_arm_j7_link"/>
     <origin rpy="1.57075 3.14159 0" xyz="0.0 0.0 0"/>
-    <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-1.0122" upper="1.0" velocity="1.0"/>
+    <axis xyz="0 0 -1"/>
+    <limit effort="100.0" lower="-1.5" upper="0.8" velocity="1.0"/>
   </joint>
   <link name="r_arm_j7_link">
     <visual>
@@ -1269,8 +1318,8 @@
     <parent link="r_gripper_link"/>
     <child link="r_gripper_thumb_link"/>
     <origin rpy="0 0 -1.57075" xyz="0.042 0.027 0.0"/>
-    <axis xyz="0 0 1"/>
-    <limit effort="100.0" lower="-0.1396" upper="1.0122" velocity="1.0"/>
+    <axis xyz="0 0 -1"/>
+    <limit effort="100.0" lower="-1.0122" upper="0.1396" velocity="1.0"/>
   </joint>
   <link name="r_gripper_thumb_link">
     <visual>

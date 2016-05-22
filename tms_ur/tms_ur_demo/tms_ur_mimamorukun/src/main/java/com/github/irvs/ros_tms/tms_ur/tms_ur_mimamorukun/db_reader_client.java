@@ -23,7 +23,7 @@ import tms_msg_db.TmsdbGetDataResponse;
  */
 public class db_reader_client extends AbstractNodeMain {
     private String TAG = "db_reader_client";
-    private String srv_name = "/tms_db_reader/dbreader";
+    private String srv_name = "/tms_db_reader";
 
     private ServiceClient<TmsdbGetDataRequest, TmsdbGetDataResponse> dbClient;
     private Handler handler;

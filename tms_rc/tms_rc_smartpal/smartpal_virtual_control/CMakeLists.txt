@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(tms_rc_smartpal_virtual_control)
 
-find_package(catkin REQUIRED COMPONENTS 
-  roscpp 
-  tf 
-  geometry_msgs 
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  tf
+  geometry_msgs
   nav_msgs
   tms_msg_rc
 )
@@ -32,7 +32,7 @@ include_directories(
 
 add_executable(smartpal_virtual_control
 
-    src/smartpal5_virtual_control.cpp 
+    src/smartpal5_virtual_control.cpp
 )
 
 add_dependencies(smartpal_virtual_control DEPENDS tms_msg_rc_gencpp tms_msg_db_gencpp)

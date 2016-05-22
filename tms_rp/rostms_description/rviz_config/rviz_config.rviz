@@ -373,6 +373,23 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        chipstar_red_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        chipstar_red_x_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        chipstar_red_y_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        chipstar_red_z_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         wardrobe_link:
           Alpha: 1
           Show Axes: false
