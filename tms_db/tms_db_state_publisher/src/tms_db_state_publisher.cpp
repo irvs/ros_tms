@@ -25,6 +25,7 @@
 #include <vector>
 #include <map>
 #include <boost/algorithm/string.hpp>
+#include <tf/transform_broadcaster.h>
 
 // #define rad2deg(x)	((x)*(180.0)/M_PI)
 // #define deg2rad(x)	((x)*M_PI/180.0)
@@ -52,6 +53,8 @@ private:
   ros::Publisher  skeleton_pub;
 
   ros::ServiceClient get_data_client_;
+  tf::TransformBroadcaster br;
+  tf::Transform transform;
 
   //------------------------------------------------------------------------------
 public:
@@ -378,6 +381,30 @@ private:
             state_data.position.push_back(posY);
             state_data.position.push_back(rotY);
           }
+        }
+      }
+
+      if(id==1002) //moverio
+      {
+        if(state==1){
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotR = msg->tmsdb[i].rr;
+          rotP = msg->tmsdb[i].rp;
+          rotY = msg->tmsdb[i].ry;
+
+          if(posX == 0.0 && posY == 0.0)
+          {
+            continue;
+          }
+          else
+          {
+            transform.setOrigin(tf::Vector3(posX,posY,1.1));
+            transform.setRotation(tf::Quaternion(0,0,-1.5708+rotY));
+            br.sendTransform(tf::StampedTransform(transform,ros::Time::now(),"world_link","Body"));
+          }
+        }else{
+
         }
       }
 

@@ -158,6 +158,7 @@ public class TmsdbGetDataNode extends AbstractNodeMain {
 	//idを送信することで詳細データを取得(nowコレクション)
 	//格納先はobj
 	public int sendInfo(TmsdbObject data){
+		Log.i("DB","ID"+data.getId());
 		if(data.getId() == 0){
 			obj = null;
 			return -1;
@@ -173,12 +174,13 @@ public class TmsdbGetDataNode extends AbstractNodeMain {
 		srvClient.call(request, new ServiceResponseListener<TmsdbGetDataResponse>(){
 			@Override
 			public void onSuccess(TmsdbGetDataResponse response) {
-				Log.v(className, "onSuccess");
+				Log.i(className, "onSuccess");
+				Log.i(className,"size:"+response.getTmsdb().size());
 				isCalled = 1;
 				obj = null;
 				if(response.getTmsdb().size()!=0/*!=null*/){
 					if(response.getTmsdb().get(0).getType().equals(TmsdbObject.TYPE._OBJECT)){
-						Log.v(className, "object");
+						Log.i(className, "object");
 						for(Tmsdb res:response.getTmsdb()){
 							if(res.getState()==1){
 								obj = new TmsdbObject(res);
@@ -192,7 +194,7 @@ public class TmsdbGetDataNode extends AbstractNodeMain {
 			}
 			@Override
 			public void onFailure(RemoteException e) {
-				Log.v(className, "onFailure");
+				Log.i(className, "onFailure");
 				throw new RosRuntimeException(e);
 			}
 		});

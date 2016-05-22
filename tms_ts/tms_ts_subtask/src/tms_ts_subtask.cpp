@@ -429,8 +429,8 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
   srv.request.tmsdb.id = sd.arg_type;
   srv.request.tmsdb.sensor = 3001;
 
-  if (sd.type == false)
-    srv.request.tmsdb.sensor = 3005;
+  // if (sd.type == false)
+  //   srv.request.tmsdb.sensor = 3005;
 
   if (sd.arg_type == -1) // move (x,y,th)
   {

@@ -69,7 +69,7 @@ public class TagAnalyzer {
 		String pre_seg = "";
 
 		for(String seg : segments){
-			Log.v("TAG",seg);
+			Log.i("TAG",seg);
 
 			if(seg.equals("ノミモノ")
 					||seg.equals("ノム")

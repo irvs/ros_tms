@@ -1212,7 +1212,7 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 							sublayout.addView(view);
 						}else{ //物品検索
 							if(objects.size()!=0){
-								Log.v("DB", objects.get(0));
+								Log.i("DB", objects.get(0));
 
 								//defaultコレクションからのデータ取得
 								data.sendTag(objects.get(0));
@@ -1227,7 +1227,7 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 									}
 								}
 								for(int i=0;i<objs.size();i++) {
-									Log.v("DB", objs.get(i).getName() + ":" + objs.get(i).getPlace());
+									Log.i("DB2", objs.get(i).getName() + ":" + objs.get(i).getPlace());
 								}
 
 								//nowコレクションからのデータ取得
@@ -1236,11 +1236,14 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 								for(TmsdbObject object:objs){
 									data.sendInfo(object);
 									if(data.getObject() != null) detectingObjs.add(new TmsdbObject(data.getObject()));
+									else Log.i("DB","null");
 								}
+
+								Log.i("DB","size="+detectingObjs.size());
 
 								if(detectingObjs.size()!=0){
 									for(int i=0;i<detectingObjs.size();i++){
-										Log.v("DB",detectingObjs.get(i).getName() + ":" + detectingObjs.get(i).getPlace());
+										Log.i("DB3",detectingObjs.get(i).getName() + ":" + detectingObjs.get(i).getPlace());
 									}
 								}
 
@@ -1252,7 +1255,7 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 										to.setId(object.getPlace());
 										data.sendInfo(to);
 
-										Log.v("DB","objsSize:" + objs.size());
+										Log.i("DB","objsSize:" + objs.size());
 										if(objs.size()==0) objs.add(new TmsdbObject(data.getObject()));
 										else{
 											boolean flag = true;
