@@ -1,33 +1,11 @@
 <?xml version="1.0"?>
 <launch>
-
-  <arg name="is_mongodb" default="true"/>
-
-  <group if="$(arg is_mongodb)">
-    <node pkg="tms_db_manager" type="tms_db_reader.py"   name="tms_db_reader">
-    </node>
-    <node pkg="tms_db_manager" type="tms_db_writer.py"   name="tms_db_writer">
-    </node>
-    <node pkg="tms_db_manager" type="tms_db_backuper.py"  name="tms_db_backuper">
-    </node>
-    <node pkg="tms_db_manager" type="tms_db_publisher.py"  name="tms_db_publisher">
-    </node>
-  </group>
-
-  <group unless="$(arg is_mongodb)">
-    <node pkg="tms_db_manager" type="tms_db_reader"   name="tms_db_reader">
-      <param name="is_debug" value="false" />
-    </node>
-    <node pkg="tms_db_manager" type="tms_db_writer"   name="tms_db_writer">
-      <param name="is_debug" value="false" />
-    </node>
-    <node pkg="tms_db_manager" type="tms_db_manager"  name="tms_db_manager">
-      <param name="update_time" value="0.01" />
-      <param name="is_debug" value="false" />
-    </node>
-    <node pkg="tms_db_manager" type="tms_db_publisher"  name="tms_db_publisher">
-      <param name="update_time" value="0.01" />
-      <param name="is_debug" value="false" />
-    </node>
-  </group>
+  <node pkg="tms_db_manager" type="tms_db_reader.py"   name="tms_db_reader">
+  </node>
+  <node pkg="tms_db_manager" type="tms_db_writer.py"   name="tms_db_writer">
+  </node>
+  <node pkg="tms_db_manager" type="tms_db_backuper.py"  name="tms_db_backuper">
+  </node>
+  <node pkg="tms_db_manager" type="tms_db_publisher.py"  name="tms_db_publisher">
+  </node>
 </launch>
