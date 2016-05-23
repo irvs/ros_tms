@@ -31,7 +31,7 @@
 <link name="wheelchair_link">
   <visual>
     <geometry>
-      <mesh filename="package://environmental_model/model/refrigerator.dae"/>
+      <mesh filename="package://environmental_model/model/wheelchair.dae"/>
     </geometry>
     <origin xyz="0.0 0.0 0.56" rpy="0 0 0"/>
   </visual>
