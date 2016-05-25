@@ -821,7 +821,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
 		    			double dis = distance(rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
 		    					rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
 
-			    		while (dis <= 250) {
+			    		while (dis <= 0.25) {
 			    			i+=2;
 			    			if (i > rp_srv.response.VoronoiPath.size()) {
 			    				ROS_ERROR("Mimamorukun cannot move the next point. Exit");
@@ -835,6 +835,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
 			    		mkun_srv.request.arg[0] = rp_srv.response.VoronoiPath[i].x;
 			    		mkun_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
 			    		mkun_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
+              ROS_INFO("path_size:%d, i:%d",rp_srv.response.VoronoiPath.size(), i);
 			    		// if (sd.type == true) {	//real world robot
 			    			ROS_INFO("[i=%d] goal x=%f, y=%f, yaw=%f", i, mkun_srv.request.arg[0], mkun_srv.request.arg[1], mkun_srv.request.arg[2]);
 				    		if(mkun_control_client.call(mkun_srv))
