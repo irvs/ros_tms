@@ -139,7 +139,7 @@ void visualization_callback(const tms_msg_ss::tracking_points::ConstPtr &msg)
           
           //line
           visualization_msgs::Marker marker_line;
-          marker_line.header.frame_id = "/world";
+          marker_line.header.frame_id = "/world_link";
           marker_line.header.stamp    = ros::Time::now();          
  Z_REFRESH1:
              for(int j = 0; j < msg->tracking_grid.size(); j++)
@@ -177,7 +177,7 @@ void visualization_callback(const tms_msg_ss::tracking_points::ConstPtr &msg)
             
              visualization_msgs::Marker marker;
 
-             marker.header.frame_id       = "/world";
+             marker.header.frame_id       = "/world_link";
              marker.header.stamp          = ros::Time::now();
              
  Z_REFRESH:    
@@ -227,7 +227,7 @@ void visualization_callback(const tms_msg_ss::tracking_points::ConstPtr &msg)
              {
           //circle
           visualization_msgs::Marker marker_circle;
-          marker_circle.header.frame_id = "/world";
+          marker_circle.header.frame_id = "/world_link";
           marker_circle.header.stamp    = ros::Time::now();
 Z_REFRESH2:
              for(int j = 0; j < msg->tracking_grid.size(); j++)
