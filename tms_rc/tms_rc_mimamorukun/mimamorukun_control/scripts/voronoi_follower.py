@@ -28,21 +28,19 @@ def main():
 
 
 def goalPoseCallback(req):
-    print "Received the service call!"
-    rospy.loginfo("Received the service call!")
     rospy.loginfo("\x1b[32mreq:\x1b[39m{} \x1b[32m/req\x1b[39m".format(req))
-    KPang = 1.0
+    KPang = 0.1 # 1.0
     KDang = 0
-    KPdist = 2.0
+    KPdist = 0.2 # 2.0
     KDdist = 0
-    ARV_DIST = 200
+    ARV_DIST = 0.25
 
     pose = getCurrentPose()
 
     goal = Pose2D()
     goal.x = req.arg[0]
     goal.y = req.arg[1]
-    goal.theta = req.arg[2] / 180.0 * 3.141592
+    goal.theta = radians(req.arg[2])
 
     errorX = goal.x - pose.x
     errorY = goal.y - pose.y
@@ -53,10 +51,11 @@ def goalPoseCallback(req):
 
     tmp_spd = limit(KPdist * errorNX, 100, -100)
     tmp_turn = limit(KPang * degrees(errorNT), 30, -30)
-    print "spd:{0} turn:{1}".format(tmp_spd, tmp_turn)
+    # print "spd:{0} turn:{1}".format(tmp_spd, tmp_turn)
 
     twist = Twist()
     distance = sqrt(errorX**2 + errorY**2)
+    rospy.loginfo("dist:{0}".format(distance))
     if distance <= ARV_DIST:
         twist.angular.z = 0
         twist.linear.x = 0
