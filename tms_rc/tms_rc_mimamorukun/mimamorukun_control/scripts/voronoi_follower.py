@@ -30,7 +30,7 @@ def main():
 def goalPoseCallback(req):
     print "Received the service call!"
     rospy.loginfo("Received the service call!")
-    rospy.loginfo(req)
+    rospy.loginfo("\x1b[32mreq:\x1b[39m{} \x1b[32m/req\x1b[39m".format(req))
     KPang = 1.0
     KDang = 0
     KPdist = 2.0
