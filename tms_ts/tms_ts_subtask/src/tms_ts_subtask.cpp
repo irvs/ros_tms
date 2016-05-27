@@ -835,7 +835,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
 			    		mkun_srv.request.arg[0] = rp_srv.response.VoronoiPath[i].x;
 			    		mkun_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
 			    		mkun_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
-              ROS_INFO("path_size:%d, i:%d",rp_srv.response.VoronoiPath.size(), i);
+              ROS_INFO("path_size:%lu, i:%d",rp_srv.response.VoronoiPath.size(), i);
 			    		// if (sd.type == true) {	//real world robot
 			    			ROS_INFO("[i=%d] goal x=%f, y=%f, yaw=%f", i, mkun_srv.request.arg[0], mkun_srv.request.arg[1], mkun_srv.request.arg[2]);
 				    		if(mkun_control_client.call(mkun_srv))
@@ -1412,7 +1412,7 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
 
         if(sd.type){
           sleep(0.5);
-          arg[0] = {0.0};
+          arg[0] = 0.0;
           if(!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg)){
             send_rc_exception(7);
             return false;
