@@ -614,32 +614,31 @@ def main():
             msg = TmsdbStamped()
             msg.header.frame_id = "world_link"
             msg.header.stamp = rospy.get_rostime() + rospy.Duration(9 * 60 * 60)
-            for i in xrange(MAX_OBJECT_NUM):
+            now = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
+
+            for tag,v in sorted(rfidValue.items(), key=lambda x: x[1]["id"]):
                 time.sleep(0.001)
                 tmp_db = Tmsdb()
-                tmp_db.time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
-                tmp_db.id = i + 7001  # 物品IDは 7001 から
-                tmp_db.x = -1.0
-                tmp_db.y = -1.0
-                tmp_db.z = -1.0
+                tmp_db.time = now
+                tmp_db.id = v["id"]
+                tmp_db.name = v["name"]
                 tmp_db.place = idPlace
                 tmp_db.sensor = idSensor
-                tmp_db.state = NONE  # 知的収納庫内に 0:存在しない, 1:存在する
+                tmp_db.tag = tag
+                exist_rfids = [rfid.mUID for rfid in cIntelCab.TagObjList]
+                if tag in exist_rfids:  # 収納庫内に存在
+                    tmp_db.state = EXIST
+                    world_pos = getWorldFramePos(cObj.mX, cObj.mY)
+                    tmp_db.x = world_pos.point.x
+                    tmp_db.y = world_pos.point.y
+                    tmp_db.z = world_pos.point.z
+                    tmp_db.weight = cObj.mWeight                
+                else :                  # 収納庫内に存在しない
+                    tmp_db.state = NONE                
+                    tmp_db.x = -1.0
+                    tmp_db.y = -1.0
+                    tmp_db.z = -1.0
                 msg.tmsdb.append(tmp_db)
-
-            for j in xrange(len(cIntelCab.TagObjList)):
-                cObj = cIntelCab.TagObjList[j]
-                vi = rfidValue[cObj.mUID]["id"] - 7001
-                time.sleep(0.001)  # 1ms
-                msg.tmsdb[vi].time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
-                msg.tmsdb[vi].id = rfidValue[cObj.mUID]["id"]
-                msg.tmsdb[vi].name = rfidValue[cObj.mUID]["name"]                
-                msg.tmsdb[vi].state = EXIST
-                world_pos = getWorldFramePos(cObj.mX, cObj.mY)
-                msg.tmsdb[vi].x = world_pos.point.x
-                msg.tmsdb[vi].y = world_pos.point.y
-                msg.tmsdb[vi].z = world_pos.point.z
-                msg.tmsdb[vi].weight = cObj.mWeight
             cIntelCab.PrintObjInfo()
             db_pub.publish(msg)
     return 0
