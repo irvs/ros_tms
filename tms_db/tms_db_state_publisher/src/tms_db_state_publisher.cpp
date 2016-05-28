@@ -479,6 +479,105 @@ private:
           }
         }
       }
+      if(id==7004) //greentea_bottle
+      {
+        if(state != 0)
+        {
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          posZ = msg->tmsdb[i].z;
+          rotR = msg->tmsdb[i].rr;
+          rotP = msg->tmsdb[i].rp;
+          rotY = msg->tmsdb[i].ry;
+
+          if(posX == 0.0 && posY == 0.0)
+          {
+            continue;
+          }
+          else
+          {
+            state_data.header.stamp = ros::Time::now();
+            state_data.name.push_back("greentea_bottle_x_joint");
+            state_data.name.push_back("greentea_bottle_y_joint");
+            state_data.name.push_back("greentea_bottle_z_joint");
+            state_data.name.push_back("greentea_bottle_yaw_joint");
+            state_data.name.push_back("greentea_bottle_pitch_joint");
+            state_data.name.push_back("greentea_bottle_roll_joint");
+            state_data.position.push_back(posX);
+            state_data.position.push_back(posY);
+            state_data.position.push_back(posZ);
+            state_data.position.push_back(rotY);
+            state_data.position.push_back(rotP);
+            state_data.position.push_back(rotR);
+          }
+        }
+      }
+      if(id==7006) //cancoffee
+      {
+        if(state != 0)
+        {
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          posZ = msg->tmsdb[i].z;
+          rotR = msg->tmsdb[i].rr;
+          rotP = msg->tmsdb[i].rp;
+          rotY = msg->tmsdb[i].ry;
+
+          if(posX == 0.0 && posY == 0.0)
+          {
+            continue;
+          }
+          else
+          {
+            state_data.header.stamp = ros::Time::now();
+            state_data.name.push_back("cancoffee_x_joint");
+            state_data.name.push_back("cancoffee_y_joint");
+            state_data.name.push_back("cancoffee_z_joint");
+            state_data.name.push_back("cancoffee_yaw_joint");
+            state_data.name.push_back("cancoffee_pitch_joint");
+            state_data.name.push_back("cancoffee_roll_joint");
+            state_data.position.push_back(posX);
+            state_data.position.push_back(posY);
+            state_data.position.push_back(posZ);
+            state_data.position.push_back(rotY);
+            state_data.position.push_back(rotP);
+            state_data.position.push_back(rotR);
+          }
+        }
+      }
+      if(id==7009) //soysauce_bottle_black
+      {
+        if(state != 0)
+        {
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          posZ = msg->tmsdb[i].z;
+          rotR = msg->tmsdb[i].rr;
+          rotP = msg->tmsdb[i].rp;
+          rotY = msg->tmsdb[i].ry;
+
+          if(posX == 0.0 && posY == 0.0)
+          {
+            continue;
+          }
+          else
+          {
+            state_data.header.stamp = ros::Time::now();
+            state_data.name.push_back("soysauce_bottle_black_x_joint");
+            state_data.name.push_back("soysauce_bottle_black_y_joint");
+            state_data.name.push_back("soysauce_bottle_black_z_joint");
+            state_data.name.push_back("soysauce_bottle_black_yaw_joint");
+            state_data.name.push_back("soysauce_bottle_black_pitch_joint");
+            state_data.name.push_back("soysauce_bottle_black_roll_joint");
+            state_data.position.push_back(posX);
+            state_data.position.push_back(posY);
+            state_data.position.push_back(posZ);
+            state_data.position.push_back(rotY);
+            state_data.position.push_back(rotP);
+            state_data.position.push_back(rotR);
+          }
+        }
+      }
     }
     state_pub.publish(state_data);
   }
