@@ -135,11 +135,17 @@ int8_t Client::vehicleGetState()
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::vehicleGetPos(double *x_mm, double *y_mm, double *theta_deg)
+int8_t Client::vehicleGetPos(double *x_m, double *y_m, double *theta_rad)
 {
     if(!bInitialize) return CORBA_ERR;
 
-    bool ret = CommandObj_Vehicle->getPosition(*x_mm, *y_mm, *theta_deg);
+    double x_mm,y_mm,theta_deg;
+
+    bool ret = CommandObj_Vehicle->getPosition(x_mm, y_mm, theta_deg);
+
+    *x_m = x_mm/1000;
+    *y_m = y_mm/1000;
+    *theta_rad = deg2rad(theta_deg);
 
     //printf("vehicleGetPose result: %0.1fmm, %0.1fmm, %0.1fdeg ",*x_mm, *y_mm, *theta_deg);
     //ret ? printf("Success\n") : printf("Failure\n");
@@ -149,9 +155,13 @@ int8_t Client::vehicleGetPos(double *x_mm, double *y_mm, double *theta_deg)
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::vehicleSetPos(double x_mm, double y_mm, double theta_deg)
+int8_t Client::vehicleSetPos(double x_m, double y_m, double theta_rad)
 {
     if(!bInitialize) return -1;
+
+    double x_mm = x_m * 1000;
+    double y_mm = y_m * 1000;
+    double theta_deg = rad2deg(theta_rad);
 
     corbaD1 = (CORBA::Double)x_mm;		// Position X (mm)
     corbaD2 = (CORBA::Double)y_mm;		// Position Y (mm)
@@ -167,9 +177,12 @@ int8_t Client::vehicleSetPos(double x_mm, double y_mm, double theta_deg)
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::vehicleSetVel(double velT_mmps, double velR_degps)
+int8_t Client::vehicleSetVel(double velT_mps, double velR_radps)
 {
     if(!bInitialize) return CORBA_ERR;
+
+    double velT_mmps = velT_mps * 1000;
+    double velR_degps = rad2deg(velR_radps);
 
     // Init Value : translation = 100(mm/s),  rotation =10(deg/s)
     // Max  Value : translation = 1000(mm/s), rotation =100(deg/s)
@@ -186,14 +199,17 @@ int8_t Client::vehicleSetVel(double velT_mmps, double velR_degps)
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::vehicleSetAcc(double accT_mmps2, double accR_mmps2)
+int8_t Client::vehicleSetAcc(double accT_mps2, double accR_radps2)
 {
     if(!bInitialize) return CORBA_ERR;
+
+    double accT_mmps2 = accT_mps2 * 1000;
+    double accR_degps2 = rad2deg(accR_radps2);
 
     // Init Value : translation = 100(mm/s^2),  rotation =10(deg/s^2)
     // Max  Value : translation = 1000(mm/s^2), rotation =100(deg/s^2)
     corbaD1 = (CORBA::Double)accT_mmps2;    // Acceleration of translation (mm/s^2)
-    corbaD2 = (CORBA::Double)accR_mmps2;    // Acceleration of rotation   (deg/s^2)
+    corbaD2 = (CORBA::Double)accR_degps2;    // Acceleration of rotation   (deg/s^2)
 
     bool ret = CommandObj_Vehicle->setAcceleration(corbaD1, corbaD2);
 
@@ -205,14 +221,18 @@ int8_t Client::vehicleSetAcc(double accT_mmps2, double accR_mmps2)
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::vehicleMoveLinearAbs(double x_mm, double y_mm, double theta_deg)
+int8_t Client::vehicleMoveLinearAbs(double x_m, double y_m, double theta_rad)
 {
     if(!bInitialize) return CORBA_ERR;
+
+    double x_mm = x_m * 1000;
+    double y_mm = y_m * 1000;
+    double theta_deg = rad2deg(theta_rad);
 
 	corbaD1 = (CORBA::Double)x_mm;		// Goal Position X (mm)
 	corbaD2 = (CORBA::Double)y_mm;		// Goal Position Y (mm)
 	corbaD3 = (CORBA::Double)theta_deg;	// Goal Rotation Theta  (deg)
-   
+
     bool ret = CommandObj_Vehicle->moveLinearAbs(corbaD1, corbaD2, corbaD3);
 
     printf("vehicleMoveLinearAbs(%0.1fmm, %0.1fmm, %0.1fdeg) result:",corbaD1, corbaD2, corbaD3);
@@ -223,9 +243,13 @@ int8_t Client::vehicleMoveLinearAbs(double x_mm, double y_mm, double theta_deg)
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::vehicleMoveLinearRel(double x_mm, double y_mm, double theta_deg)
+int8_t Client::vehicleMoveLinearRel(double x_m, double y_m, double theta_rad)
 {
     if(!bInitialize) return CORBA_ERR;
+
+    double x_mm = x_m * 1000;
+    double y_mm = y_m * 1000;
+    double theta_deg = rad2deg(theta_rad);
 
     corbaD1 = (CORBA::Double)x_mm;		// Goal Position X (mm)
     corbaD2 = (CORBA::Double)y_mm;		// Goal Position Y (mm)
@@ -241,9 +265,12 @@ int8_t Client::vehicleMoveLinearRel(double x_mm, double y_mm, double theta_deg)
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::vehicleMoveCruiseAbs(double x_mm, double y_mm)
+int8_t Client::vehicleMoveCruiseAbs(double x_m, double y_m)
 {
     if(!bInitialize) return CORBA_ERR;
+
+    double x_mm = x_m * 1000;
+    double y_mm = y_m * 1000;
 
     corbaD1 = (CORBA::Double)x_mm;		// Goal Position X (mm)
     corbaD2 = (CORBA::Double)y_mm;		// Goal Position Y (mm)
@@ -258,9 +285,12 @@ int8_t Client::vehicleMoveCruiseAbs(double x_mm, double y_mm)
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::vehicleMoveCruiseRel(double x_mm, double y_mm)
+int8_t Client::vehicleMoveCruiseRel(double x_m, double y_m)
 {
     if(!bInitialize) return CORBA_ERR;
+
+    double x_mm = x_m * 1000;
+    double y_mm = y_m * 1000;
 
     corbaD1 = (CORBA::Double)x_mm;		// Goal Position X (mm)
     corbaD2 = (CORBA::Double)y_mm;		// Goal Position Y (mm)
@@ -275,9 +305,13 @@ int8_t Client::vehicleMoveCruiseRel(double x_mm, double y_mm)
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::vehicleMoveContinuousRel(double x_mm, double y_mm, double theta_deg)
+int8_t Client::vehicleMoveContinuousRel(double x_m, double y_m, double theta_rad)
 {
     if(!bInitialize) return CORBA_ERR;
+
+    double x_mm = x_m * 1000;
+    double y_mm = y_m * 1000;
+    double theta_deg = rad2deg(theta_rad);
 
     corbaD1 = (CORBA::Double)x_mm;		// Goal Position X (mm)
     corbaD2 = (CORBA::Double)y_mm;		// Goal Position Y (mm)
@@ -293,9 +327,13 @@ int8_t Client::vehicleMoveContinuousRel(double x_mm, double y_mm, double theta_d
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::vehicleMoveCircularRel(double x_mm, double y_mm, double angle_deg)
+int8_t Client::vehicleMoveCircularRel(double x_m, double y_m, double angle_rad)
 {
     if(!bInitialize) return CORBA_ERR;
+
+    double x_mm = x_m * 1000;
+    double y_mm = y_m * 1000;
+    double angle_deg = rad2deg(angle_rad);
 
     corbaD1 = (CORBA::Double)x_mm;		// Goal Position X (mm)
     corbaD2 = (CORBA::Double)y_mm;		// Goal Position Y (mm)
@@ -327,9 +365,13 @@ int8_t Client::vehicleSetJogTimeout(double timeout_msec)
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::vehicleMoveJog(double vx_mmps, double vy_mmps, double vt_degps)
+int8_t Client::vehicleMoveJog(double vx_mps, double vy_mps, double vt_radps)
 {
     if(!bInitialize) return CORBA_ERR;
+
+    double vx_mmps = vx_mps * 1000;
+    double vy_mmps = vy_mps * 1000;
+    double vt_degps = rad2deg(vt_radps);
 
     corbaD1 = (CORBA::Double)vx_mmps;	// Velocity of Move X (mm/s)
     corbaD1 = (CORBA::Double)vy_mmps;	// Velocity of Move Y (mm/s)

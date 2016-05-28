@@ -411,14 +411,14 @@ int8_t Client::armGetPos(int8_t RL, double frameID, double *posdata)
         ret = CommandObj_ArmR->getFeedbackPos(fID, pos);
         //printf("armGetPose R result: "); armReturnValue(ret);
         //printf("armGetPose R: %0.1f %0.1f %0.1f %0.1f %0.1f %0.1f %0.1f\n",(double)pos[0],(double)pos[1],(double)pos[2],(double)pos[3],(double)pos[4],(double)pos[5],(double)pos[6]);
-        for(int i=0; i<7; i++) posdata[i]=(double)pos[i];
+        for(int i=0; i<7; i++) posdata[i]=deg2rad((double)pos[i]);
     }
     else if(RL==ArmL)
     {
         ret = CommandObj_ArmL->getFeedbackPos(fID, pos);
         //printf("armGetPose L result: "); armReturnValue(ret);
         //printf("armGetPose L: %0.1f %0.1f %0.1f %0.1f %0.1f %0.1f %0.1f\n",(double)pos[0],(double)pos[1],(double)pos[2],(double)pos[3],(double)pos[4],(double)pos[5],(double)pos[6]);
-        for(int i=0; i<7; i++) posdata[i]=(double)pos[i];
+        for(int i=0; i<7; i++) posdata[i]=deg2rad((double)pos[i]);
     }
     else
     {
@@ -486,12 +486,16 @@ int8_t Client::armSetLinearAcc(int8_t RL, double accT_ms, double accR_ms)
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::armMoveJointAbs(int8_t RL, double *joint_deg, double vel_degps)
+int8_t Client::armMoveJointAbs(int8_t RL, double *joint_rad, double vel_radps)
 {
     DoubleSeq 	jointPos;	// Joint Position (deg)
     int8_t ret;
 
     if(!bInitialize) return CORBA_ERR;
+
+    double joint_deg[7];
+    for(int i=0;i<7;i++) joint_deg[i] = rad2deg(joint_rad[i]);
+    double vel_degps = rad2deg(vel_radps);
 
     jointPos.length(7);
 
@@ -533,12 +537,16 @@ int8_t Client::armMoveJointAbs(int8_t RL, double *joint_deg, double vel_degps)
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::armMoveJointRel(int8_t RL, double *joint_deg, double vel_degps)
+int8_t Client::armMoveJointRel(int8_t RL, double *joint_rad, double vel_radps)
 {
     DoubleSeq 	jointPos;	// Joint Position (deg)
     int8_t ret;
 
     if(!bInitialize) return CORBA_ERR;
+
+    double joint_deg[7];
+    for(int i=0;i<7;i++) joint_deg[i] = rad2deg(joint_rad[i]);
+    double vel_degps = rad2deg(vel_radps);
 
     jointPos.length(7);
 
@@ -572,24 +580,28 @@ int8_t Client::armMoveJointRel(int8_t RL, double *joint_deg, double vel_degps)
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::armMoveLinearAbs(int8_t RL, double cpType, double *cartesianPos, double elbow_deg, double vt_mmps, double vr_degps)
+int8_t Client::armMoveLinearAbs(int8_t RL, double cpType, double *cartesianPos, double elbow_rad, double vt_mps, double vr_radps)
 {
     CommandFrameType cfType;
     CartesianPos     cPos;
     Velocity         v;
     int8_t ret;
 
+    double vt_mmps = vt_mps * 1000;
+    double vr_degps = rad2deg(vr_radps);
+    double elbow_deg = rad2deg(elbow_rad);
+
     if(!bInitialize) return CORBA_ERR;
 
     if(cpType == 0) cfType = ORIGINAL;
     else            cfType = TOOL;
 
-    cPos.px = cartesianPos[0];
-    cPos.py = cartesianPos[1];
-    cPos.pz = cartesianPos[2];
-    cPos.rx = cartesianPos[3];
-    cPos.ry = cartesianPos[4];
-    cPos.rz = cartesianPos[5];
+    cPos.px = cartesianPos[0] * 1000;
+    cPos.py = cartesianPos[1] * 1000;
+    cPos.pz = cartesianPos[2] * 1000;
+    cPos.rx = rad2deg(cartesianPos[3]);
+    cPos.ry = rad2deg(cartesianPos[4]);
+    cPos.rz = rad2deg(cartesianPos[5]);
 
     v.translation = vt_mmps;
     v.rotation    = vr_degps;
@@ -614,24 +626,28 @@ int8_t Client::armMoveLinearAbs(int8_t RL, double cpType, double *cartesianPos, 
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::armMoveLinearRel(int8_t RL, double cpType, double *cartesianPos, double elbow_deg, double vt_mmps, double vr_degps)
+int8_t Client::armMoveLinearRel(int8_t RL, double cpType, double *cartesianPos, double elbow_rad, double vt_mps, double vr_radps)
 {
     CommandFrameType cfType;
     CartesianPos     cPos;
     Velocity         v;
     int8_t ret;
 
+    double vt_mmps = vt_mps * 1000;
+    double vr_degps = rad2deg(vr_radps);
+    double elbow_deg = rad2deg(elbow_rad);
+
     if(!bInitialize) return CORBA_ERR;
 
     if(cpType == 0) cfType = ORIGINAL;
     else            cfType = TOOL;
 
-    cPos.px = cartesianPos[0];
-    cPos.py = cartesianPos[1];
-    cPos.pz = cartesianPos[2];
-    cPos.rx = cartesianPos[3];
-    cPos.ry = cartesianPos[4];
-    cPos.rz = cartesianPos[5];
+    cPos.px = cartesianPos[0] * 1000;
+    cPos.py = cartesianPos[1] * 1000;
+    cPos.pz = cartesianPos[2] * 1000;
+    cPos.rx = rad2deg(cartesianPos[3]);
+    cPos.ry = rad2deg(cartesianPos[4]);
+    cPos.rz = rad2deg(cartesianPos[5]);
 
     v.translation = vt_mmps;
     v.rotation    = vr_degps;
@@ -655,3 +671,30 @@ int8_t Client::armMoveLinearRel(int8_t RL, double cpType, double *cartesianPos, 
     return ret;
 }
 //------------------------------------------------------------------------------
+
+int8_t Client::armGetSoftLimit(int8_t RL){
+  	int8_t ret;
+    ArmLimitSeq_var limit;
+
+    if(RL==ArmR)
+    {
+  	  ret = CommandObj_ArmR -> getJointSoftLimit(limit);
+      printf("right arm\n");
+    }
+    else if(RL==ArmL)
+    {
+      ret = CommandObj_ArmL -> getJointSoftLimit(limit);
+      printf("left arm\n");
+    }
+    else
+    {
+      return RL_ERR;
+    }
+
+    for(int i=0;i<7;i++){
+      printf("j%d:[%f~%f] ",i+1,limit[i].lower,limit[i].upper);
+    }
+    printf("\n");
+
+    return ret;
+}

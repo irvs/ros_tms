@@ -1,6 +1,6 @@
 ///-----------------------------------------------------------------------------
-/// @FileName smartpal5_control.cpp /// @Date 2014.06.18 / 2013.06.02 
-/// @author Yoonseok Pyo (passionvirus@gmail.com) 
+/// @FileName smartpal5_control.cpp /// @Date 2014.06.18 / 2013.06.02
+/// @author Yoonseok Pyo (passionvirus@gmail.com)
 ///-----------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
@@ -8,12 +8,17 @@
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Twist.h>
+#include <vector>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <tms_msg_rc/smartpal_control.h>
 #include <tms_msg_db/TmsdbStamped.h>
 #include <tms_msg_db/TmsdbGetData.h>
+#include <sensor_msgs/JointState.h>
+#include <moveit_msgs/PlanningScene.h>
+#include <tf/transform_listener.h>
+#include <tf/transform_datatypes.h>
 
 //------------------------------------------------------------------------------
 #include "sp5_client.h"
@@ -21,7 +26,34 @@
 //------------------------------------------------------------------------------
 Client* smartpal = new Client;
 ros::ServiceClient get_data_client;
+ros::Publisher pose_publisher;
+ros::Subscriber object_data_sub;
 
+tf::TransformListener *listener;
+
+bool is_grasp = false;
+int grasping_object_id = 0;
+
+class armInfo
+{
+	public:
+	int move;
+	double j_L[7]; //0
+	double gripper_left; //1
+	double j_R[7]; //2
+	double gripper_right; //3
+};
+std::vector<armInfo> trajectory;
+
+const int sid_ = 100000;
+
+int g_oid;
+double g_ox;
+double g_oy;
+double g_oz;
+double g_orr;
+double g_orp;
+double g_ory;
 //------------------------------------------------------------------------------
 int getRobotCurrentPos(double *x, double *y, double *th, double *waistL, double *waistH,
 		double *jointR, double *gripperR, double *jointL, double *gripperL)
@@ -130,7 +162,73 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
                                                   getRobotData.response.tmsdb[0].ry);
           }
       }
+			case 8: //move trajectory
+			{
+				res.result = SUCCESS;
+				if(!trajectory.empty()){
+					for(int t=0;t<trajectory.size();t++){
+						if(trajectory.at(t).move==0){
+							ROS_INFO("trajectory[%d]:armL [%f,%f,%f,%f,%f,%f,%f]",t,trajectory.at(t).j_L[0],trajectory.at(t).j_L[1],trajectory.at(t).j_L[2],trajectory.at(t).j_L[3],trajectory.at(t).j_L[4],trajectory.at(t).j_L[5],trajectory.at(t).j_L[6]);
+						}else if(trajectory.at(t).move==1){
+							ROS_INFO("trajectory[%d]:gripperL %f",t,trajectory.at(t).gripper_left);
+						}
+					}
+					for(int t=0;t<trajectory.size();t++){
+						ROS_INFO("trajectory[%d]",t);
+						if(trajectory.at(t).move==0){ //armL
+							double arg[8] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.175};
+							for(int i=0;i<7;i++){
+								arg[i] = trajectory.at(t).j_L[i];
+							}
+							res.result = smartpal->armMoveJointAbs(ArmL,&arg[0],arg[7]);
+							// returnのタイミングをロボットの状態がReadyになるまで待機
+							ros::Time begin = ros::Time::now();
+							while(1) {
+								int state = smartpal->armGetState(ArmL);
+								if(state == Busy) {
+									ROS_INFO("armL state : Busy\n");
+									ros::Duration(1.0).sleep();
+								} else if(state == Ready) {
+									ROS_INFO("Succeed to manipulation action(armL).state : Ready\n");
+									res.result = SUCCESS;
+									break;
+								} else {
+									ROS_ERROR("Failed to get collect armL status:%d\n", state);
+									ros::Duration(1.0).sleep();
+									smartpal->armClearAlarm(ArmL);
+								}
+								ros::Time now = ros::Time::now();
+								// Time out
+								if((now - begin).toSec() >= 60.0) {
+									ROS_ERROR("TIMEOUT!(armL)\n");
+									res.result = FAILURE;
+									break;
+								}
+							}
+						}
+						else if(trajectory.at(t).move==1){ //gripperL
+							double arg[3] = {0.0,0.175,0.175};
+							arg[0] = trajectory.at(t).gripper_left;
+							res.result = smartpal->gripperMoveAbs(ArmL,arg[0],arg[1],arg[2]);
+							if(res.result != SUCCESS) ROS_ERROR("Failed gripperMove(armL)\n");
+							while(1){
+								if(smartpal->gripperGetState(ArmL)){
+									ROS_INFO("gripperL state : moving");
+									ros::Duration(1.0).sleep();
+								}else{
+									ROS_INFO("gripperL state : ready");
+									break;
+								}
+							}
+						}
+
+						if(res.result != SUCCESS) break;
+						else ROS_INFO("succeed");
+					}
+					trajectory.clear();
+				}
       break;
+			}
     default:
       res.result = SRV_CMD_ERR;
       break;
@@ -402,10 +500,150 @@ bool robotControl(tms_msg_rc::smartpal_control::Request  &req,
   case	7: // CC
     res.result = SRV_UNIT_ERR; break;
     break;
-  //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
   default:res.result = SRV_UNIT_ERR; break;
   }
   return true;
+}
+
+void armCallback(const sensor_msgs::JointState& msg)
+{
+	armInfo ai;
+  if(msg.name[0] == "l_gripper_thumb_joint")
+  {
+		ai.gripper_left = msg.position[0];
+		ai.move = 1;
+  }
+  else if(msg.name[0] == "l_arm_j1_joint"){
+		for(int i=0;i<7;i++)
+    {
+      ai.j_L[i] = msg.position[i];
+    }
+		ai.move = 0;
+  }
+	trajectory.push_back(ai);
+}
+
+void ObjectDataUpdate(const moveit_msgs::PlanningScene& msg)
+{
+  if(msg.robot_state.attached_collision_objects.size() != 0){ // grasped object
+    int object_id = atoi(msg.robot_state.attached_collision_objects[0].object.id.c_str());
+
+    g_oid = object_id;
+
+    geometry_msgs::PoseStamped pose,pose2;
+    pose.header.frame_id = "/l_end_effector_link";
+    pose.pose.position.x = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.x;
+    pose.pose.position.y = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.y;
+    pose.pose.position.z = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.z;
+
+    pose.pose.orientation.x = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.x;
+    pose.pose.orientation.y = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.y;
+    pose.pose.orientation.z = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.z;
+    pose.pose.orientation.w = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.w;
+
+    listener->transformPose("/world_link",pose,pose2);
+
+    g_ox = pose2.pose.position.x;
+    g_oy = pose2.pose.position.y;
+    g_oz = pose2.pose.position.z;
+    tf::Quaternion q2(pose2.pose.orientation.x,pose2.pose.orientation.y,pose2.pose.orientation.z,pose2.pose.orientation.w);
+    tf::Matrix3x3 m2(q2);
+    m2.getRPY(g_orr,g_orp,g_ory);
+
+    tms_msg_db::TmsdbGetData srv;
+    srv.request.tmsdb.id = object_id + sid_;
+
+    if(get_data_client.call(srv)){
+      // g_oz -= srv.response.tmsdb[0].offset_z;
+
+      ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+
+      tms_msg_db::TmsdbStamped db_msg;
+      tms_msg_db::Tmsdb current_pos_data;
+
+      db_msg.header.frame_id  = "/world";
+      db_msg.header.stamp     = now;
+
+      current_pos_data.time   = boost::posix_time::to_iso_extended_string(now.toBoost());
+      current_pos_data.id     = g_oid;
+      current_pos_data.name   = srv.response.tmsdb[0].name;
+      current_pos_data.type   = srv.response.tmsdb[0].type;
+      current_pos_data.x      = g_ox;
+      current_pos_data.y      = g_oy;
+      current_pos_data.z      = g_oz;
+      current_pos_data.rr     = g_orr;
+      current_pos_data.rp     = g_orp;
+      current_pos_data.ry     = g_ory;
+      current_pos_data.offset_x = srv.response.tmsdb[0].offset_x;
+      current_pos_data.offset_y = srv.response.tmsdb[0].offset_y;
+      current_pos_data.offset_z = srv.response.tmsdb[0].offset_z;
+      current_pos_data.place  = 2003;
+      current_pos_data.sensor = 3003;
+      current_pos_data.probability = 1.0;
+      current_pos_data.state = 2;
+
+      db_msg.tmsdb.push_back(current_pos_data);
+      pose_publisher.publish(db_msg);
+
+      is_grasp = true;
+      grasping_object_id = g_oid;
+
+    }
+    else{
+      ROS_ERROR("failed to get data");
+    }
+  }
+  if(is_grasp == true && msg.world.collision_objects.size() != 0 && msg.world.collision_objects[0].primitive_poses.size() != 0){ // released object
+    is_grasp = false;
+    grasping_object_id = 0;
+
+    int object_id = atoi(msg.world.collision_objects[0].id.c_str());
+
+    g_oid = object_id;
+    g_ox = msg.world.collision_objects[0].primitive_poses[0].position.x;
+    g_oy = msg.world.collision_objects[0].primitive_poses[0].position.y;
+    g_oz = msg.world.collision_objects[0].primitive_poses[0].position.z;
+
+    tms_msg_db::TmsdbGetData srv;
+    srv.request.tmsdb.id = object_id + sid_;
+
+    if(get_data_client.call(srv)){
+      // g_oz -= srv.response.tmsdb[0].offset_z;
+
+      ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+
+      tms_msg_db::TmsdbStamped db_msg;
+      tms_msg_db::Tmsdb current_pos_data;
+
+      db_msg.header.frame_id  = "/world";
+      db_msg.header.stamp     = now;
+
+      current_pos_data.time   = boost::posix_time::to_iso_extended_string(now.toBoost());
+      current_pos_data.id     = g_oid;
+      current_pos_data.name   = srv.response.tmsdb[0].name;
+      current_pos_data.type   = srv.response.tmsdb[0].type;
+      current_pos_data.x      = g_ox;
+      current_pos_data.y      = g_oy;
+      current_pos_data.z      = g_oz;
+      current_pos_data.rr     = g_orr;
+      current_pos_data.rp     = g_orp;
+      current_pos_data.ry     = g_ory;
+      current_pos_data.offset_x = srv.response.tmsdb[0].offset_x;
+      current_pos_data.offset_y = srv.response.tmsdb[0].offset_y;
+      current_pos_data.offset_z = srv.response.tmsdb[0].offset_z;
+      current_pos_data.place  = 5002;
+      current_pos_data.sensor = 3003;
+      current_pos_data.probability = 1.0;
+      current_pos_data.state = 1;
+
+      db_msg.tmsdb.push_back(current_pos_data);
+      pose_publisher.publish(db_msg);
+    }
+    else{
+      ROS_ERROR("failed to get data");
+    }
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -414,14 +652,21 @@ int main(int argc, char **argv)
   //--------------------------------------------------------------------------
   ros::init(argc, argv, "smartpal5_control");
   ros::NodeHandle nh;
-  get_data_client = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
+  get_data_client = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
   ros::ServiceServer service  = nh.advertiseService("sp5_control", robotControl);
-  ros::Publisher pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
+  pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
+
+	ros::Subscriber arm_data_sub = nh.subscribe("/move_group/fake_controller_joint_states",1,&armCallback);
+	object_data_sub = nh.subscribe("/move_group/monitored_planning_scene",1,&ObjectDataUpdate);
+
+	nh.setParam("/is_real",true);
+
+	listener = new tf::TransformListener;
 
   int32_t id_robot = 2003;                 // SmartPal5_2 ID
   int32_t id_odometry_and_joints = 3003;   // Sensor ID
   int32_t id_place = 5002;                 // Place ID
-  
+
   //--------------------------------------------------------------------------
   // smartpal initialize
   uint8_t cnt = 0;
@@ -462,11 +707,12 @@ int main(int argc, char **argv)
 
   // servo on
   smartpal->vehicleSetServo(ON);
-  smartpal->armSetServo(ArmR, ON);
-  smartpal->armSetServo(ArmL, ON);
   smartpal->gripperSetServo(GripperR, ON);
   smartpal->gripperSetServo(GripperL, ON);
   smartpal->lumbaSetServo(ON);
+
+	smartpal->armGetSoftLimit(ArmL);
+
 
   ros::Time tNow;
   ros::Rate loop_rate(10); // 10Hz frequency (0.1 sec)
@@ -521,6 +767,11 @@ int main(int argc, char **argv)
       // lumba_low, lumba_high, jR[0]...[6], gripper_right, jL[0]...[6], gripper_left
       current_pos_data.joint = ss.str();
 
+			std::stringstream ss2;
+	    ss2 << "grasping=" << grasping_object_id;
+
+	    current_pos_data.note = ss2.str();
+
       db_msg.tmsdb.push_back(current_pos_data);
 
       pose_publisher.publish(db_msg);
@@ -554,9 +805,9 @@ int main(int argc, char **argv)
 
   smartpal->Shutdown();
 
+	delete listener;
+
   return(0);
   //--------------------------------------------------------------------------
 }
 //------------------------------------------------------------------------------
-
-

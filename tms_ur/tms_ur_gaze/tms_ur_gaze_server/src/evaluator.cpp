@@ -46,7 +46,7 @@ Object::Object(ros::NodeHandle* nh) :
 //----------------------------------------------------------------------------------
 bool Object::GetGeometry(int id)
 {
-  ros::ServiceClient db_client = nh_->serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
+  ros::ServiceClient db_client = nh_->serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
 
   tms_msg_db::TmsdbGetData getData;
   getData.request.tmsdb.id = id;
@@ -128,7 +128,7 @@ bool Evaluator::CallBack(tms_ur_gaze_server::object_list::Request  &req,
                          tms_ur_gaze_server::object_list::Response &res)
 {
   // get the geometry of glasses
-  ros::ServiceClient db_client = nh_->serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
+  ros::ServiceClient db_client = nh_->serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
 
   tms_msg_db::TmsdbGetData getData;
   getData.request.tmsdb.id = 1001;

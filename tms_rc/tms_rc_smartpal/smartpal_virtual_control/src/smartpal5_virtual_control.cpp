@@ -10,6 +10,16 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <sstream>
 #include <boost/thread.hpp>
+#include <boost/algorithm/string.hpp>
+#include <moveit_msgs/DisplayTrajectory.h>
+#include <boost/bind.hpp>
+#include <geometry_msgs/TransformStamped.h>
+#include <tf/transform_listener.h>
+#include <tms_msg_db/TmsdbGetData.h>
+#include <sensor_msgs/JointState.h>
+#include <moveit_msgs/PlanningScene.h>
+#include <stdlib.h>
+#include <tf/transform_datatypes.h>
 
 //#define OFF       0
 #define ON          1
@@ -76,14 +86,21 @@
 #define CMD_move                15
 
 ros::Publisher pose_publisher;
+ros::Subscriber arm_data_sub;
+ros::Subscriber object_data_sub;
+ros::ServiceClient get_data_client_;
+
+tf::TransformListener *listener;
+
+const int sid_ = 100000;
 
 double g_x = 3.0;
 double g_y = 4.0;
 double g_t = 0.0;
-double g_jR[7] = {0.0,-0.08,0.0,0.0,0.0,0.0,0.0};
-double g_jL[7] = {0.0, 0.08,0.0,0.0,0.0,0.0,0.0};
+double g_jR[7] = {0.0,-0.17,0.0,0.0,0.0,0.0,0.0};
+double g_jL[7] = {0.0,-0.17,0.0,0.0,0.0,0.0,0.0};
 
-double g_gripper_right = -0.3;
+double g_gripper_right =  0.3;
 double g_gripper_left  =  0.3;
 
 double g_lumba_high = 0.0;
@@ -98,6 +115,9 @@ double g_joint_velocity     = 10.0; // Velocity (now deg/s)
 double g_joint_acceleration = 10.0; // Acceleration (now deg/s^2)
 
 bool grasping = false;
+bool is_grasp = false;
+
+int grasping_object_id = 0;
 
 int g_oid;
 double g_ox;
@@ -702,6 +722,11 @@ void RobotDataUpdate()
     // lumba_low, lumba_high, jR[0]...[6], gripper_right, jL[0]...[6], gripper_left
     current_pos_data.joint = ss.str();
 
+    std::stringstream ss2;
+    ss2 << "grasping=" << grasping_object_id;
+
+    current_pos_data.note = ss2.str();
+
     db_msg.tmsdb.push_back(current_pos_data);
     pose_publisher.publish(db_msg);
 
@@ -710,14 +735,58 @@ void RobotDataUpdate()
   }
 }
 
-void ObjectDataUpdate()
+void armCallback(const sensor_msgs::JointState& msg)
 {
-  ros::Rate loop_rate(10); // 10Hz frequency (0.1 sec)
-
-  while (ros::ok())
+  if(msg.name[0] == "l_gripper_thumb_joint")
   {
-    if (grasping == true)
+    g_gripper_left = msg.position[0];
+    printf("gripper_left=%f\n",g_gripper_left);
+  }
+  else{
+    for(int i=0;i<7;i++)
     {
+      g_jL[i] = msg.position[i];
+      printf("g_jL[%d]=%f ",i,g_jL[i]);
+    }
+    printf("\n");
+  }
+}
+
+void ObjectDataUpdate(const moveit_msgs::PlanningScene& msg)
+{
+  if(msg.robot_state.attached_collision_objects.size() != 0){ // grasped object
+    int object_id = atoi(msg.robot_state.attached_collision_objects[0].object.id.c_str());
+
+    g_oid = object_id;
+
+    geometry_msgs::PoseStamped pose,pose2;
+    pose.header.frame_id = "/l_end_effector_link";
+    pose.pose.position.x = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.x;
+    pose.pose.position.y = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.y;
+    pose.pose.position.z = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.z;
+
+    pose.pose.orientation.x = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.x;
+    pose.pose.orientation.y = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.y;
+    pose.pose.orientation.z = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.z;
+    pose.pose.orientation.w = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.w;
+
+    listener->transformPose("/world_link",pose,pose2);
+
+    g_ox = pose2.pose.position.x;
+    g_oy = pose2.pose.position.y;
+    g_oz = pose2.pose.position.z;
+    tf::Quaternion q2(pose2.pose.orientation.x,pose2.pose.orientation.y,pose2.pose.orientation.z,pose2.pose.orientation.w);
+    tf::Matrix3x3 m2(q2);
+    m2.getRPY(g_orr,g_orp,g_ory);
+
+    ROS_INFO("object_rot:(%f,%f,%f)",g_orr,g_orp,g_ory);
+
+    tms_msg_db::TmsdbGetData srv;
+    srv.request.tmsdb.id = object_id + sid_;
+
+    if(get_data_client_.call(srv)){
+      // g_oz -= srv.response.tmsdb[0].offset_z;
+
       ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 
       tms_msg_db::TmsdbStamped db_msg;
@@ -728,20 +797,83 @@ void ObjectDataUpdate()
 
       current_pos_data.time   = boost::posix_time::to_iso_extended_string(now.toBoost());
       current_pos_data.id     = g_oid;
+      current_pos_data.name   = srv.response.tmsdb[0].name;
+      current_pos_data.type   = srv.response.tmsdb[0].type;
       current_pos_data.x      = g_ox;
       current_pos_data.y      = g_oy;
       current_pos_data.z      = g_oz;
       current_pos_data.rr     = g_orr;
       current_pos_data.rp     = g_orp;
       current_pos_data.ry     = g_ory;
-      current_pos_data.place  = 2002;
+      current_pos_data.offset_x = srv.response.tmsdb[0].offset_x;
+      current_pos_data.offset_y = srv.response.tmsdb[0].offset_y;
+      current_pos_data.offset_z = srv.response.tmsdb[0].offset_z;
+      current_pos_data.place  = 2003;
       current_pos_data.sensor = 3005;
       current_pos_data.probability = 1.0;
       current_pos_data.state = 2;
 
       db_msg.tmsdb.push_back(current_pos_data);
-
       pose_publisher.publish(db_msg);
+
+      is_grasp = true;
+      grasping_object_id = g_oid;
+      printf("grasped object id:%d (%0.1f,%0.1f,%0.1f)\n",g_oid,g_ox,g_oy,g_oz);
+    }
+    else{
+      ROS_ERROR("failed to get data");
+    }
+  }
+  if(is_grasp == true && msg.world.collision_objects.size() != 0 && msg.world.collision_objects[0].primitive_poses.size() != 0){ // released object
+    is_grasp = false;
+    grasping_object_id = 0;
+
+    int object_id = atoi(msg.world.collision_objects[0].id.c_str());
+
+    g_oid = object_id;
+    g_ox = msg.world.collision_objects[0].primitive_poses[0].position.x;
+    g_oy = msg.world.collision_objects[0].primitive_poses[0].position.y;
+    g_oz = msg.world.collision_objects[0].primitive_poses[0].position.z;
+
+    tms_msg_db::TmsdbGetData srv;
+    srv.request.tmsdb.id = object_id + sid_;
+
+    if(get_data_client_.call(srv)){
+      // g_oz -= srv.response.tmsdb[0].offset_z;
+
+      ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+
+      tms_msg_db::TmsdbStamped db_msg;
+      tms_msg_db::Tmsdb current_pos_data;
+
+      db_msg.header.frame_id  = "/world";
+      db_msg.header.stamp     = now;
+
+      current_pos_data.time   = boost::posix_time::to_iso_extended_string(now.toBoost());
+      current_pos_data.id     = g_oid;
+      current_pos_data.name   = srv.response.tmsdb[0].name;
+      current_pos_data.type   = srv.response.tmsdb[0].type;
+      current_pos_data.x      = g_ox;
+      current_pos_data.y      = g_oy;
+      current_pos_data.z      = g_oz;
+      current_pos_data.rr     = g_orr;
+      current_pos_data.rp     = g_orp;
+      current_pos_data.ry     = g_ory;
+      current_pos_data.offset_x = srv.response.tmsdb[0].offset_x;
+      current_pos_data.offset_y = srv.response.tmsdb[0].offset_y;
+      current_pos_data.offset_z = srv.response.tmsdb[0].offset_z;
+      current_pos_data.place  = 5002;
+      current_pos_data.sensor = 3005;
+      current_pos_data.probability = 1.0;
+      current_pos_data.state = 1;
+
+      db_msg.tmsdb.push_back(current_pos_data);
+      pose_publisher.publish(db_msg);
+
+      printf("released object id:%d (%0.1f,%0.1f,%0.1f)\n",g_oid,g_ox,g_oy,g_oz);
+    }
+    else{
+      ROS_ERROR("failed to get data");
     }
   }
 }
@@ -750,16 +882,24 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "smartpal5_virtual_control");
   ros::NodeHandle nh;
+
+  listener = new tf::TransformListener;
+
   ros::ServiceServer service    = nh.advertiseService("sp5_virtual_control", robotControl);
   pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
+  arm_data_sub = nh.subscribe("/move_group/fake_controller_joint_states",1,&armCallback);
+  object_data_sub = nh.subscribe("/move_group/monitored_planning_scene",1,&ObjectDataUpdate);
+  get_data_client_ = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
+
+  nh.setParam("/is_real",false);
 
   printf("Virtual SmartPal initialization has been completed.\n\n");
 
   boost::thread thr_rdu(&RobotDataUpdate);
-  boost::thread thr_odu(&ObjectDataUpdate);
 
   thr_rdu.join();
-  thr_odu.join();
+
+  delete listener;
 
   return(0);
 }

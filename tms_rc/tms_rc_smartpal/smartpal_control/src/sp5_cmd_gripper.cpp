@@ -21,7 +21,7 @@ int8_t Client::gripperClearAlarm(int8_t RL)
     else if(RL==GripperL)
     {
         ret = CommandObj_GripperL->clearAlarms();
-        printf("gripperClearAlarm L result: "); 
+        printf("gripperClearAlarm L result: ");
         ret ? printf("Success\n") : printf("Failure\n");
     }
     else
@@ -112,7 +112,7 @@ int8_t Client::gripperPause(int8_t RL)
         printf("gripperPause RL error\n");
         return RL_ERR;
     }
-    
+
     if(ret) return  SUCCESS;
     else    return  FAILURE;
 }
@@ -231,21 +231,23 @@ int8_t Client::gripperGetState(int8_t RL)
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::gripperGetPos(int8_t RL, double *pos)
+int8_t Client::gripperGetPos(int8_t RL, double *pos_rad)
 {
     bool ret;
 
     if(!bInitialize) return CORBA_ERR;
 
+    double pos;
+
     if(RL==GripperR)
     {
-        ret = CommandObj_GripperR->getFeedback(*pos);
+        ret = CommandObj_GripperR->getFeedback(pos);
         //printf("gripperGetPos R result: "); ret ? printf("Success\n") : printf("Failure\n");
         //printf("gripperGetPos R: %0.1f\n",*pos);
     }
     else if(RL==GripperL)
     {
-        ret = CommandObj_GripperL->getFeedback(*pos);
+        ret = CommandObj_GripperL->getFeedback(pos);
         //printf("gripperGetPos L result: "); ret ? printf("Success\n") : printf("Failure\n");
         //printf("gripperGetPos L: %0.1f\n",*pos);
     }
@@ -255,16 +257,22 @@ int8_t Client::gripperGetPos(int8_t RL, double *pos)
         return RL_ERR;
     }
 
+    *pos_rad = deg2rad(pos);
+
     if(ret) return  SUCCESS;
     else    return  FAILURE;
 }
 
 //------------------------------------------------------------------------------
-int8_t Client::gripperMoveAbs(int8_t RL, double j_deg, double vel_degps, double acc_degps2)
+int8_t Client::gripperMoveAbs(int8_t RL, double j_rad, double vel_radps, double acc_radps2)
 {
     bool ret;
 
     if(!bInitialize) return CORBA_ERR;
+
+    double j_deg = rad2deg(j_rad);
+    double vel_degps = rad2deg(vel_radps);
+    double acc_degps2 = rad2deg(acc_radps2);
 
     // smartpal5 gripper -58 ∼ +8 degree (open direct : -)
 
