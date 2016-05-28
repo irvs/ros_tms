@@ -26,7 +26,6 @@ bool Socket::create() {
 }
 
 bool Socket::bind(const int port) {
-
   if (!is_valid()) {
     return false;
   }
@@ -116,7 +115,6 @@ bool Socket::connect(const std::string host, const int port) {
 }
 
 void Socket::set_non_blocking(const bool b) {
-
   int opts;
 
   opts = fcntl(m_sock, F_GETFL);

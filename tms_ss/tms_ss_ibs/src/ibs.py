@@ -75,7 +75,7 @@ NONE = 0
 EXIST = 1
 
 LC_MAX_SENSOR_NUM = 4
-D_COUT = sys.stdout.write
+D_COUT = sys.stdout.write  # デバッグ用アウトプット
 
 
 class CLoadCell(object):
@@ -248,10 +248,11 @@ class CTR3(object):
         return True
 
     # アンテナの電源OFF
-    # TODO: I dont know this method worked correctly
     def __AntennaPowerOFF(self):    # unsigned long num
-        self.__SetAntenna(self.__mActiveAntenna + 1)  # TODO: fix correct serquence
+        # TODO: OFFにできないので使用アンテナを切り替える．ONにしたままだとロードセルのADCにノイズが乗る
+        self.__SetAntenna(self.__mActiveAntenna + 1)
 
+        # TODO: 元のプログラムでは下記の通りだったが，動かない．おそらく動作テストもされてない．
         # self.__mCommand[2] = 0x4E  # コマンド
         # self.__mCommand[3] = 0x02  # データ長
         # self.__mCommand[4] = 0x9E  # コマンド詳細
@@ -476,6 +477,21 @@ class CIntelCab(object):
         return value, cInOut
 
 
+def getWorldFramePos(x, y):
+    global frame_id, offset_x, offset_y, offset_z
+    world = "world_link"
+    pos = tf2_geometry_msgs.PointStamped()
+    pos.header.stamp = rospy.Time()
+    pos.header.frame_id = frame_id
+    pos.point.x = x + offset_x
+    pos.point.y = y + offset_y
+    pos.point.z = offset_z
+    while not tfBuffer.can_transform(kyusu.header.frame_id, world, kyusu.header.stamp):
+        pass
+    ret = tfBuffer.transform(pos, world, timeout=rospy.Duration(1.0))
+    return ret
+
+
 def main():
     print "Hello World"
     rfidValue = dict()
@@ -508,31 +524,42 @@ def main():
     # init ROS
     rospy.init_node('ibs', anonymous=True)
     db_pub = rospy.Publisher('tms_db_data', TmsdbStamped, queue_size=10)
+
+    # rosparamが設定されてるかチェック
     if not rospy.has_param('~idSensor'):
         print "ros param 'idSensor' isn't exist"
     if not rospy.has_param('~idPlace'):
         print "ros param 'idPlace' isn't exist"
-    if not rospy.has_param('~z'):
-        print "ros param 'z' isn't exist"
+    if not rospy.has_param('~offset_x'):
+        print "ros param 'offset_x' isn't exist"
+    if not rospy.has_param('~offset_y'):
+        print "ros param 'offset_y' isn't exist"
+    if not rospy.has_param('~offset_z'):
+        print "ros param 'offset_z' isn't exist"
     if not rospy.has_param('~frame_id'):
         print "ros param 'frame_id' isn't exist"
     if not rospy.has_param('~loadcell_points/x'):
         print "ros param 'loadcell_points/x' isn't exist"
     if not rospy.has_param('~loadcell_points/y'):
         print "ros param 'loadcell_points/y' isn't exist"
+
+    # rosparam取得
     idSensor = rospy.get_param('~idSensor')
     idPlace = rospy.get_param('~idPlace')
-    z = rospy.get_param('~z')
+    offset_x = rospy.get_param('~offset_x')
+    offset_y = rospy.get_param('~offset_y')
+    offset_z = rospy.get_param('~offset_z')
     frame_id = rospy.get_param('~frame_id')
     PORT_LC0 = rospy.get_param("~PORT_LC0", "/dev/ttyACM0")
     PORT_TR = rospy.get_param("~PORT_TR", "/dev/ttyUSB0")
     xpos0 = rospy.get_param('~loadcell_points/x', (0.0, 1000.0, 0.0, 1000.0))
     ypos0 = rospy.get_param('~loadcell_points/y', (0.0, 0.0, 1000.0, 1000.0))
 
-    cmd_chmod = "sudo -S chmod a+rw "+PORT_LC0
-    print cmd_chmod+"\n",   subprocess.check_output(cmd_chmod.split(" "))
-    cmd_chmod = "sudo -S chmod a+rw "+PORT_TR
-    print cmd_chmod+"\n",   subprocess.check_output(cmd_chmod.split(" "))
+    # 仮想COMポートへのアクセス権取得
+    cmd_chmod = "sudo -S chmod a+rw " + PORT_LC0
+    print cmd_chmod + "\n",   subprocess.check_output(cmd_chmod.split(" "))
+    cmd_chmod = "sudo -S chmod a+rw " + PORT_TR
+    print cmd_chmod + "\n",   subprocess.check_output(cmd_chmod.split(" "))
 
     # xpos0 = (16.0, 407.0, 16.0, 407.0)
     # ypos0 = (16.0, 16.0, 244.0, 244.0)
@@ -581,7 +608,7 @@ def main():
             change_flag = False
             # 毎回初期化し，庫内にある物品だけ値を更新して送信する
             msg = TmsdbStamped()
-            msg.header.frame_id = frame_id
+            msg.header.frame_id = "world_link"
             msg.header.stamp = rospy.get_rostime() + rospy.Duration(9 * 60 * 60)
             for i in xrange(MAX_OBJECT_NUM):
                 time.sleep(0.001)
@@ -603,8 +630,9 @@ def main():
                 msg.tmsdb[vi].time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
                 msg.tmsdb[vi].id = rfidValue[cObj.mUID]
                 msg.tmsdb[vi].state = EXIST
-                msg.tmsdb[vi].x = cObj.mX
-                msg.tmsdb[vi].y = cObj.mY
+                world_pos = getWorldFramePos(cObj.mX, cObj.mY)
+                msg.tmsdb[vi].x = world_pos.point.x
+                msg.tmsdb[vi].y = world_pos.point.y
                 msg.tmsdb[vi].z = z
                 msg.tmsdb[vi].weight = cObj.mWeight
             cIntelCab.PrintObjInfo()
@@ -613,5 +641,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-# EOF

@@ -88,9 +88,7 @@ class MachinePose_s {
     this->vel_fusioned.theta = 0.0;
     kalman = new Kalman(6, 3, 3);
   };
-  ~MachinePose_s() {
-    delete kalman;
-  };
+  ~MachinePose_s() { delete kalman; };
   void updateOdom();
   void updateVicon();
   void updateCompFilter();
@@ -119,10 +117,7 @@ class MachinePose_s {
   // bool goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/);
 
   Kalman *kalman;
-  enum InfoType {
-    VELOCITY,
-    POSISION
-  };
+  enum InfoType { VELOCITY, POSISION };
   geometry_msgs::Pose2D UpdatePosition(geometry_msgs::Pose2D tpose, InfoType Info);
 } mchn_pose;
 
@@ -320,21 +315,21 @@ bool receiveGoalPose(tms_msg_rc::rc_robot_control::Request &req,
 // }
 
 bool is_human_detected = false;
-void HumanTrackerCallback(const visualization_msgs::MarkerArray::ConstPtr &arg){
+void HumanTrackerCallback(const visualization_msgs::MarkerArray::ConstPtr &arg) {
   is_human_detected = !arg->markers.empty();
-  if(is_human_detected){
-    mchn_pose.tgtTwist.linear.x =  0.0;
-    mchn_pose.tgtTwist.angular.z =  0.0;
+  if (is_human_detected) {
+    mchn_pose.tgtTwist.linear.x = 0.0;
+    mchn_pose.tgtTwist.angular.z = 0.0;
   }
 }
 
 void receiveJoy(const sensor_msgs::Joy::ConstPtr &joy) {
   // ROS_INFO("Rrecieve joy");
-  if(is_human_detected){
+  if (is_human_detected) {
     ROS_INFO("human detected!!");
-    mchn_pose.tgtTwist.linear.x =  0.0;
-    mchn_pose.tgtTwist.angular.z =  0.0;
-  }else{
+    mchn_pose.tgtTwist.linear.x = 0.0;
+    mchn_pose.tgtTwist.angular.z = 0.0;
+  } else {
     mchn_pose.tgtTwist.linear.x = joy->axes[1] * 300;   // 600;
     mchn_pose.tgtTwist.angular.z = joy->axes[3] * 0.7;  // 1;
   }
@@ -478,13 +473,11 @@ int main(int argc, char **argv) {
       client_socket << "@CR1@CR2@SM1,1@SM2,1@PP1," + s_Kp_ + "@PP2," + s_Kp_ + "@PI1," + s_Ki_ +
                            "@PI2," + s_Ki_ + "@PD1," + s_Kd_ + "@PD2," + s_Kd_;
       client_socket >> reply;
-    }
-    catch (SocketException &) {
+    } catch (SocketException &) {
     }
     cout << "Response:" << reply << "\n";
     ;
-  }
-  catch (SocketException &e) {
+  } catch (SocketException &e) {
     cout << "Exception was caught:" << e.description() << "\n";
   }
 
