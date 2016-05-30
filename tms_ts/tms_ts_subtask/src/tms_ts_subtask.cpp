@@ -195,8 +195,9 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
   SubtaskData sd;
 //    sd.type = grasp::TmsRpBar::production_version_;
   bool type;
-  nh1.getParam("/is_real",type);
-  sd.type = type; //sim = false , real = true
+  // nh1.getParam("/is_real",type);
+  // sd.type = type; //sim = false , real = true
+  sd.type = req.type;
   sd.robot_id = req.robot_id;
   sd.arg_type = (int)req.arg.at(0);
   sd.v_arg.clear();
@@ -427,10 +428,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
   }
 
   srv.request.tmsdb.id = sd.arg_type;
-  srv.request.tmsdb.sensor = 3001;
-
-  // if (sd.type == false)
-  //   srv.request.tmsdb.sensor = 3005;
 
   if (sd.arg_type == -1) // move (x,y,th)
   {
@@ -519,6 +516,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
   }
   else if (sd.arg_type > 1000 && sd.arg_type < 2000) //person
   {
+    srv.request.tmsdb.sensor = 3001;
     ROS_INFO("person ID:%d",sd.arg_type);
     if(get_data_client_.call(srv))
     {
@@ -546,6 +544,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
   }
   else if (sd.arg_type > 7000 && sd.arg_type < 8000) // ObjectID
   {
+    srv.request.tmsdb.sensor = 3018;
     ROS_INFO("Argument IDtype is Object%d!\n", sd.arg_type);
     if(get_data_client_.call(srv))
     {

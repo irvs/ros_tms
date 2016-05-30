@@ -1250,7 +1250,7 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 								//detectingObjsのplaceで家具を取得
 								objs.clear();
 								for(TmsdbObject object: detectingObjs){
-									if(object.getPlace()!=0){
+									if(object.getPlace()!=0 && object.getState()!=0){
 										TmsdbObject to = new TmsdbObject();
 										to.setId(object.getPlace());
 										data.sendInfo(to);

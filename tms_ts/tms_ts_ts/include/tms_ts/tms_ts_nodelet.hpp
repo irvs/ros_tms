@@ -73,6 +73,8 @@ private:
   std::string IntToString(int number);
   int StringToInt(std::string str);
 
+  std::string BoolToString(bool b);
+
   int ArrayPush(std::string *stack, std::string data, int *sp, size_t n);
   std::string ArrayPop(std::string *stack, int *sp);
 

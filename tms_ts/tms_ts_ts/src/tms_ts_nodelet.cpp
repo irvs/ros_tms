@@ -26,6 +26,12 @@ std::string tms_ts_nodelet::ROS_TMS_TS::rosCheckTime(boost::posix_time::ptime ti
   return oss.str();
 }
 
+
+std::string tms_ts_nodelet::ROS_TMS_TS::BoolToString(bool b)
+{
+  return b ? "True":"False";
+}
+
 std::string tms_ts_nodelet::ROS_TMS_TS::IntToString(int number)
 {
   std::stringstream ss;
@@ -151,6 +157,10 @@ int tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string state
   std::string state_name1, state_name2;
   std::string f_name = "smc" + IntToString(cc_count);
 
+  ros::NodeHandle nh;
+  bool type;
+  nh.getParam("/is_real",type);
+
   if (arg_type == 0)
   {
     ROS_INFO("type=0\n");
@@ -179,7 +189,7 @@ int tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string state
     generated_container += "        smach.Concurrence.add('" + state_right + "',\n"
         "                           ServiceState('rp_cmd',\n"
         "                                        rp_cmd,\n"
-        "                                        request = rp_cmdRequest(" + state_id1 + ", True, " + IntToString(robot_id) + ", [";
+        "                                        request = rp_cmdRequest(" + state_id1 + ", " + BoolToString(type) + ", " + IntToString(robot_id) + ", [";
     int check = 0;
     for (int i = 1; i < seq_of_argument1.size(); i++)
     {
@@ -213,7 +223,7 @@ int tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string state
         "        smach.Concurrence.add('" + state_left + "',\n"
         "                           ServiceState('rp_cmd',\n"
         "                                        rp_cmd,\n"
-        "                                        request = rp_cmdRequest(" + state_id2 + ", True, " + IntToString(robot_id) + ", [";
+        "                                        request = rp_cmdRequest(" + state_id2 + ", " + BoolToString(type) + ", " + IntToString(robot_id) + ", [";
     int check = 0;
       for (int j = 1; j < seq_of_argument2.size(); j++)
       {
@@ -249,7 +259,7 @@ int tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string state
         "        smach.Concurrence.add('" + state_right + "',\n"
         "                           ServiceState('rp_cmd',\n"
         "                                        rp_cmd,\n"
-        "                                        request = rp_cmdRequest(" + state_id1 + ", True, " + IntToString(robot_id) + ", [";
+        "                                        request = rp_cmdRequest(" + state_id1 + ", " + BoolToString(type) + ", " + IntToString(robot_id) + ", [";
     int check = 0;
     for (int i = 1; i < seq_of_argument1.size(); i++)
     {
@@ -264,7 +274,7 @@ int tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string state
         "        smach.Concurrence.add('" + state_left + "',\n"
         "                           ServiceState('rp_cmd',\n"
         "                                        rp_cmd,\n"
-        "                                        request = rp_cmdRequest(" + state_id2 + ", True, " + IntToString(robot_id) + ", [";
+        "                                        request = rp_cmdRequest(" + state_id2 + ", " + BoolToString(type) + ", " + IntToString(robot_id) + ", [";
     check = 0;
       for (int j = 1; j < seq_of_argument2.size(); j++)
       {
@@ -403,6 +413,11 @@ int tms_ts_nodelet::ROS_TMS_TS::AddOneStateSQ(std::string state1)
 
 void tms_ts_nodelet::ROS_TMS_TS::GenerateScript()
 {
+
+  ros::NodeHandle nh;
+  bool type;
+  nh.getParam("/is_real",type);
+
   for (int j=0; j<state_data.size(); j++)
   {
     if (state_data.at(j).arg.at(0) == -10000)
@@ -437,8 +452,7 @@ void tms_ts_nodelet::ROS_TMS_TS::GenerateScript()
           "                           ServiceState('rp_cmd',\n"
           "                                        rp_cmd,\n"
           "                                        request = rp_cmdRequest(" +
-          IntToString(state_data.at(j).state_id) + ", "
-          "True, " + IntToString(robot_id) + ", [";
+          IntToString(state_data.at(j).state_id) + ", " + BoolToString(type) + ", " + IntToString(robot_id) + ", [";
       int check = 0;
 
       for (int k = 0; k < state_data.at(j).arg.size(); k++)
