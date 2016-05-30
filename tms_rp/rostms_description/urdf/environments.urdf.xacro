@@ -72,7 +72,7 @@
     <joint name="kitchen_joint" type="fixed">
       <parent link="bsen_room_link"/>
       <child link="kitchen_link"/>
-      <origin xyz="9.05 5.87 0.4855" rpy="0 0 -1.57079633"/>
+      <origin xyz="9.03 5.87 0.4855" rpy="0 0 -1.57079633"/>
     </joint>
 
     <link name="kitchen_link">
@@ -272,7 +272,7 @@
     <joint name="workdesk_joint" type="fixed">
       <parent link="bsen_room_link"/>
       <child link="workdesk_link"/>
-      <origin xyz="11.80 5.9 0.5" rpy="0 0 -1.57079633"/>
+      <origin xyz="11.80 5.9 0.35" rpy="0 0 -1.57079633"/>
     </joint>
 
     <link name="workdesk_link">
@@ -310,7 +310,7 @@
     <joint name="intelingent_shelf_joint" type="fixed">
       <parent link="bsen_room_link"/>
       <child link="intelingent_shelf_link"/>
-      <origin xyz="11.48 4.220 0.445" rpy="0 0 0"/>
+      <origin xyz="11.65 3.970 0.005" rpy="0 0 0"/>
     </joint>
 
     <link name="intelingent_shelf_link">
