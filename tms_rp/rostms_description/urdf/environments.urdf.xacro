@@ -326,6 +326,25 @@
       </collision>
     </link>
 
+    <joint name="refrigerator_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="refrigerator_link"/>
+      <origin xyz="7.0 5.52 0.0" rpy="0 0 -1.57079633"/>
+    </joint>
+
+    <link name="refrigerator_link">
+      <visual>
+        <geometry>
+          <mesh filename="package://environmental_model/model/refrigerator.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.3 0.5 0.9"/>
+        </geometry>
+      </collision>
+    </link>
+
     <xacro:environments_sim/>
 
   </xacro:macro>
