@@ -92,7 +92,7 @@
     </link>
 
     <!-- refrigerator -->
-    <link name="refrigerator_x_link"/>
+<!--     <link name="refrigerator_x_link"/>
 
     <joint name="refrigerator_x_joint" type="prismatic">
       <parent link="world_link"/>
@@ -130,7 +130,7 @@
         </geometry>
         <origin xyz="0.0 0.0 0.56" rpy="0 0 0"/>
       </collision>
-    </link>
+    </link> -->
 
     <!-- Add meeting_chair -->
     <xacro:meeting_chair_link num="1"/>
