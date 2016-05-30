@@ -1,11 +1,11 @@
 <launch>
   <arg  default="1" name="linear_axis"/>
   <arg  default="0" name="angular_axis"/>
-  <arg  default="1.0" name="linear_scale"/>
-  <arg  default="1.0" name="angular_scale"/>
-  <arg  default="4" name="deadman_button"/>
-  <arg  default="0" name="enable_button"/>
-  <arg  default="1" name="disable_button"/>
+  <arg  default="0.3" name="linear_scale"/>
+  <arg  default="0.8" name="angular_scale"/>
+  <arg  default="0" name="deadman_button"/>
+  <arg  default="1" name="enable_button"/>
+  <arg  default="3" name="disable_button"/>
   <arg  default="10" name="spin_frequency"/>
   <arg  default="joy" name="joy_topic_name"/>
   <arg  default="cmd_vel_mux/input/joystick" name="cmd_vel_topic_name"/>

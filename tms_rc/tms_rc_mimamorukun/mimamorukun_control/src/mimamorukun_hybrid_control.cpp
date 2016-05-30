@@ -83,9 +83,7 @@ class MachinePose_s {
     this->vel_fusioned.theta = 0.0;
     kalman = new Kalman(6, 3, 3);
   };
-  ~MachinePose_s() {
-    delete kalman;
-  };
+  ~MachinePose_s() { delete kalman; };
   void updateOdom();
   void updateVicon();
   void updateCompFilter();
@@ -114,10 +112,7 @@ class MachinePose_s {
   // bool goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/);
 
   Kalman *kalman;
-  enum InfoType {
-    VELOCITY,
-    POSISION
-  };
+  enum InfoType { VELOCITY, POSISION };
   geometry_msgs::Pose2D UpdatePosition(geometry_msgs::Pose2D tpose, InfoType Info);
 } mchn_pose;
 
@@ -438,13 +433,11 @@ int main(int argc, char **argv) {
       client_socket << "@CR1@CR2@SM1,1@SM2,1@PP1," + s_Kp_ + "@PP2," + s_Kp_ + "@PI1," + s_Ki_ +
                            "@PI2," + s_Ki_ + "@PD1," + s_Kd_ + "@PD2," + s_Kd_;
       client_socket >> reply;
-    }
-    catch (SocketException &) {
+    } catch (SocketException &) {
     }
     cout << "Response:" << reply << "\n";
     ;
-  }
-  catch (SocketException &e) {
+  } catch (SocketException &e) {
     cout << "Exception was caught:" << e.description() << "\n";
   }
 

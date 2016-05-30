@@ -72,7 +72,7 @@
     <joint name="kitchen_joint" type="fixed">
       <parent link="bsen_room_link"/>
       <child link="kitchen_link"/>
-      <origin xyz="9.26 5.9 0.4855" rpy="0 0 -1.57079633"/>
+      <origin xyz="9.03 5.87 0.4855" rpy="0 0 -1.57079633"/>
     </joint>
 
     <link name="kitchen_link">
@@ -138,7 +138,7 @@
     <joint name="tv_table_joint" type="fixed">
       <parent link="bsen_room_link"/>
       <child link="tv_table_link"/>
-      <origin xyz="11.1 2.9 0.175" rpy="0 0 0"/>
+      <origin xyz="14.25 2.5 0.175" rpy="0 0 0"/>
     </joint>
 
     <link name="tv_table_link">
@@ -154,48 +154,10 @@
       </collision>
     </link>
 
-    <joint name="tv_52_link" type="fixed">
-      <parent link="bsen_room_link"/>
-      <child link="tv_52_link"/>
-      <origin xyz="11.2 2.9 0.7085" rpy="0 0 -1.57079633"/>
-    </joint>
-
-    <link name="tv_52_link">
-      <visual>
-        <geometry>
-          <mesh filename="package://environmental_model/model/tv_52.dae"/>
-        </geometry>
-      </visual>
-      <collision>
-        <geometry>
-          <box size="1.2 0.1 0.7"/>
-        </geometry>
-      </collision>
-    </link>
-
-    <joint name="recorder_joint" type="fixed">
-      <parent link="bsen_room_link"/>
-      <child link="recorder_link"/>
-      <origin xyz="11.1 2.9 0.3805" rpy="0 0 3.14159265"/>
-    </joint>
-
-    <link name="recorder_link">
-      <visual>
-        <geometry>
-          <mesh filename="package://environmental_model/model/recorder.dae"/>
-        </geometry>
-      </visual>
-      <collision>
-        <geometry>
-          <box size="0.25 0.45 0.1"/>
-        </geometry>
-      </collision>
-    </link>
-
     <joint name="sofa_joint" type="fixed">
       <parent link="bsen_room_link"/>
       <child link="sofa_link"/>
-      <origin xyz="9.1 2.9 0.395" rpy="0 0 0"/>
+      <origin xyz="11.75 2.6 0.395" rpy="0 0 0"/>
     </joint>
 
     <link name="sofa_link">
@@ -214,7 +176,7 @@
     <joint name="sofa_table_joint" type="fixed">
       <parent link="bsen_room_link"/>
       <child link="sofa_table_link"/>
-      <origin xyz="10.2 2.9 0.235" rpy="0 0 0"/>
+      <origin xyz="12.7 2.5 0.235" rpy="0 0 0"/>
     </joint>
 
     <link name="sofa_table_link">
@@ -230,10 +192,30 @@
       </collision>
     </link>
 
+    <joint name="bed_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="bed_link"/>
+      <origin xyz="10.35 2.7 0.235" rpy="0 0 0"/>
+    </joint>
+
+    <link name="bed_link">
+      <visual>
+        <geometry>
+          <mesh filename="package://environmental_model/model/paramount_bed.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.5 1.3 0.43"/>
+        </geometry>
+      </collision>
+    </link>
+
+
     <joint name="carpet_joint" type="fixed">
       <parent link="bsen_room_link"/>
       <child link="carpet_link"/>
-      <origin xyz="9.9 2.9 0.01" rpy="0 0 0"/>
+      <origin xyz="12.3 2.6 0.01" rpy="0 0 0"/>
     </joint>
 
     <link name="carpet_link">
@@ -252,7 +234,7 @@
     <joint name="drawer_joint" type="fixed">
       <parent link="bsen_room_link"/>
       <child link="drawer_link"/>
-      <origin xyz="12.93 5.8 0.303" rpy="0 0 -1.57079633"/>
+      <origin xyz="12.72 5.8 0.303" rpy="0 0 -1.57079633"/>
     </joint>
 
     <link name="drawer_link">
@@ -268,29 +250,10 @@
       </collision>
     </link>
 
-    <joint name="bed_joint" type="fixed">
-      <parent link="bsen_room_link"/>
-      <child link="bed_link"/>
-      <origin xyz="12.48 2.3 0.2075" rpy="0 0 0"/>
-    </joint>
-
-    <link name="bed_link">
-      <visual>
-        <geometry>
-          <mesh filename="package://environmental_model/model/bed.dae"/>
-        </geometry>
-      </visual>
-      <collision>
-        <geometry>
-          <box size="2.2 1.88 0.2"/>
-        </geometry>
-      </collision>
-    </link>
-
     <joint name="wardrobe_joint" type="fixed">
       <parent link="bsen_room_link"/>
       <child link="wardrobe_link"/>
-      <origin xyz="13.7 5.9 1.3" rpy="0 0 -1.57079633"/>
+      <origin xyz="13.46 5.9 1.3" rpy="0 0 -1.57079633"/>
     </joint>
 
     <link name="wardrobe_link">
@@ -309,7 +272,7 @@
     <joint name="workdesk_joint" type="fixed">
       <parent link="bsen_room_link"/>
       <child link="workdesk_link"/>
-      <origin xyz="12.05 5.9 0.5" rpy="0 0 -1.57079633"/>
+      <origin xyz="11.80 5.9 0.35" rpy="0 0 -1.57079633"/>
     </joint>
 
     <link name="workdesk_link">
@@ -328,7 +291,7 @@
     <joint name="tv_multi_joint" type="fixed">
       <parent link="bsen_room_link"/>
       <child link="tv_multi_link"/>
-      <origin xyz="14.37 2.2 1.0" rpy="0 0 -1.57079633"/>
+      <origin xyz="14.37 2.2 1.45" rpy="0 0 -1.57079633"/>
     </joint>
 
     <link name="tv_multi_link">
@@ -347,13 +310,32 @@
     <joint name="intelingent_shelf_joint" type="fixed">
       <parent link="bsen_room_link"/>
       <child link="intelingent_shelf_link"/>
-      <origin xyz="11.56 3.520 0.445" rpy="0 0 0"/>
+      <origin xyz="11.65 3.970 0.005" rpy="0 0 0"/>
     </joint>
 
     <link name="intelingent_shelf_link">
       <visual>
         <geometry>
           <mesh filename="package://environmental_model/model/intelingent_shelf.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.3 0.5 0.9"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="refrigerator_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="refrigerator_link"/>
+      <origin xyz="7.0 5.52 0.0" rpy="0 0 -1.57079633"/>
+    </joint>
+
+    <link name="refrigerator_link">
+      <visual>
+        <geometry>
+          <mesh filename="package://environmental_model/model/refrigerator.dae"/>
         </geometry>
       </visual>
       <collision>

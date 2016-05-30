@@ -12,6 +12,12 @@
 #include <tf/tf.h>
 #include <tf/transform_broadcaster.h>
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <tms_msg_db/TmsdbGetData.h>
+#include <tms_msg_db/TmsdbStamped.h>
+#include <tms_msg_db/Tmsdb.h>
+#include "kalman-Ndof.hpp"
+
 #define ROS_RATE 10
 
 using namespace std;
@@ -29,6 +35,8 @@ bool is_publish_tf;
 
 pthread_t thread_odom;
 pthread_mutex_t mutex_socket = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex_update_kalman = PTHREAD_MUTEX_INITIALIZER;
+ros::ServiceClient db_client;
 
 class MachinePose_s {
  private:
@@ -54,6 +62,11 @@ class MachinePose_s {
   void setCurrentPosition(geometry_msgs::Pose pose);
   geometry_msgs::Pose2D getCurrentPosition();
 
+  Kalman *kalman;
+  geometry_msgs::Pose2D pos_fusioned;
+  geometry_msgs::Pose2D vel_fusioned;
+  enum InfoType { VELOCITY, POSISION };
+  geometry_msgs::Pose2D UpdatePosition(geometry_msgs::Pose2D tpose, InfoType Info);
 } mchn_pose;
 
 int Dist2Pulse(int dist) { return ((float)dist) / DIST_PER_PULSE; }
@@ -80,6 +93,32 @@ double nomalizeAng(double rad) {
     rad = rad + (2 * M_PI);
   }
   return rad;
+}
+
+geometry_msgs::Pose2D updateVicon() {
+  geometry_msgs::Pose2D ret;
+  tms_msg_db::TmsdbGetData srv;
+  srv.request.tmsdb.id = 2007;
+  srv.request.tmsdb.sensor = 3001;
+  if (!db_client.call(srv)) {
+    ROS_ERROR("Failed to get vicon data from DB via tms_db_reader");
+  } else if (srv.response.tmsdb.empty()) {
+    ROS_ERROR("DB response empty");
+  } else {
+    boost::posix_time::ptime set_time =
+        boost::posix_time::time_from_string(srv.response.tmsdb[0].time);
+    ros::Time ros_now = ros::Time::now() + ros::Duration(9 * 60 * 60);
+    boost::posix_time::ptime now = ros_now.toBoost();
+    // cout << "time:" << now-set_time << "\n";
+    // cout << "3sec:" << boost::posix_time::time_duration(0,0,3,0) << "\n";
+    if (boost::posix_time::time_duration(0, 0, 3, 0) >
+        now - set_time) {  // check if data is fresh (in last 3sec)
+      ret.x = srv.response.tmsdb[0].x;
+      ret.y = srv.response.tmsdb[0].y;
+      ret.theta = Deg2Rad(srv.response.tmsdb[0].ry);
+     }
+   }
+  return ret;
 }
 
 void MachinePose_s::updateOdom() {
@@ -215,16 +254,104 @@ void pub_odom() {
   pub.publish(mchn_pose.m_Odom);
 }
 
+void *vicon_update(void *ptr) {
+  // ros::Rate r(30);
+  ros::Rate r(ROS_RATE);
+  while (ros::ok()) {
+    geometry_msgs::Pose2D pose_vicon = updateVicon();
+
+    pthread_mutex_lock(&mutex_update_kalman);
+    mchn_pose.UpdatePosition(pose_vicon, MachinePose_s::POSISION);
+    pthread_mutex_unlock(&mutex_update_kalman);
+    r.sleep();
+  }
+}
+
 void *odom_update(void *ptr) {
   ros::Rate r(ROS_RATE);
   while (ros::ok()) {
     mchn_pose.updateOdom();
+
+    double yaw = tf::getYaw(mchn_pose.m_Odom.pose.pose.orientation);
+    double speed = mchn_pose.m_Odom.twist.twist.linear.x;
+    geometry_msgs::Pose2D vel;
+    vel.x = speed*cos(yaw);
+    vel.y = speed*sin(yaw);
+    vel.theta = mchn_pose.m_Odom.twist.twist.angular.z;
+
+    pthread_mutex_lock(&mutex_update_kalman);
+    // mchn_pose.UpdatePosition(mchn_pose.vel_odom, MachinePose_s::VELOCITY);
+    mchn_pose.UpdatePosition(vel, MachinePose_s::VELOCITY);
+    pthread_mutex_unlock(&mutex_update_kalman);
+
     pub_odom();
-    if (is_publish_tf) {
-      pub_tf();
-    }
     r.sleep();
   }
+}
+
+geometry_msgs::Pose2D MachinePose_s::UpdatePosition(geometry_msgs::Pose2D tpose,
+                                                    MachinePose_s::InfoType Info) {
+  static int count = 0;
+  static double posA[6][6];  // 位置の状態行列
+  static double velA[6][6];  // 速度の状態行列
+  static double posC[3][6];  // 位置の観測行列
+  static double velC[3][6];  // 速度の観測行列
+  // Kalman kalman(6,3,3); //状態、観測、入力変数。順にn,m,l
+
+  if (kalman == NULL) return pos_fusioned;
+
+  if (count == 0) {
+    // 初期化 (システム雑音，観測雑音，積分時間)
+    kalman->init(0.1, 0.1, 1.0);
+    kalman->setX(0, pos_fusioned.x);
+    kalman->setX(1, pos_fusioned.y);
+    kalman->setX(2, pos_fusioned.theta);
+    memset(posA, 0, sizeof(posA));
+    memset(velA, 0, sizeof(velA));
+    memset(posC, 0, sizeof(posC));
+    memset(velC, 0, sizeof(velC));
+
+    for (int i = 0; i < 6; i++) posA[i][i] = 1.0;
+    for (int i = 0; i < 6; i++) velA[i][i] = 1.0;
+    for (int i = 0; i < 3; i++) velA[i][i + 3] = 1.0;
+    for (int i = 0; i < 3; i++) posC[i][i] = 1.0;
+    for (int i = 0; i < 3; i++) velC[i][i + 3] = 1.0;
+  }
+
+  // 観測値のセット
+  double obs[3] = {tpose.x, tpose.y, tpose.theta};
+  double input[3] = {0, 0, 0};
+
+  switch (Info) {
+    case MachinePose_s::POSISION:
+      // 位置を観測する場合
+      kalman->setA((double *)&posA);
+      kalman->setC((double *)&posC);
+      break;
+    case MachinePose_s::VELOCITY:
+      // 速度を観測する場合
+      kalman->setA((double *)&velA);
+      kalman->setC((double *)&velC);
+      break;
+  }
+
+  // カルマンフィルタの計算　→　答えは　getX(i) で得られる
+  kalman->update(obs, input);
+
+  pos_fusioned.x = kalman->getX(0);
+  pos_fusioned.y = kalman->getX(1);
+  pos_fusioned.theta = nomalizeAng(kalman->getX(2));
+  vel_fusioned.x = kalman->getX(3);
+  vel_fusioned.y = kalman->getX(4);
+  vel_fusioned.theta = nomalizeAng(kalman->getX(5));
+  // printf("f_vel_x:%f \n",vel_fusioned.x );
+  count++;
+
+  if (is_publish_tf) {
+    pub_tf();
+  }
+
+  return pos_fusioned;
 }
 
 int main(int argc, char **argv) {

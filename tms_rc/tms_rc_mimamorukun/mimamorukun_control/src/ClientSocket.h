@@ -8,7 +8,7 @@
 class ClientSocket : private Socket {
  public:
   ClientSocket(std::string host, int port);
-  virtual ~ClientSocket() {};
+  virtual ~ClientSocket(){};
   void init(std::string host, int port);
 
   const ClientSocket& operator<<(const std::string&) const;

@@ -1,9 +1,9 @@
-//----------------------------------------------------------
+//-----------------------------------------------------------
 // @file   : pot_ctrl.cpp
 // @author : Watanabe Yuuta
 // @version: Ver0.1.4 (since 2014.05.02)
 // @date   : 2016.06.09
-//----------------------------------------------------------
+//-----------------------------------------------------------
 
 #include <ros/ros.h>
 #include <pthread.h>
@@ -385,9 +385,9 @@ int main( int argc, char **argv )
     ros::init(argc, argv, "urg_tracker");
     ros::NodeHandle n;
     ros::Publisher  pub = n.advertise<tms_msg_ss::tracking_points>("tracking_points", 10);
-    ros::Subscriber sub1 = n.subscribe("/LaserTracker1", 1000, LaserSensingCallback1);
-    ros::Subscriber sub2 = n.subscribe("/LaserTracker2", 1000, LaserSensingCallback2);
-    ros::Subscriber sub3 = n.subscribe("/LaserTracker3", 1000, LaserSensingCallback3);
+    ros::Subscriber sub1 = n.subscribe("pot_urg1/LaserTracker", 1000, LaserSensingCallback1);
+    ros::Subscriber sub2 = n.subscribe("pot_urg2/LaserTracker", 1000, LaserSensingCallback2);
+    ros::Subscriber sub3 = n.subscribe("pot_urg3/LaserTracker", 1000, LaserSensingCallback3);
 
     if ( pthread_create( &thread_v, NULL, Visualization, (void *)&pub) )
     {
