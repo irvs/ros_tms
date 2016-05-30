@@ -97,15 +97,15 @@ class MainWidget(QtGui.QWidget):
 
     def updateCurPos(self):
         try:
-            srv_client = rospy.ServiceProxy("/tms_db_reader/dbreader",
+            srv_client = rospy.ServiceProxy("/tms_db_reader",
                                             tms_msg_db.srv.TmsdbGetData)
             req = tms_msg_db.srv.TmsdbGetDataRequest()
             req.tmsdb.id = 2007
             req.tmsdb.sensor = 3001  #3501  #kalman filtered data
             res = srv_client(req)
             if 0 < len(res.tmsdb):
-                self.wc_pos = QtCore.QPoint(res.tmsdb[0].x, res.tmsdb[0].y)
-                # print(wc_pos.x(), wc_pos.y()),
+                self.wc_pos = QtCore.QPoint(res.tmsdb[0].x*1000, res.tmsdb[0].y*1000)
+                # print(self.wc_pos.x(), self.wc_pos.y()),
                 wc_mark_pos = QtCore.QPoint(
                     self.wc_pos.x()*1.0/ROOM_SIZE.x()*MAP_SIZE.x()+MAP_ORIGN.x(),
                     -self.wc_pos.y()*1.0/ROOM_SIZE.y()*MAP_SIZE.y()+MAP_ORIGN.y())
@@ -122,7 +122,7 @@ class MainWidget(QtGui.QWidget):
             req.command = 9001   # move
             req.type = True      # not sim, in Real World.But this param isn't used yet
             req.robot_id = 2007  # ID of mimamorukun
-            req.arg = [-1, self.tgt_pos.x(), self.tgt_pos.y(), 0]
+            req.arg = [-1, self.tgt_pos.x()*0.001, self.tgt_pos.y()*0.001, 0]
             res = srv_client(req)
             print ("cmd result:", res.result)
             self.status = ""  #"Moving"
@@ -153,7 +153,7 @@ def main():
     ###init ROS
     rospy.init_node('tms_ss_vs_viewer')
     print ("finding DB service server")
-    rospy.wait_for_service('/tms_db_reader/dbreader')
+    rospy.wait_for_service('/tms_db_reader')
     print ("found DB service server")
 
 if __name__ == '__main__':

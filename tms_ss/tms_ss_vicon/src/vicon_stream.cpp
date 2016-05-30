@@ -294,6 +294,7 @@ private:
         //----------------------------------------------------------------------
         // publish to tms_db_writer
         int32_t id = 0;
+        tms_msg_db::Tmsdb tmpData;
 
         // if(SubjectName.compare("oculus2") == 0)         id = 1001; // person_1_oculus
         // else if(SubjectName.compare("moverio") == 0)    id = 1002; // person_2_moverio
@@ -323,7 +324,6 @@ private:
 
         if(id != 0)
         {
-          tms_msg_db::Tmsdb tmpData;
           now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 
           tmpData.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
