@@ -234,30 +234,30 @@ private:
         }
       }
 
-      if (id==2009) // refrigerator
-      {
-        if (state!=0)
-        {
-          posX = msg->tmsdb[i].x;
-          posY = msg->tmsdb[i].y;
-          rotY = msg->tmsdb[i].ry;
-
-          if(posX == 0.0 && posY == 0.0)
-          {
-            continue;
-          }
-          else
-          {
-            state_data.header.stamp = ros::Time::now();
-            state_data.name.push_back("refrigerator_x_joint");
-            state_data.name.push_back("refrigerator_y_joint");
-            state_data.name.push_back("refrigerator_yaw_joint");
-            state_data.position.push_back(posX);
-            state_data.position.push_back(posY);
-            state_data.position.push_back(rotY);
-          }
-        }
-      }
+      // if (id==2009) // refrigerator
+      // {
+      //   if (state!=0)
+      //   {
+      //     posX = msg->tmsdb[i].x;
+      //     posY = msg->tmsdb[i].y;
+      //     rotY = msg->tmsdb[i].ry;
+      //
+      //     if(posX == 0.0 && posY == 0.0)
+      //     {
+      //       continue;
+      //     }
+      //     else
+      //     {
+      //       state_data.header.stamp = ros::Time::now();
+      //       state_data.name.push_back("refrigerator_x_joint");
+      //       state_data.name.push_back("refrigerator_y_joint");
+      //       state_data.name.push_back("refrigerator_yaw_joint");
+      //       state_data.position.push_back(posX);
+      //       state_data.position.push_back(posY);
+      //       state_data.position.push_back(rotY);
+      //     }
+      //   }
+      // }
 
       if (id==6004) // chair
       {

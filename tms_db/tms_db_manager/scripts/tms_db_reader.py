@@ -57,6 +57,8 @@ class TmsDbReader():
         MODE_PLACE_TYPE    = 12
         MODE_HIERARCHY     = 13
         MODE_TAG_IDTABLE   = 14
+        MODE_ID_STATE      = 15
+        MODE_ID_SENSOR_STATE = 16
         MODE_ERROR         = 999
 
         if req.tmsdb.tag != '':
@@ -73,9 +75,15 @@ class TmsDbReader():
             req.tmsdb.id -= sid
             mode = MODE_ID_IDTABLE
         elif (req.tmsdb.id != 0) and (req.tmsdb.id != sid) and (req.tmsdb.type == '') and (req.tmsdb.sensor == 0) and (req.tmsdb.place == 0):
-            mode = MODE_ID
+            if (req.tmsdb.state == 1):
+                mode = MODE_ID_STATE
+            else:
+                mode = MODE_ID
         elif (req.tmsdb.id != 0) and (req.tmsdb.id != sid) and (req.tmsdb.type == '') and (req.tmsdb.sensor != 0) and (req.tmsdb.place == 0):
-            mode = MODE_ID_SENSOR
+            if (req.tmsdb.state == 1):
+                mode = MODE_ID_SENSOR_STATE
+            else:
+                mode = MODE_ID_SENSOR
         elif (req.tmsdb.id == sid) and (req.tmsdb.type != ''):
             mode = MODE_TYPE_IDTABLE
         elif (req.tmsdb.id == 0) and (req.tmsdb.type != '') and (req.tmsdb.sensor == 0) and (req.tmsdb.place ==0):
@@ -109,7 +117,7 @@ class TmsDbReader():
             temp_place = cursor[0]['place'];
 
         # Search the type, name, etc infomation in ID table
-        if(mode == MODE_ID) or (mode == MODE_ID_SENSOR) or (mode == MODE_HIERARCHY):
+        if(mode == MODE_ID) or (mode == MODE_ID_SENSOR) or (mode == MODE_ID_STATE) or (mode == MODE_ID_SENSOR_STATE) or (mode == MODE_HIERARCHY):
             cursor = db.default.find({'id':req.tmsdb.id})
             temp_type  = cursor[0]['type'];
             temp_name  = cursor[0]['name'];
@@ -178,8 +186,12 @@ class TmsDbReader():
             cursor = db.default.find({'id':req.tmsdb.id})
         elif mode == MODE_ID:
             cursor = db.now.find({'id':req.tmsdb.id})
+        elif mode == MODE_ID_STATE:
+            cursor = db.now.find({'id':req.tmsdb.id, 'state':1})
         elif mode == MODE_ID_SENSOR:
             cursor = db.now.find({'id':req.tmsdb.id, 'sensor':req.tmsdb.sensor})
+        elif mode == MODE_ID_SENSOR_STATE:
+            cursor = db.now.find({'id':req.tmsdb.id, 'sensor':req.tmsdb.sensor, 'state':1})
         elif mode == MODE_TYPE_IDTABLE:
             cursor = db.default.find({'type':req.tmsdb.type})
         elif mode == MODE_TYPE:

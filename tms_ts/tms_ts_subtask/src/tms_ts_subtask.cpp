@@ -516,7 +516,8 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
   }
   else if (sd.arg_type > 1000 && sd.arg_type < 2000) //person
   {
-    srv.request.tmsdb.sensor = 3001;
+    // srv.request.tmsdb.sensor = 3001;
+    srv.request.tmsdb.state = 1;
     ROS_INFO("person ID:%d",sd.arg_type);
     if(get_data_client_.call(srv))
     {
@@ -544,7 +545,8 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
   }
   else if (sd.arg_type > 7000 && sd.arg_type < 8000) // ObjectID
   {
-    srv.request.tmsdb.sensor = 3018;
+    // srv.request.tmsdb.sensor = 3018;
+    srv.request.tmsdb.state = 1;
     ROS_INFO("Argument IDtype is Object%d!\n", sd.arg_type);
     if(get_data_client_.call(srv))
     {

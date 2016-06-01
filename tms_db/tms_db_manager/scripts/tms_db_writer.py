@@ -62,13 +62,13 @@ class TmsDbWriter():
 
     def writeInitData(self):
         cursor = db.default.find({"$or":[{"type": "furniture"}, {"type": "robot"}]})
-        for doc in cursor:
-            # print(doc['name'])
-            result = db.now.update(
-                {"name": doc['name']},
-                doc,
-                upsert=True
-            )
+        # for doc in cursor:
+        #     # print(doc['name'])
+        #     result = db.now.update(
+        #         {"name": doc['name']},
+        #         doc,
+        #         upsert=True
+        #     )
             # print(result)
         rospy.loginfo("Writed the init data using collection of default.")
 
