@@ -312,11 +312,6 @@
         <mesh filename="package://environmental_model/model/refrigerator.dae"/>
       </geometry>
     </visual>
-    <collision>
-      <geometry>
-        <box size="0.3 0.5 0.9"/>
-      </geometry>
-    </collision>
   </link>
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <!-- meeting_chair -->

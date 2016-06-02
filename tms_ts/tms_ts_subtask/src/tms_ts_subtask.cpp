@@ -562,7 +562,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
     if(get_data_client_.call(srv))
     {
       ROS_INFO("place is %d\n",srv.response.tmsdb[0].place);
-      if (srv.response.tmsdb[0].place > 6000 && srv.response.tmsdb[0].place < 7000)
+      if ((srv.response.tmsdb[0].place > 2000 && srv.response.tmsdb[0].place < 3000) || (srv.response.tmsdb[0].place > 6000 && srv.response.tmsdb[0].place < 7000))
       {
         srv.request.tmsdb.id = srv.response.tmsdb[0].place + sid_;
 
