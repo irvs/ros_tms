@@ -422,6 +422,12 @@ private:
           {
             continue;
           }
+          else if(posX > 9.300 && posX < 11.000 && posY > 2.400 && posY < 3.200) // in the bed
+          {
+            transform.setOrigin(tf::Vector3(10.52,2.71,0.42));
+            transform.setRotation(tf::Quaternion(1.5708,0,1.5708));
+            br.sendTransform(tf::StampedTransform(transform,ros::Time::now(),"world_link","Body"));
+          }
           else
           {
             transform.setOrigin(tf::Vector3(posX,posY,1.1));

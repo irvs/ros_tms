@@ -526,16 +526,27 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
       double person_yaw = srv.response.tmsdb[0].ry;// + 1.570796;
       ROS_INFO("x=%f y=%f ry=%f",person_x,person_y,person_yaw);
 
-      rp_srv.request.goal_pos.x = person_x + 1.0 * cos(person_yaw);
-      rp_srv.request.goal_pos.y = person_y + 1.0 * sin(person_yaw);
+      if(person_x > 9.300 && person_x < 11.000 && person_y > 2.400 && person_y < 3.200){ // in the bed
+        ROS_INFO("humen in the bed");
+        rp_srv.request.goal_pos.x = 10.3;
+        rp_srv.request.goal_pos.y = 3.7;
+        rp_srv.request.goal_pos.z = 0.0;
+        rp_srv.request.goal_pos.th = -1.57079633;
+        rp_srv.request.goal_pos.roll = 0.0;
+        rp_srv.request.goal_pos.pitch = 0.0;
+        rp_srv.request.goal_pos.yaw = 0.0;
+      }else{
+        rp_srv.request.goal_pos.x = person_x + 1.0 * cos(person_yaw);
+        rp_srv.request.goal_pos.y = person_y + 1.0 * sin(person_yaw);
 
-      if(person_yaw>0) rp_srv.request.goal_pos.th = person_yaw - 3.141592;
-      else rp_srv.request.goal_pos.th = person_yaw + 3.141592;
+        if(person_yaw>0) rp_srv.request.goal_pos.th = person_yaw - 3.141592;
+        else rp_srv.request.goal_pos.th = person_yaw + 3.141592;
 
-      rp_srv.request.goal_pos.z = 0.0;
-      rp_srv.request.goal_pos.roll = 0.0;
-      rp_srv.request.goal_pos.pitch = 0.0;
-      rp_srv.request.goal_pos.yaw = 0.0;
+        rp_srv.request.goal_pos.z = 0.0;
+        rp_srv.request.goal_pos.roll = 0.0;
+        rp_srv.request.goal_pos.pitch = 0.0;
+        rp_srv.request.goal_pos.yaw = 0.0;
+      }
     }
     else{
       s_srv.request.error_msg = "Failed to get data";
