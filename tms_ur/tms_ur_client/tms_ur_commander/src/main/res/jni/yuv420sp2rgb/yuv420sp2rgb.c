@@ -222,7 +222,7 @@ static void argb_cb(
     return common_rgb_cb(r,g,b,ctx,1);
 }
 
-JNIEXPORT void JNICALL Java_com_github_irvs_ros_1tms_tms_1ur_tms_1ur_1sanmoku_urclientactivity_ARToolkitDrawer_decodeYUV420SP(JNIEnv * env, jobject obj, jintArray rgb, jbyteArray yuv420sp, jint width, jint height, jint type)
+JNIEXPORT void JNICALL Java_com_github_irvs_ros_1tms_tms_1ur_tms_1ur_1sanmoku_urclientactivity_ARToolkitDrawer_decodeYUV420SP(JNIEnv * env, jobject obj, jbyteArray rgb, jbyteArray yuv420sp, jint width, jint height, jint type)
 {
     void *in, *out;
     int psz = getpagesize();
@@ -245,7 +245,8 @@ JNIEXPORT void JNICALL Java_com_github_irvs_ros_1tms_tms_1ur_tms_1ur_1sanmoku_ur
 
     jboolean isCopyIn, isCopyOut;
     in = (*env)->GetByteArrayElements(env, yuv420sp, &isCopyIn);
-    out = (*env)->GetIntArrayElements(env, rgb, &isCopyOut);
+//    out = (*env)->GetIntArrayElements(env, rgb, &isCopyOut);
+    out = (*env)->GetByteArrayElements(env, rgb, &isCopyOut);
 
     color_convert_common(in, in + width * height,
                          width, height, 
@@ -256,5 +257,6 @@ JNIEXPORT void JNICALL Java_com_github_irvs_ros_1tms_tms_1ur_tms_1ur_1sanmoku_ur
     //if (isCopyIn == JNI_TRUE)
         (*env)->ReleaseByteArrayElements(env, yuv420sp, in, 0);
     //if (isCopyOut == JNI_TRUE)
-        (*env)->ReleaseIntArrayElements(env, rgb, out, 0);
+//        (*env)->ReleaseIntArrayElements(env, rgb, out, 0);
+        (*env)->ReleaseByteArrayElements(env, rgb, out, 0);
 }
