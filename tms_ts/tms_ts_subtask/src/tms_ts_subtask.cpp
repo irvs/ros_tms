@@ -516,7 +516,8 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
   }
   else if (sd.arg_type > 1000 && sd.arg_type < 2000) //person
   {
-    srv.request.tmsdb.sensor = 3001;
+    // srv.request.tmsdb.sensor = 3001;
+    srv.request.tmsdb.state = 1;
     ROS_INFO("person ID:%d",sd.arg_type);
     if(get_data_client_.call(srv))
     {
@@ -525,16 +526,27 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
       double person_yaw = srv.response.tmsdb[0].ry;// + 1.570796;
       ROS_INFO("x=%f y=%f ry=%f",person_x,person_y,person_yaw);
 
-      rp_srv.request.goal_pos.x = person_x + 1.0 * cos(person_yaw);
-      rp_srv.request.goal_pos.y = person_y + 1.0 * sin(person_yaw);
+      if(person_x > 9.300 && person_x < 11.000 && person_y > 2.400 && person_y < 3.200){ // in the bed
+        ROS_INFO("humen in the bed");
+        rp_srv.request.goal_pos.x = 10.3;
+        rp_srv.request.goal_pos.y = 3.7;
+        rp_srv.request.goal_pos.z = 0.0;
+        rp_srv.request.goal_pos.th = -1.57079633;
+        rp_srv.request.goal_pos.roll = 0.0;
+        rp_srv.request.goal_pos.pitch = 0.0;
+        rp_srv.request.goal_pos.yaw = 0.0;
+      }else{
+        rp_srv.request.goal_pos.x = person_x + 1.0 * cos(person_yaw);
+        rp_srv.request.goal_pos.y = person_y + 1.0 * sin(person_yaw);
 
-      if(person_yaw>0) rp_srv.request.goal_pos.th = person_yaw - 3.141592;
-      else rp_srv.request.goal_pos.th = person_yaw + 3.141592;
+        if(person_yaw>0) rp_srv.request.goal_pos.th = person_yaw - 3.141592;
+        else rp_srv.request.goal_pos.th = person_yaw + 3.141592;
 
-      rp_srv.request.goal_pos.z = 0.0;
-      rp_srv.request.goal_pos.roll = 0.0;
-      rp_srv.request.goal_pos.pitch = 0.0;
-      rp_srv.request.goal_pos.yaw = 0.0;
+        rp_srv.request.goal_pos.z = 0.0;
+        rp_srv.request.goal_pos.roll = 0.0;
+        rp_srv.request.goal_pos.pitch = 0.0;
+        rp_srv.request.goal_pos.yaw = 0.0;
+      }
     }
     else{
       s_srv.request.error_msg = "Failed to get data";
@@ -544,12 +556,13 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
   }
   else if (sd.arg_type > 7000 && sd.arg_type < 8000) // ObjectID
   {
-    srv.request.tmsdb.sensor = 3018;
+    // srv.request.tmsdb.sensor = 3018;
+    srv.request.tmsdb.state = 1;
     ROS_INFO("Argument IDtype is Object%d!\n", sd.arg_type);
     if(get_data_client_.call(srv))
     {
       ROS_INFO("place is %d\n",srv.response.tmsdb[0].place);
-      if (srv.response.tmsdb[0].place > 6000 && srv.response.tmsdb[0].place < 7000)
+      if ((srv.response.tmsdb[0].place > 2000 && srv.response.tmsdb[0].place < 3000) || (srv.response.tmsdb[0].place > 6000 && srv.response.tmsdb[0].place < 7000))
       {
         srv.request.tmsdb.id = srv.response.tmsdb[0].place + sid_;
 

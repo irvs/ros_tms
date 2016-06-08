@@ -77,7 +77,7 @@
   <joint name="kitchen_joint" type="fixed">
     <parent link="bsen_room_link"/>
     <child link="kitchen_link"/>
-    <origin rpy="0 0 -1.57079633" xyz="9.05 5.87 0.4855"/>
+    <origin rpy="0 0 -1.57079633" xyz="9.03 5.87 0.4855"/>
   </joint>
   <link name="kitchen_link">
     <visual>
@@ -195,7 +195,7 @@
     </visual>
     <collision>
       <geometry>
-        <box size="0.5 1.3 0.43"/>
+        <box size="1.95 0.82 0.38"/>
       </geometry>
     </collision>
   </link>
@@ -253,7 +253,7 @@
   <joint name="workdesk_joint" type="fixed">
     <parent link="bsen_room_link"/>
     <child link="workdesk_link"/>
-    <origin rpy="0 0 -1.57079633" xyz="11.80 5.9 0.5"/>
+    <origin rpy="0 0 -1.57079633" xyz="11.80 5.9 0.35"/>
   </joint>
   <link name="workdesk_link">
     <visual>
@@ -287,7 +287,7 @@
   <joint name="intelingent_shelf_joint" type="fixed">
     <parent link="bsen_room_link"/>
     <child link="intelingent_shelf_link"/>
-    <origin rpy="0 0 0" xyz="11.48 4.220 0.445"/>
+    <origin rpy="0 0 0" xyz="11.65 3.970 0.005"/>
   </joint>
   <link name="intelingent_shelf_link">
     <visual>
@@ -300,6 +300,18 @@
         <box size="0.3 0.5 0.9"/>
       </geometry>
     </collision>
+  </link>
+  <joint name="refrigerator_joint" type="fixed">
+    <parent link="bsen_room_link"/>
+    <child link="refrigerator_link"/>
+    <origin rpy="0 0 -1.57079633" xyz="7.0 5.52 0.0"/>
+  </joint>
+  <link name="refrigerator_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/refrigerator.dae"/>
+      </geometry>
+    </visual>
   </link>
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <!-- meeting_chair -->
@@ -339,40 +351,45 @@
     </collision>
   </link>
   <!-- refrigerator -->
-  <link name="refrigerator_x_link"/>
-  <joint name="refrigerator_x_joint" type="prismatic">
-    <parent link="world_link"/>
-    <child link="refrigerator_x_link"/>
-    <origin rpy="0 0 0" xyz="0 0 0"/>
-    <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
-  </joint>
-  <link name="refrigerator_y_link"/>
-  <joint name="refrigerator_y_joint" type="prismatic">
-    <parent link="refrigerator_x_link"/>
-    <child link="refrigerator_y_link"/>
-    <origin rpy="0 0 1.57079633" xyz="0 0 0"/>
-    <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
-  </joint>
-  <joint name="refrigerator_yaw_joint" type="continuous">
-    <parent link="refrigerator_y_link"/>
-    <child link="refrigerator_link"/>
-    <origin rpy="0 0 0" xyz="0 0 0"/>
-    <axis xyz="0 0 1"/>
-  </joint>
-  <link name="refrigerator_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://environmental_model/model/refrigerator.dae"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0.0 0.0 0.56"/>
-    </visual>
-    <collision>
-      <geometry>
-        <box size="0.6 0.5 1.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0.0 0.0 0.56"/>
-    </collision>
-  </link>
+  <!--     <link name="refrigerator_x_link"/>
+
+    <joint name="refrigerator_x_joint" type="prismatic">
+      <parent link="world_link"/>
+      <child link="refrigerator_x_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+    </joint>
+
+    <link name="refrigerator_y_link"/>
+
+    <joint name="refrigerator_y_joint" type="prismatic">
+      <parent link="refrigerator_x_link"/>
+      <child link="refrigerator_y_link"/>
+      <origin xyz="0 0 0" rpy="0 0 1.57079633"/>
+      <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+    </joint>
+
+    <joint name="refrigerator_yaw_joint" type="continuous">
+      <parent link="refrigerator_y_link"/>
+      <child link="refrigerator_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+
+    <link name="refrigerator_link">
+      <visual>
+        <geometry>
+          <mesh filename="package://environmental_model/model/refrigerator.dae"/>
+        </geometry>
+        <origin xyz="0.0 0.0 0.56" rpy="0 0 0"/>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.6 0.5 1.1"/>
+        </geometry>
+        <origin xyz="0.0 0.0 0.56" rpy="0 0 0"/>
+      </collision>
+    </link> -->
   <!-- Add meeting_chair -->
   <link name="meeting_chair1_x_link"/>
   <joint name="meeting_chair1_x_joint" type="prismatic">
@@ -802,6 +819,7 @@
   </gazebo>
   <gazebo reference="r_gripper_thumb_link">
   </gazebo>
+  <xacro:robots_sim/>
   <!-- Base, Vehicle -->
   <link name="smartpal5_link"/>
   <joint name="smartpal5_x_joint" type="prismatic">
@@ -1483,7 +1501,7 @@
   <link name="wheelchair_link">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/refrigerator.dae"/>
+        <mesh filename="package://environmental_model/model/wheelchair.dae"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0.0 0.0 0.56"/>
     </visual>
@@ -1495,6 +1513,5 @@
     </collision>
   </link>
   <!-- </xacro:macro> -->
-  <!-- <xacro:wheelchair/> -->
 </robot>
 

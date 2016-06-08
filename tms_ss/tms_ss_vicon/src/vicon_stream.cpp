@@ -296,18 +296,6 @@ private:
         int32_t id = 0;
         tms_msg_db::Tmsdb tmpData;
 
-        // if(SubjectName.compare("oculus2") == 0)         id = 1001; // person_1_oculus
-        // else if(SubjectName.compare("moverio") == 0)    id = 1002; // person_2_moverio
-        // else if(SubjectName.compare("sp4") == 0)        id = 2001;
-        // else if(SubjectName.compare("sp5_1") == 0)      id = 2002;
-        // else if(SubjectName.compare("sp5_2") == 0)      id = 2003;
-        // else if(SubjectName.compare("kobuki") == 0)     id = 2005;
-        // else if(SubjectName.compare("kxp") == 0)        id = 2006;
-        // else if(SubjectName.compare("wheelchair") == 0) id = 2007;
-        // else if(SubjectName.compare("ardrone1") == 0)   id = 2008;
-        // else if(SubjectName.compare("wagon") == 0)      id = 6018;
-        // else id = -1;
-
         std::string name;
         std::vector<std::string> v_name;
         v_name.clear();
@@ -322,7 +310,7 @@ private:
         }
 
 
-        if(id != 0)
+        if(id != 0 && pose_msg.translation.x != 0 && pose_msg.translation.y != 0)
         {
           now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 
