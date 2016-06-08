@@ -72,7 +72,7 @@
     <joint name="kitchen_joint" type="fixed">
       <parent link="bsen_room_link"/>
       <child link="kitchen_link"/>
-      <origin xyz="9.03 5.87 0.4855" rpy="0 0 -1.57079633"/>
+      <origin xyz="9.09 5.907 0.0" rpy="0 0 -1.57079633"/>
     </joint>
 
     <link name="kitchen_link">
@@ -329,7 +329,7 @@
     <joint name="refrigerator_joint" type="fixed">
       <parent link="bsen_room_link"/>
       <child link="refrigerator_link"/>
-      <origin xyz="7.0 5.52 0.0" rpy="0 0 -1.57079633"/>
+      <origin xyz="6.94 5.53 -0.01" rpy="0 0 -1.57079633"/>
     </joint>
 
     <link name="refrigerator_link">
@@ -338,6 +338,25 @@
           <mesh filename="package://environmental_model/model/refrigerator.dae"/>
         </geometry>
       </visual>
+    </link>
+
+    <joint name="meeting_door_joint" type="fixed">
+      <parent link="bsen_room_link"/>
+      <child link="meeting_door_link"/>
+      <origin xyz="1.94 3.035 1.31" rpy="0 0 3.14159"/>
+    </joint>
+
+    <link name="meeting_door_link">
+      <visual>
+        <geometry>
+          <mesh filename="package://environmental_model/model/meeting_door.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.03 1.23 0.9"/>
+        </geometry>
+      </collision>
     </link>
 
     <xacro:environments_sim/>
