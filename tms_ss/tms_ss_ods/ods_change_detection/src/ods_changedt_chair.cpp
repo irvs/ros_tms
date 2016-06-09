@@ -698,7 +698,7 @@
 
 #include <ods_chair.h>
 
-void transformation(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::PointXYZRGB>& model)
+void transformation(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointCloud< pcl::PointXYZRGB >& model)
 {
   std::cout << "transformation" << std::endl;
 
@@ -753,7 +753,7 @@ void transformation(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pc
   return;
 }
 
-void filtering(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::PointXYZRGB>& model)
+void filtering(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointCloud< pcl::PointXYZRGB >& model)
 {
   std::cout << "filtering" << std::endl;
 
@@ -780,7 +780,7 @@ void filtering(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::Po
       m_size.max_z = model.points[i].z;
   }
 
-  pcl::PassThrough<pcl::PointXYZRGB> pass;
+  pcl::PassThrough< pcl::PointXYZRGB > pass;
   pass.setInputCloud(cloud.makeShared());
   pass.setFilterFieldName("x");
   pass.setFilterLimits(m_size.min_x - 0.2, m_size.max_x + 0.2);
@@ -799,9 +799,9 @@ void filtering(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::Po
   return;
 }
 
-void downsampling(pcl::PointCloud<pcl::PointXYZRGB>& cloud, float th)
+void downsampling(pcl::PointCloud< pcl::PointXYZRGB >& cloud, float th)
 {
-  pcl::VoxelGrid<pcl::PointXYZRGB> sor;
+  pcl::VoxelGrid< pcl::PointXYZRGB > sor;
   sor.setInputCloud(cloud.makeShared());
   sor.setLeafSize(th, th, th);
   sor.filter(cloud);
@@ -809,7 +809,7 @@ void downsampling(pcl::PointCloud<pcl::PointXYZRGB>& cloud, float th)
   return;
 }
 
-pcl::PointXYZ g_pos(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
+pcl::PointXYZ g_pos(pcl::PointCloud< pcl::PointXYZRGB >& cloud)
 {
   pcl::PointXYZ g;
 
@@ -827,16 +827,16 @@ pcl::PointXYZ g_pos(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
   return g;
 }
 
-void registration(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::PointXYZRGB>& model,
-                  pcl::PointCloud<pcl::PointXYZRGB>& cloud_out, pcl::PointCloud<pcl::PointXYZRGB>& tmp_rgb,
+void registration(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointCloud< pcl::PointXYZRGB >& model,
+                  pcl::PointCloud< pcl::PointXYZRGB >& cloud_out, pcl::PointCloud< pcl::PointXYZRGB >& tmp_rgb,
                   Eigen::Matrix4f& m)
 {
-  pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB> icp;
+  pcl::IterativeClosestPoint< pcl::PointXYZRGB, pcl::PointXYZRGB > icp;
   icp.setInputSource(cloud.makeShared());
   icp.setInputTarget(model.makeShared());
   icp.setUseReciprocalCorrespondences(true);
   icp.setMaxCorrespondenceDistance(0.05);
-  pcl::PointCloud<pcl::PointXYZRGB> Final;
+  pcl::PointCloud< pcl::PointXYZRGB > Final;
   icp.align(Final);
   m = icp.getFinalTransformation();
 
@@ -848,7 +848,7 @@ void registration(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl:
   return;
 }
 
-void make_chairvoxel(pcl::PointCloud<pcl::PointXYZRGB>& model)
+void make_chairvoxel(pcl::PointCloud< pcl::PointXYZRGB >& model)
 {
   for (int k = 0; k < SIZE_Z; k++)
   {
@@ -876,7 +876,7 @@ void make_chairvoxel(pcl::PointCloud<pcl::PointXYZRGB>& model)
   return;
 }
 
-void remove_chair(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::PointXYZRGB>& rmc)
+void remove_chair(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointCloud< pcl::PointXYZRGB >& rmc)
 {
   for (int i = 0; i < cloud.points.size(); i++)
   {
@@ -948,7 +948,7 @@ void make_elevation(object_map& m)
   int int_max_y = -100;
   int int_min_y = 100;
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
   *tmp_cloud = m.cloud_rgb;
 
   for (int i = 0; i < tmp_cloud->size(); i++)
@@ -1009,19 +1009,19 @@ void make_elevation(object_map& m)
   return;
 }
 
-void segmentation(pcl::PointCloud<pcl::PointXYZRGB>& cloud, double th, int c)
+void segmentation(pcl::PointCloud< pcl::PointXYZRGB >& cloud, double th, int c)
 {
   std::cout << "segmentation" << std::endl;
 
   pcl::PointXYZ g;
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_rgb(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_rgb(new pcl::PointCloud< pcl::PointXYZRGB >);
 
   // Creating the KdTree object for the search method of the extraction
-  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB>);
+  pcl::search::KdTree< pcl::PointXYZRGB >::Ptr tree(new pcl::search::KdTree< pcl::PointXYZRGB >);
   tree->setInputCloud(cloud.makeShared());
 
-  std::vector<pcl::PointIndices> cluster_indices;
-  pcl::EuclideanClusterExtraction<pcl::PointXYZRGB> ec;
+  std::vector< pcl::PointIndices > cluster_indices;
+  pcl::EuclideanClusterExtraction< pcl::PointXYZRGB > ec;
   ec.setClusterTolerance(th);
   ec.setMinClusterSize(200);
   ec.setMaxClusterSize(300000);
@@ -1032,13 +1032,13 @@ void segmentation(pcl::PointCloud<pcl::PointXYZRGB>& cloud, double th, int c)
   std::cout << "クラスタリング開始" << std::endl;
   int m = 0;
 
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
+  for (std::vector< pcl::PointIndices >::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
   {
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_cluster_rgb(new pcl::PointCloud<pcl::PointXYZRGB>);
-    pcl::PointCloud<pcl::PointXYZHSV>::Ptr cloud_cluster_hsv(new pcl::PointCloud<pcl::PointXYZHSV>);
+    pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud_cluster_rgb(new pcl::PointCloud< pcl::PointXYZRGB >);
+    pcl::PointCloud< pcl::PointXYZHSV >::Ptr cloud_cluster_hsv(new pcl::PointCloud< pcl::PointXYZHSV >);
     pcl::PointXYZ g;
 
-    for (std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
+    for (std::vector< int >::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
     {
       cloud_cluster_rgb->points.push_back(cloud.points[*pit]);
     }
@@ -1236,8 +1236,8 @@ bool change_detection(tms_msg_ss::ods_furniture::Request& req, tms_msg_ss::ods_f
   //*******************************
   // initialize
   //*******************************
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud1(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr model(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud1(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr model(new pcl::PointCloud< pcl::PointXYZRGB >);
 
   std::cout << mkdir("/tmp/tms_ss_ods", S_IRUSR | S_IWUSR | S_IXUSR) << std::endl;
   std::cout << mkdir("/tmp/tms_ss_ods/ods_change_detection", S_IRUSR | S_IWUSR | S_IXUSR) << std::endl;
@@ -1291,7 +1291,7 @@ bool change_detection(tms_msg_ss::ods_furniture::Request& req, tms_msg_ss::ods_f
   //***************************
   // transform input cloud
   //***************************
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tfm_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tfm_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
 
   transformation(*cloud1, *model);
 
@@ -1329,7 +1329,7 @@ bool change_detection(tms_msg_ss::ods_furniture::Request& req, tms_msg_ss::ods_f
   else
     pcl::io::savePCDFile("/tmp/tms_ss_ods/ods_change_detection/chair/filter.pcd", *cloud1);
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr dsp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr dsp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
   pcl::copyPointCloud(*cloud1, *dsp_cloud);
 
   downsampling(*dsp_cloud, 0.01);
@@ -1339,8 +1339,8 @@ bool change_detection(tms_msg_ss::ods_furniture::Request& req, tms_msg_ss::ods_f
   //*******************************
   std::cout << "registration chairs" << std::endl;
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr rgs_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr view_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr rgs_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr view_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
   Eigen::Matrix4f m;
 
   int n = 0;
@@ -1379,8 +1379,8 @@ bool change_detection(tms_msg_ss::ods_furniture::Request& req, tms_msg_ss::ods_f
   //***************************
   std::cout << "remove chair" << std::endl;
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr rms_cloud1(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr rms_cloud2(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr rms_cloud1(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr rms_cloud2(new pcl::PointCloud< pcl::PointXYZRGB >);
 
   pcl::io::loadPCDFile("/tmp/tms_ss_ods/ods_change_detection/chair/memory.pcd", *rms_cloud2);
 
@@ -1413,8 +1413,8 @@ bool change_detection(tms_msg_ss::ods_furniture::Request& req, tms_msg_ss::ods_f
   //*******************************
   segment_matching();
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_rgb1(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_rgb2(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_rgb1(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_rgb2(new pcl::PointCloud< pcl::PointXYZRGB >);
 
   //***************************************
   // rewrite Object data on TMS database
@@ -1516,8 +1516,8 @@ int main(int argc, char** argv)
 
   service = n.advertiseService("chg_dt_chair", change_detection);
 
-  commander_to_kinect_capture = n.serviceClient<tms_msg_ss::ods_pcd>("ods_capture");
-  commander_to_ods_object_data = n.serviceClient<tms_msg_db::tmsdb_ods_object_data>("tmsdb_ods_object_data");
+  commander_to_kinect_capture = n.serviceClient< tms_msg_ss::ods_pcd >("ods_capture");
+  commander_to_ods_object_data = n.serviceClient< tms_msg_db::tmsdb_ods_object_data >("tmsdb_ods_object_data");
 
   ros::spin();
 

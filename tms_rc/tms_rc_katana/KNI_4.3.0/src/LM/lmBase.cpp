@@ -69,7 +69,7 @@ void CLMBase::movLM2P(double X1, double Y1, double Z1, double Ph1, double Th1, d
     dataarray[i] = new double[numberofmotors];
   double relposition, time, lasttime, x, y, z, phi, theta, psi;
   lasttime = 0;
-  std::vector<int> solution(numberofmotors, 0), lastsolution(numberofmotors, 0);
+  std::vector< int > solution(numberofmotors, 0), lastsolution(numberofmotors, 0);
   for (i = 0; i <= steps; i++)
   {
     // calculate parameters for i-th position
@@ -195,7 +195,7 @@ void CLMBase::movLM2P(double X1, double Y1, double Z1, double Ph1, double Th1, d
         activityflag = 0;
       }
       // spline_t.Start();
-      std::vector<short> polynomial;
+      std::vector< short > polynomial;
       for (j = 0; j < numberofmotors; j++)
       {
         polynomial.push_back(parameters[i][j][2]);  // time
@@ -412,8 +412,8 @@ void CLMBase::splineCoefficients(int steps, double* timearray, double* encoderar
   }
 
   // solve linear equation
-  boost::numeric::ublas::matrix<double> ublas_A(steps - 1, steps - 1);
-  boost::numeric::ublas::matrix<double> ublas_b(steps - 1, 1);
+  boost::numeric::ublas::matrix< double > ublas_A(steps - 1, steps - 1);
+  boost::numeric::ublas::matrix< double > ublas_b(steps - 1, 1);
   for (i = 0; i < (steps - 1); i++)
   {
     for (j = 0; j < (steps - 1); j++)
@@ -422,7 +422,7 @@ void CLMBase::splineCoefficients(int steps, double* timearray, double* encoderar
     }
     ublas_b(i, 0) = Alin[i][steps - 1];
   }
-  boost::numeric::ublas::permutation_matrix<unsigned int> piv(steps - 1);
+  boost::numeric::ublas::permutation_matrix< unsigned int > piv(steps - 1);
   lu_factorize(ublas_A, piv);
   lu_substitute(ublas_A, piv, ublas_b);
 
@@ -451,7 +451,7 @@ void CLMBase::splineCoefficients(int steps, double* timearray, double* encoderar
   }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool CLMBase::checkJointSpeed(std::vector<int> lastsolution, std::vector<int> solution, double time)
+bool CLMBase::checkJointSpeed(std::vector< int > lastsolution, std::vector< int > solution, double time)
 {
   const int speedlimit = 180;  // encoder per 10ms
   bool speedok = true;
@@ -503,7 +503,7 @@ int CLMBase::getSpeed(int distance, int acceleration, int time)
     return -1;
   }
   // calculate speed (derived from 't = d / speed + speed / a')
-  int speed = static_cast<int>(ceil(a * t / 2.0 - sqrt(a * a * t * t / 4.0 - a * d)));
+  int speed = static_cast< int >(ceil(a * t / 2.0 - sqrt(a * a * t * t / 4.0 - a * d)));
   if ((speed % a) != 0)
     speed += (a - speed % a);  // round up to multiple of a to reach in less than t
 
@@ -518,15 +518,15 @@ void CLMBase::movP2P(double X1, double Y1, double Z1, double Ph1, double Th1, do
   // variable declaration
   int nOfMot = getNumberOfMotors();
   int amax = 2;
-  int smax = abs(static_cast<int>(vmax));
+  int smax = abs(static_cast< int >(vmax));
   smax -= smax % amax;  // round down to multiple of amax
   if (smax == 0)
     smax = amax;
-  std::vector<int> start_enc(nOfMot);
-  std::vector<int> target_enc(nOfMot);
-  std::vector<int> distance(nOfMot);
-  std::vector<int> dir(nOfMot);
-  std::vector<bool> tooShortDistance(nOfMot);
+  std::vector< int > start_enc(nOfMot);
+  std::vector< int > target_enc(nOfMot);
+  std::vector< int > distance(nOfMot);
+  std::vector< int > dir(nOfMot);
+  std::vector< bool > tooShortDistance(nOfMot);
   bool reachmax;
   int maxtime;
   int maxdist = 0;
@@ -587,8 +587,9 @@ void CLMBase::movP2P(double X1, double Y1, double Z1, double Ph1, double Th1, do
   else
   {
     // s^2 + a*s - a*d = 0  ->  s = sqrt(a^2/4 + a*d) - a/2
-    int smaxnew = static_cast<int>(sqrt(static_cast<double>(amax * amax) / 4.0 + static_cast<double>(amax * maxdist)) -
-                                   (static_cast<double>(amax) / 2.0));
+    int smaxnew =
+        static_cast< int >(sqrt(static_cast< double >(amax * amax) / 4.0 + static_cast< double >(amax * maxdist)) -
+                           (static_cast< double >(amax) / 2.0));
     smaxnew -= smaxnew % amax;  // round down to multiple of amax
     if (smaxnew == 0)
       smaxnew = amax;
@@ -599,25 +600,25 @@ void CLMBase::movP2P(double X1, double Y1, double Z1, double Ph1, double Th1, do
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // spline calculation
-  std::vector<int> speed(nOfMot);      // maximum speed for this motor
-  std::vector<int> corrspeed(nOfMot);  // speed at correction polynomial
-  std::vector<int> t1(nOfMot);         // time for first polynomial (acceleration)
-  std::vector<int> t2(nOfMot);         // time for second polynomial (max speed)
-  std::vector<int> t3(nOfMot);         // time for third polynomial (deceleration)
-  std::vector<int> t4(nOfMot);         // time for second polynomial (correction or padding)
-  std::vector<int> t5(nOfMot);         // time for second polynomial (rest of deceleration or padding)
-  std::vector<int> t6(nOfMot);         // time for second polynomial (padding)
-  std::vector<int> p1_enc(nOfMot);     // position between acceleration and max speed
-  std::vector<int> p2_enc(nOfMot);     // position between max speed and deceleration
-  std::vector<int> p3_enc(nOfMot);     // position between deceleration and (corr or padd)
-  std::vector<int> p4_enc(nOfMot);     // position between (corr or padd) and (rod or padd)
-  std::vector<int> p5_enc(nOfMot);     // position between (rod or padd) and padding
-  std::vector<short> target(nOfMot);
-  std::vector<short> time(nOfMot);
-  std::vector<short> pp0(nOfMot);  // polynomial coefficients
-  std::vector<short> pp1(nOfMot);
-  std::vector<short> pp2(nOfMot);
-  std::vector<short> pp3(nOfMot);
+  std::vector< int > speed(nOfMot);      // maximum speed for this motor
+  std::vector< int > corrspeed(nOfMot);  // speed at correction polynomial
+  std::vector< int > t1(nOfMot);         // time for first polynomial (acceleration)
+  std::vector< int > t2(nOfMot);         // time for second polynomial (max speed)
+  std::vector< int > t3(nOfMot);         // time for third polynomial (deceleration)
+  std::vector< int > t4(nOfMot);         // time for second polynomial (correction or padding)
+  std::vector< int > t5(nOfMot);         // time for second polynomial (rest of deceleration or padding)
+  std::vector< int > t6(nOfMot);         // time for second polynomial (padding)
+  std::vector< int > p1_enc(nOfMot);     // position between acceleration and max speed
+  std::vector< int > p2_enc(nOfMot);     // position between max speed and deceleration
+  std::vector< int > p3_enc(nOfMot);     // position between deceleration and (corr or padd)
+  std::vector< int > p4_enc(nOfMot);     // position between (corr or padd) and (rod or padd)
+  std::vector< int > p5_enc(nOfMot);     // position between (rod or padd) and padding
+  std::vector< short > target(nOfMot);
+  std::vector< short > time(nOfMot);
+  std::vector< short > pp0(nOfMot);  // polynomial coefficients
+  std::vector< short > pp1(nOfMot);
+  std::vector< short > pp2(nOfMot);
+  std::vector< short > pp3(nOfMot);
   for (int i = 0; i < nOfMot; i++)
   {
     speed[i] = getSpeed(distance[i], amax, maxtime - maxpadding);
@@ -657,18 +658,18 @@ void CLMBase::movP2P(double X1, double Y1, double Z1, double Ph1, double Th1, do
   {
     if (!tooShortDistance[i])
     {
-      target[i] = static_cast<short>(p1_enc[i]);
-      time[i] = static_cast<short>(t1[i]);
-      pp0[i] = static_cast<short>(start_enc[i]);
+      target[i] = static_cast< short >(p1_enc[i]);
+      time[i] = static_cast< short >(t1[i]);
+      pp0[i] = static_cast< short >(start_enc[i]);
       pp1[i] = 0;
-      pp2[i] = static_cast<short>(1024 * (0.5 * dir[i] * amax));
+      pp2[i] = static_cast< short >(1024 * (0.5 * dir[i] * amax));
       pp3[i] = 0;
     }
     else
     {
-      target[i] = static_cast<short>(start_enc[i] + dir[i] * distance[i] / 5);
-      time[i] = static_cast<short>(maxtime / 6);
-      pp0[i] = static_cast<short>(start_enc[i]);
+      target[i] = static_cast< short >(start_enc[i] + dir[i] * distance[i] / 5);
+      time[i] = static_cast< short >(maxtime / 6);
+      pp0[i] = static_cast< short >(start_enc[i]);
       pp1[i] = 0;
       pp2[i] = 0;
       pp3[i] = 0;
@@ -682,7 +683,7 @@ void CLMBase::movP2P(double X1, double Y1, double Z1, double Ph1, double Th1, do
   }
   if (t.Elapsed())
     return;
-  std::vector<short> polynomial;
+  std::vector< short > polynomial;
   for (int i = 0; i < nOfMot; ++i)
   {
     polynomial.push_back(time[i]);
@@ -699,18 +700,18 @@ void CLMBase::movP2P(double X1, double Y1, double Z1, double Ph1, double Th1, do
   {
     if (!tooShortDistance[i])
     {
-      target[i] = static_cast<short>(p2_enc[i]);
-      time[i] = static_cast<short>(t2[i]);
-      pp0[i] = static_cast<short>(p1_enc[i]);
-      pp1[i] = static_cast<short>(64 * (dir[i] * speed[i]));
+      target[i] = static_cast< short >(p2_enc[i]);
+      time[i] = static_cast< short >(t2[i]);
+      pp0[i] = static_cast< short >(p1_enc[i]);
+      pp1[i] = static_cast< short >(64 * (dir[i] * speed[i]));
       pp2[i] = 0;
       pp3[i] = 0;
     }
     else
     {
-      target[i] = static_cast<short>(start_enc[i] + dir[i] * distance[i] * 2 / 5);
-      time[i] = static_cast<short>(maxtime / 6);
-      pp0[i] = static_cast<short>(start_enc[i] + dir[i] * distance[i] / 5);
+      target[i] = static_cast< short >(start_enc[i] + dir[i] * distance[i] * 2 / 5);
+      time[i] = static_cast< short >(maxtime / 6);
+      pp0[i] = static_cast< short >(start_enc[i] + dir[i] * distance[i] / 5);
       pp1[i] = 0;
       pp2[i] = 0;
       pp3[i] = 0;
@@ -741,18 +742,18 @@ void CLMBase::movP2P(double X1, double Y1, double Z1, double Ph1, double Th1, do
   {
     if (!tooShortDistance[i])
     {
-      target[i] = static_cast<short>(p3_enc[i]);
-      time[i] = static_cast<short>(t3[i]);
-      pp0[i] = static_cast<short>(p2_enc[i]);
-      pp1[i] = static_cast<short>(64 * (dir[i] * speed[i]));
-      pp2[i] = static_cast<short>(1024 * (-0.5 * dir[i] * amax));
+      target[i] = static_cast< short >(p3_enc[i]);
+      time[i] = static_cast< short >(t3[i]);
+      pp0[i] = static_cast< short >(p2_enc[i]);
+      pp1[i] = static_cast< short >(64 * (dir[i] * speed[i]));
+      pp2[i] = static_cast< short >(1024 * (-0.5 * dir[i] * amax));
       pp3[i] = 0;
     }
     else
     {
-      target[i] = static_cast<short>(start_enc[i] + dir[i] * distance[i] * 3 / 5);
-      time[i] = static_cast<short>(maxtime / 6);
-      pp0[i] = static_cast<short>(start_enc[i] + dir[i] * distance[i] * 2 / 5);
+      target[i] = static_cast< short >(start_enc[i] + dir[i] * distance[i] * 3 / 5);
+      time[i] = static_cast< short >(maxtime / 6);
+      pp0[i] = static_cast< short >(start_enc[i] + dir[i] * distance[i] * 2 / 5);
       pp1[i] = 0;
       pp2[i] = 0;
       pp3[i] = 0;
@@ -783,18 +784,18 @@ void CLMBase::movP2P(double X1, double Y1, double Z1, double Ph1, double Th1, do
   {
     if (!tooShortDistance[i])
     {
-      target[i] = static_cast<short>(p4_enc[i]);
-      time[i] = static_cast<short>(t4[i]);
-      pp0[i] = static_cast<short>(p3_enc[i]);
-      pp1[i] = static_cast<short>(64 * (dir[i] * corrspeed[i]));
+      target[i] = static_cast< short >(p4_enc[i]);
+      time[i] = static_cast< short >(t4[i]);
+      pp0[i] = static_cast< short >(p3_enc[i]);
+      pp1[i] = static_cast< short >(64 * (dir[i] * corrspeed[i]));
       pp2[i] = 0;
       pp3[i] = 0;
     }
     else
     {
-      target[i] = static_cast<short>(start_enc[i] + dir[i] * distance[i] * 4 / 5);
-      time[i] = static_cast<short>(maxtime / 6);
-      pp0[i] = static_cast<short>(start_enc[i] + dir[i] * distance[i] * 3 / 5);
+      target[i] = static_cast< short >(start_enc[i] + dir[i] * distance[i] * 4 / 5);
+      time[i] = static_cast< short >(maxtime / 6);
+      pp0[i] = static_cast< short >(start_enc[i] + dir[i] * distance[i] * 3 / 5);
       pp1[i] = 0;
       pp2[i] = 0;
       pp3[i] = 0;
@@ -825,13 +826,13 @@ void CLMBase::movP2P(double X1, double Y1, double Z1, double Ph1, double Th1, do
   {
     if (!tooShortDistance[i])
     {
-      target[i] = static_cast<short>(p5_enc[i]);
-      time[i] = static_cast<short>(t5[i]);
-      pp0[i] = static_cast<short>(p4_enc[i]);
-      pp1[i] = static_cast<short>(64 * (dir[i] * corrspeed[i]));
+      target[i] = static_cast< short >(p5_enc[i]);
+      time[i] = static_cast< short >(t5[i]);
+      pp0[i] = static_cast< short >(p4_enc[i]);
+      pp1[i] = static_cast< short >(64 * (dir[i] * corrspeed[i]));
       if (corrspeed[i] != 0)
       {
-        pp2[i] = static_cast<short>(1024 * (-0.5 * dir[i] * amax));
+        pp2[i] = static_cast< short >(1024 * (-0.5 * dir[i] * amax));
       }
       else
       {
@@ -841,9 +842,9 @@ void CLMBase::movP2P(double X1, double Y1, double Z1, double Ph1, double Th1, do
     }
     else
     {
-      target[i] = static_cast<short>(target_enc[i]);
-      time[i] = static_cast<short>(maxtime / 6);
-      pp0[i] = static_cast<short>(start_enc[i] + dir[i] * distance[i] * 4 / 5);
+      target[i] = static_cast< short >(target_enc[i]);
+      time[i] = static_cast< short >(maxtime / 6);
+      pp0[i] = static_cast< short >(start_enc[i] + dir[i] * distance[i] * 4 / 5);
       pp1[i] = 0;
       pp2[i] = 0;
       pp3[i] = 0;
@@ -874,18 +875,18 @@ void CLMBase::movP2P(double X1, double Y1, double Z1, double Ph1, double Th1, do
   {
     if (!tooShortDistance[i])
     {
-      target[i] = static_cast<short>(target_enc[i]);
-      time[i] = static_cast<short>(t6[i]);
-      pp0[i] = static_cast<short>(p5_enc[i]);
+      target[i] = static_cast< short >(target_enc[i]);
+      time[i] = static_cast< short >(t6[i]);
+      pp0[i] = static_cast< short >(p5_enc[i]);
       pp1[i] = 0;
       pp2[i] = 0;
       pp3[i] = 0;
     }
     else
     {
-      target[i] = static_cast<short>(target_enc[i]);
-      time[i] = static_cast<short>(maxtime - (maxtime / 6) * 5);
-      pp0[i] = static_cast<short>(target_enc[i]);
+      target[i] = static_cast< short >(target_enc[i]);
+      time[i] = static_cast< short >(maxtime - (maxtime / 6) * 5);
+      pp0[i] = static_cast< short >(target_enc[i]);
       pp1[i] = 0;
       pp2[i] = 0;
       pp3[i] = 0;
@@ -941,7 +942,7 @@ void CLMBase::moveRobotLinearTo(double x, double y, double z, double phi, double
   movLM(x, y, z, phi, theta, psi, _activatePositionController, _maximumVelocity, waitUntilReached, 100, waitTimeout);
 }
 
-void CLMBase::moveRobotLinearTo(std::vector<double> coordinates, bool waitUntilReached, int waitTimeout)
+void CLMBase::moveRobotLinearTo(std::vector< double > coordinates, bool waitUntilReached, int waitTimeout)
 {
   moveRobotLinearTo(coordinates.at(0), coordinates.at(1), coordinates.at(2), coordinates.at(3), coordinates.at(4),
                     coordinates.at(5), waitUntilReached, waitTimeout);
@@ -963,7 +964,7 @@ void CLMBase::moveRobotTo(double x, double y, double z, double phi, double theta
          _maximumVelocity, waitUntilReached, waitTimeout);
 }
 
-void CLMBase::moveRobotTo(std::vector<double> coordinates, bool waitUntilReached, int waitTimeout)
+void CLMBase::moveRobotTo(std::vector< double > coordinates, bool waitUntilReached, int waitTimeout)
 {
   moveRobotTo(coordinates.at(0), coordinates.at(1), coordinates.at(2), coordinates.at(3), coordinates.at(4),
               coordinates.at(5), waitUntilReached, waitTimeout);

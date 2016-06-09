@@ -38,20 +38,20 @@ enum NetTcpSocketErr
   __NETTCPSOCKET_MIN = -0xFFFF,
   NETTCPSOCKET_SETUP,  // NetTcpSocket not properly configured
   NETTCPSOCKET_TIMEOUT,
-  NETTCPSOCKET_IF,  // If has problems
-  NETTCPSOCKET_MEM,  // Not enough mem
+  NETTCPSOCKET_IF,     // If has problems
+  NETTCPSOCKET_MEM,    // Not enough mem
   NETTCPSOCKET_INUSE,  // If/Port is in use
   NETTCPSOCKET_EMPTY,  // Connections queue is empty
-  NETTCPSOCKET_RST,  // Connection was reset by remote host
-                     //...
+  NETTCPSOCKET_RST,    // Connection was reset by remote host
+                       //...
   NETTCPSOCKET_OK = 0
 };
 
 enum NetTcpSocketEvent
 {
   NETTCPSOCKET_CONNECTED,  // Connected to host, must call accept() if we were listening
-  NETTCPSOCKET_ACCEPT,  // Connected to client
-  NETTCPSOCKET_READABLE,  // Data in buf
+  NETTCPSOCKET_ACCEPT,     // Connected to client
+  NETTCPSOCKET_READABLE,   // Data in buf
   NETTCPSOCKET_WRITEABLE,  // Can write data to buf
   NETTCPSOCKET_CONTIMEOUT,
   NETTCPSOCKET_CONRST,
@@ -80,7 +80,7 @@ public:
 
   class CDummy;
   // Callbacks
-  template <class T>
+  template < class T >
   // Linker bug : Must be defined here :(
   void setOnEvent(T* pItem, void (T::*pMethod)(NetTcpSocketEvent))
   {
@@ -111,7 +111,7 @@ private:
   void onEvent(NetTcpSocketEvent e);  // To be called on poll
   CDummy* m_pCbItem;
   void (CDummy::*m_pCbMeth)(NetTcpSocketEvent);
-  queue<NetTcpSocketEvent> m_events;
+  queue< NetTcpSocketEvent > m_events;
 };
 
 #endif

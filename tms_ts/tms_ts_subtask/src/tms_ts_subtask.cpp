@@ -9,7 +9,7 @@ double sp5arm_init_arg[26] = {
     0.0, 0.175, -0.2,  0.175, 0.175,  // right arm
     0.0, -0.17, 0.0,   0.0,   0.0,   0.0,
     0.0, 0.175, -0.2,  0.175, 0.175  // left arm
-};  // rad
+};                                   // rad
 
 tms_rp::TmsRpSubtask* tms_rp::TmsRpSubtask::instance()
 {
@@ -22,13 +22,13 @@ tms_rp::TmsRpSubtask::TmsRpSubtask()
   sid_ = 100000;
   rp_subtask_server = nh1.advertiseService("rp_cmd", &TmsRpSubtask::subtask, this);
 
-  rp_cmd_client = nh1.serviceClient<tms_msg_rp::rp_cmd>("rp_cmd");
-  get_data_client_ = nh1.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
-  sp5_control_client_ = nh1.serviceClient<tms_msg_rc::rc_robot_control>("sp5_control");
-  sp5_virtual_control_client = nh1.serviceClient<tms_msg_rc::rc_robot_control>("sp5_virtual_control");
-  subtask_pick_client = nh1.serviceClient<tms_msg_rp::rp_pick>("subtask_pick");
-  subtask_place_client = nh1.serviceClient<tms_msg_rp::rp_place>("subtask_place");
-  subtask_release_client = nh1.serviceClient<tms_msg_rp::rp_release>("subtask_release");
+  rp_cmd_client = nh1.serviceClient< tms_msg_rp::rp_cmd >("rp_cmd");
+  get_data_client_ = nh1.serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader");
+  sp5_control_client_ = nh1.serviceClient< tms_msg_rc::rc_robot_control >("sp5_control");
+  sp5_virtual_control_client = nh1.serviceClient< tms_msg_rc::rc_robot_control >("sp5_virtual_control");
+  subtask_pick_client = nh1.serviceClient< tms_msg_rp::rp_pick >("subtask_pick");
+  subtask_place_client = nh1.serviceClient< tms_msg_rp::rp_place >("subtask_place");
+  subtask_release_client = nh1.serviceClient< tms_msg_rp::rp_release >("subtask_release");
   //  kxp_virtual_control_client    = nh1.serviceClient<tms_msg_rc::rc_robot_control>("kxp_virtual_control");
   //  kxp_mbase_client              = nh1.serviceClient<tms_msg_rc::tms_rc_pmove>("pmove");
   //  v_kxp_mbase_client            = nh1.serviceClient<tms_msg_rc::tms_rc_pmove>("virtual_pmove");
@@ -39,13 +39,14 @@ tms_rp::TmsRpSubtask::TmsRpSubtask()
   //  kobuki_virtual_control_client = nh1.serviceClient<tms_msg_rc::rc_robot_control>("kobuki_virtual_control");
   //  kobuki_actual_control_client  = nh1.serviceClient<tms_msg_rc::rc_robot_control>("kobuki_control");
   //  mkun_virtual_control_client   = nh1.serviceClient<tms_msg_rc::rc_robot_control>("mimamorukun_virtual_control");
-  mkun_control_client = nh1.serviceClient<tms_msg_rc::rc_robot_control>("mkun_goal_pose");
-  voronoi_path_planning_client_ = nh1.serviceClient<tms_msg_rp::rps_voronoi_path_planning>("rps_voronoi_path_planning");
-  give_obj_client = nh1.serviceClient<tms_msg_rp::rps_goal_planning>("rps_give_obj_pos_planning");
+  mkun_control_client = nh1.serviceClient< tms_msg_rc::rc_robot_control >("mkun_goal_pose");
+  voronoi_path_planning_client_ =
+      nh1.serviceClient< tms_msg_rp::rps_voronoi_path_planning >("rps_voronoi_path_planning");
+  give_obj_client = nh1.serviceClient< tms_msg_rp::rps_goal_planning >("rps_give_obj_pos_planning");
   //  refrigerator_client           = nh1.serviceClient<tms_msg_rs::rs_home_appliances>("refrigerator_controller");
-  state_client = nh1.serviceClient<tms_msg_ts::ts_state_control>("ts_state_control");
+  state_client = nh1.serviceClient< tms_msg_ts::ts_state_control >("ts_state_control");
 
-  db_pub = nh1.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
+  db_pub = nh1.advertise< tms_msg_db::TmsdbStamped >("tms_db_data", 10);
   //  kobuki_sound                  = nh1.advertise<kobuki_msgs::Sound>("/mobile_base/commands/sound", 1);
   //  kobuki_motorpower             = nh1.advertise<kobuki_msgs::MotorPower>("/mobile_base/commands/motor_power", 1);
 
@@ -465,7 +466,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
     {
       // analyze etcdata and get goal position
       std::string etcdata = srv.response.tmsdb[0].etcdata;
-      std::vector<std::string> v_etcdata;
+      std::vector< std::string > v_etcdata;
       v_etcdata.clear();
       boost::split(v_etcdata, etcdata, boost::is_any_of(";"));
       ROS_INFO("robot name = %s", robot_name.c_str());
@@ -481,7 +482,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
         }
       }
       std::string argdata = v_etcdata.at(i + 1);
-      std::vector<std::string> v_argdata;
+      std::vector< std::string > v_argdata;
       v_argdata.clear();
       boost::split(v_argdata, argdata, boost::is_any_of(","));  // v_argdata[0, 1, 2] = [goal_x, goal_y, goal_th]
 
@@ -595,7 +596,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
         {
           std::string etcdata = srv.response.tmsdb[0].etcdata;
           ROS_INFO("etc_data = %s", etcdata.c_str());
-          std::vector<std::string> v_etcdata;
+          std::vector< std::string > v_etcdata;
           v_etcdata.clear();
           boost::split(v_etcdata, etcdata, boost::is_any_of(";"));
 
@@ -617,7 +618,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
           }
 
           std::string argdata = v_etcdata.at(i + 1);
-          std::vector<std::string> v_argdata;
+          std::vector< std::string > v_argdata;
           v_argdata.clear();
           boost::split(v_argdata, argdata, boost::is_any_of(","));  // v_argdata[0, 1, 2] = [goal_x, goal_y, goal_th]
 
@@ -789,7 +790,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
             //			    		if (sd.type == true) {
             //				    		kobuki_srv.request.cmd = 0;
             //				    		if (kobuki_actual_control_client.call(kobuki_srv)) ROS_INFO("result: %d",
-            //kobuki_srv.response.result);
+            // kobuki_srv.response.result);
             //				    		else {
             //				    			ROS_ERROR("Failed to call service kobuki_move");
             //				    			return false;
@@ -798,7 +799,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
             //				    		kobuki_srv.request.unit = 1;
             //				    		kobuki_srv.request.cmd = 15;
             //				    		if (kobuki_virtual_control_client.call(kobuki_srv)) ROS_INFO("result: %d",
-            //kobuki_srv.response.result);
+            // kobuki_srv.response.result);
             //				    		else {
             //				    			ROS_ERROR("Failed to call service virtual_kobuki_move");
             //				    			return false;
@@ -812,15 +813,15 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
             //			    		if (sd.type) { // actual version
             //			    			tms_msg_rc::tms_rc_pmove move_srv;
             //			    			double dis = distance(rp_srv.response.VoronoiPath[i-1].x,
-            //rp_srv.response.VoronoiPath[i-1].y,
+            // rp_srv.response.VoronoiPath[i-1].y,
             //			    					    					rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
             //			    			double ang = rp_srv.response.VoronoiPath[i].th - rp_srv.response.VoronoiPath[i-1].th;
             //		    				if (ang > 180.0) ang = ang - 360.0;
             //		    				else if (ang < -180.0) ang = ang + 360.0;
             //			    			ROS_INFO("voronoi[%d]:(%f,%f,%f), voronoi[%d]:(%f,%f,%f)",i-1,
-            //rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
+            // rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
             //			    					rp_srv.response.VoronoiPath[i-1].th, i, rp_srv.response.VoronoiPath[i].x,
-            //rp_srv.response.VoronoiPath[i].y, rp_srv.response.VoronoiPath[i].th);
+            // rp_srv.response.VoronoiPath[i].y, rp_srv.response.VoronoiPath[i].th);
             //			    			if (dis != 0) {
             //			    				ROS_INFO("cmd1:%f", dis);
             //				    			move_srv.request.command = 1;
@@ -846,7 +847,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
             //			    		} else { // simulation version
             //			    			tms_msg_rc::tms_rc_pmove kxp_srv;
             //			    			ROS_INFO("voronoi[%d]=%f,%f,%f", i,
-            //rp_srv.response.VoronoiPath[i].x,rp_srv.response.VoronoiPath[i].y,rp_srv.response.VoronoiPath[i].th);
+            // rp_srv.response.VoronoiPath[i].x,rp_srv.response.VoronoiPath[i].y,rp_srv.response.VoronoiPath[i].th);
             //			    			kxp_srv.request.w_x = rp_srv.response.VoronoiPath[i].x;
             //			    			kxp_srv.request.w_y = rp_srv.response.VoronoiPath[i].y;
             //				    		kxp_srv.request.w_th = rp_srv.response.VoronoiPath[i].th;
@@ -1027,8 +1028,8 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
 
   //  std::vector<pathInfo> trajectory;
   int state;
-  std::vector<double> begin;
-  std::vector<double> end;
+  std::vector< double > begin;
+  std::vector< double > end;
 
   // SET ROBOT
   switch (sd.robot_id)
@@ -1175,7 +1176,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
         }
 
         std::string note = assign_data.note;
-        std::vector<std::string> v_note;
+        std::vector< std::string > v_note;
         v_note.clear();
         boost::split(v_note, note, boost::is_any_of(";"));
 
@@ -1298,13 +1299,13 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
   {
     std::string note = db_srv.response.tmsdb[0].note;
     ROS_INFO("note = %s", note.c_str());
-    std::vector<std::string> v_note;
+    std::vector< std::string > v_note;
     v_note.clear();
     boost::split(v_note, note, boost::is_any_of(";"));
 
     for (int i = 0; i < v_note.size(); i++)
     {
-      std::vector<std::string> v_v_note;
+      std::vector< std::string > v_v_note;
       v_v_note.clear();
       boost::split(v_v_note, v_note.at(i), boost::is_any_of("="));
       if (v_v_note.at(0) == "grasping")
@@ -1445,7 +1446,7 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
           std::string note = db_srv.response.tmsdb[0].note;
           assign_data = db_srv.response.tmsdb[0];
           ROS_INFO("note(before) = %s", note.c_str());
-          std::vector<std::string> v_note;
+          std::vector< std::string > v_note;
           v_note.clear();
           boost::split(v_note, note, boost::is_any_of(";"));
 
@@ -1467,7 +1468,7 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
           }
 
           std::string notedata = v_note.at(i + 1);
-          std::vector<std::string> v_notedata;
+          std::vector< std::string > v_notedata;
           v_notedata.clear();
           boost::split(v_notedata, notedata, boost::is_any_of(","));
 

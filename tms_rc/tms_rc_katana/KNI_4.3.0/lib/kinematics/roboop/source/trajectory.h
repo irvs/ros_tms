@@ -108,7 +108,7 @@ private:
 #define CARTESIAN_SPACE 2
 
 //! @brief Data at control points.
-typedef std::map<Real, ColumnVector, less<Real>> point_map;
+typedef std::map< Real, ColumnVector, less< Real > > point_map;
 
 /*!
   @class Spl_path
@@ -138,7 +138,7 @@ private:
 };
 
 //! @brief Data at control points.
-typedef std::map<Real, Quaternion, less<Real>> quat_map;
+typedef std::map< Real, Quaternion, less< Real > > quat_map;
 
 /*!
   @class Spl_Quaternion

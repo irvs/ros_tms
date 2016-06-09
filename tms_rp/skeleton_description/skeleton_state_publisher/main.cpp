@@ -27,7 +27,7 @@ class SkeletonsStatePublisher
 public:
   tf::TransformBroadcaster broadcaster_;
 
-  SkeletonsStatePublisher(ros::NodeHandle& nh, const std::vector<KDL::Tree>& kdl_forest, const bool& usingDB = false);
+  SkeletonsStatePublisher(ros::NodeHandle& nh, const std::vector< KDL::Tree >& kdl_forest, const bool& usingDB = false);
   ~SkeletonsStatePublisher();
 
   void run();
@@ -37,9 +37,9 @@ private:
   ros::NodeHandle nh_;
   ros::Subscriber data_sub_;
 
-  std::vector<robot_state_publisher::RobotStatePublisher> state_pubs_;  // Publish tf tree
-  std::vector<tf::StampedTransform> transforms_;                        // Position & Rotation
-  std::vector<std::map<std::string, double>> joint_states;              // Posture
+  std::vector< robot_state_publisher::RobotStatePublisher > state_pubs_;  // Publish tf tree
+  std::vector< tf::StampedTransform > transforms_;                        // Position & Rotation
+  std::vector< std::map< std::string, double > > joint_states;            // Posture
 
   bool usingDB_;
 
@@ -49,7 +49,7 @@ private:
 };
 
 //------------------------------------------------------------------------------
-SkeletonsStatePublisher::SkeletonsStatePublisher(ros::NodeHandle& nh, const std::vector<KDL::Tree>& kdl_forest,
+SkeletonsStatePublisher::SkeletonsStatePublisher(ros::NodeHandle& nh, const std::vector< KDL::Tree >& kdl_forest,
                                                  const bool& usingDB)
   : nh_(nh), usingDB_(usingDB)
 {
@@ -73,7 +73,7 @@ SkeletonsStatePublisher::SkeletonsStatePublisher(ros::NodeHandle& nh, const std:
     transforms_.push_back(
         tf::StampedTransform(tf::Transform(tf::Quaternion(0.0, 0.0, 0.0, 1.0), tf::Vector3(0.0, 0.0, 0.0)), now,
                              PARENT_LINK, tf::resolve(tf_prefix.str(), CHILD_LINK)));
-    std::map<std::string, double> joint_state;
+    std::map< std::string, double > joint_state;
     joint_states.push_back(joint_state);
   }
 
@@ -105,7 +105,7 @@ void SkeletonsStatePublisher::callback(const tms_msg_ss::SkeletonArray::ConstPtr
     else
     {
       // Set data for drawing into environment
-      calcForModel01<double>(msg->data[i], pos, rot, joint_states[i]);
+      calcForModel01< double >(msg->data[i], pos, rot, joint_states[i]);
       transforms_[i].setData(
           tf::Transform(tf::Quaternion(rot.x(), rot.y(), rot.z(), rot.w()), tf::Vector3(pos[0], pos[1], pos[2])));
     }
@@ -133,14 +133,14 @@ void SkeletonsStatePublisher::callback2(const tms_msg_db::TmsdbStamped::ConstPtr
       // JSON parsing
       picojson::value val;
       picojson::parse(val, skeleton_db_data.etcdata);
-      picojson::object& json_obj = val.get<picojson::object>();
+      picojson::object& json_obj = val.get< picojson::object >();
       ROS_INFO("------\nstorage_prace: %d\nid: %d\nposition: %f, %f, %f\nrpy: %f, %f, %f\n\
           ---------------------------------\n",
                i, skeleton_db_data.id, skeleton_db_data.x, skeleton_db_data.y, skeleton_db_data.z, skeleton_db_data.rr,
                skeleton_db_data.rp, skeleton_db_data.ry);
       for (int j = 0; j < kJointDoF; j++)
       {
-        joint_states[ref][kJointName[j]] = json_obj[kJointName[j]].get<double>();
+        joint_states[ref][kJointName[j]] = json_obj[kJointName[j]].get< double >();
       }
 
       tf::Quaternion q;
@@ -198,7 +198,7 @@ int main(int argc, char** argv)
   }
 
   // Load models
-  std::vector<KDL::Tree> kdl_forest;
+  std::vector< KDL::Tree > kdl_forest;
   const std::string base_description_name("skeleton_description");
 
   kdl_forest.resize((num_of_skeletons == 0 ? 1 : num_of_skeletons));

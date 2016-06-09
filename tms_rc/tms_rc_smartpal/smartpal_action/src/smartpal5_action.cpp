@@ -174,7 +174,7 @@ bool action(tms_msg_rp::action::Request &req, tms_msg_rp::action::Response &res)
   pb->graspMotionSeq.push_back(pb->getMotionState());
 
   //==== end point
-  vector<double> closefinger;
+  vector< double > closefinger;
   for (int i = 0; i < pb->nFing(); i++)
   {
     for (int j = 0; j < pb->fingers(i)->fing_path->numJoints(); j++)
@@ -327,8 +327,8 @@ public:
     cout << "set ros srv" << endl;
     static ros::NodeHandle nh;
     static ros::ServiceServer action_server = nh.advertiseService("rp_action_srv", action);
-    sp5_control_client = nh.serviceClient<tms_msg_rc::smartpal_control>("sp5_control");
-    path_planning_client = nh.serviceClient<tms_msg_rp::rps_path_planning>("rps_path_planning");
+    sp5_control_client = nh.serviceClient< tms_msg_rc::smartpal_control >("sp5_control");
+    path_planning_client = nh.serviceClient< tms_msg_rp::rps_path_planning >("rps_path_planning");
 
     static boost::thread t(boost::bind(&SmartpalActionPlugin::LoopRosTest, this));
 

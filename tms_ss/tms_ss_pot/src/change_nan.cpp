@@ -66,7 +66,7 @@ int main(int argc, char **argv)
   ros::MultiThreadedSpinner spinner(4);
   ros::init(argc, argv, "pot_urg_scan1");
   ros::NodeHandle nh;
-  pub = nh.advertise<sensor_msgs::LaserScan>("/LaserTracker1", 1000);
+  pub = nh.advertise< sensor_msgs::LaserScan >("/LaserTracker1", 1000);
   sub = nh.subscribe("/pot_urg1/scan", 1000, LaserSensingCallback);
   spinner.spin();
   ros::waitForShutdown();

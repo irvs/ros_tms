@@ -270,7 +270,7 @@ public:
   /// @param exactflag exactflag
   /// @param moreflag 0 = start moving more following, 1 = last or a single polynomial movement, 2 = do not start moving
   /// yet more following
-  void setAndStartPolyMovement(std::vector<short> polynomial, int exactflag, int moreflag);
+  void setAndStartPolyMovement(std::vector< short > polynomial, int exactflag, int moreflag);
 
   //!get digital I/O data from Katana400:
   int readDigitalIO();

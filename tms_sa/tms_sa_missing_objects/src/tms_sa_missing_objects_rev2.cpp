@@ -56,10 +56,10 @@
 #define table14_xru 1800
 #define table14_yru 2300
 
-#define block_size 10  // mm
+#define block_size 10       // mm
 #define environment_x 4500  // mm
 #define environment_y 4000  // mm
-#define near_aria 500  // mm
+#define near_aria 500       // mm
 
 // mapに関するFILE POINTER
 FILE *fp;
@@ -95,16 +95,16 @@ struct FURNITURES_TOTAL
 //基本的にDB_readerより持ってきた情報を保持する
 struct MISSING_OBJECTS_P
 {
-  int missing_object_id;                       //消失物品のid
-  bool missing_object_id_valid;                //既に見つかっている場合はfalseになる
-  long unsigned int missing_object_time;       //物品消失時間の記録
-  std::vector<PERSON_HISTORY> person_history;  //人の歩行履歴(物品がなくなった後より)
-  std::vector<FURNITURES> near_furnitures;  //近づいた家具のidと接近開始時間と離脱時間の保持(分離型)
-  std::vector<FURNITURES_TOTAL> near_furnitures_total;
+  int missing_object_id;                         //消失物品のid
+  bool missing_object_id_valid;                  //既に見つかっている場合はfalseになる
+  long unsigned int missing_object_time;         //物品消失時間の記録
+  std::vector< PERSON_HISTORY > person_history;  //人の歩行履歴(物品がなくなった後より)
+  std::vector< FURNITURES > near_furnitures;  //近づいた家具のidと接近開始時間と離脱時間の保持(分離型)
+  std::vector< FURNITURES_TOTAL > near_furnitures_total;
   int find_furnitures_id;  //物品を発見した家具のid
 };
 
-std::vector<MISSING_OBJECTS_P> missing_objects_list;
+std::vector< MISSING_OBJECTS_P > missing_objects_list;
 
 ros::ServiceServer service1;
 ros::ServiceServer service2;
@@ -126,10 +126,10 @@ ros::ServiceClient client3;
 ros::ServiceClient client4;
 ros::ServiceClient client5;
 
-std::vector<std::vector<long unsigned int>> missing_table;
+std::vector< std::vector< long unsigned int > > missing_table;
 bool first_flag = true;
 
-std::vector<unsigned long long int> ana_time;
+std::vector< unsigned long long int > ana_time;
 
 //ここまで分析したよ、という時刻(分析時点での人の最後の歩行軌跡の時刻に一致する)
 unsigned long int ana_time_scr;
@@ -161,7 +161,7 @@ struct FURNITURES_MAP_ELEMENT
 };
 
 //接近家具を分析するためのmap
-std::vector<std::vector<FURNITURES_MAP_ELEMENT>> map;
+std::vector< std::vector< FURNITURES_MAP_ELEMENT > > map;
 
 // sort降順比較用関数
 static bool compare(const FURNITURES_TOTAL &c1, const FURNITURES_TOTAL &c2)
@@ -186,7 +186,7 @@ bool tms_utility_analyze_missing_objects_func(tms_msg_sa::tms_to_activate_servic
 
   FURNITURES_TOTAL temp_furnitures_total;
 
-  std::vector<FURNITURES_TOTAL> furnitures_order(32);
+  std::vector< FURNITURES_TOTAL > furnitures_order(32);
   for (unsigned int i = 0; i < 32; i++)
   {
     furnitures_order[i].id = furnitures_start_number + i;  // idをfurnitures_numberから32個割り振っていく
@@ -318,7 +318,7 @@ bool tms_utility_analyze_missing_objects_func(tms_msg_sa::tms_to_activate_servic
         //				ROS_INFO("desk12?:%lf",sqrt(pow((missing_objects_list[while_i].person_history[while_j].x - bed12_x),2)
         //+ pow((missing_objects_list[while_i].person_history[while_j].y - bed12_y),2)));
         //				if(sqrt(pow((missing_objects_list[while_i].person_history[while_j].x - bed12_x),2) +
-        //pow((missing_objects_list[while_i].person_history[while_j].y - bed12_y),2))
+        // pow((missing_objects_list[while_i].person_history[while_j].y - bed12_y),2))
         //						< threshold_furnitures){
         //					ROS_INFO("2:while_j = %d",while_j);
         //					temp_furniture.id = 12;
@@ -331,7 +331,7 @@ bool tms_utility_analyze_missing_objects_func(tms_msg_sa::tms_to_activate_servic
         //					else{
         //						ROS_INFO("1-2");
         //						temp_furniture.left_time =
-        //missing_objects_list[while_i].person_history[while_j].rostime+(1*1000*1000*1000);
+        // missing_objects_list[while_i].person_history[while_j].rostime+(1*1000*1000*1000);
         //					}
         //					missing_objects_list[while_i].near_furnitures.push_back(temp_furniture);
         //				}
@@ -507,7 +507,7 @@ void callback1(const ros::TimerEvent &)
                           //このフラグがtrueの場合はmissing_listの該当行を消去しない．
 
   //タスク送信パートのための変数
-  std::vector<FURNITURES_TOTAL> furnitures_order;  // TSに渡すID列
+  std::vector< FURNITURES_TOTAL > furnitures_order;  // TSに渡すID列
   FURNITURES_TOTAL temp_furnitures;
   temp_furnitures.total_time = 0;
   tms_msg_ts::tms_sa_find_objects srv1;
@@ -725,7 +725,7 @@ void callback1(const ros::TimerEvent &)
             //					for(unsigned int j=0;j<srv03.response.x.size();j++){
             //						ROS_INFO("(rostime,id,x,y)=(%lu, %d, %f, %f)",
             //								srv03.response.rostime[j], srv03.response.id[j], srv03.response.x[j],
-            //srv03.response.y[j]);
+            // srv03.response.y[j]);
             //					}
 
             // missing_table更新
@@ -902,7 +902,7 @@ void callback2(const ros::TimerEvent &)
   //ここではmap[i][j]の集計及び見に行く固定家具の決定を行い、それをTSに投げる
   // MultiThreadSpinnerを利用しているため，ロボットサービスを行っている最中であってもmissing_tableは更新される(はず…)
 
-  std::vector<FURNITURES_TOTAL> furnitures_order;  // TSに渡すID列
+  std::vector< FURNITURES_TOTAL > furnitures_order;  // TSに渡すID列
   FURNITURES_TOTAL temp_furnitures;
 
   temp_furnitures.total_time = 0;
@@ -1011,15 +1011,15 @@ int main(int argc, char **argv)
   service2 = n.advertiseService("tms_utility_analyze_missing_object", tms_utility_analyze_missing_objects_func);
 
   // client0X ... DBとのやりとり
-  client01 = n.serviceClient<tms_msg_db::tmsdb_get_objects_info>("tmsdb_get_objects_info_present");
-  client02 = n.serviceClient<tms_msg_db::tmsdb_get_objects_info>("tmsdb_get_objects_info_history");
-  client03 = n.serviceClient<tms_msg_db::tmsdb_get_person_info>("tmsdb_get_person_info_2");
+  client01 = n.serviceClient< tms_msg_db::tmsdb_get_objects_info >("tmsdb_get_objects_info_present");
+  client02 = n.serviceClient< tms_msg_db::tmsdb_get_objects_info >("tmsdb_get_objects_info_history");
+  client03 = n.serviceClient< tms_msg_db::tmsdb_get_person_info >("tmsdb_get_person_info_2");
 
-  client001 = n.serviceClient<tms_msg_db::tmsdb_get_person_behavior_info>("tmsdb_get_person_info_3");
+  client001 = n.serviceClient< tms_msg_db::tmsdb_get_person_behavior_info >("tmsdb_get_person_info_3");
 
   // clisent1X ... DB以外とのやりとり
-  client4 = n.serviceClient<tms_msg_ts::tms_sa_find_objects>("tms_sa_find_objects_TS");  //"TS" = Task Scheduler
-  client5 = n.serviceClient<tms_msg_sa::tms_to_modify_missing_objects>("tms_utility_modify_missing_objects");
+  client4 = n.serviceClient< tms_msg_ts::tms_sa_find_objects >("tms_sa_find_objects_TS");  //"TS" = Task Scheduler
+  client5 = n.serviceClient< tms_msg_sa::tms_to_modify_missing_objects >("tms_utility_modify_missing_objects");
 
   //	client5 = n.serviceClient<tmsdb::tmsdb_change_dt>("object_detection_test");
   //	client2 = n.serviceClient<tmsdb::tmsdb_modify_person_behavior>("tmsdb_modify_person_behavior");

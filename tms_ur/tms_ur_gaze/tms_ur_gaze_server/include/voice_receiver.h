@@ -19,8 +19,8 @@ private:
   ros::NodeHandle* nh_;
   ros::ServiceServer server_;
   ros::ServiceClient client_, arrow_client_;
-  std::map<std::string, std::string*> hash_;
-  std::vector<std::string> value_;
+  std::map< std::string, std::string* > hash_;
+  std::vector< std::string > value_;
 
 public:
   VoiceReceiver(ros::NodeHandle* nh);

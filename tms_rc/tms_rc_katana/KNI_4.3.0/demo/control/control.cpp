@@ -52,11 +52,11 @@ struct TCurrentMot
 
 struct Tpos
 {
-  static std::vector<int> x, y, z, u, v, w;
+  static std::vector< int > x, y, z, u, v, w;
   static const int xArr[], yArr[], zArr[], uArr[], vArr[], wArr[];
 };
 // Katana obj.
-std::auto_ptr<CLMBase> katana;
+std::auto_ptr< CLMBase > katana;
 // std::vector<int> Foo::vec(array, array + sizeof(array)/sizeof(*array));
 // positionen, hard-coded. Use values from file instead
 const int Tpos::xArr[] = {30206, -23393, -3066, 14454, 30000, 30000};
@@ -65,13 +65,13 @@ const int Tpos::zArr[] = {24327, -7837, -16796, 5802, 30290, 10924};
 const int Tpos::uArr[] = {5333, -13791, -9985, 11449, 30996, 12063};
 const int Tpos::vArr[] = {-3799, -5703, -11676, 8210, 30995, 12063};
 const int Tpos::wArr[] = {-3799, -5703, -11676, 8210, 30995, 30992};
-std::vector<int> Tpos::x(xArr, xArr + sizeof(xArr) / sizeof(*xArr));
-std::vector<int> Tpos::y(yArr, yArr + sizeof(yArr) / sizeof(*yArr));
-std::vector<int> Tpos::z(zArr, zArr + sizeof(zArr) / sizeof(*zArr));
-std::vector<int> Tpos::u(uArr, uArr + sizeof(uArr) / sizeof(*uArr));
-std::vector<int> Tpos::v(vArr, vArr + sizeof(vArr) / sizeof(*vArr));
-std::vector<int> Tpos::w(wArr, wArr + sizeof(wArr) / sizeof(*wArr));
-std::vector<TPoint> points(0);
+std::vector< int > Tpos::x(xArr, xArr + sizeof(xArr) / sizeof(*xArr));
+std::vector< int > Tpos::y(yArr, yArr + sizeof(yArr) / sizeof(*yArr));
+std::vector< int > Tpos::z(zArr, zArr + sizeof(zArr) / sizeof(*zArr));
+std::vector< int > Tpos::u(uArr, uArr + sizeof(uArr) / sizeof(*uArr));
+std::vector< int > Tpos::v(vArr, vArr + sizeof(vArr) / sizeof(*vArr));
+std::vector< int > Tpos::w(wArr, wArr + sizeof(wArr) / sizeof(*wArr));
+std::vector< TPoint > points(0);
 void StartPointlistMovement();
 void StartProgram(int index);
 pthread_t tid;
@@ -157,8 +157,8 @@ int main(int argc, char* argv[])
   // open device: a serial port is opened in this case
   //----------------------------------------------------------------//
 
-  std::auto_ptr<CCdlSocket> device;
-  std::auto_ptr<CCplSerialCRC> protocol;
+  std::auto_ptr< CCdlSocket > device;
+  std::auto_ptr< CCplSerialCRC > protocol;
 
   try
   {
@@ -206,7 +206,7 @@ int main(int argc, char* argv[])
   bool IsOff = false;
   bool useLinearMode = false;
   double RadToDeg = 1.0;
-  std::vector<int> encoders(katana->getNumberOfMotors(), 0);
+  std::vector< int > encoders(katana->getNumberOfMotors(), 0);
   const TKatMOT* motors;
   TCurrentMot mot[6];
   for (int i = 0; i < 6; i++)
@@ -269,8 +269,8 @@ int main(int argc, char* argv[])
         */
         case '(':
         {
-          std::vector<double> pose_result(6, 0);
-          std::vector<int> etc;
+          std::vector< double > pose_result(6, 0);
+          std::vector< int > etc;
           etc.push_back(20000);
           etc.push_back(-20000);
           etc.push_back(-20000);
@@ -709,7 +709,7 @@ int main(int argc, char* argv[])
         case 'e':  // VK_E (read encoder values)
           std::cout << "\nEncoder values: " << std::endl;
           katana->getRobotEncoders(encoders.begin(), encoders.end());
-          for (std::vector<int>::iterator i = encoders.begin(); i != encoders.end(); ++i)
+          for (std::vector< int >::iterator i = encoders.begin(); i != encoders.end(); ++i)
           {
             std::cout << *i << " ";
           }
@@ -808,7 +808,7 @@ int main(int argc, char* argv[])
             std::cout << "\n\nSet the TCP velocity to: ";
             std::cin >> velocity;
             katana->setMaximumLinearVelocity(velocity);
-            katana->setRobotVelocityLimit(static_cast<short>(velocity));
+            katana->setRobotVelocityLimit(static_cast< short >(velocity));
           }
           else
           {
@@ -816,7 +816,7 @@ int main(int argc, char* argv[])
             std::cout << "\n\nSet maximum velocity for all motors to: ";
             std::cin >> velocity;
             katana->setRobotVelocityLimit(velocity);
-            katana->setMaximumLinearVelocity(static_cast<double>(velocity));
+            katana->setMaximumLinearVelocity(static_cast< double >(velocity));
           }
           std::cout << std::endl;
         }
@@ -1071,7 +1071,7 @@ int main(int argc, char* argv[])
           }
 
           string line;
-          vector<string> tokens;
+          vector< string > tokens;
           const string delimiter = ",";
 
           int lines = 0;
@@ -1119,7 +1119,7 @@ int main(int argc, char* argv[])
 
           int count = 0;
 
-          for (std::vector<TPoint>::iterator iter = points.begin(); iter != points.end(); ++iter)
+          for (std::vector< TPoint >::iterator iter = points.begin(); iter != points.end(); ++iter)
           {
             listfile.precision(8);
             if (count != 0)

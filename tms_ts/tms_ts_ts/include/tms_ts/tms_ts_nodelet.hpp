@@ -112,11 +112,11 @@ private:
   {
     int state_id;
     std::string state_name;
-    std::vector<int> arg;
+    std::vector< int > arg;
     int cc_subtasks;  // num of CC subtasks
   };
 
-  std::vector<StateData> state_data;
+  std::vector< StateData > state_data;
 
   std::string file_name;
   std::string generated_container;

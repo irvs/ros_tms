@@ -200,9 +200,9 @@ int main(int argc, char **argv)
 
   ros::NodeHandle n;
 
-  client_path_checking = n.serviceClient<tms_msg_rp::rps_path_checking>("rps_path_checking");
-  client_smartpal5_control = n.serviceClient<tms_msg_rc::smartpal_control>("sp5_control");
-  client_smartpal5_speak = n.serviceClient<tms_msg_rc::smartpal_speak>("sp5_speak");
+  client_path_checking = n.serviceClient< tms_msg_rp::rps_path_checking >("rps_path_checking");
+  client_smartpal5_control = n.serviceClient< tms_msg_rc::smartpal_control >("sp5_control");
+  client_smartpal5_speak = n.serviceClient< tms_msg_rc::smartpal_speak >("sp5_speak");
 
   ros::Subscriber rps_alarm_subscriber = n.subscribe("rps_path_alarm", 1, alarm_check);
 

@@ -114,7 +114,7 @@ bool change_detection(tms_msg_ss::ods_change_detection::Request &req, tms_msg_ss
         srv4.request.cmd = 15;
         srv4.request.arg[0] = 1400.0;  // srv2.response.rps_path[0].rps_route[i].x;
         srv4.request.arg[1] = 3400.0;  // srv2.response.rps_path[0].rps_route[i].y;
-        srv4.request.arg[2] = -90.0;  // srv2.response.rps_path[0].rps_route[i].th;
+        srv4.request.arg[2] = -90.0;   // srv2.response.rps_path[0].rps_route[i].th;
 
         if (commander_to_move_robot.call(srv4))
         {
@@ -147,7 +147,7 @@ bool change_detection(tms_msg_ss::ods_change_detection::Request &req, tms_msg_ss
         srv4.request.cmd = 15;
         srv4.request.arg.resize(3);
         srv4.request.arg[0] = 25.0;  // srv2.response.rps_path[0].rps_route[i].x;
-        srv4.request.arg[1] = 5.0;  // srv2.response.rps_path[0].rps_route[i].th;
+        srv4.request.arg[1] = 5.0;   // srv2.response.rps_path[0].rps_route[i].th;
         srv4.request.arg[2] = 3.0;
 
         if (commander_to_move_robot.call(srv4))
@@ -245,9 +245,9 @@ bool change_detection(tms_msg_ss::ods_change_detection::Request &req, tms_msg_ss
         {
           srv4.request.unit = 1;
           srv4.request.cmd = 15;
-          srv4.request.arg[0] = 500.0;  // srv2.response.rps_path[0].rps_route[i].x;
+          srv4.request.arg[0] = 500.0;   // srv2.response.rps_path[0].rps_route[i].x;
           srv4.request.arg[1] = 3500.0;  // srv2.response.rps_path[0].rps_route[i].y;
-          srv4.request.arg[2] = 0.0;  // srv2.response.rps_path[0].rps_route[i].th;
+          srv4.request.arg[2] = 0.0;     // srv2.response.rps_path[0].rps_route[i].th;
 
           if (commander_to_move_robot.call(srv4))
           {
@@ -447,16 +447,16 @@ int main(int argc, char **argv)
   ros::NodeHandle n;
 
   service = n.advertiseService("ods_change_detection", change_detection);
-  commander_to_table = n.serviceClient<tms_msg_ss::ods_furniture>("chg_dt_table");
-  commander_to_shelf = n.serviceClient<tms_msg_ss::ods_furniture>("chg_dt_shelf");
-  commander_to_chair = n.serviceClient<tms_msg_ss::ods_furniture>("chg_dt_chair");
-  commander_to_bed = n.serviceClient<tms_msg_ss::ods_furniture>("chg_dt_bed");
-  commander_to_get_robots_pos = n.serviceClient<tms_msg_ss::ods_get_robots_pos>("ods_robot_position");
-  commander_to_path_planner = n.serviceClient<tms_msg_rp::rps_path_planning>("rps_path_planning");
-  commander_to_move_robot = n.serviceClient<tms_msg_rc::smartpal_control>("sp5_control");
-  commander_to_sp5_get_state = n.serviceClient<tms_msg_rc::smartpal_control>("sp5_control");
-  commander_to_get_robots_info = n.serviceClient<tms_msg_db::tmsdb_get_robots_info>("tmsdb_get_robots_info");
-  commander_to_sp5_sound = n.serviceClient<tms_msg_rc::robot_tts>("smartpal5_tts");
+  commander_to_table = n.serviceClient< tms_msg_ss::ods_furniture >("chg_dt_table");
+  commander_to_shelf = n.serviceClient< tms_msg_ss::ods_furniture >("chg_dt_shelf");
+  commander_to_chair = n.serviceClient< tms_msg_ss::ods_furniture >("chg_dt_chair");
+  commander_to_bed = n.serviceClient< tms_msg_ss::ods_furniture >("chg_dt_bed");
+  commander_to_get_robots_pos = n.serviceClient< tms_msg_ss::ods_get_robots_pos >("ods_robot_position");
+  commander_to_path_planner = n.serviceClient< tms_msg_rp::rps_path_planning >("rps_path_planning");
+  commander_to_move_robot = n.serviceClient< tms_msg_rc::smartpal_control >("sp5_control");
+  commander_to_sp5_get_state = n.serviceClient< tms_msg_rc::smartpal_control >("sp5_control");
+  commander_to_get_robots_info = n.serviceClient< tms_msg_db::tmsdb_get_robots_info >("tmsdb_get_robots_info");
+  commander_to_sp5_sound = n.serviceClient< tms_msg_rc::robot_tts >("smartpal5_tts");
 
   ros::spin();
 

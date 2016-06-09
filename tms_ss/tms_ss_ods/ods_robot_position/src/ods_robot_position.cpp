@@ -31,8 +31,8 @@ int TABLE;
 
 typedef struct
 {
-  pcl::PointCloud<pcl::PointXYZ> cloud;
-  pcl::PointCloud<pcl::PointXYZRGB> cloud_rgb;
+  pcl::PointCloud< pcl::PointXYZ > cloud;
+  pcl::PointCloud< pcl::PointXYZRGB > cloud_rgb;
   pcl::PointIndices inliers;
   pcl::PointXYZ g;
   int map[MAP_X][MAP_Y];
@@ -47,7 +47,7 @@ typedef struct
   int size_y;
 } object_map;
 
-std::vector<object_map> Object_Map;
+std::vector< object_map > Object_Map;
 
 #define SMARTPAL4 0
 #define SMARTPAL5 1
@@ -87,9 +87,9 @@ typedef struct
 Robot robot;
 Furniture table;
 
-pcl::PointCloud<pcl::PointXYZRGB> viewpoint;
+pcl::PointCloud< pcl::PointXYZRGB > viewpoint;
 
-void transformation(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::PointXYZ>& model)
+void transformation(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointCloud< pcl::PointXYZ >& model)
 {
   std::cout << "transformation" << std::endl;
 
@@ -144,12 +144,12 @@ void transformation(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pc
   return;
 }
 
-void filtering(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::PointXYZ>& model,
+void filtering(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointCloud< pcl::PointXYZ >& model,
                pcl::PointIndices& inliers)
 {
   std::cout << "filtering" << std::endl;
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
 
   m_size.min_x = 100.0;
   m_size.max_x = -100.0;
@@ -191,9 +191,9 @@ void filtering(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::Po
 }
 
 //ダウンサンプリングを行う
-void downsampling(pcl::PointCloud<pcl::PointXYZ>& cloud, float th)
+void downsampling(pcl::PointCloud< pcl::PointXYZ >& cloud, float th)
 {
-  pcl::VoxelGrid<pcl::PointXYZ> sor;
+  pcl::VoxelGrid< pcl::PointXYZ > sor;
   sor.setInputCloud(cloud.makeShared());
   sor.setLeafSize(th, th, th);
   sor.filter(cloud);
@@ -202,14 +202,14 @@ void downsampling(pcl::PointCloud<pcl::PointXYZ>& cloud, float th)
 }
 
 //マッチング
-void registration(pcl::PointCloud<pcl::PointXYZ>& cloud, pcl::PointCloud<pcl::PointXYZ>& model,
-                  pcl::PointCloud<pcl::PointXYZ>& cloud_out, pcl::PointCloud<pcl::PointXYZRGB>& tmp_rgb,
+void registration(pcl::PointCloud< pcl::PointXYZ >& cloud, pcl::PointCloud< pcl::PointXYZ >& model,
+                  pcl::PointCloud< pcl::PointXYZ >& cloud_out, pcl::PointCloud< pcl::PointXYZRGB >& tmp_rgb,
                   Eigen::Matrix4f& m)
 {
-  pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
+  pcl::IterativeClosestPoint< pcl::PointXYZ, pcl::PointXYZ > icp;
   icp.setInputSource(cloud.makeShared());
   icp.setInputTarget(model.makeShared());
-  pcl::PointCloud<pcl::PointXYZ> Final;
+  pcl::PointCloud< pcl::PointXYZ > Final;
   icp.align(Final);
 
   m = icp.getFinalTransformation();
@@ -234,8 +234,8 @@ bool robot_position(tms_msg_ss::ods_get_robots_pos::Request& req, tms_msg_ss::od
   //***************************
   // local variable declaration
   //***************************
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud1(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZ>::Ptr model(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud1(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZ >::Ptr model(new pcl::PointCloud< pcl::PointXYZ >);
   pcl::PointIndices::Ptr inliers(new pcl::PointIndices);
 
   //***************************
@@ -311,7 +311,7 @@ bool robot_position(tms_msg_ss::ods_get_robots_pos::Request& req, tms_msg_ss::od
   //***************************
   // transform input cloud
   //***************************
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tfm_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tfm_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
 
   transformation(*cloud1, *model);
 
@@ -343,7 +343,7 @@ bool robot_position(tms_msg_ss::ods_get_robots_pos::Request& req, tms_msg_ss::od
 
   pcl::io::savePCDFile("src/ods_robot_position/data/robot_position/filter.pcd", *cloud1);
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr dsp_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud< pcl::PointXYZ >::Ptr dsp_cloud(new pcl::PointCloud< pcl::PointXYZ >);
   pcl::copyPointCloud(*cloud1, *dsp_cloud);
   downsampling(*dsp_cloud, 0.02);
 
@@ -356,7 +356,7 @@ bool robot_position(tms_msg_ss::ods_get_robots_pos::Request& req, tms_msg_ss::od
   while (1)
   {
     // registration
-    pcl::PointCloud<pcl::PointXYZ>::Ptr m_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud< pcl::PointXYZ >::Ptr m_cloud(new pcl::PointCloud< pcl::PointXYZ >);
     registration(*dsp_cloud, *model, *m_cloud, *cloud1, m1);
 
     if ((double)(m1(0, 0) + m1(1, 1) + m1(2, 2) + m1(3, 3)) >= 4)
@@ -400,7 +400,7 @@ int main(int argc, char** argv)
 
   service = n.advertiseService("ods_robot_position", robot_position);
 
-  commander_to_kinect_capture = n.serviceClient<tms_msg_ss::ods_pcd>("capture_cloud");
+  commander_to_kinect_capture = n.serviceClient< tms_msg_ss::ods_pcd >("capture_cloud");
 
   ros::spin();
 

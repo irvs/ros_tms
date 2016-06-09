@@ -32,45 +32,45 @@ int main(int argc, char **argv)
   ros::NodeHandle n;
 
   ros::ServiceClient commander_to_get_robots_info =
-      n.serviceClient<tms_msg_db::tmsdb_get_robots_info>("tmsdb_get_robots_info");
+      n.serviceClient< tms_msg_db::tmsdb_get_robots_info >("tmsdb_get_robots_info");
   tms_msg_db::tmsdb_get_robots_info srv_get_r_info;
   ros::ServiceClient commander_to_get_movable_furnitures_info =
-      n.serviceClient<tms_msg_db::tmsdb_get_movable_furnitures_info>("tmsdb_get_movable_furnitures_info");
+      n.serviceClient< tms_msg_db::tmsdb_get_movable_furnitures_info >("tmsdb_get_movable_furnitures_info");
   tms_msg_db::tmsdb_get_movable_furnitures_info srv_get_f_info;
 
-  ros::ServiceClient client_gwpp = n.serviceClient<tms_msg_rp::rps_goal_planning>("rps_grasp_wagon_pos_planning");
+  ros::ServiceClient client_gwpp = n.serviceClient< tms_msg_rp::rps_goal_planning >("rps_grasp_wagon_pos_planning");
   tms_msg_rp::rps_goal_planning rgwp;
-  ros::ServiceClient client_gopp = n.serviceClient<tms_msg_rp::rps_goal_planning>("rps_give_obj_pos_planning");
+  ros::ServiceClient client_gopp = n.serviceClient< tms_msg_rp::rps_goal_planning >("rps_give_obj_pos_planning");
   tms_msg_rp::rps_goal_planning rgop;
-  ros::ServiceClient client_vpp = n.serviceClient<tms_msg_rp::rps_voronoi_path_planning>("rps_voronoi_path_planning");
+  ros::ServiceClient client_vpp = n.serviceClient< tms_msg_rp::rps_voronoi_path_planning >("rps_voronoi_path_planning");
   tms_msg_rp::rps_voronoi_path_planning rvpp;
   ros::ServiceClient client_pwpp =
-      n.serviceClient<tms_msg_rp::rps_push_wagon_path_planning>("rps_push_wagon_path_planning");
+      n.serviceClient< tms_msg_rp::rps_push_wagon_path_planning >("rps_push_wagon_path_planning");
   tms_msg_rp::rps_push_wagon_path_planning rpwp;
-  ros::ServiceClient client_sp = n.serviceClient<tms_msg_rp::rps_select_path>("rps_select_path");
+  ros::ServiceClient client_sp = n.serviceClient< tms_msg_rp::rps_select_path >("rps_select_path");
   tms_msg_rp::rps_select_path rsp;
 
-  ros::ServiceClient client_rc_goc = n.serviceClient<tms_msg_rp::rps_give_obj_command>("rps_give_obj_command");
+  ros::ServiceClient client_rc_goc = n.serviceClient< tms_msg_rp::rps_give_obj_command >("rps_give_obj_command");
   tms_msg_rp::rps_give_obj_command rc_goc;
   ros::ServiceClient client_rc_gop =
-      n.serviceClient<tms_msg_rp::rps_cnoid_grasp_obj_planning>("rps_cnoid_grasp_obj_planning");
+      n.serviceClient< tms_msg_rp::rps_cnoid_grasp_obj_planning >("rps_cnoid_grasp_obj_planning");
   tms_msg_rp::rps_cnoid_grasp_obj_planning rc_gop;
   ros::ServiceClient client_rc_giop =
-      n.serviceClient<tms_msg_rp::rps_cnoid_grasp_obj_planning>("rps_cnoid_give_obj_planning");
+      n.serviceClient< tms_msg_rp::rps_cnoid_grasp_obj_planning >("rps_cnoid_give_obj_planning");
   tms_msg_rp::rps_cnoid_grasp_obj_planning rc_giop;
   ros::ServiceClient client_rc_gwp =
-      n.serviceClient<tms_msg_rp::rps_cnoid_grasp_wagon_planning>("rps_cnoid_grasp_wagon_planning");
+      n.serviceClient< tms_msg_rp::rps_cnoid_grasp_wagon_planning >("rps_cnoid_grasp_wagon_planning");
   tms_msg_rp::rps_cnoid_grasp_wagon_planning rc_gwp;
   ros::ServiceClient client_rc_cgwp =
-      n.serviceClient<tms_msg_rp::rps_cnoid_grasp_wagon_planning>("rps_cnoid_calc_grasp_wagon_pose");
+      n.serviceClient< tms_msg_rp::rps_cnoid_grasp_wagon_planning >("rps_cnoid_calc_grasp_wagon_pose");
   tms_msg_rp::rps_cnoid_grasp_wagon_planning rc_cgwp;
   ros::ServiceClient client_rc_rwp =
-      n.serviceClient<tms_msg_rp::rps_cnoid_grasp_wagon_planning>("rps_cnoid_release_wagon_planning");
+      n.serviceClient< tms_msg_rp::rps_cnoid_grasp_wagon_planning >("rps_cnoid_release_wagon_planning");
   tms_msg_rp::rps_cnoid_grasp_wagon_planning rc_rwp;
-  ros::ServiceClient client_rc_PRM = n.serviceClient<tms_msg_rp::rps_cnoid_PRM_planning>("rps_cnoid_PRM_planning");
+  ros::ServiceClient client_rc_PRM = n.serviceClient< tms_msg_rp::rps_cnoid_PRM_planning >("rps_cnoid_PRM_planning");
   tms_msg_rp::rps_cnoid_PRM_planning rc_PRM;
 
-  vector<tms_msg_rp::rps_route> grasp_wagon_path, push_wagon_path;
+  vector< tms_msg_rp::rps_route > grasp_wagon_path, push_wagon_path;
   grasp_wagon_path.clear();
   push_wagon_path.clear();
 
@@ -144,7 +144,7 @@ int main(int argc, char **argv)
   planning_path_list.push_wagon_Robot_path.clear();
   planning_path_list.push_wagon_Wagon_path.clear();
 
-  vector<vector<tms_msg_rp::rps_position>> temp_push_wagon_Robot_path, temp_push_wagon_Wagon_path;
+  vector< vector< tms_msg_rp::rps_position > > temp_push_wagon_Robot_path, temp_push_wagon_Wagon_path;
   temp_push_wagon_Robot_path.clear();
   temp_push_wagon_Wagon_path.clear();
   ////////////////////////////////////////////
@@ -211,9 +211,9 @@ int main(int argc, char **argv)
           grasp_wagon_path[n].rps_route.push_back(rvpp.response.VoronoiPath[i]);
 
           //~ cout<< resetiosflags(ios_base::floatfield) <<"Point."<<setw(3)<<i<<"
-          //x:"<<setw(4)<<setprecision(4)<<rvpp.response.VoronoiPath[i].x<<"
-          //y:"<<setw(4)<<setprecision(4)<<rvpp.response.VoronoiPath[i].y<<"
-          //th:"<<fixed<<setprecision(1)<<rvpp.response.VoronoiPath[i].th<<endl;
+          // x:"<<setw(4)<<setprecision(4)<<rvpp.response.VoronoiPath[i].x<<"
+          // y:"<<setw(4)<<setprecision(4)<<rvpp.response.VoronoiPath[i].y<<"
+          // th:"<<fixed<<setprecision(1)<<rvpp.response.VoronoiPath[i].th<<endl;
         }
       }
     }
@@ -297,9 +297,9 @@ int main(int argc, char **argv)
           {
             rsp.request.in_path[k].rps_route.push_back(rpwp.response.RobotPath[i]);
             //~ std::cout<< resetiosflags(ios_base::floatfield) <<"Point."<<setw(3)<<i<<"
-            //x:"<<setw(4)<<setprecision(4)<<rpwp.response.RobotPath[i].x<<"
-            //y:"<<setw(4)<<setprecision(4)<<rpwp.response.RobotPath[i].y<<"
-            //th:"<<fixed<<setprecision(1)<<rpwp.response.RobotPath[i].th<<std::endl;
+            // x:"<<setw(4)<<setprecision(4)<<rpwp.response.RobotPath[i].x<<"
+            // y:"<<setw(4)<<setprecision(4)<<rpwp.response.RobotPath[i].y<<"
+            // th:"<<fixed<<setprecision(1)<<rpwp.response.RobotPath[i].th<<std::endl;
           }
           k++;
         }
@@ -325,9 +325,9 @@ int main(int argc, char **argv)
     //~ for(unsigned int n=0;n<rsp.response.out_path.size();n++){
     //~ for(unsigned int m=0;m<rsp.response.out_path[n].rps_route.size();m++){
     //~ std::cout<< resetiosflags(ios_base::floatfield) <<"Point."<<setw(3)<<m<<"
-    //x:"<<setw(4)<<setprecision(4)<<rsp.response.out_path[n].rps_route[m].x<<"
-    //y:"<<setw(4)<<setprecision(4)<<rsp.response.out_path[n].rps_route[m].y<<"
-    //th:"<<fixed<<setprecision(1)<<rsp.response.out_path[n].rps_route[m].th<<std::endl;
+    // x:"<<setw(4)<<setprecision(4)<<rsp.response.out_path[n].rps_route[m].x<<"
+    // y:"<<setw(4)<<setprecision(4)<<rsp.response.out_path[n].rps_route[m].y<<"
+    // th:"<<fixed<<setprecision(1)<<rsp.response.out_path[n].rps_route[m].th<<std::endl;
     //~ }
     //~ }
   }

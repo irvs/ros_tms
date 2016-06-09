@@ -42,9 +42,9 @@ protected:
   // robot pointer
   ArRobot *myRobot;
   // the functor callbacks
-  ArFunctorC<ConnHandler> myConnectedCB;
-  ArFunctorC<ConnHandler> myConnFailCB;
-  ArFunctorC<ConnHandler> myDisconnectedCB;
+  ArFunctorC< ConnHandler > myConnectedCB;
+  ArFunctorC< ConnHandler > myConnFailCB;
+  ArFunctorC< ConnHandler > myDisconnectedCB;
 };
 
 ConnHandler::ConnHandler(ArRobot *robot)
@@ -128,7 +128,7 @@ bool Vicon_Psetodom(std_srvs::Empty::Request &req, std_srvs::Empty::Response &re
 //ロボット内部のオドメトリ値を変更
 bool Psetodom(tms_msg_rc::tms_rc_ppose::Request &req, tms_msg_rc::tms_rc_ppose::Response &res)
 {
-  pose.setPose(0.0, 0.0, 0.0);  //関数突入時に大域変数pose初期化
+  pose.setPose(0.0, 0.0, 0.0);                                    //関数突入時に大域変数pose初期化
   pose.setPose((double)req.px, (double)req.py, (double)req.pth);  // set robot odometry "pose"
 
   robot.lock();
@@ -353,14 +353,14 @@ int main(int argc, char **argv)
 
   ros::Timer timer = n.createTimer(ros::Duration(0.1), publishodom);
 
-  publish1 = n.advertise<tms_msg_ss::fss_object_data>("kkp_current_data", 10);
+  publish1 = n.advertise< tms_msg_ss::fss_object_data >("kkp_current_data", 10);
 
   ros::ServiceServer service1 = n.advertiseService("psetodom", Psetodom);
   ros::ServiceServer service2 = n.advertiseService("pmove", Pmove);
   ros::ServiceServer service3 = n.advertiseService("pparam", Pparam);
   ros::ServiceServer service4 = n.advertiseService("vicon_psetodom", Vicon_Psetodom);
 
-  get_data_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
+  get_data_client = n.serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader/dbreader");
 
   // Aria init//
   Aria::init();

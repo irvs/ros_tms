@@ -23,8 +23,8 @@ ros::ServiceClient commander_to_get_movable_furnitures_info;
 ros::ServiceClient commander_to_get_person_behavior_info;
 ros::ServiceClient commander_to_get_person_info;
 
-vector<vector<CollisionMapData>> sub_Map;
-vector<ManipulabilityMapData> manip_Map;
+vector< vector< CollisionMapData > > sub_Map;
+vector< ManipulabilityMapData > manip_Map;
 
 ////////////////////////////////////////////////////////////////////////
 void set_RPS_MAP(const tms_msg_rp::rps_map_full::ConstPtr& RPS_MAP)
@@ -37,7 +37,7 @@ void set_RPS_MAP(const tms_msg_rp::rps_map_full::ConstPtr& RPS_MAP)
   y_ulimit = RPS_MAP->y_ulimit;
   cell_size = RPS_MAP->cell_size;
 
-  vector<CollisionMapData> temp_map_line;
+  vector< CollisionMapData > temp_map_line;
   CollisionMapData temp_map_d;
 
   for (unsigned int x = 0; x < RPS_MAP->rps_map_x.size(); x++)
@@ -56,8 +56,8 @@ void set_RPS_MAP(const tms_msg_rp::rps_map_full::ConstPtr& RPS_MAP)
   }
 }
 
-void removeCollisionPos(vector<vector<CollisionMapData>> Map, vector<vector<double>> in_posList,
-                        vector<vector<double>>& out_posList)
+void removeCollisionPos(vector< vector< CollisionMapData > > Map, vector< vector< double > > in_posList,
+                        vector< vector< double > >& out_posList)
 {
   out_posList.clear();
 
@@ -77,7 +77,7 @@ void removeCollisionPos(vector<vector<CollisionMapData>> Map, vector<vector<doub
   }
 }
 
-void expandRobotObjDist(vector<double> objPos, double expand_dist, vector<vector<double>>& out_posList)
+void expandRobotObjDist(vector< double > objPos, double expand_dist, vector< vector< double > >& out_posList)
 {
   if (out_posList.empty())
   {
@@ -96,7 +96,7 @@ void expandRobotObjDist(vector<double> objPos, double expand_dist, vector<vector
 
 // human_pos = face_center_pos(m)
 // human_height = 170 or 160 or 150
-bool unifyManipulabilityMap(vector<double> human_pos, double human_th, int human_height, char robot_LR,
+bool unifyManipulabilityMap(vector< double > human_pos, double human_th, int human_height, char robot_LR,
                             bool robot_useWaist, char human_LR, bool human_useWaist, string& message)
 {  // LR_flg:0=left, 1=right
   manip_Map.resize(human_height + 1);
@@ -116,7 +116,8 @@ bool unifyManipulabilityMap(vector<double> human_pos, double human_th, int human
   int CommaCount = 0;
   double temp_z = 0.0;
 
-  double human_z_offset = (double)human_height - 10.0 - human_pos[2] * 100.0;  // 10.0:頭のてっぺんから目の高さまでの距離
+  double human_z_offset =
+      (double)human_height - 10.0 - human_pos[2] * 100.0;  // 10.0:頭のてっぺんから目の高さまでの距離
 
   // initial manip_Map
   for (int i = 0; i < manip_Map.size(); i++)
@@ -226,7 +227,7 @@ bool unifyManipulabilityMap(vector<double> human_pos, double human_th, int human
   //~ fp_out = fopen( fname_out, "w" );
   //~ for(unsigned int z=0;z<manip_Map.size();z++){
   //~ fprintf( fp_out, "%d,%f,%f,%f,%f\n", z, manip_Map[z].obj_pos[0], manip_Map[z].obj_pos[1],
-  //manip_Map[z].dist_from_obj_to_robot, manip_Map[z].total_manipulability);
+  // manip_Map[z].dist_from_obj_to_robot, manip_Map[z].total_manipulability);
   //~ }
   //~ fclose( fp_out );
   //~ printf( "%sファイル書き込みが終わりました\n", fname_out );
@@ -324,7 +325,7 @@ bool unifyManipulabilityMap(vector<double> human_pos, double human_th, int human
   //~ fp_out_h = fopen( fname_out_h, "w" );
   //~ for(unsigned int z=0;z<manip_Map.size();z++){
   //~ fprintf( fp_out_h, "%d,%f,%f,%f,%f\n", z, manip_Map[z].obj_pos[0], manip_Map[z].obj_pos[1],
-  //manip_Map[z].dist_from_obj_to_robot, manip_Map[z].total_manipulability);
+  // manip_Map[z].dist_from_obj_to_robot, manip_Map[z].total_manipulability);
   //~ }
   //~ fclose( fp_out_h );
   //~ printf( "%sファイル書き込みが終わりました\n", fname_out_h );
@@ -332,7 +333,7 @@ bool unifyManipulabilityMap(vector<double> human_pos, double human_th, int human
   return true;
 }
 
-void QSort_manip_map_peak(vector<ManipulabilityMapData>& m_Map, int left, int right)
+void QSort_manip_map_peak(vector< ManipulabilityMapData >& m_Map, int left, int right)
 {
   int i, j;
   double pivot;
@@ -367,7 +368,7 @@ void QSort_manip_map_peak(vector<ManipulabilityMapData>& m_Map, int left, int ri
     QSort_manip_map_peak(m_Map, j + 1, right);
 }
 
-void QSort_manip_map_total(vector<ManipulabilityMapData>& m_Map, int left, int right)
+void QSort_manip_map_total(vector< ManipulabilityMapData >& m_Map, int left, int right)
 {
   int i, j;
   double pivot;
@@ -402,7 +403,7 @@ void QSort_manip_map_total(vector<ManipulabilityMapData>& m_Map, int left, int r
     QSort_manip_map_total(m_Map, j + 1, right);
 }
 
-void QSort_give_point(vector<GivePosData>& give_point, int left, int right)
+void QSort_give_point(vector< GivePosData >& give_point, int left, int right)
 {
   int i, j;
   double pivot;
@@ -437,7 +438,7 @@ void QSort_give_point(vector<GivePosData>& give_point, int left, int right)
     QSort_give_point(give_point, j + 1, right);
 }
 
-void QSort_path_Evaluation(vector<double>& path_E, vector<int>& rank, int left, int right)
+void QSort_path_Evaluation(vector< double >& path_E, vector< int >& rank, int left, int right)
 {
   int i, j, i_temp;
   double pivot, temp;
@@ -475,7 +476,7 @@ void QSort_path_Evaluation(vector<double>& path_E, vector<int>& rank, int left, 
     QSort_path_Evaluation(path_E, rank, j + 1, right);
 }
 
-bool set_table_area(vector<vector<CollisionMapData>>& Map, double table_center_x, double table_center_y,
+bool set_table_area(vector< vector< CollisionMapData > >& Map, double table_center_x, double table_center_y,
                     double table_th, double table_size_x, double table_size_y, double table_size_z)
 {
   for (int x = 0; x < Map.size(); x++)
@@ -539,7 +540,7 @@ bool set_table_area(vector<vector<CollisionMapData>>& Map, double table_center_x
   return true;
 }
 
-bool set_table_area_id(vector<vector<CollisionMapData>>& Map, int table_id, string& message)
+bool set_table_area_id(vector< vector< CollisionMapData > >& Map, int table_id, string& message)
 {
   double table_th = deg2rad(0.0);
   double table_size_x = 800.0, table_size_y = 800.0, table_size_z = 700.0;
@@ -577,7 +578,7 @@ bool set_table_area_id(vector<vector<CollisionMapData>>& Map, int table_id, stri
   return true;
 }
 
-bool set_person_view(vector<vector<CollisionMapData>>& Map, double person_x, double person_y, double person_th)
+bool set_person_view(vector< vector< CollisionMapData > >& Map, double person_x, double person_y, double person_th)
 {
   int i_person_x = (int)round(((person_x / 1000.0) - x_llimit) / cell_size);
   int i_person_y = (int)round(((person_y / 1000.0) - y_llimit) / cell_size);
@@ -614,7 +615,7 @@ bool set_person_view(vector<vector<CollisionMapData>>& Map, double person_x, dou
   return true;
 }
 
-bool set_person_view_id(vector<vector<CollisionMapData>>& Map, int person_id, vector<double>& person_pos,
+bool set_person_view_id(vector< vector< CollisionMapData > >& Map, int person_id, vector< double >& person_pos,
                         double& person_th, string& message)
 {
   //引数にidを使っているが,実際にtms_dbから取得できるデータはidに関わらず最新の1人分のデータ
@@ -718,8 +719,8 @@ bool set_person_view_id(vector<vector<CollisionMapData>>& Map, int person_id, ve
   return true;
 }
 
-bool dividePosList(unsigned int k, vector<vector<double>> in_posList, vector<vector<vector<double>>>& out_posList,
-                   string& message)
+bool dividePosList(unsigned int k, vector< vector< double > > in_posList,
+                   vector< vector< vector< double > > >& out_posList, string& message)
 {
   if (k < 0)
   {
@@ -735,7 +736,7 @@ bool dividePosList(unsigned int k, vector<vector<double>> in_posList, vector<vec
   }
 
   out_posList.clear();
-  vector<vector<double>> tempList;
+  vector< vector< double > > tempList;
   tempList.clear();
   int j = 0;
   for (unsigned int i = 0; i < in_posList.size(); i++)
@@ -756,8 +757,8 @@ bool dividePosList(unsigned int k, vector<vector<double>> in_posList, vector<vec
   return true;
 }
 
-bool calcRobotPos_GiveObj(unsigned int rank, vector<vector<double>>& out_posList, vector<double>& object_pos,
-                          vector<double>& robot_joint_angle, string& message)
+bool calcRobotPos_GiveObj(unsigned int rank, vector< vector< double > >& out_posList, vector< double >& object_pos,
+                          vector< double >& robot_joint_angle, string& message)
 {
   out_posList.clear();
   object_pos.clear();
@@ -782,7 +783,7 @@ bool calcRobotPos_GiveObj(unsigned int rank, vector<vector<double>>& out_posList
   object_pos = manip_Map[rank].obj_pos;
   robot_joint_angle = manip_Map[rank].robot_joint_angle;
 
-  vector<double> BasePalmPos, BasePos, PalmPos;
+  vector< double > BasePalmPos, BasePos, PalmPos;
   BasePalmPos.resize(6);
   BasePos.resize(3);
   PalmPos.resize(3);
@@ -824,7 +825,7 @@ bool start_rps_goal_planner(tms_msg_rp::rps_goal_planning::Request& req, tms_msg
   res.success = 0;
   res.goal_pos.clear();
 
-  std::vector<double> start, target;
+  std::vector< double > start, target;
   tms_msg_rp::rps_position temp_pos;
   start.clear();
   start.resize(3);
@@ -923,10 +924,10 @@ bool start_grasp_wagon_pos_planner(tms_msg_rp::rps_goal_planning::Request& req,
   setCollisionArea(sub_Map, collision_threshold, res.message);
   ///////////////////////////////////////////////
 
-  vector<vector<double>> temp_posList, robot_posList;
+  vector< vector< double > > temp_posList, robot_posList;
   temp_posList.clear();
   robot_posList.clear();
-  vector<double> temp_pos;
+  vector< double > temp_pos;
   temp_pos.resize(3);
 
   for (int i = 0; i < 4; i++)
@@ -986,22 +987,22 @@ bool start_give_obj_pos_planner(tms_msg_rp::rps_goal_planning::Request& req,
   res.goal_pos.clear();
   res.joint_angle_array.clear();
 
-  vector<double> person_pos, object_pos, robot_joint_angle;
+  vector< double > person_pos, object_pos, robot_joint_angle;
   double person_th;
   if (!set_person_view_id(sub_Map, req.target_id, person_pos, person_th, res.message))
     return false;
   if (!set_table_area_id(sub_Map, 14, res.message))
     return false;
 
-  vector<vector<double>> giveObjPos;
-  vector<vector<vector<double>>> divide_giveObjPos, free_giveObjPos, robotPos;
+  vector< vector< double > > giveObjPos;
+  vector< vector< vector< double > > > divide_giveObjPos, free_giveObjPos, robotPos;
   if (!unifyManipulabilityMap(person_pos, person_th, person_height, useRobotHand, useRobotWaist, useHumanHand,
                               useHumanWaist, res.message))
     return false;
   if (!calcRobotPos_GiveObj(0, giveObjPos, object_pos, robot_joint_angle, res.message))
     return false;
 
-  vector<int> i_obj_pos;
+  vector< int > i_obj_pos;
   i_obj_pos.resize(3);
   double put_obj_offset = 100.0;  //(mm)
 
@@ -1025,7 +1026,7 @@ bool start_give_obj_pos_planner(tms_msg_rp::rps_goal_planning::Request& req,
     return false;
 
   free_giveObjPos.resize(divide_giveObjPos.size());
-  vector<vector<GivePosData>> give_ObjPosData;
+  vector< vector< GivePosData > > give_ObjPosData;
   give_ObjPosData.resize(divide_giveObjPos.size());
   GivePosData temp_GPD;
   for (unsigned int i = 0; i < divide_giveObjPos.size(); i++)
@@ -1103,22 +1104,22 @@ bool start_select_path(tms_msg_rp::rps_select_path::Request& req, tms_msg_rp::rp
   res.out_path.clear();
   res.out_path_rank.clear();
 
-  vector<double> person_pos;
+  vector< double > person_pos;
   double person_th;
   if (!set_person_view_id(sub_Map, req.person_id, person_pos, person_th, res.message))
     return false;
   if (!set_table_area_id(sub_Map, 14, res.message))
     return false;
 
-  vector<vector<double>> temp_path, temp_comp_path;
+  vector< vector< double > > temp_path, temp_comp_path;
   temp_path.clear();
   temp_comp_path.clear();
-  vector<double> temp_pos;
+  vector< double > temp_pos;
   temp_pos.clear();
 
-  vector<int> rank;
+  vector< int > rank;
   rank.clear();
-  vector<double> L, R, V, E;
+  vector< double > L, R, V, E;
   L.clear();
   R.clear();
   V.clear();
@@ -1207,14 +1208,14 @@ int main(int argc, char** argv)
 
   ros::ServiceServer service_select_path = n.advertiseService("rps_select_path", start_select_path);
 
-  commander_to_get_robots_info = n.serviceClient<tms_msg_db::tmsdb_get_robots_info>("tmsdb_get_robots_info");
+  commander_to_get_robots_info = n.serviceClient< tms_msg_db::tmsdb_get_robots_info >("tmsdb_get_robots_info");
   commander_to_get_furnitures_info =
-      n.serviceClient<tms_msg_db::tmsdb_get_furnitures_info>("tmsdb_get_furnitures_info");
+      n.serviceClient< tms_msg_db::tmsdb_get_furnitures_info >("tmsdb_get_furnitures_info");
   commander_to_get_movable_furnitures_info =
-      n.serviceClient<tms_msg_db::tmsdb_get_movable_furnitures_info>("tmsdb_get_movable_furnitures_info");
+      n.serviceClient< tms_msg_db::tmsdb_get_movable_furnitures_info >("tmsdb_get_movable_furnitures_info");
   commander_to_get_person_behavior_info =
-      n.serviceClient<tms_msg_db::tmsdb_get_person_behavior_info>("tmsdb_get_person_info_3");
-  commander_to_get_person_info = n.serviceClient<tms_msg_db::tmsdb_get_person_info>("tmsdb_get_current_person_info");
+      n.serviceClient< tms_msg_db::tmsdb_get_person_behavior_info >("tmsdb_get_person_info_3");
+  commander_to_get_person_info = n.serviceClient< tms_msg_db::tmsdb_get_person_info >("tmsdb_get_current_person_info");
 
   ros::spin();
 

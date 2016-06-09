@@ -42,9 +42,9 @@ public:
   virtual void doPost();
   virtual void doHead();
 
-  virtual void onReadable();  // Data has been read
+  virtual void onReadable();   // Data has been read
   virtual void onWriteable();  // Data has been written & buf is free
-  virtual void onClose();  // Connection is closing
+  virtual void onClose();      // Connection is closing
 };
 
 #endif

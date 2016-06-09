@@ -15,7 +15,7 @@ void tms_ts_nodelet::ROS_TMS_TS::onInit()
   ros::NodeHandle &private_nh = getPrivateNodeHandle();
   service = private_nh.advertiseService("tms_ts", &ROS_TMS_TS::tsCallback, this);
   // for connecting to ROSTMS_DB task,subtask
-  db_reader_client = nh.serviceClient<tms_msg_db::TmsdbGetData>("tms_db_reader");
+  db_reader_client = nh.serviceClient< tms_msg_db::TmsdbGetData >("tms_db_reader");
 }
 
 std::string tms_ts_nodelet::ROS_TMS_TS::rosCheckTime(boost::posix_time::ptime time)
@@ -106,7 +106,7 @@ int tms_ts_nodelet::ROS_TMS_TS::ConvertArgType(std::string arg_type)
  *        3: token [+/|] token*/
 int tms_ts_nodelet::ROS_TMS_TS::JudgeArgType(std::string state1, std::string state2)
 {
-  std::vector<std::string> seq_of_argument1, seq_of_argument2;
+  std::vector< std::string > seq_of_argument1, seq_of_argument2;
   seq_of_argument1.clear();
   seq_of_argument2.clear();
 
@@ -149,7 +149,7 @@ int tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string state
   int subtasks = 0;
 
   tms_msg_db::TmsdbGetData srv;
-  std::vector<std::string> seq_of_argument1, seq_of_argument2;
+  std::vector< std::string > seq_of_argument1, seq_of_argument2;
   seq_of_argument1.clear();
   seq_of_argument2.clear();
 
@@ -328,7 +328,7 @@ int tms_ts_nodelet::ROS_TMS_TS::BuildStateVector(std::string state1, std::string
 {
   tms_msg_db::TmsdbGetData srv;
   StateData sd;
-  std::vector<std::string> seq_of_argument1, seq_of_argument2;
+  std::vector< std::string > seq_of_argument1, seq_of_argument2;
   seq_of_argument1.clear();
   seq_of_argument2.clear();
 
@@ -351,7 +351,7 @@ int tms_ts_nodelet::ROS_TMS_TS::BuildStateVector(std::string state1, std::string
     for (int i = 1; i < seq_of_argument1.size(); i++)
       sd.arg.push_back(ConvertArgType(seq_of_argument1.at(i)));
 
-    std::vector<StateData>::iterator it = state_data.begin();
+    std::vector< StateData >::iterator it = state_data.begin();
     it = state_data.insert(it, sd);
   }
   else if (arg_type == 2)
@@ -410,7 +410,7 @@ int tms_ts_nodelet::ROS_TMS_TS::AddOneStateSQ(std::string state1)
 {
   tms_msg_db::TmsdbGetData srv;
   StateData sd;
-  std::vector<std::string> seq_of_argument1;
+  std::vector< std::string > seq_of_argument1;
   seq_of_argument1.clear();
 
   boost::split(seq_of_argument1, state1, boost::is_any_of("$"));
@@ -605,7 +605,7 @@ bool tms_ts_nodelet::ROS_TMS_TS::tsCallback(tms_msg_ts::ts_req::Request &req, tm
     int sp = 0;            // stack pointer
 
     std::string subtask = srv.response.tmsdb[0].etcdata;
-    std::vector<std::string> seq_of_subtask;
+    std::vector< std::string > seq_of_subtask;
 
     seq_of_subtask.clear();
     boost::split(seq_of_subtask, subtask, boost::is_any_of(" "));

@@ -4,7 +4,7 @@
 #include <pcl/registration/icp.h>
 
 //重心位置を求める
-pcl::PointXYZ g_pos(pcl::PointCloud<pcl::PointXYZ>& cloud)
+pcl::PointXYZ g_pos(pcl::PointCloud< pcl::PointXYZ >& cloud)
 {
   pcl::PointXYZ g;
 
@@ -25,7 +25,7 @@ pcl::PointXYZ g_pos(pcl::PointCloud<pcl::PointXYZ>& cloud)
 int main()
 {
   //宣言
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud< pcl::PointXYZ >::Ptr cloud(new pcl::PointCloud< pcl::PointXYZ >);
 
   // chair
   for (double z = -0.010; z < 0.780; z += 0.005)

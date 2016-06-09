@@ -40,9 +40,9 @@ pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 //-------------------------------------------
 
 // LASER_PARAMETOR----------------------------
-std::vector<float> scanData1;
-std::vector<float> scanData2;
-std::vector<float> scanData3;
+std::vector< float > scanData1;
+std::vector< float > scanData2;
+std::vector< float > scanData3;
 CLaser laser;
 bool CallbackCalled1 = false;
 bool CallbackCalled2 = false;
@@ -285,8 +285,8 @@ void *Processing(void *ptr)
         }
       }
     }
-    std::vector<double> class_point_x;
-    std::vector<double> class_point_y;
+    std::vector< double > class_point_x;
+    std::vector< double > class_point_y;
 
     for (int n = 0; n < laser.m_cnMaxConnect; n++)
     {
@@ -390,7 +390,7 @@ int main(int argc, char **argv)
 
   ros::init(argc, argv, "urg_tracker");
   ros::NodeHandle n;
-  ros::Publisher pub = n.advertise<tms_msg_ss::tracking_points>("tracking_points", 10);
+  ros::Publisher pub = n.advertise< tms_msg_ss::tracking_points >("tracking_points", 10);
   ros::Subscriber sub1 = n.subscribe("pot_urg1/LaserTracker", 1000, LaserSensingCallback1);
   ros::Subscriber sub2 = n.subscribe("pot_urg2/LaserTracker", 1000, LaserSensingCallback2);
   ros::Subscriber sub3 = n.subscribe("pot_urg3/LaserTracker", 1000, LaserSensingCallback3);

@@ -32,7 +32,7 @@ using namespace std;
 ros::Subscriber rosChairSub;
 ros::Publisher rosChairPub;
 
-std::vector<FuniturePosition> chairPos;
+std::vector< FuniturePosition > chairPos;
 
 float getLength(float x1, float y1, float x2, float y2)
 {
@@ -112,7 +112,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "fss_chair_buffer");
   ros::NodeHandle nh;
   rosChairSub = nh.subscribe("fss_chair_data", 10, callback);
-  rosChairPub = nh.advertise<tms_msg_ss::fss_observed_datas>("fss_chair_buffer_data", 10);
+  rosChairPub = nh.advertise< tms_msg_ss::fss_observed_datas >("fss_chair_buffer_data", 10);
 
   ros::spin();
 

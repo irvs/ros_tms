@@ -26,8 +26,8 @@ const int TRY = 5;
 const int SUC = 4;
 
 cv_bridge::CvImagePtr cv_ptr;
-pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-std::vector<int> idx;
+pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+std::vector< int > idx;
 cv::Mat mask(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC1);
 
 int a = 0;         //Šç”F¯¬Œ÷”»’è

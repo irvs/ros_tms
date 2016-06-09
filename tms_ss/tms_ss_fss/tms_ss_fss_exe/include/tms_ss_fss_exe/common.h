@@ -145,7 +145,7 @@ typedef struct
 //------------------------------------------------------------------------------
 typedef struct
 {
-  std::vector<LRF> vstRawDataQueue;
+  std::vector< LRF > vstRawDataQueue;
 } QUEUE;
 
 //------------------------------------------------------------------------------
@@ -168,22 +168,22 @@ typedef struct
 //------------------------------------------------------------------------------
 typedef struct
 {
-  vector<uint32_t> viScanID;
-  vector<float> vfDistance;
-  vector<float> vfX;
-  vector<float> vfY;
+  vector< uint32_t > viScanID;
+  vector< float > vfDistance;
+  vector< float > vfX;
+  vector< float > vfY;
 } POINT_GROUP;
 
 //------------------------------------------------------------------------------
 typedef struct
 {
   ros::Time tMeasuredTime;
-  vector<uint32_t> viID;
-  vector<float> vfClusterCenterX;
-  vector<float> vfClusterCenterY;
-  vector<float> vfClusterSize;
-  vector<float> vfAvgIntrinsicIntensity;
-  vector<tms_msg_ss::fss_tf_datas> vstDatas;
+  vector< uint32_t > viID;
+  vector< float > vfClusterCenterX;
+  vector< float > vfClusterCenterY;
+  vector< float > vfClusterSize;
+  vector< float > vfAvgIntrinsicIntensity;
+  vector< tms_msg_ss::fss_tf_datas > vstDatas;
 } CLASS_DATA;
 
 //------------------------------------------------------------------------------
@@ -202,10 +202,10 @@ public:
   float cost;
   bool isLeaf;
   Cluster cluster;
-  std::list<Node>::iterator genuin_child_it;
+  std::list< Node >::iterator genuin_child_it;
 
-  std::vector<int> child_index;
-  std::vector<std::list<Node>::iterator> child_it;
+  std::vector< int > child_index;
+  std::vector< std::list< Node >::iterator > child_it;
 };
 
 //------------------------------------------------------------------------------

@@ -30,7 +30,7 @@ float fBackgroundData[721] = {0};
 float fBackgroundThreshold = 100.0;  // 100mm
 
 //------------------------------------------------------------------------------
-bool is_intersect(vector<LINE> f_vstA, vector<LINE> f_vstB)
+bool is_intersect(vector< LINE > f_vstA, vector< LINE > f_vstB)
 {
   for (unsigned int i = 0; i < f_vstA.size(); ++i)
   {
@@ -102,7 +102,7 @@ void lrfCallback(const tms_msg_ss::fss_pre_data::ConstPtr& msg)
   tms_msg_ss::fss_tf_data fss_tf_data;
 
   LRF_DATA stLrfData;
-  vector<LRF_DATA> vstLrfDataTemp;
+  vector< LRF_DATA > vstLrfDataTemp;
 
   POINT stPoint;
 
@@ -114,16 +114,16 @@ void lrfCallback(const tms_msg_ss::fss_pre_data::ConstPtr& msg)
   LINE stLrf_Laser_line;
   POINT stIntersection_point;
 
-  vector<uint8_t> vstReflect;
-  vector<uint8_t> vstIsForwardPoint;
-  vector<float> vstDistance;
-  vector<float> vstIntensity;
-  vector<float> vstIntrinsicIntensity;
-  vector<float> vstAcuteAngle;
-  vector<float> vstX1;
-  vector<float> vstY1;
-  vector<float> vstX2;
-  vector<float> vstY2;
+  vector< uint8_t > vstReflect;
+  vector< uint8_t > vstIsForwardPoint;
+  vector< float > vstDistance;
+  vector< float > vstIntensity;
+  vector< float > vstIntrinsicIntensity;
+  vector< float > vstAcuteAngle;
+  vector< float > vstX1;
+  vector< float > vstY1;
+  vector< float > vstX2;
+  vector< float > vstY2;
 
   unsigned int iLength = 0;
 
@@ -296,13 +296,13 @@ void lrfCallback(const tms_msg_ss::fss_pre_data::ConstPtr& msg)
 
   //--------------------------------------------------------------------------
   // Make Occlusion Area Data
-  vector<LINE> vstOcclusion;
-  vector<LINE> vstLaser;
+  vector< LINE > vstOcclusion;
+  vector< LINE > vstLaser;
   LINE stLaser;
 
-  vector<POINT> vstOcculusion;
-  vector<float> vstOcculusionX;
-  vector<float> vstOcculusionY;
+  vector< POINT > vstOcculusion;
+  vector< float > vstOcculusionX;
+  vector< float > vstOcculusionY;
 
   vstOcculusion.clear();
   vstOcculusionX.clear();
@@ -545,7 +545,7 @@ void lrfCallback1(const tms_msg_ss::fss_pre_data::ConstPtr& msg)
   tms_msg_ss::fss_tf_data fss_tf_data;
 
   LRF_DATA stLrfData;
-  vector<LRF_DATA> vstLrfDataTemp;
+  vector< LRF_DATA > vstLrfDataTemp;
 
   POINT stPoint;
 
@@ -557,16 +557,16 @@ void lrfCallback1(const tms_msg_ss::fss_pre_data::ConstPtr& msg)
   LINE stLrf_Laser_line;
   POINT stIntersection_point;
 
-  vector<uint8_t> vstReflect;
-  vector<uint8_t> vstIsForwardPoint;
-  vector<float> vstDistance;
-  vector<float> vstIntensity;
-  vector<float> vstIntrinsicIntensity;
-  vector<float> vstAcuteAngle;
-  vector<float> vstX1;
-  vector<float> vstY1;
-  vector<float> vstX2;
-  vector<float> vstY2;
+  vector< uint8_t > vstReflect;
+  vector< uint8_t > vstIsForwardPoint;
+  vector< float > vstDistance;
+  vector< float > vstIntensity;
+  vector< float > vstIntrinsicIntensity;
+  vector< float > vstAcuteAngle;
+  vector< float > vstX1;
+  vector< float > vstY1;
+  vector< float > vstX2;
+  vector< float > vstY2;
 
   unsigned int iLength = 0;
 
@@ -690,7 +690,7 @@ void lrfCallback2(const tms_msg_ss::fss_pre_data::ConstPtr& msg)
   tms_msg_ss::fss_tf_data fss_tf_data;
 
   LRF_DATA stLrfData;
-  vector<LRF_DATA> vstLrfDataTemp;
+  vector< LRF_DATA > vstLrfDataTemp;
 
   POINT stPoint;
 
@@ -702,16 +702,16 @@ void lrfCallback2(const tms_msg_ss::fss_pre_data::ConstPtr& msg)
   LINE stLrf_Laser_line;
   POINT stIntersection_point;
 
-  vector<uint8_t> vstReflect;
-  vector<uint8_t> vstIsForwardPoint;
-  vector<float> vstDistance;
-  vector<float> vstIntensity;
-  vector<float> vstIntrinsicIntensity;
-  vector<float> vstAcuteAngle;
-  vector<float> vstX1;
-  vector<float> vstY1;
-  vector<float> vstX2;
-  vector<float> vstY2;
+  vector< uint8_t > vstReflect;
+  vector< uint8_t > vstIsForwardPoint;
+  vector< float > vstDistance;
+  vector< float > vstIntensity;
+  vector< float > vstIntrinsicIntensity;
+  vector< float > vstAcuteAngle;
+  vector< float > vstX1;
+  vector< float > vstY1;
+  vector< float > vstX2;
+  vector< float > vstY2;
 
   unsigned int iLength = 0;
 
@@ -832,13 +832,13 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "fss_transform");
   ros::NodeHandle nh;
   rosSub = nh.subscribe("fss_pre_data", 10, lrfCallback);
-  rosPub = nh.advertise<tms_msg_ss::fss_tf_data>("fss_tf_data", 10);
+  rosPub = nh.advertise< tms_msg_ss::fss_tf_data >("fss_tf_data", 10);
 
   rosSub1 = nh.subscribe("fss_pre_data1", 10, lrfCallback1);
-  rosPub1 = nh.advertise<tms_msg_ss::fss_tf_data>("fss_tf_data1", 10);
+  rosPub1 = nh.advertise< tms_msg_ss::fss_tf_data >("fss_tf_data1", 10);
 
   rosSub2 = nh.subscribe("fss_pre_data2", 10, lrfCallback2);
-  rosPub2 = nh.advertise<tms_msg_ss::fss_tf_data>("fss_tf_data2", 10);
+  rosPub2 = nh.advertise< tms_msg_ss::fss_tf_data >("fss_tf_data2", 10);
   //--------------------------------------------------------------------------
   // ros spin
   ros::spin();

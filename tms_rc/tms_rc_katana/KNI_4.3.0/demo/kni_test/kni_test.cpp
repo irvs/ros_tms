@@ -48,12 +48,12 @@ struct TCurrentMot
 
 struct Tpos
 {
-  static std::vector<int> x, y, z, u, v, w;
+  static std::vector< int > x, y, z, u, v, w;
   static const int xArr[], yArr[], zArr[], uArr[], vArr[], wArr[];
 };
 
 // Katana obj.
-std::auto_ptr<CLMBase> katana;
+std::auto_ptr< CLMBase > katana;
 //////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char *argv[])
@@ -74,8 +74,8 @@ int main(int argc, char *argv[])
   // open device:
   //----------------------------------------------------------------//
 
-  std::auto_ptr<CCdlSocket> device;
-  std::auto_ptr<CCplSerialCRC> protocol;
+  std::auto_ptr< CCdlSocket > device;
+  std::auto_ptr< CCplSerialCRC > protocol;
 
   try
   {
@@ -121,11 +121,11 @@ int main(int argc, char *argv[])
   int nOfMot = katana->getNumberOfMotors();  // number of motors
   int controller;                            // controller type: 0 for position, 1 for current
   const char *model;                         // katana model name
-  std::vector<TPoint> points(0);             // list of points used for motion
+  std::vector< TPoint > points(0);           // list of points used for motion
 
   // declare temporary variables
-  std::vector<int> encoders(nOfMot, 0);
-  std::vector<double> pose(6, 0.0);
+  std::vector< int > encoders(nOfMot, 0);
+  std::vector< double > pose(6, 0.0);
   TCurrentMot mot[6];
   for (int i = 0; i < 6; i++)
   {
@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
   std::cout << "- Read robot encoders..." << std::endl;
   std::cout << "   Encoder values:";
   katana->getRobotEncoders(encoders.begin(), encoders.end());
-  for (std::vector<int>::iterator i = encoders.begin(); i != encoders.end(); ++i)
+  for (std::vector< int >::iterator i = encoders.begin(); i != encoders.end(); ++i)
   {
     std::cout << " " << *i;
   }
@@ -288,7 +288,7 @@ int main(int argc, char *argv[])
       return 1;
     }
     string line;
-    vector<string> tokens;
+    vector< string > tokens;
     const string delimiter = ",";
     int lines = 0;
     while (!listfile.eof())

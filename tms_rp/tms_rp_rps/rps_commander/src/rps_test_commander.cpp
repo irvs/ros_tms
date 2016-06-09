@@ -29,39 +29,39 @@ int main(int argc, char **argv)
   ros::NodeHandle n;
 
   ros::ServiceClient commander_to_get_robots_info =
-      n.serviceClient<tms_msg_db::tmsdb_get_robots_info>("tmsdb_get_robots_info");
+      n.serviceClient< tms_msg_db::tmsdb_get_robots_info >("tmsdb_get_robots_info");
   tms_msg_db::tmsdb_get_robots_info srv_get_r_info;
   ros::ServiceClient commander_to_get_movable_furnitures_info =
-      n.serviceClient<tms_msg_db::tmsdb_get_movable_furnitures_info>("tmsdb_get_movable_furnitures_info");
+      n.serviceClient< tms_msg_db::tmsdb_get_movable_furnitures_info >("tmsdb_get_movable_furnitures_info");
   tms_msg_db::tmsdb_get_movable_furnitures_info srv_get_f_info;
 
   ros::ServiceClient client_rc_gop =
-      n.serviceClient<tms_msg_rp::rps_cnoid_grasp_obj_planning>("rps_cnoid_grasp_obj_planning");
+      n.serviceClient< tms_msg_rp::rps_cnoid_grasp_obj_planning >("rps_cnoid_grasp_obj_planning");
   tms_msg_rp::rps_cnoid_grasp_obj_planning rc_gop;
 
   ros::ServiceClient client_rc_giop =
-      n.serviceClient<tms_msg_rp::rps_cnoid_grasp_obj_planning>("rps_cnoid_give_obj_planning");
+      n.serviceClient< tms_msg_rp::rps_cnoid_grasp_obj_planning >("rps_cnoid_give_obj_planning");
   tms_msg_rp::rps_cnoid_grasp_obj_planning rc_giop;
 
   ros::ServiceClient client_rc_gwp =
-      n.serviceClient<tms_msg_rp::rps_cnoid_grasp_wagon_planning>("rps_cnoid_grasp_wagon_planning");
+      n.serviceClient< tms_msg_rp::rps_cnoid_grasp_wagon_planning >("rps_cnoid_grasp_wagon_planning");
   tms_msg_rp::rps_cnoid_grasp_wagon_planning rc_gwp;
 
   ros::ServiceClient client_rc_cgwp =
-      n.serviceClient<tms_msg_rp::rps_cnoid_grasp_wagon_planning>("rps_cnoid_calc_grasp_wagon_pose");
+      n.serviceClient< tms_msg_rp::rps_cnoid_grasp_wagon_planning >("rps_cnoid_calc_grasp_wagon_pose");
   tms_msg_rp::rps_cnoid_grasp_wagon_planning rc_cgwp;
 
   ros::ServiceClient client_rc_rwp =
-      n.serviceClient<tms_msg_rp::rps_cnoid_grasp_wagon_planning>("rps_cnoid_release_wagon_planning");
+      n.serviceClient< tms_msg_rp::rps_cnoid_grasp_wagon_planning >("rps_cnoid_release_wagon_planning");
   tms_msg_rp::rps_cnoid_grasp_wagon_planning rc_rwp;
 
-  ros::ServiceClient client_rc_PRM = n.serviceClient<tms_msg_rp::rps_cnoid_PRM_planning>("rps_cnoid_PRM_planning");
+  ros::ServiceClient client_rc_PRM = n.serviceClient< tms_msg_rp::rps_cnoid_PRM_planning >("rps_cnoid_PRM_planning");
   tms_msg_rp::rps_cnoid_PRM_planning rc_PRM;
 
-  ros::ServiceClient client_ods_wagon = n.serviceClient<tms_msg_ss::ods_wagon>("ods_wagon");
+  ros::ServiceClient client_ods_wagon = n.serviceClient< tms_msg_ss::ods_wagon >("ods_wagon");
   tms_msg_ss::ods_wagon ods_wagon;
 
-  ros::ServiceClient client_robot_command = n.serviceClient<tms_msg_rp::rps_robot_command>("rps_robot_command");
+  ros::ServiceClient client_robot_command = n.serviceClient< tms_msg_rp::rps_robot_command >("rps_robot_command");
   tms_msg_rp::rps_robot_command robot_command;
 
   ////////////////////////////////////////////////////////////////////
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
   robot_command.request.robot_id = robot_id;
   robot_command.request.param_array.clear();
 
-  vector<tms_msg_rp::rps_pos_param> rps_temp_param_array;
+  vector< tms_msg_rp::rps_pos_param > rps_temp_param_array;
   rps_temp_param_array.clear();
   tms_msg_rp::rps_pos_param rps_temp_param;
   rps_temp_param.rps_pos_param.resize(21);
@@ -136,27 +136,27 @@ int main(int argc, char **argv)
   tms_msg_rp::rps_position grasp_wagon_Robot_pos;
   tms_msg_rp::rps_position give_obj_Robot_pos;
 
-  vector<tms_msg_rp::rps_position> grasp_wagon_Robot_path;
+  vector< tms_msg_rp::rps_position > grasp_wagon_Robot_path;
   grasp_wagon_Robot_path.clear();
-  vector<tms_msg_rp::rps_position> push_wagon_Robot_path;
+  vector< tms_msg_rp::rps_position > push_wagon_Robot_path;
   push_wagon_Robot_path.clear();
-  vector<tms_msg_rp::rps_position> push_wagon_Wagon_path;
+  vector< tms_msg_rp::rps_position > push_wagon_Wagon_path;
   push_wagon_Wagon_path.clear();
-  vector<tms_msg_rp::rps_position> grasp_obj_Robot_path;
+  vector< tms_msg_rp::rps_position > grasp_obj_Robot_path;
   grasp_obj_Robot_path.clear();
-  vector<tms_msg_rp::rps_position> give_obj_Robot_path;
+  vector< tms_msg_rp::rps_position > give_obj_Robot_path;
   give_obj_Robot_path.clear();
-  vector<tms_msg_rp::rps_joint_angle> grasp_wagon_Robot_joint_angle;
+  vector< tms_msg_rp::rps_joint_angle > grasp_wagon_Robot_joint_angle;
   grasp_wagon_Robot_joint_angle.clear();
-  vector<tms_msg_rp::rps_joint_angle> push_wagon_Robot_joint_angle;
+  vector< tms_msg_rp::rps_joint_angle > push_wagon_Robot_joint_angle;
   push_wagon_Robot_joint_angle.clear();
-  vector<tms_msg_rp::rps_joint_angle> release_wagon_Robot_joint_angle;
+  vector< tms_msg_rp::rps_joint_angle > release_wagon_Robot_joint_angle;
   release_wagon_Robot_joint_angle.clear();
-  vector<tms_msg_rp::rps_joint_angle> grasp_obj_Robot_joint_angle;
+  vector< tms_msg_rp::rps_joint_angle > grasp_obj_Robot_joint_angle;
   grasp_obj_Robot_joint_angle.clear();
-  vector<tms_msg_rp::rps_joint_angle> give_obj_Robot_joint_angle;
+  vector< tms_msg_rp::rps_joint_angle > give_obj_Robot_joint_angle;
   give_obj_Robot_joint_angle.clear();
-  vector<tms_msg_rp::rps_joint_angle> return_init_pose_Robot_joint_angle;
+  vector< tms_msg_rp::rps_joint_angle > return_init_pose_Robot_joint_angle;
   return_init_pose_Robot_joint_angle.clear();
   ////////////////////////////////////////////////////////////////////
 

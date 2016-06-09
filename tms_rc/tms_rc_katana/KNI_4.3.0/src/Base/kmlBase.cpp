@@ -60,9 +60,9 @@ bool CKatBase::init(const TKatGNL _gnl, const TKatMOT _mot, const TKatSCT _sct, 
 ////////////////////////////////////////////////////////////////
 void CKatBase::recvMFW()
 {
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
   p[0] = 'B';
 
   protocol->comm(p, buf, &sz);
@@ -73,9 +73,9 @@ void CKatBase::recvMFW()
 ////////////////////////////////////////////////////////////////
 void CKatBase::recvIDS()
 {
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
   p[0] = 'Y';
 
   protocol->comm(p, buf, &sz);
@@ -86,9 +86,9 @@ void CKatBase::recvIDS()
 ////////////////////////////////////////////////////////////////
 void CKatBase::recvCTB()
 {
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
   p[0] = 'X';
 
   protocol->comm(p, buf, &sz);
@@ -101,9 +101,9 @@ void CKatBase::recvCTB()
 void CKatBase::recvGMS()
 {
   int i;
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
   p[0] = 'N';
   p[1] = 1;
   p[2] = 0;
@@ -155,9 +155,9 @@ void CKatBase::waitFor(TMotStsFlg status, int waitTimeout, bool gripper)
 ////////////////////////////////////////////////////////////////
 void CKatBase::recvECH()
 {
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
   p[0] = 'Z';
 
   protocol->comm(p, buf, &sz);
@@ -185,9 +185,9 @@ void CKatBase::enableCrashLimits()
   {
     motor = 0;  // switch all motors with KatHD400
   }
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
   p[0] = 'A';
   p[1] = motor;
   p[2] = 1;
@@ -196,9 +196,9 @@ void CKatBase::enableCrashLimits()
 ////////////////////////////////////////////////////////////////
 void CKatBase::disableCrashLimits()
 {
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
   p[0] = 'A';
   p[1] = 0;
   p[2] = 0;
@@ -208,9 +208,9 @@ void CKatBase::disableCrashLimits()
 // deprecated, use speed & position
 void CKatBase::setCrashLimit(long idx, int limit)
 {
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
   p[0] = 'S';
   p[1] = 5;  // subcommand 5 "Set Crashlimit"
   p[2] = (char)(limit >> 8);
@@ -240,7 +240,7 @@ void CKatBase::unBlock()
 void CKatBase::startSplineMovement(int exactflag, int moreflag)
 {
   // Start Linear movement
-  std::vector<byte> sendBuf(3), recvBuf(2, 0);
+  std::vector< byte > sendBuf(3), recvBuf(2, 0);
   byte readBytes;
   sendBuf[0] = 'G' + 128;
   sendBuf[1] = (byte)moreflag;
@@ -248,16 +248,16 @@ void CKatBase::startSplineMovement(int exactflag, int moreflag)
   protocol->comm(&sendBuf.front(), &recvBuf.front(), &readBytes);
 }
 ////////////////////////////////////////////////////////////////
-void CKatBase::setAndStartPolyMovement(std::vector<short> polynomial, int exactflag, int moreflag)
+void CKatBase::setAndStartPolyMovement(std::vector< short > polynomial, int exactflag, int moreflag)
 {
   // set and start poly movement on all motors
-  std::vector<byte> sendBuf(75), recvBuf(3, 0);
+  std::vector< byte > sendBuf(75), recvBuf(3, 0);
   byte readBytes;
   sendBuf[0] = 'H';
   for (int i = 0; i < (int)polynomial.size(); ++i)
   {
-    sendBuf[2 * i + 1] = static_cast<byte>(polynomial[i] >> 8);
-    sendBuf[2 * i + 2] = static_cast<byte>(polynomial[i]);
+    sendBuf[2 * i + 1] = static_cast< byte >(polynomial[i] >> 8);
+    sendBuf[2 * i + 2] = static_cast< byte >(polynomial[i]);
   }
   sendBuf[73] = (byte)moreflag;
   sendBuf[74] = (byte)exactflag;
@@ -266,9 +266,9 @@ void CKatBase::setAndStartPolyMovement(std::vector<short> polynomial, int exactf
 ////////////////////////////////////////////////////////////////
 void CKatBase::recvMPS()
 {
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
   p[0] = 'N';
   p[1] = 3;
   p[2] = 0;

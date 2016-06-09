@@ -43,7 +43,7 @@
 #include <cerrno>
 //-------------------------------------------------------//
 #endif  // WIN32 else LINUX
-//-------------------------------------------------------//
+        //-------------------------------------------------------//
 
 /*! \brief	This structrue stores the attributes for a
  *			serial port device.
@@ -83,7 +83,7 @@ protected:
   HANDLE _prtHdl;     //!< port handle
   COMMTIMEOUTS _oto;  //!< old timeouts
 //-------------------------------------------------------//
-#else  // LINUX
+#else   // LINUX
   //-------------------------------------------------------//
   int _prtHdl;          //!< port handle
   struct termios _oto;  //!< old timeouts

@@ -228,7 +228,7 @@ DLLEXPORT int moveToPos(struct TPos *pos, int velocity, int acceleration);
 //!Moves all axes to a target encoder value
 //!@param enc (encX) the target positions
 //!@param tolerance in encoders. sent unscaled to axis and handled there. WaitForMot (and MoveMOtAndWait) checks the
-//tolerance though.
+// tolerance though.
 //!@param wait wait for the movement to finish
 //!@return returns ERR_FAILURE on failure,
 //!ERR_INVALID_ARGUMENT if an argument is out of range,

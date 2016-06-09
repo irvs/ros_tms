@@ -37,7 +37,7 @@ enum NetDnsReply
 {
   NETDNS_PRTCL,
   NETDNS_NOTFOUND,  // Hostname is unknown
-  NETDNS_ERROR,  // Problem with DNS Service
+  NETDNS_ERROR,     // Problem with DNS Service
   //...
   NETDNS_FOUND,
 };
@@ -50,7 +50,7 @@ public:
   virtual ~NetDnsRequest();
 
   class CDummy;
-  template <class T>
+  template < class T >
   // Linker bug : Must be defined here :(
   void setOnReply(T* pItem, void (T::*pMethod)(NetDnsReply))
   {

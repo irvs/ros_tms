@@ -93,7 +93,7 @@ void BoxStatePublisher::run()
 //------------------------------------------------------------------------------
 void BoxStatePublisher::send(ros::Time time)
 {
-  std::map<std::string, double> joint_states;
+  std::map< std::string, double > joint_states;
   transform_.stamp_ = time;
   broadcaster.sendTransform(transform_);
   this->publishTransforms(joint_states, time, tf_prefix_);

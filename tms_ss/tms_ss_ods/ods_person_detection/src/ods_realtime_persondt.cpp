@@ -23,11 +23,11 @@
 ros::ServiceServer service;
 ros::ServiceClient commander_to_kinect_capture;
 
-pcl::PointCloud<pcl::PointXYZRGB>::Ptr viewer_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+pcl::PointCloud< pcl::PointXYZRGB >::Ptr viewer_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
 
 typedef struct
 {
-  pcl::PointCloud<pcl::PointXYZRGB> cloud;
+  pcl::PointCloud< pcl::PointXYZRGB > cloud;
   int inlier1;
   int inlier2;
   pcl::PointXYZRGB p1;
@@ -36,12 +36,12 @@ typedef struct
 
 Endpoints person;
 
-void passfilter(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::PointXYZRGB>& cloud_out,
-                std::vector<int>& index)
+void passfilter(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointCloud< pcl::PointXYZRGB >& cloud_out,
+                std::vector< int >& index)
 {
   // std::cout << "passfilter" << std::endl;
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  std::vector<int> tmp_index;
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  std::vector< int > tmp_index;
 
   pcl::removeNaNFromPointCloud(cloud, *tmp_cloud, tmp_index);
 
@@ -63,7 +63,7 @@ void passfilter(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::P
   return;
 }
 
-Endpoints endpoint(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointIndices& inlier)
+Endpoints endpoint(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointIndices& inlier)
 {
   Endpoints e;
   pcl::PointXYZRGB p1, p2;
@@ -94,7 +94,7 @@ Endpoints endpoint(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointIndices& 
   return e;
 }
 
-int check_occlusion(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointXYZRGB p1, pcl::PointXYZRGB p2, int inlier1,
+int check_occlusion(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointXYZRGB p1, pcl::PointXYZRGB p2, int inlier1,
                     int inlier2)
 {
   double a, b;
@@ -184,10 +184,11 @@ int check_occlusion(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointXYZRGB p
   return 0;
 }
 
-std::vector<Endpoints> group_endpoints(std::vector<Endpoints> endpoints_vec, pcl::PointCloud<pcl::PointXYZRGB>& cloud)
+std::vector< Endpoints > group_endpoints(std::vector< Endpoints > endpoints_vec,
+                                         pcl::PointCloud< pcl::PointXYZRGB >& cloud)
 {
-  std::vector<Endpoints> tmp, fin_e;
-  std::vector<int> group_number;
+  std::vector< Endpoints > tmp, fin_e;
+  std::vector< int > group_number;
 
   for (int i = 0; i < endpoints_vec.size(); i++)
   {
@@ -267,23 +268,23 @@ std::vector<Endpoints> group_endpoints(std::vector<Endpoints> endpoints_vec, pcl
 }
 
 //クラスタリング
-Endpoints clustering(pcl::PointCloud<pcl::PointXYZRGB>& f_cloud, pcl::PointCloud<pcl::PointXYZRGB>& cloud,
-                     std::vector<int>& index)
+Endpoints clustering(pcl::PointCloud< pcl::PointXYZRGB >& f_cloud, pcl::PointCloud< pcl::PointXYZRGB >& cloud,
+                     std::vector< int >& index)
 {
   // std::cout << "clustering" << std::endl;
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud2(new pcl::PointCloud<pcl::PointXYZRGB>);
-  std::vector<Endpoints> endpoints_vec;
-  std::vector<Endpoints> fin_endpoints_vec;
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud2(new pcl::PointCloud< pcl::PointXYZRGB >);
+  std::vector< Endpoints > endpoints_vec;
+  std::vector< Endpoints > fin_endpoints_vec;
   Endpoints final;
 
   // Creating the KdTree object for the search method of the extraction
-  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB>);
+  pcl::search::KdTree< pcl::PointXYZRGB >::Ptr tree(new pcl::search::KdTree< pcl::PointXYZRGB >);
   tree->setInputCloud(f_cloud.makeShared());
 
-  std::vector<pcl::PointIndices> cluster_indices;
-  pcl::EuclideanClusterExtraction<pcl::PointXYZRGB> ec;
+  std::vector< pcl::PointIndices > cluster_indices;
+  pcl::EuclideanClusterExtraction< pcl::PointXYZRGB > ec;
   ec.setClusterTolerance(0.03);
   ec.setMinClusterSize(3000);
   ec.setMaxClusterSize(100000);
@@ -294,12 +295,12 @@ Endpoints clustering(pcl::PointCloud<pcl::PointXYZRGB>& f_cloud, pcl::PointCloud
   // std::cout << "クラスタリング開始" << std::endl;
   int n = 0;
   float colors[6][3] = {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}, {255, 255, 0}, {0, 255, 255}, {255, 0, 255}};
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
+  for (std::vector< pcl::PointIndices >::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
   {
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_cluster(new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud_cluster(new pcl::PointCloud< pcl::PointXYZRGB >);
     pcl::PointIndices::Ptr inlier(new pcl::PointIndices);
 
-    for (std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
+    for (std::vector< int >::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
     {
       cloud_cluster->points.push_back(f_cloud.points[*pit]);
       inlier->indices.push_back(index[*pit]);
@@ -372,16 +373,16 @@ Endpoints clustering(pcl::PointCloud<pcl::PointXYZRGB>& f_cloud, pcl::PointCloud
 
   final = fin_endpoints_vec[id];
 
-  std::vector<Endpoints>().swap(fin_endpoints_vec);
-  std::vector<Endpoints>().swap(endpoints_vec);
+  std::vector< Endpoints >().swap(fin_endpoints_vec);
+  std::vector< Endpoints >().swap(endpoints_vec);
 
   return final;
 }
 
-void person_detection(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::PointXYZRGB>& out_cloud)
+void person_detection(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointCloud< pcl::PointXYZRGB >& out_cloud)
 {
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr f_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  std::vector<int> index;
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr f_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  std::vector< int > index;
   passfilter(cloud, *f_cloud, index);
 
   person = clustering(*f_cloud, cloud, index);
@@ -393,9 +394,9 @@ void person_detection(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<
 
 void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
 {
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr out_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr out_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
 
   pcl::fromROSMsg(*input, *cloud);
   pcl::copyPointCloud(*cloud, *tmp_cloud);
@@ -414,7 +415,7 @@ int main(int argc, char** argv)
   ros::NodeHandle nh;
   ros::Subscriber pcl_sub;
   pcl::visualization::CloudViewer viewer("Cloud Viewer");
-  ros::Publisher chatter_pub = nh.advertise<tms_msg_ss::ods_person_dt>("ods_realtime_persondt", 1);
+  ros::Publisher chatter_pub = nh.advertise< tms_msg_ss::ods_person_dt >("ods_realtime_persondt", 1);
   ros::Rate loop_rate(10);
 
   while (ros::ok())

@@ -82,7 +82,7 @@ private:
   ros::Subscriber fss_graph_subscriber;
   ros::Publisher fss_graph_publisher;
 
-  std::vector<tms_msg_ss::fss_tf_data> m_vstTfData;
+  std::vector< tms_msg_ss::fss_tf_data > m_vstTfData;
 };
 
 //------------------------------------------------------------------------------

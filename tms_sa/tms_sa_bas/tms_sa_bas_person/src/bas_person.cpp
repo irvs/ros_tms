@@ -80,18 +80,18 @@ ros::Time GLOBAL_START_TIME;
 ros::Time GLOBAL_LAST_TIME;
 bool isSetGlobalStartTime = false;
 
-std::vector<SumSensingTime> nearBedList;
-std::vector<SumSensingTime> nearChairList;
+std::vector< SumSensingTime > nearBedList;
+std::vector< SumSensingTime > nearChairList;
 tms_msg_ss::fss_observed_datas m_msgChairBuffer;
 tms_msg_ss::fss_person_trajectory_data m_msgPersonTrajectory;
 tms_msg_ss::fss_detected_cluster_data m_msgDetectedClusterList;
 
 // behavior
 HumanModel human;
-std::vector<HumanBehavior> walkingHistory;
-std::vector<HumanBehavior> sittingHistory;
-std::vector<HumanBehavior> sleepingHistory;
-std::vector<vector<int>> behaviorResult;
+std::vector< HumanBehavior > walkingHistory;
+std::vector< HumanBehavior > sittingHistory;
+std::vector< HumanBehavior > sleepingHistory;
+std::vector< vector< int > > behaviorResult;
 
 //------------------------------------------------------------------------------
 // output stream
@@ -140,7 +140,7 @@ int main(int argc, char **argv)
   rosSubTrajectory = nh.subscribe("fss_person_trajectory_data", 10, callbackTrajectory);
   rosSubDetectedCluster = nh.subscribe("fss_detected_cluster_data", 10, callbackDetectedCluster);
   rosSubChairBuffer = nh.subscribe("fss_chair_buffer_data", 10, callbackChairBuffer);
-  rosPubHumanBehavior = nh.advertise<tms_msg_ss::bas_behavior_data>("bas_behavior_data", 10);
+  rosPubHumanBehavior = nh.advertise< tms_msg_ss::bas_behavior_data >("bas_behavior_data", 10);
 
   ros::Rate loop_rate(1);
 
@@ -672,7 +672,7 @@ void estimateSleepingBehavior()
 
 void makeBehaviorResult()
 {
-  std::vector<int> row;
+  std::vector< int > row;
   int maxTime = (int)getTime(GLOBAL_LAST_TIME.toNSec());
 
   behaviorResult.clear();

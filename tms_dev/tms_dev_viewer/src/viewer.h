@@ -239,11 +239,11 @@ private:
 
   QPoint m_stLast_point;
 
-  vector<LINE> m_vstMap_2d;
-  vector<LINE> m_vstGrid_2d;
-  vector<LINE> m_vstRobot_smartpal_2d;
-  vector<LINE> m_vstRobot_roomba_2d;
-  vector<LINE> m_vstRobot_pioneer_2d;
+  vector< LINE > m_vstMap_2d;
+  vector< LINE > m_vstGrid_2d;
+  vector< LINE > m_vstRobot_smartpal_2d;
+  vector< LINE > m_vstRobot_roomba_2d;
+  vector< LINE > m_vstRobot_pioneer_2d;
 
   int m_iCallback;
 

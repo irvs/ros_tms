@@ -17,7 +17,7 @@
 ros::ServiceServer service;
 ros::ServiceClient commander_to_kinect_capture;
 
-double C_OFFSET_X = 0.0;  // 0.21;
+double C_OFFSET_X = 0.0;    // 0.21;
 double C_OFFSET_Y = 0.045;  // 0.045;
 double C_OFFSET_Z = 1.07;
 double C_OFFSET_PITCH = 0.0 * (PI / 180.0);
@@ -40,12 +40,12 @@ typedef struct
 PLANE plane;
 Robot robot;
 
-void passfilter(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
+void passfilter(pcl::PointCloud< pcl::PointXYZRGB >& cloud)
 {
   std::cout << "passfilter" << std::endl;
 
   // Create the filtering object
-  pcl::PassThrough<pcl::PointXYZRGB> pass;
+  pcl::PassThrough< pcl::PointXYZRGB > pass;
   pass.setInputCloud(cloud.makeShared());
   pass.setFilterFieldName("x");
   pass.setFilterLimits(-0.5, 0.5);
@@ -61,13 +61,13 @@ void passfilter(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
 }
 
 //平面検出を行う
-void plane_detect(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::PointXYZRGB>& cloud_out,
+void plane_detect(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointCloud< pcl::PointXYZRGB >& cloud_out,
                   pcl::ModelCoefficients& coefficients)
 {
-  pcl::ExtractIndices<pcl::PointXYZRGB> extract;
+  pcl::ExtractIndices< pcl::PointXYZRGB > extract;
   pcl::PointIndices::Ptr inliers(new pcl::PointIndices);
   // Create the segmentation object
-  pcl::SACSegmentation<pcl::PointXYZRGB> seg;
+  pcl::SACSegmentation< pcl::PointXYZRGB > seg;
   // Optional
   seg.setOptimizeCoefficients(true);
   // Mandatory
@@ -108,7 +108,7 @@ void plane_detect(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl:
   return;
 }
 
-void plane_info(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
+void plane_info(pcl::PointCloud< pcl::PointXYZRGB >& cloud)
 {
   double min_x = 100.0;
   double max_x = -100.0;
@@ -136,7 +136,7 @@ void plane_info(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
 }
 
 //重心位置を求める
-pcl::PointXYZRGB g_pos(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
+pcl::PointXYZRGB g_pos(pcl::PointCloud< pcl::PointXYZRGB >& cloud)
 {
   pcl::PointXYZRGB g;
 
@@ -158,19 +158,19 @@ pcl::PointXYZRGB g_pos(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
 }
 
 //クラスタリング
-void clustering(pcl::PointCloud<pcl::PointXYZRGB>& cloud, std::vector<pcl::PointXYZRGB>& points,
+void clustering(pcl::PointCloud< pcl::PointXYZRGB >& cloud, std::vector< pcl::PointXYZRGB >& points,
                 pcl::ModelCoefficients& coefficients)
 {
   std::cout << "clustering" << std::endl;
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
 
   // Creating the KdTree object for the search method of the extraction
-  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB>);
+  pcl::search::KdTree< pcl::PointXYZRGB >::Ptr tree(new pcl::search::KdTree< pcl::PointXYZRGB >);
   tree->setInputCloud(cloud.makeShared());
 
-  std::vector<pcl::PointIndices> cluster_indices;
-  pcl::EuclideanClusterExtraction<pcl::PointXYZRGB> ec;
+  std::vector< pcl::PointIndices > cluster_indices;
+  pcl::EuclideanClusterExtraction< pcl::PointXYZRGB > ec;
   ec.setClusterTolerance(0.015);
   ec.setMinClusterSize(400);
   ec.setMaxClusterSize(10000);
@@ -183,11 +183,11 @@ void clustering(pcl::PointCloud<pcl::PointXYZRGB>& cloud, std::vector<pcl::Point
 
   int m = 0;
   float colors[6][3] = {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}, {255, 255, 0}, {0, 255, 255}, {255, 0, 255}};
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
+  for (std::vector< pcl::PointIndices >::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
   {
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_cluster(new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud_cluster(new pcl::PointCloud< pcl::PointXYZRGB >);
 
-    for (std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
+    for (std::vector< int >::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
     {
       cloud_cluster->points.push_back(cloud.points[*pit]);
     }
@@ -267,9 +267,9 @@ pcl::PointXYZRGB transformation(pcl::PointXYZRGB point)
 
 bool wagon_object(tms_msg_ss::ods_wagon_object::Request& req, tms_msg_ss::ods_wagon_object::Response& res)
 {
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud2(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud2(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
   pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients);
 
   tms_msg_ss::ods_pcd srv;
@@ -312,7 +312,7 @@ bool wagon_object(tms_msg_ss::ods_wagon_object::Request& req, tms_msg_ss::ods_wa
   pcl::io::savePCDFile("src/ods_wagon/data/ods_wagon_object/plane.pcd", *tmp_cloud, true);
   pcl::io::savePCDFile("src/ods_wagon/data/ods_wagon_object/plane_reduction.pcd", *cloud2, false);
 
-  std::vector<pcl::PointXYZRGB> g_cloud;
+  std::vector< pcl::PointXYZRGB > g_cloud;
 
   clustering(*cloud2, g_cloud, *coefficients);
 
@@ -341,7 +341,7 @@ int main(int argc, char** argv)
 
   service = n.advertiseService("ods_wagon_object", wagon_object);
 
-  commander_to_kinect_capture = n.serviceClient<tms_msg_ss::ods_pcd>("capture_cloud");
+  commander_to_kinect_capture = n.serviceClient< tms_msg_ss::ods_pcd >("capture_cloud");
 
   ros::spin();
 

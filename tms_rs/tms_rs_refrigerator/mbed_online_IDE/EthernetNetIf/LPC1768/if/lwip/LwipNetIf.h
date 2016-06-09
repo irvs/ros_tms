@@ -44,10 +44,10 @@ public:
 
   void init();
 
-  virtual NetTcpSocket* tcpSocket();  // Create a new tcp socket
-  virtual NetUdpSocket* udpSocket();  // Create a new udp socket
+  virtual NetTcpSocket* tcpSocket();                        // Create a new tcp socket
+  virtual NetUdpSocket* udpSocket();                        // Create a new udp socket
   virtual NetDnsRequest* dnsRequest(const char* hostname);  // Create a new NetDnsRequest object
-  virtual NetDnsRequest* dnsRequest(Host* pHost);  // Create a new NetDnsRequest object
+  virtual NetDnsRequest* dnsRequest(Host* pHost);           // Create a new NetDnsRequest object
 
   virtual void poll();
 

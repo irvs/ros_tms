@@ -101,7 +101,7 @@ public:
   @param pItem : instance of class on which to execute the callback method
   @param pMethod : callback method
   */
-  template <class T>
+  template < class T >
   void setOnEvent(T* pItem, void (T::*pMethod)(UDPSocketEvent))
   {
     m_pCbItem = (CDummy*)pItem;

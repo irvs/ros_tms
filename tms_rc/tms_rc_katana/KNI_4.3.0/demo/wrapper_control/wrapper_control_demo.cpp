@@ -39,7 +39,7 @@ const int DEFAULT_ACCELERATION = 2;
 const int DEFAULT_VELOCITY = 50;
 int acceleration = DEFAULT_ACCELERATION;
 int velocity = DEFAULT_VELOCITY;
-std::vector<TMovement *> movement_vector;
+std::vector< TMovement * > movement_vector;
 bool isOff = false;
 //////////////////////////////////////////////////////////////////////////////////
 // helper functions

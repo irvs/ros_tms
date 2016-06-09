@@ -132,8 +132,8 @@ a lot of data that needs to be copied, this should be set high. */
 /* MEMP_NUM_TCP_PCB_LISTEN: the number of listening TCP
    connections. */
 #define MEMP_NUM_TCP_PCB_LISTEN 2  // 4
-/* MEMP_NUM_TCP_SEG: the number of simultaneously queued TCP
-   segments. */
+                                   /* MEMP_NUM_TCP_SEG: the number of simultaneously queued TCP
+                                      segments. */
 #define MEMP_NUM_TCP_SEG 16
 /* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active
    timeouts. */
@@ -247,7 +247,7 @@ a lot of data that needs to be copied, this should be set high. */
 
 /* ---------- Pbuf options ---------- */
 /* PBUF_POOL_SIZE: the number of buffers in the pbuf pool. */
-#define PBUF_POOL_SIZE 8  // 16//100
+#define PBUF_POOL_SIZE 8        // 16//100
 
 /* PBUF_POOL_BUFSIZE: the size of each pbuf in the pbuf pool. */
 //#define PBUF_POOL_BUFSIZE       128

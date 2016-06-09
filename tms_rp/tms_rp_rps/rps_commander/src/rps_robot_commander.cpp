@@ -55,16 +55,16 @@ tms_msg_db::tmsdb_get_robots_info srv_r;
 tms_msg_rc::smartpal_control srv_smartpal_control;
 tms_msg_rc::smartpal_speak srv_smartpal_speak;
 
-void sp5_commander(vector<tms_msg_rp::rps_pos_param> in_param_array)
+void sp5_commander(vector< tms_msg_rp::rps_pos_param > in_param_array)
 {
-  vector<double> delta_param;
+  vector< double > delta_param;
   delta_param.resize(in_param_array[0].rps_pos_param.size());
   bool move_flg = false, move_gripper = false;
 
   //~ srv_r.request.robots_id = 2;
   //~ if(commander_to_get_robots_info.call(srv_r))
   //~ ROS_INFO("Success robots_x = %lf, y = %lf, theta = %lf",
-  //srv_r.response.robots_x,srv_r.response.robots_y,srv_r.response.robots_theta);
+  // srv_r.response.robots_x,srv_r.response.robots_y,srv_r.response.robots_theta);
   //~ else{
   //~ ROS_ERROR("Failed to call service get_robots_info\n");
   //~ return;
@@ -646,12 +646,12 @@ void sp5_commander(vector<tms_msg_rp::rps_pos_param> in_param_array)
   return;
 }
 
-void sp4_commander(vector<tms_msg_rp::rps_pos_param> in_param_array)
+void sp4_commander(vector< tms_msg_rp::rps_pos_param > in_param_array)
 {
   return;
 }
 
-void kobuki_commander(vector<tms_msg_rp::rps_pos_param> in_param_array)
+void kobuki_commander(vector< tms_msg_rp::rps_pos_param > in_param_array)
 {
   return;
 }
@@ -690,11 +690,11 @@ int main(int argc, char** argv)
   //~ ros::Subscriber	rps_map_subscriber = n.subscribe("rps_map_data", 1, set_RPS_MAP);
   ros::ServiceServer server_robot_command = n.advertiseService("rps_robot_command", start_robot_commander);
 
-  commander_to_get_robots_info = n.serviceClient<tms_msg_db::tmsdb_get_robots_info>("tmsdb_get_robots_info");
+  commander_to_get_robots_info = n.serviceClient< tms_msg_db::tmsdb_get_robots_info >("tmsdb_get_robots_info");
 #ifdef SEND_COMMAND
-  client_smartpal5_control = n.serviceClient<tms_msg_rc::smartpal_control>("sp5_control");
+  client_smartpal5_control = n.serviceClient< tms_msg_rc::smartpal_control >("sp5_control");
 #endif
-  client_smartpal5_speak = n.serviceClient<tms_msg_rc::smartpal_speak>("sp5_speak");
+  client_smartpal5_speak = n.serviceClient< tms_msg_rc::smartpal_speak >("sp5_speak");
 
 ////////////////////////////
 #ifdef USE_TMS_DB

@@ -36,9 +36,9 @@ bool CMotBase::init(CKatBase* _own, const TMotDesc _motDesc, CCplBase* _protocol
 
 void CMotBase::resetBlocked()
 {
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
 
   recvPVP();
 
@@ -55,9 +55,9 @@ void CMotBase::resetBlocked()
 
 void CMotBase::sendAPS(const TMotAPS* _aps)
 {
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
 
   p[0] = 'C';
   p[1] = gnl.SID + 128;
@@ -75,9 +75,9 @@ void CMotBase::sendAPS(const TMotAPS* _aps)
 
 void CMotBase::sendTPS(const TMotTPS* _tps)
 {
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
 
   p[0] = 'C';
   p[1] = gnl.SID;
@@ -93,9 +93,9 @@ void CMotBase::sendTPS(const TMotTPS* _tps)
 
 void CMotBase::recvPVP()
 {
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
 
   p[0] = 'D';
   p[1] = gnl.SID;
@@ -111,9 +111,9 @@ void CMotBase::recvPVP()
 
 void CMotBase::recvSFW()
 {
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
 
   p[0] = 'V';
   p[1] = gnl.SID;
@@ -131,14 +131,14 @@ void CMotBase::recvSFW()
 
 void CMotBase::setSpeedLimits(short positiveVelocity, short negativeVelocity)
 {
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
   p[0] = 'S';
   p[1] = gnl.SID;
   p[2] = 3;  // subcommand 3 "Set Speed Limits"
-  p[3] = static_cast<byte>(positiveVelocity);
-  p[4] = static_cast<byte>(negativeVelocity);
+  p[3] = static_cast< byte >(positiveVelocity);
+  p[4] = static_cast< byte >(negativeVelocity);
   p[5] = 0;
 
   protocol->comm(p, buf, &sz);
@@ -149,18 +149,18 @@ void CMotBase::setSpeedLimits(short positiveVelocity, short negativeVelocity)
 
 void CMotBase::setAccelerationLimit(short acceleration)
 {
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
   p[0] = 'S';
   p[1] = gnl.SID;
   p[2] = 4;  // subcommand 4 "Set Acceleration Limit"
-  p[3] = static_cast<byte>(acceleration);
+  p[3] = static_cast< byte >(acceleration);
   p[4] = 0;
   p[5] = 0;
 
   protocol->comm(p, buf, &sz);
-  dyl.maxaccel_nmp = dyl.maxaccel = static_cast<byte>(acceleration);
+  dyl.maxaccel_nmp = dyl.maxaccel = static_cast< byte >(acceleration);
 }
 
 void CMotBase::setPwmLimits(byte maxppwm, byte maxnpwm)
@@ -168,9 +168,9 @@ void CMotBase::setPwmLimits(byte maxppwm, byte maxnpwm)
   if (sfw.type == 1)
     return;  // can not set pwm limit on current controller
 
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
   p[0] = 'S';
   p[1] = gnl.SID;
   p[2] = 2;  // subcommand 2 "Set PWM Limits"
@@ -187,9 +187,9 @@ void CMotBase::setPwmLimits(byte maxppwm, byte maxnpwm)
 
 void CMotBase::setControllerParameters(byte kSpeed, byte kPos, byte kI)
 {
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
   p[0] = 'S';
   p[1] = gnl.SID;
   p[2] = 1;  // subcommand 1 "Set Controller Parameters"
@@ -207,9 +207,9 @@ void CMotBase::setControllerParameters(byte kSpeed, byte kPos, byte kI)
 
 void CMotBase::setCrashLimit(int limit)
 {
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
   p[0] = 'S';
   p[1] = gnl.SID;
   p[2] = 5;  // subcommand 5 "Set Crash Limit"
@@ -225,9 +225,9 @@ void CMotBase::setCrashLimit(int limit)
 
 void CMotBase::setCrashLimitLinear(int limit_lin)
 {
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
   p[0] = 'S';
   p[1] = gnl.SID;
   p[2] = 6;  // subcommand 6 "Set Crash Limit Linear"
@@ -285,9 +285,9 @@ void CMotBase::getParameterOrLimit(int subcommand, byte* R1, byte* R2, byte* R3)
     *R3 = 0;
     return;
   }
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
   p[0] = 'S';
   p[1] = gnl.SID;
   p[2] = (byte)subcommand;
@@ -304,24 +304,24 @@ void CMotBase::getParameterOrLimit(int subcommand, byte* R1, byte* R2, byte* R3)
 
 void CMotBase::sendSpline(short targetPosition, short duration, short p1, short p2, short p3, short p4)
 {
-  std::vector<byte> sendBuf(14), recvBuf(2, 0);
+  std::vector< byte > sendBuf(14), recvBuf(2, 0);
   byte readBytes = 0;
 
   sendBuf[0] = 'G';
   sendBuf[1] = gnl.SID;
-  sendBuf[2] = static_cast<byte>(targetPosition >> 8);
-  sendBuf[3] = static_cast<byte>(targetPosition);
-  sendBuf[4] = static_cast<byte>(duration >> 8);
-  sendBuf[5] = static_cast<byte>(duration);
+  sendBuf[2] = static_cast< byte >(targetPosition >> 8);
+  sendBuf[3] = static_cast< byte >(targetPosition);
+  sendBuf[4] = static_cast< byte >(duration >> 8);
+  sendBuf[5] = static_cast< byte >(duration);
 
-  sendBuf[6] = static_cast<byte>(p1 >> 8);
-  sendBuf[7] = static_cast<byte>(p1);
-  sendBuf[8] = static_cast<byte>(p2 >> 8);
-  sendBuf[9] = static_cast<byte>(p2);
-  sendBuf[10] = static_cast<byte>(p3 >> 8);
-  sendBuf[11] = static_cast<byte>(p3);
-  sendBuf[12] = static_cast<byte>(p4 >> 8);
-  sendBuf[13] = static_cast<byte>(p4);
+  sendBuf[6] = static_cast< byte >(p1 >> 8);
+  sendBuf[7] = static_cast< byte >(p1);
+  sendBuf[8] = static_cast< byte >(p2 >> 8);
+  sendBuf[9] = static_cast< byte >(p2);
+  sendBuf[10] = static_cast< byte >(p3 >> 8);
+  sendBuf[11] = static_cast< byte >(p3);
+  sendBuf[12] = static_cast< byte >(p4 >> 8);
+  sendBuf[13] = static_cast< byte >(p4);
 
   protocol->comm(&sendBuf.front(), &recvBuf.front(), &readBytes);
 }
@@ -338,7 +338,7 @@ void CMotBase::setInitialParameters(double angleOffset, double angleRange, int e
   _initialParameters.angleStop = angleOffset + angleRange;
 
   int encoderStop =
-      encoderOffset - rotationDirection * static_cast<int>(encodersPerCycle * (angleRange / (2.0 * M_PI)));
+      encoderOffset - rotationDirection * static_cast< int >(encodersPerCycle * (angleRange / (2.0 * M_PI)));
 
   _encoderLimits.enc_minpos = (encoderOffset > encoderStop) ? encoderStop : encoderOffset;
   _encoderLimits.enc_maxpos = (encoderOffset < encoderStop) ? encoderStop : encoderOffset;

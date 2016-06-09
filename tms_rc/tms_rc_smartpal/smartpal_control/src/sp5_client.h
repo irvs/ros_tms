@@ -43,20 +43,20 @@
 #define SRV_CMD_ERR -113
 #define SRV_UNSUPPORTED_CMD_ERR -114
 
-#define Unpowered 16  // 0x10
-#define Powered 17  // 0x11
-#define Ready 18  // 0x12
-#define Busy 19  // 0x13
-#define Paused 20  // 0x14
-#define Alarm 21  // 0x15
-#define jogBusy 22  // 0x16
+#define Unpowered 16   // 0x10
+#define Powered 17     // 0x11
+#define Ready 18       // 0x12
+#define Busy 19        // 0x13
+#define Paused 20      // 0x14
+#define Alarm 21       // 0x15
+#define jogBusy 22     // 0x16
 #define DirectBusy 23  // 0x17
-#define Locked 24  // 0x18
-#define Stuck 25  // 0x19
-#define Caution 26  // 0x1A
+#define Locked 24      // 0x18
+#define Stuck 25       // 0x19
+#define Caution 26     // 0x1A
 
 #define VehicleReady 16  // 0x10
-#define VehicleBusy 17  // 0x11
+#define VehicleBusy 17   // 0x11
 
 #define UNIT_ALL 0
 #define UNIT_VEHICLE 1

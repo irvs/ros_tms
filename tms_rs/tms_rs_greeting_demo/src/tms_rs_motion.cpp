@@ -74,7 +74,7 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "tms_rs_motion");
   ros::NodeHandle n;
 
-  motion_client = n.serviceClient<tms_msg_rc::smartpal_control>("sp5_control");
+  motion_client = n.serviceClient< tms_msg_rc::smartpal_control >("sp5_control");
 
   const double motion_ini[19] = {0.0, 0.0, 0.0,   0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                                  0.0, 0.0, -10.0, 0.0, 0.0,   0.0, 0.0, 0.0, 0.0};

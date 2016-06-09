@@ -56,10 +56,10 @@ void sendDetectedCluster();
 void insertDetectedClusterList();
 void callback(const tms_msg_ss::fss_class_data::ConstPtr& msg);
 float getProbabilityFootsize(float fSize);
-float getMaxCost(std::list<Node>::iterator it);
+float getMaxCost(std::list< Node >::iterator it);
 float getProbabilitySensingtime(double sensingTime);
 float getLength(float x1, float y1, float x2, float y2);
-float getScore(std::list<Cluster>::iterator it, const tms_msg_ss::fss_class_data::ConstPtr& msg, int gt_index);
+float getScore(std::list< Cluster >::iterator it, const tms_msg_ss::fss_class_data::ConstPtr& msg, int gt_index);
 double getTime(uint64_t time);
 
 void displayCompareList();
@@ -82,12 +82,12 @@ ros::Subscriber rosSub;
 ros::Publisher rosPersonTrajectory;
 ros::Publisher rosDetectedCluster;
 
-std::list<Cluster> sensingClusterList;
-std::list<Cluster> preDetectedClusterList;
-std::list<Cluster> detectedClusterList;
+std::list< Cluster > sensingClusterList;
+std::list< Cluster > preDetectedClusterList;
+std::list< Cluster > detectedClusterList;
 
-std::list<Node> trajectoryTree;
-std::vector<vector<Cluster>> humanTrajectory;
+std::list< Node > trajectoryTree;
+std::vector< vector< Cluster > > humanTrajectory;
 
 //------------------------------------------------------------------------------
 // output stream
@@ -110,8 +110,8 @@ int main(int argc, char** argv)
 
   // rosSub					= nh.subscribe("fss_class_data", 10, callback);
   rosSub = nh.subscribe("fss_unknown_class_data", 10, callback);
-  rosPersonTrajectory = nh.advertise<tms_msg_ss::fss_person_trajectory_data>("fss_person_trajectory_data", 10);
-  rosDetectedCluster = nh.advertise<tms_msg_ss::fss_detected_cluster_data>("fss_detected_cluster_data", 10);
+  rosPersonTrajectory = nh.advertise< tms_msg_ss::fss_person_trajectory_data >("fss_person_trajectory_data", 10);
+  rosDetectedCluster = nh.advertise< tms_msg_ss::fss_detected_cluster_data >("fss_detected_cluster_data", 10);
   ros::spin();
 
   //------------------------------------------------------------------------------
@@ -156,8 +156,8 @@ void callback(const tms_msg_ss::fss_class_data::ConstPtr& msg)
   }
   else
   {
-    std::list<Matching> MatchingLanking;
-    std::list<Cluster>::iterator it;
+    std::list< Matching > MatchingLanking;
+    std::list< Cluster >::iterator it;
 
     unsigned int mt_index, gt_index;
     mt_index = gt_index = 0;
@@ -185,7 +185,7 @@ void callback(const tms_msg_ss::fss_class_data::ConstPtr& msg)
           else
           {
             bool isInsert = false;
-            std::list<Matching>::iterator m_it;
+            std::list< Matching >::iterator m_it;
             for (m_it = MatchingLanking.begin(); m_it != MatchingLanking.end(); m_it++)
             {
               if (tempMatching.score > m_it->score)
@@ -207,10 +207,10 @@ void callback(const tms_msg_ss::fss_class_data::ConstPtr& msg)
 
     //--------------------------------------------------------------------------
     // Update clusters' data order by score of MatchingLanking
-    std::list<Matching>::iterator m_it;
+    std::list< Matching >::iterator m_it;
 
     // isMatch
-    std::vector<bool> isMatch;
+    std::vector< bool > isMatch;
     for (unsigned int i = 0; i < msg->iID.size(); i++)
     {
       isMatch.push_back(false);
@@ -225,10 +225,10 @@ void callback(const tms_msg_ss::fss_class_data::ConstPtr& msg)
     {
       int count;
       float mt_bool;
-      std::list<Cluster>::iterator mt_it;
+      std::list< Cluster >::iterator mt_it;
 
       count = 0;
-      std::list<Cluster>::iterator it;
+      std::list< Cluster >::iterator it;
       for (it = sensingClusterList.begin(); it != sensingClusterList.end(); it++)
       {
         if (count == m_it->mt_index)
@@ -279,7 +279,7 @@ void callback(const tms_msg_ss::fss_class_data::ConstPtr& msg)
 
   //----------------------------------------------------------------------------
   // Analyze preDetectedClusterList
-  std::list<Cluster>::iterator it;
+  std::list< Cluster >::iterator it;
   for (it = preDetectedClusterList.begin(); it != preDetectedClusterList.end();)
   {
     //----------------------------------------------------------------------------
@@ -401,7 +401,7 @@ float getProbabilitySensingtime(double sensingTime)
     return 0.2;
 }
 
-float getScore(std::list<Cluster>::iterator it, const tms_msg_ss::fss_class_data::ConstPtr& msg, int gt_index)
+float getScore(std::list< Cluster >::iterator it, const tms_msg_ss::fss_class_data::ConstPtr& msg, int gt_index)
 {
   float score = 0;
 
@@ -502,7 +502,7 @@ bool mergeInterruptedCluster()
   float this_centerX, this_centerY;
   float next_centerX, next_centerY;
 
-  std::list<Cluster>::iterator this_it, next_it;
+  std::list< Cluster >::iterator this_it, next_it;
   for (next_it = preDetectedClusterList.begin(); next_it != preDetectedClusterList.end();)
   {
     // center
@@ -551,7 +551,7 @@ void insertDetectedClusterList()
 {
   if (detectedClusterList.size() == 0)
   {
-    std::list<Cluster>::iterator d_it;
+    std::list< Cluster >::iterator d_it;
     for (d_it = preDetectedClusterList.begin(); d_it != preDetectedClusterList.end();)
     {
       Cluster tempCluster;
@@ -581,12 +581,12 @@ void insertDetectedClusterList()
   else
   {
     // insert cluster to detectedClusterList order by start start sensingTime
-    std::list<Cluster>::iterator d_it;
+    std::list< Cluster >::iterator d_it;
     for (d_it = preDetectedClusterList.begin(); d_it != preDetectedClusterList.end();)
     {
       uint64_t sTime = d_it->tMeasuredTime.front().toNSec();
 
-      std::list<Cluster>::iterator p_it;
+      std::list< Cluster >::iterator p_it;
       p_it = detectedClusterList.end();
       for (unsigned int i = 0; i < detectedClusterList.size(); i++)
       {
@@ -634,12 +634,12 @@ void makeTrajectoryTree()
 
   //------------------------------------------------------------------------------
   // make each node of detectedClusters at first
-  std::list<Cluster>::iterator detected_it;
+  std::list< Cluster >::iterator detected_it;
   for (detected_it = detectedClusterList.begin(); detected_it != detectedClusterList.end(); detected_it++)
   {
     // trajectoryTree内に既にノード化しているかチェック
     bool isCreateNode = false;
-    std::list<Node>::iterator this_it;
+    std::list< Node >::iterator this_it;
     for (this_it = trajectoryTree.begin(); this_it != trajectoryTree.end(); this_it++)
     {
       if (detected_it->iID == this_it->index)
@@ -653,7 +653,7 @@ void makeTrajectoryTree()
     {
       // 計測中のクラスタの方が計測開始時間が早い場合(case1)や、併合される可能性がある場合(case2)はノードを作成しない
       bool isProbability = false;
-      std::list<Cluster>::iterator sensing_it;
+      std::list< Cluster >::iterator sensing_it;
       for (sensing_it = sensingClusterList.begin(); sensing_it != sensingClusterList.end(); sensing_it++)
       {
         // center, sensing time
@@ -699,7 +699,7 @@ void makeTrajectoryTree()
 void getHumanTrajectory()
 {
   int this_index, child_index;
-  std::list<Node>::iterator this_it, child_it;
+  std::list< Node >::iterator this_it, child_it;
   uint64_t this_sTime, this_eTime;
   uint64_t child_sTime, child_eTime;
 
@@ -751,7 +751,7 @@ void getHumanTrajectory()
             // ただし、現在計測中のクラスタともひもづく可能性がある場合は
             // まだひもづけを行わない
             bool isConnectSensingCluster = false;
-            std::list<Cluster>::iterator s_it;
+            std::list< Cluster >::iterator s_it;
             for (s_it = sensingClusterList.begin(); s_it != sensingClusterList.end(); s_it++)
             {
               // center, sensing time
@@ -792,8 +792,8 @@ void getHumanTrajectory()
 
   //------------------------------------------------------------------------------
   // get start node which is not linked by other node
-  std::vector<std::list<Node>::iterator> startNodes;
-  std::vector<int> visitFlag;
+  std::vector< std::list< Node >::iterator > startNodes;
+  std::vector< int > visitFlag;
   for (unsigned int i = 0; i < trajectoryTreeClusterIDMax + 1; i++)
   {
     visitFlag.push_back(0);
@@ -834,7 +834,7 @@ void getHumanTrajectory()
   for (unsigned int i = 0; i < startNodes.size(); i++)
   {
     this_it = startNodes[i];
-    std::vector<Cluster> tempHumanTrajectory;
+    std::vector< Cluster > tempHumanTrajectory;
 
     while (1)
     {
@@ -855,7 +855,7 @@ void getHumanTrajectory()
   }
 }
 
-float getMaxCost(std::list<Node>::iterator it)
+float getMaxCost(std::list< Node >::iterator it)
 {
   // if the cost already calculated, return the value
   if (it->cost != -1)
@@ -900,7 +900,7 @@ float getMaxCost(std::list<Node>::iterator it)
       else
       {
         float mostLargeCost = FLT_MIN;
-        std::list<Node>::iterator child_it;
+        std::list< Node >::iterator child_it;
         for (unsigned int i = 0; i < it->child_it.size(); i++)
         {
           float cost = 1.0 + getMaxCost(it->child_it[i]);
@@ -929,7 +929,7 @@ void sendDetectedCluster()
   fss_detected_cluster_data.header.stamp = ros::Time::now() + ros::Duration(9 * 60 * 60);  // GMT +9;
   fss_detected_cluster_data.tMeasuredTime = GLOBAL_LAST_TIME;
 
-  list<Cluster>::iterator it;
+  list< Cluster >::iterator it;
   for (it = detectedClusterList.begin(); it != detectedClusterList.end(); it++)
   {
     tms_msg_ss::fss_observed_datas fss_observed_datas;
@@ -992,7 +992,7 @@ void sendPersonData()
 void displayCompareList()
 {
   int i;
-  std::list<Cluster>::iterator it;
+  std::list< Cluster >::iterator it;
 
   printf("-----------------\n");
   i = 0;
@@ -1021,7 +1021,7 @@ void displayDetectedClusterList()
   printf("detectedClusterList: %ld\n", detectedClusterList.size());
 
   int count = 0;
-  std::list<Cluster>::iterator it;
+  std::list< Cluster >::iterator it;
   for (it = detectedClusterList.begin(); it != detectedClusterList.end(); it++)
   {
     float x = it->fCenterX.back();
@@ -1039,7 +1039,7 @@ void displayTrajectoryTree()
   printf("------------------------\n");
   printf("TrajectoryTree:\n");
 
-  std::list<Node>::iterator this_it, child_it;
+  std::list< Node >::iterator this_it, child_it;
 
   for (this_it = trajectoryTree.begin(); this_it != trajectoryTree.end(); this_it++)
   {
@@ -1094,7 +1094,7 @@ void outputTrajectoryTreeData()
   // trajectoryTree
   ofs1 << "trajectoryTree" << std::endl;
 
-  std::list<Node>::iterator this_it, child_it;
+  std::list< Node >::iterator this_it, child_it;
   for (this_it = trajectoryTree.begin(); this_it != trajectoryTree.end(); this_it++)
   {
     ofs1 << "[" << this_it->index << "]: ";

@@ -276,8 +276,8 @@ void spinWheel(/*double arg_speed, double arg_theta*/)
   val_R = (int)Limit(val_R, (double)SPEED_MAX, (double)-SPEED_MAX);
   printf("val_L:%2.f   val_R:%2.f", val_L, val_R);
 
-  string cmd_L = boost::lexical_cast<string>(val_L);
-  string cmd_R = boost::lexical_cast<string>(val_R);
+  string cmd_L = boost::lexical_cast< string >(val_L);
+  string cmd_R = boost::lexical_cast< string >(val_R);
 
   string message;
   message = "@SS1," + cmd_L + "@SS2," + cmd_R;
@@ -473,18 +473,18 @@ int main(int argc, char **argv)
   string s_Kp_, s_Ki_, s_Kd_;
   ros::NodeHandle nh_param("~");
   string tmp_ip;
-  nh_param.param<string>("IP_ADDR", tmp_ip, "192.168.11.99");
-  nh_param.param<int>("spin_Kp", Kp_, 4800);
-  nh_param.param<int>("spin_Ki", Ki_, /*30*/ 100);
-  nh_param.param<int>("spin_Kd", Kd_, 40000);
-  nh_param.param<double>("spd_Kp", SPD_KP, 2.0);
-  nh_param.param<double>("turn_Kp", TURN_KP, 1.0);
-  nh_param.param<int>("arv_dist", ARV_DIST, 200);
+  nh_param.param< string >("IP_ADDR", tmp_ip, "192.168.11.99");
+  nh_param.param< int >("spin_Kp", Kp_, 4800);
+  nh_param.param< int >("spin_Ki", Ki_, /*30*/ 100);
+  nh_param.param< int >("spin_Kd", Kd_, 40000);
+  nh_param.param< double >("spd_Kp", SPD_KP, 2.0);
+  nh_param.param< double >("turn_Kp", TURN_KP, 1.0);
+  nh_param.param< int >("arv_dist", ARV_DIST, 200);
   // acces like "mimamorukun_controller/spd_Kp"
   client_socket.init(tmp_ip, 54300);
-  s_Kp_ = boost::lexical_cast<string>(Kp_);
-  s_Ki_ = boost::lexical_cast<string>(Ki_);
-  s_Kd_ = boost::lexical_cast<string>(Kd_);
+  s_Kp_ = boost::lexical_cast< string >(Kp_);
+  s_Ki_ = boost::lexical_cast< string >(Ki_);
+  s_Kd_ = boost::lexical_cast< string >(Kd_);
 
   try
   {
@@ -508,11 +508,11 @@ int main(int argc, char **argv)
     cout << "Exception was caught:" << e.description() << "\n";
   }
 
-  db_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
+  db_client = n.serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader/dbreader");
   // db_pub    = nh2.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data", 10);
   // ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Twist>("/cmd_vel", 1,
   // receiveCmdVel);
-  ros::Subscriber cmd_vel_sub = n.subscribe<sensor_msgs::Joy>("/joy", 1, receiveJoy);
+  ros::Subscriber cmd_vel_sub = n.subscribe< sensor_msgs::Joy >("/joy", 1, receiveJoy);
   // ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Pose2D>("/mkun_goal_pose", 1,
   // receiveGoalPose);
   ros::ServiceServer service = n.advertiseService("mkun_goal_pose", receiveGoalPose);

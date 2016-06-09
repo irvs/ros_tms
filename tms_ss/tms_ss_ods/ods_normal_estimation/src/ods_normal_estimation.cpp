@@ -7,7 +7,7 @@ typedef pcl::PointXYZ PointType;
 
 int main()
 {
-  pcl::PointCloud<PointType>::Ptr cloud(new pcl::PointCloud<PointType>);
+  pcl::PointCloud< PointType >::Ptr cloud(new pcl::PointCloud< PointType >);
 
   pcl::io::loadPCDFile("src/ods_normal_estimation/data/ods_normal_estimation/sample.pcd", *cloud);
 
@@ -15,17 +15,17 @@ int main()
   // pcl::visualization::PCLVisualizer viewer2("Cloud Viewer2");
 
   // Create the normal estimation class, and pass the input dataset to it
-  pcl::NormalEstimation<PointType, pcl::Normal> ne;
+  pcl::NormalEstimation< PointType, pcl::Normal > ne;
   ne.setInputCloud(cloud);
 
   // Create an empty kdtree representation, and pass it to the normal estimation object.
   // Its content will be filled inside the object, based on the given input dataset (as no other search surface is
   // given).
-  pcl::search::KdTree<PointType>::Ptr tree(new pcl::search::KdTree<PointType>());
+  pcl::search::KdTree< PointType >::Ptr tree(new pcl::search::KdTree< PointType >());
   ne.setSearchMethod(tree);
 
   // Output datasets
-  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals(new pcl::PointCloud<pcl::Normal>);
+  pcl::PointCloud< pcl::Normal >::Ptr cloud_normals(new pcl::PointCloud< pcl::Normal >);
   pcl::Normal n;
   double n_x = 0.0, n_y = 0.0, n_z = 0.0, n_c = 0.0;
   int count = 0;
@@ -65,7 +65,7 @@ int main()
 
   while (!viewer.wasStopped())
   {
-    viewer.addPointCloudNormals<PointType, pcl::Normal>(cloud, cloud_normals);
+    viewer.addPointCloudNormals< PointType, pcl::Normal >(cloud, cloud_normals);
     // viewer2.addPointCloud<pcl::PointXYZRGB>(cloud);
     viewer.spinOnce(100);
     // viewer2.spinOnce(100);

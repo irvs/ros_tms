@@ -22,7 +22,7 @@ ros::ServiceClient commander_to_get_robots_info;
 ros::ServiceClient commander_to_get_movable_furnitures_info;
 ros::ServiceClient commander_to_calc_grasp_wagon_pose;
 
-vector<vector<CollisionMapData>> sub_Map;
+vector< vector< CollisionMapData > > sub_Map;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void set_RPS_MAP(const tms_msg_rp::rps_map_full::ConstPtr& RPS_MAP)
@@ -35,7 +35,7 @@ void set_RPS_MAP(const tms_msg_rp::rps_map_full::ConstPtr& RPS_MAP)
   y_ulimit = RPS_MAP->y_ulimit;
   cell_size = RPS_MAP->cell_size;
 
-  vector<CollisionMapData> temp_map_line;
+  vector< CollisionMapData > temp_map_line;
   CollisionMapData temp_map_d;
 
   for (unsigned int x = 0; x < RPS_MAP->rps_map_x.size(); x++)
@@ -63,7 +63,7 @@ void getPushWagonType(tms_msg_rp::rps_position robot_pos, tms_msg_rp::rps_positi
   double rw_th = atan2(robot_pos.y - wagon_pos.y, robot_pos.x - wagon_pos.x);
   double w_th = deg2rad(wagon_pos.th);
 
-  vector<double> pw_th;
+  vector< double > pw_th;
   pw_th.resize(2);
 
   pw_th[0] = atan2(Wagon_Size_ShortSide_Length / 2.0, Wagon_Size_LongSide_Length / 2.0);
@@ -102,7 +102,7 @@ void getPushWagonType(tms_msg_rp::rps_position robot_pos, tms_msg_rp::rps_positi
     rel_th += 2 * M_PI;
 }
 
-bool calcWagonPosOnVoronoi(vector<vector<CollisionMapData>> Map, vector<double>& robot_pos, int wagon_state,
+bool calcWagonPosOnVoronoi(vector< vector< CollisionMapData > > Map, vector< double >& robot_pos, int wagon_state,
                            double control_dist, double& rel_th, bool change_rel, double threshold)
 {
   if (Map.empty())
@@ -112,13 +112,13 @@ bool calcWagonPosOnVoronoi(vector<vector<CollisionMapData>> Map, vector<double>&
   }
 
   double incre_th = deg2rad(0.1);
-  vector<double> temp_r_pos, temp_w_pos, temp_control_pos;
+  vector< double > temp_r_pos, temp_w_pos, temp_control_pos;
   temp_r_pos.resize(3);
   temp_r_pos = robot_pos;
   temp_w_pos.resize(2);
   temp_control_pos.resize(2);
 
-  vector<int> i_temp_w_pos, i_temp_control_pos;
+  vector< int > i_temp_w_pos, i_temp_control_pos;
   i_temp_w_pos.resize(2);
   i_temp_control_pos.resize(2);
 
@@ -525,8 +525,8 @@ bool calcWagonPosOnVoronoi(vector<vector<CollisionMapData>> Map, vector<double>&
   return true;
 }
 
-void cut_unnecessary_path_point(vector<vector<double>> in_wagon_path, vector<vector<double>> passage_point,
-                                double threshold, vector<vector<double>>& out_wagon_path)
+void cut_unnecessary_path_point(vector< vector< double > > in_wagon_path, vector< vector< double > > passage_point,
+                                double threshold, vector< vector< double > >& out_wagon_path)
 {
   out_wagon_path.clear();
   if (in_wagon_path.empty())
@@ -534,7 +534,7 @@ void cut_unnecessary_path_point(vector<vector<double>> in_wagon_path, vector<vec
     cout << "Error : wagon_push_path is empty" << endl;
     return;
   }
-  vector<double> temp_param = in_wagon_path[0];
+  vector< double > temp_param = in_wagon_path[0];
   out_wagon_path.push_back(temp_param);
 
   double temp_th = temp_param[2], temp_rel_th = temp_param[3];
@@ -578,7 +578,7 @@ bool start_push_wagon_path_planner(tms_msg_rp::rps_push_wagon_path_planning::Req
   if (commander_to_get_movable_furnitures_info.call(srv_get_f_info))
   {
     //~ ROS_INFO("Success wagon_width = %lf, depth = %lf, height = %lf", srv_get_f_info.response.furnitures_width,
-    //srv_get_f_info.response.furnitures_depth, srv_get_f_info.response.furnitures_height);
+    // srv_get_f_info.response.furnitures_depth, srv_get_f_info.response.furnitures_height);
 
     Wagon_Size_LongSide_Length = srv_get_f_info.response.furnitures_width;
     Wagon_Size_ShortSide_Length = srv_get_f_info.response.furnitures_depth;
@@ -602,8 +602,8 @@ bool start_push_wagon_path_planner(tms_msg_rp::rps_push_wagon_path_planning::Req
   //~ cout<<push_wagon_type<<endl;
 
   ////calc robot path
-  vector<double> start, goal;
-  vector<vector<double>> voronoi_path, smooth_path, comp_path;
+  vector< double > start, goal;
+  vector< vector< double > > voronoi_path, smooth_path, comp_path;
   start.resize(3);
   goal.resize(3);
   start[0] = req.start_robot_pos.x / 1000.0;
@@ -674,8 +674,8 @@ bool start_push_wagon_path_planner(tms_msg_rp::rps_push_wagon_path_planning::Req
   compVoronoiPath(smooth_path, comp_path);
   ////calc robot path end
 
-  vector<double> rob_pos, temp_push_wagon_param;
-  vector<vector<double>> push_wagon_path, simple_push_wagon_path;
+  vector< double > rob_pos, temp_push_wagon_param;
+  vector< vector< double > > push_wagon_path, simple_push_wagon_path;
   temp_push_wagon_param.clear();
   push_wagon_path.clear();
   rob_pos.resize(3);
@@ -797,15 +797,15 @@ int main(int argc, char** argv)
   ros::ServiceServer service_push_wagon_path =
       n.advertiseService("rps_push_wagon_path_planning", start_push_wagon_path_planner);
 
-  commander_to_get_robots_info = n.serviceClient<tms_msg_db::tmsdb_get_robots_info>("tmsdb_get_robots_info");
+  commander_to_get_robots_info = n.serviceClient< tms_msg_db::tmsdb_get_robots_info >("tmsdb_get_robots_info");
   commander_to_get_movable_furnitures_info =
-      n.serviceClient<tms_msg_db::tmsdb_get_movable_furnitures_info>("tmsdb_get_movable_furnitures_info");
+      n.serviceClient< tms_msg_db::tmsdb_get_movable_furnitures_info >("tmsdb_get_movable_furnitures_info");
 
   commander_to_calc_grasp_wagon_pose =
-      n.serviceClient<tms_msg_rp::rps_cnoid_grasp_wagon_planning>("rps_cnoid_calc_grasp_wagon_pose");
+      n.serviceClient< tms_msg_rp::rps_cnoid_grasp_wagon_planning >("rps_cnoid_calc_grasp_wagon_pose");
 
-  rps_robot_path_pub = n.advertise<tms_msg_rp::rps_route>("rps_robot_path", 1);
-  rps_wagon_path_pub = n.advertise<tms_msg_rp::rps_route>("rps_wagon_path", 1);
+  rps_robot_path_pub = n.advertise< tms_msg_rp::rps_route >("rps_robot_path", 1);
+  rps_wagon_path_pub = n.advertise< tms_msg_rp::rps_route >("rps_wagon_path", 1);
 
   ros::Rate loop_rate(1);
 

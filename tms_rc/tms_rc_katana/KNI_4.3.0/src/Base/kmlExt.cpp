@@ -138,9 +138,9 @@ void CKatana::calibrate()
     }
     ///////////////////////////////////////
     // standalone calibration for K400:
-    byte p[32];  // packet
+    byte p[32];     // packet
     byte buf[256];  // readbuf
-    byte sz = 10;  // readbuf size
+    byte sz = 10;   // readbuf size
     p[0] = 'C';
     p[1] = 0;  // calibrate all motors
     p[2] = 4;  // calibrate
@@ -357,9 +357,9 @@ void CKatana::setForceLimit(int axis, int limit)
   if (force > 100)
     force = 100;
 
-  byte p[32];  // packet
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
   p[0] = 'S';
   p[1] = axis;
   p[2] = 10;  // subcommand 10 "Set Current Controller Limit"
@@ -395,12 +395,13 @@ int CKatana::getMotorEncoders(short number, bool refreshEncoders) const
   return base->GetMOT()->arr[number].GetPVP()->pos;
 }
 
-std::vector<int>::iterator CKatana::getRobotEncoders(std::vector<int>::iterator start,
-                                                     std::vector<int>::const_iterator end, bool refreshEncoders) const
+std::vector< int >::iterator CKatana::getRobotEncoders(std::vector< int >::iterator start,
+                                                       std::vector< int >::const_iterator end,
+                                                       bool refreshEncoders) const
 {
   if (refreshEncoders)
     base->recvMPS();
-  std::vector<int>::iterator iter = start;
+  std::vector< int >::iterator iter = start;
   for (int i = 0; i < getNumberOfMotors(); ++i)
   {
     if (iter == end)
@@ -411,9 +412,9 @@ std::vector<int>::iterator CKatana::getRobotEncoders(std::vector<int>::iterator 
   return iter;
 }
 
-std::vector<int> CKatana::getRobotEncoders(bool refreshEncoders) const
+std::vector< int > CKatana::getRobotEncoders(bool refreshEncoders) const
 {
-  std::vector<int> temp(getNumberOfMotors());
+  std::vector< int > temp(getNumberOfMotors());
   getRobotEncoders(temp.begin(), temp.end(), refreshEncoders);
   return temp;
 }
@@ -495,7 +496,7 @@ void CKatana::waitFor(TMotStsFlg status, int waitTimeout)
   base->waitFor(status, waitTimeout, _gripperIsPresent);
 }
 
-void CKatana::moveRobotToEnc(std::vector<int>::const_iterator start, std::vector<int>::const_iterator end,
+void CKatana::moveRobotToEnc(std::vector< int >::const_iterator start, std::vector< int >::const_iterator end,
                              bool waitUntilReached, int encTolerance, int waitTimeout)
 {
   //         // We'll do that some other time. We need to store the velocity twice for that
@@ -505,7 +506,7 @@ void CKatana::moveRobotToEnc(std::vector<int>::const_iterator start, std::vector
   //         int maxDistNr = std::distance(distance.begin(), std::max_element(distance.begin(), distance.end()));
 
   int i = 0;
-  std::vector<int>::const_iterator iter = start;
+  std::vector< int >::const_iterator iter = start;
   while ((iter != end) && (i < getNumberOfMotors()))
   {
     //             if(i != maxDistNr) {
@@ -544,16 +545,16 @@ void CKatana::moveRobotToEnc(std::vector<int>::const_iterator start, std::vector
   }
 }
 
-void CKatana::moveRobotToEnc(std::vector<int> encoders, bool waitUntilReached, int encTolerance, int waitTimeout)
+void CKatana::moveRobotToEnc(std::vector< int > encoders, bool waitUntilReached, int encTolerance, int waitTimeout)
 {
   moveRobotToEnc(encoders.begin(), encoders.end(), waitUntilReached, encTolerance, waitTimeout);
 }
 
-void CKatana::moveRobotToEnc4D(std::vector<int> target, int velocity, int acceleration, int encTolerance)
+void CKatana::moveRobotToEnc4D(std::vector< int > target, int velocity, int acceleration, int encTolerance)
 {
   int n, maxDistance = 0;
   short numberOfMotors = getNumberOfMotors();
-  std::vector<int> diffMot, speed, oldSpeed;
+  std::vector< int > diffMot, speed, oldSpeed;
 
   // Find the maximun difference between actual and target position for each motor
   for (n = 0; n < numberOfMotors; n++)
@@ -566,7 +567,7 @@ void CKatana::moveRobotToEnc4D(std::vector<int> target, int velocity, int accele
   for (n = 0; n < numberOfMotors; n++)
   {
     oldSpeed.push_back(getMotorVelocityLimit(n));
-    speed.push_back(max(static_cast<int>((static_cast<double>(diffMot.at(n)) / maxDistance) * velocity), 10));
+    speed.push_back(max(static_cast< int >((static_cast< double >(diffMot.at(n)) / maxDistance) * velocity), 10));
     setMotorVelocityLimit(n, speed.at(n));
     setMotorAccelerationLimit(n, acceleration);
   }
@@ -676,7 +677,7 @@ void CKatana::sendSplineToMotor(short number, short targetPosition, short durati
   base->GetMOT()->arr[number].sendSpline(targetPosition, duration, p1, p2, p3, p4);
 }
 
-void CKatana::setAndStartPolyMovement(std::vector<short> polynomial, bool exactflag, int moreflag)
+void CKatana::setAndStartPolyMovement(std::vector< short > polynomial, bool exactflag, int moreflag)
 {
   int exact = 0;
   if (exactflag)

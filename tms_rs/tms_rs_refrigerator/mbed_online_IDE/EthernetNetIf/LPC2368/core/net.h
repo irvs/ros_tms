@@ -94,9 +94,9 @@ private:
 
   NetIf* m_defaultIf;
 
-  list<NetIf*> m_lpIf;
-  list<NetTcpSocket*> m_lpNetTcpSocket;
-  list<NetUdpSocket*> m_lpNetUdpSocket;
+  list< NetIf* > m_lpIf;
+  list< NetTcpSocket* > m_lpNetTcpSocket;
+  list< NetUdpSocket* > m_lpNetUdpSocket;
 };
 
 #endif

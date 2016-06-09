@@ -57,16 +57,16 @@ struct FURNITURES_TOTAL
 //基本的にDB_readerより持ってきた情報を保持する
 struct MISSING_OBJECTS_P
 {
-  int missing_object_id;                       //消失物品のid
-  bool missing_object_id_valid;                //既に見つかっている場合はfalseになる
-  long unsigned int missing_object_time;       //物品消失時間の記録
-  std::vector<PERSON_HISTORY> person_history;  //人の歩行履歴(物品がなくなった後より)
-  std::vector<FURNITURES> near_furnitures;  //近づいた家具のidと接近開始時間と離脱時間の保持(分離型)
-  std::vector<FURNITURES_TOTAL> near_furnitures_total;
+  int missing_object_id;                         //消失物品のid
+  bool missing_object_id_valid;                  //既に見つかっている場合はfalseになる
+  long unsigned int missing_object_time;         //物品消失時間の記録
+  std::vector< PERSON_HISTORY > person_history;  //人の歩行履歴(物品がなくなった後より)
+  std::vector< FURNITURES > near_furnitures;  //近づいた家具のidと接近開始時間と離脱時間の保持(分離型)
+  std::vector< FURNITURES_TOTAL > near_furnitures_total;
   int find_furnitures_id;  //物品を発見した家具のid
 };
 
-std::vector<MISSING_OBJECTS_P> missing_objects_list;
+std::vector< MISSING_OBJECTS_P > missing_objects_list;
 
 ros::ServiceServer service1;
 ros::ServiceServer service2;
@@ -100,7 +100,7 @@ bool tms_utility_analyze_missing_objects_func(tms_msg_sa::tms_to_activate_servic
 
   FURNITURES_TOTAL temp_furnitures_total;
 
-  std::vector<FURNITURES_TOTAL> furnitures_order(32);
+  std::vector< FURNITURES_TOTAL > furnitures_order(32);
   for (unsigned int i = 0; i < 32; i++)
   {
     furnitures_order[i].id = furnitures_start_number + i;  // idをfurnitures_numberから32個割り振っていく
@@ -232,7 +232,7 @@ bool tms_utility_analyze_missing_objects_func(tms_msg_sa::tms_to_activate_servic
         //				ROS_INFO("desk12?:%lf",sqrt(pow((missing_objects_list[while_i].person_history[while_j].x - bed12_x),2)
         //+ pow((missing_objects_list[while_i].person_history[while_j].y - bed12_y),2)));
         //				if(sqrt(pow((missing_objects_list[while_i].person_history[while_j].x - bed12_x),2) +
-        //pow((missing_objects_list[while_i].person_history[while_j].y - bed12_y),2))
+        // pow((missing_objects_list[while_i].person_history[while_j].y - bed12_y),2))
         //						< threshold_furnitures){
         //					ROS_INFO("2:while_j = %d",while_j);
         //					temp_furniture.id = 12;
@@ -245,7 +245,7 @@ bool tms_utility_analyze_missing_objects_func(tms_msg_sa::tms_to_activate_servic
         //					else{
         //						ROS_INFO("1-2");
         //						temp_furniture.left_time =
-        //missing_objects_list[while_i].person_history[while_j].rostime+(1*1000*1000*1000);
+        // missing_objects_list[while_i].person_history[while_j].rostime+(1*1000*1000*1000);
         //					}
         //					missing_objects_list[while_i].near_furnitures.push_back(temp_furniture);
         //				}
@@ -431,11 +431,11 @@ int main(int argc, char **argv)
   //人消失時の起動の場合
   service2 = n.advertiseService("tms_utility_analyze_missing_object", tms_utility_analyze_missing_objects_func);
 
-  client1 = n.serviceClient<tms_msg_db::tmsdb_get_objects_info>("tmsdb_get_objects_info_present");
-  client2 = n.serviceClient<tms_msg_db::tmsdb_get_objects_info>("tmsdb_get_objects_info_history");
-  client3 = n.serviceClient<tms_msg_db::tmsdb_get_person_info>("tmsdb_get_person_info");
-  client4 = n.serviceClient<tms_msg_ts::tms_sa_find_objects>("tms_sa_find_objects_TS");  //"TS" = Task Scheduler
-  client5 = n.serviceClient<tms_msg_sa::tms_to_modify_missing_objects>("tms_utility_modify_missing_objects");
+  client1 = n.serviceClient< tms_msg_db::tmsdb_get_objects_info >("tmsdb_get_objects_info_present");
+  client2 = n.serviceClient< tms_msg_db::tmsdb_get_objects_info >("tmsdb_get_objects_info_history");
+  client3 = n.serviceClient< tms_msg_db::tmsdb_get_person_info >("tmsdb_get_person_info");
+  client4 = n.serviceClient< tms_msg_ts::tms_sa_find_objects >("tms_sa_find_objects_TS");  //"TS" = Task Scheduler
+  client5 = n.serviceClient< tms_msg_sa::tms_to_modify_missing_objects >("tms_utility_modify_missing_objects");
 
   //	client5 = n.serviceClient<tmsdb::tmsdb_change_dt>("object_detection_test");
   //	client2 = n.serviceClient<tmsdb::tmsdb_modify_person_behavior>("tmsdb_modify_person_behavior");

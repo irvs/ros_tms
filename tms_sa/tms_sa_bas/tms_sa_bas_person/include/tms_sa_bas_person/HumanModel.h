@@ -32,12 +32,12 @@ public:
 
   //--------------------------------------------------------------------------
   // for each humanTrajectory
-  std::vector<double> baseStepCycle;
-  std::vector<double> baseStepCycleVar;
-  std::vector<double> baseGaitCycle;
-  std::vector<double> baseGaitCycleVar;
-  std::vector<vector<SampleData>> stepCycleData;
-  std::vector<vector<SampleData>> gaitCycleData;
+  std::vector< double > baseStepCycle;
+  std::vector< double > baseStepCycleVar;
+  std::vector< double > baseGaitCycle;
+  std::vector< double > baseGaitCycleVar;
+  std::vector< vector< SampleData > > stepCycleData;
+  std::vector< vector< SampleData > > gaitCycleData;
 
   //--------------------------------------------------------------------------
   // for humanTrajectory all data
@@ -45,8 +45,8 @@ public:
   double baseStepCycleVarByAll;
   double baseGaitCycleByAll;
   double baseGaitCycleVarByAll;
-  std::vector<SampleData> stepCycleDataByAll;
-  std::vector<SampleData> gaitCycleDataByAll;
+  std::vector< SampleData > stepCycleDataByAll;
+  std::vector< SampleData > gaitCycleDataByAll;
 
   //--------------------------------------------------------------------------
   // functions

@@ -45,7 +45,7 @@ CLaser::CLaser()
       m_LRFClsPos[n][i] = cvCreateMat(2, 1, CV_64F);
     }
 
-    std::vector<double> zero(m_cnMaxDataSizeLRF, 0);
+    std::vector< double > zero(m_cnMaxDataSizeLRF, 0);
     m_BackLRFDataRing[n].resize(m_ring);
     for (int i = 0; i < m_ring; i++)
     {

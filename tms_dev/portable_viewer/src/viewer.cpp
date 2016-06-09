@@ -656,10 +656,10 @@ void Viewer::drawGradualHumanLine()
               p2->xy_time.push_back(ros::Time::now().toSec());
             }
             p2->flag = 1;
-            std::vector<tracker_point>::iterator vv;
+            std::vector< tracker_point >::iterator vv;
             vv = (p2->xy).begin();
 
-            std::vector<double>::iterator vvv;
+            std::vector< double >::iterator vvv;
             for (vvv = p2->xy_time.begin(); vvv < p2->xy_time.end(); ++vvv, ++vv)
             {
               if (ros::Time::now().toSec() - *vvv > WINDOW_TIME)

@@ -31,7 +31,7 @@
 
 ///// CUSTOMIZED ATAN FUNCTION ////////////////////////////////////////
 
-template <typename _T>
+template < typename _T >
 inline _T atan1(_T in1, _T in2)
 {
   if (in1 == 0.0 && in2 == 0.0)
@@ -229,12 +229,13 @@ private:
   int initializeMembers();
   int setAngleMinMax();
   int initDofMat(int dof);
-  int angleArrMDH2vecK4D(const double arr[], std::vector<double>* vec);
+  int angleArrMDH2vecK4D(const double arr[], std::vector< double >* vec);
 
-  int invKin(std::vector<double> pose, std::vector<double> prev, std::vector<double>& angle);
-  int invKin_bisec(std::vector<double> pose, std::vector<double> prev, std::vector<double>& conf, int maxBisection);
-  int anaGuess(std::vector<double> pose, std::vector<double> prev, std::vector<double>& angle);
-  bool checkConfig(std::vector<double> config, std::vector<double> pose, double tol = 0.00001);
+  int invKin(std::vector< double > pose, std::vector< double > prev, std::vector< double >& angle);
+  int invKin_bisec(std::vector< double > pose, std::vector< double > prev, std::vector< double >& conf,
+                   int maxBisection);
+  int anaGuess(std::vector< double > pose, std::vector< double > prev, std::vector< double >& angle);
+  bool checkConfig(std::vector< double > config, std::vector< double > pose, double tol = 0.00001);
 
 public:
   ///// CONSTRUCTOR / DESTRUCTOR ////////////////////////////////////////
@@ -283,7 +284,7 @@ public:
    * @param typeNr	0: K_6M90A_F, 1: K_6M90A_G, 2: K_6M180, 3: K_6M90B_F, 4: K_6M90B_G, -1 for other
    * @return			1 if successful, -1 if failed
    */
-  int setMDH(std::vector<double> theta, std::vector<double> d, std::vector<double> a, std::vector<double> alpha,
+  int setMDH(std::vector< double > theta, std::vector< double > d, std::vector< double > a, std::vector< double > alpha,
              int typeNr = -1);
 
   /*! \brief This sets the link length parameters (part of mDH-parameters)
@@ -297,7 +298,7 @@ public:
    * @param links	length of the links in m
    * @return		1 if successful, -1 if failed
    */
-  int setLinkLen(std::vector<double> links);
+  int setLinkLen(std::vector< double > links);
 
   /*! \brief This sets the immobile flag of the last joint
    *
@@ -318,7 +319,7 @@ public:
    * @param epc	encoders pec cycle
    * @return		1 if successful, -1 if failed
    */
-  int setEPC(std::vector<int> epc);
+  int setEPC(std::vector< int > epc);
 
   /*! \brief This sets the encoder offsets
    *
@@ -328,7 +329,7 @@ public:
    * @param encOffset	encoder values at calibration stops
    * @return			1 if successful, -1 if failed
    */
-  int setEncOff(std::vector<int> encOffset);
+  int setEncOff(std::vector< int > encOffset);
 
   /*! \brief This sets the rotation direction
    *
@@ -340,7 +341,7 @@ public:
    * @param rotDir	rotation direction of the joints
    * @return		1 if successful, -1 if failed
    */
-  int setRotDir(std::vector<int> rotDir);
+  int setRotDir(std::vector< int > rotDir);
 
   /*! \brief This sets the angle offsets
    *
@@ -350,7 +351,7 @@ public:
    * @param angleOffset	angle values at calibration stops in mDH
    * @return				1 if successful, -1 if failed
    */
-  int setAngOff(std::vector<double> angleOffset);
+  int setAngOff(std::vector< double > angleOffset);
 
   /*! \brief This sets the angle range
    *
@@ -361,7 +362,7 @@ public:
    * @param angleRange	angle range from angle offset to angle stop
    * @return			1 if successful, -1 if failed
    */
-  int setAngRan(std::vector<double> angleRange);
+  int setAngRan(std::vector< double > angleRange);
 
   /*! \brief This sets the tcp offset
    *
@@ -371,7 +372,7 @@ public:
    *						is rotation about x-axis of tool coordinate system
    * @return			1 if successful, -1 if failed
    */
-  int setTcpOff(std::vector<double> tcpOffset);
+  int setTcpOff(std::vector< double > tcpOffset);
 
   ///// GETTERS /////////////////////////////////////////////////////////
 
@@ -418,7 +419,8 @@ public:
    * @param alpha	vector to write in angle about previous x-axis
    * @return		1 if successful, -1 if failed
    */
-  int getMDH(std::vector<double>& theta, std::vector<double>& d, std::vector<double>& a, std::vector<double>& alpha);
+  int getMDH(std::vector< double >& theta, std::vector< double >& d, std::vector< double >& a,
+             std::vector< double >& alpha);
 
   /*! \brief Get the immobile flag of the last joint
    *
@@ -431,70 +433,70 @@ public:
    * @param epc	vector to write in encoders pec cycle
    * @return		1 if successful, -1 if failed
    */
-  int getEPC(std::vector<int>& epc);
+  int getEPC(std::vector< int >& epc);
 
   /*! \brief Get the encoder offsets
    *
    * @param encoderOffset		vector to write in encoder values at calibration stops
    * @return					1 if successful, -1 if failed
    */
-  int getEncOff(std::vector<int>& encOffset);
+  int getEncOff(std::vector< int >& encOffset);
 
   /*! \brief Get the rotation direction
    *
    * @param rotationDirection		vector to write in rotation direction of the joints
    * @return						1 if successful, -1 if failed
    */
-  int getRotDir(std::vector<int>& rotDir);
+  int getRotDir(std::vector< int >& rotDir);
 
   /*! \brief Get the angle offsets
    *
    * @param angleOffset	vector to write in angle values at calibration stops
    * @return				1 if successful, -1 if failed
    */
-  int getAngOff(std::vector<double>& angleOffset);
+  int getAngOff(std::vector< double >& angleOffset);
 
   /*! \brief Get the angle range
    *
    * @param angleRange	vector to write in angle range
    * @return				1 if successful, -1 if failed
    */
-  int getAngRan(std::vector<double>& angleRange);
+  int getAngRan(std::vector< double >& angleRange);
 
   /*! \brief Get angle stop
    *
    * @param angleStop		vector to write angle stop
    * @return				1 if successful, -1 if failed
    */
-  int getAngStop(std::vector<double>& angleStop);
+  int getAngStop(std::vector< double >& angleStop);
 
   /*! \brief Get angle min
    *
    * @param angleMin		vector to write angle min
    * @return				1 if successful, -1 if failed
    */
-  int getAngMin(std::vector<double>& angleMin);
+  int getAngMin(std::vector< double >& angleMin);
 
   /*! \brief Get angle max
    *
    * @param angleMax		vector to write angle max
    * @return				1 if successful, -1 if failed
    */
-  int getAngMax(std::vector<double>& angleMax);
+  int getAngMax(std::vector< double >& angleMax);
 
   /*! \brief Get the tcp offset
    *
    * @param tcpOffset		vector to write in (x, y, z, psi) offset
    * @return				1 if successful, -1 if failed
    */
-  int getTcpOff(std::vector<double>& tcpOffset);
+  int getTcpOff(std::vector< double >& tcpOffset);
 
   /*! \brief Get the version number of the library
    *
    * @param version		vector to write in version (major, minor, revision)
    * @return				1 if successful, -1 if failed
    */
-  int getVersion(std::vector<int>& version);
+  int getVersion(std::vector< int >& version);
 
   ///// INITIALIZATION //////////////////////////////////////////////////
 
@@ -518,7 +520,7 @@ public:
   * @param angleMDH	angle in mDH convention
   * @return			1 if successful, -1 if failed
   */
-  int K4D2mDHAng(std::vector<double> angleK4D, std::vector<double>& angleMDH);
+  int K4D2mDHAng(std::vector< double > angleK4D, std::vector< double >& angleMDH);
 
   /*! \brief This converts angles from mDH to Katana4D convention
   *
@@ -528,7 +530,7 @@ public:
   * @param angleK4D	angle in K4D convention
   * @return			1 if successful, -1 if failed
   */
-  int mDH2K4DAng(std::vector<double> angleMDH, std::vector<double>& angleK4D);
+  int mDH2K4DAng(std::vector< double > angleMDH, std::vector< double >& angleK4D);
 
   ///// ENCODER <-> ANGLE CONVERSION ////////////////////////////////////
 
@@ -538,7 +540,7 @@ public:
    * @param angles	resulting joint angles
    * @return			1 if successful, -1 if failed
    */
-  int enc2rad(std::vector<int> encoders, std::vector<double>& angles);
+  int enc2rad(std::vector< int > encoders, std::vector< double >& angles);
 
   /*! \brief Converts angles to encoders
    *
@@ -546,7 +548,7 @@ public:
    * @param encoders	resulting encoder positions of joints
    * @return			1 if successful, -1 if failed
    */
-  int rad2enc(std::vector<double> angles, std::vector<int>& encoders);
+  int rad2enc(std::vector< double > angles, std::vector< int >& encoders);
 
   ///// KINEMATICS //////////////////////////////////////////////////////
 
@@ -556,7 +558,7 @@ public:
    * @param pose		resulting pose of the TCP [x,	 y, z, phi, theta, psi]
    * @return			1 if successful, -1 if failed
    */
-  int directKinematics(std::vector<double> angles, std::vector<double>& pose);
+  int directKinematics(std::vector< double > angles, std::vector< double >& pose);
 
   /*! \brief Calculates the inverse kinematics
    *
@@ -565,7 +567,7 @@ public:
    * @param angles	resulting robot configuration (joint angles)
    * @return			1 if successful, -1 if failed
    */
-  int inverseKinematics(std::vector<double> pose, std::vector<double> prev, std::vector<double>& angles,
+  int inverseKinematics(std::vector< double > pose, std::vector< double > prev, std::vector< double >& angles,
                         int maxBisection = 0);
 };
 

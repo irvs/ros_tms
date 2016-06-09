@@ -304,7 +304,7 @@ void MainWindow::exportPlot(int iPlotID)
 
 #ifndef QT_NO_FILEDIALOG
 
-  const QList<QByteArray> imageFormats = QImageWriter::supportedImageFormats();
+  const QList< QByteArray > imageFormats = QImageWriter::supportedImageFormats();
 
   QStringList filter;
   filter += "PDF Documents (*.pdf)";

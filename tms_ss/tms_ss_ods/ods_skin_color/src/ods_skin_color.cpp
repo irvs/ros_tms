@@ -6,7 +6,7 @@
 //*******************************
 //**入力座標までの距離を求める
 //*******************************
-void GetDepth(std::vector<int> &tmp_idx)
+void GetDepth(std::vector< int > &tmp_idx)
 {
   std::cout << "Getdepth" << std::endl;
 
@@ -200,8 +200,8 @@ bool skin_extraction(tms_msg_ss::ods_skincolor_extraction::Request &req,
 
   //変数宣言
   cv_bridge::CvImagePtr rgb_ptr(new cv_bridge::CvImage);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  std::vector<int> tmp_idx;
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  std::vector< int > tmp_idx;
   cv::Mat frame;
   cv::Mat mask(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC1);
 
@@ -252,7 +252,7 @@ int main(int argc, char **argv)
 
   service = n.advertiseService("ods_skin_color", skin_extraction);
 
-  commander_to_kinect_capture = n.serviceClient<tms_msg_ss::ods_pcd>("ods_capture");
+  commander_to_kinect_capture = n.serviceClient< tms_msg_ss::ods_pcd >("ods_capture");
 
   ros::spin();
 

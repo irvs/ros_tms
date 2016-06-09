@@ -420,7 +420,7 @@ int main(int argc, char **argv)
   printf("Virtual KXP initialization has been completed.\n\n");
 
   ros::AsyncSpinner spinner(4);
-  pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
+  pose_publisher = nh.advertise< tms_msg_db::TmsdbStamped >("tms_db_data", 10);
 
   // スレッド処理でロボット情報の更新と物体情報の更新を同時に行う
   boost::thread thr_rdu(&RobotDataUpdate);

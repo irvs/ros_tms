@@ -24,14 +24,14 @@
 struct ExceptionTag
 {
 };
-typedef libebt::BacktraceContext<ExceptionTag, std::string> Context;
+typedef libebt::BacktraceContext< ExceptionTag, std::string > Context;
 
 ///
 /// @defgroup exceptions Exceptions
 /// @{
 ///
 
-class DLLDIR Exception : public libebt::Backtraceable<ExceptionTag>, public std::exception
+class DLLDIR Exception : public libebt::Backtraceable< ExceptionTag >, public std::exception
 {
 protected:
   const std::string _message;
@@ -39,7 +39,7 @@ protected:
 
 public:
   Exception(const std::string& message, const int error_number) throw()
-    : libebt::Backtraceable<ExceptionTag>(), std::exception(), _message(message), _error_number(error_number)
+    : libebt::Backtraceable< ExceptionTag >(), std::exception(), _message(message), _error_number(error_number)
   {
   }
 

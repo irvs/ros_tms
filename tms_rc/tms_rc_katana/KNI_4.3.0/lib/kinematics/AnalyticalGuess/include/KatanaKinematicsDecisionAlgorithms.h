@@ -12,18 +12,18 @@ namespace AnaGuess
 {
 struct KinematicsDefaultEncMinAlgorithm
 {
-  typedef std::vector<int> encoders;
+  typedef std::vector< int > encoders;
   typedef encoders::const_iterator c_iter;
-  typedef std::vector<encoders>::const_iterator t_iter;
+  typedef std::vector< encoders >::const_iterator t_iter;
 
   t_iter operator()(t_iter targetEnc_begin, t_iter targetEnc_end, c_iter currentEnc_begin, c_iter currentEnc_end);
 };
 
 struct KinematicsDefaultRadMinAlgorithm
 {
-  typedef std::vector<double> radians;
+  typedef std::vector< double > radians;
   typedef radians::const_iterator c_iter;
-  typedef std::vector<radians>::const_iterator t_iter;
+  typedef std::vector< radians >::const_iterator t_iter;
 
   t_iter operator()(t_iter targetRad_begin, t_iter targetRad_end, c_iter currentRad_begin, c_iter currentRad_end);
 };

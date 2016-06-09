@@ -31,7 +31,7 @@
 #endif
 //////////////////////////////////////////////////////////////////////////////////
 // Katana object
-std::auto_ptr<CLMBase> katana;
+std::auto_ptr< CLMBase > katana;
 //////////////////////////////////////////////////////////////////////////////////
 void DisplayHelp()
 {
@@ -84,8 +84,8 @@ int main(int argc, char *argv[])
   // open device: a serial port is opened in this case
   //----------------------------------------------------------------//
 
-  std::auto_ptr<CCdlSocket> device;
-  std::auto_ptr<CCplSerialCRC> protocol;
+  std::auto_ptr< CCdlSocket > device;
+  std::auto_ptr< CCplSerialCRC > protocol;
 
   try
   {
@@ -125,9 +125,9 @@ int main(int argc, char *argv[])
   DisplayHelp();
 
   // declare variables used in loop
-  byte packet[32];  // packet
+  byte packet[32];   // packet
   byte buffer[256];  // readbuf
-  byte size = 0;  // readbuf size
+  byte size = 0;     // readbuf size
   short param1, param2, param3, param4, param5, param6, param7;
   char p1, p2;
   int i;

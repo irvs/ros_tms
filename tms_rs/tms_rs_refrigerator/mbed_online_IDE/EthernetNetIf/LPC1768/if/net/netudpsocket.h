@@ -37,8 +37,8 @@ enum NetUdpSocketErr
 {
   __NETUDPSOCKET_MIN = -0xFFFF,
   NETUDPSOCKET_SETUP,  // NetUdpSocket not properly configured
-  NETUDPSOCKET_IF,  // If has problems
-  NETUDPSOCKET_MEM,  // Not enough mem
+  NETUDPSOCKET_IF,     // If has problems
+  NETUDPSOCKET_MEM,    // Not enough mem
   NETUDPSOCKET_INUSE,  // If/Port is in use
   //...
   NETUDPSOCKET_OK = 0
@@ -68,7 +68,7 @@ public:
 
   class CDummy;
   // Callbacks
-  template <class T>
+  template < class T >
   // Linker bug : Must be defined here :(
   void setOnEvent(T* pItem, void (T::*pMethod)(NetUdpSocketEvent))
   {
@@ -99,7 +99,7 @@ private:
   void onEvent(NetUdpSocketEvent e);  // To be called on poll
   CDummy* m_pCbItem;
   void (CDummy::*m_pCbMeth)(NetUdpSocketEvent);
-  queue<NetUdpSocketEvent> m_events;
+  queue< NetUdpSocketEvent > m_events;
 };
 
 #endif

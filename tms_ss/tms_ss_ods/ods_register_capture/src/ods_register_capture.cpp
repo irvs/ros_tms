@@ -22,13 +22,13 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "ods_register_capture");
   ros::NodeHandle n;
 
-  commander_to_kinect_capture = n.serviceClient<tms_msg_ss::ods_pcd>("capture_cloud");
+  commander_to_kinect_capture = n.serviceClient< tms_msg_ss::ods_pcd >("capture_cloud");
 
   //**************************
   // initialize
   //**************************
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr model(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr model(new pcl::PointCloud< pcl::PointXYZRGB >);
 
   //**************************
   // input cloud

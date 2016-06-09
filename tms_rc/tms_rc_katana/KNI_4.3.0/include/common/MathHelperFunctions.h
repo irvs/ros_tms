@@ -35,7 +35,7 @@ namespace KNI_MHF
 {
 //*****************************************************************
 
-template <typename _T>
+template < typename _T >
 inline short sign(_T x)
 {
   return ((x < 0) ? -1 : 1);
@@ -46,8 +46,8 @@ inline short sign(_T x)
 ///
 /// function-object which calculates sinus for n-elements of a container if used together
 /// with a STL algorithm
-template <typename _T>
-struct unary_precalc_sin : public std::unary_function<_T, _T>
+template < typename _T >
+struct unary_precalc_sin : public std::unary_function< _T, _T >
 {
   _T operator()(_T& x)
   {
@@ -58,8 +58,8 @@ struct unary_precalc_sin : public std::unary_function<_T, _T>
 ///
 /// \sa unary_precalc_sin
 ///
-template <typename _T>
-struct unary_precalc_cos : public std::unary_function<_T, _T>
+template < typename _T >
+struct unary_precalc_cos : public std::unary_function< _T, _T >
 {
   _T operator()(_T x)
   {
@@ -68,7 +68,7 @@ struct unary_precalc_cos : public std::unary_function<_T, _T>
 };
 
 //*****************************************************************
-template <typename _T>
+template < typename _T >
 inline _T atan1(_T in1, _T in2)
 {
   if (in1 == 0.0 && in2 != 0.0)
@@ -89,7 +89,7 @@ inline _T atan1(_T in1, _T in2)
 }
 
 //*****************************************************************
-template <typename _T>
+template < typename _T >
 inline _T acotan(const _T in)
 {
   if (in == 0.0)
@@ -99,7 +99,7 @@ inline _T acotan(const _T in)
 }
 
 //*************************************************
-template <typename _T>
+template < typename _T >
 inline _T atan0(const _T in1, const _T in2)
 {
   if (in1 == 0.0)
@@ -108,7 +108,7 @@ inline _T atan0(const _T in1, const _T in2)
 }
 
 //*************************************************
-template <typename _T>
+template < typename _T >
 inline _T pow2(const _T in)
 {
   return pow(in, 2);
@@ -117,7 +117,7 @@ inline _T pow2(const _T in)
 ///
 /// conversion from radian to degree
 ///
-template <typename _T>
+template < typename _T >
 inline _T rad2deg(const _T a)
 {
   return a * (180.0 / M_PI);
@@ -126,8 +126,8 @@ inline _T rad2deg(const _T a)
 ///
 /// a function-object version of rad2deg
 ///
-template <typename _T>
-struct unary_rad2deg : public std::unary_function<_T, _T>
+template < typename _T >
+struct unary_rad2deg : public std::unary_function< _T, _T >
 {
   _T operator()(const _T a)
   {
@@ -138,7 +138,7 @@ struct unary_rad2deg : public std::unary_function<_T, _T>
 ///
 /// conversion from degree to radian
 ///
-template <typename _T>
+template < typename _T >
 inline _T deg2rad(const _T a)
 {
   return a * (M_PI / 180.0);
@@ -147,8 +147,8 @@ inline _T deg2rad(const _T a)
 ///
 /// a function-object version of rad2deg
 ///
-template <typename _T>
-struct unary_deg2rad : public std::unary_function<_T, _T>
+template < typename _T >
+struct unary_deg2rad : public std::unary_function< _T, _T >
 {
   _T operator()(const _T a)
   {
@@ -157,7 +157,7 @@ struct unary_deg2rad : public std::unary_function<_T, _T>
 };
 
 //*************************************************
-template <typename _T>
+template < typename _T >
 _T inline anglereduce(const _T a)
 {
   return a - floor(a / (2 * M_PI)) * 2 * M_PI;
@@ -167,7 +167,7 @@ _T inline anglereduce(const _T a)
 ///
 /// converts absolute angles in radian to encoders.
 ///
-template <typename _angleT, typename _encT>
+template < typename _angleT, typename _encT >
 inline _encT rad2enc(_angleT const& angle, _angleT const& angleOffset, _encT const& epc, _encT const& encOffset,
                      _encT const& rotDir)
 {
@@ -175,16 +175,16 @@ inline _encT rad2enc(_angleT const& angle, _angleT const& angleOffset, _encT con
   _angleT _epc = epc, _rotDir = rotDir, _angleOffset = angleOffset, _encOffset = encOffset;
 #ifdef WIN32
   double temp = _encOffset + (_angleOffset - angle) * _epc * _rotDir / (2 * M_PI);
-  return static_cast<_encT>((temp >= 0) ? floor(temp + 0.5) : floor(temp - 0.5));
+  return static_cast< _encT >((temp >= 0) ? floor(temp + 0.5) : floor(temp - 0.5));
 #else
-  return static_cast<_encT>(round(_encOffset + (_angleOffset - angle) * _epc * _rotDir / (2 * M_PI)));
+  return static_cast< _encT >(round(_encOffset + (_angleOffset - angle) * _epc * _rotDir / (2 * M_PI)));
 #endif
 }
 
 ///
 /// converts encoders to absolute angles in radian
 ///
-template <typename _angleT, typename _encT>
+template < typename _angleT, typename _encT >
 inline _angleT enc2rad(_encT const& enc, _angleT const& angleOffset, _encT const& epc, _encT const& encOffset,
                        _encT const& rotDir)
 {

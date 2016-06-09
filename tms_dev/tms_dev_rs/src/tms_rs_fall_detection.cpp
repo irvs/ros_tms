@@ -1192,19 +1192,19 @@ int main(int argc, char **argv)
   service1 = n.advertiseService("tms_rs_fall_detection", tms_rs_fall_detection_func);
 
   // 0X ... TMSDBと
-  client01 = n.serviceClient<tms_msg_db::tmsdb_get_robots_info>("tmsdb_get_robots_info");
+  client01 = n.serviceClient< tms_msg_db::tmsdb_get_robots_info >("tmsdb_get_robots_info");
   //	client02 = n.serviceClient<tms_msg_db::tmsdb_get_furnitures_info>("tmsdb_get_furnitures_info");
   //	client03 = n.serviceClient<tms_msg_db::tmsdb_get_pcd_info>("tmsdb_get_pcd_info");
   //	client04 = n.serviceClient<tms_msg_db::tmsdb_file_conservation>("tmsdb_file_conservation");
   //	client05 = n.serviceClient<tms_msg_db::tmsdb_objects_data>("tmsdb_objects_data_1");
 
   //こちらはskill部と
-  client1 = n.serviceClient<tms_msg_rc::tms_rc_pmove>("pmove");  //直進・回転命令を指定
-  client2 = n.serviceClient<tms_msg_rc::tms_rc_pparam>("pparam");  // DirectMotionが完了しているかどうかを判定
-  client3 = n.serviceClient<tms_msg_rp::rps_path_planning>("rps_path_planning");
-  client4 = n.serviceClient<tms_msg_ss::ods_person_detection>("ods_person_detection");
-  client5 = n.serviceClient<tms_msg_ss::ods_skincolor_extraction>("ods_skin_color");
-  client6 = n.serviceClient<tms_msg_ss::ods_face_detection>("ods_face_detection");
+  client1 = n.serviceClient< tms_msg_rc::tms_rc_pmove >("pmove");  //直進・回転命令を指定
+  client2 = n.serviceClient< tms_msg_rc::tms_rc_pparam >("pparam");  // DirectMotionが完了しているかどうかを判定
+  client3 = n.serviceClient< tms_msg_rp::rps_path_planning >("rps_path_planning");
+  client4 = n.serviceClient< tms_msg_ss::ods_person_detection >("ods_person_detection");
+  client5 = n.serviceClient< tms_msg_ss::ods_skincolor_extraction >("ods_skin_color");
+  client6 = n.serviceClient< tms_msg_ss::ods_face_detection >("ods_face_detection");
 
   ros::spin();
 

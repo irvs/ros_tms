@@ -132,7 +132,7 @@ private:
    * @param time	time difference between the points in s
    * @return true if joint speeds ok, false if joint speed too high
    */
-  bool checkJointSpeed(std::vector<int> lastsolution, std::vector<int> solution, double time);
+  bool checkJointSpeed(std::vector< int > lastsolution, std::vector< int > solution, double time);
 
   /**
    * Calculates speed from distance, acceleration and time for the movement.
@@ -218,7 +218,7 @@ public:
   /// \note You can call this function in python using tuples:
   ///       Example: katana.moveRobotLinearTo( (x,y,z,phi,theta,psi) )
   /// \note If the size of the container is smaller than 6, it will throw an exception!
-  void moveRobotLinearTo(std::vector<double> coordinates, bool waitUntilReached = true, int waitTimeout = TM_ENDLESS);
+  void moveRobotLinearTo(std::vector< double > coordinates, bool waitUntilReached = true, int waitTimeout = TM_ENDLESS);
 
   /// Moves to robot to given cartesian coordinates and euler-angles.
   /// \note Instead of a given tolerance, a default tolerance is being used
@@ -229,7 +229,7 @@ public:
   /// \note You can call this function in python using tuples:
   ///       Example: katana.moveRobotTo( (x,y,z,phi,theta,psi) )
   /// \note If the size of the container is smaller than 6, it will throw an exception
-  void moveRobotTo(std::vector<double> coordinates, bool waitUntilReached = true, int waitTimeout = TM_ENDLESS);
+  void moveRobotTo(std::vector< double > coordinates, bool waitUntilReached = true, int waitTimeout = TM_ENDLESS);
 };
 /********************************************************************************/
 #endif  //_IKBASE_H_

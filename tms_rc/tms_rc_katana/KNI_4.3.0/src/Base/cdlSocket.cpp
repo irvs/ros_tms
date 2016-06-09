@@ -94,7 +94,7 @@ int CCdlSocket::disconnect()
   return 0;
 }
 //-------------------------------------------------------//
-#else  // LINUX
+#else   // LINUX
 //-------------------------------------------------------//
 // Default arguments for local Katana Simulator:
 CCdlSocket::CCdlSocket(char* ipAddr, int port) : _ipAddr(ipAddr), _port(port)

@@ -48,12 +48,12 @@ struct TCurrentMot
 
 struct Tpos
 {
-  static std::vector<int> x, y, z, u, v, w;
+  static std::vector< int > x, y, z, u, v, w;
   static const int xArr[], yArr[], zArr[], uArr[], vArr[], wArr[];
 };
 
 // Katana obj.
-std::auto_ptr<CLMBase> katana;
+std::auto_ptr< CLMBase > katana;
 
 // std::vector<int> Foo::vec(array, array + sizeof(array)/sizeof(*array));
 // positionen, hard-coded. Use values from file instead
@@ -63,13 +63,13 @@ const int Tpos::zArr[] = {24327, -7837, -16796, 5802, 30290, 10924};
 const int Tpos::uArr[] = {5333, -13791, -9985, 11449, 30996, 12063};
 const int Tpos::vArr[] = {-3799, -5703, -11676, 8210, 30995, 12063};
 const int Tpos::wArr[] = {-3799, -5703, -11676, 8210, 30995, 30992};
-std::vector<int> Tpos::x(xArr, xArr + sizeof(xArr) / sizeof(*xArr));
-std::vector<int> Tpos::y(yArr, yArr + sizeof(yArr) / sizeof(*yArr));
-std::vector<int> Tpos::z(zArr, zArr + sizeof(zArr) / sizeof(*zArr));
-std::vector<int> Tpos::u(uArr, uArr + sizeof(uArr) / sizeof(*uArr));
-std::vector<int> Tpos::v(vArr, vArr + sizeof(vArr) / sizeof(*vArr));
-std::vector<int> Tpos::w(wArr, wArr + sizeof(wArr) / sizeof(*wArr));
-std::vector<TPoint> points(0);
+std::vector< int > Tpos::x(xArr, xArr + sizeof(xArr) / sizeof(*xArr));
+std::vector< int > Tpos::y(yArr, yArr + sizeof(yArr) / sizeof(*yArr));
+std::vector< int > Tpos::z(zArr, zArr + sizeof(zArr) / sizeof(*zArr));
+std::vector< int > Tpos::u(uArr, uArr + sizeof(uArr) / sizeof(*uArr));
+std::vector< int > Tpos::v(vArr, vArr + sizeof(vArr) / sizeof(*vArr));
+std::vector< int > Tpos::w(wArr, wArr + sizeof(wArr) / sizeof(*wArr));
+std::vector< TPoint > points(0);
 // void StartPointlistMovement();
 // void StartProgram(int index);
 pthread_t tid;
@@ -129,11 +129,11 @@ bool katana_move_angle_array(tms_msg_rc::katana_pos_array::Request &req, tms_msg
 {
   //角度[6]配列(&req)→Enc値[6]配列(act_enc)→pose値[6]配列act_pose
 
-  std::vector<std::vector<int>> act_enc;  // Encoder値
-  std::vector<int> temp_enc;
+  std::vector< std::vector< int > > act_enc;  // Encoder値
+  std::vector< int > temp_enc;
 
-  std::vector<std::vector<double>> act_pose;
-  std::vector<double> temp_pose;
+  std::vector< std::vector< double > > act_pose;
+  std::vector< double > temp_pose;
 
   unsigned int i = 0;  // for用カウンタ
   unsigned int j = 0;  // std::cout用カウンタ
@@ -189,7 +189,7 @@ bool katana_move_angle_array(tms_msg_rc::katana_pos_array::Request &req, tms_msg
   //	for(i=0;i<act_enc.size();i++){
   //		ROS_INFO("Debug1");
   //		katana->getCoordinatesFromEncoders(temp_pose, act_enc[i]);	//motor1~6(Encoder) ->
-  //RobotPose(x,y,z,phi,theta,psi)
+  // RobotPose(x,y,z,phi,theta,psi)
 
   //		for(j=0;j<6;j++)
   //			printf("%lf ",temp_pose[j]);
@@ -214,8 +214,8 @@ bool katana_move_angle_array(tms_msg_rc::katana_pos_array::Request &req, tms_msg
 //実際はkatana_move_angle_arrayを投げたほうが楽のはず
 bool katana_move_angle(tms_msg_rc::katana_pos_single::Request &req, tms_msg_rc::katana_pos_single::Response &res)
 {
-  std::vector<int> temp_enc;
-  std::vector<double> temp_pose;
+  std::vector< int > temp_enc;
+  std::vector< double > temp_pose;
 
   temp_enc.push_back(user_angle_rad2enc(katana.get(), 0, user_angle_deg2rad((double)req.pose[0])));  // motor1
   temp_enc.push_back(user_angle_rad2enc(katana.get(), 1, user_angle_deg2rad((double)req.pose[1])));  // motor1
@@ -233,7 +233,7 @@ bool katana_move_angle(tms_msg_rc::katana_pos_single::Request &req, tms_msg_rc::
 
 bool katana_move_pose_array(tms_msg_rc::katana_pos_array::Request &req, tms_msg_rc::katana_pos_array::Response &res)
 {
-  std::vector<double> temp_pose;
+  std::vector< double > temp_pose;
 
   for (unsigned int i = 0; i < req.pose_array.size(); i++)
   {
@@ -244,7 +244,7 @@ bool katana_move_pose_array(tms_msg_rc::katana_pos_array::Request &req, tms_msg_
 
 bool katana_move_enc(tms_msg_rc::katana_pos_single::Request &req, tms_msg_rc::katana_pos_single::Response &res)
 {
-  std::vector<int> temp_enc;
+  std::vector< int > temp_enc;
 
   temp_enc.push_back(user_angle_rad2enc(katana.get(), 0, user_angle_deg2rad((double)req.pose[0])));  // motor1
   temp_enc.push_back(user_angle_rad2enc(katana.get(), 1, user_angle_deg2rad((double)req.pose[1])));  // motor1
@@ -326,8 +326,8 @@ int main(int argc, char *argv[])
   std::cout << "Current Directory : " << dir << std::endl;
 
   // open device: a serial port is opened in this case
-  std::auto_ptr<CCdlSocket> device;
-  std::auto_ptr<CCplSerialCRC> protocol;
+  std::auto_ptr< CCdlSocket > device;
+  std::auto_ptr< CCplSerialCRC > protocol;
 
   try
   {
@@ -374,7 +374,7 @@ int main(int argc, char *argv[])
   bool IsOff = false;
   bool useLinearMode = false;
   double RadToDeg = 1.0;
-  std::vector<int> encoders(katana->getNumberOfMotors(), 0);
+  std::vector< int > encoders(katana->getNumberOfMotors(), 0);
 
   const TKatMOT *motors;
   TCurrentMot mot[6];
@@ -419,12 +419,12 @@ int main(int argc, char *argv[])
   //	}
 
   // calibration後の姿勢の記録
-  std::vector<int> enc_init;
-  std::vector<double> pose_init;
+  std::vector< int > enc_init;
+  std::vector< double > pose_init;
 
   //直立姿勢の記録
-  std::vector<int> enc_fst;
-  std::vector<double> pose_fst;
+  std::vector< int > enc_fst;
+  std::vector< double > pose_fst;
 
   pose_init.resize(6);
 

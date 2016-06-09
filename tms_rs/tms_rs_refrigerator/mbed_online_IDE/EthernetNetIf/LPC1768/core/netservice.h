@@ -60,7 +60,7 @@ private:
   bool m_removed;
   bool m_owned;
 
-  static list<NetService*>& lpServices();  // Helper to prevent static initialization fiasco
+  static list< NetService* >& lpServices();  // Helper to prevent static initialization fiasco
 };
 
 #endif

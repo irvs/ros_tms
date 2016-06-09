@@ -18,45 +18,45 @@ Kinematics6M90G::~Kinematics6M90G()
 }
 
 //!get link length
-std::vector<double> Kinematics6M90G::getLinkLength()
+std::vector< double > Kinematics6M90G::getLinkLength()
 {
-  std::vector<double> result(mSegmentLength);
+  std::vector< double > result(mSegmentLength);
   return result;
 }
 //!get encoders per cycle
-std::vector<int> Kinematics6M90G::getEpc()
+std::vector< int > Kinematics6M90G::getEpc()
 {
-  std::vector<int> result(mEncodersPerCycle);
+  std::vector< int > result(mEncodersPerCycle);
   return result;
 }
 //!get encoder offset
-std::vector<int> Kinematics6M90G::getEncOff()
+std::vector< int > Kinematics6M90G::getEncOff()
 {
-  std::vector<int> result(mEncoderOffset);
+  std::vector< int > result(mEncoderOffset);
   return result;
 }
 //!get direction
-std::vector<int> Kinematics6M90G::getDir()
+std::vector< int > Kinematics6M90G::getDir()
 {
-  std::vector<int> result(mRotationDirection);
+  std::vector< int > result(mRotationDirection);
   return result;
 }
 //!get angle offset
-std::vector<double> Kinematics6M90G::getAngOff()
+std::vector< double > Kinematics6M90G::getAngOff()
 {
-  std::vector<double> result(mAngleOffset);
+  std::vector< double > result(mAngleOffset);
   return result;
 }
 //!get angle stop
-std::vector<double> Kinematics6M90G::getAngStop()
+std::vector< double > Kinematics6M90G::getAngStop()
 {
-  std::vector<double> result(mAngleStop);
+  std::vector< double > result(mAngleStop);
   return result;
 }
 //!get angle range
-std::vector<double> Kinematics6M90G::getAngRange()
+std::vector< double > Kinematics6M90G::getAngRange()
 {
-  std::vector<double> result;
+  std::vector< double > result;
   double diff;
   for (int i = 0; i < 6; i++)
   {
@@ -73,9 +73,9 @@ std::vector<double> Kinematics6M90G::getAngRange()
   return result;
 }
 //!get angle min
-std::vector<double> Kinematics6M90G::getAngMin()
+std::vector< double > Kinematics6M90G::getAngMin()
 {
-  std::vector<double> result;
+  std::vector< double > result;
   for (int i = 0; i < 6; i++)
   {
     if (mAngleStop[i] < mAngleOffset[i])
@@ -90,9 +90,9 @@ std::vector<double> Kinematics6M90G::getAngMin()
   return result;
 }
 //!get angle max
-std::vector<double> Kinematics6M90G::getAngMax()
+std::vector< double > Kinematics6M90G::getAngMax()
 {
-  std::vector<double> result;
+  std::vector< double > result;
   for (int i = 0; i < 6; i++)
   {
     if (mAngleStop[i] < mAngleOffset[i])
@@ -108,7 +108,7 @@ std::vector<double> Kinematics6M90G::getAngMax()
 }
 
 //!set link length
-bool Kinematics6M90G::setLinkLength(const std::vector<double> aLengths)
+bool Kinematics6M90G::setLinkLength(const std::vector< double > aLengths)
 {
   if ((int)aLengths.size() != mNumberOfSegments)
   {
@@ -123,7 +123,7 @@ bool Kinematics6M90G::setLinkLength(const std::vector<double> aLengths)
   return true;
 }
 //!set angle offset
-bool Kinematics6M90G::setAngOff(const std::vector<double> aAngOff)
+bool Kinematics6M90G::setAngOff(const std::vector< double > aAngOff)
 {
   if ((int)aAngOff.size() != mNumberOfMotors)
   {
@@ -138,7 +138,7 @@ bool Kinematics6M90G::setAngOff(const std::vector<double> aAngOff)
   return true;
 }
 //!set angle stop
-bool Kinematics6M90G::setAngStop(const std::vector<double> aAngStop)
+bool Kinematics6M90G::setAngStop(const std::vector< double > aAngStop)
 {
   if ((int)aAngStop.size() != mNumberOfMotors)
   {
@@ -154,7 +154,7 @@ bool Kinematics6M90G::setAngStop(const std::vector<double> aAngStop)
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool Kinematics6M90G::enc2rad(std::vector<double> &aAngles, const std::vector<int> aEncoders)
+bool Kinematics6M90G::enc2rad(std::vector< double > &aAngles, const std::vector< int > aEncoders)
 {
   for (int i = 0; i < 6; ++i)
   {
@@ -164,7 +164,7 @@ bool Kinematics6M90G::enc2rad(std::vector<double> &aAngles, const std::vector<in
   return true;
 }
 //////////////////////////////////////////////////////////////////////////
-bool Kinematics6M90G::rad2enc(std::vector<int> &aEncoders, const std::vector<double> aAngles)
+bool Kinematics6M90G::rad2enc(std::vector< int > &aEncoders, const std::vector< double > aAngles)
 {
   for (int i = 0; i < 6; ++i)
   {
@@ -175,7 +175,7 @@ bool Kinematics6M90G::rad2enc(std::vector<int> &aEncoders, const std::vector<dou
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool Kinematics6M90G::directKinematics(std::vector<double> &aPosition, const std::vector<double> aAngles)
+bool Kinematics6M90G::directKinematics(std::vector< double > &aPosition, const std::vector< double > aAngles)
 {
   if (!mIsInitialized)
   {
@@ -189,7 +189,7 @@ bool Kinematics6M90G::directKinematics(std::vector<double> &aPosition, const std
   double z0, z1, z2, z3;
   double R13, R23, R33, R31, R32;
 
-  std::vector<double> current_angles(6);
+  std::vector< double > current_angles(6);
   for (int i = 0; i < 6; ++i)
   {
     current_angles[i] = aAngles[i];
@@ -200,20 +200,20 @@ bool Kinematics6M90G::directKinematics(std::vector<double> &aPosition, const std
   current_angles[2] = current_angles[2] - MHF_PI;
   current_angles[3] = MHF_PI - current_angles[3];
 
-  std::vector<double> pose(6);
+  std::vector< double > pose(6);
 
-  std::vector<double> cx(current_angles.size()), sx(current_angles.size());
-  std::vector<double>::iterator cx_iter, sx_iter;
+  std::vector< double > cx(current_angles.size()), sx(current_angles.size());
+  std::vector< double >::iterator cx_iter, sx_iter;
 
-  std::vector<double> angle = current_angles;
+  std::vector< double > angle = current_angles;
 
   angle[2] = angle[1] + angle[2];
   angle[3] = angle[2] + angle[3];
 
   cx_iter = cx.begin();
   sx_iter = sx.begin();
-  std::transform(angle.begin(), angle.end(), sx_iter, MHF::unary_precalc_sin<double>());
-  std::transform(angle.begin(), angle.end(), cx_iter, MHF::unary_precalc_cos<double>());
+  std::transform(angle.begin(), angle.end(), sx_iter, MHF::unary_precalc_sin< double >());
+  std::transform(angle.begin(), angle.end(), cx_iter, MHF::unary_precalc_cos< double >());
 
   R13 = (-1 * cx[0] * cx[3] * cx[4]) - (sx[0] * sx[4]);
   R23 = (-1 * sx[0] * cx[3] * cx[4]) + (cx[0] * sx[4]);
@@ -264,8 +264,8 @@ bool Kinematics6M90G::directKinematics(std::vector<double> &aPosition, const std
   return true;
 }
 //////////////////////////////////////////////////////////////////////////
-bool Kinematics6M90G::inverseKinematics(std::vector<double> &aAngles, const std::vector<double> aPosition,
-                                        const std::vector<double> aStartingAngles)
+bool Kinematics6M90G::inverseKinematics(std::vector< double > &aAngles, const std::vector< double > aPosition,
+                                        const std::vector< double > aStartingAngles)
 {
   if (!mIsInitialized)
   {
@@ -354,7 +354,7 @@ bool Kinematics6M90G::inverseKinematics(std::vector<double> &aAngles, const std:
   thetacomp(angle[7], p_m);
 
   // delete solutions out of range (in joint space)
-  for (::std::vector<angles_calc>::iterator iter = angle.begin(); iter != angle.end(); /* do iter forward in body */)
+  for (::std::vector< angles_calc >::iterator iter = angle.begin(); iter != angle.end(); /* do iter forward in body */)
   {
     if (MHF::pow2(iter->costh3) <= 1.0)
     {
@@ -374,10 +374,10 @@ bool Kinematics6M90G::inverseKinematics(std::vector<double> &aAngles, const std:
   }
 
   // store possible solution angles to std::vector<std::vector<double>>
-  std::vector<std::vector<double>> PossibleTargets;
-  for (std::vector<angles_calc>::iterator i = angle.begin(); i != angle.end(); ++i)
+  std::vector< std::vector< double > > PossibleTargets;
+  for (std::vector< angles_calc >::iterator i = angle.begin(); i != angle.end(); ++i)
   {
-    std::vector<double> possangles(5);
+    std::vector< double > possangles(5);
 
     possangles[0] = i->theta1;
     possangles[1] = i->theta2;
@@ -389,7 +389,7 @@ bool Kinematics6M90G::inverseKinematics(std::vector<double> &aAngles, const std:
   }
 
   // choose best solution
-  std::vector<std::vector<double>>::const_iterator sol = KinematicsDefaultRadMinAlgorithm()(
+  std::vector< std::vector< double > >::const_iterator sol = KinematicsDefaultRadMinAlgorithm()(
       PossibleTargets.begin(), PossibleTargets.end(), aStartingAngles.begin(), aStartingAngles.end());
 
   if (sol == PossibleTargets.end())
@@ -400,7 +400,7 @@ bool Kinematics6M90G::inverseKinematics(std::vector<double> &aAngles, const std:
   // copy solution to aAngles vector
   for (int i = aAngles.size(); i < 6; ++i)
     aAngles.push_back(0.0);
-  std::vector<double>::iterator gripper_iter = std::copy((*sol).begin(), (*sol).end(), aAngles.begin());
+  std::vector< double >::iterator gripper_iter = std::copy((*sol).begin(), (*sol).end(), aAngles.begin());
   *gripper_iter = aStartingAngles[5];  // copy gripper-angle from current
 
   return true;

@@ -59,7 +59,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "greeting_demo2");
   ros::NodeHandle n;
 
-  motion_client2 = n.serviceClient<tms_msg_rc::smartpal_control>("sp5_2control");
+  motion_client2 = n.serviceClient< tms_msg_rc::smartpal_control >("sp5_2control");
 
   while (ros::ok())
   {

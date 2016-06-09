@@ -118,11 +118,11 @@ int KinematicsLib::initDofMat(int dof)
 
   return 1;
 }
-int KinematicsLib::angleArrMDH2vecK4D(const double arr[], std::vector<double>* angleK4D)
+int KinematicsLib::angleArrMDH2vecK4D(const double arr[], std::vector< double >* angleK4D)
 {
   if (_type < 0)
     return -1;
-  std::vector<double> angleMDH;
+  std::vector< double > angleMDH;
   for (int i = 0; i < _dom; ++i)
   {
     angleMDH.push_back(arr[i]);
@@ -135,10 +135,10 @@ int KinematicsLib::angleArrMDH2vecK4D(const double arr[], std::vector<double>* a
 ///////////////////////////////////////////////////////////////////////
 int KinematicsLib::setType(int type)
 {
-  std::vector<double> angOff;
+  std::vector< double > angOff;
   double angStopArr[MaxDof];
-  std::vector<double> angStop;
-  std::vector<double> lengths;
+  std::vector< double > angStop;
+  std::vector< double > lengths;
   switch (type)
   {
     case K_6M90A_F:  // 0
@@ -360,8 +360,8 @@ int KinematicsLib::setType(int type)
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::setMDH(std::vector<double> theta, std::vector<double> d, std::vector<double> a,
-                          std::vector<double> alpha, int typeNr)
+int KinematicsLib::setMDH(std::vector< double > theta, std::vector< double > d, std::vector< double > a,
+                          std::vector< double > alpha, int typeNr)
 {
   // check vector sizes
   if (_dof == -1)
@@ -395,7 +395,7 @@ int KinematicsLib::setMDH(std::vector<double> theta, std::vector<double> d, std:
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::setLinkLen(std::vector<double> links)
+int KinematicsLib::setLinkLen(std::vector< double > links)
 {
   if ((_dof == -1) || ((int)links.size() != 4))
     return -1;
@@ -427,7 +427,7 @@ int KinematicsLib::setLinkLen(std::vector<double> links)
   }
 
   // set in AnalyticalGuess
-  std::vector<double> lengths;
+  std::vector< double > lengths;
   for (int i = 0; i < 4; ++i)
   {
     lengths.push_back(_linkLength[i] * 1000);
@@ -459,7 +459,7 @@ int KinematicsLib::setImmob(int immob)
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::setEPC(std::vector<int> epc)
+int KinematicsLib::setEPC(std::vector< int > epc)
 {
   if ((int)epc.size() < _dom)
   {
@@ -474,7 +474,7 @@ int KinematicsLib::setEPC(std::vector<int> epc)
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::setEncOff(std::vector<int> encOffset)
+int KinematicsLib::setEncOff(std::vector< int > encOffset)
 {
   if ((int)encOffset.size() < _dom)
   {
@@ -489,7 +489,7 @@ int KinematicsLib::setEncOff(std::vector<int> encOffset)
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::setRotDir(std::vector<int> rotDir)
+int KinematicsLib::setRotDir(std::vector< int > rotDir)
 {
   if ((int)rotDir.size() < _dom)
   {
@@ -511,7 +511,7 @@ int KinematicsLib::setRotDir(std::vector<int> rotDir)
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::setAngOff(std::vector<double> angleOffset)
+int KinematicsLib::setAngOff(std::vector< double > angleOffset)
 {
   if ((int)angleOffset.size() < _dom)
   {
@@ -527,9 +527,9 @@ int KinematicsLib::setAngOff(std::vector<double> angleOffset)
     setAngleMinMax();
 
   // analytical guess
-  std::vector<double> angOff;
+  std::vector< double > angOff;
   double angStopArr[MaxDof];
-  std::vector<double> angStop;
+  std::vector< double > angStop;
   switch (_type)
   {
     case K_6M90A_F:  // 0
@@ -575,7 +575,7 @@ int KinematicsLib::setAngOff(std::vector<double> angleOffset)
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::setAngRan(std::vector<double> angleRange)
+int KinematicsLib::setAngRan(std::vector< double > angleRange)
 {
   if ((int)angleRange.size() < _dom)
   {
@@ -592,7 +592,7 @@ int KinematicsLib::setAngRan(std::vector<double> angleRange)
 
   // analytical guess
   double angStopArr[MaxDof];
-  std::vector<double> angStop;
+  std::vector< double > angStop;
   switch (_type)
   {
     case K_6M90A_F:  // 0
@@ -630,7 +630,7 @@ int KinematicsLib::setAngRan(std::vector<double> angleRange)
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::setTcpOff(std::vector<double> tcpOffset)
+int KinematicsLib::setTcpOff(std::vector< double > tcpOffset)
 {
   if ((int)tcpOffset.size() < 4)
   {
@@ -665,8 +665,8 @@ int KinematicsLib::getDOM()
   return _dom;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::getMDH(std::vector<double>& theta, std::vector<double>& d, std::vector<double>& a,
-                          std::vector<double>& alpha)
+int KinematicsLib::getMDH(std::vector< double >& theta, std::vector< double >& d, std::vector< double >& a,
+                          std::vector< double >& alpha)
 {
   if (_dof == -1)
     return -1;
@@ -690,7 +690,7 @@ int KinematicsLib::getImmob()
   return _immobile;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::getEPC(std::vector<int>& epc)
+int KinematicsLib::getEPC(std::vector< int >& epc)
 {
   if (_dof == -1)
     return -1;
@@ -703,7 +703,7 @@ int KinematicsLib::getEPC(std::vector<int>& epc)
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::getEncOff(std::vector<int>& encOffset)
+int KinematicsLib::getEncOff(std::vector< int >& encOffset)
 {
   if (_dof == -1)
     return -1;
@@ -716,7 +716,7 @@ int KinematicsLib::getEncOff(std::vector<int>& encOffset)
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::getRotDir(std::vector<int>& rotDir)
+int KinematicsLib::getRotDir(std::vector< int >& rotDir)
 {
   if (_dof == -1)
     return -1;
@@ -729,7 +729,7 @@ int KinematicsLib::getRotDir(std::vector<int>& rotDir)
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::getAngOff(std::vector<double>& angleOffset)
+int KinematicsLib::getAngOff(std::vector< double >& angleOffset)
 {
   if (_dof == -1)
     return -1;
@@ -742,7 +742,7 @@ int KinematicsLib::getAngOff(std::vector<double>& angleOffset)
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::getAngRan(std::vector<double>& angleRange)
+int KinematicsLib::getAngRan(std::vector< double >& angleRange)
 {
   if (_dof == -1)
     return -1;
@@ -755,15 +755,15 @@ int KinematicsLib::getAngRan(std::vector<double>& angleRange)
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::getAngStop(std::vector<double>& angleStop)
+int KinematicsLib::getAngStop(std::vector< double >& angleStop)
 {
-  std::vector<double> angoff;
+  std::vector< double > angoff;
   int okcount = getAngOff(angoff);
-  std::vector<int> encoff;
+  std::vector< int > encoff;
   okcount += getEncOff(encoff);
-  std::vector<int> rotdir;
+  std::vector< int > rotdir;
   okcount += getRotDir(rotdir);
-  std::vector<double> angran;
+  std::vector< double > angran;
   okcount += getAngRan(angran);
   angleStop.clear();
   for (int i = 0; i < _dom; i++)
@@ -774,11 +774,11 @@ int KinematicsLib::getAngStop(std::vector<double>& angleStop)
   return ok;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::getAngMin(std::vector<double>& angleMin)
+int KinematicsLib::getAngMin(std::vector< double >& angleMin)
 {
-  std::vector<double> angoff;
+  std::vector< double > angoff;
   int okcount = getAngOff(angoff);
-  std::vector<double> angstop;
+  std::vector< double > angstop;
   okcount += getAngStop(angstop);
   angleMin.clear();
   for (int i = 0; i < _dom; ++i)
@@ -789,11 +789,11 @@ int KinematicsLib::getAngMin(std::vector<double>& angleMin)
   return ok;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::getAngMax(std::vector<double>& angleMax)
+int KinematicsLib::getAngMax(std::vector< double >& angleMax)
 {
-  std::vector<double> angoff;
+  std::vector< double > angoff;
   int okcount = getAngOff(angoff);
-  std::vector<double> angstop;
+  std::vector< double > angstop;
   okcount += getAngStop(angstop);
   angleMax.clear();
   for (int i = 0; i < _dom; ++i)
@@ -804,7 +804,7 @@ int KinematicsLib::getAngMax(std::vector<double>& angleMax)
   return ok;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::getTcpOff(std::vector<double>& tcpOffset)
+int KinematicsLib::getTcpOff(std::vector< double >& tcpOffset)
 {
   if (_dof == -1)
     return -1;
@@ -817,7 +817,7 @@ int KinematicsLib::getTcpOff(std::vector<double>& tcpOffset)
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::getVersion(std::vector<int>& version)
+int KinematicsLib::getVersion(std::vector< int >& version)
 {
   version.clear();
   version.push_back(KINLIB_VERSION_MAJOR);
@@ -838,7 +838,7 @@ int KinematicsLib::init()
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::K4D2mDHAng(std::vector<double> angleK4D, std::vector<double>& angleMDH)
+int KinematicsLib::K4D2mDHAng(std::vector< double > angleK4D, std::vector< double >& angleMDH)
 {
   if (_type == -1)
     return -1;
@@ -876,7 +876,7 @@ int KinematicsLib::K4D2mDHAng(std::vector<double> angleK4D, std::vector<double>&
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::mDH2K4DAng(std::vector<double> angleMDH, std::vector<double>& angleK4D)
+int KinematicsLib::mDH2K4DAng(std::vector< double > angleMDH, std::vector< double >& angleK4D)
 {
   if (_type == -1)
     return -1;
@@ -914,7 +914,7 @@ int KinematicsLib::mDH2K4DAng(std::vector<double> angleMDH, std::vector<double>&
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::enc2rad(std::vector<int> encoders, std::vector<double>& angles)
+int KinematicsLib::enc2rad(std::vector< int > encoders, std::vector< double >& angles)
 {
   if ((int)encoders.size() < _dom)
     return -1;
@@ -929,7 +929,7 @@ int KinematicsLib::enc2rad(std::vector<int> encoders, std::vector<double>& angle
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::rad2enc(std::vector<double> angles, std::vector<int>& encoders)
+int KinematicsLib::rad2enc(std::vector< double > angles, std::vector< int >& encoders)
 {
   if ((int)angles.size() < _dom)
     return -1;
@@ -944,7 +944,7 @@ int KinematicsLib::rad2enc(std::vector<double> angles, std::vector<int>& encoder
   return 1;
 }
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::directKinematics(std::vector<double> angles, std::vector<double>& pose)
+int KinematicsLib::directKinematics(std::vector< double > angles, std::vector< double >& pose)
 {
   if (!_initialized || (int)angles.size() < _dom)
     return -1;
@@ -1005,7 +1005,7 @@ int KinematicsLib::directKinematics(std::vector<double> angles, std::vector<doub
 ///// IK HELPER FUNCTIONS /////////////////////////////////////////////
 
 // single inverse kinematics
-int KinematicsLib::invKin(std::vector<double> pose, std::vector<double> prev, std::vector<double>& angle)
+int KinematicsLib::invKin(std::vector< double > pose, std::vector< double > prev, std::vector< double >& angle)
 {
   if ((int)pose.size() < 6 || (int)prev.size() < _dof)
     return -1;
@@ -1050,7 +1050,7 @@ int KinematicsLib::invKin(std::vector<double> pose, std::vector<double> prev, st
 }
 
 // inverse kinematics using bisection if no solution found
-int KinematicsLib::invKin_bisec(std::vector<double> pose, std::vector<double> prev, std::vector<double>& conf,
+int KinematicsLib::invKin_bisec(std::vector< double > pose, std::vector< double > prev, std::vector< double >& conf,
                                 int maxBisection)
 {
   if ((int)pose.size() < 6 || (int)prev.size() < _dof || maxBisection < 0)
@@ -1065,16 +1065,16 @@ int KinematicsLib::invKin_bisec(std::vector<double> pose, std::vector<double> pr
   if (ok < 0 && maxBisection > 0)
   {
     // prev1pose
-    std::vector<double> prev1pose;
+    std::vector< double > prev1pose;
     directKinematics(prev, prev1pose);
 
     // prev2pose
-    std::vector<double> prev2pose;
+    std::vector< double > prev2pose;
     for (int i = 0; i < 6; ++i)
       prev2pose.push_back(prev1pose.at(i) + pose.at(i) / 2.0);
 
     // prev2conf (IK on first part)
-    std::vector<double> prev2conf;
+    std::vector< double > prev2conf;
     ok = inverseKinematics(prev2pose, prev, prev2conf, maxBisection - 1);
 
     if (ok == 1)
@@ -1088,12 +1088,12 @@ int KinematicsLib::invKin_bisec(std::vector<double> pose, std::vector<double> pr
 }
 
 // analytical guess
-int KinematicsLib::anaGuess(std::vector<double> pose, std::vector<double> prev, std::vector<double>& angle)
+int KinematicsLib::anaGuess(std::vector< double > pose, std::vector< double > prev, std::vector< double >& angle)
 {
   if (_type < 0 || (int)pose.size() < 6 || (int)prev.size() < _dof)
     return -1;
 
-  std::vector<double> positions;
+  std::vector< double > positions;
   for (int i = 0; i < 6; ++i)
   {
     if (i < 3)
@@ -1102,8 +1102,8 @@ int KinematicsLib::anaGuess(std::vector<double> pose, std::vector<double> prev, 
       positions.push_back(pose.at(i));
   }
 
-  std::vector<double> previous_angles;
-  std::vector<double> prevK4D;
+  std::vector< double > previous_angles;
+  std::vector< double > prevK4D;
   mDH2K4DAng(prev, prevK4D);
   for (int i = 0; i < _dom; ++i)
   {
@@ -1115,7 +1115,7 @@ int KinematicsLib::anaGuess(std::vector<double> pose, std::vector<double> prev, 
     previous_angles.push_back(0.0);
   }
 
-  std::vector<double> anglesK4D;
+  std::vector< double > anglesK4D;
 
   int error;
   try
@@ -1145,9 +1145,9 @@ int KinematicsLib::anaGuess(std::vector<double> pose, std::vector<double> prev, 
   return ok;
 }
 
-bool KinematicsLib::checkConfig(std::vector<double> config, std::vector<double> pose, double tol)
+bool KinematicsLib::checkConfig(std::vector< double > config, std::vector< double > pose, double tol)
 {
-  std::vector<double> configpose;
+  std::vector< double > configpose;
   directKinematics(config, configpose);
   double posdiff = 0.0;
   for (int i = 0; i < 6; ++i)
@@ -1165,8 +1165,8 @@ bool KinematicsLib::checkConfig(std::vector<double> config, std::vector<double> 
 ///// END IK HELPER FUNCTIONS /////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////
-int KinematicsLib::inverseKinematics(std::vector<double> pose, std::vector<double> prev, std::vector<double>& angles,
-                                     int maxBisection)
+int KinematicsLib::inverseKinematics(std::vector< double > pose, std::vector< double > prev,
+                                     std::vector< double >& angles, int maxBisection)
 {
   if (!_initialized || (int)pose.size() < 6 || (int)prev.size() < _dom || maxBisection < 0)
     return -1;
@@ -1194,7 +1194,7 @@ int KinematicsLib::inverseKinematics(std::vector<double> pose, std::vector<doubl
   TCP_Offset.row(4) << 0.0 << 0.0 << 0.0 << 1.0;
   Pos = Pos * TCP_Offset;
   // matrix to pose
-  std::vector<double> flangepose;
+  std::vector< double > flangepose;
   flangepose.push_back(Pos(1, 4));
   flangepose.push_back(Pos(2, 4));
   flangepose.push_back(Pos(3, 4));
@@ -1225,7 +1225,7 @@ int KinematicsLib::inverseKinematics(std::vector<double> pose, std::vector<doubl
   flangepose.push_back(eul(3));
 
   // Copy and complete prev
-  std::vector<double> prev1conf;
+  std::vector< double > prev1conf;
   for (int i = 0; i < _dof; ++i)
   {
     if (i == _dom)
@@ -1239,7 +1239,7 @@ int KinematicsLib::inverseKinematics(std::vector<double> pose, std::vector<doubl
     }
   }
 
-  std::vector<double> conf;
+  std::vector< double > conf;
 
   // calculate inverse kinematics (roboop)
   int ok = invKin_bisec(flangepose, prev1conf, conf, maxBisection);
@@ -1257,7 +1257,7 @@ int KinematicsLib::inverseKinematics(std::vector<double> pose, std::vector<doubl
   // if no solution found and type is 6M robot, get analytical guess
   if (ok < 0 && _type >= 0)
   {
-    std::vector<double> guess;
+    std::vector< double > guess;
     ok = anaGuess(flangepose, prev1conf, guess);
 
     // if analytical guess found, calculate inverse kinematics using guess
@@ -1272,7 +1272,7 @@ int KinematicsLib::inverseKinematics(std::vector<double> pose, std::vector<doubl
     // if no guess or solution found, get analytical guess of near pose
     if (ok < 0)
     {
-      std::vector<double> nearpose;
+      std::vector< double > nearpose;
       nearpose.push_back(flangepose.at(0) - sign(flangepose.at(0)) * 0.05);
       nearpose.push_back(flangepose.at(1) - sign(flangepose.at(1)) * 0.05);
       nearpose.push_back(flangepose.at(2) - sign(flangepose.at(2)) * 0.05);

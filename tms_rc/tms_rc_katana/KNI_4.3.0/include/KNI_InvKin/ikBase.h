@@ -48,7 +48,7 @@
 class DLLDIR_IK CikBase : public CKatana
 {
 private:
-  std::auto_ptr<KNI::KatanaKinematics> _kinematicsImpl;
+  std::auto_ptr< KNI::KatanaKinematics > _kinematicsImpl;
   bool _kinematicsIsInitialized;
   void _initKinematics();
 
@@ -60,7 +60,7 @@ public:
   /// @param version		vector to write in version (major, minor, revision)
   /// \note integrated analytical kinematics returns version 0.1.0
   /// \note kinematics library returns versions >= 1.0.0
-  void getKinematicsVersion(std::vector<int>& version);
+  void getKinematicsVersion(std::vector< int >& version);
 
   /// Set the offset from the flange to the desired tcp
   /// @param xoff		offset in x direction of flange coordinate system in m
@@ -81,19 +81,19 @@ public:
                       bool refreshEncoders = true);
 
   /// Returns the position of the robot corresponting to the given encoders in cartesian coordinates.
-  void getCoordinatesFromEncoders(std::vector<double>& pose, const std::vector<int>& encs);
+  void getCoordinatesFromEncoders(std::vector< double >& pose, const std::vector< int >& encs);
 
   /// Calculates a set of encoders for the given coordinates.
   /// This method reads the current encoders from the robot and
   /// involves therefore also communication to the robot
   void IKCalculate(double X, double Y, double Z, double Al, double Be, double Ga,
-                   std::vector<int>::iterator solution_iter);
+                   std::vector< int >::iterator solution_iter);
 
   /// Calculates a set of encoders for the given coordinates.
   /// For this method you have to pass an actualPosition too.
   /// No communication with the robot will be done here.
   void IKCalculate(double X, double Y, double Z, double Al, double Be, double Ga,
-                   std::vector<int>::iterator solution_iter, const std::vector<int>& actualPosition);
+                   std::vector< int >::iterator solution_iter, const std::vector< int >& actualPosition);
 
   /// Moves to robot to given cartesian coordinates and euler-angles.
   /// \note This method is deprecated, please use moveRobotTo(...) instead
@@ -109,7 +109,7 @@ public:
   /// \note You can call this function in python using tuples:
   ///       Example: katana.moveRobotTo( (x,y,z,phi,theta,psi) )
   /// \note If the size of the container is smaller than 6, it will throw an exception
-  void moveRobotTo(std::vector<double> coordinates, bool waitUntilReached = false, int waitTimeout = TM_ENDLESS);
+  void moveRobotTo(std::vector< double > coordinates, bool waitUntilReached = false, int waitTimeout = TM_ENDLESS);
 };
 
 /******************************************************************************************************************/

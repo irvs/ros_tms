@@ -85,8 +85,8 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "greeting_demo");
   ros::NodeHandle n;
 
-  motion_client = n.serviceClient<tms_msg_rc::smartpal_control>("sp5_control");
-  speech_client = n.serviceClient<tms_msg_rc::robot_tts>("smartpal5_tts");
+  motion_client = n.serviceClient< tms_msg_rc::smartpal_control >("sp5_control");
+  speech_client = n.serviceClient< tms_msg_rc::robot_tts >("smartpal5_tts");
 
   while (ros::ok())
   {

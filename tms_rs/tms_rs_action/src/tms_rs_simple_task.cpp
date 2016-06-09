@@ -37,10 +37,10 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "smartpal_simple_task");
   ros::NodeHandle nh;
-  ros::Publisher send_task = nh.advertise<tms_msg_rs::robot_task>("rs_simple_task", 10);
+  ros::Publisher send_task = nh.advertise< tms_msg_rs::robot_task >("rs_simple_task", 10);
 
-  ros::ServiceClient move_robot = nh.serviceClient<tms_msg_rp::rp_cmd>("rp_cmd");
-  ros::ServiceClient get_data_client = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
+  ros::ServiceClient move_robot = nh.serviceClient< tms_msg_rp::rp_cmd >("rp_cmd");
+  ros::ServiceClient get_data_client = nh.serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader/dbreader");
 
   cout << "Enter a task and press Enter\n\n";
 

@@ -22,7 +22,7 @@ class EvaluatorNodelet : public nodelet::Nodelet
 {
 private:
   ros::NodeHandle nh_;
-  boost::shared_ptr<Evaluator> evaluator_;
+  boost::shared_ptr< Evaluator > evaluator_;
 
 public:
   virtual void onInit()
@@ -43,7 +43,7 @@ class VoiceReceiverNodelet : public nodelet::Nodelet
 {
 private:
   ros::NodeHandle nh_;
-  boost::shared_ptr<VoiceReceiver> voice_receiver_;
+  boost::shared_ptr< VoiceReceiver > voice_receiver_;
 
 public:
   virtual void onInit()

@@ -10,7 +10,7 @@ public:
   void update(CLaser *Laser);
 
 public:
-  std::vector<CPF> m_ParticleFilter;
+  std::vector< CPF > m_ParticleFilter;
   CLaser *m_pLaser;
 
 protected:

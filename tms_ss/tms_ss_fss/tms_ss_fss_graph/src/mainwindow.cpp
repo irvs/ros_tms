@@ -264,9 +264,9 @@ void MainWindow::plot_graph()
   QPolygonF points2;
   QPolygonF points3;
 
-  QVector<QwtIntervalSample> vDistanceRangeData(721);
-  QVector<QwtIntervalSample> vIntensityRangeData(721);
-  QVector<QwtIntervalSample> vIntrinsicIntensityRangeData(721);
+  QVector< QwtIntervalSample > vDistanceRangeData(721);
+  QVector< QwtIntervalSample > vIntensityRangeData(721);
+  QVector< QwtIntervalSample > vIntrinsicIntensityRangeData(721);
 
   for (int i = 0; i < 721; i++)
   {
@@ -385,7 +385,7 @@ void MainWindow::exportPlot1()
 
 #ifndef QT_NO_FILEDIALOG
 
-  const QList<QByteArray> imageFormats = QImageWriter::supportedImageFormats();
+  const QList< QByteArray > imageFormats = QImageWriter::supportedImageFormats();
 
   QStringList filter;
   filter += "PDF Documents (*.pdf)";
@@ -428,7 +428,7 @@ void MainWindow::exportPlot2()
 
 #ifndef QT_NO_FILEDIALOG
 
-  const QList<QByteArray> imageFormats = QImageWriter::supportedImageFormats();
+  const QList< QByteArray > imageFormats = QImageWriter::supportedImageFormats();
 
   QStringList filter;
   filter += "PDF Documents (*.pdf)";
@@ -471,7 +471,7 @@ void MainWindow::exportPlot3()
 
 #ifndef QT_NO_FILEDIALOG
 
-  const QList<QByteArray> imageFormats = QImageWriter::supportedImageFormats();
+  const QList< QByteArray > imageFormats = QImageWriter::supportedImageFormats();
 
   QStringList filter;
   filter += "PDF Documents (*.pdf)";

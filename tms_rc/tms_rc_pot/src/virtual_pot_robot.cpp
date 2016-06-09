@@ -17,7 +17,7 @@ int main(int argc, char **argv)
   double x, y, z, yaw;
   double theta;
 
-  ros::Publisher pub = n.advertise<tms_msg_rc::robot_current_data>("virtual", 1000);
+  ros::Publisher pub = n.advertise< tms_msg_rc::robot_current_data >("virtual", 1000);
 
   ros::Rate loop(100);
   while (ros::ok())

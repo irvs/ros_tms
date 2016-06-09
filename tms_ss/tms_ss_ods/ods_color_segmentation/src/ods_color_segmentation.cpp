@@ -40,18 +40,18 @@ Model m_size;
 Robot robot;
 Furniture bed;
 
-void clustering(pcl::PointCloud<pcl::PointXYZRGB>& f_cloud, pcl::PointCloud<pcl::PointXYZRGB>& cloud)
+void clustering(pcl::PointCloud< pcl::PointXYZRGB >& f_cloud, pcl::PointCloud< pcl::PointXYZRGB >& cloud)
 {
   std::cout << "clustering" << std::endl;
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
 
   // Creating the KdTree object for the search method of the extraction
-  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB>);
+  pcl::search::KdTree< pcl::PointXYZRGB >::Ptr tree(new pcl::search::KdTree< pcl::PointXYZRGB >);
   tree->setInputCloud(f_cloud.makeShared());
 
-  std::vector<pcl::PointIndices> cluster_indices;
-  pcl::EuclideanClusterExtraction<pcl::PointXYZRGB> ec;
+  std::vector< pcl::PointIndices > cluster_indices;
+  pcl::EuclideanClusterExtraction< pcl::PointXYZRGB > ec;
   ec.setClusterTolerance(0.03);
   ec.setMinClusterSize(10000);
   ec.setMaxClusterSize(200000);
@@ -62,12 +62,12 @@ void clustering(pcl::PointCloud<pcl::PointXYZRGB>& f_cloud, pcl::PointCloud<pcl:
   // std::cout << "クラスタリング開始" << std::endl;
   int n = 0;
   float colors[6][3] = {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}, {255, 255, 0}, {0, 255, 255}, {255, 0, 255}};
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
+  for (std::vector< pcl::PointIndices >::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
   {
     // pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZRGB>);
 
     std::cout << "part1" << std::endl;
-    for (std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
+    for (std::vector< int >::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
     {
       // cloud_cluster->points.push_back (f_cloud.points[*pit]);
       cloud.points[*pit].r = colors[n % 6][0];
@@ -93,7 +93,7 @@ void clustering(pcl::PointCloud<pcl::PointXYZRGB>& f_cloud, pcl::PointCloud<pcl:
   return;
 }
 
-void transformation(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::PointXYZRGB>& model)
+void transformation(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointCloud< pcl::PointXYZRGB >& model)
 {
   std::cout << "transformation" << std::endl;
 
@@ -150,7 +150,7 @@ void transformation(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pc
   return;
 }
 
-void filtering(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::PointXYZRGB>& model)
+void filtering(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointCloud< pcl::PointXYZRGB >& model)
 {
   std::cout << "filtering" << std::endl;
 
@@ -177,7 +177,7 @@ void filtering(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::Po
       m_size.max_z = model.points[i].z;
   }
 
-  pcl::PassThrough<pcl::PointXYZRGB> pass;
+  pcl::PassThrough< pcl::PointXYZRGB > pass;
   pass.setInputCloud(cloud.makeShared());
   pass.setFilterFieldName("x");
   pass.setFilterLimits(m_size.min_x, 4.0 /*m_size.max_x*/);
@@ -198,9 +198,9 @@ void filtering(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::Po
 
 int main()
 {
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr model(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr rgb_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr model(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr rgb_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
   pcl::PointXYZRGB tmp;
 
   pcl::io::loadPCDFile("src/ods_color_segmentation/data/ods_color_segmentation/sample.pcd", *cloud);

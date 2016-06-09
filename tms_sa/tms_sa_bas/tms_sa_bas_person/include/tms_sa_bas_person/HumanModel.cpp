@@ -16,7 +16,7 @@ void HumanModel::calcBaseStepCycle(tms_msg_ss::fss_person_trajectory_data humanT
   // copy sample stepCycle to stepCycleData
   for (unsigned int i = 0; i < humanTrajectory.trajectory.size(); i++)
   {
-    std::vector<SampleData> tempStepCycleData;
+    std::vector< SampleData > tempStepCycleData;
     for (unsigned int j = 0; j < humanTrajectory.trajectory[i].fCenterX.size(); j++)
     {
       unsigned int k = j + 1;
@@ -134,7 +134,7 @@ void HumanModel::calcBaseGaitCycle(tms_msg_ss::fss_person_trajectory_data humanT
   // copy sample gaitCycle to gaitCycleData
   for (unsigned int i = 0; i < humanTrajectory.trajectory.size(); i++)
   {
-    std::vector<SampleData> tempGaitCycleData;
+    std::vector< SampleData > tempGaitCycleData;
     for (unsigned int j = 0; j < humanTrajectory.trajectory[i].fCenterX.size(); j++)
     {
       unsigned int k = j + 2;

@@ -41,7 +41,7 @@ operator()(t_iter targetEnc_begin, t_iter targetEnc_end, c_iter currentEnc_begin
     c_iter c = currentEnc_begin;
     while (t != (*target).end() && c != currentEnc_end)
     {
-      sum += pow2<double>(*t - *c);
+      sum += pow2< double >(*t - *c);
       ++t;
       ++c;
     }

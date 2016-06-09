@@ -19,13 +19,13 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "ods_changedt_trigger");
   ros::NodeHandle n;
   tms_msg_ss::ods_change_detection srv;
-  commander_to_ods_change_detection = n.serviceClient<tms_msg_ss::ods_change_detection>("ods_change_detection");
+  commander_to_ods_change_detection = n.serviceClient< tms_msg_ss::ods_change_detection >("ods_change_detection");
   int id;
 
   while (1)
   {
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr model(new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+    pcl::PointCloud< pcl::PointXYZRGB >::Ptr model(new pcl::PointCloud< pcl::PointXYZRGB >);
 
     printf("1:table1\n2:table2\n3:small shelf\n4:big shelf\n5:chair\n6:bed\n7:robot_position\n0:finish\n\nid = ");
     scanf("%d", &id);
@@ -38,14 +38,14 @@ int main(int argc, char **argv)
 
     // printf("furniture position : ");
     // scanf("%f %f %f %f", &furniture_x, &furniture_y, &furniture_z, &furniture_theta);
-    srv.request.furniture.position.x = 900;  // furniture_x;
+    srv.request.furniture.position.x = 900;   // furniture_x;
     srv.request.furniture.position.y = 1900;  // furniture_y;
-    srv.request.furniture.position.z = 700;  // furniture_z;
+    srv.request.furniture.position.z = 700;   // furniture_z;
     srv.request.furniture.orientation.z = 0;  // furniture_theta;
     // printf("robot position : ");
     // scanf("%f %f %f %f", &robot_x, &robot_y, &robot_z, &robot_theta);
-    srv.request.robot.x = 2250;  // robot_x;
-    srv.request.robot.y = 1800;  // robot_y;
+    srv.request.robot.x = 2250;     // robot_x;
+    srv.request.robot.y = 1800;     // robot_y;
     srv.request.robot.theta = 180;  // robot_theta;
 
     switch (id)

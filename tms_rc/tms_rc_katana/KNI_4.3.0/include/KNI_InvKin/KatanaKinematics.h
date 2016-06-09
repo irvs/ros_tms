@@ -67,20 +67,20 @@ public:
   {
   }
 
-  typedef std::vector<KinematicParameters> parameter_container;
+  typedef std::vector< KinematicParameters > parameter_container;
 
   ///
   /// Being used to store angles (in radian).
-  typedef std::vector<double> angles;
+  typedef std::vector< double > angles;
   ///
   /// To store coordinates.
-  typedef std::vector<double> coordinates;
+  typedef std::vector< double > coordinates;
   ///
   /// To store metrics, 'aka' the length's of the different segments of the robot.
-  typedef std::vector<double> metrics;
+  typedef std::vector< double > metrics;
   ///
   /// To store encoders.
-  typedef std::vector<int> encoders;
+  typedef std::vector< int > encoders;
 
   /// Initialize the parameters for the calculations.
   /// This is needed to validate the calculated angles and to choose an appropriate solution

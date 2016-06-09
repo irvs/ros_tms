@@ -22,12 +22,12 @@ public:
 
   void calibrate(void);
 
-  array<int> ^ getRobotEncoders(bool refreshEncoders);
-  void moveRobotToEnc(array<int> ^ encoders, bool waitUntilReached, int waitTimeout);
+  array< int > ^ getRobotEncoders(bool refreshEncoders);
+  void moveRobotToEnc(array< int > ^ encoders, bool waitUntilReached, int waitTimeout);
   void moveMotorToEnc(int motor, int encoder, bool waitUntilReached, int waitTimeout);
-  array<double> ^ getCoordinates(bool refreshEncoders);
-  void moveRobotTo(array<double> ^ coordinates, bool waitUntilReached, int waitTimeout);
-  void moveRobotLinearTo(array<double> ^ coordinates, bool waitUntilReached, int waitTimeout);
+  array< double > ^ getCoordinates(bool refreshEncoders);
+  void moveRobotTo(array< double > ^ coordinates, bool waitUntilReached, int waitTimeout);
+  void moveRobotLinearTo(array< double > ^ coordinates, bool waitUntilReached, int waitTimeout);
 
   void setMaximumLinearVelocity(double maximumVelocity);
   double getMaximumLinearVelocity();

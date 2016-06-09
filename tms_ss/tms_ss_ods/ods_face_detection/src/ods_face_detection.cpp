@@ -9,7 +9,7 @@
 //*******************************
 //**入力座標までの距離を求める
 //*******************************
-void GetDepth(std::vector<int>& tmp_idx)
+void GetDepth(std::vector< int >& tmp_idx)
 {
   std::cout << "Getdepth" << std::endl;
 
@@ -37,7 +37,7 @@ int detectAndDraw(cv::Mat& img, cv::Mat& view, int cn, cv::CascadeClassifier& ca
                   cv::CascadeClassifier& nestedCascade, double scale)
 {
   //変数宣言
-  std::vector<cv::Rect> faces;
+  std::vector< cv::Rect > faces;
 
   cv::Mat gray, smallImg(cvRound(img.rows / scale), cvRound(img.cols / scale), CV_8UC1);
   cv::cvtColor(img, gray, CV_BGR2GRAY);
@@ -48,7 +48,7 @@ int detectAndDraw(cv::Mat& img, cv::Mat& view, int cn, cv::CascadeClassifier& ca
 
   //顔を検出したときの処理
 
-  for (std::vector<cv::Rect>::const_iterator r = faces.begin(); r != faces.end(); r++)
+  for (std::vector< cv::Rect >::const_iterator r = faces.begin(); r != faces.end(); r++)
   {
     //変数宣言
     cv::Point center;
@@ -135,8 +135,8 @@ void rotation_img(cv::Mat& src, cv::Mat& dst, double angle)
 void face_detection(cv::Mat& frame)
 {
   //変数宣言
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  std::vector<int> tmp_idx;
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  std::vector< int > tmp_idx;
   cv::CascadeClassifier cascade, nestedCascade;
   cv::Mat frame2, frame3;
   double scale = 1.0;
@@ -322,7 +322,7 @@ int main(int argc, char** argv)
 
   service = n.advertiseService("ods_face_detection", callback);
 
-  commander_to_kinect_capture = n.serviceClient<tms_msg_ss::ods_pcd>("ods_capture");
+  commander_to_kinect_capture = n.serviceClient< tms_msg_ss::ods_pcd >("ods_capture");
 
   ros::spin();
 

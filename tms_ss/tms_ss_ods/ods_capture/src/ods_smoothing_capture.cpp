@@ -1,7 +1,7 @@
 #include <ods_capture.h>
 
-pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-std::vector<float> check;
+pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+std::vector< float > check;
 
 /*void downsampling(float th)
 {
@@ -18,9 +18,9 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr &input)
 {
   if (n < 5)
   {
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp(new pcl::PointCloud<pcl::PointXYZRGB>);
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp2(new pcl::PointCloud<pcl::PointXYZRGB>);
-    std::vector<int> index;
+    pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp(new pcl::PointCloud< pcl::PointXYZRGB >);
+    pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp2(new pcl::PointCloud< pcl::PointXYZRGB >);
+    std::vector< int > index;
     pcl::fromROSMsg(*input, *tmp);
     n++;
 

@@ -123,19 +123,19 @@ class Plot2d;
 class GNUcurve
 {
 public:
-  GNUcurve(const std::vector<double> &x, std::vector<double> &y, const std::string &label = "",
+  GNUcurve(const std::vector< double > &x, std::vector< double > &y, const std::string &label = "",
            LineType_en enLineType = LINES);
   GNUcurve(void);
   void dump(void);
 
-  std::vector<double> vdX;
-  std::vector<double> vdY;
+  std::vector< double > vdX;
+  std::vector< double > vdY;
   std::string clabel;      //!< string defining the curve label for the legend
   LineType_en enLineType;  //!< Line type
 };
 
-typedef boost::shared_ptr<GNUcurve> PSHR_Curve;
-typedef std::vector<PSHR_Curve> VectorCurves;
+typedef boost::shared_ptr< GNUcurve > PSHR_Curve;
+typedef std::vector< PSHR_Curve > VectorCurves;
 
 /*!
   @class Plot2d
@@ -197,11 +197,11 @@ class IO_matrix_file
 {
 public:
   IO_matrix_file(const std::string &filename);
-  short write(const std::vector<Matrix> &data);
-  short write(const std::vector<Matrix> &data, const std::vector<std::string> &title);
-  short read(std::vector<Matrix> &data);
-  short read(std::vector<Matrix> &data, std::vector<std::string> &title);
-  short read_all(std::vector<Matrix> &data, std::vector<std::string> &data_title);
+  short write(const std::vector< Matrix > &data);
+  short write(const std::vector< Matrix > &data, const std::vector< std::string > &title);
+  short read(std::vector< Matrix > &data);
+  short read(std::vector< Matrix > &data, std::vector< std::string > &title);
+  short read_all(std::vector< Matrix > &data, std::vector< std::string > &data_title);
 
 private:
   int position_read,        //!< Position to read the file.
@@ -223,16 +223,16 @@ public:
               const short x_start, const short y_start, const short y_end);
 
 private:
-  std::vector<Matrix> data_from_file;   //!< Data file.
-  std::vector<std::string> data_title;  //!< Data file title.
+  std::vector< Matrix > data_from_file;   //!< Data file.
+  std::vector< std::string > data_title;  //!< Data file title.
 };
 
 short set_plot2d(const char *title_graph, const char *x_axis_title, const char *y_axis_title, const char *label,
                  LineType_en enLineType, const Matrix &xdata, const Matrix &ydata, int start_y, int end_y);
 
 short set_plot2d(const char *title_graph, const char *x_axis_title, const char *y_axis_title,
-                 const vector<char *> label, LineType_en enLineType, const Matrix &xdata, const Matrix &ydata,
-                 const vector<int> &data_select);
+                 const vector< char * > label, LineType_en enLineType, const Matrix &xdata, const Matrix &ydata,
+                 const vector< int > &data_select);
 
 short set_plot3d(const Matrix &xyz, const std::string &title_graph, const std::string &x_axis_title,
                  const std::string &y_axis_title, const std::string &z_axis_title);

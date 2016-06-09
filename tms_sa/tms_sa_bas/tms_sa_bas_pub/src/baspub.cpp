@@ -118,18 +118,18 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "baspub");
   ros::NodeHandle nh;
 
-  rosPub = nh.advertise<tms_msg_ss::bas_behavior_data>("bas_behavior_data", 10);
+  rosPub = nh.advertise< tms_msg_ss::bas_behavior_data >("bas_behavior_data", 10);
 
   //--------------------------------------------------------------------------
   // declare variable
   tms_msg_ss::bas_behavior_data bas_behavior_data;
 
-  vector<ros::Time> vtTimeStamp;
+  vector< ros::Time > vtTimeStamp;
 
-  vector<uint32_t> viBehaviorWalking;
-  vector<uint32_t> viBehaviorSitting;
-  vector<uint32_t> viBehaviorSleeping;
-  vector<uint32_t> viBehaviorMerged;
+  vector< uint32_t > viBehaviorWalking;
+  vector< uint32_t > viBehaviorSitting;
+  vector< uint32_t > viBehaviorSleeping;
+  vector< uint32_t > viBehaviorMerged;
 
   int count = 0;
 

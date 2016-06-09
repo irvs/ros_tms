@@ -31,7 +31,7 @@ int kin_setMDH(FloatVector* theta, FloatVector* d, FloatVector* a, FloatVector* 
     delete _kinematics;
   _kinematics = new KinematicsLib();
   LibInstantiated = true;
-  std::vector<double> thetaw, dw, aw, alphaw;
+  std::vector< double > thetaw, dw, aw, alphaw;
   for (int i = 0; i < theta->length; ++i)
   {
     thetaw.push_back(theta->data[i]);
@@ -48,7 +48,7 @@ int kin_setLinkLen(FloatVector* links)
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<double> fw;
+  std::vector< double > fw;
   for (int i = 0; i < links->length; ++i)
   {
     fw.push_back(links->data[i]);
@@ -71,7 +71,7 @@ int kin_setEPC(IntVector* epc)
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<int> iw;
+  std::vector< int > iw;
   for (int i = 0; i < epc->length; ++i)
   {
     iw.push_back(epc->data[i]);
@@ -85,7 +85,7 @@ int kin_setEncOff(IntVector* encOffset)
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<int> iw;
+  std::vector< int > iw;
   for (int i = 0; i < encOffset->length; ++i)
   {
     iw.push_back(encOffset->data[i]);
@@ -99,7 +99,7 @@ int kin_setRotDir(IntVector* rotDir)
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<int> iw;
+  std::vector< int > iw;
   for (int i = 0; i < rotDir->length; ++i)
   {
     iw.push_back(rotDir->data[i]);
@@ -113,7 +113,7 @@ int kin_setAngOff(FloatVector* angleOffset)
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<double> fw;
+  std::vector< double > fw;
   for (int i = 0; i < angleOffset->length; ++i)
   {
     fw.push_back(angleOffset->data[i]);
@@ -128,7 +128,7 @@ int kin_setAngRan(FloatVector* angleRange)
   if (!LibInstantiated)
     return -1;
   // check vector size
-  std::vector<double> fw;
+  std::vector< double > fw;
   for (int i = 0; i < angleRange->length; ++i)
   {
     fw.push_back(angleRange->data[i]);
@@ -142,7 +142,7 @@ int kin_setTcpOff(FloatVector* tcpOffset)
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<double> fw;
+  std::vector< double > fw;
   for (int i = 0; i < tcpOffset->length; ++i)
   {
     fw.push_back(tcpOffset->data[i]);
@@ -186,7 +186,7 @@ int kin_getMDH(FloatVector* theta, FloatVector* d, FloatVector* a, FloatVector* 
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<double> thetaw, dw, aw, alphaw;
+  std::vector< double > thetaw, dw, aw, alphaw;
   int ok = _kinematics->getMDH(thetaw, dw, aw, alphaw);
   for (int i = 0; i < (int)thetaw.size(); ++i)
   {
@@ -214,7 +214,7 @@ int kin_getEPC(IntVector* epc)
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<int> iw;
+  std::vector< int > iw;
   int ok = _kinematics->getEPC(iw);
   for (int i = 0; i < (int)iw.size(); ++i)
   {
@@ -234,7 +234,7 @@ int kin_getEncOff(IntVector* encOffset)
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<int> iw;
+  std::vector< int > iw;
   int ok = _kinematics->getEncOff(iw);
   for (int i = 0; i < (int)iw.size(); ++i)
   {
@@ -254,7 +254,7 @@ int kin_getRotDir(IntVector* rotDir)
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<int> iw;
+  std::vector< int > iw;
   int ok = _kinematics->getRotDir(iw);
   for (int i = 0; i < (int)iw.size(); ++i)
   {
@@ -274,7 +274,7 @@ int kin_getAngOff(FloatVector* angleOffset)
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<double> fw;
+  std::vector< double > fw;
   int ok = _kinematics->getAngOff(fw);
   for (int i = 0; i < (int)fw.size(); ++i)
   {
@@ -294,7 +294,7 @@ int kin_getAngRan(FloatVector* angleRange)
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<double> fw;
+  std::vector< double > fw;
   int ok = _kinematics->getAngRan(fw);
   for (int i = 0; i < (int)fw.size(); ++i)
   {
@@ -314,7 +314,7 @@ int kin_getTcpOff(FloatVector* tcpOffset)
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<double> fw;
+  std::vector< double > fw;
   int ok = _kinematics->getTcpOff(fw);
   for (int i = 0; i < (int)fw.size(); ++i)
   {
@@ -330,7 +330,7 @@ int kin_getVersion(IntVector* version)
   int error;
   if (LibInstantiated)
   {
-    std::vector<int> iw;
+    std::vector< int > iw;
     int ok = _kinematics->getVersion(iw);
     for (int i = 0; i < (int)iw.size(); ++i)
     {
@@ -377,7 +377,7 @@ int kin_K4D2mDHAng(FloatVector* angleK4D, FloatVector* angleMDH)
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<double> k4d, mdh;
+  std::vector< double > k4d, mdh;
   for (int i = 0; i < angleK4D->length; ++i)
   {
     k4d.push_back(angleK4D->data[i]);
@@ -396,7 +396,7 @@ int kin_mDH2K4DAng(FloatVector* angleMDH, FloatVector* angleK4D)
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<double> mdh, k4d;
+  std::vector< double > mdh, k4d;
   for (int i = 0; i < angleMDH->length; ++i)
   {
     mdh.push_back(angleMDH->data[i]);
@@ -415,12 +415,12 @@ int kin_enc2rad(IntVector* enc, FloatVector* angle)
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<int> iw;
+  std::vector< int > iw;
   for (int i = 0; i < enc->length; ++i)
   {
     iw.push_back(enc->data[i]);
   }
-  std::vector<double> fw;
+  std::vector< double > fw;
   int ok = _kinematics->enc2rad(iw, fw);
   for (int i = 0; i < (int)fw.size(); ++i)
   {
@@ -435,12 +435,12 @@ int kin_rad2enc(FloatVector* angle, IntVector* enc)
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<double> fw;
+  std::vector< double > fw;
   for (int i = 0; i < angle->length; ++i)
   {
     fw.push_back(angle->data[i]);
   }
-  std::vector<int> iw;
+  std::vector< int > iw;
   int ok = _kinematics->rad2enc(fw, iw);
   for (int i = 0; i < (int)iw.size(); ++i)
   {
@@ -455,7 +455,7 @@ int kin_DK(FloatVector* angle, FloatVector* pose)
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<double> aw, pw;
+  std::vector< double > aw, pw;
   for (int i = 0; i < angle->length; ++i)
   {
     aw.push_back(angle->data[i]);
@@ -474,17 +474,17 @@ int kin_IK(FloatVector* pose, FloatVector* prev, FloatVector* angle, int maxBise
 {
   if (!LibInstantiated)
     return -1;
-  std::vector<double> pw;
+  std::vector< double > pw;
   for (int i = 0; i < pose->length; ++i)
   {
     pw.push_back(pose->data[i]);
   }
-  std::vector<double> paw;
+  std::vector< double > paw;
   for (int i = 0; i < prev->length; ++i)
   {
     paw.push_back(prev->data[i]);
   }
-  std::vector<double> aw;
+  std::vector< double > aw;
   int ok = _kinematics->inverseKinematics(pw, paw, aw, maxBisection);
   for (int i = 0; i < (int)aw.size(); ++i)
   {

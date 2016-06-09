@@ -51,7 +51,7 @@ enum DNSReply
 {
   DNS_PRTCL,
   DNS_NOTFOUND,  /// Hostname is unknown
-  DNS_ERROR,  /// Problem with DNS Service
+  DNS_ERROR,     /// Problem with DNS Service
   //...
   DNS_FOUND,
 };
@@ -98,7 +98,7 @@ public:
   @param pItem : instance of class on which to execute the callback method
   @param pMethod : callback method
   */
-  template <class T>
+  template < class T >
   void setOnReply(T* pItem, void (T::*pMethod)(DNSReply))
   {
     m_pCbItem = (CDummy*)pItem;

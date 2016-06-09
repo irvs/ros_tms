@@ -67,7 +67,7 @@ private:
   // ROS Topic Subscriber
   ros::Publisher static_map_pub_;
   ros::Publisher dynamic_map_pub_;
-  vector<vector<CollisionMapData>> collision_map_;
+  vector< vector< CollisionMapData > > collision_map_;
   tms_msg_rp::rps_map_full static_map_;
   tms_msg_rp::rps_map_full dynamic_map_;
   string result_msg_;
@@ -89,12 +89,12 @@ public:
     nh_priv.param("is_debug", is_debug, is_debug);
     ROS_ASSERT(initTmsRpVoronoiMap());
     // Subscriber for tms_db_data topic
-    get_data_client_ = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
-    static_map_pub_ = nh.advertise<tms_msg_rp::rps_map_full>("rps_map_data", 1);
-    dynamic_map_pub_ = nh.advertise<tms_msg_rp::rps_map_full>("rps_dynamic_map", 1);
-    nonvoronoi_map_marker_pub = nh.advertise<visualization_msgs::Marker>("nonvoronoi_map_marker", 1);
-    static_map_marker_pub = nh.advertise<visualization_msgs::Marker>("voronoi_map_marker", 1);
-    dynamic_marker_pub = nh.advertise<visualization_msgs::Marker>("dynamic_map_marker", 1);
+    get_data_client_ = nh.serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader");
+    static_map_pub_ = nh.advertise< tms_msg_rp::rps_map_full >("rps_map_data", 1);
+    dynamic_map_pub_ = nh.advertise< tms_msg_rp::rps_map_full >("rps_dynamic_map", 1);
+    nonvoronoi_map_marker_pub = nh.advertise< visualization_msgs::Marker >("nonvoronoi_map_marker", 1);
+    static_map_marker_pub = nh.advertise< visualization_msgs::Marker >("voronoi_map_marker", 1);
+    dynamic_marker_pub = nh.advertise< visualization_msgs::Marker >("dynamic_map_marker", 1);
     // TimerEvent
     static_map_update_timer = nh.createTimer(ros::Duration(update_time), &TmsRpVoronoiMap::staticMapPublish, this);
     dynamic_map_update_timer = nh.createTimer(ros::Duration(update_time), &TmsRpVoronoiMap::dynamicMapPublish, this);
@@ -123,7 +123,7 @@ private:
     return true;
   }
 
-  bool initCollisionMap(vector<vector<CollisionMapData>>& map)
+  bool initCollisionMap(vector< vector< CollisionMapData > >& map)
   {
     FILE* fp;
     string file_name;
@@ -149,7 +149,7 @@ private:
     }
 
     map.clear();
-    vector<CollisionMapData> tempMapLine;
+    vector< CollisionMapData > tempMapLine;
     CollisionMapData tempMapData;
 
     char* tp, buff[4096];
@@ -238,7 +238,7 @@ private:
     return true;
   }
 
-  bool setVoronoiLine(vector<vector<CollisionMapData>>& map, string& message)
+  bool setVoronoiLine(vector< vector< CollisionMapData > >& map, string& message)
   {
     if (map.empty())
     {
@@ -384,7 +384,7 @@ private:
     return true;
   }
 
-  bool calcDistFromObj(vector<vector<CollisionMapData>>& map, string& message)
+  bool calcDistFromObj(vector< vector< CollisionMapData > >& map, string& message)
   {
     if (map.empty())
     {
@@ -437,7 +437,7 @@ private:
     return true;
   }
 
-  void convertMap(vector<vector<CollisionMapData>> map, tms_msg_rp::rps_map_full& pp_map)
+  void convertMap(vector< vector< CollisionMapData > > map, tms_msg_rp::rps_map_full& pp_map)
   {
     pp_map.rps_map_x.clear();
 
@@ -551,7 +551,7 @@ private:
   void dynamicMapPublish(const ros::TimerEvent& e)
   {
     int map_x = 0, map_y = 0;
-    vector<vector<CollisionMapData>> temp_Map;
+    vector< vector< CollisionMapData > > temp_Map;
     string result_msg;
 
     temp_Map.clear();
@@ -645,7 +645,7 @@ private:
   {
     int map_x = 0, map_y = 0;
     int obstacle_pos_x = 0, obstacle_pos_y = 0;
-    vector<vector<CollisionMapData>> temp_Map;
+    vector< vector< CollisionMapData > > temp_Map;
     string result_msg;
 
     temp_Map.clear();

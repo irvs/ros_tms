@@ -52,7 +52,7 @@ public:
   virtual NetUdpSocket* udpSocket() = 0;  // Create a new udp socket
   virtual void poll() = 0;
   virtual NetDnsRequest* dnsRequest(const char* hostname) = 0;  // Create a new NetDnsRequest object
-  virtual NetDnsRequest* dnsRequest(Host* pHost) = 0;  // Create a new NetDnsRequest object
+  virtual NetDnsRequest* dnsRequest(Host* pHost) = 0;           // Create a new NetDnsRequest object
 
   //!Returns the IP of the interface once it's connected
   IpAddr getIp() const;

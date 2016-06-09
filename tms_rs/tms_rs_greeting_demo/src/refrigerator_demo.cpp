@@ -138,9 +138,9 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "ref_demo");
   ros::NodeHandle n;
 
-  motion_client = n.serviceClient<tms_msg_rc::smartpal_control>("sp5_control");
-  speech_client = n.serviceClient<tms_msg_rc::robot_tts>("smartpal5_tts");
-  refrigerator_client = n.serviceClient<tms_msg_rs::rs_home_appliances>("refrigerator_controller");
+  motion_client = n.serviceClient< tms_msg_rc::smartpal_control >("sp5_control");
+  speech_client = n.serviceClient< tms_msg_rc::robot_tts >("smartpal5_tts");
+  refrigerator_client = n.serviceClient< tms_msg_rs::rs_home_appliances >("refrigerator_controller");
 
   ros::ServiceServer service = n.advertiseService("ref_demo", callback);
 

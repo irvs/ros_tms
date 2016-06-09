@@ -108,8 +108,8 @@ public:
     // Init Vicon Stream
     ROS_ASSERT(init_vicon());
     // Publishers
-    db_pub = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 1);
-    pose_pub = nh_priv.advertise<tms_msg_ss::vicon_data>("output", 1);
+    db_pub = nh.advertise< tms_msg_db::TmsdbStamped >("tms_db_data", 1);
+    pose_pub = nh_priv.advertise< tms_msg_ss::vicon_data >("output", 1);
     // TimerEvent
     update_timer = nh.createTimer(ros::Duration(update_time), &ViconStream::updateCallback, this);
   }
@@ -308,7 +308,7 @@ private:
         tms_msg_db::Tmsdb tmpData;
 
         std::string name;
-        std::vector<std::string> v_name;
+        std::vector< std::string > v_name;
         v_name.clear();
         boost::split(v_name, SubjectName, boost::is_any_of("#"));
 

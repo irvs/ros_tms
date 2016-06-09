@@ -23,7 +23,7 @@
 
 #include <iostream>
 
-#define ORIGIN_X 77  // 32.0
+#define ORIGIN_X 77   // 32.0
 #define ORIGIN_Y 841  // 724.0
 #define GRID_X_SIZE 15
 #define GRID_Y_SIZE 7
@@ -74,18 +74,18 @@ public:
     int id;
     int flag;
     int count;
-    std::vector<tracker_point> xy;
+    std::vector< tracker_point > xy;
     double start_time;
-    std::vector<double> xy_time;
+    std::vector< double > xy_time;
   };
 
   tracker_param tmp_tracker_info;
-  std::vector<tracker_param> tracker_info_array;
-  std::vector<tracker_param>::iterator p;
+  std::vector< tracker_param > tracker_info_array;
+  std::vector< tracker_param >::iterator p;
 
   tracker_param2 tmp_tracker_info2;
-  std::vector<tracker_param2> tracker_info_array2;
-  std::vector<tracker_param2>::iterator p2;
+  std::vector< tracker_param2 > tracker_info_array2;
+  std::vector< tracker_param2 >::iterator p2;
 
   Viewer(QNode *node, QWidget *parent = 0);
   virtual ~Viewer();

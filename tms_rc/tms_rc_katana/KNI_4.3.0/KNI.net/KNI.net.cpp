@@ -16,7 +16,7 @@ bool To_string(System::String ^ source, std::string &target)
   char *ch = new char[len];
   bool result;
   {
-    pin_ptr<const wchar_t> wch = PtrToStringChars(source);
+    pin_ptr< const wchar_t > wch = PtrToStringChars(source);
     result = wcstombs(ch, wch, len) != -1;
   }
   target = ch;
@@ -44,7 +44,7 @@ Katana::Katana(System::String ^ ipAddress, System::String ^ configurationFile) :
   To_string(configurationFile, configFile);
   try
   {
-    socket = new CCdlSocket(const_cast<char *>(ip.c_str()), atoi("5566"));
+    socket = new CCdlSocket(const_cast< char * >(ip.c_str()), atoi("5566"));
     proto = new CCplSerialCRC();
     proto->init(socket);
 
@@ -89,10 +89,10 @@ void Katana::calibrate(void)
   }
 }
 ////////////////////////////////////////////////////////////////////////////////////////
-array<int> ^ Katana::getRobotEncoders(bool refreshEncoders)
+array< int > ^ Katana::getRobotEncoders(bool refreshEncoders)
 {
-  std::vector<int> encodersVec(katana->getNumberOfMotors(), 0);
-  array<int> ^ encoders = gcnew array<int>(encodersVec.size());
+  std::vector< int > encodersVec(katana->getNumberOfMotors(), 0);
+  array< int > ^ encoders = gcnew array< int >(encodersVec.size());
   try
   {
     katana->getRobotEncoders(encodersVec.begin(), encodersVec.end(), refreshEncoders);
@@ -108,9 +108,9 @@ array<int> ^ Katana::getRobotEncoders(bool refreshEncoders)
   return encoders;
 }
 ////////////////////////////////////////////////////////////////////////////////////////
-void Katana::moveRobotToEnc(array<int> ^ encoders, bool waitUntilReached, int waitTimeout)
+void Katana::moveRobotToEnc(array< int > ^ encoders, bool waitUntilReached, int waitTimeout)
 {
-  std::vector<int> encoderVector(katana->getNumberOfMotors(), 0);
+  std::vector< int > encoderVector(katana->getNumberOfMotors(), 0);
   for (int i = 0; i < katana->getNumberOfMotors(); ++i)
   {
     encoderVector[i] = encoders[i];
@@ -137,9 +137,9 @@ void Katana::moveMotorToEnc(int motor, int encoder, bool waitUntilReached, int w
   }
 }
 ////////////////////////////////////////////////////////////////////////////////////////
-array<double> ^ Katana::getCoordinates(bool refreshEncoders)
+array< double > ^ Katana::getCoordinates(bool refreshEncoders)
 {
-  std::vector<double> coordinateVector(6, 0);
+  std::vector< double > coordinateVector(6, 0);
   try
   {
     katana->getCoordinates(coordinateVector[0], coordinateVector[1], coordinateVector[2], coordinateVector[3],
@@ -150,7 +150,7 @@ array<double> ^ Katana::getCoordinates(bool refreshEncoders)
     throw gcnew System::Exception(gcnew System::String(e.what()));
   }
 
-  array<double> ^ coordinates = gcnew array<double>(6);
+  array< double > ^ coordinates = gcnew array< double >(6);
   for (unsigned int i = 0; i < 6; ++i)
   {
     coordinates[i] = coordinateVector[i];
@@ -158,9 +158,9 @@ array<double> ^ Katana::getCoordinates(bool refreshEncoders)
   return coordinates;
 }
 ////////////////////////////////////////////////////////////////////////////////////////
-void Katana::moveRobotTo(array<double> ^ coordinates, bool waitUntilReached, int waitTimeout)
+void Katana::moveRobotTo(array< double > ^ coordinates, bool waitUntilReached, int waitTimeout)
 {
-  std::vector<double> coordinateVector(6, 0);
+  std::vector< double > coordinateVector(6, 0);
   for (unsigned int i = 0; i < 6; ++i)
   {
     coordinateVector[i] = coordinates[i];
@@ -175,9 +175,9 @@ void Katana::moveRobotTo(array<double> ^ coordinates, bool waitUntilReached, int
   }
 }
 ////////////////////////////////////////////////////////////////////////////////////////
-void Katana::moveRobotLinearTo(array<double> ^ coordinates, bool waitUntilReached, int waitTimeout)
+void Katana::moveRobotLinearTo(array< double > ^ coordinates, bool waitUntilReached, int waitTimeout)
 {
-  std::vector<double> coordinateVector(6, 0);
+  std::vector< double > coordinateVector(6, 0);
   for (unsigned int i = 0; i < 6; ++i)
   {
     coordinateVector[i] = coordinates[i];

@@ -34,12 +34,12 @@ int main(int argc, char **argv)
   smartpal->TagSetConfig(1, 3);  // set time-slots = 16
   smartpal->TagSetPower(2);      // Max Power
 
-  ros::Publisher pub_fmtagdata = nh.advertise<tms_msg_rc::tag_data>("spfm_tag_data", 1000);
-  ros::Publisher pub_bmtagdata = nh.advertise<tms_msg_rc::tag_data>("spbm_tag_data", 1000);
-  ros::Publisher pub_lhtagdata = nh.advertise<tms_msg_rc::tag_data>("splh_tag_data", 1000);
-  ros::Publisher pub_rhtagdata = nh.advertise<tms_msg_rc::tag_data>("sprh_tag_data", 1000);
+  ros::Publisher pub_fmtagdata = nh.advertise< tms_msg_rc::tag_data >("spfm_tag_data", 1000);
+  ros::Publisher pub_bmtagdata = nh.advertise< tms_msg_rc::tag_data >("spbm_tag_data", 1000);
+  ros::Publisher pub_lhtagdata = nh.advertise< tms_msg_rc::tag_data >("splh_tag_data", 1000);
+  ros::Publisher pub_rhtagdata = nh.advertise< tms_msg_rc::tag_data >("sprh_tag_data", 1000);
 
-  vector<uint8_t> vstData;
+  vector< uint8_t > vstData;
 
   ros::Rate loop_rate(10);
 

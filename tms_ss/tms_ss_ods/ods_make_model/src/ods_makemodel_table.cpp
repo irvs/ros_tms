@@ -7,7 +7,7 @@
 int main()
 {
   //宣言
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud< pcl::PointXYZ >::Ptr cloud(new pcl::PointCloud< pcl::PointXYZ >);
 
   // table1
   if (TABLE == 1)

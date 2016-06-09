@@ -6,9 +6,9 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "ods_capture_exbed");
   ros::NodeHandle n;
 
-  commander_to_kinect_capture = n.serviceClient<tms_msg_ss::ods_pcd>("ods_capture");
+  commander_to_kinect_capture = n.serviceClient< tms_msg_ss::ods_pcd >("ods_capture");
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
   int id;
   std::stringstream ss, ss2;
 

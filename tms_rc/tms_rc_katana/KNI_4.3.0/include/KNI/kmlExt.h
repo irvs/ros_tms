@@ -213,13 +213,14 @@ public:
   /// container,
   /// the function will not throw an exception because of this. The return value will point to one element after the
   /// last one.
-  std::vector<int>::iterator getRobotEncoders(std::vector<int>::iterator start, std::vector<int>::const_iterator end,
-                                              bool refreshEncoders = true) const;
+  std::vector< int >::iterator getRobotEncoders(std::vector< int >::iterator start,
+                                                std::vector< int >::const_iterator end,
+                                                bool refreshEncoders = true) const;
 
   /// Get the current robot encoders as a vector-container.
   /// This method is mainly provided for convenience. It is easier than the other getRobotEncoders method
   /// but probably not so efficient. It is much easier to use via the wrappers.
-  std::vector<int> getRobotEncoders(bool refreshEncoders = true) const;
+  std::vector< int > getRobotEncoders(bool refreshEncoders = true) const;
 
   short getMotorVelocityLimit(short number) const;
   short getMotorAccelerationLimit(short number) const;
@@ -252,15 +253,15 @@ public:
   /// Move to robot to given encoders.
   /// You can provide less values than the number of motors. In that case only the given ones will be moved.
   /// This can be usefull in cases where you want to move the robot but you don't want to move the gripper.
-  void moveRobotToEnc(std::vector<int>::const_iterator start, std::vector<int>::const_iterator end,
+  void moveRobotToEnc(std::vector< int >::const_iterator start, std::vector< int >::const_iterator end,
                       bool waitUntilReached = false, int encTolerance = 100, int waitTimeout = 0);
   /// Move to robot to given encoders in the vector-container.
   /// This method is mainly provided for convenience. Catch by value (and not by reference) is intended to avoid
   /// nasty wrapping code.
-  void moveRobotToEnc(std::vector<int> encoders, bool waitUntilReached = false, int encTolerance = 100,
+  void moveRobotToEnc(std::vector< int > encoders, bool waitUntilReached = false, int encTolerance = 100,
                       int waitTimeout = 0);
   /// Move to robot to given target in the vector-container with the given velocity, acceleration and tolerance
-  void moveRobotToEnc4D(std::vector<int> target, int velocity = 180, int acceleration = 1, int encTolerance = 100);
+  void moveRobotToEnc4D(std::vector< int > target, int velocity = 180, int acceleration = 1, int encTolerance = 100);
 
   void openGripper(bool waitUntilReached = false, int waitTimeout = 100);
   void closeGripper(bool waitUntilReached = false, int waitTimeout = 100);
@@ -288,7 +289,7 @@ public:
   /// @param exactflag exactflag
   /// @param moreflag 0 = start moving more following, 1 = last or a single polynomial movement, 2 = do not start moving
   /// yet more following
-  void setAndStartPolyMovement(std::vector<short> polynomial, bool exactflag, int moreflag);
+  void setAndStartPolyMovement(std::vector< short > polynomial, bool exactflag, int moreflag);
 
   //!Read The Digital I/Os
   int readDigitalIO();

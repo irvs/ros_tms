@@ -27,7 +27,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "spc_test");
 
   ros::NodeHandle n;
-  ros::ServiceClient client = n.serviceClient<tms_msg_rc::smartpal_control>("sp5_control");
+  ros::ServiceClient client = n.serviceClient< tms_msg_rc::smartpal_control >("sp5_control");
   tms_msg_rc::smartpal_control srv;
 
   //----------------------------------------------------------------------------

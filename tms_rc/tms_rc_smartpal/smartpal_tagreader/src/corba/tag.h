@@ -254,8 +254,8 @@ public:
   static _ptr_type unmarshalObjRef(cdrStream&);
 };
 
-typedef _CORBA_ObjRef_Var<_objref_ReaderWriter, ReaderWriter_Helper> ReaderWriter_var;
-typedef _CORBA_ObjRef_OUT_arg<_objref_ReaderWriter, ReaderWriter_Helper> ReaderWriter_out;
+typedef _CORBA_ObjRef_Var< _objref_ReaderWriter, ReaderWriter_Helper > ReaderWriter_var;
+typedef _CORBA_ObjRef_OUT_arg< _objref_ReaderWriter, ReaderWriter_Helper > ReaderWriter_out;
 
 #endif
 

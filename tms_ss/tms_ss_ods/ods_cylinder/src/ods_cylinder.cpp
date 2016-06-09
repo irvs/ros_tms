@@ -29,7 +29,7 @@ typedef pcl::PointXYZRGB PointType;
 
 typedef struct
 {
-  pcl::PointCloud<PointType> cloud;
+  pcl::PointCloud< PointType > cloud;
   pcl::PointIndices inliers;
   pcl::PointXYZ g;
   double map[MAP_X][MAP_Y];
@@ -42,12 +42,12 @@ typedef struct
   double radious;
 } object;
 
-std::vector<object> Object_Map;
+std::vector< object > Object_Map;
 
-void passfilter(pcl::PointCloud<PointType>& cloud)
+void passfilter(pcl::PointCloud< PointType >& cloud)
 {
   // Create the filtering object
-  pcl::PassThrough<PointType> pass;
+  pcl::PassThrough< PointType > pass;
   pass.setInputCloud(cloud.makeShared());
   pass.setFilterFieldName("x");
   pass.setFilterLimits(-0.8, 0.8);
@@ -65,9 +65,9 @@ void passfilter(pcl::PointCloud<PointType>& cloud)
 }
 
 //ダウンサンプリングを行う
-void downsampling(pcl::PointCloud<PointType>& cloud, float th)
+void downsampling(pcl::PointCloud< PointType >& cloud, float th)
 {
-  pcl::VoxelGrid<PointType> sor;
+  pcl::VoxelGrid< PointType > sor;
   sor.setInputCloud(cloud.makeShared());
   sor.setLeafSize(th, th, th);
   sor.filter(cloud);
@@ -76,14 +76,14 @@ void downsampling(pcl::PointCloud<PointType>& cloud, float th)
 }
 
 //平面検出を行う
-void segmentate(pcl::PointCloud<PointType>& cloud, pcl::PointCloud<PointType>& p_cloud,
+void segmentate(pcl::PointCloud< PointType >& cloud, pcl::PointCloud< PointType >& p_cloud,
                 pcl::ModelCoefficients& coefficients)
 {
-  pcl::ExtractIndices<PointType> extract;
+  pcl::ExtractIndices< PointType > extract;
 
   pcl::PointIndices::Ptr inliers(new pcl::PointIndices);
   // Create the segmentation object
-  pcl::SACSegmentation<PointType> seg;
+  pcl::SACSegmentation< PointType > seg;
   // Optional
   seg.setOptimizeCoefficients(true);
   // Mandatory
@@ -105,7 +105,7 @@ void segmentate(pcl::PointCloud<PointType>& cloud, pcl::PointCloud<PointType>& p
 }
 
 //重心位置を求める
-pcl::PointXYZ g_pos(pcl::PointCloud<PointType>& cloud)
+pcl::PointXYZ g_pos(pcl::PointCloud< PointType >& cloud)
 {
   pcl::PointXYZ g;
 
@@ -124,16 +124,16 @@ pcl::PointXYZ g_pos(pcl::PointCloud<PointType>& cloud)
 }
 
 //射影変換(平面のz値を0にする→テーブル上面を基準面にする)
-void transformation(pcl::PointCloud<PointType>& cloud, pcl::PointCloud<PointType>& p_cloud,
+void transformation(pcl::PointCloud< PointType >& cloud, pcl::PointCloud< PointType >& p_cloud,
                     pcl::ModelCoefficientsPtr coefficients)
 {
   Eigen::Matrix4f r1(Eigen::Matrix4f::Identity());  //平行移動
   Eigen::Matrix4f r2(Eigen::Matrix4f::Identity());  // x軸まわりの回転行列
   Eigen::Matrix4f r3(Eigen::Matrix4f::Identity());  // y軸まわりの回転行列
   pcl::PointXYZ g;
-  pcl::PointCloud<PointType>::Ptr tmp_cloud(new pcl::PointCloud<PointType>);
+  pcl::PointCloud< PointType >::Ptr tmp_cloud(new pcl::PointCloud< PointType >);
 
-  pcl::ProjectInliers<PointType> proj;
+  pcl::ProjectInliers< PointType > proj;
   proj.setModelType(pcl::SACMODEL_PLANE);
 
   proj.setInputCloud(p_cloud.makeShared());
@@ -225,7 +225,7 @@ void elevation_map(object& m)
   double min_y = 10.0;
   double min_z = 10.0;
 
-  pcl::PointCloud<PointType>::Ptr tmp_cloud(new pcl::PointCloud<PointType>);
+  pcl::PointCloud< PointType >::Ptr tmp_cloud(new pcl::PointCloud< PointType >);
   *tmp_cloud = m.cloud;
 
   for (int i = 0; i < tmp_cloud->size(); i++)
@@ -270,12 +270,12 @@ void elevation_map(object& m)
   return;
 }
 
-double cylinder_radious(pcl::PointCloud<PointType>& cloud)
+double cylinder_radious(pcl::PointCloud< PointType >& cloud)
 {
   // estimate point normals
-  pcl::search::KdTree<PointType>::Ptr tree(new pcl::search::KdTree<PointType>());
-  pcl::NormalEstimation<PointType, pcl::Normal> ne;
-  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals(new pcl::PointCloud<pcl::Normal>);
+  pcl::search::KdTree< PointType >::Ptr tree(new pcl::search::KdTree< PointType >());
+  pcl::NormalEstimation< PointType, pcl::Normal > ne;
+  pcl::PointCloud< pcl::Normal >::Ptr cloud_normals(new pcl::PointCloud< pcl::Normal >);
   pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients);
 
   ne.setSearchMethod(tree);
@@ -285,7 +285,7 @@ double cylinder_radious(pcl::PointCloud<PointType>& cloud)
 
   // cylinder detection
   std::cout << "cylinder detection" << std::endl;
-  pcl::SACSegmentationFromNormals<PointType, pcl::Normal> seg;
+  pcl::SACSegmentationFromNormals< PointType, pcl::Normal > seg;
   pcl::PointIndices::Ptr inliers(new pcl::PointIndices);
   // pcl::ExtractIndices<PointType> extract;
 
@@ -313,14 +313,14 @@ double cylinder_radious(pcl::PointCloud<PointType>& cloud)
 }
 
 //クラスタリング
-void clustering(pcl::PointCloud<PointType>& cloud, pcl::PointCloud<PointType>& c_cloud)
+void clustering(pcl::PointCloud< PointType >& cloud, pcl::PointCloud< PointType >& c_cloud)
 {
   // Creating the KdTree object for the search method of the extraction
-  pcl::search::KdTree<PointType>::Ptr tree(new pcl::search::KdTree<PointType>);
+  pcl::search::KdTree< PointType >::Ptr tree(new pcl::search::KdTree< PointType >);
   tree->setInputCloud(cloud.makeShared());
 
-  std::vector<pcl::PointIndices> cluster_indices;
-  pcl::EuclideanClusterExtraction<PointType> ec;
+  std::vector< pcl::PointIndices > cluster_indices;
+  pcl::EuclideanClusterExtraction< PointType > ec;
   ec.setClusterTolerance(0.04);
   ec.setMinClusterSize(500);
   ec.setMaxClusterSize(10000);
@@ -331,12 +331,12 @@ void clustering(pcl::PointCloud<PointType>& cloud, pcl::PointCloud<PointType>& c
   std::cout << "クラスタリング開始" << std::endl;
   int i = 0;
   float colors[6][3] = {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}, {255, 255, 0}, {0, 255, 255}, {255, 0, 255}};
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
+  for (std::vector< pcl::PointIndices >::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
   {
     // std::cout << "クラスタ重心を求める" << std::endl;
-    pcl::PointCloud<PointType>::Ptr cloud_cluster(new pcl::PointCloud<PointType>);
+    pcl::PointCloud< PointType >::Ptr cloud_cluster(new pcl::PointCloud< PointType >);
     pcl::PointIndices::Ptr inliers(new pcl::PointIndices);
-    for (std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
+    for (std::vector< int >::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
     {
       cloud_cluster->points.push_back(cloud.points[*pit]);
       inliers->indices.push_back(*pit);
@@ -381,8 +381,8 @@ bool cylinder_detection(tms_msg_ss::ods_cylinder::Request& req, tms_msg_ss::ods_
   std::cout << "cylinder detection" << std::endl;
 
   // local variable declaration
-  pcl::PointCloud<PointType>::Ptr cloud(new pcl::PointCloud<PointType>);
-  pcl::PointCloud<PointType>::Ptr tmp_cloud(new pcl::PointCloud<PointType>);
+  pcl::PointCloud< PointType >::Ptr cloud(new pcl::PointCloud< PointType >);
+  pcl::PointCloud< PointType >::Ptr tmp_cloud(new pcl::PointCloud< PointType >);
 
   // Fill in the cloud data
   tms_msg_ss::ods_pcd srv;
@@ -400,7 +400,7 @@ bool cylinder_detection(tms_msg_ss::ods_cylinder::Request& req, tms_msg_ss::ods_
 
   // planar segmentation
   std::cout << "planar segmentation" << std::endl;
-  pcl::PointCloud<PointType>::Ptr p_cloud(new pcl::PointCloud<PointType>);
+  pcl::PointCloud< PointType >::Ptr p_cloud(new pcl::PointCloud< PointType >);
   pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients);  //テーブル上面の式
   segmentate(*cloud, *p_cloud, *coefficients);
 
@@ -413,7 +413,7 @@ bool cylinder_detection(tms_msg_ss::ods_cylinder::Request& req, tms_msg_ss::ods_
 
   // segmentation on the table
   std::cout << "segmentation" << std::endl;
-  pcl::PointCloud<PointType>::Ptr c_cloud(new pcl::PointCloud<PointType>);
+  pcl::PointCloud< PointType >::Ptr c_cloud(new pcl::PointCloud< PointType >);
   clustering(*cloud, *c_cloud);
   pcl::io::savePCDFile("src/ods_cylinder/data/ods_cylinder/cluster.pcd", *c_cloud, true);
 
@@ -421,7 +421,7 @@ bool cylinder_detection(tms_msg_ss::ods_cylinder::Request& req, tms_msg_ss::ods_
 
   for (int i = 0; i < Object_Map.size(); i++)
   {
-    pcl::PointCloud<PointType>::Ptr tmp_cloud2(new pcl::PointCloud<PointType>);
+    pcl::PointCloud< PointType >::Ptr tmp_cloud2(new pcl::PointCloud< PointType >);
     for (int j = 0; j < Object_Map[i].inliers.indices.size(); j++)
     {
       tmp_cloud2->push_back(tmp_cloud->points[Object_Map[i].inliers.indices[j]]);
@@ -465,7 +465,7 @@ int main(int argc, char** argv)
 
   service = n.advertiseService("ods_cylinder_detection", cylinder_detection);
 
-  commander_to_kinect_capture = n.serviceClient<tms_msg_ss::ods_pcd>("capture_cloud");
+  commander_to_kinect_capture = n.serviceClient< tms_msg_ss::ods_pcd >("capture_cloud");
   ros::spin();
 
   return 0;

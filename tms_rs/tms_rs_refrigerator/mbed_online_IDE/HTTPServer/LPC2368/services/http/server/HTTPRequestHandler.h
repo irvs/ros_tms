@@ -53,15 +53,15 @@ public:
   virtual void doPost() = 0;
   virtual void doHead() = 0;
 
-  virtual void onReadable() = 0;  // Data has been read
+  virtual void onReadable() = 0;   // Data has been read
   virtual void onWriteable() = 0;  // Data has been written & buf is free
-  virtual void onTimeout();  // Connection has timed out
-  virtual void onClose() = 0;  // Connection is closing
+  virtual void onTimeout();        // Connection has timed out
+  virtual void onClose() = 0;      // Connection is closing
 
   virtual void close();  // Close socket and destroy data
 
 protected:
-  map<string, string>& reqHeaders() /*const*/;
+  map< string, string >& reqHeaders() /*const*/;
   string& path() /*const*/;
   int dataLen() const;
   int readData(char* buf, int len);
@@ -70,20 +70,20 @@ protected:
   void setErrCode(int errc);
   void setContentLen(int len);
 
-  map<string, string>& respHeaders();
+  map< string, string >& respHeaders();
   int writeData(const char* buf, int len);
 
   void setTimeout(int ms);
   void resetTimeout();
 
 private:
-  void readHeaders();  // Called at instanciation
+  void readHeaders();   // Called at instanciation
   void writeHeaders();  // Called at the first writeData call
   void onTCPSocketEvent(TCPSocketEvent e);
 
   TCPSocket* m_pTCPSocket;
-  map<string, string> m_reqHeaders;
-  map<string, string> m_respHeaders;
+  map< string, string > m_reqHeaders;
+  map< string, string > m_respHeaders;
   string m_rootPath;
   string m_path;
   int m_errc;  // Response code

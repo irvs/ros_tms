@@ -25,10 +25,10 @@ bool CSctBase::init(CKatBase* _own, const TSctDesc _sctDesc, CCplBase* _protocol
 
 void CSctBase::recvDAT()
 {
-  int i;  // iterator
-  byte p[32];  // packet
+  int i;          // iterator
+  byte p[32];     // packet
   byte buf[256];  // readbuf
-  byte sz = 0;  // readbuf size
+  byte sz = 0;    // readbuf size
 
   // switch between 8/12 bit resolution
   p[0] = 'E';

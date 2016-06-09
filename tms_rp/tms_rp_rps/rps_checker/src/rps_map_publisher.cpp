@@ -12,9 +12,9 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "rps_map_publisher");
 
   ros::NodeHandle n;
-  ros::Publisher rps_map_pub = n.advertise<tms_msg_rp::rps_map_full>("rps_map_data", 1);
+  ros::Publisher rps_map_pub = n.advertise< tms_msg_rp::rps_map_full >("rps_map_data", 1);
 
-  vector<vector<CollisionMapData>> Map;
+  vector< vector< CollisionMapData > > Map;
   tms_msg_rp::rps_map_full pub_Map;
 
   initCollisionMap(Map);

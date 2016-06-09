@@ -39,7 +39,7 @@ void Timer::Start()
 
 long Timer::_ElapsedTime() const
 {
-  return static_cast<long>(1000.0 * (static_cast<double>((clock() - _ct)) / static_cast<double>(CLOCKS_PER_SEC)));
+  return static_cast< long >(1000.0 * (static_cast< double >((clock() - _ct)) / static_cast< double >(CLOCKS_PER_SEC)));
 }
 
 Timer::Timer() : _timeout(0), _ct(0)

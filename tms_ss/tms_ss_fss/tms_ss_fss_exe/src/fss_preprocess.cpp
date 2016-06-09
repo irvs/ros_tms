@@ -20,17 +20,17 @@ ros::Publisher rosPub1;
 ros::Subscriber rosSub2;
 ros::Publisher rosPub2;
 
-std::list<QUEUE> lstUtm30LX_raw_data_average;
-std::list<QUEUE> lstUtm30LX_raw_data_average1;
-std::list<QUEUE> lstUtm30LX_raw_data_average2;
+std::list< QUEUE > lstUtm30LX_raw_data_average;
+std::list< QUEUE > lstUtm30LX_raw_data_average1;
+std::list< QUEUE > lstUtm30LX_raw_data_average2;
 
-vector<float> utm30lx_raw_distance_before;
-vector<float> utm30lx_raw_intensity_before;
+vector< float > utm30lx_raw_distance_before;
+vector< float > utm30lx_raw_intensity_before;
 
 int iLrf_scan_max_count = 721;
 
 //------------------------------------------------------------------------------
-float getMedian(vector<float> array, size_t arraySize)
+float getMedian(vector< float > array, size_t arraySize)
 {
   size_t center = arraySize / 2;
   if (arraySize % 2 == 1)
@@ -55,10 +55,10 @@ void lrfCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
   ROS_INFO_STREAM("completed sending of fss_pre_data #s");
   //--------------------------------------------------------------------------
   tms_msg_ss::fss_pre_data fss_pre_data;
-  list<QUEUE>::iterator it1;
-  vector<LRF>::iterator it2;
-  vector<float> utm30lx_raw_distance;
-  vector<float> utm30lx_raw_intensity;
+  list< QUEUE >::iterator it1;
+  vector< LRF >::iterator it2;
+  vector< float > utm30lx_raw_distance;
+  vector< float > utm30lx_raw_intensity;
   QUEUE stTempBackup;
   LRF stTmepData;
   unsigned int iLength = 0;
@@ -67,8 +67,8 @@ void lrfCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
   ////float fLrf_set_x = 3000;
   // float fLrf_set_y = 0;
 
-  vector<float> raw_distance[iLrf_scan_max_count];
-  vector<float> raw_intensity[iLrf_scan_max_count];
+  vector< float > raw_distance[iLrf_scan_max_count];
+  vector< float > raw_intensity[iLrf_scan_max_count];
 
   ros::Time tNow = ros::Time::now() + ros::Duration(9 * 60 * 60);  // GMT +9;
 
@@ -162,8 +162,8 @@ void lrfCallback1(const sensor_msgs::LaserScan::ConstPtr& msg)
   ROS_INFO_STREAM("completed sending of fss_pre_data1 #s");
   //--------------------------------------------------------------------------
   tms_msg_ss::fss_pre_data fss_pre_data;
-  vector<float> utm30lx_raw_distance;
-  vector<float> utm30lx_raw_intensity;
+  vector< float > utm30lx_raw_distance;
+  vector< float > utm30lx_raw_intensity;
   LRF stTmepData;
   unsigned int iLength = 0;
   ros::Time tNow = ros::Time::now() + ros::Duration(9 * 60 * 60);  // GMT +9;
@@ -200,8 +200,8 @@ void lrfCallback2(const sensor_msgs::LaserScan::ConstPtr& msg)
   ROS_INFO_STREAM("completed sending of fss_pre_data2 #s");
   //--------------------------------------------------------------------------
   tms_msg_ss::fss_pre_data fss_pre_data;
-  vector<float> utm30lx_raw_distance;
-  vector<float> utm30lx_raw_intensity;
+  vector< float > utm30lx_raw_distance;
+  vector< float > utm30lx_raw_intensity;
   LRF stTmepData;
   unsigned int iLength = 0;
   ros::Time tNow = ros::Time::now() + ros::Duration(9 * 60 * 60);  // GMT +9;
@@ -240,13 +240,13 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "fss_preprocess");
   ros::NodeHandle nh;
   rosSub = nh.subscribe("fss_raw_data", 10, lrfCallback);
-  rosPub = nh.advertise<tms_msg_ss::fss_pre_data>("fss_pre_data", 10);
+  rosPub = nh.advertise< tms_msg_ss::fss_pre_data >("fss_pre_data", 10);
 
   rosSub1 = nh.subscribe("scan1", 10, lrfCallback1);
-  rosPub1 = nh.advertise<tms_msg_ss::fss_pre_data>("fss_pre_data1", 10);
+  rosPub1 = nh.advertise< tms_msg_ss::fss_pre_data >("fss_pre_data1", 10);
 
   rosSub2 = nh.subscribe("scan2", 10, lrfCallback2);
-  rosPub2 = nh.advertise<tms_msg_ss::fss_pre_data>("fss_pre_data2", 10);
+  rosPub2 = nh.advertise< tms_msg_ss::fss_pre_data >("fss_pre_data2", 10);
 
   //--------------------------------------------------------------------------
   // ros spin

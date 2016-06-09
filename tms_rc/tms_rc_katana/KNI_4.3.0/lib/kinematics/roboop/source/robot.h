@@ -278,7 +278,7 @@ private:
   ColumnVector mc;   //!< Mass \f$\times\f$ center of gravity (used if min_para = true).
   Matrix I;          //!< Inertia matrix w.r.t. center of mass and link coordinate system orientation.
   bool immobile;  //!< true if the joint is to be considered locked - ignored for inverse kinematics, but can still be
-                  //reassigned through transform
+  // reassigned through transform
 };
 
 /*!

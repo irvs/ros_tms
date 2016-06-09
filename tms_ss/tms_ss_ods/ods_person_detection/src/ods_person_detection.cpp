@@ -3,14 +3,14 @@
 //*******************************
 //**Y軸フィルター
 //*******************************
-void passfilter(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::PointXYZRGB>& cloud_out,
-                std::vector<int>& index)
+void passfilter(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointCloud< pcl::PointXYZRGB >& cloud_out,
+                std::vector< int >& index)
 {
   std::cout << "passfilter" << std::endl;
 
   //変数宣言
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  std::vector<int> tmp_index;
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  std::vector< int > tmp_index;
 
   // NaN値を除去
   pcl::removeNaNFromPointCloud(cloud, *tmp_cloud, tmp_index);
@@ -31,7 +31,7 @@ void passfilter(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::P
 //*******************************
 //**セグメントの端点を求める
 //*******************************
-Endpoints endpoint(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointIndices& inlier)
+Endpoints endpoint(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointIndices& inlier)
 {
   //変数宣言
   Endpoints e;
@@ -97,7 +97,7 @@ Endpoints endpoint(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointIndices& 
 //*******************************
 //**オクルージョンの判定
 //*******************************
-int check_occlusion(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointXYZRGB p1, pcl::PointXYZRGB p2, int inlier1,
+int check_occlusion(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointXYZRGB p1, pcl::PointXYZRGB p2, int inlier1,
                     int inlier2)
 {
   //変数宣言
@@ -192,10 +192,11 @@ int check_occlusion(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointXYZRGB p
   return 0;
 }
 
-std::vector<Endpoints> group_endpoints(std::vector<Endpoints> endpoints_vec, pcl::PointCloud<pcl::PointXYZRGB>& cloud)
+std::vector< Endpoints > group_endpoints(std::vector< Endpoints > endpoints_vec,
+                                         pcl::PointCloud< pcl::PointXYZRGB >& cloud)
 {
-  std::vector<Endpoints> tmp, fin_e;
-  std::vector<int> group_number;
+  std::vector< Endpoints > tmp, fin_e;
+  std::vector< int > group_number;
 
   return endpoints_vec;
 
@@ -277,22 +278,22 @@ std::vector<Endpoints> group_endpoints(std::vector<Endpoints> endpoints_vec, pcl
 }
 
 //クラスタリング
-Endpoints clustering(pcl::PointCloud<pcl::PointXYZRGB>& f_cloud, pcl::PointCloud<pcl::PointXYZRGB>& cloud,
-                     std::vector<int>& index)
+Endpoints clustering(pcl::PointCloud< pcl::PointXYZRGB >& f_cloud, pcl::PointCloud< pcl::PointXYZRGB >& cloud,
+                     std::vector< int >& index)
 {
   std::cout << "clustering" << std::endl;
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud2(new pcl::PointCloud<pcl::PointXYZRGB>);
-  std::vector<Endpoints> endpoints_vec;
-  std::vector<Endpoints> fin_endpoints_vec;
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud2(new pcl::PointCloud< pcl::PointXYZRGB >);
+  std::vector< Endpoints > endpoints_vec;
+  std::vector< Endpoints > fin_endpoints_vec;
 
   // Creating the KdTree object for the search method of the extraction
-  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB>);
+  pcl::search::KdTree< pcl::PointXYZRGB >::Ptr tree(new pcl::search::KdTree< pcl::PointXYZRGB >);
   tree->setInputCloud(f_cloud.makeShared());
 
-  std::vector<pcl::PointIndices> cluster_indices;
-  pcl::EuclideanClusterExtraction<pcl::PointXYZRGB> ec;
+  std::vector< pcl::PointIndices > cluster_indices;
+  pcl::EuclideanClusterExtraction< pcl::PointXYZRGB > ec;
   ec.setClusterTolerance(0.03);
   ec.setMinClusterSize(3000);
   ec.setMaxClusterSize(100000);
@@ -303,12 +304,12 @@ Endpoints clustering(pcl::PointCloud<pcl::PointXYZRGB>& f_cloud, pcl::PointCloud
   std::cout << "クラスタリング開始" << std::endl;
   int n = 0;
   float colors[6][3] = {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}, {255, 255, 0}, {0, 255, 255}, {255, 0, 255}};
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
+  for (std::vector< pcl::PointIndices >::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
   {
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_cluster(new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud_cluster(new pcl::PointCloud< pcl::PointXYZRGB >);
     pcl::PointIndices::Ptr inlier(new pcl::PointIndices);
 
-    for (std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
+    for (std::vector< int >::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
     {
       cloud_cluster->points.push_back(f_cloud.points[*pit]);
       inlier->indices.push_back(index[*pit]);
@@ -378,7 +379,7 @@ bool person_detection(tms_msg_ss::ods_person_detection::Request& req, tms_msg_ss
 {
   std::cout << "person_detection" << std::endl;
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
   Endpoints person;
   cv_bridge::CvImagePtr cv_ptr;
 
@@ -402,8 +403,8 @@ bool person_detection(tms_msg_ss::ods_person_detection::Request& req, tms_msg_ss
   // pcl::io::loadPCDFile("src/ods_person_detection/data/person_detection/input.pcd", *cloud);
   pcl::io::savePCDFile("src/ods_person_detection/data/person_detection/input.pcd", *cloud);
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr f_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  std::vector<int> index;
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr f_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  std::vector< int > index;
 
   passfilter(*cloud, *f_cloud, index);
 
@@ -436,7 +437,7 @@ int main(int argc, char** argv)
 
   service = n.advertiseService("ods_person_detection", person_detection);
 
-  commander_to_kinect_capture = n.serviceClient<tms_msg_ss::ods_pcd>("ods_capture");
+  commander_to_kinect_capture = n.serviceClient< tms_msg_ss::ods_pcd >("ods_capture");
 
   ros::spin();
 

@@ -136,9 +136,9 @@ int main(int argc, char** argv)
 
   ros::ServiceServer service_p = n.advertiseService("rps_path_planning", start_rps_path_planner);
 
-  get_data_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
-  commander_to_get_robots_info = n.serviceClient<tms_msg_db::tmsdb_get_robots_info>("tmsdb_get_robots_info");
-  client_voronoi_path = n.serviceClient<tms_msg_rp::rps_voronoi_path_planning>("rps_voronoi_path_planning");
+  get_data_client = n.serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader/dbreader");
+  commander_to_get_robots_info = n.serviceClient< tms_msg_db::tmsdb_get_robots_info >("tmsdb_get_robots_info");
+  client_voronoi_path = n.serviceClient< tms_msg_rp::rps_voronoi_path_planning >("rps_voronoi_path_planning");
 
   ros::spin();
 

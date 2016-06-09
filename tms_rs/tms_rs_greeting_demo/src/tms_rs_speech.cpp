@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "tms_rs_speech");
   ros::NodeHandle n;
-  speech_client = n.serviceClient<tms_msg_rc::robot_tts>("smartpal5_tts");
+  speech_client = n.serviceClient< tms_msg_rc::robot_tts >("smartpal5_tts");
 
   //	int size = 4;
   //	std::string s_sentence_list[4] = {"Hello, I am Smart pal five.", "Thank you for coming to our rabo.",

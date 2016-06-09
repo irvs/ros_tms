@@ -13,7 +13,7 @@
 //----------------------------------------------------------------------------------
 VoiceReceiver::VoiceReceiver(ros::NodeHandle *nh) : nh_(nh)
 {
-  std::vector<std::string>::iterator itr;
+  std::vector< std::string >::iterator itr;
   value_.push_back("chipstar");
   value_.push_back("tea");
   value_.push_back("soysauce");
@@ -59,8 +59,8 @@ VoiceReceiver::VoiceReceiver(ros::NodeHandle *nh) : nh_(nh)
 #endif
 
   server_ = nh_->advertiseService("voice_command", &VoiceReceiver::Callback, this);
-  client_ = nh_->serviceClient<tms_ur_gaze_server::object_list>("object_sorting");
-  arrow_client_ = nh_->serviceClient<tms_msg_rp::rp_arrow>("rp_arrow");
+  client_ = nh_->serviceClient< tms_ur_gaze_server::object_list >("object_sorting");
+  arrow_client_ = nh_->serviceClient< tms_msg_rp::rp_arrow >("rp_arrow");
 
   ROS_INFO("voice receiver constructed");
 }

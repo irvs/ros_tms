@@ -23,7 +23,7 @@
 #define FRONT_ANGLE_RANGE 130  // [deg]
 
 //-----------------------------------------------------------------------------
-template <class T>
+template < class T >
 std::string to_str(const T& t)
 {
   std::stringstream ss;
@@ -57,7 +57,7 @@ inline tms_msg_ss::Skeleton initialize_skeleton()
 class SkeletonIntegrator
 {
 public:
-  SkeletonIntegrator(const std::vector<int>& camera, ros::NodeHandle& nh);
+  SkeletonIntegrator(const std::vector< int >& camera, ros::NodeHandle& nh);
   ~SkeletonIntegrator();
 
   void callback(const tms_msg_ss::SkeletonStreamWrapper::ConstPtr& msg);
@@ -65,13 +65,13 @@ public:
 
 private:
   ros::NodeHandle& nh_;
-  std::vector<int> array;  // using camera's id array
+  std::vector< int > array;  // using camera's id array
   tms_msg_ss::SkeletonArray out;
   int tracked_skeleton_num_;
   int tracking_validity[MAX_USERS];
 
-  std::vector<std::map<int, bool>> bFaceStateTable;       // [user_index, [camera_id, is_front?]]
-  std::vector<std::pair<int, float>> storage_evaluation;  // [user_index, [camera_id, value]]
+  std::vector< std::map< int, bool > > bFaceStateTable;       // [user_index, [camera_id, is_front?]]
+  std::vector< std::pair< int, float > > storage_evaluation;  // [user_index, [camera_id, value]]
 
   void listenSkeletonStream();
 
@@ -80,7 +80,7 @@ private:
 };
 
 //-----------------------------------------------------------------------------
-SkeletonIntegrator::SkeletonIntegrator(const std::vector<int>& camera, ros::NodeHandle& nh)
+SkeletonIntegrator::SkeletonIntegrator(const std::vector< int >& camera, ros::NodeHandle& nh)
   : array(camera), tracked_skeleton_num_(0), nh_(nh)
 {
   out.data.resize(MAX_USERS);
@@ -89,11 +89,11 @@ SkeletonIntegrator::SkeletonIntegrator(const std::vector<int>& camera, ros::Node
   {
     out.data[i] = initialize_skeleton();
     tracking_validity[i] = 0;
-    for (std::vector<int>::iterator it = array.begin(); it != array.end(); it++)
+    for (std::vector< int >::iterator it = array.begin(); it != array.end(); it++)
     {
       bFaceStateTable[i][*it] = false;
     }
-    storage_evaluation.push_back(std::pair<int, float>(-1, 1));
+    storage_evaluation.push_back(std::pair< int, float >(-1, 1));
   }
   return;
 }
@@ -272,7 +272,7 @@ void SkeletonIntegrator::run()
 
   static boost::thread thread_listener(boost::bind(&SkeletonIntegrator::listenSkeletonStream, this));
 
-  ros::Publisher pub = nh_.advertise<tms_msg_ss::SkeletonArray>("integrated_skeleton_stream", 1);
+  ros::Publisher pub = nh_.advertise< tms_msg_ss::SkeletonArray >("integrated_skeleton_stream", 1);
 
   while (ros::ok())
   {
@@ -289,7 +289,7 @@ void SkeletonIntegrator::run()
       if (tracking_validity[i] == 0)
       {
         out.data[i] = initialize_skeleton();
-        for (std::vector<int>::iterator camera_id = array.begin(); camera_id != array.end(); camera_id++)
+        for (std::vector< int >::iterator camera_id = array.begin(); camera_id != array.end(); camera_id++)
         {
           bFaceStateTable[i][*camera_id] = false;
         }
@@ -308,13 +308,13 @@ void SkeletonIntegrator::run()
 void SkeletonIntegrator::listenSkeletonStream()
 {
   ros::Rate loop_late(10);
-  std::vector<ros::Subscriber> sub(array.size());
+  std::vector< ros::Subscriber > sub(array.size());
 
   std::cout << "Subscribe ===" << std::endl;
   for (int i = 0; i < array.size(); i++)
   {
     std::string topic_name("skeleton_stream_wrapper");
-    sub[i] = nh_.subscribe(topic_name.append(to_str<int>(array[i])), 1, &SkeletonIntegrator::callback, this);
+    sub[i] = nh_.subscribe(topic_name.append(to_str< int >(array[i])), 1, &SkeletonIntegrator::callback, this);
   }
 
   ros::spin();
@@ -356,7 +356,7 @@ void SkeletonIntegrator::showStatus()
      << std::endl;
 
   ss << "Face state table" << std::endl;
-  for (std::vector<int>::iterator it = array.begin(); it != array.end(); it++)
+  for (std::vector< int >::iterator it = array.begin(); it != array.end(); it++)
   {
     if (*it == 0)
     {
@@ -384,7 +384,7 @@ void SkeletonIntegrator::showStatus()
 //-----------------------------------------------------------------------------
 int main(int argc, char** argv)
 {
-  std::vector<int> cameraID_array;
+  std::vector< int > cameraID_array;
 
   ros::init(argc, argv, "skeleton_integrator");
 

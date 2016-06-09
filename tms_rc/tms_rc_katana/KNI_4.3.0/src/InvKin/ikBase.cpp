@@ -205,7 +205,7 @@ void CikBase::_initKinematics()
   _kinematicsIsInitialized = true;
 }
 
-void CikBase::getKinematicsVersion(std::vector<int>& version)
+void CikBase::getKinematicsVersion(std::vector< int >& version)
 {
   if (mKinematics == 0)
   {
@@ -251,7 +251,7 @@ void CikBase::DKApos(double* position)
 }
 
 void CikBase::IKCalculate(double X, double Y, double Z, double phi, double theta, double psi,
-                          std::vector<int>::iterator solution_iter)
+                          std::vector< int >::iterator solution_iter)
 {
   if (!_kinematicsIsInitialized)
     _initKinematics();
@@ -259,7 +259,7 @@ void CikBase::IKCalculate(double X, double Y, double Z, double phi, double theta
   if (mKinematics == 0)
   {
     // Analytical Kinematics
-    std::vector<double> pose(6);
+    std::vector< double > pose(6);
     pose[0] = X;
     pose[1] = Y;
     pose[2] = Z;
@@ -267,7 +267,7 @@ void CikBase::IKCalculate(double X, double Y, double Z, double phi, double theta
     pose[4] = theta;
     pose[5] = psi;
 
-    std::vector<int> actualPosition;
+    std::vector< int > actualPosition;
     base->recvMPS();
     for (int c = 0; c < getNumberOfMotors(); ++c)
     {
@@ -324,7 +324,7 @@ void CikBase::IKCalculate(double X, double Y, double Z, double phi, double theta
 }
 
 void CikBase::IKCalculate(double X, double Y, double Z, double phi, double theta, double psi,
-                          std::vector<int>::iterator solution_iter, const std::vector<int>& actualPosition)
+                          std::vector< int >::iterator solution_iter, const std::vector< int >& actualPosition)
 {
   if (!_kinematicsIsInitialized)
     _initKinematics();
@@ -332,7 +332,7 @@ void CikBase::IKCalculate(double X, double Y, double Z, double phi, double theta
   if (mKinematics == 0)
   {
     // Analytical Kinematics
-    std::vector<double> pose(6);
+    std::vector< double > pose(6);
     pose[0] = X;
     pose[1] = Y;
     pose[2] = Z;
@@ -398,10 +398,10 @@ void CikBase::IKGoto(double X, double Y, double Z, double Al, double Be, double 
 
   const TKatMOT* mot = base->GetMOT();
 
-  std::vector<int> solution(getNumberOfMotors());
+  std::vector< int > solution(getNumberOfMotors());
   // fills act_pos[] with the current position in degree units
-  std::vector<int> act_pos(getNumberOfMotors());
-  std::vector<int> distance(getNumberOfMotors());
+  std::vector< int > act_pos(getNumberOfMotors());
+  std::vector< int > distance(getNumberOfMotors());
 
   base->recvMPS();
   for (int idx = 0; idx < getNumberOfMotors(); ++idx)
@@ -425,13 +425,13 @@ void CikBase::getCoordinates(double& x, double& y, double& z, double& phi, doubl
   if (mKinematics == 0)
   {
     // Analytical Kinematics
-    std::vector<int> current_encoders(getNumberOfMotors());
+    std::vector< int > current_encoders(getNumberOfMotors());
     for (int i = 0; i < getNumberOfMotors(); i++)
     {
       current_encoders[i] = base->GetMOT()->arr[i].GetPVP()->pos;
     }
 
-    std::vector<double> pose(6);
+    std::vector< double > pose(6);
 
     _kinematicsImpl->DK(pose, current_encoders);
 
@@ -469,7 +469,7 @@ void CikBase::getCoordinates(double& x, double& y, double& z, double& phi, doubl
   }
 }
 
-void CikBase::getCoordinatesFromEncoders(std::vector<double>& pos, const std::vector<int>& encs)
+void CikBase::getCoordinatesFromEncoders(std::vector< double >& pos, const std::vector< int >& encs)
 {
   if (!_kinematicsIsInitialized)
     _initKinematics();
@@ -509,7 +509,7 @@ void CikBase::moveRobotTo(double x, double y, double z, double phi, double theta
   IKGoto(x, y, z, phi, theta, psi, waitUntilReached, 100, waitTimeout);
 }
 
-void CikBase::moveRobotTo(std::vector<double> coordinates, const bool waitUntilReached, const int waitTimeout)
+void CikBase::moveRobotTo(std::vector< double > coordinates, const bool waitUntilReached, const int waitTimeout)
 {
   IKGoto(coordinates.at(0), coordinates.at(1), coordinates.at(2), coordinates.at(3), coordinates.at(4),
          coordinates.at(5), waitUntilReached, 100, waitTimeout);

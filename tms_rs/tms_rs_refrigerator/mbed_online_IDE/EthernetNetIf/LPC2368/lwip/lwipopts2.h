@@ -131,8 +131,8 @@ a lot of data that needs to be copied, this should be set high. */
 /* MEMP_NUM_TCP_PCB_LISTEN: the number of listening TCP
    connections. */
 #define MEMP_NUM_TCP_PCB_LISTEN 2  // 4
-/* MEMP_NUM_TCP_SEG: the number of simultaneously queued TCP
-   segments. */
+                                   /* MEMP_NUM_TCP_SEG: the number of simultaneously queued TCP
+                                      segments. */
 #define MEMP_NUM_TCP_SEG 16
 /* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active
    timeouts. */
@@ -242,7 +242,7 @@ a lot of data that needs to be copied, this should be set high. */
 
 /* ---------- Pbuf options ---------- */
 /* PBUF_POOL_SIZE: the number of buffers in the pbuf pool. */
-#define PBUF_POOL_SIZE 8  // 16//100
+#define PBUF_POOL_SIZE 8        // 16//100
 
 /* PBUF_POOL_BUFSIZE: the size of each pbuf in the pbuf pool. */
 //#define PBUF_POOL_BUFSIZE       128
@@ -268,10 +268,10 @@ a lot of data that needs to be copied, this should be set high. */
 
 /* TCP Maximum segment size. */
 //#define TCP_MSS                 1024
-#define TCP_MSS 512  // 0x276//536//0x276
+#define TCP_MSS 512                                   // 0x276//536//0x276
 
 /* TCP sender buffer space (bytes). */
-#define TCP_SND_BUF 1024  // 2048
+#define TCP_SND_BUF 1024                              // 2048
 
 /* TCP sender buffer space (pbufs). This must be at least = 2 *
    TCP_SND_BUF/TCP_MSS for things to work. */
@@ -296,7 +296,7 @@ a lot of data that needs to be copied, this should be set high. */
 /* ---------- ARP options ---------- */
 #define LWIP_ARP (NET_ETH | NET_ZG2100)
 #define ARP_TABLE_SIZE 2  // 4//10
-#define ARP_QUEUEING 0  // 1
+#define ARP_QUEUEING 0    // 1
 #define ETHARP_TRUST_IP_MAC 1
 
 /* ---------- IP options ---------- */

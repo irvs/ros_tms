@@ -92,8 +92,8 @@ public:
   UmoTracker()
   {
     all_tracker_sub_ = nh_.subscribe("tracking_points", 10, &UmoTracker::msgCallback, this);
-    get_data_client_ = nh_.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
-    umo_tracker_pub_ = nh_.advertise<tms_msg_ss::tracking_points>("umo_tracking_points", 10);
+    get_data_client_ = nh_.serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader/dbreader");
+    umo_tracker_pub_ = nh_.advertise< tms_msg_ss::tracking_points >("umo_tracking_points", 10);
   }
   ~UmoTracker()
   {

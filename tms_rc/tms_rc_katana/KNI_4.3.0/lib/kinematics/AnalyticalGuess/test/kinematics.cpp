@@ -12,12 +12,12 @@
 
 #include "keyboard.h"
 
-std::vector<std::string> explode(const std::string &in, const std::string &delim)
+std::vector< std::string > explode(const std::string &in, const std::string &delim)
 {
   typedef std::string::size_type size_type;
 
   const size_type delim_len = delim.length();
-  std::vector<std::string> result;
+  std::vector< std::string > result;
 
   size_type i = 0, j;
   for (;;)
@@ -97,16 +97,16 @@ int main(int argc, char *argv[])
   bool loop = true;
   int input;
   std::string strtemp;
-  std::vector<std::string> strvectemp;
+  std::vector< std::string > strvectemp;
   double doubletemp;
   int size;
-  std::vector<double> pose;
+  std::vector< double > pose;
   pose.reserve(6);
-  std::vector<int> encoder;
+  std::vector< int > encoder;
   encoder.reserve(6);
-  std::vector<double> angle;
+  std::vector< double > angle;
   angle.reserve(6);
-  std::vector<double> start;
+  std::vector< double > start;
   start.reserve(6);
 
   while (loop)
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
     {
       switch (input)
       {
-        case 27:  // VK_ESCAPE
+        case 27:   // VK_ESCAPE
         case 'q':  // VK_Q
           loop = false;
           continue;

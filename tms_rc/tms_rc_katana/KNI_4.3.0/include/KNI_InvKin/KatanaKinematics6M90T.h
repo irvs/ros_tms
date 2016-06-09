@@ -65,7 +65,7 @@ private:
     double costh3;
   };
 
-  typedef std::vector<angles_calc> angles_container;
+  typedef std::vector< angles_calc > angles_container;
 
   metrics _length;
   parameter_container _parameters;

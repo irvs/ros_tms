@@ -52,17 +52,17 @@
 #define SRV_CMD_ERR -113
 #define SRV_UNSUPPORTED_CMD_ERR -114
 
-#define Unpowered 16  // 0x10
-#define Powered 17  // 0x11
-#define Ready 18  // 0x12
-#define Busy 19  // 0x13
-#define Paused 20  // 0x14
-#define Alarm 21  // 0x15
-#define jogBusy 22  // 0x16
+#define Unpowered 16   // 0x10
+#define Powered 17     // 0x11
+#define Ready 18       // 0x12
+#define Busy 19        // 0x13
+#define Paused 20      // 0x14
+#define Alarm 21       // 0x15
+#define jogBusy 22     // 0x16
 #define DirectBusy 23  // 0x17
-#define Locked 24  // 0x18
-#define Stuck 25  // 0x19
-#define Caution 26  // 0x1A
+#define Locked 24      // 0x18
+#define Stuck 25       // 0x19
+#define Caution 26     // 0x1A
 
 #define UNIT_ALL 0
 #define UNIT_VEHICLE 1
@@ -94,8 +94,8 @@ tf::TransformListener *listener;
 
 const int sid_ = 100000;
 
-double g_x = 5.3;  // 3.0;
-double g_y = 3.0;  // 4.0;
+double g_x = 5.3;   // 3.0;
+double g_y = 3.0;   // 4.0;
 double g_t = 0.65;  // 0.0;
 double g_jR[7] = {0.0, -0.17, 0.0, 0.0, 0.0, 0.0, 0.0};
 double g_jL[7] = {0.0, -0.17, 0.0, 0.0, 0.0, 0.0, 0.0};
@@ -1139,10 +1139,10 @@ int main(int argc, char **argv)
   listener = new tf::TransformListener;
 
   ros::ServiceServer service = nh.advertiseService("sp5_virtual_control", robotControl);
-  pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
+  pose_publisher = nh.advertise< tms_msg_db::TmsdbStamped >("tms_db_data", 10);
   arm_data_sub = nh.subscribe("/move_group/fake_controller_joint_states", 1, &armCallback);
   object_data_sub = nh.subscribe("/move_group/monitored_planning_scene", 1, &ObjectDataUpdate);
-  get_data_client_ = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
+  get_data_client_ = nh.serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader");
 
   nh.setParam("/2003_is_real", false);
 

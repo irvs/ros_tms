@@ -6,7 +6,7 @@
 int main()
 {
   //宣言
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud< pcl::PointXYZ >::Ptr cloud(new pcl::PointCloud< pcl::PointXYZ >);
 
   // small shelf
   /*for(double z=0.00;z<0.290;z+=0.005){

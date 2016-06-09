@@ -33,7 +33,7 @@ THE SOFTWARE.
 // Implements NetTcpSockets over lwIP raw API
 
 struct tcp_pcb;  // Represents a Tcp Connection, "Protocol Control Block", see rawapi.txt & tcp.h
-struct pbuf;  // Lwip Buffer Container
+struct pbuf;     // Lwip Buffer Container
 
 typedef signed char err_t;
 typedef uint16_t u16_t;
@@ -73,7 +73,7 @@ private:
   void cleanUp();  // Flush input buffer
 
   //  queue<tcp_pcb*> m_lpInPcb; //Incoming connections that have not been accepted yet
-  queue<LwipNetTcpSocket*> m_lpInNetTcpSocket;  // Incoming connections that have not been accepted yet
+  queue< LwipNetTcpSocket* > m_lpInNetTcpSocket;  // Incoming connections that have not been accepted yet
 
   volatile pbuf* m_pReadPbuf;  // Ptr to read buffer
 

@@ -84,9 +84,9 @@ using namespace std;
 
 #define THSTOP 0.050      // 躍度（加加速度）がこの値以下なら停止と判断する
 #define MAX_PERSON_NO 10  // 追跡可能人数
-#define MAX_SENSOR_NO 4  // 28					// ９軸センサ最大個数
-#define BEFORE 0  // fssPositionData の前回時刻情報
-#define NOW 1     // fssPositionData の今回時刻情報
+#define MAX_SENSOR_NO 4   // 28					// ９軸センサ最大個数
+#define BEFORE 0          // fssPositionData の前回時刻情報
+#define NOW 1             // fssPositionData の今回時刻情報
 
 #define _POSIX_SOURCE 1  // POSIX準拠のソース
 //--
@@ -101,7 +101,7 @@ using namespace std;
 
 void callback(const tms_msg_ss::fss_class_data::ConstPtr &msg);
 float getLength(float x1, float y1, float x2, float y2);
-float getScore(std::list<Cluster>::iterator it, const tms_msg_ss::fss_class_data::ConstPtr &msg, int gt_index);
+float getScore(std::list< Cluster >::iterator it, const tms_msg_ss::fss_class_data::ConstPtr &msg, int gt_index);
 double getTime(uint64_t time);
 
 //--
@@ -147,12 +147,12 @@ ros::Subscriber rosSub;
 ros::Publisher rosPersonTrajectory;
 ros::Publisher rosDetectedCluster;
 
-std::list<Cluster> sensingClusterList;
-std::list<Cluster> preDetectedClusterList;
-std::list<Cluster> detectedClusterList;
+std::list< Cluster > sensingClusterList;
+std::list< Cluster > preDetectedClusterList;
+std::list< Cluster > detectedClusterList;
 
-std::list<Node> trajectoryTree;
-std::vector<vector<Cluster>> humanTrajectory;
+std::list< Node > trajectoryTree;
+std::vector< vector< Cluster > > humanTrajectory;
 
 FILE *fpresultPosition;     // 計測結果出力用ファイルポインタ
 char fileNamePosition[19];  // 保存ファイル名（現在時刻を格納する yyyymmddhhmmss）
@@ -243,8 +243,8 @@ void callback(const tms_msg_ss::fss_class_data::ConstPtr &msg)
   }
   else
   {
-    std::list<Matching> MatchingLanking;
-    std::list<Cluster>::iterator it;
+    std::list< Matching > MatchingLanking;
+    std::list< Cluster >::iterator it;
 
     unsigned int mt_index, gt_index;
     mt_index = gt_index = 0;
@@ -272,7 +272,7 @@ void callback(const tms_msg_ss::fss_class_data::ConstPtr &msg)
           else
           {
             bool isInsert = false;
-            std::list<Matching>::iterator m_it;
+            std::list< Matching >::iterator m_it;
             for (m_it = MatchingLanking.begin(); m_it != MatchingLanking.end(); m_it++)
             {
               if (tempMatching.score > m_it->score)
@@ -294,10 +294,10 @@ void callback(const tms_msg_ss::fss_class_data::ConstPtr &msg)
 
     //--------------------------------------------------------------------------
     // Update clusters' data order by score of MatchingLanking
-    std::list<Matching>::iterator m_it;
+    std::list< Matching >::iterator m_it;
 
     // isMatch
-    std::vector<bool> isMatch;
+    std::vector< bool > isMatch;
     for (unsigned int i = 0; i < msg->iID.size(); i++)
     {
       isMatch.push_back(false);
@@ -312,10 +312,10 @@ void callback(const tms_msg_ss::fss_class_data::ConstPtr &msg)
     {
       int count;
       float mt_bool;
-      std::list<Cluster>::iterator mt_it;
+      std::list< Cluster >::iterator mt_it;
 
       count = 0;
-      std::list<Cluster>::iterator it;
+      std::list< Cluster >::iterator it;
       for (it = sensingClusterList.begin(); it != sensingClusterList.end(); it++)
       {
         if (count == m_it->mt_index)
@@ -366,7 +366,7 @@ void callback(const tms_msg_ss::fss_class_data::ConstPtr &msg)
 
   //----------------------------------------------------------------------------
   // Analyze preDetectedClusterList
-  std::list<Cluster>::iterator it;
+  std::list< Cluster >::iterator it;
   for (it = preDetectedClusterList.begin(); it != preDetectedClusterList.end();)
   {
     //----------------------------------------------------------------------------
@@ -649,7 +649,7 @@ float getLength(float x1, float y1, float x2, float y2)
   return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 }
 
-float getScore(std::list<Cluster>::iterator it, const tms_msg_ss::fss_class_data::ConstPtr &msg, int gt_index)
+float getScore(std::list< Cluster >::iterator it, const tms_msg_ss::fss_class_data::ConstPtr &msg, int gt_index)
 {
   float score = 0;
 
@@ -1112,11 +1112,11 @@ VOID on_BinaryMessage(PBYTE data, char fileName[], int sensorNo)
     }
     //		printf( "node_no : %d\n", node_no );
     //		printf( " acc : %11.6lf %11.6lf %11.6lf\n",   sensor[node_no-1].acc[0],  sensor[node_no-1].acc[1],
-    //sensor[node_no-1].acc[2]  );
+    // sensor[node_no-1].acc[2]  );
     //		printf( "gyro : %11.6lf %11.6lf %11.6lf\n",   sensor[node_no-1].gyro[0], sensor[node_no-1].gyro[1],
-    //sensor[node_no-1].gyro[2] );
+    // sensor[node_no-1].gyro[2] );
     //		printf( "comp : %11.6lf %11.6lf %11.6lf\n\n", sensor[node_no-1].comp[0], sensor[node_no-1].comp[1],
-    //sensor[node_no-1].comp[2] );
+    // sensor[node_no-1].comp[2] );
     // dataNo++;
 
     if (first == false)
@@ -1132,7 +1132,7 @@ VOID on_BinaryMessage(PBYTE data, char fileName[], int sensorNo)
               sensor[node_no - 1].gyro[0], sensor[node_no - 1].gyro[1], sensor[node_no - 1].gyro[2],
               sensor[node_no - 1].comp[0], sensor[node_no - 1].comp[1], sensor[node_no - 1].comp[2]);
       //			fprintf( fpresult, "%d,%lf,%lf,%lf,", time_stamp, sensor[node_no-1].acc[0], sensor[node_no-1].acc[1],
-      //sensor[node_no-1].acc[2] );
+      // sensor[node_no-1].acc[2] );
       fclose(fpresult9axis);
 
       /* データを配列に格納 */
@@ -1248,7 +1248,7 @@ void storeData(int sensorNo, unsigned long long rtime, float data)
   }
   //	for( dataNo = 0; dataNo < dataNum[sensorNo]; dataNo++ ){
   //		printf( "%d:%llu,%f,%llu,%f\n", sensorNo, accZ[sensorNo].rtime[dataNo], accZ[sensorNo].data[dataNo],
-  //diffAccZ[sensorNo].rtime[dataNo], diffAccZ[sensorNo].data[dataNo] );
+  // diffAccZ[sensorNo].rtime[dataNo], diffAccZ[sensorNo].data[dataNo] );
   //	}
 
   //	/* 評価値更新 */
@@ -1267,7 +1267,7 @@ void storeData(int sensorNo, unsigned long long rtime, float data)
   //	for( dataNo = 0; dataNo < dataNum[sensorNo]; dataNo++ ){
   //		fprintf( fpresult2, "%llu,%f,%llu,%f\n",
   //			accZ[sensorNo].time[dataNo], accZ[sensorNo].data[dataNo], diffAccZ[sensorNo].time[dataNo],
-  //diffAccZ[sensorNo].data[dataNo]
+  // diffAccZ[sensorNo].data[dataNo]
   //		);
   //	}
   //	fclose( fpresult2 );

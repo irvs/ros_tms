@@ -19,20 +19,20 @@
 #include <sstream>
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // KNI internal types
-static std::auto_ptr<CLMBase> katana;
-static std::auto_ptr<CCdlSocket> device;
-static std::auto_ptr<CCplSerialCRC> protocol;
+static std::auto_ptr< CLMBase > katana;
+static std::auto_ptr< CCdlSocket > device;
+static std::auto_ptr< CCplSerialCRC > protocol;
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // A map containing movement vectors accessible by a string name:
-std::map<std::string, std::vector<TMovement>> movements;
+std::map< std::string, std::vector< TMovement > > movements;
 // A vector for storing encoders
-std::vector<int> encoders;
+std::vector< int > encoders;
 // The number of motors, initialized in initKatana()
 int numberOfMotors;
 // variables to store communication data
-byte packet[32];  // comm packet
+byte packet[32];   // comm packet
 byte buffer[256];  // comm readbuf
-byte size = 0;  // comm readbuf size
+byte size = 0;     // comm readbuf size
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 DLLEXPORT int initKatana(char *configFile, char *ipaddress)
@@ -271,7 +271,7 @@ DLLEXPORT int moveToPosEnc(int enc1, int enc2, int enc3, int enc4, int enc5, int
       katana->setMotorAccelerationLimit(i, acceleration);
     }
     // move
-    std::vector<int> enc;
+    std::vector< int > enc;
     enc.push_back(enc1);
     enc.push_back(enc2);
     enc.push_back(enc3);
@@ -428,7 +428,7 @@ DLLEXPORT int deleteMovementFromStack(char *name, int index)
     // name as string
     std::string name_str(name);
     // find movement vector
-    std::map<std::string, std::vector<TMovement>>::iterator it;
+    std::map< std::string, std::vector< TMovement > >::iterator it;
     it = movements.find(name_str);
     if (it == movements.end())
     {
@@ -438,7 +438,7 @@ DLLEXPORT int deleteMovementFromStack(char *name, int index)
     else
     {
       // movement vector exists
-      std::vector<TMovement> movement_vector = (*it).second;
+      std::vector< TMovement > movement_vector = (*it).second;
       if ((int)movement_vector.size() >= index)
       {
         // index out of range
@@ -475,7 +475,7 @@ DLLEXPORT int deleteMovementStack(char *name)
     // name as string
     std::string name_str(name);
     // find movement vector
-    std::map<std::string, std::vector<TMovement>>::iterator it;
+    std::map< std::string, std::vector< TMovement > >::iterator it;
     it = movements.find(name_str);
     if (it == movements.end())
     {
@@ -512,7 +512,7 @@ DLLEXPORT int runThroughMovementStack(char *name, int loops)
     // name as string
     std::string name_str(name);
     // find movement vector
-    std::map<std::string, std::vector<TMovement>>::iterator it;
+    std::map< std::string, std::vector< TMovement > >::iterator it;
     it = movements.find(name_str);
     if (it == movements.end())
     {
@@ -522,7 +522,7 @@ DLLEXPORT int runThroughMovementStack(char *name, int loops)
     else
     {
       // movement vector exists
-      std::vector<TMovement> movement_vector = (*it).second;
+      std::vector< TMovement > movement_vector = (*it).second;
       // execute all movements in movement vector
       int size = (int)movement_vector.size();
       if (size == 1)
@@ -769,7 +769,7 @@ int IO_readInput(int inputNr, int &value)
 #endif
     return ERR_FAILED;
   }
-  byte mask = static_cast<byte>(pow(static_cast<double>(2), inputNr - 1));
+  byte mask = static_cast< byte >(pow(static_cast< double >(2), inputNr - 1));
   if (buffer[1] != 0xFF)
   {
     if ((mask & (int)buffer[1]) > 0)

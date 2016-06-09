@@ -61,8 +61,8 @@ void KatanaKinematics6M90T::DK(coordinates& solution, encoders const& current_en
 
   cx_iter = cx.begin();
   sx_iter = sx.begin();
-  std::transform(angle.begin(), angle.end(), sx_iter, unary_precalc_sin<double>());
-  std::transform(angle.begin(), angle.end(), cx_iter, unary_precalc_cos<double>());
+  std::transform(angle.begin(), angle.end(), sx_iter, unary_precalc_sin< double >());
+  std::transform(angle.begin(), angle.end(), cx_iter, unary_precalc_cos< double >());
 
   // x
   x0 = cx[0] * sx[1];
@@ -264,7 +264,7 @@ void KatanaKinematics6M90T::thetacomp(angles_calc& angle, const position& p_m, c
   const double R11 = cos(phi) * cos(psi) - sin(phi) * cos(theta) * sin(psi);
   const double R21 = sin(phi) * cos(psi) + cos(phi) * cos(theta) * sin(psi);
 
-  std::vector<double> theta16c(2), theta16s(2);
+  std::vector< double > theta16c(2), theta16s(2);
 
   if (std::abs(theta234 + M_PI / 2) < _tolerance)
   {
@@ -510,7 +510,7 @@ void KatanaKinematics6M90T::IK(encoders::iterator solution, coordinates const& p
   angle[7].theta3 = -acos(angle[7].costh3) + M_PI;
   thetacomp(angle[7], p_m, pose);
 
-  for (::std::vector<angles_calc>::iterator iter = angle.begin(); iter != angle.end(); /* do iter forward in body */)
+  for (::std::vector< angles_calc >::iterator iter = angle.begin(); iter != angle.end(); /* do iter forward in body */)
   {
     if (pow2(iter->costh3) <= 1.0)
     {
@@ -528,10 +528,10 @@ void KatanaKinematics6M90T::IK(encoders::iterator solution, coordinates const& p
     throw NoSolutionException();
   }
 
-  ::std::vector<::std::vector<int>> PossibleTargetsInEncoders;
-  for (::std::vector<angles_calc>::iterator i = angle.begin(); i != angle.end(); ++i)
+  ::std::vector<::std::vector< int > > PossibleTargetsInEncoders;
+  for (::std::vector< angles_calc >::iterator i = angle.begin(); i != angle.end(); ++i)
   {
-    ::std::vector<int> solution(6);
+    ::std::vector< int > solution(6);
 
     solution[0] = rad2enc(i->theta1, _parameters[0].angleOffset, _parameters[0].epc, _parameters[0].encOffset,
                           _parameters[0].rotDir);
@@ -548,7 +548,7 @@ void KatanaKinematics6M90T::IK(encoders::iterator solution, coordinates const& p
     PossibleTargetsInEncoders.push_back(solution);
   }
 
-  ::std::vector<::std::vector<int>>::const_iterator sol =
+  ::std::vector<::std::vector< int > >::const_iterator sol =
       KinematicsDefaultEncMinAlgorithm()(PossibleTargetsInEncoders.begin(), PossibleTargetsInEncoders.end(),
                                          current_encoders.begin(), current_encoders.end());
 

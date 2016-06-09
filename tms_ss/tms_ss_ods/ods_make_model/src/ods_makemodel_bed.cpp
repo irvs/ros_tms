@@ -118,15 +118,15 @@ void init_cameraparam(int id)
   return;
 }
 
-void downsampling(pcl::PointCloud<pcl::PointXYZRGB>& cloud, float th)
+void downsampling(pcl::PointCloud< pcl::PointXYZRGB >& cloud, float th)
 {
-  pcl::VoxelGrid<pcl::PointXYZRGB> sor;
+  pcl::VoxelGrid< pcl::PointXYZRGB > sor;
   sor.setInputCloud(cloud.makeShared());
   sor.setLeafSize(th, th, th);
   sor.filter(cloud);
 }
 
-void transformation(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
+void transformation(pcl::PointCloud< pcl::PointXYZRGB >& cloud)
 {
   Eigen::Matrix4f t1(Eigen::Matrix4f::Identity());
 
@@ -152,10 +152,10 @@ void transformation(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
   return;
 }
 
-void filtering(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
+void filtering(pcl::PointCloud< pcl::PointXYZRGB >& cloud)
 {
   // Create the filtering object
-  pcl::PassThrough<pcl::PointXYZRGB> pass;
+  pcl::PassThrough< pcl::PointXYZRGB > pass;
   pass.setInputCloud(cloud.makeShared());
   pass.setFilterFieldName("x");
   pass.setFilterLimits(Bed.x - Bed.width / 2.0 - 0.1, Bed.x + Bed.width / 2.0 + 0.1);
@@ -174,13 +174,13 @@ void filtering(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
   return;
 }
 
-void registration(pcl::PointCloud<pcl::PointXYZRGB>& src_cloud, pcl::PointCloud<pcl::PointXYZRGB>& mem_cloud,
+void registration(pcl::PointCloud< pcl::PointXYZRGB >& src_cloud, pcl::PointCloud< pcl::PointXYZRGB >& mem_cloud,
                   Eigen::Matrix4f& m)
 {
-  pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB> icp;
+  pcl::IterativeClosestPoint< pcl::PointXYZRGB, pcl::PointXYZRGB > icp;
   icp.setInputSource(src_cloud.makeShared());
   icp.setInputTarget(mem_cloud.makeShared());
-  pcl::PointCloud<pcl::PointXYZRGB> Final;
+  pcl::PointCloud< pcl::PointXYZRGB > Final;
   icp.align(Final);
   m = icp.getFinalTransformation();
 
@@ -189,7 +189,7 @@ void registration(pcl::PointCloud<pcl::PointXYZRGB>& src_cloud, pcl::PointCloud<
   return;
 }
 
-void make_voxel(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
+void make_voxel(pcl::PointCloud< pcl::PointXYZRGB >& cloud)
 {
   std::cout << "make_voxel" << std::endl;
 
@@ -233,7 +233,7 @@ void make_voxel(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
   return;
 }
 
-void make_bed(pcl::PointCloud<pcl::PointXYZRGB>& model)
+void make_bed(pcl::PointCloud< pcl::PointXYZRGB >& model)
 {
   std::cout << "make_bed" << std::endl;
 
@@ -264,8 +264,8 @@ void make_bed(pcl::PointCloud<pcl::PointXYZRGB>& model)
 int main()
 {
   //宣言
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr model(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr model(new pcl::PointCloud< pcl::PointXYZRGB >);
 
   pcl::visualization::CloudViewer viewer("Cloud Viewer");
 
@@ -317,8 +317,8 @@ int main()
   for (int j = 1; j < LOOP; j++)
   {
     std::cout << "LOOP : " << j << std::endl;
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr bed(new pcl::PointCloud<pcl::PointXYZRGB>);
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr target(new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::PointCloud< pcl::PointXYZRGB >::Ptr bed(new pcl::PointCloud< pcl::PointXYZRGB >);
+    pcl::PointCloud< pcl::PointXYZRGB >::Ptr target(new pcl::PointCloud< pcl::PointXYZRGB >);
 
     for (int i = 1; i <= 8; i++)
     {
@@ -348,7 +348,7 @@ int main()
           Eigen::Matrix4f m1;
           std::cout << "registration "
                     << " " << i << " -> " << i - 1 << std::endl;
-          pcl::PointCloud<pcl::PointXYZRGB>::Ptr rgs_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+          pcl::PointCloud< pcl::PointXYZRGB >::Ptr rgs_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
           int a = 0;
           while (a < 5)
           {

@@ -201,8 +201,8 @@ void spinWheel(/*double arg_speed, double arg_theta*/)
   val_R = (int)Limit(val_R, (double)SPEED_MAX, (double)-SPEED_MAX);
   ROS_DEBUG("val_L:%2.f   val_R:%2.f", val_L, val_R);
 
-  string cmd_L = boost::lexical_cast<string>(val_L);
-  string cmd_R = boost::lexical_cast<string>(val_R);
+  string cmd_L = boost::lexical_cast< string >(val_L);
+  string cmd_R = boost::lexical_cast< string >(val_R);
 
   string message;
   message = "@SS1," + cmd_L + "@SS2," + cmd_R;
@@ -244,7 +244,7 @@ void pub_tf()
 void pub_odom()
 {
   static ros::NodeHandle nh;
-  static ros::Publisher pub = nh.advertise<nav_msgs::Odometry>("odom", 100);
+  static ros::Publisher pub = nh.advertise< nav_msgs::Odometry >("odom", 100);
   pub.publish(mchn_pose.m_Odom);
 }
 
@@ -273,19 +273,19 @@ int main(int argc, char **argv)
   string s_Kp_, s_Ki_, s_Kd_;
   ros::NodeHandle nh_param("~");
 
-  ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Twist>("cmd_vel", 10, receiveCmdVel);
+  ros::Subscriber cmd_vel_sub = n.subscribe< geometry_msgs::Twist >("cmd_vel", 10, receiveCmdVel);
 
   string tmp_ip;
-  nh_param.param<string>("IP_ADDR", tmp_ip, "192.168.11.99");
-  nh_param.param<int>("spin_Kp", Kp_, 4800);
-  nh_param.param<int>("spin_Ki", Ki_, /*30*/ 100);
-  nh_param.param<int>("spin_Kd", Kd_, 40000);
+  nh_param.param< string >("IP_ADDR", tmp_ip, "192.168.11.99");
+  nh_param.param< int >("spin_Kp", Kp_, 4800);
+  nh_param.param< int >("spin_Ki", Ki_, /*30*/ 100);
+  nh_param.param< int >("spin_Kd", Kd_, 40000);
   // acces like "mimamorukun_controller/spd_Kp"
   client_socket.init(tmp_ip, 54300);
-  s_Kp_ = boost::lexical_cast<string>(Kp_);
-  s_Ki_ = boost::lexical_cast<string>(Ki_);
-  s_Kd_ = boost::lexical_cast<string>(Kd_);
-  nh_param.param<bool>("publish_tf", is_publish_tf, true);
+  s_Kp_ = boost::lexical_cast< string >(Kp_);
+  s_Ki_ = boost::lexical_cast< string >(Ki_);
+  s_Kd_ = boost::lexical_cast< string >(Kd_);
+  nh_param.param< bool >("publish_tf", is_publish_tf, true);
 
   try
   {

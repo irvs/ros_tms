@@ -77,7 +77,7 @@ bool CCplSerialCRC::load_tbl()
 void CCplSerialCRC::defineProtocol(byte _kataddr)
 {
   hdr.size = 3;
-  hdr.data[0] = 1;  // convention
+  hdr.data[0] = 1;         // convention
   hdr.data[1] = _kataddr;  // complete header
 }
 
@@ -92,14 +92,14 @@ void CCplSerialCRC::comm(const byte* pack, byte* buf, byte* size)
 {
   // This method enssamble the packet with the header, data, and CRC.
   // Sends it and receives the answer.
-  memset(send_buf, 0, 256);  // override old values
+  memset(send_buf, 0, 256);                       // override old values
   hdr.data[hdr.size - 1] = cmd[pack[0]].send_sz;  // complete header
   memcpy(send_buf, hdr.data, hdr.size);
   memcpy(send_buf + hdr.size, pack, hdr.data[hdr.size - 1]);
 
   short crc = CRC_CHECKSUM((uint8*)pack, hdr.data[hdr.size - 1]);
   byte bufsz = hdr.size + hdr.data[hdr.size - 1];
-  send_buf[bufsz++] = (byte)(crc >> 8);  // hi-byte
+  send_buf[bufsz++] = (byte)(crc >> 8);    // hi-byte
   send_buf[bufsz++] = (byte)(crc & 0xFF);  // lo-byte
 
   memset(read_buf, 0, 256);  // read through device
@@ -283,6 +283,6 @@ void CCplSerialCRC::recv(byte* read_buf, byte read_sz, byte* size)
       errorString += ")";
     }
     // std::cout << "\"" << errorString << "\"\n";
-    throw FirmwareException(errorString, static_cast<signed char>(errorCode), device, lastCommand);
+    throw FirmwareException(errorString, static_cast< signed char >(errorCode), device, lastCommand);
   }
 }

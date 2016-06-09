@@ -18,7 +18,7 @@ ros::Publisher rps_robot_path_pub;
 ros::ServiceClient commander_to_get_robots_info;
 ros::ServiceClient commander_to_get_movable_furnitures_info;
 
-vector<vector<CollisionMapData>> sub_Map;
+vector< vector< CollisionMapData > > sub_Map;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void set_RPS_MAP(const tms_msg_rp::rps_map_full::ConstPtr& RPS_MAP)
@@ -31,7 +31,7 @@ void set_RPS_MAP(const tms_msg_rp::rps_map_full::ConstPtr& RPS_MAP)
   y_ulimit = RPS_MAP->y_ulimit;
   cell_size = RPS_MAP->cell_size;
 
-  vector<CollisionMapData> temp_map_line;
+  vector< CollisionMapData > temp_map_line;
   CollisionMapData temp_map_d;
 
   for (unsigned int x = 0; x < RPS_MAP->rps_map_x.size(); x++)
@@ -62,7 +62,7 @@ bool start_voronoi_path_planner(tms_msg_rp::rps_voronoi_path_planning::Request& 
 
   double collision_threshold = getRobotCollisionDist(req.robot_id);
 
-  vector<double> start, goal;
+  vector< double > start, goal;
   start.resize(3);
   goal.resize(3);
   start[0] = req.start_pos.x / 1000.0;   //(m)
@@ -82,7 +82,7 @@ bool start_voronoi_path_planner(tms_msg_rp::rps_voronoi_path_planning::Request& 
   if (commander_to_get_movable_furnitures_info.call(srv_get_f_info))
   {
     //~ ROS_INFO("Success target_x = %lf, y = %lf, th = %lf, width = %lf, depth = %lf, height = %lf",
-    //srv_get_f_info.response.furniture_x,srv_get_f_info.response.furniture_y,srv_get_f_info.response.furnitures_theta,srv_get_f_info.response.furnitures_width,srv_get_f_info.response.furnitures_depth,srv_get_f_info.response.furnitures_height);
+    // srv_get_f_info.response.furniture_x,srv_get_f_info.response.furniture_y,srv_get_f_info.response.furnitures_theta,srv_get_f_info.response.furnitures_width,srv_get_f_info.response.furnitures_depth,srv_get_f_info.response.furnitures_height);
   }
   else
   {
@@ -173,7 +173,7 @@ bool start_voronoi_path_planner(tms_msg_rp::rps_voronoi_path_planning::Request& 
     return false;
   }
 
-  vector<vector<double>> voronoi_path, smooth_path, comp_path;
+  vector< vector< double > > voronoi_path, smooth_path, comp_path;
   res.success = calcVoronoiPath(sub_Map, start, goal, voronoi_path, res.message);
   if (!res.success)
   {
@@ -232,10 +232,10 @@ int main(int argc, char** argv)
 
   ros::Subscriber rps_map_sub = n.subscribe("rps_map_data", 1, set_RPS_MAP);
   ros::ServiceServer service_voronoi_path = n.advertiseService("rps_voronoi_path_planning", start_voronoi_path_planner);
-  commander_to_get_robots_info = n.serviceClient<tms_msg_db::tmsdb_get_robots_info>("tmsdb_get_robots_info");
+  commander_to_get_robots_info = n.serviceClient< tms_msg_db::tmsdb_get_robots_info >("tmsdb_get_robots_info");
   commander_to_get_movable_furnitures_info =
-      n.serviceClient<tms_msg_db::tmsdb_get_movable_furnitures_info>("tmsdb_get_movable_furnitures_info");
-  rps_robot_path_pub = n.advertise<tms_msg_rp::rps_route>("rps_robot_path", 1);
+      n.serviceClient< tms_msg_db::tmsdb_get_movable_furnitures_info >("tmsdb_get_movable_furnitures_info");
+  rps_robot_path_pub = n.advertise< tms_msg_rp::rps_route >("rps_robot_path", 1);
 
   ros::Rate loop_rate(1);
 

@@ -6,9 +6,9 @@
 #define MAX_TRACKING_OBJECT 20
 
 //#define MAX_LRF_RANGE 55.0 // LRFの最大計測範囲
-#define MIN_DIFF_DIST 0.02  // 0.02  // 前景とみなす背景からの距離（Gaussianでは使わない）
+#define MIN_DIFF_DIST 0.02          // 0.02  // 前景とみなす背景からの距離（Gaussianでは使わない）
 #define MIN_OBJ_PROB 0.00000000001  // 0.005  // 前景とみなす確率（Gaussianで使う）
-#define N_RING 1000  // Gaussianの計算に使うデータ数
+#define N_RING 1000                 // Gaussianの計算に使うデータ数
 //#define	TARGET_AREA  30.0  // ターゲットの存在する範囲 レーザ中心に +-30 m
 //#define N_OF_PARTICLES 100 // パーティクル数
 //#define M_SIGMA 100.0      // 尤度計算用の分散

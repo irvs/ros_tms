@@ -33,11 +33,11 @@ private:
   Eigen::Vector3f world_points[CORRESPOND_POINTS];
   Eigen::Vector3f picked_points[CORRESPOND_POINTS];
 
-  std::vector<Eigen::Vector3f *> points_on_plane;
-  std::vector<Eigen::Vector3f *> other_points;
-  std::vector<Eigen::Vector3f *> picked_points_around;
+  std::vector< Eigen::Vector3f * > points_on_plane;
+  std::vector< Eigen::Vector3f * > other_points;
+  std::vector< Eigen::Vector3f * > picked_points_around;
 
-  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB>> cloud{new pcl::PointCloud<pcl::PointXYZRGB>()};
+  boost::shared_ptr< pcl::PointCloud< pcl::PointXYZRGB > > cloud{new pcl::PointCloud< pcl::PointXYZRGB >()};
   pcl::visualization::CloudViewer *viewer;
 };
 

@@ -18,31 +18,31 @@
 ros::Subscriber rosSub;
 ros::Publisher rosPubSmartpal, rosPubRoomba, rosPubWagon, rosPubChair, rosPubUnknownClass;
 
-vector<float> fRobotAngleArray;
+vector< float > fRobotAngleArray;
 
 float fWagonCenterXb2 = 0.0;
 float fWagonCenterYb2 = 0.0;
 float fWagonCenterXb1 = 0.0;
 float fWagonCenterYb1 = 0.0;
 
-vector<float> vfWagonBeforeVirtualPointX;
-vector<float> vfWagonBeforeVirtualPointY;
+vector< float > vfWagonBeforeVirtualPointX;
+vector< float > vfWagonBeforeVirtualPointY;
 
 float fChairCenterXb1 = 0.0;
 float fChairCenterYb1 = 0.0;
 
-vector<float> vfChairBeforeVirtualPointX;
-vector<float> vfChairBeforeVirtualPointY;
+vector< float > vfChairBeforeVirtualPointX;
+vector< float > vfChairBeforeVirtualPointY;
 
 POINT stSmartpalCenter;
 POINT stRoombaCenter;
 POINT stWagonCenter;
 POINT stChairCenter;
 
-vector<tms_msg_ss::fss_class_data> vstBefore_fss_unknown_cluster_data;
+vector< tms_msg_ss::fss_class_data > vstBefore_fss_unknown_cluster_data;
 
 bool bDebugMode = false;
-vector<float> x, y, t;
+vector< float > x, y, t;
 
 //------------------------------------------------------------------------------
 float get_length(float x1, float y1, float x2, float y2)
@@ -57,14 +57,14 @@ bool smartpalTracking(CLASS_DATA stClassData)
   //--------------------------------------------------------------------------
   tms_msg_ss::fss_object_data fss_smartpal_data;
 
-  vector<float> vfPointX;
-  vector<float> vfPointY;
-  vector<uint32_t> viIntensity;
+  vector< float > vfPointX;
+  vector< float > vfPointY;
+  vector< uint32_t > viIntensity;
 
-  vector<BOUNDARY_POINT> vstBoundaryPonit;
+  vector< BOUNDARY_POINT > vstBoundaryPonit;
 
-  vector<float> vfSortedVirtualPointX;
-  vector<float> vfSortedVirtualPointY;
+  vector< float > vfSortedVirtualPointX;
+  vector< float > vfSortedVirtualPointY;
 
   float fIntensityThreshold = 8000;  // Threshold of Intensity
   float fAcuteAngleThreshold = 65;   // Threshold of AcuteAngle  (degree)
@@ -365,14 +365,14 @@ bool roombaTracking(CLASS_DATA stClassData)
   //--------------------------------------------------------------------------
   tms_msg_ss::fss_object_data fss_roomba_data;
 
-  vector<float> vfPointX;
-  vector<float> vfPointY;
-  vector<uint32_t> viIntensity;
+  vector< float > vfPointX;
+  vector< float > vfPointY;
+  vector< uint32_t > viIntensity;
 
-  vector<BOUNDARY_POINT> vstBoundaryPonit;
+  vector< BOUNDARY_POINT > vstBoundaryPonit;
 
-  vector<float> vfSortedVirtualPointX;
-  vector<float> vfSortedVirtualPointY;
+  vector< float > vfSortedVirtualPointX;
+  vector< float > vfSortedVirtualPointY;
 
   float fIntensityThreshold = 8000;  // Threshold of Intensity
   float fAcuteAngleThreshold = 65;   // Threshold of AcuteAngle  (degree)
@@ -757,16 +757,16 @@ bool wagonTracking(CLASS_DATA stClassData)
   //--------------------------------------------------------------------------
   tms_msg_ss::fss_object_data fss_wagon_data;
 
-  vector<float> vfClusterCenterX;
-  vector<float> vfClusterCenterY;
-  vector<float> vfClusterSize;
-  vector<float> vfAvgIntrinsicIntensity;
-  vector<tms_msg_ss::fss_tf_datas> vstDatas;
+  vector< float > vfClusterCenterX;
+  vector< float > vfClusterCenterY;
+  vector< float > vfClusterSize;
+  vector< float > vfAvgIntrinsicIntensity;
+  vector< tms_msg_ss::fss_tf_datas > vstDatas;
 
-  vector<float> vfVirtualPointX;
-  vector<float> vfVirtualPointY;
-  vector<float> vfSortedVirtualPointX;
-  vector<float> vfSortedVirtualPointY;
+  vector< float > vfVirtualPointX;
+  vector< float > vfVirtualPointY;
+  vector< float > vfSortedVirtualPointX;
+  vector< float > vfSortedVirtualPointY;
 
   float fDirection = 0.0;
   float fObjectCenterX = 0.0;
@@ -1267,16 +1267,16 @@ bool chairTracking(CLASS_DATA stClassData)
   //--------------------------------------------------------------------------
   tms_msg_ss::fss_object_data fss_chair_data;
 
-  vector<float> vfClusterCenterX;
-  vector<float> vfClusterCenterY;
-  vector<float> vfClusterSize;
-  vector<float> vfAvgIntrinsicIntensity;
-  vector<tms_msg_ss::fss_tf_datas> vstDatas;
+  vector< float > vfClusterCenterX;
+  vector< float > vfClusterCenterY;
+  vector< float > vfClusterSize;
+  vector< float > vfAvgIntrinsicIntensity;
+  vector< tms_msg_ss::fss_tf_datas > vstDatas;
 
-  vector<float> vfVirtualPointX;
-  vector<float> vfVirtualPointY;
-  vector<float> vfSortedVirtualPointX;
-  vector<float> vfSortedVirtualPointY;
+  vector< float > vfVirtualPointX;
+  vector< float > vfVirtualPointY;
+  vector< float > vfSortedVirtualPointX;
+  vector< float > vfSortedVirtualPointY;
 
   uint32_t iGroupsCount = 0;
 
@@ -2193,24 +2193,24 @@ void trackCallback(const tms_msg_ss::fss_class_data::ConstPtr &msg)
 
   //--------------------------------------------------------------------------
   // occlusion process
-  vector<uint32_t> viCurrentScanID;
-  vector<float> vfCurrentDistance;
-  vector<float> vfCurrentX;
-  vector<float> vfCurrentY;
-  vector<uint32_t> viBeforeScanID;
-  vector<float> vfBeforeDistance;
-  vector<float> vfBeforeX;
-  vector<float> vfBeforeY;
-  vector<uint32_t> viOcclusionScanID;
-  vector<float> vfOcclusionDistance;
-  vector<float> vfOcclusionX;
-  vector<float> vfOcclusionY;
+  vector< uint32_t > viCurrentScanID;
+  vector< float > vfCurrentDistance;
+  vector< float > vfCurrentX;
+  vector< float > vfCurrentY;
+  vector< uint32_t > viBeforeScanID;
+  vector< float > vfBeforeDistance;
+  vector< float > vfBeforeX;
+  vector< float > vfBeforeY;
+  vector< uint32_t > viOcclusionScanID;
+  vector< float > vfOcclusionDistance;
+  vector< float > vfOcclusionX;
+  vector< float > vfOcclusionY;
   POINT_GROUP stOcclusionGroupTemp;
-  vector<POINT_GROUP> stOcclusionGroup;
+  vector< POINT_GROUP > stOcclusionGroup;
   POINT_GROUP stCurrentGroupTemp;
-  vector<POINT_GROUP> stCurrentGroup;
+  vector< POINT_GROUP > stCurrentGroup;
   POINT_GROUP stRestorationGroupTemp;
-  vector<POINT_GROUP> stRestorationGroup;
+  vector< POINT_GROUP > stRestorationGroup;
 
   CLASS_DATA stReclusterDataTemp;
   CLASS_DATA stReclusterData;
@@ -2394,7 +2394,7 @@ void trackCallback(const tms_msg_ss::fss_class_data::ConstPtr &msg)
     }
     printf("stCurrentGroup = %d\n", stCurrentGroup.size());
 
-    vector<POINT_GROUP> stStaticCurrentGroup;
+    vector< POINT_GROUP > stStaticCurrentGroup;
 
     stStaticCurrentGroup = stCurrentGroup;
 
@@ -2477,17 +2477,17 @@ void trackCallback(const tms_msg_ss::fss_class_data::ConstPtr &msg)
     // re-clusterring
     tms_msg_ss::fss_tf_datas vstDatas;
 
-    vector<uint32_t> vstScanID;
-    vector<uint8_t> vstReflect;
-    vector<uint8_t> vstIsForwardPoint;
-    vector<float> vstDistance;
-    vector<float> vstIntensity;
-    vector<float> vstIntrinsicIntensity;
-    vector<float> vstAcuteAngle;
-    vector<float> vstX1;
-    vector<float> vstY1;
-    vector<float> vstX2;
-    vector<float> vstY2;
+    vector< uint32_t > vstScanID;
+    vector< uint8_t > vstReflect;
+    vector< uint8_t > vstIsForwardPoint;
+    vector< float > vstDistance;
+    vector< float > vstIntensity;
+    vector< float > vstIntrinsicIntensity;
+    vector< float > vstAcuteAngle;
+    vector< float > vstX1;
+    vector< float > vstY1;
+    vector< float > vstX2;
+    vector< float > vstY2;
 
     uint32_t iGroupID = 201;
     float fCenterX = 0.0;
@@ -2859,12 +2859,12 @@ int main(int argc, char **argv)
 
   rosSub = nh.subscribe("fss_class_data", 10, trackCallback);
 
-  rosPubSmartpal = nh.advertise<tms_msg_ss::fss_object_data>("fss_smartpal_data", 10);
-  rosPubRoomba = nh.advertise<tms_msg_ss::fss_object_data>("fss_roomba_data", 10);
-  rosPubWagon = nh.advertise<tms_msg_ss::fss_object_data>("fss_wagon_data", 10);
-  rosPubChair = nh.advertise<tms_msg_ss::fss_object_data>("fss_chair_data", 10);
+  rosPubSmartpal = nh.advertise< tms_msg_ss::fss_object_data >("fss_smartpal_data", 10);
+  rosPubRoomba = nh.advertise< tms_msg_ss::fss_object_data >("fss_roomba_data", 10);
+  rosPubWagon = nh.advertise< tms_msg_ss::fss_object_data >("fss_wagon_data", 10);
+  rosPubChair = nh.advertise< tms_msg_ss::fss_object_data >("fss_chair_data", 10);
 
-  rosPubUnknownClass = nh.advertise<tms_msg_ss::fss_class_data>("fss_unknown_class_data", 10);
+  rosPubUnknownClass = nh.advertise< tms_msg_ss::fss_class_data >("fss_unknown_class_data", 10);
 
   //--------------------------------------------------------------------------
   // ros spin

@@ -125,7 +125,7 @@ void Cluster::update(const tms_msg_ss::fss_class_data::ConstPtr& msg, int index)
   isUpdate = true;
 }
 
-void Cluster::copy(std::list<Cluster>::iterator it, int startIndex, int size, bool isFull)
+void Cluster::copy(std::list< Cluster >::iterator it, int startIndex, int size, bool isFull)
 {
   if (isFull)
   {

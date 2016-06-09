@@ -120,8 +120,8 @@ struct null
 class value
 {
 public:
-  typedef std::vector<value> array;
-  typedef std::map<std::string, value> object;
+  typedef std::vector< value > array;
+  typedef std::map< std::string, value > object;
   union _storage
   {
     bool boolean_;
@@ -155,11 +155,11 @@ public:
   value(const value& x);
   value& operator=(const value& x);
   void swap(value& x);
-  template <typename T>
+  template < typename T >
   bool is() const;
-  template <typename T>
+  template < typename T >
   const T& get() const;
-  template <typename T>
+  template < typename T >
   T& get();
   bool evaluate_as_boolean() const;
   const value& get(size_t idx) const;
@@ -170,16 +170,16 @@ public:
   bool contains(size_t idx) const;
   bool contains(const std::string& key) const;
   std::string to_str() const;
-  template <typename Iter>
+  template < typename Iter >
   void serialize(Iter os, bool prettify = false) const;
   std::string serialize(bool prettify = false) const;
 
 private:
-  template <typename T>
+  template < typename T >
   value(const T*);  // intentionally defined to block implicit conversion of pointer to bool
-  template <typename Iter>
+  template < typename Iter >
   static void _indent(Iter os, int indent);
-  template <typename Iter>
+  template < typename Iter >
   void _serialize(Iter os, int indent) const;
   std::string _serialize(int indent) const;
 };
@@ -320,7 +320,7 @@ inline void value::swap(value& x)
 
 #define IS(ctype, jtype)                                                                                               \
   template <>                                                                                                          \
-  inline bool value::is<ctype>() const                                                                                 \
+  inline bool value::is< ctype >() const                                                                               \
   {                                                                                                                    \
     return type_ == jtype##_type;                                                                                      \
   }
@@ -334,7 +334,7 @@ IS(array, array)
 IS(object, object)
 #undef IS
 template <>
-inline bool value::is<double>() const
+inline bool value::is< double >() const
 {
   return type_ == number_type
 #ifdef PICOJSON_USE_INT64
@@ -345,15 +345,15 @@ inline bool value::is<double>() const
 
 #define GET(ctype, var)                                                                                                \
   template <>                                                                                                          \
-  inline const ctype& value::get<ctype>() const                                                                        \
+  inline const ctype& value::get< ctype >() const                                                                      \
   {                                                                                                                    \
-    PICOJSON_ASSERT("type mismatch! call is<type>() before get<type>()" && is<ctype>());                               \
+    PICOJSON_ASSERT("type mismatch! call is<type>() before get<type>()" && is< ctype >());                             \
     return var;                                                                                                        \
   }                                                                                                                    \
   template <>                                                                                                          \
-  inline ctype& value::get<ctype>()                                                                                    \
+  inline ctype& value::get< ctype >()                                                                                  \
   {                                                                                                                    \
-    PICOJSON_ASSERT("type mismatch! call is<type>() before get<type>()" && is<ctype>());                               \
+    PICOJSON_ASSERT("type mismatch! call is<type>() before get<type>()" && is< ctype >());                             \
     return var;                                                                                                        \
   }
 GET(bool, u_.boolean_)
@@ -362,7 +362,7 @@ GET(array, *u_.array_)
 GET(object, *u_.object_)
 #ifdef PICOJSON_USE_INT64
 GET(double, (type_ == int64_type &&
-                 (const_cast<value*>(this)->type_ = number_type, const_cast<value*>(this)->u_.number_ = u_.int64_),
+                 (const_cast< value* >(this)->type_ = number_type, const_cast< value* >(this)->u_.number_ = u_.int64_),
              u_.number_))
 GET(int64_t, u_.int64_)
 #else
@@ -394,21 +394,21 @@ inline bool value::evaluate_as_boolean() const
 inline const value& value::get(size_t idx) const
 {
   static value s_null;
-  PICOJSON_ASSERT(is<array>());
+  PICOJSON_ASSERT(is< array >());
   return idx < u_.array_->size() ? (*u_.array_)[idx] : s_null;
 }
 
 inline value& value::get(size_t idx)
 {
   static value s_null;
-  PICOJSON_ASSERT(is<array>());
+  PICOJSON_ASSERT(is< array >());
   return idx < u_.array_->size() ? (*u_.array_)[idx] : s_null;
 }
 
 inline const value& value::get(const std::string& key) const
 {
   static value s_null;
-  PICOJSON_ASSERT(is<object>());
+  PICOJSON_ASSERT(is< object >());
   object::const_iterator i = u_.object_->find(key);
   return i != u_.object_->end() ? i->second : s_null;
 }
@@ -416,20 +416,20 @@ inline const value& value::get(const std::string& key) const
 inline value& value::get(const std::string& key)
 {
   static value s_null;
-  PICOJSON_ASSERT(is<object>());
+  PICOJSON_ASSERT(is< object >());
   object::iterator i = u_.object_->find(key);
   return i != u_.object_->end() ? i->second : s_null;
 }
 
 inline bool value::contains(size_t idx) const
 {
-  PICOJSON_ASSERT(is<array>());
+  PICOJSON_ASSERT(is< array >());
   return idx < u_.array_->size();
 }
 
 inline bool value::contains(const std::string& key) const
 {
-  PICOJSON_ASSERT(is<object>());
+  PICOJSON_ASSERT(is< object >());
   object::const_iterator i = u_.object_->find(key);
   return i != u_.object_->end();
 }
@@ -487,13 +487,13 @@ inline std::string value::to_str() const
   return std::string();
 }
 
-template <typename Iter>
+template < typename Iter >
 void copy(const std::string& s, Iter oi)
 {
   std::copy(s.begin(), s.end(), oi);
 }
 
-template <typename Iter>
+template < typename Iter >
 void serialize_str(const std::string& s, Iter oi)
 {
   *oi++ = '"';
@@ -515,7 +515,7 @@ void serialize_str(const std::string& s, Iter oi)
       MAP('\t', "\\t");
 #undef MAP
       default:
-        if (static_cast<unsigned char>(*i) < 0x20 || *i == 0x7f)
+        if (static_cast< unsigned char >(*i) < 0x20 || *i == 0x7f)
         {
           char buf[7];
           SNPRINTF(buf, sizeof(buf), "\\u%04x", *i & 0xff);
@@ -531,7 +531,7 @@ void serialize_str(const std::string& s, Iter oi)
   *oi++ = '"';
 }
 
-template <typename Iter>
+template < typename Iter >
 void value::serialize(Iter oi, bool prettify) const
 {
   return _serialize(oi, prettify ? 0 : -1);
@@ -542,7 +542,7 @@ inline std::string value::serialize(bool prettify) const
   return _serialize(prettify ? 0 : -1);
 }
 
-template <typename Iter>
+template < typename Iter >
 void value::_indent(Iter oi, int indent)
 {
   *oi++ = '\n';
@@ -552,7 +552,7 @@ void value::_indent(Iter oi, int indent)
   }
 }
 
-template <typename Iter>
+template < typename Iter >
 void value::_serialize(Iter oi, int indent) const
 {
   switch (type_)
@@ -643,7 +643,7 @@ inline std::string value::_serialize(int indent) const
   return s;
 }
 
-template <typename Iter>
+template < typename Iter >
 class input
 {
 protected:
@@ -728,8 +728,8 @@ public:
   }
 };
 
-template <typename Iter>
-inline int _parse_quadhex(input<Iter>& in)
+template < typename Iter >
+inline int _parse_quadhex(input< Iter >& in)
 {
   int uni_ch = 0, hex;
   for (int i = 0; i < 4; i++)
@@ -760,8 +760,8 @@ inline int _parse_quadhex(input<Iter>& in)
   return uni_ch;
 }
 
-template <typename String, typename Iter>
-inline bool _parse_codepoint(String& out, input<Iter>& in)
+template < typename String, typename Iter >
+inline bool _parse_codepoint(String& out, input< Iter >& in)
 {
   int uni_ch;
   if ((uni_ch = _parse_quadhex(in)) == -1)
@@ -817,8 +817,8 @@ inline bool _parse_codepoint(String& out, input<Iter>& in)
   return true;
 }
 
-template <typename String, typename Iter>
-inline bool _parse_string(String& out, input<Iter>& in)
+template < typename String, typename Iter >
+inline bool _parse_string(String& out, input< Iter >& in)
 {
   while (1)
   {
@@ -871,8 +871,8 @@ inline bool _parse_string(String& out, input<Iter>& in)
   return false;
 }
 
-template <typename Context, typename Iter>
-inline bool _parse_array(Context& ctx, input<Iter>& in)
+template < typename Context, typename Iter >
+inline bool _parse_array(Context& ctx, input< Iter >& in)
 {
   if (!ctx.parse_array_start())
   {
@@ -894,8 +894,8 @@ inline bool _parse_array(Context& ctx, input<Iter>& in)
   return in.expect(']') && ctx.parse_array_stop(idx);
 }
 
-template <typename Context, typename Iter>
-inline bool _parse_object(Context& ctx, input<Iter>& in)
+template < typename Context, typename Iter >
+inline bool _parse_object(Context& ctx, input< Iter >& in)
 {
   if (!ctx.parse_object_start())
   {
@@ -920,8 +920,8 @@ inline bool _parse_object(Context& ctx, input<Iter>& in)
   return in.expect('}');
 }
 
-template <typename Iter>
-inline std::string _parse_number(input<Iter>& in)
+template < typename Iter >
+inline std::string _parse_number(input< Iter >& in)
 {
   std::string num_str;
   while (1)
@@ -948,8 +948,8 @@ inline std::string _parse_number(input<Iter>& in)
   return num_str;
 }
 
-template <typename Context, typename Iter>
-inline bool _parse(Context& ctx, input<Iter>& in)
+template < typename Context, typename Iter >
+inline bool _parse(Context& ctx, input< Iter >& in)
 {
   in.skip_ws();
   int ch = in.getc();
@@ -990,8 +990,8 @@ inline bool _parse(Context& ctx, input<Iter>& in)
         {
           errno = 0;
           intmax_t ival = strtoimax(num_str.c_str(), &endp, 10);
-          if (errno == 0 && std::numeric_limits<int64_t>::min() <= ival &&
-              ival <= std::numeric_limits<int64_t>::max() && endp == num_str.c_str() + num_str.size())
+          if (errno == 0 && std::numeric_limits< int64_t >::min() <= ival &&
+              ival <= std::numeric_limits< int64_t >::max() && endp == num_str.c_str() + num_str.size())
           {
             ctx.set_int64(ival);
             return true;
@@ -1033,8 +1033,8 @@ public:
   {
     return false;
   }
-  template <typename Iter>
-  bool parse_string(input<Iter>&)
+  template < typename Iter >
+  bool parse_string(input< Iter >&)
   {
     return false;
   }
@@ -1042,8 +1042,8 @@ public:
   {
     return false;
   }
-  template <typename Iter>
-  bool parse_array_item(input<Iter>&, size_t)
+  template < typename Iter >
+  bool parse_array_item(input< Iter >&, size_t)
   {
     return false;
   }
@@ -1055,8 +1055,8 @@ public:
   {
     return false;
   }
-  template <typename Iter>
-  bool parse_object_item(input<Iter>&, const std::string&)
+  template < typename Iter >
+  bool parse_object_item(input< Iter >&, const std::string&)
   {
     return false;
   }
@@ -1093,21 +1093,21 @@ public:
     *out_ = value(f);
     return true;
   }
-  template <typename Iter>
-  bool parse_string(input<Iter>& in)
+  template < typename Iter >
+  bool parse_string(input< Iter >& in)
   {
     *out_ = value(string_type, false);
-    return _parse_string(out_->get<std::string>(), in);
+    return _parse_string(out_->get< std::string >(), in);
   }
   bool parse_array_start()
   {
     *out_ = value(array_type, false);
     return true;
   }
-  template <typename Iter>
-  bool parse_array_item(input<Iter>& in, size_t)
+  template < typename Iter >
+  bool parse_array_item(input< Iter >& in, size_t)
   {
-    array& a = out_->get<array>();
+    array& a = out_->get< array >();
     a.push_back(value());
     default_parse_context ctx(&a.back());
     return _parse(ctx, in);
@@ -1121,10 +1121,10 @@ public:
     *out_ = value(object_type, false);
     return true;
   }
-  template <typename Iter>
-  bool parse_object_item(input<Iter>& in, const std::string& key)
+  template < typename Iter >
+  bool parse_object_item(input< Iter >& in, const std::string& key)
   {
-    object& o = out_->get<object>();
+    object& o = out_->get< object >();
     default_parse_context ctx(&o[key]);
     return _parse(ctx, in);
   }
@@ -1166,8 +1166,8 @@ public:
   {
     return true;
   }
-  template <typename Iter>
-  bool parse_string(input<Iter>& in)
+  template < typename Iter >
+  bool parse_string(input< Iter >& in)
   {
     dummy_str s;
     return _parse_string(s, in);
@@ -1176,8 +1176,8 @@ public:
   {
     return true;
   }
-  template <typename Iter>
-  bool parse_array_item(input<Iter>& in, size_t)
+  template < typename Iter >
+  bool parse_array_item(input< Iter >& in, size_t)
   {
     return _parse(*this, in);
   }
@@ -1189,8 +1189,8 @@ public:
   {
     return true;
   }
-  template <typename Iter>
-  bool parse_object_item(input<Iter>& in, const std::string&)
+  template < typename Iter >
+  bool parse_object_item(input< Iter >& in, const std::string&)
   {
     return _parse(*this, in);
   }
@@ -1201,7 +1201,7 @@ private:
 };
 
 // obsolete, use the version below
-template <typename Iter>
+template < typename Iter >
 inline std::string parse(value& out, Iter& pos, const Iter& last)
 {
   std::string err;
@@ -1209,10 +1209,10 @@ inline std::string parse(value& out, Iter& pos, const Iter& last)
   return err;
 }
 
-template <typename Context, typename Iter>
+template < typename Context, typename Iter >
 inline Iter _parse(Context& ctx, const Iter& first, const Iter& last, std::string* err)
 {
-  input<Iter> in(first, last);
+  input< Iter > in(first, last);
   if (!_parse(ctx, in) && err != NULL)
   {
     char buf[64];
@@ -1234,7 +1234,7 @@ inline Iter _parse(Context& ctx, const Iter& first, const Iter& last, std::strin
   return in.cur();
 }
 
-template <typename Iter>
+template < typename Iter >
 inline Iter parse(value& out, const Iter& first, const Iter& last, std::string* err)
 {
   default_parse_context ctx(&out);
@@ -1251,35 +1251,35 @@ inline std::string parse(value& out, const std::string& s)
 inline std::string parse(value& out, std::istream& is)
 {
   std::string err;
-  parse(out, std::istreambuf_iterator<char>(is.rdbuf()), std::istreambuf_iterator<char>(), &err);
+  parse(out, std::istreambuf_iterator< char >(is.rdbuf()), std::istreambuf_iterator< char >(), &err);
   return err;
 }
 
-template <typename T>
+template < typename T >
 struct last_error_t
 {
   static std::string s;
 };
-template <typename T>
-std::string last_error_t<T>::s;
+template < typename T >
+std::string last_error_t< T >::s;
 
 inline void set_last_error(const std::string& s)
 {
-  last_error_t<bool>::s = s;
+  last_error_t< bool >::s = s;
 }
 
 inline const std::string& get_last_error()
 {
-  return last_error_t<bool>::s;
+  return last_error_t< bool >::s;
 }
 
 inline bool operator==(const value& x, const value& y)
 {
-  if (x.is<null>())
-    return y.is<null>();
+  if (x.is< null >())
+    return y.is< null >();
 #define PICOJSON_CMP(type)                                                                                             \
-  if (x.is<type>())                                                                                                    \
-  return y.is<type>() && x.get<type>() == y.get<type>()
+  if (x.is< type >())                                                                                                  \
+  return y.is< type >() && x.get< type >() == y.get< type >()
   PICOJSON_CMP(bool);
   PICOJSON_CMP(double);
   PICOJSON_CMP(std::string);
@@ -1322,7 +1322,7 @@ inline std::istream& operator>>(std::istream& is, picojson::value& x)
 
 inline std::ostream& operator<<(std::ostream& os, const picojson::value& x)
 {
-  x.serialize(std::ostream_iterator<char>(os));
+  x.serialize(std::ostream_iterator< char >(os));
   return os;
 }
 #ifdef _MSC_VER

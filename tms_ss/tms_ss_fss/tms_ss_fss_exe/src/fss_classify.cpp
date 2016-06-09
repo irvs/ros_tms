@@ -47,17 +47,17 @@ void lrfCallback(const tms_msg_ss::fss_cluster_data::ConstPtr &msg)
   tms_msg_ss::fss_cluster_data fss_class_data;
   tms_msg_ss::fss_tf_datas lrf_data;
 
-  vector<uint32_t> vstScanID;
-  vector<uint8_t> vstReflect;
-  vector<uint8_t> vstIsForwardPoint;
-  vector<float> vstDistance;
-  vector<float> vstIntensity;
-  vector<float> fIntrinsicIntensity;
-  vector<float> vstAcuteAngle;
-  vector<float> vstX1;
-  vector<float> vstY1;
-  vector<float> vstX2;
-  vector<float> vstY2;
+  vector< uint32_t > vstScanID;
+  vector< uint8_t > vstReflect;
+  vector< uint8_t > vstIsForwardPoint;
+  vector< float > vstDistance;
+  vector< float > vstIntensity;
+  vector< float > fIntrinsicIntensity;
+  vector< float > vstAcuteAngle;
+  vector< float > vstX1;
+  vector< float > vstY1;
+  vector< float > vstX2;
+  vector< float > vstY2;
 
   bool iLength = lrf_cluster_before.iID.empty();
 
@@ -173,7 +173,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "fss_classify");
   ros::NodeHandle nh;
   rosSub = nh.subscribe("fss_cluster_data", 10, lrfCallback);
-  rosPub = nh.advertise<tms_msg_ss::fss_class_data>("fss_class_data", 10);
+  rosPub = nh.advertise< tms_msg_ss::fss_class_data >("fss_class_data", 10);
 
   //--------------------------------------------------------------------------
   // ros spin

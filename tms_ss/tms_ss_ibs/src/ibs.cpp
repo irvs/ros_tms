@@ -91,7 +91,7 @@ std::string PORT_TR, PORT_LC0;
 #define NONE 0
 #define EXIST 1
 
-#define vec_str std::vector<std::string>
+#define vec_str std::vector< std::string >
 
 #define DEBUG_IBS 0
 #if 1 == DEBUG_IBS
@@ -201,7 +201,7 @@ public:
   unsigned char mAntenna;
   int mStagePos[3];
   std::string mName;
-  std::vector<CTagOBJ> cTagObj;
+  std::vector< CTagOBJ > cTagObj;
 
   bool Setup();
   void SetSensorPos(int sensor_num, float x[], float y[]);
@@ -897,7 +897,7 @@ int CIntelCab::UpdateObj(int No, CTagOBJ *cInOut)
 //------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
-  std::map<std::string, int32_t> rfidValue;
+  std::map< std::string, int32_t > rfidValue;
   rfidValue["E00401004E17F97A"] = 7001;
   rfidValue["E00401004E180E50"] = 7002;
   rfidValue["E00401004E180E58"] = 7003;
@@ -935,11 +935,11 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "ics", ros::init_options::AnonymousName);
 
   ros::NodeHandle n;
-  ros::Publisher ics_pub = n.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
+  ros::Publisher ics_pub = n.advertise< tms_msg_db::TmsdbStamped >("tms_db_data", 10);
 
   ros::NodeHandle nh_param("~");
-  nh_param.param<std::string>("PORT_TR", PORT_TR, "/dev/ttyUSB0");
-  nh_param.param<std::string>("PORT_LC0", PORT_LC0, "/dev/ttyACM0");
+  nh_param.param< std::string >("PORT_TR", PORT_TR, "/dev/ttyUSB0");
+  nh_param.param< std::string >("PORT_LC0", PORT_LC0, "/dev/ttyACM0");
   std::cout << ("sudo -S chmod a+rw " + PORT_TR + " " + PORT_LC0).c_str();
   system(("sudo -S chmod a+rw " + PORT_TR + " " + PORT_LC0).c_str());
   if (!nh_param.getParam("idSensor", idSensor))
@@ -994,7 +994,7 @@ int main(int argc, char **argv)
     icsmsg.tmsdb.clear();
     for (int i = 0; i < MAX_OBJECT_NUM; i++)
     {
-      usleep(1000);  // 1ms
+      usleep(1000);                                         // 1ms
       now = ros::Time::now() + ros::Duration(9 * 60 * 60);  // GMT +9
       tmpdata.time = boost::posix_time::to_iso_extended_string(now.toBoost());
       tmpdata.id = i + 7001;  //物品IDは 7001 から
@@ -1046,7 +1046,7 @@ int main(int argc, char **argv)
         {
           cObj = cIntelCab.cStage[i].cTagObj[j];
           vi = rfidValue[cObj.mUID] - 7001;
-          usleep(1000);  // 1ms
+          usleep(1000);                                         // 1ms
           now = ros::Time::now() + ros::Duration(9 * 60 * 60);  // GMT +9
           icsmsg.tmsdb[vi].time = boost::posix_time::to_iso_extended_string(now.toBoost());
           icsmsg.tmsdb[vi].id = rfidValue[cObj.mUID];

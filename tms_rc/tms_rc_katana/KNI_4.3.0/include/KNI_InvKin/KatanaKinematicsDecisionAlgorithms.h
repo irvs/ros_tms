@@ -28,9 +28,9 @@ namespace KNI
 {
 struct DLLDIR_IK KinematicsDefaultEncMinAlgorithm
 {
-  typedef std::vector<int> encoders;
+  typedef std::vector< int > encoders;
   typedef encoders::const_iterator c_iter;
-  typedef std::vector<encoders>::const_iterator t_iter;
+  typedef std::vector< encoders >::const_iterator t_iter;
 
   t_iter operator()(t_iter targetEnc_begin, t_iter targetEnc_end, c_iter currentEnc_begin, c_iter currentEnc_end);
 };

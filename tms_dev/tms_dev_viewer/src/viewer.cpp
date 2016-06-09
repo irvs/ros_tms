@@ -236,7 +236,7 @@ Viewer::Viewer(QNode* node, QWidget* parent) : QWidget(parent), qnode(node)
   rps_MAP_subscriber = nh.subscribe("rps_map_data", 10, &Viewer::RPS_MAPCallback, this);
 
   rosclientTmsdbRobotTrajectoryData =
-      nh.serviceClient<tms_msg_db::tmsdb_robot_trajectory_data>("tmsdb_robot_trajectory_data");
+      nh.serviceClient< tms_msg_db::tmsdb_robot_trajectory_data >("tmsdb_robot_trajectory_data");
 
   setMouseTracking(true);
 

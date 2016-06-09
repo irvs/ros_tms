@@ -75,7 +75,7 @@ public:
   @param T : class which will be instanciated to serve these requests
   @param path : requests starting with this path will be served using this handler
   */
-  template <typename T>
+  template < typename T >
   void addHandler(const char* path)  // Template decl in header
   {
     m_lpHandlers[path] = &T::inst;
@@ -94,7 +94,7 @@ private:
   void onTCPSocketEvent(TCPSocketEvent e);
 
   TCPSocket* m_pTCPSocket;
-  map<string, HTTPRequestHandler* (*)(const char*, const char*, TCPSocket*), handlersComp> m_lpHandlers;
+  map< string, HTTPRequestHandler* (*)(const char*, const char*, TCPSocket*), handlersComp > m_lpHandlers;
 };
 
 // Including handlers here for more convenience

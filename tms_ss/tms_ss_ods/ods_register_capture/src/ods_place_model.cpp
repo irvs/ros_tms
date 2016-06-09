@@ -15,14 +15,14 @@ int main(int argc, char **argv)
   //**************************
   // initialize
   //**************************
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr model1(new pcl::PointCloud<pcl::PointXYZRGB>);  // table1
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr model2(new pcl::PointCloud<pcl::PointXYZRGB>);  // table2
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr model3(new pcl::PointCloud<pcl::PointXYZRGB>);  // small shelf
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr model4(new pcl::PointCloud<pcl::PointXYZRGB>);  // big shelf
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr model5(new pcl::PointCloud<pcl::PointXYZRGB>);  // chair
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr model6(new pcl::PointCloud<pcl::PointXYZRGB>);  // chair
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr model7(new pcl::PointCloud<pcl::PointXYZRGB>);  // bed
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr model1(new pcl::PointCloud< pcl::PointXYZRGB >);  // table1
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr model2(new pcl::PointCloud< pcl::PointXYZRGB >);  // table2
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr model3(new pcl::PointCloud< pcl::PointXYZRGB >);  // small shelf
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr model4(new pcl::PointCloud< pcl::PointXYZRGB >);  // big shelf
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr model5(new pcl::PointCloud< pcl::PointXYZRGB >);  // chair
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr model6(new pcl::PointCloud< pcl::PointXYZRGB >);  // chair
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr model7(new pcl::PointCloud< pcl::PointXYZRGB >);  // bed
   //**************************
   // input cloud
   //**************************

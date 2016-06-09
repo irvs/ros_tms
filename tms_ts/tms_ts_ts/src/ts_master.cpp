@@ -6,47 +6,47 @@ int TmsTsMaster::state_condition = -1;
 int TmsTsMaster::loop_counter = 0;
 bool TmsTsMaster::abort = false;
 
-std::list<TmsTsMaster::Task> task_list_;
+std::list< TmsTsMaster::Task > task_list_;
 // return first data of the list
 int at_rostime(void)
 {
-  std::list<TmsTsMaster::Task>::iterator it = task_list_.begin();
+  std::list< TmsTsMaster::Task >::iterator it = task_list_.begin();
   return it->rostime;
 }
 
 int at_taskID0(void)
 {
-  std::list<TmsTsMaster::Task>::iterator it = task_list_.begin();
+  std::list< TmsTsMaster::Task >::iterator it = task_list_.begin();
   return it->task_id;
 }
 
 int at_robotID0(void)
 {
-  std::list<TmsTsMaster::Task>::iterator it = task_list_.begin();
+  std::list< TmsTsMaster::Task >::iterator it = task_list_.begin();
   return it->robot_id;
 }
 
 int at_objectID0(void)
 {
-  std::list<TmsTsMaster::Task>::iterator it = task_list_.begin();
+  std::list< TmsTsMaster::Task >::iterator it = task_list_.begin();
   return it->object_id;
 }
 
 int at_userID0(void)
 {
-  std::list<TmsTsMaster::Task>::iterator it = task_list_.begin();
+  std::list< TmsTsMaster::Task >::iterator it = task_list_.begin();
   return it->user_id;
 }
 
 int at_placeID0(void)
 {
-  std::list<TmsTsMaster::Task>::iterator it = task_list_.begin();
+  std::list< TmsTsMaster::Task >::iterator it = task_list_.begin();
   return it->place_id;
 }
 
 int at_priority(void)
 {
-  std::list<TmsTsMaster::Task>::iterator it = task_list_.begin();
+  std::list< TmsTsMaster::Task >::iterator it = task_list_.begin();
   return it->priority;
 }
 
@@ -62,7 +62,7 @@ TmsTsMaster::TmsTsMaster(int argc, char **argv)
   // task initializer
   for (uint32_t i = 0; i < MAX_TASK_NUM * 2; i++)
   {
-    task_manager[i].num = boost::lexical_cast<std::string>(i);
+    task_manager[i].num = boost::lexical_cast< std::string >(i);
     task_manager[i].flag = 0;
   }
 
@@ -86,12 +86,12 @@ std::string TmsTsMaster::CreateSrvCall(long long int rostime, int task_id, int r
   // std::string s_rostime = boost::lexical_cast<std::string>(rostime);
   std::string s_rostime("0");
   // string s_task_id = IntToString(task_id);
-  std::string s_task_id = boost::lexical_cast<std::string>(task_id);
-  std::string s_robot_id = boost::lexical_cast<std::string>(robot_id);
-  std::string s_object_id = boost::lexical_cast<std::string>(object_id);
-  std::string s_user_id = boost::lexical_cast<std::string>(user_id);
-  std::string s_place_id = boost::lexical_cast<std::string>(place_id);
-  std::string s_priority = boost::lexical_cast<std::string>(priority);
+  std::string s_task_id = boost::lexical_cast< std::string >(task_id);
+  std::string s_robot_id = boost::lexical_cast< std::string >(robot_id);
+  std::string s_object_id = boost::lexical_cast< std::string >(object_id);
+  std::string s_user_id = boost::lexical_cast< std::string >(user_id);
+  std::string s_place_id = boost::lexical_cast< std::string >(place_id);
+  std::string s_priority = boost::lexical_cast< std::string >(priority);
 
   // rosservice call /request{num} "rostime" "task_id" "robot_id" "object_id" "user_id" "place_id" "priority"\n
   std::string command("rosservice call /");
@@ -168,7 +168,7 @@ bool TmsTsMaster::ts_master_callback(tms_msg_ts::ts_req::Request &req, tms_msg_t
 
   // sort first condition：priority, second condition：rostime
   task_list_.sort(pred());
-  std::list<Task>::iterator it = task_list_.begin();
+  std::list< Task >::iterator it = task_list_.begin();
 
   while (it != task_list_.end())
   {

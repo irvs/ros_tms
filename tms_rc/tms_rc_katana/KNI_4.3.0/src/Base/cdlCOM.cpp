@@ -28,7 +28,7 @@
 
 CCdlCOM::CCdlCOM(TCdlCOMDesc ccd) : _deviceName(""), _ccd(), _prtHdl(INVALID_HANDLE_VALUE), _oto()
 {
-  DCB commDCB;  // COM port parameters
+  DCB commDCB;       // COM port parameters
   COMMTIMEOUTS nto;  // new timeouts
   char comX[5];
   char dcb[35];
@@ -128,7 +128,7 @@ int CCdlCOM::send(const void* buf, int size)
     throw DeviceWriteException(_deviceName, "WriteFile failed");
   }
 
-  if (readsz != static_cast<long>(size))
+  if (readsz != static_cast< long >(size))
   {
     throw WriteNotCompleteException(_deviceName);
   }
@@ -143,7 +143,7 @@ int CCdlCOM::recv(void* buf, int size)
     throw PortNotOpenException(_deviceName);
   }
 
-  unsigned char* tmp = static_cast<unsigned char*>(buf);
+  unsigned char* tmp = static_cast< unsigned char* >(buf);
   unsigned long readsz = 0, readsz_temp = 0;
   KNI::Timer timeout(_ccd.rttc);
   timeout.Start();
@@ -351,7 +351,7 @@ int CCdlCOM::send(const void* buf, int size)
 
 int CCdlCOM::recv(void* buf, int size)
 {
-  unsigned char* tmp = static_cast<unsigned char*>(buf);
+  unsigned char* tmp = static_cast< unsigned char* >(buf);
   register int readsz = 0;
 
   if (_prtHdl < 0)

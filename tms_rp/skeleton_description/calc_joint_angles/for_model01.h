@@ -58,15 +58,15 @@ const int kModel01BaseLink = SpineMid;
 // Keep consistency with kJointName
 const int kJointDoF = 29;
 
-template <class T>
-int calcForModel01(const tms_msg_ss::Skeleton &in, Eigen::Matrix<T, 3, 1> &position, Eigen::Quaternion<T> &rotation,
-                   std::map<std::string, T> &out)
+template < class T >
+int calcForModel01(const tms_msg_ss::Skeleton &in, Eigen::Matrix< T, 3, 1 > &position, Eigen::Quaternion< T > &rotation,
+                   std::map< std::string, T > &out)
 {
   if (in.user_id < 0)
   {
     // Set data to disappear from environment
-    position = Eigen::Matrix<T, 3, 1>(0.0, 0.0, 0.0);
-    rotation = Eigen::Quaternion<T>(1.0, 0.0, 0.0, 0.0);
+    position = Eigen::Matrix< T, 3, 1 >(0.0, 0.0, 0.0);
+    rotation = Eigen::Quaternion< T >(1.0, 0.0, 0.0, 0.0);
     for (int j = 0; j < kJointDoF; j++)
     {
       out[kJointName[j]] = 0.0;
@@ -75,21 +75,21 @@ int calcForModel01(const tms_msg_ss::Skeleton &in, Eigen::Matrix<T, 3, 1> &posit
   }
   else
   {
-    std::vector<Eigen::Matrix<T, 3, 1>> j;
+    std::vector< Eigen::Matrix< T, 3, 1 > > j;
     j.resize(JOINT_NUM);
     for (int i = 0; i < JOINT_NUM; i++)
     {
-      j[i] = Eigen::Matrix<T, 3, 1>(in.position[i].x, in.position[i].y, in.position[i].z);
+      j[i] = Eigen::Matrix< T, 3, 1 >(in.position[i].x, in.position[i].y, in.position[i].z);
     }
     // Calculation of position.
-    position = Eigen::Matrix<T, 3, 1>(j[SpineMid][0], j[SpineMid][1], j[SpineMid][2]);
+    position = Eigen::Matrix< T, 3, 1 >(j[SpineMid][0], j[SpineMid][1], j[SpineMid][2]);
 
     // Calculation of rotation.
-    Eigen::Matrix<T, 3, 1> x, y, z;
+    Eigen::Matrix< T, 3, 1 > x, y, z;
     y = ((j[SpineMid] - j[SpineBase]).cross(j[HipRight] - j[HipLeft])).normalized();
     z = (j[SpineMid] - j[SpineBase]).normalized();
     x = (y.cross(z)).normalized();
-    Eigen::Matrix<T, 3, 3> mat;
+    Eigen::Matrix< T, 3, 3 > mat;
     mat << x[0], y[0], z[0], x[1], y[1], z[1], x[2], y[2], z[2];
 
     rotation = mat;
@@ -98,7 +98,7 @@ int calcForModel01(const tms_msg_ss::Skeleton &in, Eigen::Matrix<T, 3, 1> &posit
     if (isnan(rotation.x()))
     {
       // It happens when gets same j[SpinMid], j[SpineBase], j[HipRight] and j[HipLeft]
-      rotation = Eigen::Quaternion<T>(1.0, 0.0, 0.0, 0.0);
+      rotation = Eigen::Quaternion< T >(1.0, 0.0, 0.0, 0.0);
     }
 
     // Initialize
@@ -108,8 +108,8 @@ int calcForModel01(const tms_msg_ss::Skeleton &in, Eigen::Matrix<T, 3, 1> &posit
     }
 
     // Calculation of joint angles.
-    Eigen::Matrix<T, 3, 1> vec;
-    Eigen::Quaternion<T> rot[2];
+    Eigen::Matrix< T, 3, 1 > vec;
+    Eigen::Quaternion< T > rot[2];
     // -*- Invalid calculation -*-
     // if (1)//req.skeleton.confidence[SpineMid] == 2 &&
     //    //req.skeleton.confidence[SpineBase] == 2 &&
@@ -139,13 +139,13 @@ int calcForModel01(const tms_msg_ss::Skeleton &in, Eigen::Matrix<T, 3, 1> &posit
       y = ((j[SpineShoulder] - j[ShoulderRight]).cross(j[SpineMid] - j[SpineShoulder])).normalized();
       vec = j[ElbowRight] - j[ShoulderRight];
       out["R_ARM_JOINT1"] = atan2(y.dot(vec), x.dot(vec));
-      rot[0] = Eigen::AngleAxis<T>(out["R_ARM_JOINT1"], x.cross(y));
+      rot[0] = Eigen::AngleAxis< T >(out["R_ARM_JOINT1"], x.cross(y));
       // 3:R_ARM_JOINT2
       x = rot[0] * (j[SpineMid] - j[SpineShoulder]).normalized();
       y = rot[0] * (j[SpineShoulder] - j[ShoulderRight]).normalized();
       vec = j[ElbowRight] - j[ShoulderRight];
       out["R_ARM_JOINT2"] = atan2(y.dot(vec), x.dot(vec));
-      rot[1] = Eigen::AngleAxis<T>(out["R_ARM_JOINT2"], x.cross(y));
+      rot[1] = Eigen::AngleAxis< T >(out["R_ARM_JOINT2"], x.cross(y));
       // 4:R_ARM_JOINT3
       x = rot[1] * rot[0] * (j[ShoulderRight] - j[SpineShoulder]).normalized();
       y = rot[1] * rot[0] * ((j[ShoulderRight] - j[SpineShoulder]).cross(j[SpineMid] - j[SpineShoulder])).normalized();
@@ -172,13 +172,13 @@ int calcForModel01(const tms_msg_ss::Skeleton &in, Eigen::Matrix<T, 3, 1> &posit
       y = (z.cross(j[SpineMid] - j[SpineShoulder])).normalized();
       vec = j[ElbowLeft] - j[ShoulderLeft];
       out["L_ARM_JOINT1"] = atan2(y.dot(vec), x.dot(vec));
-      rot[0] = Eigen::AngleAxis<T>(out["L_ARM_JOINT1"], x.cross(y));
+      rot[0] = Eigen::AngleAxis< T >(out["L_ARM_JOINT1"], x.cross(y));
       // 11:L_ARM_JOINT2
       x = rot[0] * (j[SpineMid] - j[SpineShoulder]).normalized();
       y = rot[0] * (j[ShoulderLeft] - j[SpineShoulder]).normalized();
       vec = j[ElbowLeft] - j[ShoulderLeft];
       out["L_ARM_JOINT2"] = atan2(y.dot(vec), x.dot(vec));
-      rot[1] = Eigen::AngleAxis<T>(out["L_ARM_JOINT2"], x.cross(y));
+      rot[1] = Eigen::AngleAxis< T >(out["L_ARM_JOINT2"], x.cross(y));
       // 12:L_ARM_JOINT3
       x = rot[1] * rot[0] * (j[ShoulderLeft] - j[SpineShoulder]).normalized();
       y = rot[1] * rot[0] * ((j[ShoulderLeft] - j[SpineShoulder]).cross(j[SpineMid] - j[SpineShoulder])).normalized();
@@ -205,14 +205,14 @@ int calcForModel01(const tms_msg_ss::Skeleton &in, Eigen::Matrix<T, 3, 1> &posit
       y = (z.cross(j[SpineBase] - j[SpineMid])).normalized();
       vec = j[KneeRight] - j[HipRight];
       out["R_LEG_JOINT1"] = atan2(y.dot(vec), x.dot(vec));
-      rot[0] = Eigen::AngleAxis<T>(out["R_LEG_JOINT1"], x.cross(y));
+      rot[0] = Eigen::AngleAxis< T >(out["R_LEG_JOINT1"], x.cross(y));
       // 21:R_LEG_JOINT2
       z = rot[0] * (j[HipRight] - j[HipLeft]).cross(j[SpineBase] - j[SpineMid]);
       x = rot[0] * (j[SpineBase] - j[SpineMid]).normalized();
       y = (z.cross(j[SpineBase] - j[SpineMid])).normalized();
       vec = j[KneeRight] - j[HipRight];
       out["R_LEG_JOINT2"] = atan2(y.dot(vec), x.dot(vec));
-      rot[1] = Eigen::AngleAxis<T>(out["R_LEG_JOINT2"], x.cross(y));
+      rot[1] = Eigen::AngleAxis< T >(out["R_LEG_JOINT2"], x.cross(y));
       // 22:R_LEG_JOINT3
       x = rot[1] * rot[0] * (j[HipRight] - j[HipLeft]).normalized();
       y = rot[1] * rot[0] * ((j[HipRight] - j[HipLeft]).cross(j[SpineBase] - j[SpineMid])).normalized();
@@ -239,14 +239,14 @@ int calcForModel01(const tms_msg_ss::Skeleton &in, Eigen::Matrix<T, 3, 1> &posit
       y = (z.cross(j[SpineBase] - j[SpineMid])).normalized();
       vec = j[KneeLeft] - j[HipLeft];
       out["L_LEG_JOINT1"] = atan2(y.dot(vec), x.dot(vec));
-      rot[0] = Eigen::AngleAxis<T>(out["L_LEG_JOINT1"], x.cross(y));
+      rot[0] = Eigen::AngleAxis< T >(out["L_LEG_JOINT1"], x.cross(y));
       // 28:L_LEG_JOINT2
       z = rot[0] * (j[HipRight] - j[HipLeft]).cross(j[SpineBase] - j[SpineMid]);
       x = rot[0] * (j[SpineBase] - j[SpineMid]).normalized();
       y = (z.cross(j[SpineBase] - j[SpineMid])).normalized();
       vec = j[KneeLeft] - j[HipLeft];
       out["L_LEG_JOINT2"] = atan2(y.dot(vec), x.dot(vec));
-      rot[1] = Eigen::AngleAxis<T>(out["L_LEG_JOINT2"], x.cross(y));
+      rot[1] = Eigen::AngleAxis< T >(out["L_LEG_JOINT2"], x.cross(y));
       // 29:L_LEG_JOINT3
       z = j[HipLeft] - j[KneeLeft];
       x = rot[1] * rot[0] * (j[HipRight] - j[HipLeft]).normalized();

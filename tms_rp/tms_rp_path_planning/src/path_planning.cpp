@@ -85,7 +85,7 @@ private:
   double x_llimit_, x_ulimit_, y_llimit_, y_ulimit_, cell_size_;
 
 public:
-  vector<vector<CollisionMapData>> dynamic_map_;
+  vector< vector< CollisionMapData > > dynamic_map_;
   TmsRpPathPlanning()
     : kSmartPal5CollisionThreshold_(0.4)
     , kSmartPal4CollisionThreshold_(0.4)
@@ -105,9 +105,9 @@ public:
     dynamic_map_sub_ = nh.subscribe("/rps_dynamic_map", 10, &TmsRpPathPlanning::getDynamicMap, this);
     service_voronoi_path_ =
         nh.advertiseService("/rps_voronoi_path_planning", &TmsRpPathPlanning::voronoiPathPlanner, this);
-    robot_path_pub_ = nh.advertise<tms_msg_rp::rps_route>("/rps_robot_path", 1);
-    path_marker_pub = nh.advertise<visualization_msgs::MarkerArray>("robot_path_marker", 1);
-    mesh_marker_pub = nh.advertise<visualization_msgs::MarkerArray>("shadow_path_marker", 1);
+    robot_path_pub_ = nh.advertise< tms_msg_rp::rps_route >("/rps_robot_path", 1);
+    path_marker_pub = nh.advertise< visualization_msgs::MarkerArray >("robot_path_marker", 1);
+    mesh_marker_pub = nh.advertise< visualization_msgs::MarkerArray >("shadow_path_marker", 1);
   }
 
   ~TmsRpPathPlanning()
@@ -137,7 +137,7 @@ private:
     y_ulimit_ = original_map->y_ulimit;
     cell_size_ = original_map->cell_size;
 
-    vector<CollisionMapData> temp_map_line;
+    vector< CollisionMapData > temp_map_line;
     CollisionMapData temp_map_d;
 
     for (unsigned int x = 0; x < original_map->rps_map_x.size(); x++)
@@ -168,7 +168,7 @@ private:
 
     double collision_threshold = getRobotCollisionThreshold(req.robot_id);
 
-    vector<double> start, goal;
+    vector< double > start, goal;
     start.resize(3);
     goal.resize(3);
 
@@ -181,8 +181,8 @@ private:
     goal[2] = req.goal_pos.th;
 
     ROS_INFO("Init map ...");
-    vector<vector<CollisionMapData>> using_map;
-    vector<CollisionMapData> temp_map_line;
+    vector< vector< CollisionMapData > > using_map;
+    vector< CollisionMapData > temp_map_line;
 
     while (1)
     {
@@ -259,7 +259,7 @@ private:
       return false;
     }
 
-    vector<vector<double>> voronoi_path, smooth_path, comp_path;
+    vector< vector< double > > voronoi_path, smooth_path, comp_path;
 
     res.success = calcVoronoiPath(using_map, start, goal, voronoi_path, res.message);
     if (!res.success)
@@ -420,7 +420,7 @@ private:
     return collision_threshold;
   }
 
-  bool setCollisionArea(vector<vector<CollisionMapData>>& map, double threshold, string& message)
+  bool setCollisionArea(vector< vector< CollisionMapData > >& map, double threshold, string& message)
   {
     if (map.empty())
     {
@@ -443,7 +443,7 @@ private:
     return true;
   }
 
-  bool setVoronoiLine(vector<vector<CollisionMapData>>& map, string& message)
+  bool setVoronoiLine(vector< vector< CollisionMapData > >& map, string& message)
   {
     if (map.empty())
     {
@@ -587,7 +587,7 @@ private:
     return true;
   }
 
-  bool calcDistFromVoronoi(vector<vector<CollisionMapData>>& map, string& message)
+  bool calcDistFromVoronoi(vector< vector< CollisionMapData > >& map, string& message)
   {
     if (map.empty())
     {
@@ -640,7 +640,7 @@ private:
     return true;
   }
 
-  bool connectToVoronoi(vector<vector<CollisionMapData>>& map, vector<double> connect_point, string& message)
+  bool connectToVoronoi(vector< vector< CollisionMapData > >& map, vector< double > connect_point, string& message)
   {
     if (map.empty())
     {
@@ -743,7 +743,7 @@ private:
       temp_y += dy;
     }
 
-    vector<double> vec;
+    vector< double > vec;
     vec.resize(2);
     vec[0] = temp_x - target_x;
     vec[1] = temp_y - target_y;
@@ -769,7 +769,7 @@ private:
     return true;
   }
 
-  bool calcDistFromGoal(vector<vector<CollisionMapData>>& map, vector<double> goal_point, string& message)
+  bool calcDistFromGoal(vector< vector< CollisionMapData > >& map, vector< double > goal_point, string& message)
   {
     if (map.empty())
     {
@@ -853,8 +853,8 @@ private:
     return true;
   }
 
-  bool calcVoronoiPath(vector<vector<CollisionMapData>>& map, vector<double> start, vector<double> goal,
-                       vector<vector<double>>& out_path, string& message)
+  bool calcVoronoiPath(vector< vector< CollisionMapData > >& map, vector< double > start, vector< double > goal,
+                       vector< vector< double > >& out_path, string& message)
   {
     out_path.clear();
 
@@ -912,7 +912,7 @@ private:
     i_temp_x = i_start_x;
     i_temp_y = i_start_y;
     double temp_dist = map[i_temp_x][i_temp_y].dist_from_goal_;
-    vector<double> temp_pos;
+    vector< double > temp_pos;
     temp_pos.resize(2);
     if (temp_dist >= 0 && temp_dist <= 0.01)
     {
@@ -1000,11 +1000,11 @@ private:
     return true;
   }
 
-  bool smoothVoronoiPath(vector<vector<CollisionMapData>>& map, vector<double> start, vector<double> goal,
-                         vector<vector<double>> in_path, vector<vector<double>>& out_path, double threshold)
+  bool smoothVoronoiPath(vector< vector< CollisionMapData > >& map, vector< double > start, vector< double > goal,
+                         vector< vector< double > > in_path, vector< vector< double > >& out_path, double threshold)
   {
     out_path.clear();
-    vector<double> temp_pos;
+    vector< double > temp_pos;
     temp_pos.resize(3);
 
     if (in_path.size() < 2)
@@ -1022,7 +1022,7 @@ private:
     i_prev_x = (int)round((start[0] - x_llimit_) / cell_size_);
     i_prev_y = (int)round((start[1] - y_llimit_) / cell_size_);
 
-    vector<double> vec;
+    vector< double > vec;
     vec.resize(2);
     double vec_norm, temp_norm;
     bool smoothing = true;

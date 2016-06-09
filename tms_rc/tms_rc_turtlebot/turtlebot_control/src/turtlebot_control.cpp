@@ -592,7 +592,7 @@ int main(int argc, char **argv)
   p = write(fd, &stSendRWPacket.ucHeader[0], stSendRWPacket.ucPacketSize);
   //------------------------------------------------------------------------------
 
-  db_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
+  db_client = n.serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader/dbreader");
 
 #ifdef ODOM
   // kobukiの初期位置を格納
@@ -623,7 +623,7 @@ int main(int argc, char **argv)
   ros::Subscriber vicon_sub = n.subscribe("output", 10, vicon_sysCallback);
   ros::Subscriber odom_sub = n.subscribe("odom", 10, odomCallback);  // Odometry情報取得
 
-  vel_pub = n.advertise<geometry_msgs::Twist>("mobile_base/commands/velocity", 1);  // kobukiに速度を送る
+  vel_pub = n.advertise< geometry_msgs::Twist >("mobile_base/commands/velocity", 1);  // kobukiに速度を送る
   // robotInfo_pub = n.advertise<geometry_msgs::Point>("kobuki_info", 1);
   ros::waitForShutdown();
 

@@ -14,8 +14,8 @@
 
 typedef struct
 {
-  pcl::PointCloud<pcl::PointXYZRGB> cloud_rgb;
-  pcl::PointCloud<pcl::PointXYZHSV> cloud_hsv;
+  pcl::PointCloud< pcl::PointXYZRGB > cloud_rgb;
+  pcl::PointCloud< pcl::PointXYZHSV > cloud_hsv;
   int histogram[MAP_H][MAP_S];
 } object_map;
 
@@ -30,13 +30,13 @@ typedef struct
 // passfilter
 //
 //***********************************************
-void passfilter(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
+void passfilter(pcl::PointCloud< pcl::PointXYZRGB >& cloud)
 {
   std::cout << "passfilter" << std::endl;
 
   // 変数宣言
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PassThrough<pcl::PointXYZRGB> pass;  // パスフィルタをもちいるためのクラス
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PassThrough< pcl::PointXYZRGB > pass;  // パスフィルタをもちいるためのクラス
 
   // ワゴンはロボットの正面近くにあると仮定し、カメラ座標空間でフィルタをかける
   pass.setInputCloud(cloud.makeShared());
@@ -58,11 +58,11 @@ void passfilter(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
 //  入力点群のうち、もっとも大きな平面を検出し除去
 //
 //***********************************************
-void plane_detect(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::PointXYZRGB>& plane)
+void plane_detect(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointCloud< pcl::PointXYZRGB >& plane)
 {
   // 変数宣言
-  pcl::SACSegmentation<pcl::PointXYZRGB> seg;                            // RANSACを用いるためのクラス
-  pcl::ExtractIndices<pcl::PointXYZRGB> extract;                         // 点群除去のためのクラス
+  pcl::SACSegmentation< pcl::PointXYZRGB > seg;                          // RANSACを用いるためのクラス
+  pcl::ExtractIndices< pcl::PointXYZRGB > extract;                       // 点群除去のためのクラス
   pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients);  // 検出された平面のパラメータ
   pcl::PointIndices::Ptr inliers(new pcl::PointIndices);  // 検出された平面を構成する点群の配列番号
 
@@ -95,16 +95,16 @@ void plane_detect(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl:
 //  クラスタリングを行う．
 //
 //***********************************************
-void segmentation(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl::PointXYZHSV>& hsv,
-                  std::vector<object_map>& map)
+void segmentation(pcl::PointCloud< pcl::PointXYZRGB >& cloud, pcl::PointCloud< pcl::PointXYZHSV >& hsv,
+                  std::vector< object_map >& map)
 {
   std::cout << "clustering" << std::endl;
 
   // 変数宣言
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB>);
-  pcl::EuclideanClusterExtraction<pcl::PointXYZRGB> ec;  // クラスタリングのためのクラス
-  std::vector<pcl::PointIndices> cluster_indices;  // 各クラスタを構成する点の点群番号を格納した配列
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::search::KdTree< pcl::PointXYZRGB >::Ptr tree(new pcl::search::KdTree< pcl::PointXYZRGB >);
+  pcl::EuclideanClusterExtraction< pcl::PointXYZRGB > ec;  // クラスタリングのためのクラス
+  std::vector< pcl::PointIndices > cluster_indices;  // 各クラスタを構成する点の点群番号を格納した配列
 
   tree->setInputCloud(cloud.makeShared());  // Kdtreeの作成
 
@@ -120,10 +120,10 @@ void segmentation(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl:
   int m = 0;
   float colors[6][3] = {
       {255, 0, 0}, {0, 255, 0}, {0, 0, 255}, {255, 255, 0}, {0, 255, 255}, {255, 0, 255}};  // クラスタの色
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
+  for (std::vector< pcl::PointIndices >::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
   {
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_cluster(new pcl::PointCloud<pcl::PointXYZRGB>);
-    pcl::PointCloud<pcl::PointXYZHSV>::Ptr cloud_cluster_hsv(new pcl::PointCloud<pcl::PointXYZHSV>);
+    pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud_cluster(new pcl::PointCloud< pcl::PointXYZRGB >);
+    pcl::PointCloud< pcl::PointXYZHSV >::Ptr cloud_cluster_hsv(new pcl::PointCloud< pcl::PointXYZHSV >);
     object_map tmp;
 
     for (int i = 0; i < MAP_H; i++)
@@ -135,7 +135,7 @@ void segmentation(pcl::PointCloud<pcl::PointXYZRGB>& cloud, pcl::PointCloud<pcl:
     }
 
     // クラスタを構成する点群
-    for (std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
+    for (std::vector< int >::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
     {
       cloud_cluster->points.push_back(cloud.points[*pit]);
     }
@@ -261,14 +261,14 @@ int main(int argc, char** argv)
   ros::NodeHandle n;
   ros::ServiceClient commander_to_kinect_capture;
   tms_msg_ss::ods_pcd srv;
-  std::vector<object_map> Object_Map1, Object_Map2;
+  std::vector< object_map > Object_Map1, Object_Map2;
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr rgb_cloud1(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr rgb_cloud2(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZHSV>::Ptr hsv_cloud1(new pcl::PointCloud<pcl::PointXYZHSV>);
-  pcl::PointCloud<pcl::PointXYZHSV>::Ptr hsv_cloud2(new pcl::PointCloud<pcl::PointXYZHSV>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr plane_cloud1(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr plane_cloud2(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr rgb_cloud1(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr rgb_cloud2(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZHSV >::Ptr hsv_cloud1(new pcl::PointCloud< pcl::PointXYZHSV >);
+  pcl::PointCloud< pcl::PointXYZHSV >::Ptr hsv_cloud2(new pcl::PointCloud< pcl::PointXYZHSV >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr plane_cloud1(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr plane_cloud2(new pcl::PointCloud< pcl::PointXYZRGB >);
 
   /*commander_to_kinect_capture = n.serviceClient<tms_msg_ss::ods_pcd>("ods_capture");
 

@@ -85,7 +85,8 @@ GNUcurve::GNUcurve(void)
   enLineType = LINES;
 }
 
-GNUcurve::GNUcurve(const std::vector<double> &x, std::vector<double> &y, const string &label, LineType_en enLineType_)
+GNUcurve::GNUcurve(const std::vector< double > &x, std::vector< double > &y, const string &label,
+                   LineType_en enLineType_)
   : vdX(x), vdY(y), clabel(label), enLineType(enLineType_)
 //!  @brief Constructor.
 {
@@ -259,8 +260,8 @@ void Plot2d::gnuplot(void)
 void Plot2d::addcurve(const Matrix &data, const string &label, LineType_en enLineType)
 //!  @brief Add a curve on the graphic.
 {
-  vector<double> x;
-  vector<double> y;
+  vector< double > x;
+  vector< double > y;
 
   for (int j = 1; j <= data.Nrows(); j++)
   {
@@ -482,10 +483,10 @@ IO_matrix_file::IO_matrix_file(const string &filename_)
   nb_element = 0;
 }
 
-short IO_matrix_file::write(const vector<Matrix> &data)
+short IO_matrix_file::write(const vector< Matrix > &data)
 //!  @brief Write data on disk using a default data name..
 {
-  vector<string> title;
+  vector< string > title;
   string tmp;
   for (unsigned int i = 1; i <= data.size(); i++)
   {
@@ -497,7 +498,7 @@ short IO_matrix_file::write(const vector<Matrix> &data)
   return IO_matrix_file::write(data, title);
 }
 
-short IO_matrix_file::write(const vector<Matrix> &data, const vector<string> &title)
+short IO_matrix_file::write(const vector< Matrix > &data, const vector< string > &title)
 /*!
   @brief Write data on disk.
   @param data: Data.
@@ -589,10 +590,10 @@ short IO_matrix_file::write(const vector<Matrix> &data, const vector<string> &ti
   return 0;
 }
 
-short IO_matrix_file::read(vector<Matrix> &data)
+short IO_matrix_file::read(vector< Matrix > &data)
 //! @brief Read one sequence of data per call.
 {
-  vector<string> data_title;
+  vector< string > data_title;
   string tmp;
   for (unsigned int i = 1; i <= data.size(); i++)
   {
@@ -604,7 +605,7 @@ short IO_matrix_file::read(vector<Matrix> &data)
   return IO_matrix_file::read(data, data_title);
 }
 
-short IO_matrix_file::read(vector<Matrix> &data, vector<string> &data_title)
+short IO_matrix_file::read(vector< Matrix > &data, vector< string > &data_title)
 //! @brief Read one sequence of data per call.
 {
   /*
@@ -664,7 +665,7 @@ short IO_matrix_file::read(vector<Matrix> &data, vector<string> &data_title)
   return 0;
 }
 
-short IO_matrix_file::read_all(vector<Matrix> &data, vector<string> &data_title)
+short IO_matrix_file::read_all(vector< Matrix > &data, vector< string > &data_title)
 /*!
   @brief Reads all sequences of data.
 
@@ -817,8 +818,8 @@ short set_plot2d(const char *title_graph, const char *x_axis_title, const char *
 }
 
 short set_plot2d(const char *title_graph, const char *x_axis_title, const char *y_axis_title,
-                 const vector<char *> label, LineType_en enLineType, const Matrix &xdata, const Matrix &ydata,
-                 const vector<int> &data_select)
+                 const vector< char * > label, LineType_en enLineType, const Matrix &xdata, const Matrix &ydata,
+                 const vector< int > &data_select)
 {
   Plot2d plotgraph;
 

@@ -34,17 +34,17 @@ private:
   //!Number of segments of the robot
   int mNumberOfSegments;
   //!Effector segment lengths vector [m]
-  std::vector<double> mSegmentLength;
+  std::vector< double > mSegmentLength;
   //!Angle offset vector [rad]
-  std::vector<double> mAngleOffset;
+  std::vector< double > mAngleOffset;
   //!Angle stop vector [rad]
-  std::vector<double> mAngleStop;
+  std::vector< double > mAngleStop;
   //!Encoders per cycle vector
-  std::vector<int> mEncodersPerCycle;
+  std::vector< int > mEncodersPerCycle;
   //!Encoder offset vector
-  std::vector<int> mEncoderOffset;
+  std::vector< int > mEncoderOffset;
   //!Rotation direction vector [1|-1]
-  std::vector<int> mRotationDirection;
+  std::vector< int > mRotationDirection;
   //!Initialized flag
   bool mIsInitialized;
 
@@ -68,7 +68,7 @@ private:
     double b2;
     double costh3;
   };
-  typedef std::vector<angles_calc> angles_container;
+  typedef std::vector< angles_calc > angles_container;
   static const int cNrOfPossibleSolutions = 8;
 
   //!initialization routine
@@ -78,8 +78,8 @@ private:
   void IK_theta234theta5(angles_calc& angle, const position& p_gr) const;
   bool GripperTest(const position& p_gr, const angles_calc& angle) const;
   void IK_b1b2costh3_6MS(angles_calc& angle, const position& p) const;
-  double findFirstEqualAngle(const std::vector<double>& v1, const std::vector<double>& v2) const;
-  void thetacomp(angles_calc& angle, const position& p_m, const std::vector<double>& pose) const;
+  double findFirstEqualAngle(const std::vector< double >& v1, const std::vector< double >& v2) const;
+  void thetacomp(angles_calc& angle, const position& p_m, const std::vector< double >& pose) const;
   bool PositionTest6MS(const double& theta1, const double& theta2, const double& theta3, const double& theta234,
                        const position& p) const;
   bool angledef(angles_calc& a) const;
@@ -94,47 +94,47 @@ public:
   ~Kinematics6M90T();
 
   //!get link length
-  std::vector<double> getLinkLength();
+  std::vector< double > getLinkLength();
   //!get encoders per cycle
-  std::vector<int> getEpc();
+  std::vector< int > getEpc();
   //!get encoder offset
-  std::vector<int> getEncOff();
+  std::vector< int > getEncOff();
   //!get direction
-  std::vector<int> getDir();
+  std::vector< int > getDir();
   //!get angle offset
-  std::vector<double> getAngOff();
+  std::vector< double > getAngOff();
   //!get angle stop
-  std::vector<double> getAngStop();
+  std::vector< double > getAngStop();
   //!get angle range
-  std::vector<double> getAngRange();
+  std::vector< double > getAngRange();
   //!get angle min
-  std::vector<double> getAngMin();
+  std::vector< double > getAngMin();
   //!get angle max
-  std::vector<double> getAngMax();
+  std::vector< double > getAngMax();
   //!set link length
-  bool setLinkLength(const std::vector<double> aLengths);
+  bool setLinkLength(const std::vector< double > aLengths);
   //!set angle offset
-  bool setAngOff(const std::vector<double> aAngOff);
+  bool setAngOff(const std::vector< double > aAngOff);
   //!set angle stop
-  bool setAngStop(const std::vector<double> aAngStop);
+  bool setAngStop(const std::vector< double > aAngStop);
 
   //!calculates the angles corresponding to the given encoders
   //!@param aAngles	empty vector to store the angles
   //!@param aEncoders	the encoder vector
   //!@return true if no error occurred, false on error
-  bool enc2rad(std::vector<double>& aAngles, const std::vector<int> aEncoders);
+  bool enc2rad(std::vector< double >& aAngles, const std::vector< int > aEncoders);
 
   //!calculates the encoders corresponding to the given angles
   //!@param aEncoders	empty vector to store the encoders
   //!@param aAngles	the angle vector
   //!@return true if no error occurred, false on error
-  bool rad2enc(std::vector<int>& aEncoders, const std::vector<double> aAngles);
+  bool rad2enc(std::vector< int >& aEncoders, const std::vector< double > aAngles);
 
   //!calculates the direct kinematics
   //!@param aPosition	empty vector to store the position
   //!@param aAngles	the angle vector
   //!@return true if no error occurred, false on error
-  bool directKinematics(std::vector<double>& aPosition, const std::vector<double> aAngles);
+  bool directKinematics(std::vector< double >& aPosition, const std::vector< double > aAngles);
 
   //!caltulates the inverse kinematics
   //!@param aAngles	empty vector to store the angles
@@ -142,8 +142,8 @@ public:
   //!@param aStartingAngles	starting angle vector to find the best (nearest) solution
   //!@throws NoSolutionException	if no solutios exists
   //!@return true if no error occurred, false on error
-  bool inverseKinematics(std::vector<double>& aAngles, const std::vector<double> aPosition,
-                         const std::vector<double> aStartingAngles);
+  bool inverseKinematics(std::vector< double >& aAngles, const std::vector< double > aPosition,
+                         const std::vector< double > aStartingAngles);
 };
 ////////////////////////////////////////////////////////////////////////////
 

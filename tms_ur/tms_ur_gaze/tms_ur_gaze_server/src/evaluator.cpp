@@ -45,7 +45,7 @@ Object::Object(ros::NodeHandle* nh) : nh_(nh), sort_key_(0)
 //----------------------------------------------------------------------------------
 bool Object::GetGeometry(int id)
 {
-  ros::ServiceClient db_client = nh_->serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
+  ros::ServiceClient db_client = nh_->serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader");
 
   tms_msg_db::TmsdbGetData getData;
   getData.request.tmsdb.id = id;
@@ -111,9 +111,9 @@ Evaluator::~Evaluator()
 //----------------------------------------------------------------------------------
 // for indirect reference
 //----------------------------------------------------------------------------------
-void Evaluator::StoreAddress(std::vector<Object*>* object, std::vector<Object>* object_data)
+void Evaluator::StoreAddress(std::vector< Object* >* object, std::vector< Object >* object_data)
 {
-  std::vector<Object>::iterator it, begin, end;
+  std::vector< Object >::iterator it, begin, end;
   begin = object_data->begin();
   end = object_data->end();
   for (it = begin; it != end; ++it)
@@ -128,7 +128,7 @@ void Evaluator::StoreAddress(std::vector<Object*>* object, std::vector<Object>* 
 bool Evaluator::CallBack(tms_ur_gaze_server::object_list::Request& req, tms_ur_gaze_server::object_list::Response& res)
 {
   // get the geometry of glasses
-  ros::ServiceClient db_client = nh_->serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
+  ros::ServiceClient db_client = nh_->serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader");
 
   tms_msg_db::TmsdbGetData getData;
   getData.request.tmsdb.id = 1001;
@@ -217,7 +217,7 @@ bool Evaluator::CallBack(tms_ur_gaze_server::object_list::Request& req, tms_ur_g
     }
   }
 
-  std::vector<Object*>::iterator it, begin, end;
+  std::vector< Object* >::iterator it, begin, end;
   StoreAddress(&objects_ptr_, &objects_);
 
   begin = objects_ptr_.begin();

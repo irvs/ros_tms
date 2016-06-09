@@ -89,7 +89,7 @@ private:
     bool type;
     int robot_id;
     int arg_type;
-    std::vector<double> v_arg;
+    std::vector< double > v_arg;
   };
 
   bool update_obj(int id, double x, double y, double z, double rr, double rp, double ry, int place, int sensor,

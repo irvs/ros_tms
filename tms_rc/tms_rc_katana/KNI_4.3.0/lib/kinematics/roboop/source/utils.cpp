@@ -67,12 +67,12 @@ static const char rcsid[] = "$Id: utils.cpp,v 1.26 2006/05/16 16:11:15 gourdeau 
 #define GUARD_minmax_H
 // needed to cope with bug in MS library:
 // it fails to define min/max
-template <class T>
+template < class T >
 inline T max(const T& a, const T& b)
 {
   return (a > b) ? a : b;
 }
-template <class T>
+template < class T >
 inline T min(const T& a, const T& b)
 {
   return (a < b) ? a : b;
@@ -125,7 +125,7 @@ ReturnMatrix pinv(const Matrix& M)
 
 {
   /* floating point eps */
-  const Real eps = numeric_limits<Real>::epsilon();
+  const Real eps = numeric_limits< Real >::epsilon();
 
   int m = M.nrows();
   int n = M.ncols();

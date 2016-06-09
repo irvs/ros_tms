@@ -106,7 +106,7 @@ int MyCalibration::initialize(pcl::visualization::CloudViewer& viewer, uint8_t* 
 int MyCalibration::extractPlanePoints()
 {
   int i, j;
-  std::vector<Eigen::Vector3f> all_points;
+  std::vector< Eigen::Vector3f > all_points;
 
   // Sort points
   int min_cross;
@@ -152,7 +152,7 @@ int MyCalibration::extractPlanePoints()
   // Setting points
   int check;
   bool check_flg;
-  std::vector<char> points_attribute;
+  std::vector< char > points_attribute;
   Eigen::Vector3f tmp_vec3[1];
 
   points_on_plane.clear();
@@ -177,7 +177,7 @@ int MyCalibration::extractPlanePoints()
     }
   }
 
-  std::vector<Eigen::Vector2i> loop_stack;
+  std::vector< Eigen::Vector2i > loop_stack;
   loop_stack.clear();
   loop_stack.push_back(Eigen::Vector2i(tmp_vec[0][0], tmp_vec[0][1]));
   while (!loop_stack.empty())
@@ -269,7 +269,7 @@ int MyCalibration::extractPlanePoints()
         points_on_plane.push_back(&all_points[now]);
         if ((i + j) % 2 == 0)
         {
-          image.at<uchar>(i, j) = 255;
+          image.at< uchar >(i, j) = 255;
         }
       }
       if (points_attribute[now] & 0x02)
@@ -289,7 +289,7 @@ int MyCalibration::extractPlanePoints()
 int MyCalibration::viewPoints()
 {
   int i;
-  std::vector<Eigen::Vector3f*>::iterator it;
+  std::vector< Eigen::Vector3f* >::iterator it;
   Eigen::Vector3f* ptmp;
   Eigen::Vector3f tmp;
 
@@ -363,13 +363,13 @@ inline double _E(double phi_x, double phi_y, double phi_z, double t_x, double t_
   for (i = 0; i < CORRESPOND_POINTS; i++)
   {
     Eigen::Vector3d tmp;
-    tmp = X_w[i].cast<double>() - (rot * (X_c[i].cast<double>()) + Eigen::Vector3d(t_x, t_y, t_z));
+    tmp = X_w[i].cast< double >() - (rot * (X_c[i].cast< double >()) + Eigen::Vector3d(t_x, t_y, t_z));
     ret += pow(tmp.norm(), 2.0);
   }
   return ret;
 }
 
-inline int find_corner(const cv::Mat& image, const cv::Size pattern_size, std::vector<cv::Point2f>& corners,
+inline int find_corner(const cv::Mat& image, const cv::Size pattern_size, std::vector< cv::Point2f >& corners,
                        bool& pattern_found)
 {
   cv::Mat gray(image.rows, image.cols, CV_8UC1);
@@ -402,9 +402,9 @@ void viewerDrawAxis(pcl::visualization::PCLVisualizer& viewer)
   viewer.removeShape("axis-x");
   viewer.removeShape("axis-y");
   viewer.removeShape("axis-z");
-  viewer.addLine<pcl::PointXYZRGB>(_s, _ex, 255, 0, 0, "axis-x");
-  viewer.addLine<pcl::PointXYZRGB>(_s, _ey, 0, 255, 0, "axis-y");
-  viewer.addLine<pcl::PointXYZRGB>(_s, _ez, 0, 0, 255, "axis-z");
+  viewer.addLine< pcl::PointXYZRGB >(_s, _ex, 255, 0, 0, "axis-x");
+  viewer.addLine< pcl::PointXYZRGB >(_s, _ey, 0, 255, 0, "axis-y");
+  viewer.addLine< pcl::PointXYZRGB >(_s, _ez, 0, 0, 255, "axis-z");
   return;
 }
 
@@ -434,7 +434,7 @@ int MyCalibration::calcurateExtrinsicParameters(double convertion_th, int conver
     {
       for (k = 0; k < points_on_plane.size(); k++)
       {
-        tmp = points_on_plane[k]->cast<double>();
+        tmp = points_on_plane[k]->cast< double >();
         avg_vec[i] += tmp[i] / points_on_plane.size();
       }
     }
@@ -446,7 +446,7 @@ int MyCalibration::calcurateExtrinsicParameters(double convertion_th, int conver
       {
         for (k = 0; k < points_on_plane.size(); k++)
         {
-          tmp = points_on_plane[k]->cast<double>();
+          tmp = points_on_plane[k]->cast< double >();
           cov_mat(i, j) += ((tmp[i] - avg_vec[i]) * (tmp[j] - avg_vec[j])) / points_on_plane.size();
         }
       }
@@ -454,8 +454,8 @@ int MyCalibration::calcurateExtrinsicParameters(double convertion_th, int conver
   }
 
   {  // Calcurate Z-axis
-    Eigen::EigenSolver<Eigen::Matrix3d> solver(cov_mat);
-    double eigen_min = std::numeric_limits<double>::infinity();
+    Eigen::EigenSolver< Eigen::Matrix3d > solver(cov_mat);
+    double eigen_min = std::numeric_limits< double >::infinity();
     for (i = 0; i < 3; i++)
     {
       if (solver.eigenvalues()(i).real() < eigen_min)
@@ -500,7 +500,7 @@ int MyCalibration::calcurateExtrinsicParameters(double convertion_th, int conver
 
     for (i = 0; i < CORRESPOND_POINTS; i++)
     {
-      picked_points[i] = _debug_mat.cast<float>().inverse() * (world_points[i] - _debug_vec.cast<float>());
+      picked_points[i] = _debug_mat.cast< float >().inverse() * (world_points[i] - _debug_vec.cast< float >());
       std::cout << "i: " << i << "\t" << picked_points[i][0] << ", " << picked_points[i][1] << ", "
                 << picked_points[i][2] << std::endl;
     }
@@ -518,7 +518,7 @@ int MyCalibration::calcurateExtrinsicParameters(double convertion_th, int conver
   t_z = 0.0;
   for (i = 0; i < CORRESPOND_POINTS; i++)
   {
-    rotatedRP_point = rot_rp * picked_points[i].cast<double>();
+    rotatedRP_point = rot_rp * picked_points[i].cast< double >();
     // t_z
     t_z += (world_points[i][2] - rotatedRP_point[2]) / CORRESPOND_POINTS;
   }
@@ -545,8 +545,8 @@ int MyCalibration::calcurateExtrinsicParameters(double convertion_th, int conver
       grad_E = Eigen::Vector3d::Zero();
       for (i = 0; i < CORRESPOND_POINTS; i++)
       {
-        Eigen::Vector3d rotated_point = rot * (picked_points[i].cast<double>());
-        Eigen::Vector3d world_point = world_points[i].cast<double>();
+        Eigen::Vector3d rotated_point = rot * (picked_points[i].cast< double >());
+        Eigen::Vector3d world_point = world_points[i].cast< double >();
         grad_E[0] += 2.0 * ((world_point[0] - t_x) * rotated_point[1] - (world_point[1] - t_y) * rotated_point[0]);
         grad_E[1] -= 2.0 * (world_point[0] - (rotated_point[0] + t_x));
         grad_E[2] -= 2.0 * (world_point[1] - (rotated_point[1] + t_y));
@@ -589,7 +589,7 @@ int MyCalibration::calcurateExtrinsicParameters(double convertion_th, int conver
       E_prev = E;
 
       double min;
-      min = std::numeric_limits<double>::infinity();
+      min = std::numeric_limits< double >::infinity();
       for (i = 0; i < 6; i++)
       {
         switch (i)
@@ -755,13 +755,13 @@ int MyCalibration::pickPointsAutomatically(int pattern_rows, int pattern_cols)
 
   // openni::VideoFrameRef frame;
   bool pattern_found;
-  std::vector<cv::Point2f> corners;
+  std::vector< cv::Point2f > corners;
   cv::namedWindow("Detecting points");
   for (i = 0; i < image.rows; i++)
   {
     for (j = 0; j < image.cols; j++)
     {
-      image_chess.at<cv::Vec3b>(i, j) = cv::Vec3b(255, 255, 255);
+      image_chess.at< cv::Vec3b >(i, j) = cv::Vec3b(255, 255, 255);
     }
   }
 
@@ -778,7 +778,7 @@ int MyCalibration::pickPointsAutomatically(int pattern_rows, int pattern_cols)
       {
         for (j = 0; j < CAMERA_RESOLUTION_X; j++)
         {
-          image.at<cv::Vec3b>(i, j) = cv::Vec3b(255, 255, 255);
+          image.at< cv::Vec3b >(i, j) = cv::Vec3b(255, 255, 255);
         }
       }
     }
@@ -792,7 +792,7 @@ int MyCalibration::pickPointsAutomatically(int pattern_rows, int pattern_cols)
         int now = (i * CAMERA_RESOLUTION_X + j);
         if (*(float*)(dp + now) == INVALID_PIXEL_VALUE)
         {
-          image.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 0);
+          image.at< cv::Vec3b >(i, j) = cv::Vec3b(0, 0, 0);
         }
       }
     }

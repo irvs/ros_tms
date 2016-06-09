@@ -15,7 +15,7 @@ ros::Publisher rps_map_pub;
 ros::ServiceClient commander_to_get_movable_furnitures_info;
 ros::ServiceClient commander_to_get_robots_info;
 
-vector<vector<CollisionMapData>> temp_Map, init_Map;
+vector< vector< CollisionMapData > > temp_Map, init_Map;
 tms_msg_rp::rps_map_full pub_Map;
 string msg;
 
@@ -46,7 +46,7 @@ void map_make(const tms_msg_ss::fss_class_data::ConstPtr &msgClass)
         for (unsigned int j = 0; j < iLengthx; j++)
         {
           //~ cout<<"X1:"<<msgClass->LrfData[i].fX1[j]<<"	Y1:"<<msgClass->LrfData[i].fY1[j]<<"
-          //X2:"<<msgClass->LrfData[i].fX2[j]<<"	Y2:"<<msgClass->LrfData[i].fY2[j]<<endl;
+          // X2:"<<msgClass->LrfData[i].fX2[j]<<"	Y2:"<<msgClass->LrfData[i].fY2[j]<<endl;
           convertPos(msgClass->LrfData[i].fX1[j] / 1000.0, msgClass->LrfData[i].fY1[j] / 1000.0, map_x, map_y);
           //~ cout<<"	map_X1:"<<map_x<<"	map_Y1:"<<map_y<<endl;
           temp_Map[map_x][map_y].object = 1;
@@ -78,11 +78,11 @@ int main(int argc, char **argv)
 
   ros::NodeHandle n;
   ros::Subscriber fss_class_data_subscriber = n.subscribe("fss_class_data", 1, map_make);
-  rps_map_pub = n.advertise<tms_msg_rp::rps_map_full>("rps_map_data", 1);
+  rps_map_pub = n.advertise< tms_msg_rp::rps_map_full >("rps_map_data", 1);
 
   commander_to_get_movable_furnitures_info =
-      n.serviceClient<tms_msg_db::tmsdb_get_movable_furnitures_info>("tmsdb_get_movable_furnitures_info");
-  commander_to_get_robots_info = n.serviceClient<tms_msg_db::tmsdb_get_robots_info>("tmsdb_get_robots_info");
+      n.serviceClient< tms_msg_db::tmsdb_get_movable_furnitures_info >("tmsdb_get_movable_furnitures_info");
+  commander_to_get_robots_info = n.serviceClient< tms_msg_db::tmsdb_get_robots_info >("tmsdb_get_robots_info");
 
   initCollisionMap(init_Map);
   setVoronoiLine(init_Map, msg);

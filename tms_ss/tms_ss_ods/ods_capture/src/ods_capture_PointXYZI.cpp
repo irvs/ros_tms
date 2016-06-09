@@ -5,7 +5,7 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
   std::cout << "callback1 " << n << std::endl;
   if (n <= 3)
   {
-    pcl::PointCloud<PointType1>::Ptr cloud(new pcl::PointCloud<PointType1>);
+    pcl::PointCloud< PointType1 >::Ptr cloud(new pcl::PointCloud< PointType1 >);
     pcl::fromROSMsg(*input, *cloud);
 
     pcl::io::savePCDFile("src/ods_capture/data/PointXYZI/input.pcd", *cloud, false);
@@ -21,8 +21,8 @@ void callback2(const sensor_msgs::Image::ConstPtr& input)
   std::cout << "callback2 " << n << std::endl;
 
   n++;
-  pcl::PointCloud<PointType1>::Ptr cloud_src(new pcl::PointCloud<PointType1>);
-  pcl::PointCloud<PointType2>::Ptr cloud_cbr(new pcl::PointCloud<PointType2>);
+  pcl::PointCloud< PointType1 >::Ptr cloud_src(new pcl::PointCloud< PointType1 >);
+  pcl::PointCloud< PointType2 >::Ptr cloud_cbr(new pcl::PointCloud< PointType2 >);
   pcl::io::loadPCDFile("src/ods_capture/data/PointXYZI/input.pcd", *cloud_src);
   pcl::copyPointCloud(*cloud_src, *cloud_cbr);
 

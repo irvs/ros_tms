@@ -75,8 +75,8 @@ using namespace NEWMAT;
 #endif
 
 #define NITMAX 1000  //!< def maximum number of iterations in inv_kin
-#ifdef USING_FLOAT  // from newmat's include.h
-#define ITOL 1e-4  //!< def tolerance for the end of iterations in inv_kin
+#ifdef USING_FLOAT   // from newmat's include.h
+#define ITOL 1e-4    //!< def tolerance for the end of iterations in inv_kin
 #else
 #define ITOL 1e-6  //!< def tolerance for the end of iterations in inv_kin
 #endif

@@ -14,12 +14,12 @@ int main(int argc, char *argv[])
   ros::NodeHandle n;
   ROS_INFO("ros_katana_test2 : init");
 
-  ros::ServiceClient client0 = n.serviceClient<tms_msg_rc::gripper_action>("katana_gripper_action");
-  ros::ServiceClient client1 = n.serviceClient<tms_msg_rc::katana_pos_array>("katana_move_angle_array");
-  ros::ServiceClient client2 = n.serviceClient<tms_msg_rc::katana_pos_array>("katana_move_pose_array");
-  ros::ServiceClient client3 = n.serviceClient<tms_msg_rc::katana_pos_array>("katana_move_enc");
-  ros::ServiceClient client4 = n.serviceClient<tms_msg_rc::katana_pos_array>("katana_move_motor_angle");
-  ros::ServiceClient client5 = n.serviceClient<tms_msg_rc::katana_pos_single>("katana_move_motor_angle");
+  ros::ServiceClient client0 = n.serviceClient< tms_msg_rc::gripper_action >("katana_gripper_action");
+  ros::ServiceClient client1 = n.serviceClient< tms_msg_rc::katana_pos_array >("katana_move_angle_array");
+  ros::ServiceClient client2 = n.serviceClient< tms_msg_rc::katana_pos_array >("katana_move_pose_array");
+  ros::ServiceClient client3 = n.serviceClient< tms_msg_rc::katana_pos_array >("katana_move_enc");
+  ros::ServiceClient client4 = n.serviceClient< tms_msg_rc::katana_pos_array >("katana_move_motor_angle");
+  ros::ServiceClient client5 = n.serviceClient< tms_msg_rc::katana_pos_single >("katana_move_motor_angle");
 
   tms_msg_rc::gripper_action srv0;
   tms_msg_rc::katana_pos_array srv1;

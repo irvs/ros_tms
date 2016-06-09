@@ -36,8 +36,8 @@ typedef struct
   double sTime;
   double eTime;
   int behavior;
-  std::vector<float> fCenterX;
-  std::vector<float> fCenterY;
+  std::vector< float > fCenterX;
+  std::vector< float > fCenterY;
 } HumanBehavior;
 
 //------------------------------------------------------------------------------

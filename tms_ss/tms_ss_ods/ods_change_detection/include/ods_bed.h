@@ -34,8 +34,8 @@ ros::ServiceClient commander_to_ods_object_data;
 
 typedef struct
 {
-  pcl::PointCloud<pcl::PointXYZRGB> cloud_rgb;
-  pcl::PointCloud<pcl::PointXYZHSV> cloud_hsv;
+  pcl::PointCloud< pcl::PointXYZRGB > cloud_rgb;
+  pcl::PointCloud< pcl::PointXYZHSV > cloud_hsv;
   pcl::PointXYZ g;
   int map[MAP_X][MAP_Y];
   float histogram[MAP_H][MAP_S];  // H-Sヒストグラム
@@ -83,7 +83,7 @@ typedef struct
   float value;    // histogram[index_h][index_s]の値
 } TYPE;
 
-std::vector<object_map> Object_Map;
+std::vector< object_map > Object_Map;
 Model m_size;
 Robot robot;
 Robot sensor;

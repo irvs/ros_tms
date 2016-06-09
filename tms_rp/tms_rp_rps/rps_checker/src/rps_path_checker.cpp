@@ -32,13 +32,13 @@ bool set_path_flg = false;
 enum PATH_ALARM path_alarm;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void path_comp(vector<vector<double>> in_path, vector<vector<double>>& out_path)
+void path_comp(vector< vector< double > > in_path, vector< vector< double > >& out_path)
 {
   double incre_th = deg2rad(1.0);
   double d_norm;
 
   out_path.clear();
-  std::vector<double> temp_pos, next_pos, d_vector;
+  std::vector< double > temp_pos, next_pos, d_vector;
   temp_pos.resize(3);
   next_pos.resize(3);
   d_vector.resize(3);
@@ -102,8 +102,8 @@ void path_comp(vector<vector<double>> in_path, vector<vector<double>>& out_path)
 bool set_robot_path(tms_msg_rp::rps_path_checking::Request& req, tms_msg_rp::rps_path_checking::Response& res)
 {
   cout << "set robot path..." << endl;
-  vector<vector<double>> smoothing_path, complement_path;
-  vector<double> temp_pos;
+  vector< vector< double > > smoothing_path, complement_path;
+  vector< double > temp_pos;
   smoothing_path.clear();
   complement_path.clear();
   temp_pos.resize(3);
@@ -187,7 +187,7 @@ void path_check(const tms_msg_rp::rps_map_full::ConstPtr& RPS_MAP)
   tms_msg_rp::rps_path_alarm msg_path_alarm;
   msg_path_alarm.rps_route.clear();
 
-  vector<double> start, end;
+  vector< double > start, end;
   start.resize(3);
   end.resize(3);
 
@@ -334,7 +334,7 @@ void path_check(const tms_msg_rp::rps_map_full::ConstPtr& RPS_MAP)
   }
 }
 
-void MAP_time_init(vector<vector<map_data>>& Map)
+void MAP_time_init(vector< vector< map_data > >& Map)
 {
   for (unsigned int x = 0; x < Map.size(); x++)
   {  //初期化
@@ -360,13 +360,13 @@ int main(int argc, char** argv)
   path_alarm = NOT_PATH;
 
   ros::ServiceServer service_path_checking = n.advertiseService("rps_path_checking", set_robot_path);
-  client_voronoi_path = n.serviceClient<tms_msg_rp::rps_voronoi_path_planning>("rps_voronoi_path_planning");
-  commander_to_get_robots_info = n.serviceClient<tms_msg_db::tmsdb_get_robots_info>("tmsdb_get_robots_info");
+  client_voronoi_path = n.serviceClient< tms_msg_rp::rps_voronoi_path_planning >("rps_voronoi_path_planning");
+  commander_to_get_robots_info = n.serviceClient< tms_msg_db::tmsdb_get_robots_info >("tmsdb_get_robots_info");
 
   ros::Subscriber rps_map_subscriber = n.subscribe("rps_map_data", 1, path_check);
-  rps_robot_path_pub = n.advertise<tms_msg_rp::rps_route>("rps_robot_path", 1);
-  rps_path_pub = n.advertise<tms_msg_rp::rps_route>("rps_plan_path", 1);
-  rps_path_alarm_pub = n.advertise<tms_msg_rp::rps_path_alarm>("rps_path_alarm", 1);
+  rps_robot_path_pub = n.advertise< tms_msg_rp::rps_route >("rps_robot_path", 1);
+  rps_path_pub = n.advertise< tms_msg_rp::rps_route >("rps_plan_path", 1);
+  rps_path_alarm_pub = n.advertise< tms_msg_rp::rps_path_alarm >("rps_path_alarm", 1);
 
   ros::spin();
 

@@ -5,7 +5,7 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
   std::cout << "Callback " << n << std::endl;
   if (n <= 1)
   {
-    pcl::PointCloud<PointType1>::Ptr cloud(new pcl::PointCloud<PointType1>);
+    pcl::PointCloud< PointType1 >::Ptr cloud(new pcl::PointCloud< PointType1 >);
 
     pcl::fromROSMsg(*input, *cloud);
 

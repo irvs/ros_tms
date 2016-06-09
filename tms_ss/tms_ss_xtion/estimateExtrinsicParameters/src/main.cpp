@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     }
     std::string args(optarg);
     std::string delim(",");
-    std::vector<std::string> list_args;
+    std::vector< std::string > list_args;
     switch (option)
     {
       case 'h':

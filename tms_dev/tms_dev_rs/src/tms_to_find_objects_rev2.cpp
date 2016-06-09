@@ -55,10 +55,10 @@ unsigned int uiTagDataSize_spfm;
 unsigned int uiTagDataSize_spbm;
 unsigned int uiTagDataSize_splh;
 unsigned int uiTagDataSize_sprh;
-std::vector<uint8_t> ucTagData_spfm;
-std::vector<uint8_t> ucTagData_spbm;
-std::vector<uint8_t> ucTagData_splh;
-std::vector<uint8_t> ucTagData_sprh;
+std::vector< uint8_t > ucTagData_spfm;
+std::vector< uint8_t > ucTagData_spbm;
+std::vector< uint8_t > ucTagData_splh;
+std::vector< uint8_t > ucTagData_sprh;
 
 tms_msg_rp::tms_ts_find_objects::Request task_find_objects_information;
 
@@ -148,10 +148,10 @@ bool tms_to_find_objects_func(tms_msg_rp::tms_ts_find_objects::Request& req,
   ros::Rate r(10);
 
   tms_msg_db::tmsdb_get_furnitures_info srv01;  // get furnitures info
-  tms_msg_db::tmsdb_get_robots_info srv02;  // get robots info
-  tms_msg_db::tmsdb_get_pcd_info srv03;  // get pcd info
-  tms_msg_db::tmsdb_file_conservation srv04;  // insert file to TMSDB
-  tms_msg_db::tmsdb_objects_data srv05;  // INSERT OBJECT_DATA
+  tms_msg_db::tmsdb_get_robots_info srv02;      // get robots info
+  tms_msg_db::tmsdb_get_pcd_info srv03;         // get pcd info
+  tms_msg_db::tmsdb_file_conservation srv04;    // insert file to TMSDB
+  tms_msg_db::tmsdb_objects_data srv05;         // INSERT OBJECT_DATA
 
   tms_msg_rp::rps_goal_planning srv1;
   tms_msg_rp::rps_path_planning srv2;
@@ -674,13 +674,13 @@ bool tms_to_find_objects_func(tms_msg_rp::tms_ts_find_objects::Request& req,
       srv11.request.unit = 2;
       srv11.request.cmd = 15;
       srv11.request.arg.push_back(-1.51573);  // 1
-      srv11.request.arg.push_back(-4.0);  // 2
-      srv11.request.arg.push_back(6.4605);  // 3
-      srv11.request.arg.push_back(1.09681);  // 4
-      srv11.request.arg.push_back(0.0);  // 5
-      srv11.request.arg.push_back(8.23093);  // 6
+      srv11.request.arg.push_back(-4.0);      // 2
+      srv11.request.arg.push_back(6.4605);    // 3
+      srv11.request.arg.push_back(1.09681);   // 4
+      srv11.request.arg.push_back(0.0);       // 5
+      srv11.request.arg.push_back(8.23093);   // 6
       srv11.request.arg.push_back(-1.56232);  // 7
-      srv11.request.arg.push_back(30.0);  // vel
+      srv11.request.arg.push_back(30.0);      // vel
       if (client11.call(srv11))
         ROS_INFO("result: %d", srv11.response.result);
       else
@@ -692,14 +692,14 @@ bool tms_to_find_objects_func(tms_msg_rp::tms_ts_find_objects::Request& req,
       srv11.request.arg.clear();
       srv11.request.unit = 2;
       srv11.request.cmd = 15;
-      srv11.request.arg.push_back(-40.0);  // 1
-      srv11.request.arg.push_back(-4.0);  // 2
-      srv11.request.arg.push_back(80.0);  // 3
-      srv11.request.arg.push_back(75.0);  // 4
-      srv11.request.arg.push_back(0.0);  // 5
-      srv11.request.arg.push_back(8.23093);  // 6
+      srv11.request.arg.push_back(-40.0);     // 1
+      srv11.request.arg.push_back(-4.0);      // 2
+      srv11.request.arg.push_back(80.0);      // 3
+      srv11.request.arg.push_back(75.0);      // 4
+      srv11.request.arg.push_back(0.0);       // 5
+      srv11.request.arg.push_back(8.23093);   // 6
       srv11.request.arg.push_back(-1.56232);  // 7
-      srv11.request.arg.push_back(30.0);  // vel
+      srv11.request.arg.push_back(30.0);      // vel
       if (client11.call(srv11))
         ROS_INFO("result: %d", srv11.response.result);
       else
@@ -713,12 +713,12 @@ bool tms_to_find_objects_func(tms_msg_rp::tms_ts_find_objects::Request& req,
       srv11.request.cmd = 15;
       srv11.request.arg.push_back(-35.1028);  // 1
       srv11.request.arg.push_back(-3.32541);  // 2
-      srv11.request.arg.push_back(55.6545);  // 3
-      srv11.request.arg.push_back(81.5873);  // 4
-      srv11.request.arg.push_back(23.4591);  // 5
-      srv11.request.arg.push_back(13.8435);  // 6
+      srv11.request.arg.push_back(55.6545);   // 3
+      srv11.request.arg.push_back(81.5873);   // 4
+      srv11.request.arg.push_back(23.4591);   // 5
+      srv11.request.arg.push_back(13.8435);   // 6
       srv11.request.arg.push_back(0.211368);  // 7
-      srv11.request.arg.push_back(30.0);  // vel
+      srv11.request.arg.push_back(30.0);      // vel
       if (client11.call(srv11))
         ROS_INFO("result: %d", srv11.response.result);
       else
@@ -730,14 +730,14 @@ bool tms_to_find_objects_func(tms_msg_rp::tms_ts_find_objects::Request& req,
       srv11.request.arg.clear();
       srv11.request.unit = 2;
       srv11.request.cmd = 15;
-      srv11.request.arg.push_back(-32.988);  // 1
+      srv11.request.arg.push_back(-32.988);   // 1
       srv11.request.arg.push_back(-3.07647);  // 2
-      srv11.request.arg.push_back(44.2093);  // 3
-      srv11.request.arg.push_back(84.4797);  // 4
-      srv11.request.arg.push_back(34.854);  // 5
-      srv11.request.arg.push_back(20.0595);  // 6
+      srv11.request.arg.push_back(44.2093);   // 3
+      srv11.request.arg.push_back(84.4797);   // 4
+      srv11.request.arg.push_back(34.854);    // 5
+      srv11.request.arg.push_back(20.0595);   // 6
       srv11.request.arg.push_back(0.289368);  // 7
-      srv11.request.arg.push_back(30.0);  // vel
+      srv11.request.arg.push_back(30.0);      // vel
       if (client11.call(srv11))
         ROS_INFO("result: %d", srv11.response.result);
       else
@@ -751,12 +751,12 @@ bool tms_to_find_objects_func(tms_msg_rp::tms_ts_find_objects::Request& req,
       srv11.request.cmd = 15;
       srv11.request.arg.push_back(-32.5664);  // 1
       srv11.request.arg.push_back(-3.13708);  // 2
-      srv11.request.arg.push_back(39.5044);  // 3
-      srv11.request.arg.push_back(85.1802);  // 4
-      srv11.request.arg.push_back(40.4139);  // 5
-      srv11.request.arg.push_back(21.9173);  // 6
+      srv11.request.arg.push_back(39.5044);   // 3
+      srv11.request.arg.push_back(85.1802);   // 4
+      srv11.request.arg.push_back(40.4139);   // 5
+      srv11.request.arg.push_back(21.9173);   // 6
       srv11.request.arg.push_back(0.270378);  // 7
-      srv11.request.arg.push_back(30.0);  // vel
+      srv11.request.arg.push_back(30.0);      // vel
       if (client11.call(srv11))
         ROS_INFO("result: %d", srv11.response.result);
       else
@@ -768,14 +768,14 @@ bool tms_to_find_objects_func(tms_msg_rp::tms_ts_find_objects::Request& req,
       srv11.request.arg.clear();
       srv11.request.unit = 2;
       srv11.request.cmd = 15;
-      srv11.request.arg.push_back(-30.0);  // 1
-      srv11.request.arg.push_back(-4.0);  // 2
-      srv11.request.arg.push_back(6.4605);  // 3
-      srv11.request.arg.push_back(90.0);  // 4
-      srv11.request.arg.push_back(89.0);  // 5
-      srv11.request.arg.push_back(36.0);  // 6
+      srv11.request.arg.push_back(-30.0);     // 1
+      srv11.request.arg.push_back(-4.0);      // 2
+      srv11.request.arg.push_back(6.4605);    // 3
+      srv11.request.arg.push_back(90.0);      // 4
+      srv11.request.arg.push_back(89.0);      // 5
+      srv11.request.arg.push_back(36.0);      // 6
       srv11.request.arg.push_back(-1.56232);  // 7
-      srv11.request.arg.push_back(30.0);  // vel
+      srv11.request.arg.push_back(30.0);      // vel
       if (client11.call(srv11))
         ROS_INFO("result: %d", srv11.response.result);
       else
@@ -787,14 +787,14 @@ bool tms_to_find_objects_func(tms_msg_rp::tms_ts_find_objects::Request& req,
       srv11.request.arg.clear();
       srv11.request.unit = 2;
       srv11.request.cmd = 15;
-      srv11.request.arg.push_back(20.0);  // 1
-      srv11.request.arg.push_back(-4.0);  // 2
-      srv11.request.arg.push_back(15.0);  // 3
-      srv11.request.arg.push_back(30.0);  // 4
-      srv11.request.arg.push_back(89.0);  // 5
-      srv11.request.arg.push_back(36.0);  // 6
+      srv11.request.arg.push_back(20.0);      // 1
+      srv11.request.arg.push_back(-4.0);      // 2
+      srv11.request.arg.push_back(15.0);      // 3
+      srv11.request.arg.push_back(30.0);      // 4
+      srv11.request.arg.push_back(89.0);      // 5
+      srv11.request.arg.push_back(36.0);      // 6
       srv11.request.arg.push_back(-1.56232);  // 7
-      srv11.request.arg.push_back(30.0);  // vel
+      srv11.request.arg.push_back(30.0);      // vel
       if (client11.call(srv11))
         ROS_INFO("result: %d", srv11.response.result);
       else
@@ -893,8 +893,8 @@ bool tms_to_find_objects_func(tms_msg_rp::tms_ts_find_objects::Request& req,
       srv05.request.x = srv4.response.objects.poses[0].position.x;  //本来ここは検索した場所のIDで
       srv05.request.y = srv4.response.objects.poses[0].position.y;
       srv05.request.z = srv4.response.objects.poses[0].position.z;
-      srv05.request.theta = 0.0;  //これはどうしよう…
-      srv05.request.state = 2;  // 2=found
+      srv05.request.theta = 0.0;                          //これはどうしよう…
+      srv05.request.state = 2;                            // 2=found
       srv05.request.place = req.search_furnitures_id[i];  //探した家具のIDを突っ込む
 
       ROS_INFO("OBJECTS_DATA_INSERT");
@@ -907,14 +907,14 @@ bool tms_to_find_objects_func(tms_msg_rp::tms_ts_find_objects::Request& req,
     srv11.request.arg.clear();
     srv11.request.unit = 2;
     srv11.request.cmd = 15;
-    srv11.request.arg.push_back(-30.0);  // 1
-    srv11.request.arg.push_back(-4.0);  // 2
-    srv11.request.arg.push_back(6.4605);  // 3
-    srv11.request.arg.push_back(90.0);  // 4
-    srv11.request.arg.push_back(89.0);  // 5
-    srv11.request.arg.push_back(36.0);  // 6
+    srv11.request.arg.push_back(-30.0);     // 1
+    srv11.request.arg.push_back(-4.0);      // 2
+    srv11.request.arg.push_back(6.4605);    // 3
+    srv11.request.arg.push_back(90.0);      // 4
+    srv11.request.arg.push_back(89.0);      // 5
+    srv11.request.arg.push_back(36.0);      // 6
     srv11.request.arg.push_back(-1.56232);  // 7
-    srv11.request.arg.push_back(30.0);  // vel
+    srv11.request.arg.push_back(30.0);      // vel
     if (client11.call(srv11))
       ROS_INFO("result: %d", srv11.response.result);
     else
@@ -928,12 +928,12 @@ bool tms_to_find_objects_func(tms_msg_rp::tms_ts_find_objects::Request& req,
     srv11.request.cmd = 15;
     srv11.request.arg.push_back(-32.5664);  // 1
     srv11.request.arg.push_back(-3.13708);  // 2
-    srv11.request.arg.push_back(39.5044);  // 3
-    srv11.request.arg.push_back(85.1802);  // 4
-    srv11.request.arg.push_back(40.4139);  // 5
-    srv11.request.arg.push_back(21.9173);  // 6
+    srv11.request.arg.push_back(39.5044);   // 3
+    srv11.request.arg.push_back(85.1802);   // 4
+    srv11.request.arg.push_back(40.4139);   // 5
+    srv11.request.arg.push_back(21.9173);   // 6
     srv11.request.arg.push_back(0.270378);  // 7
-    srv11.request.arg.push_back(30.0);  // vel
+    srv11.request.arg.push_back(30.0);      // vel
     if (client11.call(srv11))
       ROS_INFO("result: %d", srv11.response.result);
     else
@@ -945,14 +945,14 @@ bool tms_to_find_objects_func(tms_msg_rp::tms_ts_find_objects::Request& req,
     srv11.request.arg.clear();
     srv11.request.unit = 2;
     srv11.request.cmd = 15;
-    srv11.request.arg.push_back(-32.988);  // 1
+    srv11.request.arg.push_back(-32.988);   // 1
     srv11.request.arg.push_back(-3.07647);  // 2
-    srv11.request.arg.push_back(44.2093);  // 3
-    srv11.request.arg.push_back(84.4797);  // 4
-    srv11.request.arg.push_back(34.854);  // 5
-    srv11.request.arg.push_back(20.0595);  // 6
+    srv11.request.arg.push_back(44.2093);   // 3
+    srv11.request.arg.push_back(84.4797);   // 4
+    srv11.request.arg.push_back(34.854);    // 5
+    srv11.request.arg.push_back(20.0595);   // 6
     srv11.request.arg.push_back(0.289368);  // 7
-    srv11.request.arg.push_back(30.0);  // vel
+    srv11.request.arg.push_back(30.0);      // vel
     if (client11.call(srv11))
       ROS_INFO("result: %d", srv11.response.result);
     else
@@ -966,12 +966,12 @@ bool tms_to_find_objects_func(tms_msg_rp::tms_ts_find_objects::Request& req,
     srv11.request.cmd = 15;
     srv11.request.arg.push_back(-35.1028);  // 1
     srv11.request.arg.push_back(-3.32541);  // 2
-    srv11.request.arg.push_back(55.6545);  // 3
-    srv11.request.arg.push_back(81.5873);  // 4
-    srv11.request.arg.push_back(23.4591);  // 5
-    srv11.request.arg.push_back(13.8435);  // 6
+    srv11.request.arg.push_back(55.6545);   // 3
+    srv11.request.arg.push_back(81.5873);   // 4
+    srv11.request.arg.push_back(23.4591);   // 5
+    srv11.request.arg.push_back(13.8435);   // 6
     srv11.request.arg.push_back(0.211368);  // 7
-    srv11.request.arg.push_back(30.0);  // vel
+    srv11.request.arg.push_back(30.0);      // vel
     if (client11.call(srv11))
       ROS_INFO("result: %d", srv11.response.result);
     else
@@ -983,14 +983,14 @@ bool tms_to_find_objects_func(tms_msg_rp::tms_ts_find_objects::Request& req,
     srv11.request.arg.clear();
     srv11.request.unit = 2;
     srv11.request.cmd = 15;
-    srv11.request.arg.push_back(-40.0);  // 1
-    srv11.request.arg.push_back(-4.0);  // 2
-    srv11.request.arg.push_back(80.0);  // 3
-    srv11.request.arg.push_back(75.0);  // 4
-    srv11.request.arg.push_back(0.0);  // 5
-    srv11.request.arg.push_back(8.23093);  // 6
+    srv11.request.arg.push_back(-40.0);     // 1
+    srv11.request.arg.push_back(-4.0);      // 2
+    srv11.request.arg.push_back(80.0);      // 3
+    srv11.request.arg.push_back(75.0);      // 4
+    srv11.request.arg.push_back(0.0);       // 5
+    srv11.request.arg.push_back(8.23093);   // 6
     srv11.request.arg.push_back(-1.56232);  // 7
-    srv11.request.arg.push_back(30.0);  // vel
+    srv11.request.arg.push_back(30.0);      // vel
     if (client11.call(srv11))
       ROS_INFO("result: %d", srv11.response.result);
     else
@@ -1003,13 +1003,13 @@ bool tms_to_find_objects_func(tms_msg_rp::tms_ts_find_objects::Request& req,
     srv11.request.unit = 2;
     srv11.request.cmd = 15;
     srv11.request.arg.push_back(-1.51573);  // 1
-    srv11.request.arg.push_back(-4.0);  // 2
-    srv11.request.arg.push_back(6.4605);  // 3
-    srv11.request.arg.push_back(1.09681);  // 4
-    srv11.request.arg.push_back(0.0);  // 5
-    srv11.request.arg.push_back(8.23093);  // 6
+    srv11.request.arg.push_back(-4.0);      // 2
+    srv11.request.arg.push_back(6.4605);    // 3
+    srv11.request.arg.push_back(1.09681);   // 4
+    srv11.request.arg.push_back(0.0);       // 5
+    srv11.request.arg.push_back(8.23093);   // 6
     srv11.request.arg.push_back(-1.56232);  // 7
-    srv11.request.arg.push_back(30.0);  // vel
+    srv11.request.arg.push_back(30.0);      // vel
     if (client11.call(srv11))
       ROS_INFO("result: %d", srv11.response.result);
     else
@@ -1137,24 +1137,24 @@ int main(int argc, char** argv)
   service1 = n.advertiseService("tms_ts_find_objects", tms_to_find_objects_func);
 
   // 0X ... TMSDBと
-  client01 = n.serviceClient<tms_msg_db::tmsdb_get_furnitures_info>("tmsdb_get_furnitures_info");
-  client02 = n.serviceClient<tms_msg_db::tmsdb_get_robots_info>("tmsdb_get_robots_info");
-  client03 = n.serviceClient<tms_msg_db::tmsdb_get_pcd_info>("tmsdb_get_pcd_info");
-  client04 = n.serviceClient<tms_msg_db::tmsdb_file_conservation>("tmsdb_file_conservation");
-  client05 = n.serviceClient<tms_msg_db::tmsdb_objects_data>("tmsdb_objects_data_1");
+  client01 = n.serviceClient< tms_msg_db::tmsdb_get_furnitures_info >("tmsdb_get_furnitures_info");
+  client02 = n.serviceClient< tms_msg_db::tmsdb_get_robots_info >("tmsdb_get_robots_info");
+  client03 = n.serviceClient< tms_msg_db::tmsdb_get_pcd_info >("tmsdb_get_pcd_info");
+  client04 = n.serviceClient< tms_msg_db::tmsdb_file_conservation >("tmsdb_file_conservation");
+  client05 = n.serviceClient< tms_msg_db::tmsdb_objects_data >("tmsdb_objects_data_1");
 
-  client1 = n.serviceClient<tms_msg_rp::rps_goal_planning>("rps_goal_planning");
-  client2 = n.serviceClient<tms_msg_rp::rps_path_planning>("rps_path_planning");
-  client3 = n.serviceClient<tms_msg_rp::rps_robot_drive>("rps_robot_drive");
-  client4 = n.serviceClient<tms_msg_ss::ods_change_detection>("ods_change_dt");
+  client1 = n.serviceClient< tms_msg_rp::rps_goal_planning >("rps_goal_planning");
+  client2 = n.serviceClient< tms_msg_rp::rps_path_planning >("rps_path_planning");
+  client3 = n.serviceClient< tms_msg_rp::rps_robot_drive >("rps_robot_drive");
+  client4 = n.serviceClient< tms_msg_ss::ods_change_detection >("ods_change_dt");
 
-  client8 = n.serviceClient<tms_msg_rp::rps_arm_drive>("rps_arm_drive");
+  client8 = n.serviceClient< tms_msg_rp::rps_arm_drive >("rps_arm_drive");
   //	client2 = n.serviceClient<tmsdb::tmsdb_modify_person_behavior>("tmsdb_modify_person_behavior");
   //	client3 = n.serviceClient<tmsdb::tmsdb_modify_missing_objects>("tmsdb_modify_missing_objects");
   //	client9 = n.serviceClient<tms_msg_rc::tag_data>("rts_read_tag");
 
-  client10 = n.serviceClient<tms_msg_rp::rps_command_to_move_smartpal>("rps_smartpal_path");
-  client11 = n.serviceClient<tms_msg_rc::smartpal_control>("sp4_control");
+  client10 = n.serviceClient< tms_msg_rp::rps_command_to_move_smartpal >("rps_smartpal_path");
+  client11 = n.serviceClient< tms_msg_rc::smartpal_control >("sp4_control");
 
   ROS_INFO("tms_to_find_objects_rev2 : wait");
 

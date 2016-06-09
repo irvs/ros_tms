@@ -35,8 +35,8 @@ pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 #include <fstream>
 #include <string>
 
-std::vector<float> scanData;
-std::vector<float> scanData1;
+std::vector< float > scanData;
+std::vector< float > scanData1;
 CLaser laser;
 bool CallbackCalled = false;
 bool CallbackCalled1 = false;
@@ -98,10 +98,10 @@ void *Processing(void *ptr)
 {
   CMultipleParticleFilter m_PF;
 
-  std::vector<int> lrf_number;
-  std::vector<double> lrf_cls_x;
-  std::vector<double> lrf_cls_y;
-  std::vector<int> length;
+  std::vector< int > lrf_number;
+  std::vector< double > lrf_cls_x;
+  std::vector< double > lrf_cls_y;
+  std::vector< int > length;
 
   tms_msg_ss::tracking_cluster cluster;
   tms_msg_ss::tracking_clusters_data clusters;
@@ -326,8 +326,8 @@ int main(int argc, char **argv)
 
   ros::init(argc, argv, "moving_object_tracker");
   ros::NodeHandle n;
-  ros::Publisher pub = n.advertise<tms_msg_ss::tracking_points>("tracking_points", 10);
-  ros::Publisher pub1 = n.advertise<tms_msg_ss::tracking_clusters_data>("clusters_data", 10);
+  ros::Publisher pub = n.advertise< tms_msg_ss::tracking_points >("tracking_points", 10);
+  ros::Publisher pub1 = n.advertise< tms_msg_ss::tracking_clusters_data >("clusters_data", 10);
   ros::Subscriber sub = n.subscribe("/urg2/most_intense", 10, LaserSensingCallback);
   ros::Subscriber sub1 = n.subscribe("/urg1/most_intense", 10, LaserSensingCallback1);
 

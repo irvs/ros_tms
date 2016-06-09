@@ -70,8 +70,8 @@ class Evaluator
 private:
   ros::NodeHandle* nh_;
   ros::ServiceServer sever_;
-  std::vector<Object> objects_;
-  std::vector<Object*> objects_ptr_;
+  std::vector< Object > objects_;
+  std::vector< Object* > objects_ptr_;
   Object object_tmp_;
 
   double yaw_;
@@ -91,7 +91,7 @@ private:
 public:
   Evaluator(ros::NodeHandle* nh);
   ~Evaluator();
-  void StoreAddress(std::vector<Object*>* object, std::vector<Object>* object_data);
+  void StoreAddress(std::vector< Object* >* object, std::vector< Object >* object_data);
   bool CallBack(tms_ur_gaze_server::object_list::Request& req, tms_ur_gaze_server::object_list::Response& res);
 };
 

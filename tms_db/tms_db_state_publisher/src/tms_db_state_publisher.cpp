@@ -65,9 +65,9 @@ public:
     // Init target name
     ROS_ASSERT(initDbStatePublisher());
     data_sub = nh.subscribe("/tms_db_publisher", 1, &DbStatePublisher::dbTFCallback, this);
-    state_pub = nh.advertise<sensor_msgs::JointState>("/joint_states", 10);
-    get_data_client_ = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
-    skeleton_pub = nh.advertise<tms_msg_ss::SkeletonArray>("integrated_skeleton_stream", 1);
+    state_pub = nh.advertise< sensor_msgs::JointState >("/joint_states", 10);
+    get_data_client_ = nh.serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader");
+    skeleton_pub = nh.advertise< tms_msg_ss::SkeletonArray >("integrated_skeleton_stream", 1);
   }
 
   //----------------------------------------------------------------------------
@@ -103,9 +103,9 @@ private:
       return;
 
     bool type2003;
-    nh.param<bool>("/2003_is_real", type2003, true);
+    nh.param< bool >("/2003_is_real", type2003, true);
     bool type2009;
-    nh.param<bool>("/2009_is_real", type2009, true);
+    nh.param< bool >("/2009_is_real", type2009, true);
 
     for (uint32_t i = 0; i < msg->tmsdb.size(); i++)
     {
@@ -129,7 +129,7 @@ private:
 
           if (joint != "")
           {
-            std::vector<std::string> v_joint;
+            std::vector< std::string > v_joint;
             v_joint.clear();
             boost::split(v_joint, joint, boost::is_any_of(";"));
             std::stringstream ss;

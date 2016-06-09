@@ -101,7 +101,7 @@ void KatanaKinematics5M180::IK(encoders::iterator solution, coordinates const& p
   if (angle[0].theta2 > (2 * M_PI + _parameters[1].angleOffset))
     angle[0].theta2 -= 2 * M_PI;
 
-  std::vector<int> temp_solution(5);
+  std::vector< int > temp_solution(5);
 
   temp_solution[0] = rad2enc(angle[0].theta1, _parameters[0].angleOffset, _parameters[0].epc, _parameters[0].encOffset,
                              _parameters[0].rotDir);

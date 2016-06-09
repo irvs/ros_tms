@@ -89,7 +89,7 @@ typedef struct Data
 } Data;
 
 //! @brief Configuration data type.
-typedef std::vector<Data> Conf_data;
+typedef std::vector< Data > Conf_data;
 
 //! @brief Handle configuration files.
 class Config
@@ -103,7 +103,7 @@ public:
   bool section_exists(const std::string &section) const;
   bool parameter_exists(const std::string &section, const std::string &parameter) const;
 
-  template <typename T>
+  template < typename T >
   bool select(const std::string &section, const std::string &parameter, T &value) const
   /*!
       @brief Get a parameter data, of a certain section, into the string value.
@@ -116,7 +116,7 @@ public:
       {
         try
         {
-          value = boost::lexical_cast<T>(iter->value);
+          value = boost::lexical_cast< T >(iter->value);
         }
         catch (boost::bad_lexical_cast &e)
         {
@@ -130,7 +130,7 @@ public:
 
   short write_conf(std::ofstream &outconffile, const std::string &file_title, const int space_between_column);
 
-  template <typename T>
+  template < typename T >
   bool add(const std::string &section, const std::string &parameter, const T &value)
   /*!
       @brief Added the value(string) of the parameter in the section in the
@@ -143,7 +143,7 @@ public:
     dataSet.parameter = parameter;
     try
     {
-      dataSet.value = boost::lexical_cast<std::string>(value);
+      dataSet.value = boost::lexical_cast< std::string >(value);
     }
     catch (boost::bad_lexical_cast &e)
     {
@@ -158,7 +158,7 @@ public:
         {
           try
           {
-            iterConf->value = boost::lexical_cast<std::string>(value);
+            iterConf->value = boost::lexical_cast< std::string >(value);
           }
           catch (boost::bad_lexical_cast &e)
           {

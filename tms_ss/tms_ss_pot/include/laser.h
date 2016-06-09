@@ -40,12 +40,12 @@ public:
   bool m_bNodeActive[m_cnMaxConnect];
   int m_nConnectNum;
 
-  std::vector<std::vector<double>> m_LRFData;
-  std::vector<std::vector<double>> m_BackLRFData;
-  std::vector<std::vector<range_t>> m_DiffLRFData;
-  std::vector<std::vector<pos_t>> m_LRFPoints;
-  std::vector<std::vector<cluster_t>> m_LRFClsData;
-  std::vector<std::vector<pos_t>> m_LRFClsPoints;
+  std::vector< std::vector< double > > m_LRFData;
+  std::vector< std::vector< double > > m_BackLRFData;
+  std::vector< std::vector< range_t > > m_DiffLRFData;
+  std::vector< std::vector< pos_t > > m_LRFPoints;
+  std::vector< std::vector< cluster_t > > m_LRFClsData;
+  std::vector< std::vector< pos_t > > m_LRFClsPoints;
 
   CvMat* m_LRFPos[m_cnMaxConnect][m_cnMaxDataSizeLRF];
   CvMat* m_LRFClsPos[m_cnMaxConnect][m_cnMaxDataSizeLRF];
@@ -59,9 +59,9 @@ public:
   int m_Target_cnt[m_cnMaxTrackingObject];
 
   int m_n_ring;
-  std::vector<std::vector<std::vector<double>>> m_BackLRFDataRing;
-  std::vector<std::vector<double>> m_BackLRFDataAve;
-  std::vector<std::vector<double>> m_BackLRFDataVar;
+  std::vector< std::vector< std::vector< double > > > m_BackLRFDataRing;
+  std::vector< std::vector< double > > m_BackLRFDataAve;
+  std::vector< std::vector< double > > m_BackLRFDataVar;
 
 public:
   bool Init();  // OnNewDocument()

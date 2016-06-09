@@ -31,12 +31,12 @@ struct TCurrentMot
 };
 struct Tpos
 {
-  static std::vector<int> x, y, z, u, v, w;
+  static std::vector< int > x, y, z, u, v, w;
   static const int xArr[], yArr[], zArr[], uArr[], vArr[], wArr[];
 };
 //////////////////////////////////////////////////////////////////////////////////
 // Katana obj.
-std::auto_ptr<CLMBase> katana;
+std::auto_ptr< CLMBase > katana;
 int retVal = 0;
 const double PI = 3.14159265358979323846;
 //////////////////////////////////////////////////////////////////////////////////
@@ -52,8 +52,8 @@ int main(int argc, char *argv[])
   std::cout << "--------------------------\n";
   std::cout << "SOCKETCONTROL DEMO STARTED\n";
   std::cout << "--------------------------\n";
-  std::auto_ptr<CCdlSocket> device;
-  std::auto_ptr<CCplSerialCRC> protocol;
+  std::auto_ptr< CCdlSocket > device;
+  std::auto_ptr< CCplSerialCRC > protocol;
   try
   {
     int port = 5566;
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
   std::cout << "-------------------------------------------\n";
   std::cout << "success: katana initialized\n";
   std::cout << "-------------------------------------------\n";
-  std::vector<int> encoders(katana->getNumberOfMotors(), 0);
+  std::vector< int > encoders(katana->getNumberOfMotors(), 0);
   TCurrentMot mot[6];
   for (int i = 0; i < 6; i++)
   {

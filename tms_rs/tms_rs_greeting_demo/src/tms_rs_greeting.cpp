@@ -93,7 +93,7 @@ bool sp5_control_function(int unit, int cmd, int arg_size, double* arg)
   return true;
 }
 
-bool sp5_control(const std::vector<std::vector<double>>& arg, int row, int column)
+bool sp5_control(const std::vector< std::vector< double > >& arg, int row, int column)
 {
   for (int i = 0; i < row; i++)
   {
@@ -120,7 +120,7 @@ bool sp5_control(const std::vector<std::vector<double>>& arg, int row, int colum
   return true;
 }
 
-bool sp5_tts(const std::vector<std::string>& sentene, const std::vector<double>& timing, int size)
+bool sp5_tts(const std::vector< std::string >& sentene, const std::vector< double >& timing, int size)
 {
   tms_msg_rc::robot_tts sp_tts_srv;
 
@@ -146,8 +146,8 @@ bool callback(tms_msg_rs::rs_task::Request& req, tms_msg_rs::rs_task::Response& 
   static std::string str("/tms_rs_greeting/");
 
   // get parameters from the parameter server(main block)
-  std::vector<std::string> s_motion_list, s_speech_list;
-  std::vector<double> timing_list;
+  std::vector< std::string > s_motion_list, s_speech_list;
+  std::vector< double > timing_list;
 
   std::string main_name = req.task;
   std::string motion_name = str + main_name + "M";
@@ -168,8 +168,8 @@ bool callback(tms_msg_rs::rs_task::Request& req, tms_msg_rs::rs_task::Response& 
   }
 
   // get parameters from the parameter server(sub block)
-  std::vector<std::string> s_sentence_list;
-  std::vector<std::vector<std::string>> s_submotion_list;
+  std::vector< std::string > s_sentence_list;
+  std::vector< std::vector< std::string > > s_submotion_list;
 
   s_submotion_list.resize(s_motion_list.size());
   for (int i = 0; i < s_motion_list.size(); i++)
@@ -187,8 +187,8 @@ bool callback(tms_msg_rs::rs_task::Request& req, tms_msg_rs::rs_task::Response& 
     ROS_INFO("speech%d: %s", i, s_sentence_list[i].c_str());
   }
 
-  std::vector<double> tmp_d;
-  std::vector<std::vector<double>> d_motion_list;
+  std::vector< double > tmp_d;
+  std::vector< std::vector< double > > d_motion_list;
 
   for (int i = 0; i < s_submotion_list.size(); i++)
   {
@@ -229,9 +229,9 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "tms_rs_greeting");
   ros::NodeHandle n;
 
-  motion_client = n.serviceClient<tms_msg_rc::smartpal_control>("sp5_control");
+  motion_client = n.serviceClient< tms_msg_rc::smartpal_control >("sp5_control");
   // motion_client = n.serviceClient<tms_msg_rc::smartpal_control>("sp5_virtual_control");
-  speech_client = n.serviceClient<tms_msg_rc::robot_tts>("smartpal5_tts");
+  speech_client = n.serviceClient< tms_msg_rc::robot_tts >("smartpal5_tts");
 
   ros::ServiceServer service = n.advertiseService("opencampus_greeting", callback);
   ROS_INFO("Ready to do greeting demonstration.");

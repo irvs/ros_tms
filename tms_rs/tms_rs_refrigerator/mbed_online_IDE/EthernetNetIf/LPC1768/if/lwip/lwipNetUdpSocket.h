@@ -37,7 +37,7 @@ using std::list;
 // Implements NetUdpSockets over lwIP raw API
 
 struct udp_pcb;  // Represents a Udp Connection, "Protocol Control Block", see rawapi.txt & udp.h
-struct pbuf;  // Lwip Buffer Container
+struct pbuf;     // Lwip Buffer Container
 typedef struct ip_addr ip_addr_t;
 
 // typedef signed char err_t;
@@ -74,7 +74,7 @@ private:
     u16_t port;
   };
 
-  list<InPacket> m_lInPkt;
+  list< InPacket > m_lInPkt;
   IpAddr m_multicastGroup;
 
   // Static callback : Transforms into a C++ callback

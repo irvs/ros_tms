@@ -44,8 +44,8 @@ void CMultipleParticleFilter::update(CLaser *Laser)
   {
     if (m_pLaser->m_bNodeActive[n])
     {
-      std::vector<int> label(m_pLaser->m_LRFClsPoints[n].size(), -1);  // クラスタに対応するパーティクルフィルタの番号
-      int pn = m_ParticleFilter.size();                                // 現在のパーティクルフィルタの個数
+      std::vector< int > label(m_pLaser->m_LRFClsPoints[n].size(), -1);  // クラスタに対応するパーティクルフィルタの番号
+      int pn = m_ParticleFilter.size();                                  // 現在のパーティクルフィルタの個数
 
       for (int j = 0; j < m_pLaser->m_LRFClsPoints[n].size(); j++)
       {
@@ -56,7 +56,7 @@ void CMultipleParticleFilter::update(CLaser *Laser)
         // クラスタ毎に，一番近いパーティクルフィルタを探す
         double min_r = 1e10;
         int np = 0;
-        for (vector<CPF>::iterator it = m_ParticleFilter.begin(); it != m_ParticleFilter.end(); ++it, ++np)
+        for (vector< CPF >::iterator it = m_ParticleFilter.begin(); it != m_ParticleFilter.end(); ++it, ++np)
         {
           p[0] = it->state[0];
           p[1] = it->state[1];
@@ -77,7 +77,7 @@ void CMultipleParticleFilter::update(CLaser *Laser)
         }
       }
 
-      std::vector<int> flg(pn, -1);  // クラスタに対応するパーティクルフィルタの番号
+      std::vector< int > flg(pn, -1);  // クラスタに対応するパーティクルフィルタの番号
       for (int j = 0; j < m_pLaser->m_LRFClsPoints[n].size(); j++)
       {
         if (label[j] < 0)
@@ -111,7 +111,7 @@ void CMultipleParticleFilter::update(CLaser *Laser)
       }
 
       int np = 0;
-      for (vector<CPF>::iterator it = m_ParticleFilter.begin(); it != m_ParticleFilter.end(); ++it, ++np)
+      for (vector< CPF >::iterator it = m_ParticleFilter.begin(); it != m_ParticleFilter.end(); ++it, ++np)
       {
         if (flg[np] < 0)
         {
@@ -129,7 +129,7 @@ void CMultipleParticleFilter::update(CLaser *Laser)
       }
 
       np = 0;
-      for (vector<CPF>::iterator it = m_ParticleFilter.begin(); it != m_ParticleFilter.end(); ++it, ++np)
+      for (vector< CPF >::iterator it = m_ParticleFilter.begin(); it != m_ParticleFilter.end(); ++it, ++np)
       {
         m_pLaser->m_pTarget[np] = new CTarget();
         m_pLaser->m_pTarget[np]->id = it->GetID();

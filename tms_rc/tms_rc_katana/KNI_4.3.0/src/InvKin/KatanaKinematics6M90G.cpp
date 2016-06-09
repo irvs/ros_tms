@@ -70,8 +70,8 @@ void KatanaKinematics6M90G::DK(coordinates &solution, encoders const &current_en
 
   cx_iter = cx.begin();
   sx_iter = sx.begin();
-  std::transform(angle.begin(), angle.end(), sx_iter, unary_precalc_sin<double>());
-  std::transform(angle.begin(), angle.end(), cx_iter, unary_precalc_cos<double>());
+  std::transform(angle.begin(), angle.end(), sx_iter, unary_precalc_sin< double >());
+  std::transform(angle.begin(), angle.end(), cx_iter, unary_precalc_cos< double >());
 
   R13 = (-1 * cx[0] * cx[3] * cx[4]) - (sx[0] * sx[4]);
   R23 = (-1 * sx[0] * cx[3] * cx[4]) + (cx[0] * sx[4]);
@@ -371,7 +371,7 @@ void KatanaKinematics6M90G::IK(encoders::iterator solution, coordinates const &p
   angle[7].theta3 = -acos(angle[7].costh3) + M_PI;
   thetacomp(angle[7], p_m);
 
-  for (::std::vector<angles_calc>::iterator iter = angle.begin(); iter != angle.end(); /* do iter forward in body */)
+  for (::std::vector< angles_calc >::iterator iter = angle.begin(); iter != angle.end(); /* do iter forward in body */)
   {
     if (pow2(iter->costh3) <= 1.0)
     {
@@ -389,10 +389,10 @@ void KatanaKinematics6M90G::IK(encoders::iterator solution, coordinates const &p
     throw NoSolutionException();
   }
 
-  ::std::vector<::std::vector<int>> PossibleTargetsInEncoders;
-  for (::std::vector<angles_calc>::iterator i = angle.begin(); i != angle.end(); ++i)
+  ::std::vector<::std::vector< int > > PossibleTargetsInEncoders;
+  for (::std::vector< angles_calc >::iterator i = angle.begin(); i != angle.end(); ++i)
   {
-    ::std::vector<int> solution(5);
+    ::std::vector< int > solution(5);
 
     solution[0] = rad2enc(i->theta1, _parameters[0].angleOffset, _parameters[0].epc, _parameters[0].encOffset,
                           _parameters[0].rotDir);
@@ -408,7 +408,7 @@ void KatanaKinematics6M90G::IK(encoders::iterator solution, coordinates const &p
     PossibleTargetsInEncoders.push_back(solution);
   }
 
-  ::std::vector<::std::vector<int>>::const_iterator sol =
+  ::std::vector<::std::vector< int > >::const_iterator sol =
       KinematicsDefaultEncMinAlgorithm()(PossibleTargetsInEncoders.begin(), PossibleTargetsInEncoders.end(),
                                          current_encoders.begin(), current_encoders.end());
 

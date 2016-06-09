@@ -73,7 +73,7 @@ int main(int argc, char **argv)
   ros::NodeHandle nh;
   ros::ServiceServer service = nh.advertiseService("kobuki_virtual_control", robotControl);
 
-  pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
+  pose_publisher = nh.advertise< tms_msg_db::TmsdbStamped >("tms_db_data", 10);
 
   // kobuki initialize
   printf("Virtual KOBUKI initialization has been completed.\n\n");

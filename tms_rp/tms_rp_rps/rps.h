@@ -16,28 +16,28 @@ double getLength(double x1, double y1, double x2, double y2)
   return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 }
 
-const double sp5_arm_init_pose[18] = {0.0, 0.0,                                 /*waist*/
-                                      0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, /*right arm*/
+const double sp5_arm_init_pose[18] = {0.0, 0.0,                                                /*waist*/
+                                      0.0, -10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,                /*right arm*/
                                       0.0, 10.0,  0.0, 0.0, 0.0, 0.0, 0.0, 0.0 /*left arm*/};  // degree
 //~ const double sp5_arm_give_pre_pose[18] = {	0.0, 0.0,	/*waist*/
 //~ 20.0, -15.0, -65.0, 90.0, 40.0, 0.0, 0.0, 0.0, /*right arm*/
 //~ 0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 /*left arm*/};	//degree
-const double sp5_arm_give_pre_pose[18] = {0.0, 0.0,                                        /*waist*/
-                                          0.0, -10.0, -40.0, 100.0, 25.0, 0.0, -40.0, 0.0, /*right arm*/
+const double sp5_arm_give_pre_pose[18] = {0.0, 0.0,                                                       /*waist*/
+                                          0.0, -10.0, -40.0, 100.0, 25.0, 0.0, -40.0, 0.0,                /*right arm*/
                                           0.0, 10.0,  0.0,   0.0,   0.0,  0.0, 0.0,   0.0 /*left arm*/};  // degree
 
 const int jointNum = sizeof sp5_arm_init_pose / sizeof sp5_arm_init_pose[0];
 
 const double SmartPal5_Collision_Threshold = 400.0;  // mm
 const double SmartPal4_Collision_Threshold = 400.0;  // mm
-const double Kobuki_Collision_Threshold = 200.0;  // mm
-const double KKP_Collision_Threshold = 400.0;  // mm
+const double Kobuki_Collision_Threshold = 200.0;     // mm
+const double KKP_Collision_Threshold = 400.0;        // mm
 
 const double Robot_Control_Wagon_Dist = 400.0;  // mm
 //~ const double Robot_Control_Wagon_Dist		=	500.0;	//mm
 
 const double Smooth_Voronoi_Path_Threshold = 100.0;  // mm
-const double Push_Wagon_Path_Threshold = 200.0;  // mm
+const double Push_Wagon_Path_Threshold = 200.0;      // mm
 const bool change_wagon_rel_th = false;
 const double wagon_control_limit_th = deg2rad(30.0);
 const double cut_th_threshold = deg2rad(5.0);
@@ -88,28 +88,28 @@ public:
   double peak_manipulability;
   double total_manipulability;
 
-  vector<double> obj_pos;
-  vector<double> robot_palm_pos_rel;
+  vector< double > obj_pos;
+  vector< double > robot_palm_pos_rel;
 
   double dist_from_obj_to_robot;
   double th_from_obj_to_robot;
 
-  vector<double> human_joint_angle;
-  vector<double> robot_joint_angle;
+  vector< double > human_joint_angle;
+  vector< double > robot_joint_angle;
 };
 
 class GivePosData
 {
 public:
-  vector<double> robotPos;
-  vector<double> joint_angle;
+  vector< double > robotPos;
+  vector< double > joint_angle;
 
   bool view;
-  double obj_dist;  // m
+  double obj_dist;    // m
   double human_dist;  // m
   double evaluation;
 
-  void set_Evaluation(vector<vector<CollisionMapData>> Map, vector<double> human_pos)
+  void set_Evaluation(vector< vector< CollisionMapData > > Map, vector< double > human_pos)
   {
     view = Map[(int)round((robotPos[0] - x_llimit) / cell_size)][(int)round((robotPos[1] - y_llimit) / cell_size)]
                .person_view;
@@ -130,11 +130,11 @@ public:
   int object_id;
 
   tms_msg_rp::rps_position start_Robot_pos, start_Wagon_pos, give_obj_Obj_pos;
-  vector<tms_msg_rp::rps_position> grasp_wagon_Robot_pos, give_obj_Robot_pos;
-  vector<tms_msg_rp::rps_joint_angle> give_obj_Robot_joint_angle;
+  vector< tms_msg_rp::rps_position > grasp_wagon_Robot_pos, give_obj_Robot_pos;
+  vector< tms_msg_rp::rps_joint_angle > give_obj_Robot_joint_angle;
 
-  vector<vector<tms_msg_rp::rps_position>> grasp_wagon_Robot_path;
-  vector<vector<vector<tms_msg_rp::rps_position>>> push_wagon_Robot_path, push_wagon_Wagon_path;
+  vector< vector< tms_msg_rp::rps_position > > grasp_wagon_Robot_path;
+  vector< vector< vector< tms_msg_rp::rps_position > > > push_wagon_Robot_path, push_wagon_Wagon_path;
 };
 
 class ExecutePushWagonPath
@@ -147,8 +147,8 @@ public:
 
   tms_msg_rp::rps_position start_Robot_pos, start_Wagon_pos, give_obj_Obj_pos, grasp_wagon_Robot_pos,
       give_obj_Robot_pos;
-  vector<tms_msg_rp::rps_position> grasp_wagon_Robot_path, push_wagon_Robot_path, push_wagon_Wagon_path;
-  vector<tms_msg_rp::rps_joint_angle> grasp_wagon_Robot_joint_angle, push_wagon_Robot_joint_angle,
+  vector< tms_msg_rp::rps_position > grasp_wagon_Robot_path, push_wagon_Robot_path, push_wagon_Wagon_path;
+  vector< tms_msg_rp::rps_joint_angle > grasp_wagon_Robot_joint_angle, push_wagon_Robot_joint_angle,
       release_wagon_Robot_joint_angle, grasp_obj_Robot_joint_angle, give_obj_Robot_joint_angle;
 };
 
@@ -202,7 +202,7 @@ double getRobotCollisionDist(int robot_id)
   return collision_threshold;
 }
 
-bool calcDistFromObj(vector<vector<CollisionMapData>>& Map, string& message)
+bool calcDistFromObj(vector< vector< CollisionMapData > >& Map, string& message)
 {
   if (Map.empty())
   {
@@ -254,12 +254,12 @@ bool calcDistFromObj(vector<vector<CollisionMapData>>& Map, string& message)
   return true;
 }
 
-void calcWagonPolePos(tms_msg_rp::rps_position wagon_pos, vector<tms_msg_rp::rps_position>& out_pos)
+void calcWagonPolePos(tms_msg_rp::rps_position wagon_pos, vector< tms_msg_rp::rps_position >& out_pos)
 {
   out_pos.clear();
 
   tms_msg_rp::rps_position tempPos;
-  vector<tms_msg_rp::rps_position> polePos;
+  vector< tms_msg_rp::rps_position > polePos;
   polePos.clear();
 
   tempPos.x = Wagon_Size_LongSide_Length / 2.0;
@@ -288,9 +288,9 @@ void calcWagonPolePos(tms_msg_rp::rps_position wagon_pos, vector<tms_msg_rp::rps
   polePos.clear();
 }
 
-void set_wagon_as_obstacle(vector<vector<CollisionMapData>>& Map, tms_msg_rp::rps_position wagon_pos)
+void set_wagon_as_obstacle(vector< vector< CollisionMapData > >& Map, tms_msg_rp::rps_position wagon_pos)
 {
-  vector<tms_msg_rp::rps_position> polePos;
+  vector< tms_msg_rp::rps_position > polePos;
   calcWagonPolePos(wagon_pos, polePos);
 
   int temp_x, temp_y;
@@ -305,7 +305,7 @@ void set_wagon_as_obstacle(vector<vector<CollisionMapData>>& Map, tms_msg_rp::rp
   }
 }
 
-bool setCollisionArea(vector<vector<CollisionMapData>>& Map, double threshold, string& message)
+bool setCollisionArea(vector< vector< CollisionMapData > >& Map, double threshold, string& message)
 {
   if (Map.empty())
   {
@@ -328,7 +328,7 @@ bool setCollisionArea(vector<vector<CollisionMapData>>& Map, double threshold, s
   return true;
 }
 
-bool setVoronoiLine(vector<vector<CollisionMapData>>& Map, string& message)
+bool setVoronoiLine(vector< vector< CollisionMapData > >& Map, string& message)
 {
   if (Map.empty())
   {
@@ -468,7 +468,7 @@ bool setVoronoiLine(vector<vector<CollisionMapData>>& Map, string& message)
   return true;
 }
 
-bool initCollisionMap(vector<vector<CollisionMapData>>& Map)
+bool initCollisionMap(vector< vector< CollisionMapData > >& Map)
 {
   FILE* fp;
 
@@ -494,7 +494,7 @@ bool initCollisionMap(vector<vector<CollisionMapData>>& Map)
   }
 
   Map.clear();
-  vector<CollisionMapData> tempMapLine;
+  vector< CollisionMapData > tempMapLine;
   CollisionMapData tempMapData;
 
   char* tp, buff[4096];
@@ -576,7 +576,7 @@ bool initCollisionMap(vector<vector<CollisionMapData>>& Map)
   return true;
 }
 
-void convertMap(vector<vector<CollisionMapData>> Map, tms_msg_rp::rps_map_full& rps_map)
+void convertMap(vector< vector< CollisionMapData > > Map, tms_msg_rp::rps_map_full& rps_map)
 {
   rps_map.rps_map_x.clear();
 

@@ -51,13 +51,13 @@ geometry_msgs::Pose2D wagon;
 // passfilter
 //  入力点群から黒色の点のみを抽出
 //***********************************************
-void passfilter(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
+void passfilter(pcl::PointCloud< pcl::PointXYZRGB >& cloud)
 {
   std::cout << "passfilter" << std::endl;
 
   // 変数宣言
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PassThrough<pcl::PointXYZRGB> pass;  // パスフィルタをもちいるためのクラス
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PassThrough< pcl::PointXYZRGB > pass;  // パスフィルタをもちいるためのクラス
 
   // ワゴンはロボットの正面近くにあると仮定し、カメラ座標空間でフィルタをかける
   pass.setInputCloud(cloud.makeShared());
@@ -90,7 +90,7 @@ void passfilter(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
 // g_pos
 //  入力点群の重心位置を求める
 //***********************************************
-pcl::PointXYZ g_pos(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
+pcl::PointXYZ g_pos(pcl::PointCloud< pcl::PointXYZRGB >& cloud)
 {
   // 変数宣言
   pcl::PointXYZ g;
@@ -114,11 +114,11 @@ pcl::PointXYZ g_pos(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
 //  入力点群のうち、もっとも大きな平面を検出し除去
 //  黒色の棚板を除去
 //***********************************************
-void plane_detect(pcl::PointCloud<pcl::PointXYZRGB>& cloud)
+void plane_detect(pcl::PointCloud< pcl::PointXYZRGB >& cloud)
 {
   // 変数宣言
-  pcl::SACSegmentation<pcl::PointXYZRGB> seg;                            // RANSACを用いるためのクラス
-  pcl::ExtractIndices<pcl::PointXYZRGB> extract;                         // 点群除去のためのクラス
+  pcl::SACSegmentation< pcl::PointXYZRGB > seg;                          // RANSACを用いるためのクラス
+  pcl::ExtractIndices< pcl::PointXYZRGB > extract;                       // 点群除去のためのクラス
   pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients);  // 検出された平面のパラメータ
   pcl::PointIndices::Ptr inliers(new pcl::PointIndices);  // 検出された平面を構成する点群の配列番号
 
@@ -205,15 +205,15 @@ pcl::PointXYZ transformation(pcl::PointXYZ point)
 //  クラスタリングを行う．クラスタはグリッパを表す
 //  ワゴングリッパの検出を行う
 //***********************************************
-void clustering(pcl::PointCloud<pcl::PointXYZRGB>& cloud, std::vector<pcl::PointXYZ>& points)
+void clustering(pcl::PointCloud< pcl::PointXYZRGB >& cloud, std::vector< pcl::PointXYZ >& points)
 {
   std::cout << "clustering" << std::endl;
 
   // 変数宣言
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB>);
-  pcl::EuclideanClusterExtraction<pcl::PointXYZRGB> ec;  // クラスタリングのためのクラス
-  std::vector<pcl::PointIndices> cluster_indices;  // 各クラスタを構成する点の点群番号を格納した配列
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::search::KdTree< pcl::PointXYZRGB >::Ptr tree(new pcl::search::KdTree< pcl::PointXYZRGB >);
+  pcl::EuclideanClusterExtraction< pcl::PointXYZRGB > ec;  // クラスタリングのためのクラス
+  std::vector< pcl::PointIndices > cluster_indices;  // 各クラスタを構成する点の点群番号を格納した配列
 
   tree->setInputCloud(cloud.makeShared());  // Kdtreeの作成
 
@@ -229,13 +229,13 @@ void clustering(pcl::PointCloud<pcl::PointXYZRGB>& cloud, std::vector<pcl::Point
   int m = 0;
   float colors[6][3] = {
       {255, 0, 0}, {0, 255, 0}, {0, 0, 255}, {255, 255, 0}, {0, 255, 255}, {255, 0, 255}};  // クラスタの色
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
+  for (std::vector< pcl::PointIndices >::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
   {
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_cluster(new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud_cluster(new pcl::PointCloud< pcl::PointXYZRGB >);
     pcl::PointXYZ g;
 
     // クラスタを構成する点群
-    for (std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
+    for (std::vector< int >::const_iterator pit = it->indices.begin(); pit != it->indices.end(); pit++)
     {
       cloud_cluster->points.push_back(cloud.points[*pit]);
     }
@@ -282,7 +282,7 @@ void clustering(pcl::PointCloud<pcl::PointXYZRGB>& cloud, std::vector<pcl::Point
 //  配列で指定された2つの番号の要素を入れ替える
 //  検出されたグリッパの順番を入れ替える
 //***********************************************
-void swap(std::vector<pcl::PointXYZ>& points, std::vector<double>& distance, int i, int j)
+void swap(std::vector< pcl::PointXYZ >& points, std::vector< double >& distance, int i, int j)
 {
   pcl::PointXYZ tmp;
   double tmp2;
@@ -302,12 +302,12 @@ void swap(std::vector<pcl::PointXYZ>& points, std::vector<double>& distance, int
 //  配列の要素を昇順に並べる
 //  検出されたグリッパの順番を距離が近い順に並べる
 //***********************************************
-void quick_sort(std::vector<pcl::PointXYZ>& points, int left, int right)
+void quick_sort(std::vector< pcl::PointXYZ >& points, int left, int right)
 {
   // 変数宣言
   int i, j;
   double pivot, dst;
-  std::vector<double> distance;  // 距離値を格納
+  std::vector< double > distance;  // 距離値を格納
 
   i = left;
   j = right;
@@ -352,7 +352,7 @@ void quick_sort(std::vector<pcl::PointXYZ>& points, int left, int right)
 //  グリッパの位置からワゴン中心位置を求める
 //  ワゴンの幾何情報がわかっている前提
 //***********************************************
-void wagon_position(std::vector<pcl::PointXYZ>& points)
+void wagon_position(std::vector< pcl::PointXYZ >& points)
 {
   std::cout << "wagon_position " << points.size() << std::endl;
 
@@ -525,8 +525,8 @@ void wagon_position(std::vector<pcl::PointXYZ>& points)
 
 bool ods_wagon(tms_msg_ss::ods_wagon::Request& req, tms_msg_ss::ods_wagon::Response& res)
 {
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
+  pcl::PointCloud< pcl::PointXYZRGB >::Ptr tmp_cloud(new pcl::PointCloud< pcl::PointXYZRGB >);
 
   tms_msg_ss::ods_pcd srv;
   srv.request.id = 3;
@@ -538,9 +538,9 @@ bool ods_wagon(tms_msg_ss::ods_wagon::Request& req, tms_msg_ss::ods_wagon::Respo
   robot.x = req.robot.x / 1000.0;
   robot.y = req.robot.y / 1000.0;
   robot.theta = req.robot.theta * PI / 180.0;
-  C_OFFSET_X = 0.06;  // req.sensor.position.x;
-  C_OFFSET_Y = 0.055;  // req.sensor.position.y;
-  C_OFFSET_Z = 0.97;  // req.sensor.position.z;
+  C_OFFSET_X = 0.06;     // req.sensor.position.x;
+  C_OFFSET_Y = 0.055;    // req.sensor.position.y;
+  C_OFFSET_Z = 0.97;     // req.sensor.position.z;
   C_OFFSET_PITCH = 0.0;  // req.sensor.orientation.x;
 
   // pcl::io::loadPCDFile("src/ods_wagon/data/ods_wagon/input.pcd", *cloud);
@@ -555,7 +555,7 @@ bool ods_wagon(tms_msg_ss::ods_wagon::Request& req, tms_msg_ss::ods_wagon::Respo
 
   pcl::io::savePCDFile("src/ods_wagon/data/ods_wagon/filter.pcd", *cloud, false);
 
-  std::vector<pcl::PointXYZ> g_cloud;
+  std::vector< pcl::PointXYZ > g_cloud;
 
   clustering(*cloud, g_cloud);
 
@@ -603,7 +603,7 @@ int main(int argc, char** argv)
 
   service = n.advertiseService("ods_wagon", ods_wagon);
 
-  commander_to_kinect_capture = n.serviceClient<tms_msg_ss::ods_pcd>("ods_capture");
+  commander_to_kinect_capture = n.serviceClient< tms_msg_ss::ods_pcd >("ods_capture");
 
   ros::spin();
 

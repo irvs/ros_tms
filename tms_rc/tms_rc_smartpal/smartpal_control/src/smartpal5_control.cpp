@@ -38,12 +38,12 @@ class armInfo
 {
 public:
   int move;
-  double j_L[7];  // 0
-  double gripper_left;  // 1
-  double j_R[7];  // 2
+  double j_L[7];         // 0
+  double gripper_left;   // 1
+  double j_R[7];         // 2
   double gripper_right;  // 3
 };
-std::vector<armInfo> trajectory;
+std::vector< armInfo > trajectory;
 
 const int sid_ = 100000;
 
@@ -912,9 +912,9 @@ int main(int argc, char **argv)
   //--------------------------------------------------------------------------
   ros::init(argc, argv, "smartpal5_control");
   ros::NodeHandle nh;
-  get_data_client = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
+  get_data_client = nh.serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader");
   ros::ServiceServer service = nh.advertiseService("sp5_control", robotControl);
-  pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
+  pose_publisher = nh.advertise< tms_msg_db::TmsdbStamped >("tms_db_data", 10);
 
   ros::Subscriber arm_data_sub = nh.subscribe("/move_group/fake_controller_joint_states", 1, &armCallback);
   object_data_sub = nh.subscribe("/move_group/monitored_planning_scene", 1, &ObjectDataUpdate);

@@ -18,7 +18,7 @@ void callback2(const sensor_msgs::Image::ConstPtr& input)
 {
   if (n < 1)
   {
-    pcl::PointCloud<PointType2>::Ptr cloud_cbr(new pcl::PointCloud<PointType2>);
+    pcl::PointCloud< PointType2 >::Ptr cloud_cbr(new pcl::PointCloud< PointType2 >);
     pcl::PCLPointCloud2 tmp_cloud;
     pcl_conversions::toPCL(*client, tmp_cloud);
     pcl::fromPCLPointCloud2(tmp_cloud, *cloud_cbr);

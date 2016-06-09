@@ -22,9 +22,9 @@
 #define MSB(data) ((unsigned char)((unsigned int)(data) >> 8) & 0xFF)
 
 // turtlebot arm data(cm)
-#define L1 9.75000  // length from servo0 to servo1
+#define L1 9.75000    // length from servo0 to servo1
 #define L2 10.512000  // length from servo1 to servo2
-#define L3 9.51000  // length from servo2 to servo3
+#define L3 9.51000    // length from servo2 to servo3
 
 typedef struct
 {
@@ -67,7 +67,7 @@ int degToPos(double degree)
 // output:joint angles (Th0, Th1, Th2) radian→degree→position
 void compute_ik(int Px, int Py, int Pz, int* Th0, int* Th1, int* Th2)
 {
-  double l = 0;  // length from O to goal position
+  double l = 0;    // length from O to goal position
   double phy = 0;  // angle betweeen X and goal position
   double tmp = 0;
 
@@ -220,7 +220,7 @@ int main(void)
   SendRWPacket stSendRWPacket;
   SendIJogPacket stSendIJOGPacket;
 
-  double Px, Py = 0;  // for servo goal position
+  double Px, Py = 0;      // for servo goal position
   int Th0, Th1, Th2 = 0;  // for joint angle(21~1002)
 
   //--------------------------------------------------------------------------

@@ -188,7 +188,7 @@ VOID on_BinaryMessage(PBYTE data, char fileName[])
               sensor[node_no - 1].gyro[0], sensor[node_no - 1].gyro[1], sensor[node_no - 1].gyro[2],
               sensor[node_no - 1].comp[0], sensor[node_no - 1].comp[1], sensor[node_no - 1].comp[2]);
       //			fprintf( fpresult, "%d,%lf,%lf,%lf,", time_stamp, sensor[node_no-1].acc[0], sensor[node_no-1].acc[1],
-      //sensor[node_no-1].acc[2] );
+      // sensor[node_no-1].acc[2] );
       fclose(fpresult);
     }
   }

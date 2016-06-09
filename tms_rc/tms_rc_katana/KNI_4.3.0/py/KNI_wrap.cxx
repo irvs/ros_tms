@@ -12,7 +12,7 @@
 #define SWIG_PYTHON_DIRECTOR_NO_VTABLE
 
 #ifdef __cplusplus
-template <typename T>
+template < typename T >
 class SwigValueWrapper
 {
   T *tt;
@@ -21,7 +21,7 @@ public:
   SwigValueWrapper() : tt(0)
   {
   }
-  SwigValueWrapper(const SwigValueWrapper<T> &rhs) : tt(new T(*rhs.tt))
+  SwigValueWrapper(const SwigValueWrapper< T > &rhs) : tt(new T(*rhs.tt))
   {
   }
   SwigValueWrapper(const T &t) : tt(new T(t))
@@ -47,10 +47,10 @@ public:
   }
 
 private:
-  SwigValueWrapper &operator=(const SwigValueWrapper<T> &rhs);
+  SwigValueWrapper &operator=(const SwigValueWrapper< T > &rhs);
 };
 
-template <typename T>
+template < typename T >
 T SwigValueInit()
 {
   return T();
@@ -2817,8 +2817,8 @@ static swig_module_info swig_module = {swig_types, 4, 0, 0, 0, 0};
 #define SWIGVERSION 0x010333
 #define SWIG_VERSION SWIGVERSION
 
-#define SWIG_as_voidptr(a) const_cast<void *>(static_cast<const void *>(a))
-#define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a), reinterpret_cast<void **>(a))
+#define SWIG_as_voidptr(a) const_cast< void * >(static_cast< const void * >(a))
+#define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a), reinterpret_cast< void ** >(a))
 
 #include <stdexcept>
 
@@ -3077,7 +3077,7 @@ SWIGINTERN int SWIG_AsVal_int(PyObject *obj, int *val)
     else
     {
       if (val)
-        *val = static_cast<int>(v);
+        *val = static_cast< int >(v);
     }
   }
   return res;
@@ -3136,7 +3136,7 @@ SWIGINTERN int SWIG_AsCharPtrAndSize(PyObject *obj, char **cptr, size_t *psize, 
         if (*alloc == SWIG_NEWOBJ)
 #endif
         {
-          *cptr = reinterpret_cast<char *>(memcpy((new char[len + 1]), cstr, sizeof(char) * (len + 1)));
+          *cptr = reinterpret_cast< char * >(memcpy((new char[len + 1]), cstr, sizeof(char) * (len + 1)));
           *alloc = SWIG_NEWOBJ;
         }
         else
@@ -3219,7 +3219,7 @@ SWIGINTERN int SWIG_AsVal_char(PyObject *obj, char *val)
       if ((CHAR_MIN <= v) && (v <= CHAR_MAX))
       {
         if (val)
-          *val = static_cast<char>(v);
+          *val = static_cast< char >(v);
       }
       else
       {
@@ -3275,7 +3275,7 @@ SWIGINTERN PyObject *Swig_var_PI_get(void)
 {
   PyObject *pyobj = 0;
 
-  pyobj = SWIG_From_double(static_cast<double>(PI));
+  pyobj = SWIG_From_double(static_cast< double >(PI));
   return pyobj;
 }
 
@@ -3304,7 +3304,7 @@ SWIGINTERN PyObject *_wrap_TPos_X_set(PyObject *SWIGUNUSEDPARM(self), PyObject *
                                              "TPos *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TPos *>(argp1);
+  arg1 = reinterpret_cast< TPos * >(argp1);
   ecode2 = SWIG_AsVal_double(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -3316,7 +3316,7 @@ SWIGINTERN PyObject *_wrap_TPos_X_set(PyObject *SWIGUNUSEDPARM(self), PyObject *
                                                "double"
                                                "'");
   }
-  arg2 = static_cast<double>(val2);
+  arg2 = static_cast< double >(val2);
   if (arg1)
     (arg1)->X = arg2;
 
@@ -3348,9 +3348,9 @@ SWIGINTERN PyObject *_wrap_TPos_X_get(PyObject *SWIGUNUSEDPARM(self), PyObject *
                                              "TPos *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TPos *>(argp1);
+  arg1 = reinterpret_cast< TPos * >(argp1);
   result = (double)((arg1)->X);
-  resultobj = SWIG_From_double(static_cast<double>(result));
+  resultobj = SWIG_From_double(static_cast< double >(result));
   return resultobj;
 fail:
   return NULL;
@@ -3381,7 +3381,7 @@ SWIGINTERN PyObject *_wrap_TPos_Y_set(PyObject *SWIGUNUSEDPARM(self), PyObject *
                                              "TPos *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TPos *>(argp1);
+  arg1 = reinterpret_cast< TPos * >(argp1);
   ecode2 = SWIG_AsVal_double(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -3393,7 +3393,7 @@ SWIGINTERN PyObject *_wrap_TPos_Y_set(PyObject *SWIGUNUSEDPARM(self), PyObject *
                                                "double"
                                                "'");
   }
-  arg2 = static_cast<double>(val2);
+  arg2 = static_cast< double >(val2);
   if (arg1)
     (arg1)->Y = arg2;
 
@@ -3425,9 +3425,9 @@ SWIGINTERN PyObject *_wrap_TPos_Y_get(PyObject *SWIGUNUSEDPARM(self), PyObject *
                                              "TPos *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TPos *>(argp1);
+  arg1 = reinterpret_cast< TPos * >(argp1);
   result = (double)((arg1)->Y);
-  resultobj = SWIG_From_double(static_cast<double>(result));
+  resultobj = SWIG_From_double(static_cast< double >(result));
   return resultobj;
 fail:
   return NULL;
@@ -3458,7 +3458,7 @@ SWIGINTERN PyObject *_wrap_TPos_Z_set(PyObject *SWIGUNUSEDPARM(self), PyObject *
                                              "TPos *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TPos *>(argp1);
+  arg1 = reinterpret_cast< TPos * >(argp1);
   ecode2 = SWIG_AsVal_double(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -3470,7 +3470,7 @@ SWIGINTERN PyObject *_wrap_TPos_Z_set(PyObject *SWIGUNUSEDPARM(self), PyObject *
                                                "double"
                                                "'");
   }
-  arg2 = static_cast<double>(val2);
+  arg2 = static_cast< double >(val2);
   if (arg1)
     (arg1)->Z = arg2;
 
@@ -3502,9 +3502,9 @@ SWIGINTERN PyObject *_wrap_TPos_Z_get(PyObject *SWIGUNUSEDPARM(self), PyObject *
                                              "TPos *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TPos *>(argp1);
+  arg1 = reinterpret_cast< TPos * >(argp1);
   result = (double)((arg1)->Z);
-  resultobj = SWIG_From_double(static_cast<double>(result));
+  resultobj = SWIG_From_double(static_cast< double >(result));
   return resultobj;
 fail:
   return NULL;
@@ -3535,7 +3535,7 @@ SWIGINTERN PyObject *_wrap_TPos_phi_set(PyObject *SWIGUNUSEDPARM(self), PyObject
                                              "TPos *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TPos *>(argp1);
+  arg1 = reinterpret_cast< TPos * >(argp1);
   ecode2 = SWIG_AsVal_double(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -3547,7 +3547,7 @@ SWIGINTERN PyObject *_wrap_TPos_phi_set(PyObject *SWIGUNUSEDPARM(self), PyObject
                                                "double"
                                                "'");
   }
-  arg2 = static_cast<double>(val2);
+  arg2 = static_cast< double >(val2);
   if (arg1)
     (arg1)->phi = arg2;
 
@@ -3579,9 +3579,9 @@ SWIGINTERN PyObject *_wrap_TPos_phi_get(PyObject *SWIGUNUSEDPARM(self), PyObject
                                              "TPos *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TPos *>(argp1);
+  arg1 = reinterpret_cast< TPos * >(argp1);
   result = (double)((arg1)->phi);
-  resultobj = SWIG_From_double(static_cast<double>(result));
+  resultobj = SWIG_From_double(static_cast< double >(result));
   return resultobj;
 fail:
   return NULL;
@@ -3612,7 +3612,7 @@ SWIGINTERN PyObject *_wrap_TPos_theta_set(PyObject *SWIGUNUSEDPARM(self), PyObje
                                              "TPos *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TPos *>(argp1);
+  arg1 = reinterpret_cast< TPos * >(argp1);
   ecode2 = SWIG_AsVal_double(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -3624,7 +3624,7 @@ SWIGINTERN PyObject *_wrap_TPos_theta_set(PyObject *SWIGUNUSEDPARM(self), PyObje
                                                "double"
                                                "'");
   }
-  arg2 = static_cast<double>(val2);
+  arg2 = static_cast< double >(val2);
   if (arg1)
     (arg1)->theta = arg2;
 
@@ -3656,9 +3656,9 @@ SWIGINTERN PyObject *_wrap_TPos_theta_get(PyObject *SWIGUNUSEDPARM(self), PyObje
                                              "TPos *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TPos *>(argp1);
+  arg1 = reinterpret_cast< TPos * >(argp1);
   result = (double)((arg1)->theta);
-  resultobj = SWIG_From_double(static_cast<double>(result));
+  resultobj = SWIG_From_double(static_cast< double >(result));
   return resultobj;
 fail:
   return NULL;
@@ -3689,7 +3689,7 @@ SWIGINTERN PyObject *_wrap_TPos_psi_set(PyObject *SWIGUNUSEDPARM(self), PyObject
                                              "TPos *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TPos *>(argp1);
+  arg1 = reinterpret_cast< TPos * >(argp1);
   ecode2 = SWIG_AsVal_double(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -3701,7 +3701,7 @@ SWIGINTERN PyObject *_wrap_TPos_psi_set(PyObject *SWIGUNUSEDPARM(self), PyObject
                                                "double"
                                                "'");
   }
-  arg2 = static_cast<double>(val2);
+  arg2 = static_cast< double >(val2);
   if (arg1)
     (arg1)->psi = arg2;
 
@@ -3733,9 +3733,9 @@ SWIGINTERN PyObject *_wrap_TPos_psi_get(PyObject *SWIGUNUSEDPARM(self), PyObject
                                              "TPos *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TPos *>(argp1);
+  arg1 = reinterpret_cast< TPos * >(argp1);
   result = (double)((arg1)->psi);
-  resultobj = SWIG_From_double(static_cast<double>(result));
+  resultobj = SWIG_From_double(static_cast< double >(result));
   return resultobj;
 fail:
   return NULL;
@@ -3776,7 +3776,7 @@ SWIGINTERN PyObject *_wrap_delete_TPos(PyObject *SWIGUNUSEDPARM(self), PyObject 
                                              "TPos *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TPos *>(argp1);
+  arg1 = reinterpret_cast< TPos * >(argp1);
   delete arg1;
 
   resultobj = SWIG_Py_Void();
@@ -3819,7 +3819,7 @@ SWIGINTERN PyObject *_wrap_TMovement_pos_set(PyObject *SWIGUNUSEDPARM(self), PyO
                                              "TMovement *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TMovement *>(argp1);
+  arg1 = reinterpret_cast< TMovement * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_TPos, 0 | 0);
   if (!SWIG_IsOK(res2))
   {
@@ -3831,7 +3831,7 @@ SWIGINTERN PyObject *_wrap_TMovement_pos_set(PyObject *SWIGUNUSEDPARM(self), PyO
                                              "TPos *"
                                              "'");
   }
-  arg2 = reinterpret_cast<TPos *>(argp2);
+  arg2 = reinterpret_cast< TPos * >(argp2);
   if (arg1)
     (arg1)->pos = *arg2;
 
@@ -3863,7 +3863,7 @@ SWIGINTERN PyObject *_wrap_TMovement_pos_get(PyObject *SWIGUNUSEDPARM(self), PyO
                                              "TMovement *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TMovement *>(argp1);
+  arg1 = reinterpret_cast< TMovement * >(argp1);
   result = (TPos *)&((arg1)->pos);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_TPos, 0 | 0);
   return resultobj;
@@ -3896,7 +3896,7 @@ SWIGINTERN PyObject *_wrap_TMovement_transition_set(PyObject *SWIGUNUSEDPARM(sel
                                              "TMovement *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TMovement *>(argp1);
+  arg1 = reinterpret_cast< TMovement * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -3908,7 +3908,7 @@ SWIGINTERN PyObject *_wrap_TMovement_transition_set(PyObject *SWIGUNUSEDPARM(sel
                                                "ETransition"
                                                "'");
   }
-  arg2 = static_cast<ETransition>(val2);
+  arg2 = static_cast< ETransition >(val2);
   if (arg1)
     (arg1)->transition = arg2;
 
@@ -3940,9 +3940,9 @@ SWIGINTERN PyObject *_wrap_TMovement_transition_get(PyObject *SWIGUNUSEDPARM(sel
                                              "TMovement *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TMovement *>(argp1);
+  arg1 = reinterpret_cast< TMovement * >(argp1);
   result = (ETransition)((arg1)->transition);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -3973,7 +3973,7 @@ SWIGINTERN PyObject *_wrap_TMovement_velocity_set(PyObject *SWIGUNUSEDPARM(self)
                                              "TMovement *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TMovement *>(argp1);
+  arg1 = reinterpret_cast< TMovement * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -3985,7 +3985,7 @@ SWIGINTERN PyObject *_wrap_TMovement_velocity_set(PyObject *SWIGUNUSEDPARM(self)
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   if (arg1)
     (arg1)->velocity = arg2;
 
@@ -4017,9 +4017,9 @@ SWIGINTERN PyObject *_wrap_TMovement_velocity_get(PyObject *SWIGUNUSEDPARM(self)
                                              "TMovement *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TMovement *>(argp1);
+  arg1 = reinterpret_cast< TMovement * >(argp1);
   result = (int)((arg1)->velocity);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -4050,7 +4050,7 @@ SWIGINTERN PyObject *_wrap_TMovement_acceleration_set(PyObject *SWIGUNUSEDPARM(s
                                              "TMovement *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TMovement *>(argp1);
+  arg1 = reinterpret_cast< TMovement * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -4062,7 +4062,7 @@ SWIGINTERN PyObject *_wrap_TMovement_acceleration_set(PyObject *SWIGUNUSEDPARM(s
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   if (arg1)
     (arg1)->acceleration = arg2;
 
@@ -4094,9 +4094,9 @@ SWIGINTERN PyObject *_wrap_TMovement_acceleration_get(PyObject *SWIGUNUSEDPARM(s
                                              "TMovement *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TMovement *>(argp1);
+  arg1 = reinterpret_cast< TMovement * >(argp1);
   result = (int)((arg1)->acceleration);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -4137,7 +4137,7 @@ SWIGINTERN PyObject *_wrap_delete_TMovement(PyObject *SWIGUNUSEDPARM(self), PyOb
                                              "TMovement *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TMovement *>(argp1);
+  arg1 = reinterpret_cast< TMovement * >(argp1);
   delete arg1;
 
   resultobj = SWIG_Py_Void();
@@ -4180,7 +4180,7 @@ SWIGINTERN PyObject *_wrap_TCurrentMot_idx_set(PyObject *SWIGUNUSEDPARM(self), P
                                              "TCurrentMot *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TCurrentMot *>(argp1);
+  arg1 = reinterpret_cast< TCurrentMot * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -4192,7 +4192,7 @@ SWIGINTERN PyObject *_wrap_TCurrentMot_idx_set(PyObject *SWIGUNUSEDPARM(self), P
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   if (arg1)
     (arg1)->idx = arg2;
 
@@ -4224,9 +4224,9 @@ SWIGINTERN PyObject *_wrap_TCurrentMot_idx_get(PyObject *SWIGUNUSEDPARM(self), P
                                              "TCurrentMot *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TCurrentMot *>(argp1);
+  arg1 = reinterpret_cast< TCurrentMot * >(argp1);
   result = (int)((arg1)->idx);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -4257,7 +4257,7 @@ SWIGINTERN PyObject *_wrap_TCurrentMot_running_set(PyObject *SWIGUNUSEDPARM(self
                                              "TCurrentMot *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TCurrentMot *>(argp1);
+  arg1 = reinterpret_cast< TCurrentMot * >(argp1);
   ecode2 = SWIG_AsVal_bool(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -4269,7 +4269,7 @@ SWIGINTERN PyObject *_wrap_TCurrentMot_running_set(PyObject *SWIGUNUSEDPARM(self
                                                "bool"
                                                "'");
   }
-  arg2 = static_cast<bool>(val2);
+  arg2 = static_cast< bool >(val2);
   if (arg1)
     (arg1)->running = arg2;
 
@@ -4301,9 +4301,9 @@ SWIGINTERN PyObject *_wrap_TCurrentMot_running_get(PyObject *SWIGUNUSEDPARM(self
                                              "TCurrentMot *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TCurrentMot *>(argp1);
+  arg1 = reinterpret_cast< TCurrentMot * >(argp1);
   result = (bool)((arg1)->running);
-  resultobj = SWIG_From_bool(static_cast<bool>(result));
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
 fail:
   return NULL;
@@ -4334,7 +4334,7 @@ SWIGINTERN PyObject *_wrap_TCurrentMot_dir_set(PyObject *SWIGUNUSEDPARM(self), P
                                              "TCurrentMot *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TCurrentMot *>(argp1);
+  arg1 = reinterpret_cast< TCurrentMot * >(argp1);
   ecode2 = SWIG_AsVal_bool(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -4346,7 +4346,7 @@ SWIGINTERN PyObject *_wrap_TCurrentMot_dir_set(PyObject *SWIGUNUSEDPARM(self), P
                                                "bool"
                                                "'");
   }
-  arg2 = static_cast<bool>(val2);
+  arg2 = static_cast< bool >(val2);
   if (arg1)
     (arg1)->dir = arg2;
 
@@ -4378,9 +4378,9 @@ SWIGINTERN PyObject *_wrap_TCurrentMot_dir_get(PyObject *SWIGUNUSEDPARM(self), P
                                              "TCurrentMot *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TCurrentMot *>(argp1);
+  arg1 = reinterpret_cast< TCurrentMot * >(argp1);
   result = (bool)((arg1)->dir);
-  resultobj = SWIG_From_bool(static_cast<bool>(result));
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
 fail:
   return NULL;
@@ -4421,7 +4421,7 @@ SWIGINTERN PyObject *_wrap_delete_TCurrentMot(PyObject *SWIGUNUSEDPARM(self), Py
                                              "TCurrentMot *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TCurrentMot *>(argp1);
+  arg1 = reinterpret_cast< TCurrentMot * >(argp1);
   delete arg1;
 
   resultobj = SWIG_Py_Void();
@@ -4447,7 +4447,7 @@ SWIGINTERN PyObject *_wrap_allMotorsOff(PyObject *SWIGUNUSEDPARM(self), PyObject
   if (!PyArg_ParseTuple(args, (char *)":allMotorsOff"))
     SWIG_fail;
   result = (int)allMotorsOff();
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -4461,7 +4461,7 @@ SWIGINTERN PyObject *_wrap_allMotorsOn(PyObject *SWIGUNUSEDPARM(self), PyObject 
   if (!PyArg_ParseTuple(args, (char *)":allMotorsOn"))
     SWIG_fail;
   result = (int)allMotorsOn();
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -4489,9 +4489,9 @@ SWIGINTERN PyObject *_wrap_calibrate(PyObject *SWIGUNUSEDPARM(self), PyObject *a
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   result = (int)calibrate(arg1);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -4505,7 +4505,7 @@ SWIGINTERN PyObject *_wrap_clearMoveBuffers(PyObject *SWIGUNUSEDPARM(self), PyOb
   if (!PyArg_ParseTuple(args, (char *)":clearMoveBuffers"))
     SWIG_fail;
   result = (int)clearMoveBuffers();
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -4519,7 +4519,7 @@ SWIGINTERN PyObject *_wrap_closeGripper(PyObject *SWIGUNUSEDPARM(self), PyObject
   if (!PyArg_ParseTuple(args, (char *)":closeGripper"))
     SWIG_fail;
   result = (int)closeGripper();
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -4552,7 +4552,7 @@ SWIGINTERN PyObject *_wrap_deleteMovementFromStack(PyObject *SWIGUNUSEDPARM(self
                                              "char *"
                                              "'");
   }
-  arg1 = reinterpret_cast<char *>(buf1);
+  arg1 = reinterpret_cast< char * >(buf1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -4564,9 +4564,9 @@ SWIGINTERN PyObject *_wrap_deleteMovementFromStack(PyObject *SWIGUNUSEDPARM(self
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   result = (int)deleteMovementFromStack(arg1, arg2);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   if (alloc1 == SWIG_NEWOBJ)
     delete[] buf1;
   return resultobj;
@@ -4599,9 +4599,9 @@ SWIGINTERN PyObject *_wrap_deleteMovementStack(PyObject *SWIGUNUSEDPARM(self), P
                                              "char *"
                                              "'");
   }
-  arg1 = reinterpret_cast<char *>(buf1);
+  arg1 = reinterpret_cast< char * >(buf1);
   result = (int)deleteMovementStack(arg1);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   if (alloc1 == SWIG_NEWOBJ)
     delete[] buf1;
   return resultobj;
@@ -4645,7 +4645,7 @@ SWIGINTERN PyObject *_wrap_executeConnectedMovement(PyObject *SWIGUNUSEDPARM(sel
                                              "TMovement *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TMovement *>(argp1);
+  arg1 = reinterpret_cast< TMovement * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_TPos, 0 | 0);
   if (!SWIG_IsOK(res2))
   {
@@ -4657,7 +4657,7 @@ SWIGINTERN PyObject *_wrap_executeConnectedMovement(PyObject *SWIGUNUSEDPARM(sel
                                              "TPos *"
                                              "'");
   }
-  arg2 = reinterpret_cast<TPos *>(argp2);
+  arg2 = reinterpret_cast< TPos * >(argp2);
   ecode3 = SWIG_AsVal_bool(obj2, &val3);
   if (!SWIG_IsOK(ecode3))
   {
@@ -4669,7 +4669,7 @@ SWIGINTERN PyObject *_wrap_executeConnectedMovement(PyObject *SWIGUNUSEDPARM(sel
                                                "bool"
                                                "'");
   }
-  arg3 = static_cast<bool>(val3);
+  arg3 = static_cast< bool >(val3);
   ecode4 = SWIG_AsVal_bool(obj3, &val4);
   if (!SWIG_IsOK(ecode4))
   {
@@ -4681,9 +4681,9 @@ SWIGINTERN PyObject *_wrap_executeConnectedMovement(PyObject *SWIGUNUSEDPARM(sel
                                                "bool"
                                                "'");
   }
-  arg4 = static_cast<bool>(val4);
+  arg4 = static_cast< bool >(val4);
   result = (int)executeConnectedMovement(arg1, arg2, arg3, arg4);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -4711,9 +4711,9 @@ SWIGINTERN PyObject *_wrap_executeMovement(PyObject *SWIGUNUSEDPARM(self), PyObj
                                              "TMovement *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TMovement *>(argp1);
+  arg1 = reinterpret_cast< TMovement * >(argp1);
   result = (int)executeMovement(arg1);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -4746,7 +4746,7 @@ SWIGINTERN PyObject *_wrap_getAxisFirmwareVersion(PyObject *SWIGUNUSEDPARM(self)
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2))
   {
@@ -4758,9 +4758,9 @@ SWIGINTERN PyObject *_wrap_getAxisFirmwareVersion(PyObject *SWIGUNUSEDPARM(self)
                                              "char []"
                                              "'");
   }
-  arg2 = reinterpret_cast<char *>(buf2);
+  arg2 = reinterpret_cast< char * >(buf2);
   result = (int)getAxisFirmwareVersion(arg1, arg2);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   if (alloc2 == SWIG_NEWOBJ)
     delete[] buf2;
   return resultobj;
@@ -4778,7 +4778,7 @@ SWIGINTERN PyObject *_wrap_getNumberOfMotors(PyObject *SWIGUNUSEDPARM(self), PyO
   if (!PyArg_ParseTuple(args, (char *)":getNumberOfMotors"))
     SWIG_fail;
   result = (int)getNumberOfMotors();
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -4806,9 +4806,9 @@ SWIGINTERN PyObject *_wrap_getPosition(PyObject *SWIGUNUSEDPARM(self), PyObject 
                                              "TPos *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TPos *>(argp1);
+  arg1 = reinterpret_cast< TPos * >(argp1);
   result = (int)getPosition(arg1);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -4837,9 +4837,9 @@ SWIGINTERN PyObject *_wrap_getVersion(PyObject *SWIGUNUSEDPARM(self), PyObject *
                                              "char []"
                                              "'");
   }
-  arg1 = reinterpret_cast<char *>(buf1);
+  arg1 = reinterpret_cast< char * >(buf1);
   result = (int)getVersion(arg1);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   if (alloc1 == SWIG_NEWOBJ)
     delete[] buf1;
   return resultobj;
@@ -4877,7 +4877,7 @@ SWIGINTERN PyObject *_wrap_initKatana(PyObject *SWIGUNUSEDPARM(self), PyObject *
                                              "char *"
                                              "'");
   }
-  arg1 = reinterpret_cast<char *>(buf1);
+  arg1 = reinterpret_cast< char * >(buf1);
   res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2))
   {
@@ -4889,9 +4889,9 @@ SWIGINTERN PyObject *_wrap_initKatana(PyObject *SWIGUNUSEDPARM(self), PyObject *
                                              "char *"
                                              "'");
   }
-  arg2 = reinterpret_cast<char *>(buf2);
+  arg2 = reinterpret_cast< char * >(buf2);
   result = (int)initKatana(arg1, arg2);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   if (alloc1 == SWIG_NEWOBJ)
     delete[] buf1;
   if (alloc2 == SWIG_NEWOBJ)
@@ -4931,7 +4931,7 @@ SWIGINTERN PyObject *_wrap_IO_setOutput(PyObject *SWIGUNUSEDPARM(self), PyObject
                                                "char"
                                                "'");
   }
-  arg1 = static_cast<char>(val1);
+  arg1 = static_cast< char >(val1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -4943,9 +4943,9 @@ SWIGINTERN PyObject *_wrap_IO_setOutput(PyObject *SWIGUNUSEDPARM(self), PyObject
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   result = (int)IO_setOutput(arg1, arg2);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -4977,7 +4977,7 @@ SWIGINTERN PyObject *_wrap_ModBusTCP_writeWord(PyObject *SWIGUNUSEDPARM(self), P
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -4989,9 +4989,9 @@ SWIGINTERN PyObject *_wrap_ModBusTCP_writeWord(PyObject *SWIGUNUSEDPARM(self), P
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   result = (int)ModBusTCP_writeWord(arg1, arg2);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -5019,9 +5019,9 @@ SWIGINTERN PyObject *_wrap_motorOff(PyObject *SWIGUNUSEDPARM(self), PyObject *ar
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   result = (int)motorOff(arg1);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -5049,9 +5049,9 @@ SWIGINTERN PyObject *_wrap_motorOn(PyObject *SWIGUNUSEDPARM(self), PyObject *arg
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   result = (int)motorOn(arg1);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -5091,7 +5091,7 @@ SWIGINTERN PyObject *_wrap_moveMot(PyObject *SWIGUNUSEDPARM(self), PyObject *arg
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -5103,7 +5103,7 @@ SWIGINTERN PyObject *_wrap_moveMot(PyObject *SWIGUNUSEDPARM(self), PyObject *arg
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3))
   {
@@ -5115,7 +5115,7 @@ SWIGINTERN PyObject *_wrap_moveMot(PyObject *SWIGUNUSEDPARM(self), PyObject *arg
                                                "int"
                                                "'");
   }
-  arg3 = static_cast<int>(val3);
+  arg3 = static_cast< int >(val3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4))
   {
@@ -5127,9 +5127,9 @@ SWIGINTERN PyObject *_wrap_moveMot(PyObject *SWIGUNUSEDPARM(self), PyObject *arg
                                                "int"
                                                "'");
   }
-  arg4 = static_cast<int>(val4);
+  arg4 = static_cast< int >(val4);
   result = (int)moveMot(arg1, arg2, arg3, arg4);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -5165,7 +5165,7 @@ SWIGINTERN PyObject *_wrap_moveMotAndWait(PyObject *SWIGUNUSEDPARM(self), PyObje
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -5177,7 +5177,7 @@ SWIGINTERN PyObject *_wrap_moveMotAndWait(PyObject *SWIGUNUSEDPARM(self), PyObje
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3))
   {
@@ -5189,9 +5189,9 @@ SWIGINTERN PyObject *_wrap_moveMotAndWait(PyObject *SWIGUNUSEDPARM(self), PyObje
                                                "int"
                                                "'");
   }
-  arg3 = static_cast<int>(val3);
+  arg3 = static_cast< int >(val3);
   result = (int)moveMotAndWait(arg1, arg2, arg3);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -5227,7 +5227,7 @@ SWIGINTERN PyObject *_wrap_moveToPos(PyObject *SWIGUNUSEDPARM(self), PyObject *a
                                              "TPos *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TPos *>(argp1);
+  arg1 = reinterpret_cast< TPos * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -5239,7 +5239,7 @@ SWIGINTERN PyObject *_wrap_moveToPos(PyObject *SWIGUNUSEDPARM(self), PyObject *a
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3))
   {
@@ -5251,9 +5251,9 @@ SWIGINTERN PyObject *_wrap_moveToPos(PyObject *SWIGUNUSEDPARM(self), PyObject *a
                                                "int"
                                                "'");
   }
-  arg3 = static_cast<int>(val3);
+  arg3 = static_cast< int >(val3);
   result = (int)moveToPos(arg1, arg2, arg3);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -5318,7 +5318,7 @@ SWIGINTERN PyObject *_wrap_moveToPosEnc(PyObject *SWIGUNUSEDPARM(self), PyObject
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -5330,7 +5330,7 @@ SWIGINTERN PyObject *_wrap_moveToPosEnc(PyObject *SWIGUNUSEDPARM(self), PyObject
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3))
   {
@@ -5342,7 +5342,7 @@ SWIGINTERN PyObject *_wrap_moveToPosEnc(PyObject *SWIGUNUSEDPARM(self), PyObject
                                                "int"
                                                "'");
   }
-  arg3 = static_cast<int>(val3);
+  arg3 = static_cast< int >(val3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4))
   {
@@ -5354,7 +5354,7 @@ SWIGINTERN PyObject *_wrap_moveToPosEnc(PyObject *SWIGUNUSEDPARM(self), PyObject
                                                "int"
                                                "'");
   }
-  arg4 = static_cast<int>(val4);
+  arg4 = static_cast< int >(val4);
   ecode5 = SWIG_AsVal_int(obj4, &val5);
   if (!SWIG_IsOK(ecode5))
   {
@@ -5366,7 +5366,7 @@ SWIGINTERN PyObject *_wrap_moveToPosEnc(PyObject *SWIGUNUSEDPARM(self), PyObject
                                                "int"
                                                "'");
   }
-  arg5 = static_cast<int>(val5);
+  arg5 = static_cast< int >(val5);
   ecode6 = SWIG_AsVal_int(obj5, &val6);
   if (!SWIG_IsOK(ecode6))
   {
@@ -5378,7 +5378,7 @@ SWIGINTERN PyObject *_wrap_moveToPosEnc(PyObject *SWIGUNUSEDPARM(self), PyObject
                                                "int"
                                                "'");
   }
-  arg6 = static_cast<int>(val6);
+  arg6 = static_cast< int >(val6);
   ecode7 = SWIG_AsVal_int(obj6, &val7);
   if (!SWIG_IsOK(ecode7))
   {
@@ -5390,7 +5390,7 @@ SWIGINTERN PyObject *_wrap_moveToPosEnc(PyObject *SWIGUNUSEDPARM(self), PyObject
                                                "int"
                                                "'");
   }
-  arg7 = static_cast<int>(val7);
+  arg7 = static_cast< int >(val7);
   ecode8 = SWIG_AsVal_int(obj7, &val8);
   if (!SWIG_IsOK(ecode8))
   {
@@ -5402,7 +5402,7 @@ SWIGINTERN PyObject *_wrap_moveToPosEnc(PyObject *SWIGUNUSEDPARM(self), PyObject
                                                "int"
                                                "'");
   }
-  arg8 = static_cast<int>(val8);
+  arg8 = static_cast< int >(val8);
   ecode9 = SWIG_AsVal_int(obj8, &val9);
   if (!SWIG_IsOK(ecode9))
   {
@@ -5414,7 +5414,7 @@ SWIGINTERN PyObject *_wrap_moveToPosEnc(PyObject *SWIGUNUSEDPARM(self), PyObject
                                                "int"
                                                "'");
   }
-  arg9 = static_cast<int>(val9);
+  arg9 = static_cast< int >(val9);
   ecode10 = SWIG_AsVal_bool(obj9, &val10);
   if (!SWIG_IsOK(ecode10))
   {
@@ -5426,9 +5426,9 @@ SWIGINTERN PyObject *_wrap_moveToPosEnc(PyObject *SWIGUNUSEDPARM(self), PyObject
                                                 "bool"
                                                 "'");
   }
-  arg10 = static_cast<bool>(val10);
+  arg10 = static_cast< bool >(val10);
   result = (int)moveToPosEnc(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -5464,7 +5464,7 @@ SWIGINTERN PyObject *_wrap_moveToPosLin(PyObject *SWIGUNUSEDPARM(self), PyObject
                                              "TPos *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TPos *>(argp1);
+  arg1 = reinterpret_cast< TPos * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -5476,7 +5476,7 @@ SWIGINTERN PyObject *_wrap_moveToPosLin(PyObject *SWIGUNUSEDPARM(self), PyObject
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3))
   {
@@ -5488,9 +5488,9 @@ SWIGINTERN PyObject *_wrap_moveToPosLin(PyObject *SWIGUNUSEDPARM(self), PyObject
                                                "int"
                                                "'");
   }
-  arg3 = static_cast<int>(val3);
+  arg3 = static_cast< int >(val3);
   result = (int)moveToPosLin(arg1, arg2, arg3);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -5504,7 +5504,7 @@ SWIGINTERN PyObject *_wrap_openGripper(PyObject *SWIGUNUSEDPARM(self), PyObject 
   if (!PyArg_ParseTuple(args, (char *)":openGripper"))
     SWIG_fail;
   result = (int)openGripper();
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -5532,9 +5532,9 @@ SWIGINTERN PyObject *_wrap_ping(PyObject *SWIGUNUSEDPARM(self), PyObject *args)
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   result = (int)ping(arg1);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -5567,7 +5567,7 @@ SWIGINTERN PyObject *_wrap_pushMovementToStack(PyObject *SWIGUNUSEDPARM(self), P
                                              "TMovement *"
                                              "'");
   }
-  arg1 = reinterpret_cast<TMovement *>(argp1);
+  arg1 = reinterpret_cast< TMovement * >(argp1);
   res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2))
   {
@@ -5579,9 +5579,9 @@ SWIGINTERN PyObject *_wrap_pushMovementToStack(PyObject *SWIGUNUSEDPARM(self), P
                                              "char *"
                                              "'");
   }
-  arg2 = reinterpret_cast<char *>(buf2);
+  arg2 = reinterpret_cast< char * >(buf2);
   result = (int)pushMovementToStack(arg1, arg2);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   if (alloc2 == SWIG_NEWOBJ)
     delete[] buf2;
   return resultobj;
@@ -5618,7 +5618,7 @@ SWIGINTERN PyObject *_wrap_runThroughMovementStack(PyObject *SWIGUNUSEDPARM(self
                                              "char *"
                                              "'");
   }
-  arg1 = reinterpret_cast<char *>(buf1);
+  arg1 = reinterpret_cast< char * >(buf1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -5630,9 +5630,9 @@ SWIGINTERN PyObject *_wrap_runThroughMovementStack(PyObject *SWIGUNUSEDPARM(self
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   result = (int)runThroughMovementStack(arg1, arg2);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   if (alloc1 == SWIG_NEWOBJ)
     delete[] buf1;
   return resultobj;
@@ -5688,7 +5688,7 @@ SWIGINTERN PyObject *_wrap_sendSplineToMotor(PyObject *SWIGUNUSEDPARM(self), PyO
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -5700,7 +5700,7 @@ SWIGINTERN PyObject *_wrap_sendSplineToMotor(PyObject *SWIGUNUSEDPARM(self), PyO
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3))
   {
@@ -5712,7 +5712,7 @@ SWIGINTERN PyObject *_wrap_sendSplineToMotor(PyObject *SWIGUNUSEDPARM(self), PyO
                                                "int"
                                                "'");
   }
-  arg3 = static_cast<int>(val3);
+  arg3 = static_cast< int >(val3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4))
   {
@@ -5724,7 +5724,7 @@ SWIGINTERN PyObject *_wrap_sendSplineToMotor(PyObject *SWIGUNUSEDPARM(self), PyO
                                                "int"
                                                "'");
   }
-  arg4 = static_cast<int>(val4);
+  arg4 = static_cast< int >(val4);
   ecode5 = SWIG_AsVal_int(obj4, &val5);
   if (!SWIG_IsOK(ecode5))
   {
@@ -5736,7 +5736,7 @@ SWIGINTERN PyObject *_wrap_sendSplineToMotor(PyObject *SWIGUNUSEDPARM(self), PyO
                                                "int"
                                                "'");
   }
-  arg5 = static_cast<int>(val5);
+  arg5 = static_cast< int >(val5);
   ecode6 = SWIG_AsVal_int(obj5, &val6);
   if (!SWIG_IsOK(ecode6))
   {
@@ -5748,7 +5748,7 @@ SWIGINTERN PyObject *_wrap_sendSplineToMotor(PyObject *SWIGUNUSEDPARM(self), PyO
                                                "int"
                                                "'");
   }
-  arg6 = static_cast<int>(val6);
+  arg6 = static_cast< int >(val6);
   ecode7 = SWIG_AsVal_int(obj6, &val7);
   if (!SWIG_IsOK(ecode7))
   {
@@ -5760,9 +5760,9 @@ SWIGINTERN PyObject *_wrap_sendSplineToMotor(PyObject *SWIGUNUSEDPARM(self), PyO
                                                "int"
                                                "'");
   }
-  arg7 = static_cast<int>(val7);
+  arg7 = static_cast< int >(val7);
   result = (int)sendSplineToMotor(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -5794,7 +5794,7 @@ SWIGINTERN PyObject *_wrap_setCollisionDetection(PyObject *SWIGUNUSEDPARM(self),
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   ecode2 = SWIG_AsVal_bool(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -5806,9 +5806,9 @@ SWIGINTERN PyObject *_wrap_setCollisionDetection(PyObject *SWIGUNUSEDPARM(self),
                                                "bool"
                                                "'");
   }
-  arg2 = static_cast<bool>(val2);
+  arg2 = static_cast< bool >(val2);
   result = (int)setCollisionDetection(arg1, arg2);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -5844,7 +5844,7 @@ SWIGINTERN PyObject *_wrap_setCollisionParameters(PyObject *SWIGUNUSEDPARM(self)
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -5856,7 +5856,7 @@ SWIGINTERN PyObject *_wrap_setCollisionParameters(PyObject *SWIGUNUSEDPARM(self)
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3))
   {
@@ -5868,9 +5868,9 @@ SWIGINTERN PyObject *_wrap_setCollisionParameters(PyObject *SWIGUNUSEDPARM(self)
                                                "int"
                                                "'");
   }
-  arg3 = static_cast<int>(val3);
+  arg3 = static_cast< int >(val3);
   result = (int)setCollisionParameters(arg1, arg2, arg3);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -5910,7 +5910,7 @@ SWIGINTERN PyObject *_wrap_setControllerParameters(PyObject *SWIGUNUSEDPARM(self
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -5922,7 +5922,7 @@ SWIGINTERN PyObject *_wrap_setControllerParameters(PyObject *SWIGUNUSEDPARM(self
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3))
   {
@@ -5934,7 +5934,7 @@ SWIGINTERN PyObject *_wrap_setControllerParameters(PyObject *SWIGUNUSEDPARM(self
                                                "int"
                                                "'");
   }
-  arg3 = static_cast<int>(val3);
+  arg3 = static_cast< int >(val3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4))
   {
@@ -5946,9 +5946,9 @@ SWIGINTERN PyObject *_wrap_setControllerParameters(PyObject *SWIGUNUSEDPARM(self
                                                "int"
                                                "'");
   }
-  arg4 = static_cast<int>(val4);
+  arg4 = static_cast< int >(val4);
   result = (int)setControllerParameters(arg1, arg2, arg3, arg4);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -5976,9 +5976,9 @@ SWIGINTERN PyObject *_wrap_setGripper(PyObject *SWIGUNUSEDPARM(self), PyObject *
                                                "bool"
                                                "'");
   }
-  arg1 = static_cast<bool>(val1);
+  arg1 = static_cast< bool >(val1);
   result = (int)setGripper(arg1);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -6010,7 +6010,7 @@ SWIGINTERN PyObject *_wrap_setMaxAccel(PyObject *SWIGUNUSEDPARM(self), PyObject 
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -6022,9 +6022,9 @@ SWIGINTERN PyObject *_wrap_setMaxAccel(PyObject *SWIGUNUSEDPARM(self), PyObject 
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   result = (int)setMaxAccel(arg1, arg2);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -6056,7 +6056,7 @@ SWIGINTERN PyObject *_wrap_setMaxVelocity(PyObject *SWIGUNUSEDPARM(self), PyObje
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -6068,9 +6068,9 @@ SWIGINTERN PyObject *_wrap_setMaxVelocity(PyObject *SWIGUNUSEDPARM(self), PyObje
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   result = (int)setMaxVelocity(arg1, arg2);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -6102,7 +6102,7 @@ SWIGINTERN PyObject *_wrap_setPositionCollisionLimit(PyObject *SWIGUNUSEDPARM(se
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -6114,9 +6114,9 @@ SWIGINTERN PyObject *_wrap_setPositionCollisionLimit(PyObject *SWIGUNUSEDPARM(se
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   result = (int)setPositionCollisionLimit(arg1, arg2);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -6148,7 +6148,7 @@ SWIGINTERN PyObject *_wrap_setVelocityCollisionLimit(PyObject *SWIGUNUSEDPARM(se
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -6160,9 +6160,9 @@ SWIGINTERN PyObject *_wrap_setVelocityCollisionLimit(PyObject *SWIGUNUSEDPARM(se
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   result = (int)setVelocityCollisionLimit(arg1, arg2);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -6194,7 +6194,7 @@ SWIGINTERN PyObject *_wrap_startSplineMovement(PyObject *SWIGUNUSEDPARM(self), P
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -6206,9 +6206,9 @@ SWIGINTERN PyObject *_wrap_startSplineMovement(PyObject *SWIGUNUSEDPARM(self), P
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   result = (int)startSplineMovement(arg1, arg2);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -6222,7 +6222,7 @@ SWIGINTERN PyObject *_wrap_unblock(PyObject *SWIGUNUSEDPARM(self), PyObject *arg
   if (!PyArg_ParseTuple(args, (char *)":unblock"))
     SWIG_fail;
   result = (int)unblock();
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -6258,7 +6258,7 @@ SWIGINTERN PyObject *_wrap_waitForMot(PyObject *SWIGUNUSEDPARM(self), PyObject *
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2))
   {
@@ -6270,7 +6270,7 @@ SWIGINTERN PyObject *_wrap_waitForMot(PyObject *SWIGUNUSEDPARM(self), PyObject *
                                                "int"
                                                "'");
   }
-  arg2 = static_cast<int>(val2);
+  arg2 = static_cast< int >(val2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3))
   {
@@ -6282,9 +6282,9 @@ SWIGINTERN PyObject *_wrap_waitForMot(PyObject *SWIGUNUSEDPARM(self), PyObject *
                                                "int"
                                                "'");
   }
-  arg3 = static_cast<int>(val3);
+  arg3 = static_cast< int >(val3);
   result = (int)waitForMot(arg1, arg2, arg3);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -6312,9 +6312,9 @@ SWIGINTERN PyObject *_wrap_getDrive(PyObject *SWIGUNUSEDPARM(self), PyObject *ar
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   result = (int)getDrive_new(arg1);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -6342,9 +6342,9 @@ SWIGINTERN PyObject *_wrap_getEncoder(PyObject *SWIGUNUSEDPARM(self), PyObject *
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   result = (int)getEncoder_new(arg1);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -6372,9 +6372,9 @@ SWIGINTERN PyObject *_wrap_getVelocity(PyObject *SWIGUNUSEDPARM(self), PyObject 
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   result = (int)getVelocity_new(arg1);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -6402,9 +6402,9 @@ SWIGINTERN PyObject *_wrap_IO_readInput(PyObject *SWIGUNUSEDPARM(self), PyObject
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   result = (int)IO_readInput_new(arg1);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -6432,9 +6432,9 @@ SWIGINTERN PyObject *_wrap_ModBusTCP_readWord(PyObject *SWIGUNUSEDPARM(self), Py
                                                "int"
                                                "'");
   }
-  arg1 = static_cast<int>(val1);
+  arg1 = static_cast< int >(val1);
   result = (int)ModBusTCP_readWord_new(arg1);
-  resultobj = SWIG_From_int(static_cast<int>(result));
+  resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
   return NULL;
@@ -7133,8 +7133,8 @@ extern "C"
 
   PyDict_SetItemString(d, (char *)"cvar", SWIG_globals());
   SWIG_addvarlink(SWIG_globals(), (char *)"PI", Swig_var_PI_get, Swig_var_PI_set);
-  SWIG_Python_SetConstant(d, "ERR_NONE", SWIG_From_int(static_cast<int>(ERR_NONE)));
-  SWIG_Python_SetConstant(d, "ERR_SUCCESS", SWIG_From_int(static_cast<int>(ERR_SUCCESS)));
-  SWIG_Python_SetConstant(d, "PTP", SWIG_From_int(static_cast<int>(PTP)));
-  SWIG_Python_SetConstant(d, "LINEAR", SWIG_From_int(static_cast<int>(LINEAR)));
+  SWIG_Python_SetConstant(d, "ERR_NONE", SWIG_From_int(static_cast< int >(ERR_NONE)));
+  SWIG_Python_SetConstant(d, "ERR_SUCCESS", SWIG_From_int(static_cast< int >(ERR_SUCCESS)));
+  SWIG_Python_SetConstant(d, "PTP", SWIG_From_int(static_cast< int >(PTP)));
+  SWIG_Python_SetConstant(d, "LINEAR", SWIG_From_int(static_cast< int >(LINEAR)));
 }

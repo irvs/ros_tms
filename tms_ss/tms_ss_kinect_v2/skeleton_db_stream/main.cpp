@@ -34,13 +34,13 @@ private:
   double update_time_;
   std::string frame_id_;
 
-  std::string makeJSONofJointAngles(std::map<std::string, double>& data);
+  std::string makeJSONofJointAngles(std::map< std::string, double >& data);
 };
 
 //------------------------------------------------------------------------------
 SkeletonDBStream::SkeletonDBStream() : frame_id_("/world"), update_time_(0.01)  // sec
 {
-  db_pub_ = nh_.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 1);
+  db_pub_ = nh_.advertise< tms_msg_db::TmsdbStamped >("tms_db_data", 1);
   skeleton_sub_ = nh_.subscribe("integrated_skeleton_stream", 1, &SkeletonDBStream::callback, this);
 
   ROS_ASSERT("Start sending skeleton data to DB.");
@@ -75,8 +75,8 @@ void SkeletonDBStream::callback(const tms_msg_ss::SkeletonArray::ConstPtr& msg)
     // Calculation of position and posture
     Eigen::Vector3d pos;
     Eigen::Quaterniond quat;
-    std::map<std::string, double> joint_states;
-    calcForModel01<double>(skeleton, pos, quat, joint_states);
+    std::map< std::string, double > joint_states;
+    calcForModel01< double >(skeleton, pos, quat, joint_states);
     double rr, rp, ry;
     tf::Matrix3x3(tf::Quaternion(quat.x(), quat.y(), quat.z(), quat.w())).getRPY(rr, rp, ry);
 
@@ -118,7 +118,7 @@ void SkeletonDBStream::callback(const tms_msg_ss::SkeletonArray::ConstPtr& msg)
 }
 
 //------------------------------------------------------------------------------
-std::string SkeletonDBStream::makeJSONofJointAngles(std::map<std::string, double>& data)
+std::string SkeletonDBStream::makeJSONofJointAngles(std::map< std::string, double >& data)
 {
   std::stringstream json;
   json << "{";

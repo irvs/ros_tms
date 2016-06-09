@@ -33,14 +33,14 @@ struct tracker_param
   int id;
   int flag;
   int count;
-  std::vector<tracker_point> xy;
-  std::vector<double> point_time;
+  std::vector< tracker_point > xy;
+  std::vector< double > point_time;
   double start_time;
 };
 
 tracker_param tmp_tracker_info;
-std::vector<tracker_param> tracker_info_array;
-std::vector<tracker_param>::iterator p;
+std::vector< tracker_param > tracker_info_array;
+std::vector< tracker_param >::iterator p;
 int object_id_max = 0;
 
 // colorset
@@ -133,10 +133,10 @@ void visualization_callback(const tms_msg_ss::tracking_points::ConstPtr &msg)
             p->point_time.push_back(ros::Time::now().toSec());
           }
           p->flag = 1;  // flag ON
-          std::vector<tracker_point>::iterator xy_iterator;
+          std::vector< tracker_point >::iterator xy_iterator;
           xy_iterator = (p->xy).begin();
 
-          std::vector<double>::iterator time_iterator;
+          std::vector< double >::iterator time_iterator;
           for (time_iterator = p->point_time.begin(); time_iterator < p->point_time.end();
                ++time_iterator, ++xy_iterator)
           {
@@ -348,7 +348,7 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "portable_visualization");
   ros::NodeHandle n;
-  pub = n.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 1);
+  pub = n.advertise< visualization_msgs::MarkerArray >("visualization_marker_array", 1);
   sub = n.subscribe("/tracking_points", 1000, visualization_callback);
   ros::spin();
   return 0;

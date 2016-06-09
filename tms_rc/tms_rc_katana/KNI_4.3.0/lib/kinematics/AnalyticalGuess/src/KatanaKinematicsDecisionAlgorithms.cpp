@@ -22,7 +22,7 @@ operator()(t_iter targetEnc_begin, t_iter targetEnc_end, c_iter currentEnc_begin
     c_iter c = currentEnc_begin;
     while (t != (*target).end() && c != currentEnc_end)
     {
-      sum += MHF::pow2<double>(*t - *c);
+      sum += MHF::pow2< double >(*t - *c);
       ++t;
       ++c;
     }
@@ -52,7 +52,7 @@ operator()(t_iter targetRad_begin, t_iter targetRad_end, c_iter currentRad_begin
     c_iter c = currentRad_begin;
     while (t != (*target).end() && c != currentRad_end)
     {
-      sum += MHF::pow2<double>(*t - *c);
+      sum += MHF::pow2< double >(*t - *c);
       ++t;
       ++c;
     }

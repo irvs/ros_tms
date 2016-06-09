@@ -18,45 +18,45 @@ Kinematics6M90T::~Kinematics6M90T()
 }
 
 //!get link length
-std::vector<double> Kinematics6M90T::getLinkLength()
+std::vector< double > Kinematics6M90T::getLinkLength()
 {
-  std::vector<double> result(mSegmentLength);
+  std::vector< double > result(mSegmentLength);
   return result;
 }
 //!get encoders per cycle
-std::vector<int> Kinematics6M90T::getEpc()
+std::vector< int > Kinematics6M90T::getEpc()
 {
-  std::vector<int> result(mEncodersPerCycle);
+  std::vector< int > result(mEncodersPerCycle);
   return result;
 }
 //!get encoder offset
-std::vector<int> Kinematics6M90T::getEncOff()
+std::vector< int > Kinematics6M90T::getEncOff()
 {
-  std::vector<int> result(mEncoderOffset);
+  std::vector< int > result(mEncoderOffset);
   return result;
 }
 //!get direction
-std::vector<int> Kinematics6M90T::getDir()
+std::vector< int > Kinematics6M90T::getDir()
 {
-  std::vector<int> result(mRotationDirection);
+  std::vector< int > result(mRotationDirection);
   return result;
 }
 //!get angle offset
-std::vector<double> Kinematics6M90T::getAngOff()
+std::vector< double > Kinematics6M90T::getAngOff()
 {
-  std::vector<double> result(mAngleOffset);
+  std::vector< double > result(mAngleOffset);
   return result;
 }
 //!get angle stop
-std::vector<double> Kinematics6M90T::getAngStop()
+std::vector< double > Kinematics6M90T::getAngStop()
 {
-  std::vector<double> result(mAngleStop);
+  std::vector< double > result(mAngleStop);
   return result;
 }
 //!get angle range
-std::vector<double> Kinematics6M90T::getAngRange()
+std::vector< double > Kinematics6M90T::getAngRange()
 {
-  std::vector<double> result;
+  std::vector< double > result;
   double diff;
   for (int i = 0; i < 6; i++)
   {
@@ -73,9 +73,9 @@ std::vector<double> Kinematics6M90T::getAngRange()
   return result;
 }
 //!get angle min
-std::vector<double> Kinematics6M90T::getAngMin()
+std::vector< double > Kinematics6M90T::getAngMin()
 {
-  std::vector<double> result;
+  std::vector< double > result;
   for (int i = 0; i < 6; i++)
   {
     if (mAngleStop[i] < mAngleOffset[i])
@@ -90,9 +90,9 @@ std::vector<double> Kinematics6M90T::getAngMin()
   return result;
 }
 //!get angle max
-std::vector<double> Kinematics6M90T::getAngMax()
+std::vector< double > Kinematics6M90T::getAngMax()
 {
-  std::vector<double> result;
+  std::vector< double > result;
   for (int i = 0; i < 6; i++)
   {
     if (mAngleStop[i] < mAngleOffset[i])
@@ -108,7 +108,7 @@ std::vector<double> Kinematics6M90T::getAngMax()
 }
 
 //!set link length
-bool Kinematics6M90T::setLinkLength(const std::vector<double> aLengths)
+bool Kinematics6M90T::setLinkLength(const std::vector< double > aLengths)
 {
   if ((int)aLengths.size() != mNumberOfSegments)
   {
@@ -123,7 +123,7 @@ bool Kinematics6M90T::setLinkLength(const std::vector<double> aLengths)
   return true;
 }
 //!set angle offset
-bool Kinematics6M90T::setAngOff(const std::vector<double> aAngOff)
+bool Kinematics6M90T::setAngOff(const std::vector< double > aAngOff)
 {
   if ((int)aAngOff.size() != mNumberOfMotors)
   {
@@ -138,7 +138,7 @@ bool Kinematics6M90T::setAngOff(const std::vector<double> aAngOff)
   return true;
 }
 //!set angle stop
-bool Kinematics6M90T::setAngStop(const std::vector<double> aAngStop)
+bool Kinematics6M90T::setAngStop(const std::vector< double > aAngStop)
 {
   if ((int)aAngStop.size() != mNumberOfMotors)
   {
@@ -154,7 +154,7 @@ bool Kinematics6M90T::setAngStop(const std::vector<double> aAngStop)
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool Kinematics6M90T::enc2rad(std::vector<double>& aAngles, const std::vector<int> aEncoders)
+bool Kinematics6M90T::enc2rad(std::vector< double >& aAngles, const std::vector< int > aEncoders)
 {
   for (int i = 0; i < 6; ++i)
   {
@@ -164,7 +164,7 @@ bool Kinematics6M90T::enc2rad(std::vector<double>& aAngles, const std::vector<in
   return true;
 }
 //////////////////////////////////////////////////////////////////////////
-bool Kinematics6M90T::rad2enc(std::vector<int>& aEncoders, const std::vector<double> aAngles)
+bool Kinematics6M90T::rad2enc(std::vector< int >& aEncoders, const std::vector< double > aAngles)
 {
   for (int i = 0; i < 6; ++i)
   {
@@ -175,7 +175,7 @@ bool Kinematics6M90T::rad2enc(std::vector<int>& aEncoders, const std::vector<dou
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool Kinematics6M90T::directKinematics(std::vector<double>& aPosition, const std::vector<double> aAngles)
+bool Kinematics6M90T::directKinematics(std::vector< double >& aPosition, const std::vector< double > aAngles)
 {
   if (!mIsInitialized)
   {
@@ -188,7 +188,7 @@ bool Kinematics6M90T::directKinematics(std::vector<double>& aPosition, const std
   double y0, y1, y2, y3;
   double z0, z1, z2, z3;
 
-  std::vector<double> current_angles(6);
+  std::vector< double > current_angles(6);
   for (int i = 0; i < 6; ++i)
   {
     current_angles[i] = aAngles[i];
@@ -200,20 +200,20 @@ bool Kinematics6M90T::directKinematics(std::vector<double>& aPosition, const std
   current_angles[3] = MHF_PI - current_angles[3];
   current_angles[5] = -current_angles[5];
 
-  std::vector<double> pose(6);
+  std::vector< double > pose(6);
 
-  std::vector<double> cx(current_angles.size()), sx(current_angles.size());
-  std::vector<double>::iterator cx_iter, sx_iter;
+  std::vector< double > cx(current_angles.size()), sx(current_angles.size());
+  std::vector< double >::iterator cx_iter, sx_iter;
 
-  std::vector<double> angle = current_angles;
+  std::vector< double > angle = current_angles;
 
   angle[2] = angle[1] + angle[2];
   angle[3] = angle[2] + angle[3];
 
   cx_iter = cx.begin();
   sx_iter = sx.begin();
-  std::transform(angle.begin(), angle.end(), sx_iter, MHF::unary_precalc_sin<double>());
-  std::transform(angle.begin(), angle.end(), cx_iter, MHF::unary_precalc_cos<double>());
+  std::transform(angle.begin(), angle.end(), sx_iter, MHF::unary_precalc_sin< double >());
+  std::transform(angle.begin(), angle.end(), cx_iter, MHF::unary_precalc_cos< double >());
 
   // x
   x0 = cx[0] * sx[1];
@@ -249,7 +249,7 @@ bool Kinematics6M90T::directKinematics(std::vector<double>& aPosition, const std
   if (std::abs(pose[4]) < cTolerance || std::abs(pose[4] - MHF_PI) < cTolerance)
   {  // catch the case where theta=0, resp. theta=180
     // phi
-    std::vector<double> v1(2), v2(2);
+    std::vector< double > v1(2), v2(2);
 
     double R11 = -sin(theta1) * cos(theta5) * sin(theta6) +
                  cos(theta1) * (sin(theta234) * cos(theta6) + cos(theta234) * sin(theta5) * sin(theta6));
@@ -283,8 +283,8 @@ bool Kinematics6M90T::directKinematics(std::vector<double>& aPosition, const std
   return true;
 }
 //////////////////////////////////////////////////////////////////////////
-bool Kinematics6M90T::inverseKinematics(std::vector<double>& aAngles, const std::vector<double> aPosition,
-                                        const std::vector<double> aStartingAngles)
+bool Kinematics6M90T::inverseKinematics(std::vector< double >& aAngles, const std::vector< double > aPosition,
+                                        const std::vector< double > aStartingAngles)
 {
   if (!mIsInitialized)
   {
@@ -372,7 +372,7 @@ bool Kinematics6M90T::inverseKinematics(std::vector<double>& aAngles, const std:
   thetacomp(angle[7], p_m, aPosition);
 
   // delete solutions out of range (in joint space)
-  for (std::vector<angles_calc>::iterator iter = angle.begin(); iter != angle.end();)
+  for (std::vector< angles_calc >::iterator iter = angle.begin(); iter != angle.end();)
   {
     if (MHF::pow2(iter->costh3) <= 1.0)
     {
@@ -392,10 +392,10 @@ bool Kinematics6M90T::inverseKinematics(std::vector<double>& aAngles, const std:
   }
 
   // store possible solution angles to std::vector<std::vector<double>>
-  std::vector<std::vector<double>> PossibleTargets;
-  for (std::vector<angles_calc>::iterator i = angle.begin(); i != angle.end(); ++i)
+  std::vector< std::vector< double > > PossibleTargets;
+  for (std::vector< angles_calc >::iterator i = angle.begin(); i != angle.end(); ++i)
   {
-    std::vector<double> possangles(6);
+    std::vector< double > possangles(6);
 
     possangles[0] = i->theta1;
     possangles[1] = i->theta2;
@@ -408,7 +408,7 @@ bool Kinematics6M90T::inverseKinematics(std::vector<double>& aAngles, const std:
   }
 
   // choose best solution
-  std::vector<std::vector<double>>::const_iterator sol = KinematicsDefaultRadMinAlgorithm()(
+  std::vector< std::vector< double > >::const_iterator sol = KinematicsDefaultRadMinAlgorithm()(
       PossibleTargets.begin(), PossibleTargets.end(), aStartingAngles.begin(), aStartingAngles.end());
 
   if (sol == PossibleTargets.end())
@@ -419,7 +419,7 @@ bool Kinematics6M90T::inverseKinematics(std::vector<double>& aAngles, const std:
   // copy solution to aAngles vector
   for (int i = aAngles.size(); i < 6; ++i)
     aAngles.push_back(0.0);
-  std::vector<double>::iterator gripper_iter = std::copy((*sol).begin(), (*sol).end(), aAngles.begin());
+  std::vector< double >::iterator gripper_iter = std::copy((*sol).begin(), (*sol).end(), aAngles.begin());
 
   return true;
 }
@@ -559,11 +559,11 @@ void Kinematics6M90T::IK_b1b2costh3_6MS(angles_calc& angle, const position& p) c
       (2.0 * mSegmentLength[0] * mSegmentLength[1]);
 }
 //////////////////////////////////////////////////////////////////////////
-double Kinematics6M90T::findFirstEqualAngle(const std::vector<double>& v1, const std::vector<double>& v2) const
+double Kinematics6M90T::findFirstEqualAngle(const std::vector< double >& v1, const std::vector< double >& v2) const
 {
-  for (std::vector<double>::const_iterator i = v1.begin(); i != v1.end(); ++i)
+  for (std::vector< double >::const_iterator i = v1.begin(); i != v1.end(); ++i)
   {
-    for (std::vector<double>::const_iterator j = v2.begin(); j != v2.end(); ++j)
+    for (std::vector< double >::const_iterator j = v2.begin(); j != v2.end(); ++j)
     {
       if (std::abs(MHF::anglereduce(*j) - MHF::anglereduce(*i)) < cTolerance)
         return *i;
@@ -573,7 +573,7 @@ double Kinematics6M90T::findFirstEqualAngle(const std::vector<double>& v1, const
   return 0;
 }
 
-void Kinematics6M90T::thetacomp(angles_calc& angle, const position& p_m, const std::vector<double>& pose) const
+void Kinematics6M90T::thetacomp(angles_calc& angle, const position& p_m, const std::vector< double >& pose) const
 {
   const double theta1 = angle.theta1;
   double theta2 = 0;
@@ -602,7 +602,7 @@ void Kinematics6M90T::thetacomp(angles_calc& angle, const position& p_m, const s
   const double R11 = cos(phi) * cos(psi) - sin(phi) * cos(theta) * sin(psi);
   const double R21 = sin(phi) * cos(psi) + cos(phi) * cos(theta) * sin(psi);
 
-  std::vector<double> theta16c(2), theta16s(2);
+  std::vector< double > theta16c(2), theta16s(2);
 
   if (std::abs(theta234 + MHF_PI / 2) < cTolerance)
   {

@@ -40,45 +40,45 @@ public:
       YAML::Node config = YAML::LoadFile(filepath);
 
       if (config["n_of_particles"])
-        n_of_particles = config["n_of_particles"].as<int>();
+        n_of_particles = config["n_of_particles"].as< int >();
       if (config["update"])
-        update = config["update"].as<int>();
+        update = config["update"].as< int >();
       if (config["max_lrf_range"])
-        max_lrf_range = config["max_lrf_range"].as<double>();
+        max_lrf_range = config["max_lrf_range"].as< double >();
       if (config["min_lrf_range"])
-        min_lrf_range = config["min_lrf_range"].as<double>();
+        min_lrf_range = config["min_lrf_range"].as< double >();
       if (config["target_area"])
       {
         if (config["target_area"].IsSequence())
         {
           for (int i = 0; i < 4; i++)
-            target_area[i] = config["target_area"][i].as<double>();
+            target_area[i] = config["target_area"][i].as< double >();
         }
         else
         {
-          target_area[0] = -config["target_area"].as<double>();
-          target_area[1] = -config["target_area"].as<double>();
-          target_area[2] = config["target_area"].as<double>();
-          target_area[3] = config["target_area"].as<double>();
+          target_area[0] = -config["target_area"].as< double >();
+          target_area[1] = -config["target_area"].as< double >();
+          target_area[2] = config["target_area"].as< double >();
+          target_area[3] = config["target_area"].as< double >();
         }
       }
       if (config["m_sigma"])
-        m_sigma = config["m_sigma"].as<double>();
+        m_sigma = config["m_sigma"].as< double >();
       if (config["pos_noise"])
-        pos_noise = config["pos_noise"].as<double>();
+        pos_noise = config["pos_noise"].as< double >();
       if (config["vel_noise"])
-        vel_noise = config["vel_noise"].as<double>();
+        vel_noise = config["vel_noise"].as< double >();
       if (config["particle_area"])
-        particle_area = config["particle_area"].as<double>();
+        particle_area = config["particle_area"].as< double >();
       if (config["max_vel"])
-        max_vel = config["max_vel"].as<double>();
+        max_vel = config["max_vel"].as< double >();
 
       if (config["m_max_ID"])
-        m_max_ID = config["m_max_ID"].as<int>();
+        m_max_ID = config["m_max_ID"].as< int >();
       if (config["m_min_distance"])
-        m_min_distance = config["m_min_distance"].as<double>();
+        m_min_distance = config["m_min_distance"].as< double >();
       if (config["m_initial_dist"])
-        m_initial_dist = config["m_initial_dist"].as<double>();
+        m_initial_dist = config["m_initial_dist"].as< double >();
 
       // std::cout << "max_vel" << max_vel << std::endl;
     }

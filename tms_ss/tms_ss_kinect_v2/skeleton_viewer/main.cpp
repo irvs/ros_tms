@@ -49,7 +49,7 @@ inline void SkeletonViewer::toWorldPoint(Eigen::Vector3f &vec)
   return;
 }
 
-template <class T>
+template < class T >
 std::string to_str(const T &t)
 {
   std::stringstream ss;
@@ -72,7 +72,7 @@ void SkeletonViewer::callback_skeleton(const tms_msg_ss::SkeletonArray::ConstPtr
       marker.header.frame_id = "/world_link";
       marker.header.stamp = ros::Time::now();
       std::string name("skeleton");
-      marker.ns = name.append(to_str<int>(j + 1));
+      marker.ns = name.append(to_str< int >(j + 1));
       marker.id = i;
       marker.type = shape;
       marker.action = visualization_msgs::Marker::ADD;
@@ -108,7 +108,7 @@ void SkeletonViewer::run()
 {
   ros::Subscriber sub_skeleton =
       this->_nh.subscribe("integrated_skeleton_stream", 1, &SkeletonViewer::callback_skeleton, this);
-  ros::Publisher marker_pub = _nh.advertise<visualization_msgs::MarkerArray>("skeleton_visualization", 1);
+  ros::Publisher marker_pub = _nh.advertise< visualization_msgs::MarkerArray >("skeleton_visualization", 1);
   _pmarker_array_pub = &marker_pub;
   ros::spin();
   return;

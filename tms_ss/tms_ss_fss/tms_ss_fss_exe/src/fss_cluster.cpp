@@ -52,23 +52,23 @@ void lrfCallback(const tms_msg_ss::fss_tf_data::ConstPtr &msg)
   float fMinDistance = 200.0;          // 200mm
   float fMaxStandardDeviation = 35.0;  // 35mm
 
-  vector<uint32_t> vstGroupID;
-  vector<float> vstCenterX;
-  vector<float> vstCenterY;
-  vector<float> vstSize;
-  vector<float> vstAvgIntrinsicIntensity;
+  vector< uint32_t > vstGroupID;
+  vector< float > vstCenterX;
+  vector< float > vstCenterY;
+  vector< float > vstSize;
+  vector< float > vstAvgIntrinsicIntensity;
 
-  vector<uint32_t> vstScanID;
-  vector<uint8_t> vstReflect;
-  vector<uint8_t> vstIsForwardPoint;
-  vector<float> vstDistance;
-  vector<float> vstIntensity;
-  vector<float> vstIntrinsicIntensity;
-  vector<float> vstAcuteAngle;
-  vector<float> vstX1;
-  vector<float> vstY1;
-  vector<float> vstX2;
-  vector<float> vstY2;
+  vector< uint32_t > vstScanID;
+  vector< uint8_t > vstReflect;
+  vector< uint8_t > vstIsForwardPoint;
+  vector< float > vstDistance;
+  vector< float > vstIntensity;
+  vector< float > vstIntrinsicIntensity;
+  vector< float > vstAcuteAngle;
+  vector< float > vstX1;
+  vector< float > vstY1;
+  vector< float > vstX2;
+  vector< float > vstY2;
 
   //--------------------------------------------------------------------------
   iGroupID = 2;
@@ -517,7 +517,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "fss_cluster");
   ros::NodeHandle nh;
   rosSub = nh.subscribe("fss_tf_data", 10, lrfCallback);
-  rosPub = nh.advertise<tms_msg_ss::fss_cluster_data>("fss_cluster_data", 10);
+  rosPub = nh.advertise< tms_msg_ss::fss_cluster_data >("fss_cluster_data", 10);
 
   //--------------------------------------------------------------------------
   // ros spin
