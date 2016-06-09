@@ -3,8 +3,8 @@
 using namespace std;
 using namespace boost;
 
-volatile map<int, bool> MOVE_IS_WORKING;
-volatile map<int, bool> MOVE_IS_WAITING;
+map<int, bool> MOVE_IS_WORKING;
+map<int, bool> MOVE_IS_WAITING;
 
 double sp5arm_init_arg[26] =
 {
@@ -212,7 +212,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
     case 9001: // move
     {
       ROS_INFO("[tms_rp]move command\n");
-      if(MOVE_IS_WORKING.find(sd.robot_id) = MOVE_IS_WORKING.end()){
+      if(0==MOVE_IS_WORKING.count(sd.robot_id)){
         MOVE_IS_WORKING[sd.robot_id] = false;  //初実行初期値設定
         MOVE_IS_WAITING[sd.robot_id] = false;
       }
@@ -675,6 +675,10 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
       while(1)
       {
         ROS_INFO("result:%d, message:%s", rp_srv.response.success, rp_srv.response.message.c_str());
+        if(MOVE_IS_WAITING.at(sd.robot_id)){
+          MOVE_IS_WORKING.at(sd.robot_id) = false;
+          return 0;
+        }
         // call virtual_controller
 
         switch (sd.robot_id)
@@ -754,30 +758,30 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
           }
           case 2005: //kobuki
           {
-			    		tms_msg_rc::rc_robot_control kobuki_srv;
-			    		kobuki_srv.request.arg.resize(3);
-			    		kobuki_srv.request.arg[0] = rp_srv.response.VoronoiPath[i].x;
-			    		kobuki_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
-			    		kobuki_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
-
-			    		if (sd.type == true) {
-				    		kobuki_srv.request.cmd = 0;
-				    		if (kobuki_actual_control_client.call(kobuki_srv)) ROS_INFO("result: %d", kobuki_srv.response.result);
-				    		else {
-				    			ROS_ERROR("Failed to call service kobuki_move");
-				    			return false;
-				    		}
-			    		} else {
-				    		kobuki_srv.request.unit = 1;
-				    		kobuki_srv.request.cmd = 15;
-				    		if (kobuki_virtual_control_client.call(kobuki_srv)) ROS_INFO("result: %d", kobuki_srv.response.result);
-				    		else {
-				    			ROS_ERROR("Failed to call service virtual_kobuki_move");
-				    			return false;
-				    		}
-				    		sleep(0.7);
-			    		}
-            break;
+			    	// 	tms_msg_rc::rc_robot_control kobuki_srv;
+			    	// 	kobuki_srv.request.arg.resize(3);
+			    	// 	kobuki_srv.request.arg[0] = rp_srv.response.VoronoiPath[i].x;
+			    	// 	kobuki_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
+			    	// 	kobuki_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
+            //
+			    	// 	if (sd.type == true) {
+				    // 		kobuki_srv.request.cmd = 0;
+				    // 		if (kobuki_actual_control_client.call(kobuki_srv)) ROS_INFO("result: %d", kobuki_srv.response.result);
+				    // 		else {
+				    // 			ROS_ERROR("Failed to call service kobuki_move");
+				    // 			return false;
+				    // 		}
+			    	// 	} else {
+				    // 		kobuki_srv.request.unit = 1;
+				    // 		kobuki_srv.request.cmd = 15;
+				    // 		if (kobuki_virtual_control_client.call(kobuki_srv)) ROS_INFO("result: %d", kobuki_srv.response.result);
+				    // 		else {
+				    // 			ROS_ERROR("Failed to call service virtual_kobuki_move");
+				    // 			return false;
+				    // 		}
+				    // 		sleep(0.7);
+			    	// 	}
+            // break;
           }
           case 2006: // kxp
           {
