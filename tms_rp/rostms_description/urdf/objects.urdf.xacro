@@ -236,6 +236,12 @@
         </geometry>
         <origin rpy="0 0 0" xyz="0. 0. 0."/>
       </visual>
+      <collision>
+        <geometry>
+          <cylinder radius="0.001" length="0.001"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="0. 0. 0."/>
+      </collision>
     </link>
 
     <!-- greentea_bottle -->
@@ -294,6 +300,12 @@
         </geometry>
         <origin rpy="0 0 0" xyz="0. 0. 0."/>
       </visual>
+      <collision>
+        <geometry>
+          <cylinder radius="0.001" length="0.001"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="0. 0. 0."/>
+      </collision>
     </link>
 
     <!-- cancoffee -->
@@ -352,6 +364,12 @@
         </geometry>
         <origin rpy="0 0 0" xyz="0. 0. 0."/>
       </visual>
+      <collision>
+        <geometry>
+          <cylinder radius="0.001" length="0.001"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="0. 0. 0."/>
+      </collision>
     </link>
 
     <!-- soysauce_bottle_black -->
@@ -410,6 +428,12 @@
         </geometry>
         <origin rpy="0 0 0" xyz="0. 0. 0."/>
       </visual>
+      <collision>
+        <geometry>
+          <cylinder radius="0.001" length="0.001"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="0. 0. 0."/>
+      </collision>
     </link>
 
     <objects_sim/>

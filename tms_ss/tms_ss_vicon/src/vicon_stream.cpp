@@ -309,9 +309,30 @@ private:
           name = v_name.at(1).c_str();
         }
 
+        if(id == 2009){
+          now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 
-        if(id != 0 && pose_msg.translation.x != 0 && pose_msg.translation.y != 0)
-        {
+          tmpData.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
+          tmpData.id      = id;
+          tmpData.name    = name;
+          tmpData.x       = pose_msg.translation.x / 1000;
+          tmpData.y       = pose_msg.translation.y / 1000;
+          tmpData.z       = pose_msg.translation.z / 1000;
+          // Vicon DataStream SDK: Rotations are expressed in radians.
+          tmpData.rr      = pose_msg.eulerXYZ[0];
+          tmpData.rp      = pose_msg.eulerXYZ[1];
+          tmpData.ry      = pose_msg.eulerXYZ[2];
+          tmpData.place   = idPlace;
+          tmpData.sensor  = 2009;
+          tmpData.state   = 1;
+
+          std::stringstream ss;
+          ss.clear();
+          ss << pose_msg.eulerXYZ[2];
+          tmpData.joint   = ss.str();
+
+          db_msg.tmsdb.push_back(tmpData);
+        }else if(id != 0 && pose_msg.translation.x != 0 && pose_msg.translation.y != 0){
           now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 
           tmpData.time    = boost::posix_time::to_iso_extended_string(now.toBoost());

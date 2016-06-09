@@ -612,6 +612,12 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0. 0. 0."/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.001" radius="0.001"/>
+      </geometry>
+      <origin rpy="0. 0. 0." xyz="0 0 0"/>
+    </collision>
   </link>
   <!-- greentea_bottle -->
   <link name="greentea_bottle_x_link"/>
@@ -662,6 +668,12 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0. 0. 0."/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.001" radius="0.001"/>
+      </geometry>
+      <origin rpy="0. 0. 0." xyz="0 0 0"/>
+    </collision>
   </link>
   <!-- cancoffee -->
   <link name="cancoffee_x_link"/>
@@ -712,6 +724,12 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0. 0. 0."/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.001" radius="0.001"/>
+      </geometry>
+      <origin rpy="0. 0. 0." xyz="0 0 0"/>
+    </collision>
   </link>
   <!-- soysauce_bottle_black -->
   <link name="soysauce_bottle_black_x_link"/>
@@ -762,6 +780,12 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0. 0. 0."/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.001" radius="0.001"/>
+      </geometry>
+      <origin rpy="0. 0. 0." xyz="0 0 0"/>
+    </collision>
   </link>
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <!-- ros_control plugin -->
