@@ -94,9 +94,9 @@ tf::TransformListener *listener;
 
 const int sid_ = 100000;
 
-double g_x = 3.0;
-double g_y = 4.0;
-double g_t = 0.0;
+double g_x = 5.3;//3.0;
+double g_y = 3.0;//4.0;
+double g_t = 0.65;//0.0;
 double g_jR[7] = {0.0,-0.17,0.0,0.0,0.0,0.0,0.0};
 double g_jL[7] = {0.0,-0.17,0.0,0.0,0.0,0.0,0.0};
 
@@ -759,33 +759,32 @@ void ObjectDataUpdate(const moveit_msgs::PlanningScene& msg)
 
     g_oid = object_id;
 
-    geometry_msgs::PoseStamped pose,pose2;
-    pose.header.frame_id = "/l_end_effector_link";
-    pose.pose.position.x = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.x;
-    pose.pose.position.y = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.y;
-    pose.pose.position.z = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.z;
-
-    pose.pose.orientation.x = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.x;
-    pose.pose.orientation.y = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.y;
-    pose.pose.orientation.z = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.z;
-    pose.pose.orientation.w = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.w;
-
-    listener->transformPose("/world_link",pose,pose2);
-
-    g_ox = pose2.pose.position.x;
-    g_oy = pose2.pose.position.y;
-    g_oz = pose2.pose.position.z;
-    tf::Quaternion q2(pose2.pose.orientation.x,pose2.pose.orientation.y,pose2.pose.orientation.z,pose2.pose.orientation.w);
-    tf::Matrix3x3 m2(q2);
-    m2.getRPY(g_orr,g_orp,g_ory);
-
-    ROS_INFO("object_rot:(%f,%f,%f)",g_orr,g_orp,g_ory);
-
     tms_msg_db::TmsdbGetData srv;
     srv.request.tmsdb.id = object_id + sid_;
 
     if(get_data_client_.call(srv)){
       // g_oz -= srv.response.tmsdb[0].offset_z;
+      geometry_msgs::PoseStamped pose,pose2;
+      pose.header.frame_id = "/l_end_effector_link";
+      pose.pose.position.x = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.x;
+      pose.pose.position.y = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.y;
+      pose.pose.position.z = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].position.z-srv.response.tmsdb[0].offset_z;
+
+      pose.pose.orientation.x = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.x;
+      pose.pose.orientation.y = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.y;
+      pose.pose.orientation.z = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.z;
+      pose.pose.orientation.w = msg.robot_state.attached_collision_objects[0].object.primitive_poses[0].orientation.w;
+
+      listener->transformPose("/world_link",pose,pose2);
+
+      g_ox = pose2.pose.position.x;
+      g_oy = pose2.pose.position.y;
+      g_oz = pose2.pose.position.z;
+      tf::Quaternion q2(pose2.pose.orientation.x,pose2.pose.orientation.y,pose2.pose.orientation.z,pose2.pose.orientation.w);
+      tf::Matrix3x3 m2(q2);
+      m2.getRPY(g_orr,g_orp,g_ory);
+
+      ROS_INFO("object_rot:(%f,%f,%f)",g_orr,g_orp,g_ory);
 
       ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 
@@ -839,7 +838,7 @@ void ObjectDataUpdate(const moveit_msgs::PlanningScene& msg)
     srv.request.tmsdb.id = object_id + sid_;
 
     if(get_data_client_.call(srv)){
-      // g_oz -= srv.response.tmsdb[0].offset_z;
+      g_oz -= srv.response.tmsdb[0].offset_z;
 
       ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
 
