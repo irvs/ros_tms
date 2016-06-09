@@ -1,29 +1,29 @@
-cmake_minimum_required(VERSION 2.8.3)
-project(tms_rc_katana)
-
-find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  tms_msg_rc
-)
-
-###################################
-## catkin specific configuration ##
-###################################
-catkin_package(
-)
-
-###########
-## Build ##
-###########
-
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
-# include_directories(include)
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-  ./KNI_4.3.0/include
-  ./KNI_4.3.0/demo/common
-)
+# cmake_minimum_required(VERSION 2.8.3)
+# project(tms_rc_katana)
+#
+# find_package(catkin REQUIRED COMPONENTS
+#   roscpp
+#   tms_msg_rc
+# )
+#
+# ###################################
+# ## catkin specific configuration ##
+# ###################################
+# catkin_package(
+# )
+#
+# ###########
+# ## Build ##
+# ###########
+#
+# ## Specify additional locations of header files
+# ## Your package locations should be listed before other locations
+# # include_directories(include)
+# include_directories(
+#   ${catkin_INCLUDE_DIRS}
+#   ./KNI_4.3.0/include
+#   ./KNI_4.3.0/demo/common
+# )
 
 ## Declare a cpp library
 # add_library(ros_katana
