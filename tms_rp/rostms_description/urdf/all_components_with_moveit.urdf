@@ -304,7 +304,7 @@
   <joint name="refrigerator_joint" type="fixed">
     <parent link="bsen_room_link"/>
     <child link="refrigerator_link"/>
-    <origin rpy="0 0 -1.57079633" xyz="7.0 5.52 0.0"/>
+    <origin rpy="0 0 -1.57079633" xyz="6.94 5.53 -0.01"/>
   </joint>
   <link name="refrigerator_link">
     <visual>
@@ -312,6 +312,41 @@
         <mesh filename="package://environmental_model/model/refrigerator.dae"/>
       </geometry>
     </visual>
+  </link>
+  <joint name="refrigerator_door_joint" type="continuous">
+    <parent link="refrigerator_link"/>
+    <child link="refrigerator_door_link"/>
+    <origin rpy="0 0 0" xyz="-0.035 0.45 1.06"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <link name="refrigerator_door_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/refrigerator_door.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.001" radius="0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="meeting_door_joint" type="fixed">
+    <parent link="bsen_room_link"/>
+    <child link="meeting_door_link"/>
+    <origin rpy="0 0 3.14159" xyz="1.94 3.035 1.31"/>
+  </joint>
+  <link name="meeting_door_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/meeting_door.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.03 1.23 0.9"/>
+      </geometry>
+    </collision>
   </link>
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <!-- meeting_chair -->

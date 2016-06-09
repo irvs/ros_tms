@@ -659,7 +659,7 @@ int main(int argc, char **argv)
 	ros::Subscriber arm_data_sub = nh.subscribe("/move_group/fake_controller_joint_states",1,&armCallback);
 	object_data_sub = nh.subscribe("/move_group/monitored_planning_scene",1,&ObjectDataUpdate);
 
-	nh.setParam("/is_real",true);
+	nh.setParam("/2003_is_real",true);
 
 	listener = new tf::TransformListener;
 

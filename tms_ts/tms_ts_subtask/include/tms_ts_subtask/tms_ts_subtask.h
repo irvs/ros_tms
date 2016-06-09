@@ -114,6 +114,8 @@ class TmsRpSubtask
   ros::ServiceClient subtask_pick_client;
   ros::ServiceClient subtask_place_client;
   ros::ServiceClient subtask_release_client;
+
+  ros::ServiceClient rp_cmd_client;
 //	ros::ServiceClient kxp_virtual_control_client;
 //	ros::ServiceClient kxp_mbase_client;
 //	ros::ServiceClient v_kxp_mbase_client;

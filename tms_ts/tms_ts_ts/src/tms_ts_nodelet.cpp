@@ -159,7 +159,7 @@ int tms_ts_nodelet::ROS_TMS_TS::GenerateCC(std::string state1, std::string state
 
   ros::NodeHandle nh;
   bool type;
-  nh.getParam("/is_real",type);
+  nh.getParam("/2003_is_real",type);
 
   if (arg_type == 0)
   {
@@ -416,7 +416,7 @@ void tms_ts_nodelet::ROS_TMS_TS::GenerateScript()
 
   ros::NodeHandle nh;
   bool type;
-  nh.getParam("/is_real",type);
+  nh.getParam("/2003_is_real",type);
 
   for (int j=0; j<state_data.size(); j++)
   {

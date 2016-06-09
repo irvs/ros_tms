@@ -21,6 +21,7 @@ tms_rp::TmsRpSubtask::TmsRpSubtask()
   sid_ = 100000;
   rp_subtask_server             = nh1.advertiseService("rp_cmd", &TmsRpSubtask::subtask, this);
 
+  rp_cmd_client                 = nh1.serviceClient<tms_msg_rp::rp_cmd>("rp_cmd");
   get_data_client_              = nh1.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
   sp5_control_client_           = nh1.serviceClient<tms_msg_rc::rc_robot_control>("sp5_control");
   sp5_virtual_control_client    = nh1.serviceClient<tms_msg_rc::rc_robot_control>("sp5_virtual_control");
@@ -195,7 +196,6 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req,
   SubtaskData sd;
 //    sd.type = grasp::TmsRpBar::production_version_;
   bool type;
-  // nh1.getParam("/is_real",type);
   // sd.type = type; //sim = false , real = true
   sd.type = req.type;
   sd.robot_id = req.robot_id;
@@ -959,6 +959,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
   tms_msg_db::Tmsdb assign_data;
   s_srv.request.type = 1; // for subtask state update;
   s_srv.request.state = 0;
+  int furniture_id;
 
   nh1.setParam("planning_mode", 1); // stop ROS-TMS viewer
 
@@ -1007,9 +1008,10 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
     if (get_data_client_.call(srv))
     {
       std::string obj_name = srv.response.tmsdb[0].name;
-      int furniture_id = srv.response.tmsdb[0].place;
+      furniture_id = srv.response.tmsdb[0].place;
 
       cout << obj_name << ", "<< furniture_id << endl;
+
 
       if (furniture_id > 6000 && furniture_id < 7000)
       {
@@ -1032,6 +1034,39 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
   else
   {
     ROS_INFO("Robot cannot grasp this object! Wrong id:%d\n", sd.arg_type);
+  }
+
+
+  if(furniture_id == 2009 && sd.type==false){
+    nh1.setParam("/2009_is_real",false);
+
+    tms_msg_db::TmsdbStamped db_msg;
+    tms_msg_db::Tmsdb tmpData;
+    ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+
+    tmpData.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
+    tmpData.id      = 2009;
+    tmpData.name    = "refrigerator";
+    tmpData.place   = 5002;
+    tmpData.sensor  = 3005;
+    tmpData.state   = 1;
+    tmpData.joint   = "2.14";
+
+    db_msg.tmsdb.push_back(tmpData);
+    db_pub.publish(db_msg);
+
+    sleep(0.5);
+
+    double arg[3];
+    arg[0] = 7.3;
+    arg[1] = 5.1;
+    arg[2] = 1.57079;
+    if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg))
+    {
+      send_rc_exception(1);
+      return false;
+    }
+
   }
 
   cout << "set begin and end posture." << endl;
@@ -1152,6 +1187,37 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
     }
   }
   nh1.setParam("planning_mode", 0);
+
+  if(furniture_id == 2009 && sd.type==false){
+    double arg[3];
+    arg[0] = 7.3;
+    arg[1] = 5.0;
+    arg[2] = 1.57079;
+    if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg))
+    {
+      send_rc_exception(1);
+      return false;
+    }
+
+    sleep(0.5);
+
+    tms_msg_db::TmsdbStamped db_msg;
+    tms_msg_db::Tmsdb tmpData;
+    ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+
+    tmpData.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
+    tmpData.id      = 2009;
+    tmpData.name    = "refrigerator";
+    tmpData.place   = 5002;
+    tmpData.sensor  = 3005;
+    tmpData.state   = 1;
+    tmpData.joint   = "0";
+
+    db_msg.tmsdb.push_back(tmpData);
+    db_pub.publish(db_msg);
+
+    nh1.setParam("/2009_is_real",true);
+  }
 
   //	apprise TS_control of succeeding subtask execution
   s_srv.request.state = 1;

@@ -1,5 +1,4 @@
 roscore
-rosparam set /is_real true
 roslaunch tms_db_manager tms_db_manager.launch
 rosrun tms_ss_vicon vicon_stream
 roslaunch rostms_bringup rostms.launch

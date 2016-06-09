@@ -323,7 +323,7 @@ private:
           tmpData.rp      = pose_msg.eulerXYZ[1];
           tmpData.ry      = pose_msg.eulerXYZ[2];
           tmpData.place   = idPlace;
-          tmpData.sensor  = 2009;
+          tmpData.sensor  = idSensor;
           tmpData.state   = 1;
 
           std::stringstream ss;

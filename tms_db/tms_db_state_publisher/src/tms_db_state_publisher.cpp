@@ -105,8 +105,10 @@ private:
     if (msg->tmsdb.size()==0)
       return;
 
-    bool type;
-    nh.getParam("/is_real",type);
+    bool type2003;
+    nh.param<bool>("/2003_is_real",type2003,true);
+    bool type2009;
+    nh.param<bool>("/2009_is_real",type2009,true);
 
     for (uint32_t i=0; i<msg->tmsdb.size(); i++)
     {
@@ -116,7 +118,7 @@ private:
       place   = msg->tmsdb[i].place;
       joint   = msg->tmsdb[i].joint;
 
-      if (id==2003 && ((type==true && sensor==3003)||(type==false && sensor==3005))) // smartpal5-2
+      if (id==2003 && ((type2003==true && sensor==3001)||(type2003==false && sensor==3005))) // smartpal5-2
       {
         if (state==1)
         {
@@ -234,30 +236,20 @@ private:
         }
       }
 
-      // if (id==2009) // refrigerator
-      // {
-      //   if (state!=0)
-      //   {
-      //     posX = msg->tmsdb[i].x;
-      //     posY = msg->tmsdb[i].y;
-      //     rotY = msg->tmsdb[i].ry;
-      //
-      //     if(posX == 0.0 && posY == 0.0)
-      //     {
-      //       continue;
-      //     }
-      //     else
-      //     {
-      //       state_data.header.stamp = ros::Time::now();
-      //       state_data.name.push_back("refrigerator_x_joint");
-      //       state_data.name.push_back("refrigerator_y_joint");
-      //       state_data.name.push_back("refrigerator_yaw_joint");
-      //       state_data.position.push_back(posX);
-      //       state_data.position.push_back(posY);
-      //       state_data.position.push_back(rotY);
-      //     }
-      //   }
-      // }
+      if (id==2009 && ((type2009==true && sensor==3001)||(type2009==false && sensor==3005))) // refrigerator
+      {
+        if (joint!="")
+        {
+          std::stringstream ss;
+          ss << joint;
+          ss >> rotY;
+          ss.clear();
+
+          state_data.header.stamp = ros::Time::now();
+          state_data.name.push_back("refrigerator_door_joint");
+          state_data.position.push_back(rotY);
+        }
+      }
 
       if (id==6004) // chair
       {
