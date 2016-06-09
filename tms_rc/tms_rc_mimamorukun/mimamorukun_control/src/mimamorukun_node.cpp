@@ -30,10 +30,12 @@ bool is_publish_tf;
 pthread_t thread_odom;
 pthread_mutex_t mutex_socket = PTHREAD_MUTEX_INITIALIZER;
 
-class MachinePose_s {
- private:
- public:
-  MachinePose_s() {
+class MachinePose_s
+{
+private:
+public:
+  MachinePose_s()
+  {
     ROS_DEBUG("In Mimamorukun Constructor");
     m_Odom.header.frame_id = "odom";
     m_Odom.child_frame_id = "base_footprint";
@@ -56,15 +58,37 @@ class MachinePose_s {
 
 } mchn_pose;
 
-int Dist2Pulse(int dist) { return ((float)dist) / DIST_PER_PULSE; }
-int Pulse2Dist(int pulse) { return ((float)pulse) * DIST_PER_PULSE; }
-double Rad2Deg(double rad) { return rad * (180.0) / M_PI; }
-double Deg2Rad(double deg) { return deg * M_PI / 180.0; }
+int Dist2Pulse(int dist)
+{
+  return ((float)dist) / DIST_PER_PULSE;
+}
+int Pulse2Dist(int pulse)
+{
+  return ((float)pulse) * DIST_PER_PULSE;
+}
+double Rad2Deg(double rad)
+{
+  return rad * (180.0) / M_PI;
+}
+double Deg2Rad(double deg)
+{
+  return deg * M_PI / 180.0;
+}
 // double Deg2Rad(double deg) { return deg * 3 / 180.0; }
-double MM2M(double mm) { return mm * 0.001; }
-double M2MM(double M) { return M * 1000; }
-double sqr(double val) { return pow(val, 2); }
-double Limit(double val, double max, double min) {
+double MM2M(double mm)
+{
+  return mm * 0.001;
+}
+double M2MM(double M)
+{
+  return M * 1000;
+}
+double sqr(double val)
+{
+  return pow(val, 2);
+}
+double Limit(double val, double max, double min)
+{
   if (val > max)
     return max;
   else if (min > val)
@@ -72,17 +96,21 @@ double Limit(double val, double max, double min) {
   else
     return val;
 }
-double nomalizeAng(double rad) {
-  while (rad > M_PI) {  //角度を-180°~180°(-π~π)の範囲に合わせる
+double nomalizeAng(double rad)
+{
+  while (rad > M_PI)
+  {  //角度を-180°~180°(-π~π)の範囲に合わせる
     rad = rad - (2 * M_PI);
   }
-  while (rad < -M_PI) {
+  while (rad < -M_PI)
+  {
     rad = rad + (2 * M_PI);
   }
   return rad;
 }
 
-void MachinePose_s::updateOdom() {
+void MachinePose_s::updateOdom()
+{
   // update Encoder value
   m_Odom.header.stamp = ros::Time::now();
   long int ENC_L, ENC_R;
@@ -109,8 +137,10 @@ void MachinePose_s::updateOdom() {
   static long int ENC_L_old = 0;
   double detLp /*,r , dX ,dY,dL*/;
 
-  if (fabs(ENC_L - ENC_L_old) > ENC_MAX / 2) ENC_L_old -= ENC_MAX + 1;
-  if (fabs(ENC_R - ENC_R_old) > ENC_MAX / 2) ENC_R_old -= ENC_MAX + 1;
+  if (fabs(ENC_L - ENC_L_old) > ENC_MAX / 2)
+    ENC_L_old -= ENC_MAX + 1;
+  if (fabs(ENC_R - ENC_R_old) > ENC_MAX / 2)
+    ENC_R_old -= ENC_MAX + 1;
 
   //エンコーダーの位置での前回からの移動距離dL_R,dL_Lを算出
   double dL_L = (double)(ENC_L - ENC_L_old) * (-DIST_PER_PULSE);
@@ -122,8 +152,7 @@ void MachinePose_s::updateOdom() {
 
   // double dX = dL * cos(mchn_pose.pos_odom.theta + POS_SIGMA);  // X,Yの前回からの移動量計算
   // double dY = dL * sin(mchn_pose.pos_odom.theta + POS_SIGMA);
-  double dX =
-      dL * cos(tf::getYaw(m_Odom.pose.pose.orientation) + POS_SIGMA);  // X,Yの前回からの移動量計算
+  double dX = dL * cos(tf::getYaw(m_Odom.pose.pose.orientation) + POS_SIGMA);  // X,Yの前回からの移動量計算
   double dY = dL * sin(tf::getYaw(m_Odom.pose.pose.orientation) + POS_SIGMA);
   ENC_R_old = ENC_R;  //前回のエンコーダーの値を記録
   ENC_L_old = ENC_L;
@@ -161,7 +190,8 @@ void MachinePose_s::updateOdom() {
  *   arg_speed: forward speed   [mm/sec]
  *   arg_theta: CCW turn speed  [radian/sec]
  * ----------------------------------*/
-void spinWheel(/*double arg_speed, double arg_theta*/) {
+void spinWheel(/*double arg_speed, double arg_theta*/)
+{
   double arg_speed = M2MM(mchn_pose.tgtTwist.linear.x);
   double arg_theta = mchn_pose.tgtTwist.angular.z;
   // ROS_INFO("X:%4.2f   Theta:%4.2f",arg_speed,arg_theta);
@@ -187,13 +217,15 @@ void spinWheel(/*double arg_speed, double arg_theta*/) {
   // cout << "Response:" << reply << "   ";
 }
 
-void receiveCmdVel(const geometry_msgs::Twist::ConstPtr &cmd_vel) {
+void receiveCmdVel(const geometry_msgs::Twist::ConstPtr &cmd_vel)
+{
   // ROS_DEBUG("receive /cmd_vel");
   mchn_pose.tgtTwist = *cmd_vel;
   // spinWheel(/*cmd_vel->linear.x,cmd_vel->angular.z*/);
 }
 
-void pub_tf() {
+void pub_tf()
+{
   static tf::TransformBroadcaster broadcaster;
   geometry_msgs::TransformStamped ts;
   ts.header.frame_id = mchn_pose.m_Odom.header.frame_id;
@@ -209,25 +241,30 @@ void pub_tf() {
   broadcaster.sendTransform(ts);
 }
 
-void pub_odom() {
+void pub_odom()
+{
   static ros::NodeHandle nh;
   static ros::Publisher pub = nh.advertise<nav_msgs::Odometry>("odom", 100);
   pub.publish(mchn_pose.m_Odom);
 }
 
-void *odom_update(void *ptr) {
+void *odom_update(void *ptr)
+{
   ros::Rate r(ROS_RATE);
-  while (ros::ok()) {
+  while (ros::ok())
+  {
     mchn_pose.updateOdom();
     pub_odom();
-    if (is_publish_tf) {
+    if (is_publish_tf)
+    {
       pub_tf();
     }
     r.sleep();
   }
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   ROS_INFO("wc_controller");
   ros::init(argc, argv, "wc_controller");
   ros::NodeHandle n;
@@ -250,19 +287,25 @@ int main(int argc, char **argv) {
   s_Kd_ = boost::lexical_cast<string>(Kd_);
   nh_param.param<bool>("publish_tf", is_publish_tf, true);
 
-  try {
+  try
+  {
     string reply;
-    try {
+    try
+    {
       // koyuusinndou 3Hz at Kp = 8000
       // client_socket << "@CR1@CR2@SM1,1@SM2,1@PP1,50@PP2,50@PI1,100@PI2,100@PD1,10@PD2,10";
-      client_socket << "@CR1@CR2@SM1,1@SM2,1@PP1," + s_Kp_ + "@PP2," + s_Kp_ + "@PI1," + s_Ki_ +
-                           "@PI2," + s_Ki_ + "@PD1," + s_Kd_ + "@PD2," + s_Kd_;
+      client_socket << "@CR1@CR2@SM1,1@SM2,1@PP1," + s_Kp_ + "@PP2," + s_Kp_ + "@PI1," + s_Ki_ + "@PI2," + s_Ki_ +
+                           "@PD1," + s_Kd_ + "@PD2," + s_Kd_;
       client_socket >> reply;
-    } catch (SocketException &) {
+    }
+    catch (SocketException &)
+    {
     }
     cout << "Response:" << reply << "\n";
     ;
-  } catch (SocketException &e) {
+  }
+  catch (SocketException &e)
+  {
     cout << "Exception was caught:" << e.description() << "\n";
   }
 
@@ -275,13 +318,15 @@ int main(int argc, char **argv) {
   //        Rad2Deg(tf::getYaw(mchn_pose.m_Odom.pose.pose.orientation)));
   // mchn_pose.setCurrentPosition(mchn_pose.pos_vicon);
 
-  if (pthread_create(&thread_odom, NULL, odom_update, NULL)) {
+  if (pthread_create(&thread_odom, NULL, odom_update, NULL))
+  {
     cout << "error creating thread." << endl;
     abort();
   }
 
   ros::Rate r(ROS_RATE);
-  while (n.ok()) {
+  while (n.ok())
+  {
     spinWheel();
     ros::spinOnce();
     r.sleep();
@@ -290,7 +335,8 @@ int main(int argc, char **argv) {
 }
 
 // void MachinePose_s::setCurrentPosition(geometry_msgs::Pose2D pose) { pos_odom = pose; }
-void MachinePose_s::setCurrentPosition(geometry_msgs::Pose pose) {
+void MachinePose_s::setCurrentPosition(geometry_msgs::Pose pose)
+{
   m_Odom.pose.pose = pose;
   // pos_odom = pose;
 }

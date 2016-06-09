@@ -1,25 +1,25 @@
 #include <ros/ros.h>
 #include <tms_msg_rc/smartpal_control.h>
 
-#define UNIT_ALL                0
-#define UNIT_VEHICLE            1
-#define UNIT_ARM_R              2
-#define UNIT_ARM_L              3
-#define UNIT_GRIPPER_R          4
-#define UNIT_GRIPPER_L          5
-#define UNIT_LUMBA              6
-#define UNIT_CC                 7
+#define UNIT_ALL 0
+#define UNIT_VEHICLE 1
+#define UNIT_ARM_R 2
+#define UNIT_ARM_L 3
+#define UNIT_GRIPPER_R 4
+#define UNIT_GRIPPER_L 5
+#define UNIT_LUMBA 6
+#define UNIT_CC 7
 
-#define CMD_clearAlarm          0
-#define CMD_setPower            1
-#define CMD_setServo            2
-#define CMD_pause               3
-#define CMD_resume              4
-#define CMD_abort               5
-#define CMD_stop                6
-#define CMD_getState            7
-#define CMD_getPose             8
-#define CMD_move                15
+#define CMD_clearAlarm 0
+#define CMD_setPower 1
+#define CMD_setServo 2
+#define CMD_pause 3
+#define CMD_resume 4
+#define CMD_abort 5
+#define CMD_stop 6
+#define CMD_getState 7
+#define CMD_getPose 8
+#define CMD_move 15
 
 int main(int argc, char **argv)
 {
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 
   //----------------------------------------------------------------------------
   srv.request.unit = UNIT_VEHICLE;
-  srv.request.cmd  = CMD_getPose;
+  srv.request.cmd = CMD_getPose;
   srv.response.val.resize(3);
 
   if (client.call(srv))
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 
   //----------------------------------------------------------------------------
   srv.request.unit = UNIT_ARM_R;
-  srv.request.cmd  = CMD_getPose;
+  srv.request.cmd = CMD_getPose;
   srv.request.arg.resize(1);
   srv.request.arg[0] = 0;
   srv.response.val.resize(7);
@@ -72,7 +72,7 @@ int main(int argc, char **argv)
   }
   //----------------------------------------------------------------------------
   srv.request.unit = UNIT_GRIPPER_R;
-  srv.request.cmd  = CMD_getPose;
+  srv.request.cmd = CMD_getPose;
   srv.response.val.resize(1);
   if (client.call(srv))
   {

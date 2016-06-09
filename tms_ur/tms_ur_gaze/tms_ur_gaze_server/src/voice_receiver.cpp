@@ -11,8 +11,7 @@
 //----------------------------------------------------------------------------------
 // constructor
 //----------------------------------------------------------------------------------
-VoiceReceiver::VoiceReceiver(ros::NodeHandle* nh) :
-  nh_(nh)
+VoiceReceiver::VoiceReceiver(ros::NodeHandle *nh) : nh_(nh)
 {
   std::vector<std::string>::iterator itr;
   value_.push_back("chipstar");
@@ -22,41 +21,41 @@ VoiceReceiver::VoiceReceiver(ros::NodeHandle* nh) :
   value_.push_back("robot");
   // chipstar-------------------------------------------------------------------
   itr = value_.begin();
-  hash_.insert(std::make_pair("chips",&(*itr)));
+  hash_.insert(std::make_pair("chips", &(*itr)));
 #if JAPANESE
-  hash_.insert(std::make_pair("お菓子",&(*itr)));
-  hash_.insert(std::make_pair("チップスター",&(*itr)));
-  hash_.insert(std::make_pair("ポテトチップス",&(*itr)));
-  hash_.insert(std::make_pair("チップス",&(*itr)));
+  hash_.insert(std::make_pair("お菓子", &(*itr)));
+  hash_.insert(std::make_pair("チップスター", &(*itr)));
+  hash_.insert(std::make_pair("ポテトチップス", &(*itr)));
+  hash_.insert(std::make_pair("チップス", &(*itr)));
 #endif
   // tea------------------------------------------------------------------------
   itr++;
-  hash_.insert(std::make_pair("tea",&(*itr)));
+  hash_.insert(std::make_pair("tea", &(*itr)));
 #if JAPANESE
-  hash_.insert(std::make_pair("ペットボトル",&(*itr)));
-  hash_.insert(std::make_pair("お茶",&(*itr)));
+  hash_.insert(std::make_pair("ペットボトル", &(*itr)));
+  hash_.insert(std::make_pair("お茶", &(*itr)));
 #endif
   // soysauce-------------------------------------------------------------------
   itr++;
-  hash_.insert(std::make_pair("soysauce",&(*itr)));
-  hash_.insert(std::make_pair("sauce",&(*itr)));
+  hash_.insert(std::make_pair("soysauce", &(*itr)));
+  hash_.insert(std::make_pair("sauce", &(*itr)));
 #if JAPANESE
-  hash_.insert(std::make_pair("醤油",&(*itr)));
-  hash_.insert(std::make_pair("しょうゆ",&(*itr)));
+  hash_.insert(std::make_pair("醤油", &(*itr)));
+  hash_.insert(std::make_pair("しょうゆ", &(*itr)));
 #endif
   // bottle---------------------------------------------------------------------
   itr++;
-  hash_.insert(std::make_pair("water",&(*itr)));
-  hash_.insert(std::make_pair("bottle",&(*itr)));
+  hash_.insert(std::make_pair("water", &(*itr)));
+  hash_.insert(std::make_pair("bottle", &(*itr)));
 #if JAPANESE
-  hash_.insert(std::make_pair("ボトル",&(*itr)));
+  hash_.insert(std::make_pair("ボトル", &(*itr)));
 #endif
   // robot---------------------------------------------------------------------
   itr++;
-  hash_.insert(std::make_pair("robot",&(*itr)));
-  hash_.insert(std::make_pair("robots",&(*itr)));
+  hash_.insert(std::make_pair("robot", &(*itr)));
+  hash_.insert(std::make_pair("robots", &(*itr)));
 #if JAPANESE
-  hash_.insert(std::make_pair("ロボット",&(*itr)));
+  hash_.insert(std::make_pair("ロボット", &(*itr)));
 #endif
 
   server_ = nh_->advertiseService("voice_command", &VoiceReceiver::Callback, this);
@@ -77,34 +76,44 @@ VoiceReceiver::~VoiceReceiver()
 //----------------------------------------------------------------------------------
 // list candidate
 //----------------------------------------------------------------------------------
-void VoiceReceiver::ListCandidates(std::string tag, tms_ur_gaze_server::object_list* srv) {
-  if (tag == "chipstar") {
-    srv->request.id_in.push_back(7001); // chipstar_red
-    srv->request.id_in.push_back(7002); // chipstar_orange
-    srv->request.id_in.push_back(7003); // chipstar_green
-  } else if (tag == "tea") {
-    srv->request.id_in.push_back(7004); // greentea_bottle
-    srv->request.id_in.push_back(7005); // soukentea_bottle
-  } else if (tag == "soysauce") {
-    srv->request.id_in.push_back(7009); // soysauce_bottle_black
-    srv->request.id_in.push_back(7010); // soysauce_bottle_blue
-    srv->request.id_in.push_back(7011); // soysauce_bottle_white
-  } else if (tag == "bottle") {
-    srv->request.id_in.push_back(7004); // greentea_bottle
-    srv->request.id_in.push_back(7005); // soukentea_bottle
-    srv->request.id_in.push_back(7009); // soysauce_bottle_black
-    srv->request.id_in.push_back(7010); // soysauce_bottle_blue
-    srv->request.id_in.push_back(7011); // soysauce_bottle_white
-  } else if (tag == "robot") {
-    srv->request.id_in.push_back(2001); // smartpal5
-    srv->request.id_in.push_back(2002); // smartpal4
+void VoiceReceiver::ListCandidates(std::string tag, tms_ur_gaze_server::object_list *srv)
+{
+  if (tag == "chipstar")
+  {
+    srv->request.id_in.push_back(7001);  // chipstar_red
+    srv->request.id_in.push_back(7002);  // chipstar_orange
+    srv->request.id_in.push_back(7003);  // chipstar_green
+  }
+  else if (tag == "tea")
+  {
+    srv->request.id_in.push_back(7004);  // greentea_bottle
+    srv->request.id_in.push_back(7005);  // soukentea_bottle
+  }
+  else if (tag == "soysauce")
+  {
+    srv->request.id_in.push_back(7009);  // soysauce_bottle_black
+    srv->request.id_in.push_back(7010);  // soysauce_bottle_blue
+    srv->request.id_in.push_back(7011);  // soysauce_bottle_white
+  }
+  else if (tag == "bottle")
+  {
+    srv->request.id_in.push_back(7004);  // greentea_bottle
+    srv->request.id_in.push_back(7005);  // soukentea_bottle
+    srv->request.id_in.push_back(7009);  // soysauce_bottle_black
+    srv->request.id_in.push_back(7010);  // soysauce_bottle_blue
+    srv->request.id_in.push_back(7011);  // soysauce_bottle_white
+  }
+  else if (tag == "robot")
+  {
+    srv->request.id_in.push_back(2001);  // smartpal5
+    srv->request.id_in.push_back(2002);  // smartpal4
   }
 }
 
 //----------------------------------------------------------------------------------
 // callback function
 //----------------------------------------------------------------------------------
-bool VoiceReceiver::Callback(tms_ur_gaze_server::recognized_text::Request  &req,
+bool VoiceReceiver::Callback(tms_ur_gaze_server::recognized_text::Request &req,
                              tms_ur_gaze_server::recognized_text::Response &res)
 {
   tms_ur_gaze_server::object_list srv;
@@ -126,7 +135,8 @@ bool VoiceReceiver::Callback(tms_ur_gaze_server::recognized_text::Request  &req,
   }
 
   // object_selector
-  if (client_.call(srv)) {
+  if (client_.call(srv))
+  {
     ROS_INFO_STREAM("Result: " << srv.response.id_out << " " << srv.response.name.c_str());
 
 #if 0
@@ -150,8 +160,9 @@ bool VoiceReceiver::Callback(tms_ur_gaze_server::recognized_text::Request  &req,
       return true;
     }
 #endif
-
-  } else {
+  }
+  else
+  {
     ROS_ERROR("Failed to call service object_selector\n");
     res.response = "Failed to call service object_selector";
   }

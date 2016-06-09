@@ -17,10 +17,9 @@ ros::ServiceServer service;
 ros::ServiceClient commander_to_kinect_capture;
 
 // 大域変数
-const int IMAGE_WIDTH  = 640;		//画像サイズ(横)
-const int IMAGE_HEIGHT = 480;		//画像サイズ(縦)
+const int IMAGE_WIDTH = 640;   //画像サイズ(横)
+const int IMAGE_HEIGHT = 480;  //画像サイズ(縦)
 int count = 0;
 
 pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
 std::vector<int> idx;
-

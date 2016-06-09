@@ -16,11 +16,11 @@
 //------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
-    QApplication app(argc, argv);
-    fss_graph::MainWindow window(argc,argv);
-    window.resize(1900,900);
-    window.show();
-    return app.exec();
+  QApplication app(argc, argv);
+  fss_graph::MainWindow window(argc, argv);
+  window.resize(1900, 900);
+  window.show();
+  return app.exec();
 }
 
 //------------------------------------------------------------------------------

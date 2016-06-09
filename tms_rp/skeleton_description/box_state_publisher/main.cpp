@@ -16,42 +16,38 @@
 //------------------------------------------------------------------------------
 class BoxStatePublisher : public robot_state_publisher::RobotStatePublisher
 {
-  public:
-    tf::TransformBroadcaster broadcaster;
+public:
+  tf::TransformBroadcaster broadcaster;
 
-    BoxStatePublisher(const KDL::Tree& tree, std::string tf_prefix="");
-    ~BoxStatePublisher();
+  BoxStatePublisher(const KDL::Tree& tree, std::string tf_prefix = "");
+  ~BoxStatePublisher();
 
-    void run();
-    void send(ros::Time time);
+  void run();
+  void send(ros::Time time);
 
-  private:
-    ros::NodeHandle nh;
-    ros::Subscriber data_sub;
-    ros::Publisher state_pub;
-    sensor_msgs::JointState state_data;
-    tf::StampedTransform transform_;
+private:
+  ros::NodeHandle nh;
+  ros::Subscriber data_sub;
+  ros::Publisher state_pub;
+  sensor_msgs::JointState state_data;
+  tf::StampedTransform transform_;
 
-    std::string tf_prefix_;
-    bool bFind;
+  std::string tf_prefix_;
+  bool bFind;
 
-    geometry_msgs::Point pos;
-    geometry_msgs::Quaternion rot;
+  geometry_msgs::Point pos;
+  geometry_msgs::Quaternion rot;
 
-    void callback(const tms_msg_ss::vicon_data::ConstPtr& msg);
+  void callback(const tms_msg_ss::vicon_data::ConstPtr& msg);
 };
 
 //------------------------------------------------------------------------------
-BoxStatePublisher::BoxStatePublisher(const KDL::Tree& tree, std::string tf_prefix) :
-  robot_state_publisher::RobotStatePublisher(tree),
-  bFind(false),
-  tf_prefix_(tf_prefix)
+BoxStatePublisher::BoxStatePublisher(const KDL::Tree& tree, std::string tf_prefix)
+  : robot_state_publisher::RobotStatePublisher(tree), bFind(false), tf_prefix_(tf_prefix)
 {
-  data_sub = nh.subscribe("vicon_stream/output", 10,
-      &BoxStatePublisher::callback, this);
-  transform_ = tf::StampedTransform(
-      tf::Transform(tf::Quaternion(0.0,0.0,0.0,1.0), tf::Vector3(0.0,0.0,0.0)),
-      ros::Time::now(), "world_link", tf::resolve(tf_prefix_,"Box"));
+  data_sub = nh.subscribe("vicon_stream/output", 10, &BoxStatePublisher::callback, this);
+  transform_ = tf::StampedTransform(tf::Transform(tf::Quaternion(0.0, 0.0, 0.0, 1.0), tf::Vector3(0.0, 0.0, 0.0)),
+                                    ros::Time::now(), "world_link", tf::resolve(tf_prefix_, "Box"));
   return;
 }
 
@@ -64,7 +60,7 @@ BoxStatePublisher::~BoxStatePublisher()
 //------------------------------------------------------------------------------
 void BoxStatePublisher::callback(const tms_msg_ss::vicon_data::ConstPtr& msg)
 {
-  if (msg->subjectName == tf::resolve(tf_prefix_,"checker_box"))
+  if (msg->subjectName == tf::resolve(tf_prefix_, "checker_box"))
   {
     pos = msg->translation;
     rot = msg->rotation;
@@ -86,7 +82,7 @@ void BoxStatePublisher::run()
     ROS_INFO("Got box state from vicon_stream");
     // [mm] -> [m]
     tf::Quaternion q(rot.x, rot.y, rot.z, rot.w);
-    transform_.setData(tf::Transform(q, tf::Vector3(pos.x/1000.0,pos.y/1000.0,pos.z/1000.0)));
+    transform_.setData(tf::Transform(q, tf::Vector3(pos.x / 1000.0, pos.y / 1000.0, pos.z / 1000.0)));
 
     this->send(time);
     sleeper.sleep();
@@ -105,10 +101,10 @@ void BoxStatePublisher::send(ros::Time time)
 }
 
 //------------------------------------------------------------------------------
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   std::string tf_prefix("");
-  //if (argc > 1)
+  // if (argc > 1)
   //{
   //  ROS_INFO("Set tf_prefix: %s.\n", argv[1]);
   //  tf_prefix.assign(argv[1]);
@@ -118,7 +114,7 @@ int main(int argc, char **argv)
 
   urdf::Model model;
   std::stringstream description_name_stream;
-  //if (!tf_prefix.empty())
+  // if (!tf_prefix.empty())
   //{
   //  description_name_stream << tf_prefix << "_";
   //}
@@ -139,4 +135,3 @@ int main(int argc, char **argv)
 
   return 0;
 }
-

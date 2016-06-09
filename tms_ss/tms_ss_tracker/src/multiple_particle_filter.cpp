@@ -20,9 +20,9 @@ extern pthread_mutex_t mutex_target;
 
 CMultipleParticleFilter::CMultipleParticleFilter()
 {
-  m_max_ID        = 100;
-  m_min_distance  = 1000;  // 1000mm
-  m_ID            = 0;
+  m_max_ID = 100;
+  m_min_distance = 1000;  // 1000mm
+  m_ID = 0;
 }
 
 CMultipleParticleFilter::~CMultipleParticleFilter()
@@ -42,7 +42,7 @@ void CMultipleParticleFilter::update(CLaser *Laser)
       std::vector<int> label(m_pLaser->m_LRFClsPoints[n].size(), -1);
       int pn = m_ParticleFilter.size();
 
-      for (int j=0; j<m_pLaser->m_LRFClsPoints[n].size(); j++)
+      for (int j = 0; j < m_pLaser->m_LRFClsPoints[n].size(); j++)
       {
         obs[0] = m_pLaser->m_LRFClsPoints[n][j].x;
         obs[1] = m_pLaser->m_LRFClsPoints[n][j].y;
@@ -88,7 +88,7 @@ void CMultipleParticleFilter::update(CLaser *Laser)
         else
         {
           CPF pf;
-          int area[2] = { STAGE_X, STAGE_Y };
+          int area[2] = {STAGE_X, STAGE_Y};
           pf.initialize(area);
           obs[0] = m_pLaser->m_LRFClsPoints[n][j].x;
           obs[1] = m_pLaser->m_LRFClsPoints[n][j].y;

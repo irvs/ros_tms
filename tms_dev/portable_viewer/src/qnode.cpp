@@ -17,16 +17,11 @@
 //------------------------------------------------------------------------------
 // Implementation
 //------------------------------------------------------------------------------
-QNode::QNode(int argc, char** argv, const std::string &name ) :
-    init_argc(argc),
-    init_argv(argv),
-    node_name(name)
+QNode::QNode(int argc, char **argv, const std::string &name) : init_argc(argc), init_argv(argv), node_name(name)
 {
-
 }
 
 //------------------------------------------------------------------------------
 QNode::~QNode()
 {
-
 }

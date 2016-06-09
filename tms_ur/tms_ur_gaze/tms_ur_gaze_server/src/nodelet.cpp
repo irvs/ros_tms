@@ -15,7 +15,6 @@
 
 namespace tms_ur_gaze_server
 {
-
 //----------------------------------------------------------------------------------
 // EvaluatorNodelet
 //----------------------------------------------------------------------------------
@@ -35,7 +34,7 @@ public:
     spinner.start();
   }
 };
-PLUGINLIB_EXPORT_CLASS(tms_ur_gaze_server::EvaluatorNodelet, nodelet::Nodelet) 
+PLUGINLIB_EXPORT_CLASS(tms_ur_gaze_server::EvaluatorNodelet, nodelet::Nodelet)
 
 //----------------------------------------------------------------------------------
 // VoiceReceiverNodelet
@@ -56,6 +55,5 @@ public:
     spinner.start();
   }
 };
-PLUGINLIB_EXPORT_CLASS(tms_ur_gaze_server::VoiceReceiverNodelet, nodelet::Nodelet) 
-
+PLUGINLIB_EXPORT_CLASS(tms_ur_gaze_server::VoiceReceiverNodelet, nodelet::Nodelet)
 }

@@ -25,11 +25,12 @@
 ros::ServiceServer service;
 ros::ServiceClient commander_to_kinect_capture;
 
-typedef struct{
-    pcl::PointCloud<pcl::PointXYZRGB> cloud;
-    pcl::Normal normal;
-    int inlier1;
-    int inlier2;
-    pcl::PointXYZRGB p1;
-    pcl::PointXYZRGB p2;
+typedef struct
+{
+  pcl::PointCloud<pcl::PointXYZRGB> cloud;
+  pcl::Normal normal;
+  int inlier1;
+  int inlier2;
+  pcl::PointXYZRGB p1;
+  pcl::PointXYZRGB p2;
 } Endpoints;

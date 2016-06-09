@@ -21,12 +21,12 @@ private:
   ros::ServiceClient client_, arrow_client_;
   std::map<std::string, std::string*> hash_;
   std::vector<std::string> value_;
+
 public:
   VoiceReceiver(ros::NodeHandle* nh);
   ~VoiceReceiver();
   void ListCandidates(std::string tag, tms_ur_gaze_server::object_list* srv);
-  bool Callback(tms_ur_gaze_server::recognized_text::Request  &req,
-                tms_ur_gaze_server::recognized_text::Response &res);
+  bool Callback(tms_ur_gaze_server::recognized_text::Request& req, tms_ur_gaze_server::recognized_text::Response& res);
 };
 
 #endif
