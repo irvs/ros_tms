@@ -94,8 +94,8 @@ tf::TransformListener *listener;
 
 const int sid_ = 100000;
 
-double g_x = 5.3;   // 3.0;
-double g_y = 3.0;   // 4.0;
+double g_x = 5.2;   // 3.0;
+double g_y = 2.9;   // 4.0;
 double g_t = 0.65;  // 0.0;
 double g_jR[7] = {0.0, -0.17, 0.0, 0.0, 0.0, 0.0, 0.0};
 double g_jL[7] = {0.0, -0.17, 0.0, 0.0, 0.0, 0.0, 0.0};

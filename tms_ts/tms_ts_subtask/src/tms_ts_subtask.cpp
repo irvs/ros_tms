@@ -766,7 +766,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
             }
             else
             {
-              sleep(0.7);
+              sleep(1);
               // if (sd.robot_id == 2002)
               // {
               //	 sleep(0.7);
@@ -1096,7 +1096,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
     db_msg.tmsdb.push_back(tmpData);
     db_pub.publish(db_msg);
 
-    sleep(0.5);
+    sleep(1);
 
     double arg[3];
     arg[0] = 7.3;
@@ -1138,7 +1138,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
 
         if (sd.type)
         {
-          sleep(0.5);
+          sleep(1);
           arg[0] = 0.0;
           if (!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg))
           {
@@ -1243,7 +1243,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
       return false;
     }
 
-    sleep(0.5);
+    sleep(1);
 
     tms_msg_db::TmsdbStamped db_msg;
     tms_msg_db::Tmsdb tmpData;
@@ -1550,7 +1550,7 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
 
         if (sd.type)
         {
-          sleep(0.5);
+          sleep(1);
           arg[0] = 0.0;
           if (!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg))
           {
@@ -1575,7 +1575,7 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
 
         if (sd.type)
         {
-          sleep(0.5);
+          sleep(1);
           double arg[1] = {0.0};
           if (!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg))
           {
