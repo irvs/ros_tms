@@ -15,7 +15,6 @@
 
 namespace tms_ur_gaze_server
 {
-
 //----------------------------------------------------------------------------------
 // EvaluatorNodelet
 //----------------------------------------------------------------------------------
@@ -23,7 +22,7 @@ class EvaluatorNodelet : public nodelet::Nodelet
 {
 private:
   ros::NodeHandle nh_;
-  boost::shared_ptr<Evaluator> evaluator_;
+  boost::shared_ptr< Evaluator > evaluator_;
 
 public:
   virtual void onInit()
@@ -35,7 +34,7 @@ public:
     spinner.start();
   }
 };
-PLUGINLIB_EXPORT_CLASS(tms_ur_gaze_server::EvaluatorNodelet, nodelet::Nodelet) 
+PLUGINLIB_EXPORT_CLASS(tms_ur_gaze_server::EvaluatorNodelet, nodelet::Nodelet)
 
 //----------------------------------------------------------------------------------
 // VoiceReceiverNodelet
@@ -44,7 +43,7 @@ class VoiceReceiverNodelet : public nodelet::Nodelet
 {
 private:
   ros::NodeHandle nh_;
-  boost::shared_ptr<VoiceReceiver> voice_receiver_;
+  boost::shared_ptr< VoiceReceiver > voice_receiver_;
 
 public:
   virtual void onInit()
@@ -56,6 +55,5 @@ public:
     spinner.start();
   }
 };
-PLUGINLIB_EXPORT_CLASS(tms_ur_gaze_server::VoiceReceiverNodelet, nodelet::Nodelet) 
-
+PLUGINLIB_EXPORT_CLASS(tms_ur_gaze_server::VoiceReceiverNodelet, nodelet::Nodelet)
 }

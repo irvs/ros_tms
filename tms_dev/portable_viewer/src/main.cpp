@@ -15,11 +15,10 @@
 
 int main(int argc, char **argv)
 {
-    std::cout << "-----start viewer-----" << std::endl;
-    QApplication app(argc, argv);                 //Qapplicatio statement
-    QNode qnode(argc, argv, "test_viewer");
-    MainWindow window(&qnode);
-    window.show();
-    return app.exec();
+  std::cout << "-----start viewer-----" << std::endl;
+  QApplication app(argc, argv);  // Qapplicatio statement
+  QNode qnode(argc, argv, "test_viewer");
+  MainWindow window(&qnode);
+  window.show();
+  return app.exec();
 }
-

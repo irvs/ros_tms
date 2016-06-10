@@ -23,62 +23,59 @@
 
 #include <ctime>
 
-#ifndef WIN32 // POSIX 1b
+#ifndef WIN32  // POSIX 1b
 #include <sys/time.h>
 #endif
 
-namespace KNI {
-
+namespace KNI
+{
 ///
 /// This functions shields the platform specific implementation of the sleep function.
 ///
 ///
-    void sleep(long time);
+void sleep(long time);
 
 ///
 /// Provides a stop-watch-like class with a resolution of milliseconds.
 ///
-    class Timer {
-    private:
-	long _timeout;
-	
+class Timer
+{
+private:
+  long _timeout;
+
 #ifdef WIN32
-	clock_t _ct;
+  clock_t _ct;
 #else
-	struct timeval _ct;
+  struct timeval _ct;
 #endif
 
-        /// Platform specific implementation of ElapsedTime().
-	long _ElapsedTime() const;
+  /// Platform specific implementation of ElapsedTime().
+  long _ElapsedTime() const;
 
-    public:
-	Timer();
-	Timer(long timeout);
+public:
+  Timer();
+  Timer(long timeout);
 
-	void Set(long timeout);
-	void Start();
+  void Set(long timeout);
+  void Start();
 
-	void Set_And_Start(long timeout);
-	
-	///
-	/// Returns true if timer is elapsed.
-	///
-	bool Elapsed() const;
+  void Set_And_Start(long timeout);
 
-	///
-	/// Returns the elapsed time.
-	///
-	long ElapsedTime() const;
+  ///
+  /// Returns true if timer is elapsed.
+  ///
+  bool Elapsed() const;
 
-        ///
-        /// Block until time's up.
-        ///
-        void WaitUntilElapsed() const;
+  ///
+  /// Returns the elapsed time.
+  ///
+  long ElapsedTime() const;
 
-    };
-
-
-
+  ///
+  /// Block until time's up.
+  ///
+  void WaitUntilElapsed() const;
+};
 }
 
 #endif

@@ -16,17 +16,15 @@
 #include "newmat.h"
 
 #ifdef use_namespace
-namespace NEWMAT {
+namespace NEWMAT
+{
 #endif
-
-
 
 // **************************** input/output *****************************/
 
 ostream& operator<<(ostream&, const BaseMatrix&);
 
 ostream& operator<<(ostream&, const GeneralMatrix&);
-
 
 /*  Use in some old versions of G++ without complete iomanipulators
 
@@ -57,11 +55,8 @@ Omanip_width setw(int i);
 }
 #endif
 
-
-
 #endif
 
 // body file: newmat9.cpp
-
 
 ///@}

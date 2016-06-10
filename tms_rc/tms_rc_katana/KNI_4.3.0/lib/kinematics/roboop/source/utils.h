@@ -59,24 +59,25 @@ Revision_history:
 //! @brief RCS/CVS version.
 static const char header_utils_rcsid[] = "$Id: utils.h,v 1.10 2006/05/16 16:11:15 gourdeau Exp $";
 
-#ifdef _MSC_VER                         // Microsoft
-#pragma warning (disable:4786)  /* Disable decorated name truncation warnings */
+#ifdef _MSC_VER                 // Microsoft
+#pragma warning(disable : 4786) /* Disable decorated name truncation warnings */
 #endif
 #include <stdio.h>
 #include <limits>
-#define WANT_STRING                  /* include.h will get string fns */
-#define WANT_STREAM                  /* include.h will get stream fns */
-#define WANT_FSTREAM                 /* include.h will get fstream fns */
-#define WANT_MATH                    /* include.h will get math fns */
-                                     /* newmatap.h will get include.h */
+#define WANT_STRING  /* include.h will get string fns */
+#define WANT_STREAM  /* include.h will get stream fns */
+#define WANT_FSTREAM /* include.h will get fstream fns */
+#define WANT_MATH    /* include.h will get math fns */
+                     /* newmatap.h will get include.h */
 
-#include "newmatap.h"                /* need matrix applications */
+#include "newmatap.h" /* need matrix applications */
 
-#include "newmatio.h"                /* need matrix output routines */
+#include "newmatio.h" /* need matrix output routines */
 
 #ifdef use_namespace
-namespace ROBOOP {
-  using namespace NEWMAT;
+namespace ROBOOP
+{
+using namespace NEWMAT;
 #endif
 
 #ifndef M_PI
@@ -90,36 +91,38 @@ extern Real fourbyfourident[];
 extern Real threebythreeident[];
 
 // angle conversion
-inline double deg2rad(const double angle_deg){ return angle_deg*M_PI/180; }
-inline double rad2deg(const double angle_rad){ return angle_rad*180/M_PI; }
+inline double deg2rad(const double angle_deg)
+{
+  return angle_deg * M_PI / 180;
+}
+inline double rad2deg(const double angle_rad)
+{
+  return angle_rad * 180 / M_PI;
+}
 
-// vector operation 
+// vector operation
 
-ReturnMatrix x_prod_matrix(const ColumnVector & x);
+ReturnMatrix x_prod_matrix(const ColumnVector &x);
 
-ReturnMatrix pinv(const Matrix & M);
+ReturnMatrix pinv(const Matrix &M);
 
 // numerical analysis tools
 
-ReturnMatrix Integ_Trap(const ColumnVector & present, ColumnVector & past, const Real dt);
+ReturnMatrix Integ_Trap(const ColumnVector &present, ColumnVector &past, const Real dt);
 
-void Runge_Kutta4(ReturnMatrix (*xdot)(Real time, const Matrix & xin),
-                  const Matrix & xo, Real to, Real tf, int nsteps,
-                  RowVector & tout, Matrix & xout);
+void Runge_Kutta4(ReturnMatrix (*xdot)(Real time, const Matrix &xin), const Matrix &xo, Real to, Real tf, int nsteps,
+                  RowVector &tout, Matrix &xout);
 
-void Runge_Kutta4_Real_time(ReturnMatrix (*xdot)(Real time, const Matrix & xin),
-                            const Matrix & xo, Real to, Real tf, int nsteps);
+void Runge_Kutta4_Real_time(ReturnMatrix (*xdot)(Real time, const Matrix &xin), const Matrix &xo, Real to, Real tf,
+                            int nsteps);
 
-void Runge_Kutta4_Real_time(ReturnMatrix (*xdot)(Real time, const Matrix & xin,
-                            bool & exit, bool & init),
-                            const Matrix & xo, Real to, Real tf, int nsteps);
+void Runge_Kutta4_Real_time(ReturnMatrix (*xdot)(Real time, const Matrix &xin, bool &exit, bool &init),
+                            const Matrix &xo, Real to, Real tf, int nsteps);
 
-void odeint(ReturnMatrix (*xdot)(Real time, const Matrix & xin),
-            Matrix & xo, Real to, Real tf, Real eps, Real h1, Real hmin,
-            int & nok, int & nbad,
-            RowVector & tout, Matrix & xout, Real dtsav);
+void odeint(ReturnMatrix (*xdot)(Real time, const Matrix &xin), Matrix &xo, Real to, Real tf, Real eps, Real h1,
+            Real hmin, int &nok, int &nbad, RowVector &tout, Matrix &xout, Real dtsav);
 
-ReturnMatrix sign(const Matrix & x);
+ReturnMatrix sign(const Matrix &x);
 
 short sign(const Real x);
 
@@ -127,36 +130,33 @@ const double epsilon = 0.0000001;
 
 inline bool isZero(const double x)
 {
-    if ( fabs(x) < epsilon)
-    {
-        return true;
-    }
-    return false;
+  if (fabs(x) < epsilon)
+  {
+    return true;
+  }
+  return false;
 }
 
+// translation
+ReturnMatrix trans(const ColumnVector &a);
 
-// translation 
-ReturnMatrix trans(const ColumnVector & a);
-
-// rotation matrices 
+// rotation matrices
 ReturnMatrix rotx(const Real alpha);
 ReturnMatrix roty(const Real beta);
 ReturnMatrix rotz(const Real gamma);
-ReturnMatrix rotk(const Real theta, const ColumnVector & k);
+ReturnMatrix rotk(const Real theta, const ColumnVector &k);
 
-ReturnMatrix rpy(const ColumnVector & a);
-ReturnMatrix eulzxz(const ColumnVector & a);
-ReturnMatrix rotd(const Real theta, const ColumnVector & k1, const ColumnVector & k2);
+ReturnMatrix rpy(const ColumnVector &a);
+ReturnMatrix eulzxz(const ColumnVector &a);
+ReturnMatrix rotd(const Real theta, const ColumnVector &k1, const ColumnVector &k2);
 
-
-// inverse on rotation matrices 
-ReturnMatrix irotk(const Matrix & R);
-ReturnMatrix irpy(const Matrix & R);
-ReturnMatrix ieulzxz(const Matrix & R);
+// inverse on rotation matrices
+ReturnMatrix irotk(const Matrix &R);
+ReturnMatrix irpy(const Matrix &R);
+ReturnMatrix ieulzxz(const Matrix &R);
 
 #ifdef use_namespace
 }
 #endif
 
 #endif
-
