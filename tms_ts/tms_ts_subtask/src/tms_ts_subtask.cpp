@@ -12,7 +12,7 @@ double sp5arm_init_arg[26] = {
     0.0, 0.175, -0.2,  0.175, 0.175,  // right arm
     0.0, -0.17, 0.0,   0.0,   0.0,   0.0,
     0.0, 0.175, -0.2,  0.175, 0.175  // left arm
-};  // rad
+};                                   // rad
 
 tms_rp::TmsRpSubtask *tms_rp::TmsRpSubtask::instance()
 {
@@ -837,15 +837,15 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
             //			    		if (sd.type) { // actual version
             //			    			tms_msg_rc::tms_rc_pmove move_srv;
             //			    			double dis = distance(rp_srv.response.VoronoiPath[i-1].x,
-            //rp_srv.response.VoronoiPath[i-1].y,
+            // rp_srv.response.VoronoiPath[i-1].y,
             //			    					    					rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
             //			    			double ang = rp_srv.response.VoronoiPath[i].th - rp_srv.response.VoronoiPath[i-1].th;
             //		    				if (ang > 180.0) ang = ang - 360.0;
             //		    				else if (ang < -180.0) ang = ang + 360.0;
             //			    			ROS_INFO("voronoi[%d]:(%f,%f,%f), voronoi[%d]:(%f,%f,%f)",i-1,
-            //rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
+            // rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
             //			    					rp_srv.response.VoronoiPath[i-1].th, i, rp_srv.response.VoronoiPath[i].x,
-            //rp_srv.response.VoronoiPath[i].y, rp_srv.response.VoronoiPath[i].th);
+            // rp_srv.response.VoronoiPath[i].y, rp_srv.response.VoronoiPath[i].th);
             //			    			if (dis != 0) {
             //			    				ROS_INFO("cmd1:%f", dis);
             //				    			move_srv.request.command = 1;
@@ -871,7 +871,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
             //			    		} else { // simulation version
             //			    			tms_msg_rc::tms_rc_pmove kxp_srv;
             //			    			ROS_INFO("voronoi[%d]=%f,%f,%f", i,
-            //rp_srv.response.VoronoiPath[i].x,rp_srv.response.VoronoiPath[i].y,rp_srv.response.VoronoiPath[i].th);
+            // rp_srv.response.VoronoiPath[i].x,rp_srv.response.VoronoiPath[i].y,rp_srv.response.VoronoiPath[i].th);
             //			    			kxp_srv.request.w_x = rp_srv.response.VoronoiPath[i].x;
             //			    			kxp_srv.request.w_y = rp_srv.response.VoronoiPath[i].y;
             //				    		kxp_srv.request.w_th = rp_srv.response.VoronoiPath[i].th;
@@ -975,9 +975,8 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
                                rp_srv.request.goal_pos.y);
 
           if (error_th > PI)
-          else if (error_th < -PI)
-            error_th = error_th - 2 * PI;
-            error_th = error_th + 2 * PI;
+            else if (error_th < -PI) error_th = error_th - 2 * PI;
+          error_th = error_th + 2 * PI;
 
           ROS_INFO("error_x:%f,error_y:%f,error_th:%f, error_dis:%f", error_x, error_y, error_th, error_dis);
           if (error_x <= 0.01 && error_y <= 0.01 && (error_th >= -0.05 && error_th <= 0.05))
@@ -1708,7 +1707,7 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
 //	return true;
 //}
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
   // Init ROS node
   ros::init(argc, argv, "tms_ts_subtask");

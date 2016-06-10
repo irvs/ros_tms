@@ -308,7 +308,7 @@ struct tcp_seg
 #define TF_SEG_OPTS_MSS (u8_t)0x01U /* Include MSS option. */
 #define TF_SEG_OPTS_TS (u8_t)0x02U  /* Include timestamp option. */
 #define TF_SEG_DATA_CHECKSUMMED                                                                                        \
-  (u8_t)0x04U /* ALL data (not the header) is                                                              \           \
+  (u8_t)0x04U /* ALL data (not the header) is                                                              \ \                                                                                                                     \
                  checksummed into 'chksum' */
   struct tcp_hdr *tcphdr; /* the TCP header */
 };
