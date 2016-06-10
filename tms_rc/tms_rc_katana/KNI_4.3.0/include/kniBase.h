@@ -18,20 +18,24 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+
 /******************************************************************************************************************/
 #ifndef _KNIBASE_H_
 #define _KNIBASE_H_
 /******************************************************************************************************************/
 
-#include "KNI/cdlCOM.h"     // for serial device: TCdlCOMDesc, CCdlCOM
-#include "KNI/cplSerial.h"  // for serial-CRC protocol: CCplSerialCRC
-#include "KNI/kmlBase.h"    // for robot: CKatBase, CMotBase, CSctBase
-#include "KNI/kmlExt.h"     // extended katana features
-#include "KNI/cdlSocket.h"
+#include "KNI/cdlCOM.h"		// for serial device: TCdlCOMDesc, CCdlCOM
+#include "KNI/cplSerial.h"	// for serial-CRC protocol: CCplSerialCRC
+#include "KNI/kmlBase.h"	// for robot: CKatBase, CMotBase, CSctBase
+#include "KNI/kmlExt.h"		// extended katana features
+#include "KNI/cdlSocket.h"	
 #include "KNI_InvKin/ikBase.h"
 #include "KNI_LM/lmBase.h"
 #include "KNI/kmlMotBase.h"
 
+
+
+
 /******************************************************************************************************************/
-#endif  //_KNIBASE_H_
+#endif //_KNIBASE_H_
 /******************************************************************************************************************/

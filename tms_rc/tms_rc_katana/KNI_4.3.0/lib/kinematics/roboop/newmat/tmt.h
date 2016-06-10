@@ -7,44 +7,39 @@
 //#define DONT_DO_NRIC         // activate if running a bounds checker
 
 #ifdef use_namespace
-// using namespace NEWMAT;
-namespace NEWMAT
-{
+//using namespace NEWMAT;
+namespace NEWMAT {
 #endif
 
 // print time between construction and destruction
 class time_lapse
 {
-  double start_time;
-
+   double start_time;
 public:
-  time_lapse();
-  ~time_lapse();
+   time_lapse();
+   ~time_lapse();
 };
 
 // random number generator
 
 class MultWithCarry
 {
-  unsigned long x;
-  unsigned long crry;
+   unsigned long x;
+   unsigned long crry;
 
-  void NextValue();
+   void NextValue();
 
-  void operator=(const MultWithCarry&)
-  {
-  }  // private so can't access
+   void operator=(const MultWithCarry&) {}    // private so can't access
 
 public:
-  MultWithCarry(double s = 0.46875);
-  Real Next();
-  ~MultWithCarry()
-  {
-  }
+   MultWithCarry(double s=0.46875);
+   Real Next();
+   ~MultWithCarry() {}
 };
 
 // fill a matrix with values from the MultWithCarry random number generator
-void FillWithValues(MultWithCarry& MWC, Matrix& M);
+void FillWithValues(MultWithCarry& MWC, Matrix& M);   
+
 
 void Print(const Matrix& X);
 void Print(const UpperTriangularMatrix& X);
@@ -60,28 +55,18 @@ void Clean(DiagonalMatrix&, Real);
 using namespace NEWMAT;
 #endif
 
-void trymat1();
-void trymat2();
-void trymat3();
-void trymat4();
-void trymat5();
-void trymat6();
-void trymat7();
-void trymat8();
-void trymat9();
-void trymata();
-void trymatb();
-void trymatc();
-void trymatd();
-void trymate();
-void trymatf();
-void trymatg();
-void trymath();
-void trymati();
-void trymatj();
-void trymatk();
-void trymatl();
+
+
+void trymat1(); void trymat2(); void trymat3();
+void trymat4(); void trymat5(); void trymat6();
+void trymat7(); void trymat8(); void trymat9();
+void trymata(); void trymatb(); void trymatc();
+void trymatd(); void trymate(); void trymatf();
+void trymatg(); void trymath(); void trymati();
+void trymatj(); void trymatk(); void trymatl();
 void trymatm();
+
+
 
 // body file: tmt.cpp
 // body file: tmt1.cpp
@@ -106,5 +91,6 @@ void trymatm();
 // body file: tmtk.cpp
 // body file: tmtl.cpp
 // body file: tmtm.cpp
+
 
 ///@}

@@ -41,11 +41,12 @@ Revision_history:
     -Added support for newmat's use_namespace #define, using ROBOOP namespace
 
 2005/11/06: Etienne Lachance
-    - No need to provide a copy constructor and the assignment operator
-      (operator=) for Spl_Quaternion, Spl_Cubic and Spl_path classes. Instead we
+    - No need to provide a copy constructor and the assignment operator 
+      (operator=) for Spl_Quaternion, Spl_Cubic and Spl_path classes. Instead we 
       use the one provide by the compiler.
 -------------------------------------------------------------------------------
 */
+
 
 #ifndef TRAJECTORY_H
 #define TRAJECTORY_H
@@ -58,10 +59,11 @@ Revision_history:
 //! @brief RCS/CVS version.
 static const char header_trajectory_rcsid[] = "$Id: trajectory.h,v 1.10 2006/05/16 19:24:26 gourdeau Exp $";
 
-#ifdef _MSC_VER  // Microsoft
+
+#ifdef _MSC_VER                         // Microsoft
 //#include <string.h>
 //#include <iostream.h>
-#pragma warning(disable : 4786) /* Disable decorated name truncation warnings */
+#pragma warning (disable:4786)  /* Disable decorated name truncation warnings */
 #endif
 //#include <string>
 //#include <iostream>
@@ -73,15 +75,14 @@ static const char header_trajectory_rcsid[] = "$Id: trajectory.h,v 1.10 2006/05/
 #include "utils.h"
 
 #ifdef use_namespace
-namespace ROBOOP
-{
-using namespace NEWMAT;
+namespace ROBOOP {
+  using namespace NEWMAT;
 #endif
 
-#define K_ZER0 1
-#define BAD_DATA -1
+#define K_ZER0          1
+#define BAD_DATA       -1
 #define EXTRAPOLLATION -2
-#define NOT_IN_RANGE -3
+#define NOT_IN_RANGE   -3
 
 /*!
   @class Spl_cubic
@@ -90,25 +91,27 @@ using namespace NEWMAT;
 class Spl_cubic
 {
 public:
-  Spl_cubic(){};
-  Spl_cubic(const Matrix &pts);
-  short interpolating(const Real t, ColumnVector &s);
-  short first_derivative(const Real t, ColumnVector &ds);
-  short second_derivative(const Real t, ColumnVector &dds);
-
+   Spl_cubic(){};
+   Spl_cubic(const Matrix & pts);
+   short interpolating(const Real t, ColumnVector & s);
+   short first_derivative(const Real t, ColumnVector & ds);
+   short second_derivative(const Real t, ColumnVector & dds);
 private:
-  int nb_path;  //!< Number of path, i.e: path in x,y,z nb_path=3
-  Matrix Ak, Bk, Ck, Dk;
-  RowVector tk;   //!< Time at control points.
-  bool bad_data;  //!< Status flag.
+   int nb_path;    //!< Number of path, i.e: path in x,y,z nb_path=3
+   Matrix
+   Ak, Bk, Ck, Dk;
+   RowVector tk;   //!< Time at control points.
+   bool bad_data;  //!< Status flag.
 };
 
-#define NONE 0
-#define JOINT_SPACE 1
+
+#define NONE            0
+#define JOINT_SPACE     1
 #define CARTESIAN_SPACE 2
 
 //! @brief Data at control points.
 typedef std::map< Real, ColumnVector, less< Real > > point_map;
+
 
 /*!
   @class Spl_path
@@ -117,28 +120,25 @@ typedef std::map< Real, ColumnVector, less< Real > > point_map;
 class Spl_path : public Spl_cubic
 {
 public:
-  Spl_path() : Spl_cubic(){};
-  Spl_path(const std::string &filename);
-  Spl_path(const Matrix &x);
-  short p(const Real time, ColumnVector &p);
-  short p_pdot(const Real time, ColumnVector &p, ColumnVector &pdot);
-  short p_pdot_pddot(const Real time, ColumnVector &p, ColumnVector &pdot, ColumnVector &pdotdot);
-  short get_type()
-  {
-    return type;
-  }
-  double get_final_time()
-  {
-    return final_time;
-  }
-
+   Spl_path():Spl_cubic(){};
+   Spl_path(const std::string & filename);
+   Spl_path(const Matrix & x);
+   short p(const Real time, ColumnVector & p);
+   short p_pdot(const Real time, ColumnVector & p, ColumnVector & pdot);
+   short p_pdot_pddot(const Real time, ColumnVector & p, ColumnVector & pdot,
+                      ColumnVector & pdotdot);
+   short get_type(){ return type; }
+   double get_final_time(){ return final_time; }
+   
 private:
-  short type;         //!< Cartesian space or joint space.
-  double final_time;  //!< Spline final time.
+   short type;        //!< Cartesian space or joint space.
+   double final_time; //!< Spline final time.
 };
+
 
 //! @brief Data at control points.
 typedef std::map< Real, Quaternion, less< Real > > quat_map;
+
 
 /*!
   @class Spl_Quaternion
@@ -147,17 +147,15 @@ typedef std::map< Real, Quaternion, less< Real > > quat_map;
 class Spl_Quaternion
 {
 public:
-  Spl_Quaternion()
-  {
-  }
-  Spl_Quaternion(const std::string &filename);
-  Spl_Quaternion(const quat_map &quat);
-  short quat(const Real t, Quaternion &s);
-  short quat_w(const Real t, Quaternion &s, ColumnVector &w);
-
+   Spl_Quaternion(){}
+   Spl_Quaternion(const std::string & filename);
+   Spl_Quaternion(const quat_map & quat);
+   short quat(const Real t, Quaternion & s);
+   short quat_w(const Real t, Quaternion & s, ColumnVector & w);
 private:
-  quat_map quat_data;  //!< Data at control points.
+   quat_map quat_data;  //!< Data at control points.
 };
+
 
 /*!
   @class Trajectory_Select
@@ -166,17 +164,17 @@ private:
 class Trajectory_Select
 {
 public:
-  Trajectory_Select();
-  Trajectory_Select(const std::string &filename);
-  Trajectory_Select &operator=(const Trajectory_Select &x);
+    Trajectory_Select();
+    Trajectory_Select(const std::string & filename);
+    Trajectory_Select & operator=(const Trajectory_Select & x);
 
-  void set_trajectory(const std::string &filename);
+    void set_trajectory(const std::string & filename);
 
-  short type;                //!< Cartesian or joint space
-  Spl_path path;             //!< Spl_path instance.
-  Spl_Quaternion path_quat;  //!< Spl_Quaternion instance.
+    short type;               //!< Cartesian or joint space
+    Spl_path path;            //!< Spl_path instance.
+    Spl_Quaternion path_quat; //!< Spl_Quaternion instance.
 private:
-  bool quaternion_active;  //!< Using Spl_Quaternion.
+    bool quaternion_active;   //!< Using Spl_Quaternion.
 };
 
 #ifdef use_namespace

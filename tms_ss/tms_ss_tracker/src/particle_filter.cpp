@@ -37,8 +37,8 @@ void CPF::initialize(int area[2])
 
   Area[0] = -area[0] / 2.0;
   Area[1] = -area[1] / 2.0;
-  Area[2] = area[0] / 2.0;
-  Area[3] = area[1] / 2.0;
+  Area[2] =  area[0] / 2.0;
+  Area[3] =  area[1] / 2.0;
   cvmSet(lower_bound, 0, 0, Area[0]);
   cvmSet(lower_bound, 1, 0, Area[1]);
   cvmSet(lower_bound, 2, 0, -MaxVel);
@@ -53,9 +53,11 @@ void CPF::initialize(int area[2])
   cvReleaseMat(&lower_bound);
   cvReleaseMat(&upper_bound);
 
-  const double matrix_elements[] = {
-      1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-  };
+  const double matrix_elements[] = {1.0, 0.0, 1.0, 0.0,
+                                    0.0, 1.0, 0.0, 1.0,
+                                    0.0, 0.0, 1.0, 0.0,
+                                    0.0, 0.0, 0.0, 1.0,
+                                    };
 
   size_t n = sizeof(matrix_elements) / sizeof(matrix_elements[0]);
 
@@ -64,10 +66,10 @@ void CPF::initialize(int area[2])
     particle_filter->DynamMatr[i] = matrix_elements[i];
   }
 
-  cvRandInit(&(particle_filter->RandS[0]), -50, 50, (int)cvGetTickCount(), CV_RAND_UNI);
-  cvRandInit(&(particle_filter->RandS[1]), -50, 50, (int)cvGetTickCount(), CV_RAND_UNI);
-  cvRandInit(&(particle_filter->RandS[2]), -10, 10, (int)cvGetTickCount(), CV_RAND_UNI);
-  cvRandInit(&(particle_filter->RandS[3]), -10, 10, (int)cvGetTickCount(), CV_RAND_UNI);
+  cvRandInit(&(particle_filter->RandS[0]), -50, 50, (int) cvGetTickCount(), CV_RAND_UNI);
+  cvRandInit(&(particle_filter->RandS[1]), -50, 50, (int) cvGetTickCount(), CV_RAND_UNI);
+  cvRandInit(&(particle_filter->RandS[2]), -10, 10, (int) cvGetTickCount(), CV_RAND_UNI);
+  cvRandInit(&(particle_filter->RandS[3]), -10, 10, (int) cvGetTickCount(), CV_RAND_UNI);
 
   m_cnt = 0;
 }

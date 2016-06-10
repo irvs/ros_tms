@@ -198,24 +198,24 @@ struct snmp_trap_header_lengths
 };
 
 /* Accepting new SNMP messages. */
-#define SNMP_MSG_EMPTY 0
+#define SNMP_MSG_EMPTY                 0
 /* Search for matching object for variable binding. */
-#define SNMP_MSG_SEARCH_OBJ 1
+#define SNMP_MSG_SEARCH_OBJ            1
 /* Perform SNMP operation on in-memory object.
    Pass-through states, for symmetry only. */
-#define SNMP_MSG_INTERNAL_GET_OBJDEF 2
-#define SNMP_MSG_INTERNAL_GET_VALUE 3
-#define SNMP_MSG_INTERNAL_SET_TEST 4
+#define SNMP_MSG_INTERNAL_GET_OBJDEF   2
+#define SNMP_MSG_INTERNAL_GET_VALUE    3
+#define SNMP_MSG_INTERNAL_SET_TEST     4
 #define SNMP_MSG_INTERNAL_GET_OBJDEF_S 5
-#define SNMP_MSG_INTERNAL_SET_VALUE 6
+#define SNMP_MSG_INTERNAL_SET_VALUE    6
 /* Perform SNMP operation on object located externally.
    In theory this could be used for building a proxy agent.
    Practical use is for an enterprise spc. app. gateway. */
-#define SNMP_MSG_EXTERNAL_GET_OBJDEF 7
-#define SNMP_MSG_EXTERNAL_GET_VALUE 8
-#define SNMP_MSG_EXTERNAL_SET_TEST 9
+#define SNMP_MSG_EXTERNAL_GET_OBJDEF   7
+#define SNMP_MSG_EXTERNAL_GET_VALUE    8
+#define SNMP_MSG_EXTERNAL_SET_TEST     9
 #define SNMP_MSG_EXTERNAL_GET_OBJDEF_S 10
-#define SNMP_MSG_EXTERNAL_SET_VALUE 11
+#define SNMP_MSG_EXTERNAL_SET_VALUE    11
 
 #define SNMP_COMMUNITY_STR_LEN 64
 struct snmp_msg_pstat
@@ -293,11 +293,11 @@ void snmp_trap_dst_enable(u8_t dst_idx, u8_t enable);
 void snmp_trap_dst_ip_set(u8_t dst_idx, ip_addr_t *dst);
 
 /** Varbind-list functions. */
-struct snmp_varbind *snmp_varbind_alloc(struct snmp_obj_id *oid, u8_t type, u8_t len);
+struct snmp_varbind* snmp_varbind_alloc(struct snmp_obj_id *oid, u8_t type, u8_t len);
 void snmp_varbind_free(struct snmp_varbind *vb);
 void snmp_varbind_list_free(struct snmp_varbind_root *root);
 void snmp_varbind_tail_add(struct snmp_varbind_root *root, struct snmp_varbind *vb);
-struct snmp_varbind *snmp_varbind_tail_remove(struct snmp_varbind_root *root);
+struct snmp_varbind* snmp_varbind_tail_remove(struct snmp_varbind_root *root);
 
 /** Handle an internal (recv) or external (private response) event. */
 void snmp_msg_event(u8_t request_id);

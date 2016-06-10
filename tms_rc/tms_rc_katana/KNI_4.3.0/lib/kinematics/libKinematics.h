@@ -16,12 +16,12 @@
 */
 
 #ifndef WIN32
-#define _declspec(dllexport) /**/
-#endif                       // ifndef WIN32
+#define	_declspec(dllexport) /**/
+#endif // ifndef WIN32
 
 #ifdef WIN32
 #include <windows.h>
-#endif  // ifdef WIN32
+#endif // ifdef WIN32
 #include <stdio.h>
 #include <vector>
 #include <iostream>
@@ -32,21 +32,22 @@
 
 #include "kinematics.h"
 
-extern "C" {
+extern "C"{
+
 
 ///// STRUCTURES //////////////////////////////////////////////////////
 
 // This structure holds an int array including its length.
 typedef struct IntVector
 {
-  int length;
-  int data[MaxDof];
+	int		length;
+	int		data[MaxDof];
 } IntVector;
 // This structure holds a float array including its length.
 typedef struct FloatVector
 {
-  int length;
-  float data[MaxDof];
+	int		length;
+	float	data[MaxDof];
 } FloatVector;
 
 ///// SETTERS /////////////////////////////////////////////////////////
@@ -84,8 +85,8 @@ _declspec(dllexport) int kin_setType(int type);
 * @param typeNr	0: 6M90A_F, 1: 6M90A_G, 2: 6M180, 3: 6M90B_F, 4: 6M90B_G, -1: other
 * @return		0 if successful, < 0 if failed
 */
-_declspec(dllexport) int kin_setMDH(FloatVector* theta, FloatVector* d, FloatVector* a, FloatVector* alpha,
-                                    int typeNr = -1);
+_declspec(dllexport) int kin_setMDH(FloatVector* theta, FloatVector* d,
+		FloatVector* a, FloatVector* alpha, int typeNr = -1);
 
 /*! \brief This sets the link length parameters (part of mDH-parameters)
 *
@@ -166,7 +167,7 @@ _declspec(dllexport) int kin_setAngRan(FloatVector* angleRange);
 /*! \brief This sets the tcp offset
 *
 * Offset from the flange to the effective tcp.
-*
+* 
 * @param tcpOffset	(x, y, z, psi) offset in m and rad respectively where psi
 *						is rotation about x-axis of tool coordinate system
 * @return			0 if successful, < 0 if failed
@@ -217,7 +218,8 @@ _declspec(dllexport) int kin_getDOM();
 * @param alpha	vector to write in angle about previous x-axis
 * @return		0 if successful, < 0 if failed
 */
-_declspec(dllexport) int kin_getMDH(FloatVector* theta, FloatVector* d, FloatVector* a, FloatVector* alpha);
+_declspec(dllexport) int kin_getMDH(FloatVector* theta, FloatVector* d,
+		FloatVector* a, FloatVector* alpha);
 
 /*! \brief Get the immobile flag of the last joint
 *
@@ -360,6 +362,10 @@ _declspec(dllexport) int kin_DK(FloatVector* angle, FloatVector* pose);
 * @param maxBisection	maximum number of bisections done, if no solution found
 * @return				0 if successful, < 0 if failed
 */
-_declspec(dllexport) int kin_IK(FloatVector* pose, FloatVector* prev, FloatVector* angle, int maxBisection = 0);
+_declspec(dllexport) int kin_IK(FloatVector* pose, FloatVector* prev,
+		FloatVector* angle, int maxBisection = 0);
 
-}  // extern c
+} // extern c
+
+
+

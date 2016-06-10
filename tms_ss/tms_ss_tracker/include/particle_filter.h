@@ -4,7 +4,7 @@
 #include <opencv2/legacy/legacy.hpp>
 
 #ifndef M_PI
-#define M_PI 3.1415926535897932384626433832795
+#define M_PI 3.1415926535897932384626433832795 
 #endif
 
 class CPF
@@ -38,4 +38,4 @@ protected:
   double likelihood(double p[2]);
 };
 
-#endif  // PARTICLE_FILTER_H
+#endif // PARTICLE_FILTER_H

@@ -17,39 +17,39 @@ int id;
 
 void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
 {
-  std::cout << "Callback " << n << std::endl;
-  if (n < LOOP)
-  {
-    pcl::PointCloud< PointType1 >::Ptr cloud(new pcl::PointCloud< PointType1 >);
+    std::cout << "Callback " << n << std::endl;
+    if(n < LOOP){
+        pcl::PointCloud<PointType1>::Ptr cloud (new pcl::PointCloud<PointType1>);
 
-    pcl::fromROSMsg(*input, *cloud);
+        pcl::fromROSMsg (*input, *cloud);
 
-    std::stringstream ss;
-    ss << "src/ods_make_model/data/capture/input" << id << "_" << n << ".pcd";
-    pcl::io::savePCDFile(ss.str(), *cloud, false);
+        std::stringstream ss;
+        ss << "src/ods_make_model/data/capture/input" << id << "_" << n << ".pcd";
+        pcl::io::savePCDFile(ss.str(), *cloud, false);
 
-    n++;
-  }
+        n++;
+    }
 
-  return;
+    return;
 }
 
 int main(int argc, char** argv)
 {
-  printf("capture_data\nid = ");
-  scanf("%d", &id);
-  ros::init(argc, argv, "ods_makemodel_capture");
-  ros::NodeHandle nh;
-  ros::Rate loop_late(1);
-  ros::Time::init();
+    printf("capture_data\nid = ");
+    scanf("%d", &id);
+    ros::init (argc, argv, "ods_makemodel_capture");
+    ros::NodeHandle nh;
+    ros::Rate loop_late(1);
+    ros::Time::init();
 
-  pcl_sub = nh.subscribe("/camera/depth_registered/points", 1, callback);
+    pcl_sub = nh.subscribe("/camera/depth_registered/points", 1, callback);
 
-  while (n < LOOP)
-  {
-    ros::spinOnce();
-    loop_late.sleep();
-  }
+    while(n<LOOP)
+    {
+        ros::spinOnce();
+        loop_late.sleep();
+    }
 
-  return 0;
+    return 0;
 }
+

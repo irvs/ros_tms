@@ -58,10 +58,8 @@ class Evaluator
   struct compare_struct
   {
     Evaluator* ptr_;
-    compare_struct(Evaluator* ptr) : ptr_(ptr)
-    {
-    }
-    bool operator()(Object* object1, Object* object2)
+    compare_struct(Evaluator* ptr): ptr_(ptr) {}
+    bool operator () (Object* object1, Object* object2)
     {
       return object1->sort_key_ < object2->sort_key_;
     }
@@ -70,8 +68,8 @@ class Evaluator
 private:
   ros::NodeHandle* nh_;
   ros::ServiceServer sever_;
-  std::vector< Object > objects_;
-  std::vector< Object* > objects_ptr_;
+  std::vector<Object> objects_;
+  std::vector<Object*> objects_ptr_;
   Object object_tmp_;
 
   double yaw_;
@@ -91,8 +89,9 @@ private:
 public:
   Evaluator(ros::NodeHandle* nh);
   ~Evaluator();
-  void StoreAddress(std::vector< Object* >* object, std::vector< Object >* object_data);
-  bool CallBack(tms_ur_gaze_server::object_list::Request& req, tms_ur_gaze_server::object_list::Response& res);
+  void StoreAddress(std::vector<Object*>* object, std::vector<Object>* object_data);
+  bool CallBack(tms_ur_gaze_server::object_list::Request  &req,
+                tms_ur_gaze_server::object_list::Response &res);
 };
 
 #endif

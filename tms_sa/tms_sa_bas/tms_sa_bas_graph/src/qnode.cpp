@@ -20,65 +20,67 @@
 //------------------------------------------------------------------------------
 // Namespaces
 //------------------------------------------------------------------------------
-namespace bas_graph
-{
+namespace bas_graph {
+
 //------------------------------------------------------------------------------
 // Implementation
 //------------------------------------------------------------------------------
-QNode::QNode(int argc, char** argv) : init_argc(argc), init_argv(argv)
+QNode::QNode(int argc, char** argv ) :
+    init_argc(argc),
+    init_argv(argv)
 {
 }
 
 //------------------------------------------------------------------------------
 QNode::~QNode()
 {
-  shutdown();
+    shutdown();
 }
 
 //------------------------------------------------------------------------------
 void QNode::shutdown()
 {
-  if (ros::isStarted())
-  {
-    ros::shutdown();
-    ros::waitForShutdown();
-  }
-  wait();
+    if(ros::isStarted())
+    {
+        ros::shutdown();
+        ros::waitForShutdown();
+    }
+    wait();
 }
 
 //------------------------------------------------------------------------------
 bool QNode::init()
 {
-  ros::init(init_argc, init_argv, "bas_graph");
+    ros::init(init_argc, init_argv, "bas_graph");
 
-  if (!ros::master::check())
-  {
-    return false;
-  }
-  ros::start();
+    if ( ! ros::master::check() )
+    {
+        return false;
+    }
+    ros::start();
 
-  ros::NodeHandle nh;
-  bas_graph_subscriber = nh.subscribe("bas_behavior_data", 10, &QNode::behaviorCallback, this);
+    ros::NodeHandle nh;
+    bas_graph_subscriber = nh.subscribe("bas_behavior_data", 10, &QNode::behaviorCallback, this);
 
-  start();
-  return true;
+    start();
+    return true;
 }
 
 //------------------------------------------------------------------------------
 void QNode::behaviorCallback(const tms_msg_ss::bas_behavior_data::ConstPtr& msg)
 {
-  m_bas_behavior_data = *msg;
+    m_bas_behavior_data = *msg;
 }
 
 //------------------------------------------------------------------------------
 void QNode::run()
 {
-  while (ros::ok())
-  {
-    ros::spin();
-  }
-  std::cout << "ROS shutdown, proceeding to close the gui." << std::endl;
-  rosShutdown();  // used to signal the gui for a shutdown (useful to roslaunch)
+    while ( ros::ok() )
+    {
+        ros::spin();
+    }
+    std::cout << "ROS shutdown, proceeding to close the gui." << std::endl;
+    rosShutdown(); // used to signal the gui for a shutdown (useful to roslaunch)
 }
 
 //------------------------------------------------------------------------------

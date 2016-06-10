@@ -1,4 +1,4 @@
-// This file has been auto-generated, please do not modify here.
+//This file has been auto-generated, please do not modify here.
 #ifndef __ETHERNETNETIF_CONFIG_H
 #define NET_TELIT_STACK 0
 #define NET_GPRS 0

@@ -28,19 +28,19 @@ CLIK: closed loop inverse kinematics
     Inverse Kinematics of Robot Manipulators", Systems Analysis, Modelling
     and Simulation, vol. 35, pp.45-60, 1999.
 
-[2] F. Caccavale, S. Chiaverini, B. Siciliano, "Second-Order Kinematic Control
+[2] F. Caccavale, S. Chiaverini, B. Siciliano, "Second-Order Kinematic Control 
     of Robot Manipulators with Jacobian Damped Least-Squares Inverse: Theory
-    and Experiments", IEEE/ASME Trans on Mechatronics, vol 2, no. 3,
+    and Experiments", IEEE/ASME Trans on Mechatronics, vol 2, no. 3, 
     pp. 188-194, 1997.
 
-[3] S. Chiaverini, B. Siciliano, "Review of the Damped Least-Squares Inverse
+[3] S. Chiaverini, B. Siciliano, "Review of the Damped Least-Squares Inverse 
     Kinematics with Experiments on an Industrial Robot Manipulator" IEEE Trans
     on Control Systems Technology, vol 2, no 2, june 1994
 
 [4] C. Natale, "Quaternion-Based Representation of Rigid Bodies Orientation",
     PRISMA LAB, PRISMA Technical Report no. 97-05, Oct 1997.
 
-The algorithme is based on [1], which is of first order.
+The algorithme is based on [1], which is of first order.     
 
 -------------------------------------------------------------------------------
 Revision_history:
@@ -54,6 +54,7 @@ Revision_history:
 2006/01/21: Etienne Lachance
     -No need to include quaternion.h.
 */
+
 
 #ifndef CLIK_H
 #define CLIK_H
@@ -69,59 +70,57 @@ static const char header_clik_rcsid[] = "$Id: clik.h,v 1.6 2006/05/16 16:11:15 g
 #include "robot.h"
 
 #ifdef use_namespace
-namespace ROBOOP
-{
-using namespace NEWMAT;
+namespace ROBOOP {
+  using namespace NEWMAT;
 #endif
 
+
 //! @brief Using Clik under DH notation.
-#define CLICK_DH 1
+#define CLICK_DH           1
 //! @brief Using Clik under modified DH notation.
-#define CLICK_mDH 2
+#define CLICK_mDH          2
 //! @brief Using Clik under modified DH notation with minimum intertial parameters
 #define CLICK_mDH_min_para 3
 
+
 //! @brief Handle Closed Loop Inverse Kinematics scheme.
-class Clik
-{
+class Clik {
 public:
-  Clik()
-  {
-  }
-  Clik(const Robot &robot_, const DiagonalMatrix &Kp_, const DiagonalMatrix &Ko_, const Real eps_ = 0.04,
-       const Real lambda_max_ = 0.04, const Real dt = 1.0);
-  Clik(const mRobot &mrobot_, const DiagonalMatrix &Kp_, const DiagonalMatrix &Ko_, const Real eps_ = 0.04,
-       const Real lambda_max_ = 0.04, const Real dt = 1.0);
-  Clik(const mRobot_min_para &mrobot_min_para_, const DiagonalMatrix &Kp_, const DiagonalMatrix &Ko_,
-       const Real eps_ = 0.04, const Real lambda_max_ = 0.04, const Real dt = 1.0);
-  Clik(const Clik &x);
-  ~Clik()
-  {
-  }
-  Clik &operator=(const Clik &x);
-  void q_qdot(const Quaternion &qd, const ColumnVector &pd, const ColumnVector &pddot, const ColumnVector &wd,
-              ColumnVector &q, ColumnVector &qp);
-
+   Clik(){}
+   Clik(const Robot & robot_, const DiagonalMatrix & Kp_, const DiagonalMatrix & Ko_,
+        const Real eps_=0.04, const Real lambda_max_=0.04, const Real dt=1.0);
+   Clik(const mRobot & mrobot_, const DiagonalMatrix & Kp_, const DiagonalMatrix & Ko_,
+        const Real eps_=0.04, const Real lambda_max_=0.04, const Real dt=1.0);
+   Clik(const mRobot_min_para & mrobot_min_para_, const DiagonalMatrix & Kp_,
+        const DiagonalMatrix & Ko_, const Real eps_=0.04, const Real lambda_max_=0.04,
+        const Real dt=1.0);
+   Clik(const Clik & x);
+   ~Clik(){}
+   Clik & operator=(const Clik & x);
+   void q_qdot(const Quaternion & qd, const ColumnVector & pd,
+               const ColumnVector & pddot, const ColumnVector & wd,
+               ColumnVector & q, ColumnVector & qp);
 private:
-  int endeff_pos_ori_err(const ColumnVector &pd, const ColumnVector &pddot, const Quaternion &qd,
-                         const ColumnVector &wd);
+   int endeff_pos_ori_err(const ColumnVector & pd, const ColumnVector & pddot,
+                          const Quaternion & qd, const ColumnVector & wd);
 
-  Real dt,                          //!< Time frame.
-      eps,                          //!< Range of singular region in Jacobian DLS inverse.
-      lambda_max;                   //!< Damping factor in Jacobian DLS inverse.
-  short robot_type;                 //!< Robot type used.
-  Robot robot;                      //!< Robot instance.
-  mRobot mrobot;                    //!< mRobot instance.
-  mRobot_min_para mrobot_min_para;  //!< mRobot_min_para instance.
-  DiagonalMatrix Kp,                //!< Position error gain.
-      Ko;                           //!< Orientation error gain.
+   Real 
+     dt,                //!< Time frame.
+     eps,               //!< Range of singular region in Jacobian DLS inverse.
+     lambda_max;        //!< Damping factor in Jacobian DLS inverse.
+   short  robot_type;   //!< Robot type used.
+   Robot robot;         //!< Robot instance.
+   mRobot mrobot;       //!< mRobot instance.
+   mRobot_min_para mrobot_min_para; //!< mRobot_min_para instance.
+   DiagonalMatrix Kp,   //!< Position error gain.
+                  Ko;   //!< Orientation error gain.
 
-  ColumnVector q,  //!< Clik joint position.
-      qp,          //!< Clik joint velocity.
-      qp_prev,     //!< Clik previous joint velocity.
-      Kpep,        //!< Kp times position error.
-      Koe0Quat,    //!< Ko times orientation error (quaternion vector part).
-      v;           //!< Quaternion vector part.
+   ColumnVector q ,       //!< Clik joint position.
+                qp,       //!< Clik joint velocity.
+                qp_prev,  //!< Clik previous joint velocity.
+                Kpep,     //!< Kp times position error.
+                Koe0Quat, //!< Ko times orientation error (quaternion vector part).
+                v;        //!< Quaternion vector part.
 };
 
 #ifdef use_namespace

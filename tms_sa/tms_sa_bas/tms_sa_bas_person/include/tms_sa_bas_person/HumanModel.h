@@ -11,49 +11,51 @@
 #include <tms_msg_ss/fss_person_trajectory_data.h>
 #include "common.h"
 
-class HumanModel
-{
+
+class HumanModel{
+
 public:
-  // variables
-  int behaviorWalking;
-  int behaviorSitting;
-  int behaviorSleeping;
 
-  float stepCycle;
-  float fPosFoot1X;
-  float fPosFoot1Y;
-  float fPosFoot2X;
-  float fPosFoot2Y;
+	// variables
+	int 	behaviorWalking;
+	int 	behaviorSitting;
+	int 	behaviorSleeping;
 
-  float fAccFoot1X;
-  float fAccFoot1Y;
-  float fAccFoot2X;
-  float fAccFoot2Y;
+	float	stepCycle;
+	float	fPosFoot1X;
+	float	fPosFoot1Y;
+	float	fPosFoot2X;
+	float	fPosFoot2Y;
 
-  //--------------------------------------------------------------------------
-  // for each humanTrajectory
-  std::vector< double > baseStepCycle;
-  std::vector< double > baseStepCycleVar;
-  std::vector< double > baseGaitCycle;
-  std::vector< double > baseGaitCycleVar;
-  std::vector< vector< SampleData > > stepCycleData;
-  std::vector< vector< SampleData > > gaitCycleData;
+	float	fAccFoot1X;
+	float	fAccFoot1Y;
+	float	fAccFoot2X;
+	float	fAccFoot2Y;
 
-  //--------------------------------------------------------------------------
-  // for humanTrajectory all data
-  double baseStepCycleByAll;
-  double baseStepCycleVarByAll;
-  double baseGaitCycleByAll;
-  double baseGaitCycleVarByAll;
-  std::vector< SampleData > stepCycleDataByAll;
-  std::vector< SampleData > gaitCycleDataByAll;
+	//--------------------------------------------------------------------------
+	// for each humanTrajectory
+	std::vector<double>	baseStepCycle;
+	std::vector<double>	baseStepCycleVar;
+	std::vector<double>	baseGaitCycle;
+	std::vector<double>	baseGaitCycleVar;
+	std::vector<vector<SampleData> > stepCycleData;
+	std::vector<vector<SampleData> > gaitCycleData;
 
-  //--------------------------------------------------------------------------
-  // functions
-  void calcBaseStepCycle(tms_msg_ss::fss_person_trajectory_data humanTrajectory);
-  void calcBaseGaitCycle(tms_msg_ss::fss_person_trajectory_data humanTrajectory);
-  void calcBaseStepCycleByAll();
-  void calcBaseGaitCycleByAll();
+	//--------------------------------------------------------------------------
+	// for humanTrajectory all data
+	double	baseStepCycleByAll;
+	double baseStepCycleVarByAll;
+	double baseGaitCycleByAll;
+	double	baseGaitCycleVarByAll;
+	std::vector<SampleData> stepCycleDataByAll;
+	std::vector<SampleData> gaitCycleDataByAll;
 
-  void clearAllParameter();
+	//--------------------------------------------------------------------------
+	// functions
+	void calcBaseStepCycle(tms_msg_ss::fss_person_trajectory_data humanTrajectory);
+	void calcBaseGaitCycle(tms_msg_ss::fss_person_trajectory_data humanTrajectory);
+	void calcBaseStepCycleByAll();
+	void calcBaseGaitCycleByAll();
+
+	void clearAllParameter();
 };

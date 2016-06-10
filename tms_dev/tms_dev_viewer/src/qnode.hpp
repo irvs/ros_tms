@@ -12,24 +12,24 @@
 //------------------------------------------------------------------------------
 class QNode : public QThread
 {
-  Q_OBJECT
+Q_OBJECT
 
 public:
-  int init_argc;
-  char** init_argv;
-  const std::string node_name;
+    int init_argc;
+    char** init_argv;
+    const std::string node_name;
 
-  QNode(int argc, char** argv, const std::string& name);
-  virtual ~QNode();
+    QNode(int argc, char** argv, const std::string &name );
+    virtual ~QNode();
 
-  bool init();
-  void run();
-  void shutdown();
+    bool init();
+    void run();
+    void shutdown();
 
 Q_SIGNALS:
-  void rosShutdown();
+    void rosShutdown();
 };
 
-#endif  // NODE_HPP
+#endif // NODE_HPP
 
 //------------------------------------------------------------------------------

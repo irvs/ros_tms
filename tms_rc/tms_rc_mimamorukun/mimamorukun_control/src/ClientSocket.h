@@ -5,9 +5,8 @@
 
 #include "Socket.h"
 
-class ClientSocket : private Socket
-{
-public:
+class ClientSocket : private Socket {
+ public:
   ClientSocket(std::string host, int port);
   virtual ~ClientSocket(){};
   void init(std::string host, int port);
@@ -15,7 +14,7 @@ public:
   const ClientSocket& operator<<(const std::string&) const;
   const ClientSocket& operator>>(std::string&) const;
 
-private:
+ private:
   std::string hostIP_s;
   int port;
 };

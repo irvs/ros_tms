@@ -15,48 +15,43 @@
 
 #include <string>
 
-namespace AnaGuess
-{
+namespace AnaGuess {
+
 ///
 /// @defgroup exceptions Exceptions
 /// @{
 ///
 
-class Exception : public std::exception
-{
-protected:
-  const std::string mMessage;
-  const int mErrorNumber;
+class Exception : public std::exception {
+    protected:
+        const std::string mMessage;
+        const int mErrorNumber;
 
-public:
-  Exception(const std::string& aMessage, const int aErrorNumber) throw()
-    : std::exception(), mMessage(aMessage), mErrorNumber(aErrorNumber)
-  {
-  }
+    public:
+        Exception(const std::string & aMessage, const int aErrorNumber) throw () :
+            std::exception(),
+            mMessage(aMessage), mErrorNumber(aErrorNumber) {
+        }
 
-  virtual ~Exception() throw()
-  {
-  }
+        virtual ~Exception() throw () {
+        }
 
-  std::string message() const throw()
-  {
-    return mMessage;
-  }
-  const char* what() const throw()
-  {
-    return mMessage.c_str();
-  }
+        std::string message() const throw() {
+            return mMessage;
+        }
+	const char* what() const throw() {
+	    return mMessage.c_str();
+	}
 
-  const int errorNumber() const throw()
-  {
-    return mErrorNumber;
-  }
+	const int errorNumber() const throw() {
+	    return mErrorNumber;
+	}
 };
 
 ///
 /// @}
 ///
 
-}  // namespace
+} // namespace
 
-#endif  //_EXCEPTION_H_
+#endif //_EXCEPTION_H_

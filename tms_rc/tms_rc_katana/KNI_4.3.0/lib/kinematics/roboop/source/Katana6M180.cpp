@@ -10,17 +10,17 @@ void homogen_demo(void);
 
 int main(void)
 {
-  cout << "=====================================================\n";
-  cout << " Katana6M180  \n";
-  cout << " DEMO program \n";
-  cout << "=====================================================\n";
-  cout << "\n";
+   cout << "=====================================================\n";
+   cout << " Katana6M180  \n";
+   cout << " DEMO program \n";
+   cout << "=====================================================\n";
+   cout << "\n";
 
-  homogen_demo();
-  // kinematics_demo();
-  // dynamics_demo();
+   homogen_demo();
+   //kinematics_demo();
+   //dynamics_demo();
 
-  return (0);
+   return(0);
 }
 // 1 	sigma 		joint type (revolute=0, prismatic=1)
 // 2 	theta 		Denavit-Hartenberg parameter
@@ -55,72 +55,74 @@ int main(void)
 //     0, 0, 0.1473, 0, -M_PI/2.0, 31000, 31000+51200, 31000, 0.366,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 //     0, 0, 0.166, 0, 0, 31000, 31000+51200, 31000, 0.181,0, 0, 0.08, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-const Real Katana180_data[] = {
-    0, 0, 0,      0,     0,           0, 0, 0, 0,     0,    0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0,      0,     M_PI / 2.0,  0, 0, 0, 0,     0,    0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0,      0.19,  0,           0, 0, 0, 0.926, 0,    0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0,      0.139, 0,           0, 0, 0, 0.745, 0.69, 0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0.1473, 0,     -M_PI / 2.0, 0, 0, 0, 0.366, 0,    0, 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0.166,  0,     0,           0, 0, 0, 0.181, 0,    0, 0.08, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+const Real Katana180_data[] =
+  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, M_PI/2.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0.19, 0, 0, 0, 0, 0.926,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0.139, 0, 0, 0, 0, 0.745,0.69, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0.1473, 0, -M_PI/2.0, 0, 0, 0, 0.366,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0.166, 0, 0, 0, 0, 0,0.181,0, 0, 0.08, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 void homogen_demo(void)
 {
-  Matrix initrob(6, 23), Tobj;
-  ColumnVector qs, qr;
-  int dof = 0;
+   Matrix initrob(6,23), Tobj;
+   ColumnVector qs, qr;
+   int dof = 0;
 
-  cout << "\n";
-  cout << "=====================================================\n";
-  cout << "Katana 6M180 kinematics\n";
-  cout << "=====================================================\n";
-  initrob << Katana180_data;
-  mRobot robot = mRobot(initrob);
-  dof = robot.get_dof();
+   cout << "\n";
+   cout << "=====================================================\n";
+   cout << "Katana 6M180 kinematics\n";
+   cout << "=====================================================\n";
+   initrob << Katana180_data;
+   mRobot robot = mRobot(initrob);
+   dof = robot.get_dof();
 
-  cout << "Robot D-H parameters\n";
-  cout << "   type     theta      d        a      alpha\n";
-  cout << setw(7) << setprecision(3) << initrob.SubMatrix(1, dof, 1, 5);
-  cout << "\n";
+   cout << "Robot D-H parameters\n";
+   cout << "   type     theta      d        a      alpha\n";
+   cout << setw(7) << setprecision(3) << initrob.SubMatrix(1,dof,1,5);
+   cout << "\n";
 
-  cout << "DOF = " << dof;
-  cout << "\n";
+   cout << "DOF = " << dof;
+   cout << "\n";
 
-  cout << "Robot joints variables\n";
-  cout << setw(7) << setprecision(3) << robot.get_q();
-  cout << "\n";
+   cout << "Robot joints variables\n";
+   cout << setw(7) << setprecision(3) << robot.get_q();
+   cout << "\n";
 
-  cout << "Robot position\n";
-  cout << setw(7) << setprecision(3) << robot.kine();  // Gibt homogene Trafomatrix aus
-  cout << "\n";
+   cout << "Robot position\n";
+   cout << setw(7) << setprecision(3) << robot.kine(); //Gibt homogene Trafomatrix aus
+   cout << "\n";
 
-  qr = ColumnVector(dof);
-  qr(1) = M_PI / 2.0;
-  qr(2) = 0.0;
-  qr(3) = 0.0;
-  qr(4) = 0.0;
-  qr(5) = 0.0;
-  robot.set_q(qr);
-  cout << "Robot joints variables\n";
-  cout << setw(7) << setprecision(3) << robot.get_q();
-  cout << "\n";
+   qr = ColumnVector(dof);
+   qr(1)=M_PI/2.0;
+   qr(2)=0.0;
+   qr(3)=0.0;
+   qr(4)=0.0;
+   qr(5)=0.0;
+   robot.set_q(qr);
+   cout << "Robot joints variables\n";
+   cout << setw(7) << setprecision(3) << robot.get_q();
+   cout << "\n";
 
-  cout << "Robot Pose\n";
-  Matrix Pos = robot.kine();
-  cout << setw(7) << setprecision(3) << Pos;
-  cout << "\n";
+   cout << "Robot Pose\n";
+   Matrix Pos=robot.kine();
+   cout << setw(7) << setprecision(3) << Pos;
+   cout << "\n";
 
-  cout << "x,y,z coordinates\n";
-  cout << Pos(1, 4) << "\n" << Pos(2, 4) << "\n" << Pos(3, 4) << "\n";
-  cout << "\n";
+   cout << "x,y,z coordinates\n";
+   cout << Pos(1,4) << "\n" << Pos(2,4) << "\n" << Pos(3,4) << "\n";
+   cout << "\n";
 
-  Matrix Xobj = robot.kine();  // Aktuelle Position
-  qs = ColumnVector(dof);
-  qs = M_PI / 16.0;
-  // robot.set_q(qs); // Ändert Position
-  cout << "Robot inverse kinematics\n";
-  cout << "  q start  q final  q real\n";
-  cout << setw(7) << setprecision(3)
-       << (qs | robot.inv_kin(Xobj) | qr);  // Jetztige Winkel | IK der vorherigen Postion | Vorherige Winkel
-  cout << "\n";
-  cout << "\n";
+   Matrix Xobj = robot.kine(); //Aktuelle Position
+   qs = ColumnVector(dof);
+   qs = M_PI/16.0;
+   //robot.set_q(qs); // Ändert Position
+   cout << "Robot inverse kinematics\n";
+   cout << "  q start  q final  q real\n";
+   cout << setw(7) << setprecision(3) << (qs | robot.inv_kin(Xobj) | qr); //Jetztige Winkel | IK der vorherigen Postion | Vorherige Winkel
+   cout << "\n";
+   cout << "\n";
+
 }
+
+

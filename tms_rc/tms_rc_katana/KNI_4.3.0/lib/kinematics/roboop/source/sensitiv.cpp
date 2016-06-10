@@ -50,67 +50,65 @@ static const char rcsid[] = "$Id: sensitiv.cpp,v 1.13 2004/07/06 02:16:37 gourde
 #include "robot.h"
 
 #ifdef use_namespace
-namespace ROBOOP
-{
-using namespace NEWMAT;
+namespace ROBOOP {
+  using namespace NEWMAT;
 #endif
 
-ReturnMatrix Robot_basic::dtau_dq(const ColumnVector &q, const ColumnVector &qp, const ColumnVector &qpp)
+
+ReturnMatrix Robot_basic::dtau_dq(const ColumnVector & q,
+                                  const ColumnVector & qp,
+                                  const ColumnVector & qpp)
 /*!
   @brief Sensitivity of the dynamics with respect to \f$ q \f$
 
   This function computes \f$S_2(q, \dot{q}, \ddot{q})\f$.
 */
 {
-  int i, j;
-  Matrix ldtau_dq(dof, dof);
-  ColumnVector ltorque(dof);
-  ColumnVector dtorque(dof);
-  ColumnVector dq(dof);
-  for (i = 1; i <= dof; i++)
-  {
-    for (j = 1; j <= dof; j++)
-    {
-      dq(j) = (i == j ? 1.0 : 0.0);
-    }
-    dq_torque(q, qp, qpp, dq, ltorque, dtorque);
-    for (j = 1; j <= dof; j++)
-    {
-      ldtau_dq(j, i) = dtorque(j);
-    }
-  }
-  ldtau_dq.Release();
-  return ldtau_dq;
+   int i, j;
+   Matrix ldtau_dq(dof,dof);
+   ColumnVector ltorque(dof);
+   ColumnVector dtorque(dof);
+   ColumnVector dq(dof);
+   for(i = 1; i <= dof; i++) {
+      for(j = 1; j <= dof; j++) {
+         dq(j) = (i == j ? 1.0 : 0.0);
+      }
+      dq_torque(q,qp,qpp,dq,ltorque,dtorque);
+      for(j = 1; j <= dof; j++) {
+         ldtau_dq(j,i) = dtorque(j);
+      }
+   }
+   ldtau_dq.Release(); return ldtau_dq;
 }
 
-ReturnMatrix Robot_basic::dtau_dqp(const ColumnVector &q, const ColumnVector &qp)
+ReturnMatrix Robot_basic::dtau_dqp(const ColumnVector & q,
+                                   const ColumnVector & qp)
 /*!
   @brief Sensitivity of the dynamics with respect to \f$\dot{q} \f$
 
   This function computes \f$S_1(q, \dot{q})\f$.
 */
 {
-  int i, j;
-  Matrix ldtau_dqp(dof, dof);
-  ColumnVector ltorque(dof);
-  ColumnVector dtorque(dof);
-  ColumnVector dqp(dof);
-  for (i = 1; i <= dof; i++)
-  {
-    for (j = 1; j <= dof; j++)
-    {
-      dqp(j) = (i == j ? 1.0 : 0.0);
-    }
-    dqp_torque(q, qp, dqp, ltorque, dtorque);
-    for (j = 1; j <= dof; j++)
-    {
-      ldtau_dqp(j, i) = dtorque(j);
-    }
-  }
-  ldtau_dqp.Release();
-  return ldtau_dqp;
+   int i, j;
+   Matrix ldtau_dqp(dof,dof);
+   ColumnVector ltorque(dof);
+   ColumnVector dtorque(dof);
+   ColumnVector dqp(dof);
+   for(i = 1; i <= dof; i++) {
+      for(j = 1; j <= dof; j++) {
+         dqp(j) = (i == j ? 1.0 : 0.0);
+      }
+      dqp_torque(q,qp,dqp,ltorque,dtorque);
+      for(j = 1; j <= dof; j++) {
+         ldtau_dqp(j,i) = dtorque(j);
+      }
+   }
+   ldtau_dqp.Release(); return ldtau_dqp;
 }
 
 #ifdef use_namespace
 }
 #endif
+
+
+

@@ -7,76 +7,73 @@
 #include <omniORB4/callHandle.h>
 #include <omniORB4/objTracker.h>
 
+
 OMNI_USING_NAMESPACE(omni)
 
 static const char* _0RL_library_version = omniORB_4_1;
 
-Tag::ReaderWriter_ptr Tag::ReaderWriter_Helper::_nil()
-{
+
+
+Tag::ReaderWriter_ptr Tag::ReaderWriter_Helper::_nil() {
   return ::Tag::ReaderWriter::_nil();
 }
 
-::CORBA::Boolean Tag::ReaderWriter_Helper::is_nil(::Tag::ReaderWriter_ptr p)
-{
+::CORBA::Boolean Tag::ReaderWriter_Helper::is_nil(::Tag::ReaderWriter_ptr p) {
   return ::CORBA::is_nil(p);
+
 }
 
-void Tag::ReaderWriter_Helper::release(::Tag::ReaderWriter_ptr p)
-{
+void Tag::ReaderWriter_Helper::release(::Tag::ReaderWriter_ptr p) {
   ::CORBA::release(p);
 }
 
-void Tag::ReaderWriter_Helper::marshalObjRef(::Tag::ReaderWriter_ptr obj, cdrStream& s)
-{
+void Tag::ReaderWriter_Helper::marshalObjRef(::Tag::ReaderWriter_ptr obj, cdrStream& s) {
   ::Tag::ReaderWriter::_marshalObjRef(obj, s);
 }
 
-Tag::ReaderWriter_ptr Tag::ReaderWriter_Helper::unmarshalObjRef(cdrStream& s)
-{
+Tag::ReaderWriter_ptr Tag::ReaderWriter_Helper::unmarshalObjRef(cdrStream& s) {
   return ::Tag::ReaderWriter::_unmarshalObjRef(s);
 }
 
-void Tag::ReaderWriter_Helper::duplicate(::Tag::ReaderWriter_ptr obj)
-{
-  if (obj && !obj->_NP_is_nil())
-    omni::duplicateObjRef(obj);
+void Tag::ReaderWriter_Helper::duplicate(::Tag::ReaderWriter_ptr obj) {
+  if( obj && !obj->_NP_is_nil() )  omni::duplicateObjRef(obj);
 }
 
-Tag::ReaderWriter_ptr Tag::ReaderWriter::_duplicate(::Tag::ReaderWriter_ptr obj)
+Tag::ReaderWriter_ptr
+Tag::ReaderWriter::_duplicate(::Tag::ReaderWriter_ptr obj)
 {
-  if (obj && !obj->_NP_is_nil())
-    omni::duplicateObjRef(obj);
+  if( obj && !obj->_NP_is_nil() )  omni::duplicateObjRef(obj);
   return obj;
 }
 
-Tag::ReaderWriter_ptr Tag::ReaderWriter::_narrow(::CORBA::Object_ptr obj)
+Tag::ReaderWriter_ptr
+Tag::ReaderWriter::_narrow(::CORBA::Object_ptr obj)
 {
-  if (!obj || obj->_NP_is_nil() || obj->_NP_is_pseudo())
-    return _nil();
-  _ptr_type e = (_ptr_type)obj->_PR_getobj()->_realNarrow(_PD_repoId);
+  if( !obj || obj->_NP_is_nil() || obj->_NP_is_pseudo() ) return _nil();
+  _ptr_type e = (_ptr_type) obj->_PR_getobj()->_realNarrow(_PD_repoId);
   return e ? e : _nil();
 }
 
-Tag::ReaderWriter_ptr Tag::ReaderWriter::_unchecked_narrow(::CORBA::Object_ptr obj)
+
+Tag::ReaderWriter_ptr
+Tag::ReaderWriter::_unchecked_narrow(::CORBA::Object_ptr obj)
 {
-  if (!obj || obj->_NP_is_nil() || obj->_NP_is_pseudo())
-    return _nil();
-  _ptr_type e = (_ptr_type)obj->_PR_getobj()->_uncheckedNarrow(_PD_repoId);
+  if( !obj || obj->_NP_is_nil() || obj->_NP_is_pseudo() ) return _nil();
+  _ptr_type e = (_ptr_type) obj->_PR_getobj()->_uncheckedNarrow(_PD_repoId);
   return e ? e : _nil();
 }
 
-Tag::ReaderWriter_ptr Tag::ReaderWriter::_nil()
+Tag::ReaderWriter_ptr
+Tag::ReaderWriter::_nil()
 {
 #ifdef OMNI_UNLOADABLE_STUBS
   static _objref_ReaderWriter _the_nil_obj;
   return &_the_nil_obj;
 #else
   static _objref_ReaderWriter* _the_nil_ptr = 0;
-  if (!_the_nil_ptr)
-  {
+  if( !_the_nil_ptr ) {
     omni::nilRefLock().lock();
-    if (!_the_nil_ptr)
-    {
+    if( !_the_nil_ptr ) {
       _the_nil_ptr = new _objref_ReaderWriter;
       registerNilCorbaObject(_the_nil_ptr);
     }
@@ -88,29 +85,33 @@ Tag::ReaderWriter_ptr Tag::ReaderWriter::_nil()
 
 const char* Tag::ReaderWriter::_PD_repoId = "IDL:Tag/ReaderWriter:1.0";
 
-Tag::_objref_ReaderWriter::~_objref_ReaderWriter()
-{
+
+Tag::_objref_ReaderWriter::~_objref_ReaderWriter() {
+  
 }
 
-Tag::_objref_ReaderWriter::_objref_ReaderWriter(omniIOR* ior, omniIdentity* id)
-  : omniObjRef(::Tag::ReaderWriter::_PD_repoId, ior, id, 1)
 
+Tag::_objref_ReaderWriter::_objref_ReaderWriter(omniIOR* ior, omniIdentity* id) :
+   omniObjRef(::Tag::ReaderWriter::_PD_repoId, ior, id, 1)
+   
+   
 {
   _PR_setobj(this);
 }
 
-void* Tag::_objref_ReaderWriter::_ptrToObjRef(const char* id)
+void*
+Tag::_objref_ReaderWriter::_ptrToObjRef(const char* id)
 {
-  if (id == ::Tag::ReaderWriter::_PD_repoId)
+  if( id == ::Tag::ReaderWriter::_PD_repoId )
     return (::Tag::ReaderWriter_ptr) this;
-
-  if (id == ::CORBA::Object::_PD_repoId)
+  
+  if( id == ::CORBA::Object::_PD_repoId )
     return (::CORBA::Object_ptr) this;
 
-  if (omni::strMatch(id, ::Tag::ReaderWriter::_PD_repoId))
+  if( omni::strMatch(id, ::Tag::ReaderWriter::_PD_repoId) )
     return (::Tag::ReaderWriter_ptr) this;
-
-  if (omni::strMatch(id, ::CORBA::Object::_PD_repoId))
+  
+  if( omni::strMatch(id, ::CORBA::Object::_PD_repoId) )
     return (::CORBA::Object_ptr) this;
 
   return 0;
@@ -118,17 +119,21 @@ void* Tag::_objref_ReaderWriter::_ptrToObjRef(const char* id)
 
 // Proxy call descriptor class. Mangled signature:
 //  _cboolean
-class _0RL_cd_239e9f800063ae0f_00000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_00000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_00000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_00000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
+  
   void unmarshalReturnedValues(cdrStream&);
   void marshalReturnedValues(cdrStream&);
-
+  
+  
   static const char* const _user_exns[];
 
   ::CORBA::Boolean result;
@@ -137,46 +142,59 @@ public:
 void _0RL_cd_239e9f800063ae0f_00000000::marshalReturnedValues(cdrStream& _n)
 {
   _n.marshalBoolean(result);
+
 }
 
 void _0RL_cd_239e9f800063ae0f_00000000::unmarshalReturnedValues(cdrStream& _n)
 {
   result = _n.unmarshalBoolean();
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_00000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_00000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_10000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_10000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_00000000* tcd = (_0RL_cd_239e9f800063ae0f_00000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->intialize();
+
+
 }
 
 ::CORBA::Boolean Tag::_objref_ReaderWriter::intialize()
 {
   _0RL_cd_239e9f800063ae0f_00000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_10000000, "intialize", 10);
 
+
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cboolean_i_clong_i_clong
-class _0RL_cd_239e9f800063ae0f_20000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_20000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_20000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_20000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
   void marshalArguments(cdrStream&);
   void unmarshalArguments(cdrStream&);
 
   void unmarshalReturnedValues(cdrStream&);
   void marshalReturnedValues(cdrStream&);
-
+  
+  
   static const char* const _user_exns[];
 
   ::CORBA::Long arg_0;
@@ -188,32 +206,41 @@ void _0RL_cd_239e9f800063ae0f_20000000::marshalArguments(cdrStream& _n)
 {
   arg_0 >>= _n;
   arg_1 >>= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_20000000::unmarshalArguments(cdrStream& _n)
 {
   (::CORBA::Long&)arg_0 <<= _n;
   (::CORBA::Long&)arg_1 <<= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_20000000::marshalReturnedValues(cdrStream& _n)
 {
   _n.marshalBoolean(result);
+
 }
 
 void _0RL_cd_239e9f800063ae0f_20000000::unmarshalReturnedValues(cdrStream& _n)
 {
   result = _n.unmarshalBoolean();
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_20000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_20000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_30000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_30000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_20000000* tcd = (_0RL_cd_239e9f800063ae0f_20000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->setConfig(tcd->arg_0, tcd->arg_1);
+
+
 }
 
 ::CORBA::Boolean Tag::_objref_ReaderWriter::setConfig(::CORBA::Long confNo, ::CORBA::Long confVal)
@@ -224,23 +251,28 @@ static void _0RL_lcfn_239e9f800063ae0f_30000000(omniCallDescriptor* cd, omniServ
 
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  _clong_i_clong
-class _0RL_cd_239e9f800063ae0f_40000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_40000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_40000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_40000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
   void marshalArguments(cdrStream&);
   void unmarshalArguments(cdrStream&);
 
   void unmarshalReturnedValues(cdrStream&);
   void marshalReturnedValues(cdrStream&);
-
+  
+  
   static const char* const _user_exns[];
 
   ::CORBA::Long arg_0;
@@ -250,31 +282,40 @@ public:
 void _0RL_cd_239e9f800063ae0f_40000000::marshalArguments(cdrStream& _n)
 {
   arg_0 >>= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_40000000::unmarshalArguments(cdrStream& _n)
 {
   (::CORBA::Long&)arg_0 <<= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_40000000::marshalReturnedValues(cdrStream& _n)
 {
   result >>= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_40000000::unmarshalReturnedValues(cdrStream& _n)
 {
   (::CORBA::Long&)result <<= _n;
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_40000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_40000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_50000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_50000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_40000000* tcd = (_0RL_cd_239e9f800063ae0f_40000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->getConfig(tcd->arg_0);
+
+
 }
 
 ::CORBA::Long Tag::_objref_ReaderWriter::getConfig(::CORBA::Long confNo)
@@ -284,23 +325,28 @@ static void _0RL_lcfn_239e9f800063ae0f_50000000(omniCallDescriptor* cd, omniServ
 
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cboolean_i_cunsigned_plong_i_cunsigned_plong_i_cunsigned_plong
-class _0RL_cd_239e9f800063ae0f_60000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_60000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_60000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_60000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
   void marshalArguments(cdrStream&);
   void unmarshalArguments(cdrStream&);
 
   void unmarshalReturnedValues(cdrStream&);
   void marshalReturnedValues(cdrStream&);
-
+  
+  
   static const char* const _user_exns[];
 
   ::CORBA::ULong arg_0;
@@ -314,6 +360,7 @@ void _0RL_cd_239e9f800063ae0f_60000000::marshalArguments(cdrStream& _n)
   arg_0 >>= _n;
   arg_1 >>= _n;
   arg_2 >>= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_60000000::unmarshalArguments(cdrStream& _n)
@@ -321,26 +368,34 @@ void _0RL_cd_239e9f800063ae0f_60000000::unmarshalArguments(cdrStream& _n)
   (::CORBA::ULong&)arg_0 <<= _n;
   (::CORBA::ULong&)arg_1 <<= _n;
   (::CORBA::ULong&)arg_2 <<= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_60000000::marshalReturnedValues(cdrStream& _n)
 {
   _n.marshalBoolean(result);
+
 }
 
 void _0RL_cd_239e9f800063ae0f_60000000::unmarshalReturnedValues(cdrStream& _n)
 {
   result = _n.unmarshalBoolean();
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_60000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_60000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_70000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_70000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_60000000* tcd = (_0RL_cd_239e9f800063ae0f_60000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->setupCom(tcd->arg_0, tcd->arg_1, tcd->arg_2);
+
+
 }
 
 ::CORBA::Boolean Tag::_objref_ReaderWriter::setupCom(::CORBA::ULong baud, ::CORBA::ULong stop, ::CORBA::ULong parity)
@@ -352,38 +407,49 @@ static void _0RL_lcfn_239e9f800063ae0f_70000000(omniCallDescriptor* cd, omniServ
 
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_80000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_80000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_00000000* tcd = (_0RL_cd_239e9f800063ae0f_00000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->RFPowerOff();
+
+
 }
 
 ::CORBA::Boolean Tag::_objref_ReaderWriter::RFPowerOff()
 {
   _0RL_cd_239e9f800063ae0f_00000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_80000000, "RFPowerOff", 11);
 
+
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cboolean_i_clong
-class _0RL_cd_239e9f800063ae0f_90000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_90000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_90000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_90000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
   void marshalArguments(cdrStream&);
   void unmarshalArguments(cdrStream&);
 
   void unmarshalReturnedValues(cdrStream&);
   void marshalReturnedValues(cdrStream&);
-
+  
+  
   static const char* const _user_exns[];
 
   ::CORBA::Long arg_0;
@@ -393,31 +459,40 @@ public:
 void _0RL_cd_239e9f800063ae0f_90000000::marshalArguments(cdrStream& _n)
 {
   arg_0 >>= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_90000000::unmarshalArguments(cdrStream& _n)
 {
   (::CORBA::Long&)arg_0 <<= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_90000000::marshalReturnedValues(cdrStream& _n)
 {
   _n.marshalBoolean(result);
+
 }
 
 void _0RL_cd_239e9f800063ae0f_90000000::unmarshalReturnedValues(cdrStream& _n)
 {
   result = _n.unmarshalBoolean();
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_90000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_90000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_a0000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_a0000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_90000000* tcd = (_0RL_cd_239e9f800063ae0f_90000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->setPower(tcd->arg_0);
+
+
 }
 
 ::CORBA::Boolean Tag::_objref_ReaderWriter::setPower(::CORBA::Long power)
@@ -427,20 +502,26 @@ static void _0RL_lcfn_239e9f800063ae0f_a0000000(omniCallDescriptor* cd, omniServ
 
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  _clong
-class _0RL_cd_239e9f800063ae0f_b0000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_b0000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_b0000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_b0000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
+  
   void unmarshalReturnedValues(cdrStream&);
   void marshalReturnedValues(cdrStream&);
-
+  
+  
   static const char* const _user_exns[];
 
   ::CORBA::Long result;
@@ -449,73 +530,99 @@ public:
 void _0RL_cd_239e9f800063ae0f_b0000000::marshalReturnedValues(cdrStream& _n)
 {
   result >>= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_b0000000::unmarshalReturnedValues(cdrStream& _n)
 {
   (::CORBA::Long&)result <<= _n;
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_b0000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_b0000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_c0000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_c0000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_b0000000* tcd = (_0RL_cd_239e9f800063ae0f_b0000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->getPower();
+
+
 }
 
 ::CORBA::Long Tag::_objref_ReaderWriter::getPower()
 {
   _0RL_cd_239e9f800063ae0f_b0000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_c0000000, "getPower", 9);
 
+
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_d0000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_d0000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_b0000000* tcd = (_0RL_cd_239e9f800063ae0f_b0000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->getNoiseLevel();
+
+
 }
 
 ::CORBA::Long Tag::_objref_ReaderWriter::getNoiseLevel()
 {
   _0RL_cd_239e9f800063ae0f_b0000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_d0000000, "getNoiseLevel", 14);
 
+
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_e0000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_e0000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_00000000* tcd = (_0RL_cd_239e9f800063ae0f_00000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->tagReset();
+
+
 }
 
 ::CORBA::Boolean Tag::_objref_ReaderWriter::tagReset()
 {
   _0RL_cd_239e9f800063ae0f_00000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_e0000000, "tagReset", 9);
 
+
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cboolean_o_cTagData
-class _0RL_cd_239e9f800063ae0f_f0000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_f0000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_f0000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_f0000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
+  
   void unmarshalReturnedValues(cdrStream&);
   void marshalReturnedValues(cdrStream&);
-
+  
+  
   static const char* const _user_exns[];
 
   TagData_var arg_0;
@@ -525,7 +632,8 @@ public:
 void _0RL_cd_239e9f800063ae0f_f0000000::marshalReturnedValues(cdrStream& _n)
 {
   _n.marshalBoolean(result);
-  (const TagData&)arg_0 >>= _n;
+  (const TagData&) arg_0 >>= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_f0000000::unmarshalReturnedValues(cdrStream& _n)
@@ -533,42 +641,54 @@ void _0RL_cd_239e9f800063ae0f_f0000000::unmarshalReturnedValues(cdrStream& _n)
   result = _n.unmarshalBoolean();
   arg_0 = new TagData;
   (TagData&)arg_0 <<= _n;
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_f0000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_f0000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_01000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_01000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_f0000000* tcd = (_0RL_cd_239e9f800063ae0f_f0000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->inventory(tcd->arg_0.out());
+
+
 }
 
 ::CORBA::Boolean Tag::_objref_ReaderWriter::inventory(::TagData_out uids)
 {
   _0RL_cd_239e9f800063ae0f_f0000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_01000000, "inventory", 10);
 
+
   _invoke(_call_desc);
   uids = _call_desc.arg_0._retn();
   return _call_desc.result;
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cboolean_i_clong_i_clong_o_cTagData_i_cTagData
-class _0RL_cd_239e9f800063ae0f_11000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_11000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_11000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_11000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
   void marshalArguments(cdrStream&);
   void unmarshalArguments(cdrStream&);
 
   void unmarshalReturnedValues(cdrStream&);
   void marshalReturnedValues(cdrStream&);
-
+  
+  
   static const char* const _user_exns[];
 
   ::CORBA::Long arg_0;
@@ -583,7 +703,8 @@ void _0RL_cd_239e9f800063ae0f_11000000::marshalArguments(cdrStream& _n)
 {
   arg_0 >>= _n;
   arg_1 >>= _n;
-  (const TagData&)* arg_3 >>= _n;
+  (const TagData&) *arg_3 >>= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_11000000::unmarshalArguments(cdrStream& _n)
@@ -593,12 +714,14 @@ void _0RL_cd_239e9f800063ae0f_11000000::unmarshalArguments(cdrStream& _n)
   arg_3_ = new TagData;
   (TagData&)arg_3_ <<= _n;
   arg_3 = &arg_3_.in();
+
 }
 
 void _0RL_cd_239e9f800063ae0f_11000000::marshalReturnedValues(cdrStream& _n)
 {
   _n.marshalBoolean(result);
-  (const TagData&)arg_2 >>= _n;
+  (const TagData&) arg_2 >>= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_11000000::unmarshalReturnedValues(cdrStream& _n)
@@ -606,46 +729,56 @@ void _0RL_cd_239e9f800063ae0f_11000000::unmarshalReturnedValues(cdrStream& _n)
   result = _n.unmarshalBoolean();
   arg_2 = new TagData;
   (TagData&)arg_2 <<= _n;
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_11000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_11000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_21000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_21000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_11000000* tcd = (_0RL_cd_239e9f800063ae0f_11000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->ISORead(tcd->arg_0, tcd->arg_1, tcd->arg_2.out(), *tcd->arg_3);
+
+
 }
 
-::CORBA::Boolean Tag::_objref_ReaderWriter::ISORead(::CORBA::Long blockAddr, ::CORBA::Long blockNum, ::TagData_out data,
-                                                    const ::TagData& uid)
+::CORBA::Boolean Tag::_objref_ReaderWriter::ISORead(::CORBA::Long blockAddr, ::CORBA::Long blockNum, ::TagData_out data, const ::TagData& uid)
 {
   _0RL_cd_239e9f800063ae0f_11000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_21000000, "ISORead", 8);
   _call_desc.arg_0 = blockAddr;
   _call_desc.arg_1 = blockNum;
-  _call_desc.arg_3 = &(::TagData&)uid;
+  _call_desc.arg_3 = &(::TagData&) uid;
 
   _invoke(_call_desc);
   data = _call_desc.arg_2._retn();
   return _call_desc.result;
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cboolean_i_clong_i_clong_i_cTagData_i_cTagData
-class _0RL_cd_239e9f800063ae0f_31000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_31000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_31000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_31000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
   void marshalArguments(cdrStream&);
   void unmarshalArguments(cdrStream&);
 
   void unmarshalReturnedValues(cdrStream&);
   void marshalReturnedValues(cdrStream&);
-
+  
+  
   static const char* const _user_exns[];
 
   ::CORBA::Long arg_0;
@@ -661,8 +794,9 @@ void _0RL_cd_239e9f800063ae0f_31000000::marshalArguments(cdrStream& _n)
 {
   arg_0 >>= _n;
   arg_1 >>= _n;
-  (const TagData&)* arg_2 >>= _n;
-  (const TagData&)* arg_3 >>= _n;
+  (const TagData&) *arg_2 >>= _n;
+  (const TagData&) *arg_3 >>= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_31000000::unmarshalArguments(cdrStream& _n)
@@ -675,56 +809,68 @@ void _0RL_cd_239e9f800063ae0f_31000000::unmarshalArguments(cdrStream& _n)
   arg_3_ = new TagData;
   (TagData&)arg_3_ <<= _n;
   arg_3 = &arg_3_.in();
+
 }
 
 void _0RL_cd_239e9f800063ae0f_31000000::marshalReturnedValues(cdrStream& _n)
 {
   _n.marshalBoolean(result);
+
 }
 
 void _0RL_cd_239e9f800063ae0f_31000000::unmarshalReturnedValues(cdrStream& _n)
 {
   result = _n.unmarshalBoolean();
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_31000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_31000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_41000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_41000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_31000000* tcd = (_0RL_cd_239e9f800063ae0f_31000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->ISOWrite(tcd->arg_0, tcd->arg_1, *tcd->arg_2, *tcd->arg_3);
+
+
 }
 
-::CORBA::Boolean Tag::_objref_ReaderWriter::ISOWrite(::CORBA::Long blockAddr, ::CORBA::Long blockNum,
-                                                     const ::TagData& data, const ::TagData& uid)
+::CORBA::Boolean Tag::_objref_ReaderWriter::ISOWrite(::CORBA::Long blockAddr, ::CORBA::Long blockNum, const ::TagData& data, const ::TagData& uid)
 {
   _0RL_cd_239e9f800063ae0f_31000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_41000000, "ISOWrite", 9);
   _call_desc.arg_0 = blockAddr;
   _call_desc.arg_1 = blockNum;
-  _call_desc.arg_2 = &(::TagData&)data;
-  _call_desc.arg_3 = &(::TagData&)uid;
+  _call_desc.arg_2 = &(::TagData&) data;
+  _call_desc.arg_3 = &(::TagData&) uid;
 
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cboolean_i_cTagData
-class _0RL_cd_239e9f800063ae0f_51000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_51000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_51000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_51000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
   void marshalArguments(cdrStream&);
   void unmarshalArguments(cdrStream&);
 
   void unmarshalReturnedValues(cdrStream&);
   void marshalReturnedValues(cdrStream&);
-
+  
+  
   static const char* const _user_exns[];
 
   TagData_var arg_0_;
@@ -734,7 +880,8 @@ public:
 
 void _0RL_cd_239e9f800063ae0f_51000000::marshalArguments(cdrStream& _n)
 {
-  (const TagData&)* arg_0 >>= _n;
+  (const TagData&) *arg_0 >>= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_51000000::unmarshalArguments(cdrStream& _n)
@@ -742,65 +889,84 @@ void _0RL_cd_239e9f800063ae0f_51000000::unmarshalArguments(cdrStream& _n)
   arg_0_ = new TagData;
   (TagData&)arg_0_ <<= _n;
   arg_0 = &arg_0_.in();
+
 }
 
 void _0RL_cd_239e9f800063ae0f_51000000::marshalReturnedValues(cdrStream& _n)
 {
   _n.marshalBoolean(result);
+
 }
 
 void _0RL_cd_239e9f800063ae0f_51000000::unmarshalReturnedValues(cdrStream& _n)
 {
   result = _n.unmarshalBoolean();
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_51000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_51000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_61000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_61000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_51000000* tcd = (_0RL_cd_239e9f800063ae0f_51000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->ISOStayQuiet(*tcd->arg_0);
+
+
 }
 
 ::CORBA::Boolean Tag::_objref_ReaderWriter::ISOStayQuiet(const ::TagData& uid)
 {
   _0RL_cd_239e9f800063ae0f_51000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_61000000, "ISOStayQuiet", 13);
-  _call_desc.arg_0 = &(::TagData&)uid;
+  _call_desc.arg_0 = &(::TagData&) uid;
 
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_71000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_71000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_51000000* tcd = (_0RL_cd_239e9f800063ae0f_51000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->ISOResetToReady(*tcd->arg_0);
+
+
 }
 
 ::CORBA::Boolean Tag::_objref_ReaderWriter::ISOResetToReady(const ::TagData& uid)
 {
   _0RL_cd_239e9f800063ae0f_51000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_71000000, "ISOResetToReady", 16);
-  _call_desc.arg_0 = &(::TagData&)uid;
+  _call_desc.arg_0 = &(::TagData&) uid;
 
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cboolean_o_clong
-class _0RL_cd_239e9f800063ae0f_81000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_81000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_81000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_81000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
+  
   void unmarshalReturnedValues(cdrStream&);
   void marshalReturnedValues(cdrStream&);
-
+  
+  
   static const char* const _user_exns[];
 
   ::CORBA::Long arg_0;
@@ -811,38 +977,51 @@ void _0RL_cd_239e9f800063ae0f_81000000::marshalReturnedValues(cdrStream& _n)
 {
   _n.marshalBoolean(result);
   arg_0 >>= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_81000000::unmarshalReturnedValues(cdrStream& _n)
 {
   result = _n.unmarshalBoolean();
   (::CORBA::Long&)arg_0 <<= _n;
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_81000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_81000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_91000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_91000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_81000000* tcd = (_0RL_cd_239e9f800063ae0f_81000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->senseTag(tcd->arg_0);
+
+
 }
 
 ::CORBA::Boolean Tag::_objref_ReaderWriter::senseTag(::CORBA::Long& kind)
 {
   _0RL_cd_239e9f800063ae0f_81000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_91000000, "senseTag", 9);
 
+
   _invoke(_call_desc);
   kind = _call_desc.arg_0;
   return _call_desc.result;
+
+
 }
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_a1000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_a1000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_90000000* tcd = (_0RL_cd_239e9f800063ae0f_90000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->stop(tcd->arg_0);
+
+
 }
 
 ::CORBA::Boolean Tag::_objref_ReaderWriter::stop(::CORBA::Long cmdClass)
@@ -852,20 +1031,26 @@ static void _0RL_lcfn_239e9f800063ae0f_a1000000(omniCallDescriptor* cd, omniServ
 
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cunsigned_plong
-class _0RL_cd_239e9f800063ae0f_b1000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_b1000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_b1000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_b1000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
+  
   void unmarshalReturnedValues(cdrStream&);
   void marshalReturnedValues(cdrStream&);
-
+  
+  
   static const char* const _user_exns[];
 
   ::CORBA::ULong result;
@@ -874,43 +1059,57 @@ public:
 void _0RL_cd_239e9f800063ae0f_b1000000::marshalReturnedValues(cdrStream& _n)
 {
   result >>= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_b1000000::unmarshalReturnedValues(cdrStream& _n)
 {
   (::CORBA::ULong&)result <<= _n;
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_b1000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_b1000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_c1000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_c1000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_b1000000* tcd = (_0RL_cd_239e9f800063ae0f_b1000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->CommPort();
+
+
 }
 
 ::CORBA::ULong Tag::_objref_ReaderWriter::CommPort()
 {
   _0RL_cd_239e9f800063ae0f_b1000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_c1000000, "_get_CommPort", 14);
 
+
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  void_i_cunsigned_plong
-class _0RL_cd_239e9f800063ae0f_d1000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_d1000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_d1000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_d1000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
   void marshalArguments(cdrStream&);
   void unmarshalArguments(cdrStream&);
 
+    
+  
   static const char* const _user_exns[];
 
   ::CORBA::ULong arg_0;
@@ -919,21 +1118,28 @@ public:
 void _0RL_cd_239e9f800063ae0f_d1000000::marshalArguments(cdrStream& _n)
 {
   arg_0 >>= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_d1000000::unmarshalArguments(cdrStream& _n)
 {
   (::CORBA::ULong&)arg_0 <<= _n;
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_d1000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_d1000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_e1000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_e1000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_d1000000* tcd = (_0RL_cd_239e9f800063ae0f_d1000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   impl->CommPort(tcd->arg_0);
+
+
 }
 
 void Tag::_objref_ReaderWriter::CommPort(::CORBA::ULong _v)
@@ -942,35 +1148,48 @@ void Tag::_objref_ReaderWriter::CommPort(::CORBA::ULong _v)
   _call_desc.arg_0 = _v;
 
   _invoke(_call_desc);
+
+
+
 }
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_f1000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_f1000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_00000000* tcd = (_0RL_cd_239e9f800063ae0f_00000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->isPortOpen();
+
+
 }
 
 ::CORBA::Boolean Tag::_objref_ReaderWriter::isPortOpen()
 {
   _0RL_cd_239e9f800063ae0f_00000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_f1000000, "_get_isPortOpen", 16);
 
+
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  void_i_cboolean
-class _0RL_cd_239e9f800063ae0f_02000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_02000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_02000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_02000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
   void marshalArguments(cdrStream&);
   void unmarshalArguments(cdrStream&);
 
+    
+  
   static const char* const _user_exns[];
 
   ::CORBA::Boolean arg_0;
@@ -979,21 +1198,28 @@ public:
 void _0RL_cd_239e9f800063ae0f_02000000::marshalArguments(cdrStream& _n)
 {
   _n.marshalBoolean(arg_0);
+
 }
 
 void _0RL_cd_239e9f800063ae0f_02000000::unmarshalArguments(cdrStream& _n)
 {
   arg_0 = _n.unmarshalBoolean();
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_02000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_02000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_12000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_12000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_02000000* tcd = (_0RL_cd_239e9f800063ae0f_02000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   impl->isPortOpen(tcd->arg_0);
+
+
 }
 
 void Tag::_objref_ReaderWriter::isPortOpen(::CORBA::Boolean _v)
@@ -1002,28 +1228,40 @@ void Tag::_objref_ReaderWriter::isPortOpen(::CORBA::Boolean _v)
   _call_desc.arg_0 = _v;
 
   _invoke(_call_desc);
+
+
+
 }
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_22000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_22000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_b1000000* tcd = (_0RL_cd_239e9f800063ae0f_b1000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->BaudRate();
+
+
 }
 
 ::CORBA::ULong Tag::_objref_ReaderWriter::BaudRate()
 {
   _0RL_cd_239e9f800063ae0f_b1000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_22000000, "_get_BaudRate", 14);
 
+
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_32000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_32000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_d1000000* tcd = (_0RL_cd_239e9f800063ae0f_d1000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   impl->BaudRate(tcd->arg_0);
+
+
 }
 
 void Tag::_objref_ReaderWriter::BaudRate(::CORBA::ULong _v)
@@ -1032,28 +1270,40 @@ void Tag::_objref_ReaderWriter::BaudRate(::CORBA::ULong _v)
   _call_desc.arg_0 = _v;
 
   _invoke(_call_desc);
+
+
+
 }
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_42000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_42000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_b1000000* tcd = (_0RL_cd_239e9f800063ae0f_b1000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->Parity();
+
+
 }
 
 ::CORBA::ULong Tag::_objref_ReaderWriter::Parity()
 {
   _0RL_cd_239e9f800063ae0f_b1000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_42000000, "_get_Parity", 12);
 
+
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_52000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_52000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_d1000000* tcd = (_0RL_cd_239e9f800063ae0f_d1000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   impl->Parity(tcd->arg_0);
+
+
 }
 
 void Tag::_objref_ReaderWriter::Parity(::CORBA::ULong _v)
@@ -1062,28 +1312,40 @@ void Tag::_objref_ReaderWriter::Parity(::CORBA::ULong _v)
   _call_desc.arg_0 = _v;
 
   _invoke(_call_desc);
+
+
+
 }
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_62000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_62000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_b1000000* tcd = (_0RL_cd_239e9f800063ae0f_b1000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->Stopbits();
+
+
 }
 
 ::CORBA::ULong Tag::_objref_ReaderWriter::Stopbits()
 {
   _0RL_cd_239e9f800063ae0f_b1000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_62000000, "_get_Stopbits", 14);
 
+
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_72000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_72000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_d1000000* tcd = (_0RL_cd_239e9f800063ae0f_d1000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   impl->Stopbits(tcd->arg_0);
+
+
 }
 
 void Tag::_objref_ReaderWriter::Stopbits(::CORBA::ULong _v)
@@ -1092,20 +1354,27 @@ void Tag::_objref_ReaderWriter::Stopbits(::CORBA::ULong _v)
   _call_desc.arg_0 = _v;
 
   _invoke(_call_desc);
+
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cstring
-class _0RL_cd_239e9f800063ae0f_82000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_82000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_82000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_82000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
+  
   void unmarshalReturnedValues(cdrStream&);
   void marshalReturnedValues(cdrStream&);
-
+  
+  
   static const char* const _user_exns[];
 
   ::CORBA::String_var result;
@@ -1113,44 +1382,58 @@ public:
 
 void _0RL_cd_239e9f800063ae0f_82000000::marshalReturnedValues(cdrStream& _n)
 {
-  _n.marshalString(result, 0);
+  _n.marshalString(result,0);
+
 }
 
 void _0RL_cd_239e9f800063ae0f_82000000::unmarshalReturnedValues(cdrStream& _n)
 {
   result = _n.unmarshalString(0);
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_82000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_82000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_92000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_92000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_82000000* tcd = (_0RL_cd_239e9f800063ae0f_82000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->IPAddress();
+
+
 }
 
 char* Tag::_objref_ReaderWriter::IPAddress()
 {
   _0RL_cd_239e9f800063ae0f_82000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_92000000, "_get_IPAddress", 15);
 
+
   _invoke(_call_desc);
   return _call_desc.result._retn();
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  void_i_cstring
-class _0RL_cd_239e9f800063ae0f_a2000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_a2000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_a2000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_a2000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
   void marshalArguments(cdrStream&);
   void unmarshalArguments(cdrStream&);
 
+    
+  
   static const char* const _user_exns[];
 
   ::CORBA::String_var arg_0_;
@@ -1159,23 +1442,30 @@ public:
 
 void _0RL_cd_239e9f800063ae0f_a2000000::marshalArguments(cdrStream& _n)
 {
-  _n.marshalString(arg_0, 0);
+  _n.marshalString(arg_0,0);
+
 }
 
 void _0RL_cd_239e9f800063ae0f_a2000000::unmarshalArguments(cdrStream& _n)
 {
   arg_0_ = _n.unmarshalString(0);
   arg_0 = arg_0_.in();
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_a2000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_a2000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_b2000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_b2000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_a2000000* tcd = (_0RL_cd_239e9f800063ae0f_a2000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   impl->IPAddress(tcd->arg_0);
+
+
 }
 
 void Tag::_objref_ReaderWriter::IPAddress(const char* _v)
@@ -1184,28 +1474,40 @@ void Tag::_objref_ReaderWriter::IPAddress(const char* _v)
   _call_desc.arg_0 = _v;
 
   _invoke(_call_desc);
+
+
+
 }
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_c2000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_c2000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_b1000000* tcd = (_0RL_cd_239e9f800063ae0f_b1000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->ServerPort();
+
+
 }
 
 ::CORBA::ULong Tag::_objref_ReaderWriter::ServerPort()
 {
   _0RL_cd_239e9f800063ae0f_b1000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_c2000000, "_get_ServerPort", 16);
 
+
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_d2000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_d2000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_d1000000* tcd = (_0RL_cd_239e9f800063ae0f_d1000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   impl->ServerPort(tcd->arg_0);
+
+
 }
 
 void Tag::_objref_ReaderWriter::ServerPort(::CORBA::ULong _v)
@@ -1214,28 +1516,40 @@ void Tag::_objref_ReaderWriter::ServerPort(::CORBA::ULong _v)
   _call_desc.arg_0 = _v;
 
   _invoke(_call_desc);
+
+
+
 }
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_e2000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_e2000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_00000000* tcd = (_0RL_cd_239e9f800063ae0f_00000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->isConnect();
+
+
 }
 
 ::CORBA::Boolean Tag::_objref_ReaderWriter::isConnect()
 {
   _0RL_cd_239e9f800063ae0f_00000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_e2000000, "_get_isConnect", 15);
 
+
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_f2000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_f2000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_02000000* tcd = (_0RL_cd_239e9f800063ae0f_02000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   impl->isConnect(tcd->arg_0);
+
+
 }
 
 void Tag::_objref_ReaderWriter::isConnect(::CORBA::Boolean _v)
@@ -1244,20 +1558,27 @@ void Tag::_objref_ReaderWriter::isConnect(::CORBA::Boolean _v)
   _call_desc.arg_0 = _v;
 
   _invoke(_call_desc);
+
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  _cdouble
-class _0RL_cd_239e9f800063ae0f_03000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_03000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_03000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_03000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
+  
   void unmarshalReturnedValues(cdrStream&);
   void marshalReturnedValues(cdrStream&);
-
+  
+  
   static const char* const _user_exns[];
 
   ::CORBA::Double result;
@@ -1266,43 +1587,57 @@ public:
 void _0RL_cd_239e9f800063ae0f_03000000::marshalReturnedValues(cdrStream& _n)
 {
   result >>= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_03000000::unmarshalReturnedValues(cdrStream& _n)
 {
   (::CORBA::Double&)result <<= _n;
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_03000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_03000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_13000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_13000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_03000000* tcd = (_0RL_cd_239e9f800063ae0f_03000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->RecvTimeOut();
+
+
 }
 
 ::CORBA::Double Tag::_objref_ReaderWriter::RecvTimeOut()
 {
   _0RL_cd_239e9f800063ae0f_03000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_13000000, "_get_RecvTimeOut", 17);
 
+
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  void_i_cdouble
-class _0RL_cd_239e9f800063ae0f_23000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_23000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_23000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_23000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
   void marshalArguments(cdrStream&);
   void unmarshalArguments(cdrStream&);
 
+    
+  
   static const char* const _user_exns[];
 
   ::CORBA::Double arg_0;
@@ -1311,21 +1646,28 @@ public:
 void _0RL_cd_239e9f800063ae0f_23000000::marshalArguments(cdrStream& _n)
 {
   arg_0 >>= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_23000000::unmarshalArguments(cdrStream& _n)
 {
   (::CORBA::Double&)arg_0 <<= _n;
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_23000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_23000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_33000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_33000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_23000000* tcd = (_0RL_cd_239e9f800063ae0f_23000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   impl->RecvTimeOut(tcd->arg_0);
+
+
 }
 
 void Tag::_objref_ReaderWriter::RecvTimeOut(::CORBA::Double _v)
@@ -1334,35 +1676,48 @@ void Tag::_objref_ReaderWriter::RecvTimeOut(::CORBA::Double _v)
   _call_desc.arg_0 = _v;
 
   _invoke(_call_desc);
+
+
+
 }
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_43000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_43000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_b0000000* tcd = (_0RL_cd_239e9f800063ae0f_b0000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   tcd->result = impl->LastStatus();
+
+
 }
 
 ::CORBA::Long Tag::_objref_ReaderWriter::LastStatus()
 {
   _0RL_cd_239e9f800063ae0f_b0000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_43000000, "_get_LastStatus", 16);
 
+
   _invoke(_call_desc);
   return _call_desc.result;
+
+
 }
 // Proxy call descriptor class. Mangled signature:
 //  void_i_clong
-class _0RL_cd_239e9f800063ae0f_53000000 : public omniCallDescriptor
+class _0RL_cd_239e9f800063ae0f_53000000
+  : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_239e9f800063ae0f_53000000(LocalCallFn lcfn, const char* op_, size_t oplen, _CORBA_Boolean upcall = 0)
-    : omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
+  inline _0RL_cd_239e9f800063ae0f_53000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+     omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
+    
   }
-
+  
   void marshalArguments(cdrStream&);
   void unmarshalArguments(cdrStream&);
 
+    
+  
   static const char* const _user_exns[];
 
   ::CORBA::Long arg_0;
@@ -1371,21 +1726,28 @@ public:
 void _0RL_cd_239e9f800063ae0f_53000000::marshalArguments(cdrStream& _n)
 {
   arg_0 >>= _n;
+
 }
 
 void _0RL_cd_239e9f800063ae0f_53000000::unmarshalArguments(cdrStream& _n)
 {
   (::CORBA::Long&)arg_0 <<= _n;
+
 }
 
-const char* const _0RL_cd_239e9f800063ae0f_53000000::_user_exns[] = {0};
+const char* const _0RL_cd_239e9f800063ae0f_53000000::_user_exns[] = {
+  0
+};
 
 // Local call call-back function.
-static void _0RL_lcfn_239e9f800063ae0f_63000000(omniCallDescriptor* cd, omniServant* svnt)
+static void
+_0RL_lcfn_239e9f800063ae0f_63000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_239e9f800063ae0f_53000000* tcd = (_0RL_cd_239e9f800063ae0f_53000000*)cd;
-  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*)svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
+  Tag::_impl_ReaderWriter* impl = (Tag::_impl_ReaderWriter*) svnt->_ptrToInterface(Tag::ReaderWriter::_PD_repoId);
   impl->LastStatus(tcd->arg_0);
+
+
 }
 
 void Tag::_objref_ReaderWriter::LastStatus(::CORBA::Long _v)
@@ -1394,346 +1756,353 @@ void Tag::_objref_ReaderWriter::LastStatus(::CORBA::Long _v)
   _call_desc.arg_0 = _v;
 
   _invoke(_call_desc);
-}
-Tag::_pof_ReaderWriter::~_pof_ReaderWriter()
-{
-}
 
-omniObjRef* Tag::_pof_ReaderWriter::newObjRef(omniIOR* ior, omniIdentity* id)
+
+
+}
+Tag::_pof_ReaderWriter::~_pof_ReaderWriter() {}
+
+
+omniObjRef*
+Tag::_pof_ReaderWriter::newObjRef(omniIOR* ior, omniIdentity* id)
 {
   return new ::Tag::_objref_ReaderWriter(ior, id);
 }
 
-::CORBA::Boolean Tag::_pof_ReaderWriter::is_a(const char* id) const
-{
-  if (omni::ptrStrMatch(id, ::Tag::ReaderWriter::_PD_repoId))
-    return 1;
 
+::CORBA::Boolean
+Tag::_pof_ReaderWriter::is_a(const char* id) const
+{
+  if( omni::ptrStrMatch(id, ::Tag::ReaderWriter::_PD_repoId) )
+    return 1;
+  
   return 0;
 }
 
 const Tag::_pof_ReaderWriter _the_pof_Tag_mReaderWriter;
 
-Tag::_impl_ReaderWriter::~_impl_ReaderWriter()
-{
-}
+Tag::_impl_ReaderWriter::~_impl_ReaderWriter() {}
 
-::CORBA::Boolean Tag::_impl_ReaderWriter::_dispatch(omniCallHandle& _handle)
+
+::CORBA::Boolean
+Tag::_impl_ReaderWriter::_dispatch(omniCallHandle& _handle)
 {
   const char* op = _handle.operation_name();
 
-  if (omni::strMatch(op, "intialize"))
-  {
+  if( omni::strMatch(op, "intialize") ) {
+
     _0RL_cd_239e9f800063ae0f_00000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_10000000, "intialize", 10, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "setConfig"))
-  {
+  if( omni::strMatch(op, "setConfig") ) {
+
     _0RL_cd_239e9f800063ae0f_20000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_30000000, "setConfig", 10, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "getConfig"))
-  {
+  if( omni::strMatch(op, "getConfig") ) {
+
     _0RL_cd_239e9f800063ae0f_40000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_50000000, "getConfig", 10, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "setupCom"))
-  {
+  if( omni::strMatch(op, "setupCom") ) {
+
     _0RL_cd_239e9f800063ae0f_60000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_70000000, "setupCom", 9, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "RFPowerOff"))
-  {
+  if( omni::strMatch(op, "RFPowerOff") ) {
+
     _0RL_cd_239e9f800063ae0f_00000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_80000000, "RFPowerOff", 11, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "setPower"))
-  {
+  if( omni::strMatch(op, "setPower") ) {
+
     _0RL_cd_239e9f800063ae0f_90000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_a0000000, "setPower", 9, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "getPower"))
-  {
+  if( omni::strMatch(op, "getPower") ) {
+
     _0RL_cd_239e9f800063ae0f_b0000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_c0000000, "getPower", 9, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "getNoiseLevel"))
-  {
+  if( omni::strMatch(op, "getNoiseLevel") ) {
+
     _0RL_cd_239e9f800063ae0f_b0000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_d0000000, "getNoiseLevel", 14, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "tagReset"))
-  {
+  if( omni::strMatch(op, "tagReset") ) {
+
     _0RL_cd_239e9f800063ae0f_00000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_e0000000, "tagReset", 9, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "inventory"))
-  {
+  if( omni::strMatch(op, "inventory") ) {
+
     _0RL_cd_239e9f800063ae0f_f0000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_01000000, "inventory", 10, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "ISORead"))
-  {
+  if( omni::strMatch(op, "ISORead") ) {
+
     _0RL_cd_239e9f800063ae0f_11000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_21000000, "ISORead", 8, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "ISOWrite"))
-  {
+  if( omni::strMatch(op, "ISOWrite") ) {
+
     _0RL_cd_239e9f800063ae0f_31000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_41000000, "ISOWrite", 9, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "ISOStayQuiet"))
-  {
+  if( omni::strMatch(op, "ISOStayQuiet") ) {
+
     _0RL_cd_239e9f800063ae0f_51000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_61000000, "ISOStayQuiet", 13, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "ISOResetToReady"))
-  {
+  if( omni::strMatch(op, "ISOResetToReady") ) {
+
     _0RL_cd_239e9f800063ae0f_51000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_71000000, "ISOResetToReady", 16, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "senseTag"))
-  {
+  if( omni::strMatch(op, "senseTag") ) {
+
     _0RL_cd_239e9f800063ae0f_81000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_91000000, "senseTag", 9, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "stop"))
-  {
+  if( omni::strMatch(op, "stop") ) {
+
     _0RL_cd_239e9f800063ae0f_90000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_a1000000, "stop", 5, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_get_CommPort"))
-  {
+  if( omni::strMatch(op, "_get_CommPort") ) {
+
     _0RL_cd_239e9f800063ae0f_b1000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_c1000000, "_get_CommPort", 14, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_set_CommPort"))
-  {
+  if( omni::strMatch(op, "_set_CommPort") ) {
+
     _0RL_cd_239e9f800063ae0f_d1000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_e1000000, "_set_CommPort", 14, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_get_isPortOpen"))
-  {
+  if( omni::strMatch(op, "_get_isPortOpen") ) {
+
     _0RL_cd_239e9f800063ae0f_00000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_f1000000, "_get_isPortOpen", 16, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_set_isPortOpen"))
-  {
+  if( omni::strMatch(op, "_set_isPortOpen") ) {
+
     _0RL_cd_239e9f800063ae0f_02000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_12000000, "_set_isPortOpen", 16, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_get_BaudRate"))
-  {
+  if( omni::strMatch(op, "_get_BaudRate") ) {
+
     _0RL_cd_239e9f800063ae0f_b1000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_22000000, "_get_BaudRate", 14, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_set_BaudRate"))
-  {
+  if( omni::strMatch(op, "_set_BaudRate") ) {
+
     _0RL_cd_239e9f800063ae0f_d1000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_32000000, "_set_BaudRate", 14, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_get_Parity"))
-  {
+  if( omni::strMatch(op, "_get_Parity") ) {
+
     _0RL_cd_239e9f800063ae0f_b1000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_42000000, "_get_Parity", 12, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_set_Parity"))
-  {
+  if( omni::strMatch(op, "_set_Parity") ) {
+
     _0RL_cd_239e9f800063ae0f_d1000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_52000000, "_set_Parity", 12, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_get_Stopbits"))
-  {
+  if( omni::strMatch(op, "_get_Stopbits") ) {
+
     _0RL_cd_239e9f800063ae0f_b1000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_62000000, "_get_Stopbits", 14, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_set_Stopbits"))
-  {
+  if( omni::strMatch(op, "_set_Stopbits") ) {
+
     _0RL_cd_239e9f800063ae0f_d1000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_72000000, "_set_Stopbits", 14, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_get_IPAddress"))
-  {
+  if( omni::strMatch(op, "_get_IPAddress") ) {
+
     _0RL_cd_239e9f800063ae0f_82000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_92000000, "_get_IPAddress", 15, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_set_IPAddress"))
-  {
+  if( omni::strMatch(op, "_set_IPAddress") ) {
+
     _0RL_cd_239e9f800063ae0f_a2000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_b2000000, "_set_IPAddress", 15, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_get_ServerPort"))
-  {
+  if( omni::strMatch(op, "_get_ServerPort") ) {
+
     _0RL_cd_239e9f800063ae0f_b1000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_c2000000, "_get_ServerPort", 16, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_set_ServerPort"))
-  {
+  if( omni::strMatch(op, "_set_ServerPort") ) {
+
     _0RL_cd_239e9f800063ae0f_d1000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_d2000000, "_set_ServerPort", 16, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_get_isConnect"))
-  {
+  if( omni::strMatch(op, "_get_isConnect") ) {
+
     _0RL_cd_239e9f800063ae0f_00000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_e2000000, "_get_isConnect", 15, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_set_isConnect"))
-  {
+  if( omni::strMatch(op, "_set_isConnect") ) {
+
     _0RL_cd_239e9f800063ae0f_02000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_f2000000, "_set_isConnect", 15, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_get_RecvTimeOut"))
-  {
+  if( omni::strMatch(op, "_get_RecvTimeOut") ) {
+
     _0RL_cd_239e9f800063ae0f_03000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_13000000, "_get_RecvTimeOut", 17, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_set_RecvTimeOut"))
-  {
+  if( omni::strMatch(op, "_set_RecvTimeOut") ) {
+
     _0RL_cd_239e9f800063ae0f_23000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_33000000, "_set_RecvTimeOut", 17, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_get_LastStatus"))
-  {
+  if( omni::strMatch(op, "_get_LastStatus") ) {
+
     _0RL_cd_239e9f800063ae0f_b0000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_43000000, "_get_LastStatus", 16, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
-  if (omni::strMatch(op, "_set_LastStatus"))
-  {
+  if( omni::strMatch(op, "_set_LastStatus") ) {
+
     _0RL_cd_239e9f800063ae0f_53000000 _call_desc(_0RL_lcfn_239e9f800063ae0f_63000000, "_set_LastStatus", 16, 1);
-
-    _handle.upcall(this, _call_desc);
+    
+    _handle.upcall(this,_call_desc);
     return 1;
   }
 
+
   return 0;
 }
 
-void* Tag::_impl_ReaderWriter::_ptrToInterface(const char* id)
+void*
+Tag::_impl_ReaderWriter::_ptrToInterface(const char* id)
 {
-  if (id == ::Tag::ReaderWriter::_PD_repoId)
-    return (::Tag::_impl_ReaderWriter*)this;
+  if( id == ::Tag::ReaderWriter::_PD_repoId )
+    return (::Tag::_impl_ReaderWriter*) this;
+  
+  if( id == ::CORBA::Object::_PD_repoId )
+    return (void*) 1;
 
-  if (id == ::CORBA::Object::_PD_repoId)
-    return (void*)1;
-
-  if (omni::strMatch(id, ::Tag::ReaderWriter::_PD_repoId))
-    return (::Tag::_impl_ReaderWriter*)this;
-
-  if (omni::strMatch(id, ::CORBA::Object::_PD_repoId))
-    return (void*)1;
+  if( omni::strMatch(id, ::Tag::ReaderWriter::_PD_repoId) )
+    return (::Tag::_impl_ReaderWriter*) this;
+  
+  if( omni::strMatch(id, ::CORBA::Object::_PD_repoId) )
+    return (void*) 1;
   return 0;
 }
 
-const char* Tag::_impl_ReaderWriter::_mostDerivedRepoId()
+const char*
+Tag::_impl_ReaderWriter::_mostDerivedRepoId()
 {
   return ::Tag::ReaderWriter::_PD_repoId;
 }
 
-POA_Tag::ReaderWriter::~ReaderWriter()
-{
-}
+POA_Tag::ReaderWriter::~ReaderWriter() {}
+

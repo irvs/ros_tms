@@ -34,7 +34,7 @@ Revision_history:
     -Controller type NONE
 
 2005/11/06: Etienne Lachance
-    - No need to provide a copy constructor and the assignment operator
+    - No need to provide a copy constructor and the assignment operator 
       (operator=) for Control_Select class. Instead we use the one provide by the
       compiler.
 -------------------------------------------------------------------------------
@@ -53,9 +53,8 @@ static const char rcsid[] = "$Id: control_select.cpp,v 1.7 2006/05/16 19:24:26 g
 #include "trajectory.h"
 
 #ifdef use_namespace
-namespace ROBOOP
-{
-using namespace NEWMAT;
+namespace ROBOOP {
+  using namespace NEWMAT;
 #endif
 
 Control_Select::Control_Select()
@@ -66,124 +65,124 @@ Control_Select::Control_Select()
   dof = 0;
 }
 
-Control_Select::Control_Select(const string &filename)
+Control_Select::Control_Select(const string & filename)
 /*!
   @brief Constructor.
   @param filename: configuration file (path+name).
 */
 {
-  set_control(filename);
+    set_control(filename);
 }
 
 int Control_Select::get_dof()
 //! @brief Return the degree of freedom.
-{
-  return dof;
+{ 
+    return dof; 
 }
 
-void Control_Select::set_control(const string &filename)
-//! @brief Select the proper controller from filename.
+void Control_Select::set_control(const string & filename)
+//! @brief Select the proper controller from filename. 
 {
-  Config conf(true);
-  ifstream inconffile(filename.c_str(), std::ios::in);
-  if (conf.read_conf(inconffile))
-  {
-    cerr << "Control_Select::set_control: unable to read input config file." << endl;
-  }
+   Config conf(true);
+   ifstream inconffile(filename.c_str(), std::ios::in);
+   if (conf.read_conf(inconffile))
+   {
+       cerr << "Control_Select::set_control: unable to read input config file." << endl;
+   }
 
-  conf.select(CONTROLLER, "type", ControllerName);
+    conf.select(CONTROLLER, "type", ControllerName);
 
-  if (ControllerName == PROPORTIONAL_DERIVATIVE)
-  {
-    type = PD;
-    space_type = JOINT_SPACE;
-  }
-  else if (ControllerName == COMPUTED_TORQUE_METHOD)
-  {
-    type = CTM;
-    space_type = JOINT_SPACE;
-  }
-  else if (ControllerName == RESOLVED_RATE_ACCELERATION)
-  {
-    type = RRA;
-    space_type = CARTESIAN_SPACE;
-  }
-  else if (ControllerName == IMPEDANCE)
-  {
-    type = IMP;
-    space_type = CARTESIAN_SPACE;
-  }
-  else
-  {
-    ControllerName = "";
-    type = NONE;
-    space_type = 0;
-  }
-
-  conf.select(CONTROLLER, "dof", dof);
-
-  switch (type)
-  {
-    case PD:
+    if (ControllerName == PROPORTIONAL_DERIVATIVE)
     {
-      pd = Proportional_Derivative(dof);
-      DiagonalMatrix Kp(dof), Kd(dof);
-      for (int i = 1; i <= dof; i++)
-      {
-        ostringstream Kp_ostr, Kd_ostr;
-        Kp_ostr << "Kp_" << i;
-        Kd_ostr << "Kd_" << i;
-        conf.select("GAINS", Kp_ostr.str(), Kp(i));
-        conf.select("GAINS", Kd_ostr.str(), Kd(i));
-      }
-      pd.set_Kp(Kp);
-      pd.set_Kd(Kd);
+	type = PD;
+	space_type = JOINT_SPACE;
     }
-    break;
-
-    case CTM:
+    else if(ControllerName == COMPUTED_TORQUE_METHOD)
     {
-      ctm = Computed_torque_method(dof);
-      DiagonalMatrix Kp(dof), Kd(dof);
-      for (int i = 1; i <= dof; i++)
-      {
-        ostringstream Kp_ostr, Kd_ostr;
-        Kp_ostr << "Kp_" << i;
-        Kd_ostr << "Kd_" << i;
-        conf.select("GAINS", Kp_ostr.str(), Kp(i));
-        conf.select("GAINS", Kd_ostr.str(), Kd(i));
-      }
-      ctm.set_Kp(Kp);
-      ctm.set_Kd(Kd);
+	type = CTM;
+	space_type = JOINT_SPACE;
     }
-    break;
-
-    case RRA:
+    else if(ControllerName == RESOLVED_RATE_ACCELERATION)
     {
-      rra = Resolved_acc(dof);
-      Real Kvp, Kpp, Kvo, Kpo;
-      conf.select("GAINS", "Kvp", Kvp);
-      conf.select("GAINS", "Kpp", Kpp);
-      conf.select("GAINS", "Kvo", Kvo);
-      conf.select("GAINS", "Kpo", Kpo);
-
-      rra.set_Kvp(Kvp);
-      rra.set_Kpp(Kpp);
-      rra.set_Kvo(Kvo);
-      rra.set_Kpo(Kpo);
+	type = RRA;
+	space_type = CARTESIAN_SPACE;
     }
-    break;
-
-    case IMP:
+    else if(ControllerName == IMPEDANCE)
     {
+	type = IMP;
+	space_type = CARTESIAN_SPACE;
     }
-    break;
+    else 
+    {
+	ControllerName = "";
+	type = NONE;
+	space_type = 0;
+    }
+    
+    conf.select(CONTROLLER, "dof", dof);
 
-    default:
-      break;
-  }
+    switch (type) {
+	case PD:
+	{	    
+	    pd = Proportional_Derivative(dof);
+	    DiagonalMatrix Kp(dof), Kd(dof);
+	    for(int i = 1; i <= dof; i++)
+	    {
+		ostringstream Kp_ostr, Kd_ostr;
+		Kp_ostr << "Kp_" << i;
+		Kd_ostr << "Kd_" << i;
+		conf.select("GAINS", Kp_ostr.str(), Kp(i));	
+		conf.select("GAINS", Kd_ostr.str(), Kd(i));
+	    }
+	    pd.set_Kp(Kp);
+	    pd.set_Kd(Kd);	    
+	}
+	break;
+	
+	case CTM:
+	{	    
+	    ctm = Computed_torque_method(dof);
+	    DiagonalMatrix Kp(dof), Kd(dof);
+	    for(int i = 1; i <= dof; i++)
+	    {
+		ostringstream Kp_ostr, Kd_ostr;
+		Kp_ostr << "Kp_" << i;
+		Kd_ostr << "Kd_" << i;
+		conf.select("GAINS", Kp_ostr.str(), Kp(i));
+		conf.select("GAINS", Kd_ostr.str(), Kd(i));
+	    }
+	    ctm.set_Kp(Kp);
+	    ctm.set_Kd(Kd);
+	}
+	break;
+	    
+	case RRA:
+	{
+	    rra = Resolved_acc(dof);
+	    Real Kvp, Kpp, Kvo, Kpo;
+	    conf.select("GAINS", "Kvp", Kvp);
+	    conf.select("GAINS", "Kpp", Kpp);
+	    conf.select("GAINS", "Kvo", Kvo);
+	    conf.select("GAINS", "Kpo", Kpo);
+
+	    rra.set_Kvp( Kvp );
+	    rra.set_Kpp( Kpp );
+	    rra.set_Kvo( Kvo );
+	    rra.set_Kpo( Kpo );
+	}
+	break;
+
+	case IMP:
+	{
+	}
+	break;
+	
+	default:
+	    break;
+    }
 }
 
 #ifdef use_namespace
 }
 #endif
+

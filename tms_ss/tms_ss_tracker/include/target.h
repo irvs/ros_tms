@@ -17,4 +17,4 @@ public:
   void SetPosi(double x, double y);
 };
 
-#endif  // TARGET_H
+#endif // TARGET_H

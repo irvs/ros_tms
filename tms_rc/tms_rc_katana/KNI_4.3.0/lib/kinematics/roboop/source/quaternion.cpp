@@ -46,7 +46,7 @@ Revision_history:
     -Fixed problem in constructor using float as Real type
 
 2005/11/06: Etienne Lachance
-    - No need to provide a copy constructor and the assignment operator
+    - No need to provide a copy constructor and the assignment operator 
       (operator=) for Quaternion class. Instead we use the one provide by the
       compiler.
 
@@ -56,6 +56,7 @@ Revision_history:
       q2 = q1 * c
 -------------------------------------------------------------------------------
 */
+
 
 /*!
   @file quaternion.cpp
@@ -68,54 +69,55 @@ static const char rcsid[] = "$Id: quaternion.cpp,v 1.18 2005/11/15 19:25:58 gour
 #include "quaternion.h"
 
 #ifdef use_namespace
-namespace ROBOOP
-{
-using namespace NEWMAT;
+namespace ROBOOP {
+  using namespace NEWMAT;
 #endif
+
 
 Quaternion::Quaternion()
 //! @brief Constructor.
 {
-  s_ = 1.0;
-  v_ = ColumnVector(3);
-  v_ = 0.0;
+   s_ = 1.0;
+   v_ = ColumnVector(3);
+   v_ = 0.0;
 }
 
-Quaternion::Quaternion(const Real angle, const ColumnVector &axis)
+Quaternion::Quaternion(const Real angle, const ColumnVector & axis)
 //! @brief Constructor.
 {
-  if (axis.Nrows() != 3)
-  {
-    cerr << "Quaternion::Quaternion, size of axis != 3" << endl;
-    exit(1);
-  }
+   if(axis.Nrows() != 3)
+   {
+      cerr << "Quaternion::Quaternion, size of axis != 3" << endl;
+      exit(1);
+   }
 
-  // make sure axis is a unit vector
-  Real norm_axis = sqrt(DotProduct(axis, axis));
+   // make sure axis is a unit vector
+   Real norm_axis = sqrt(DotProduct(axis, axis));
 
-  if (norm_axis != 1)
-  {
-    cerr << "Quaternion::Quaternion(angle, axis), axis is not unit" << endl;
-    cerr << "Make the axis unit." << endl;
-    v_ = sin(angle / 2) * axis / norm_axis;
-  }
-  else
-    v_ = sin(angle / 2) * axis;
+   if(norm_axis != 1)
+   {
+      cerr << "Quaternion::Quaternion(angle, axis), axis is not unit" << endl;
+      cerr << "Make the axis unit." << endl;
+      v_ = sin(angle/2) * axis/norm_axis;
+   }
+   else
+      v_ = sin(angle/2) * axis;
 
-  s_ = cos(angle / 2);
+   s_ = cos(angle/2);
 }
 
-Quaternion::Quaternion(const Real s_in, const Real v1, const Real v2, const Real v3)
+Quaternion::Quaternion(const Real s_in, const Real v1, const Real v2,
+                       const Real v3)
 //!  @brief Constructor.
 {
-  s_ = s_in;
-  v_ = ColumnVector(3);
-  v_(1) = v1;
-  v_(2) = v2;
-  v_(3) = v3;
+   s_ = s_in;
+   v_ = ColumnVector(3);
+   v_(1) = v1;
+   v_(2) = v2;
+   v_(3) = v3;
 }
 
-Quaternion::Quaternion(const Matrix &R)
+Quaternion::Quaternion(const Matrix & R)
 /*!
   @brief Constructor.
 
@@ -127,11 +129,11 @@ Quaternion::Quaternion(const Matrix &R)
     \begin{array}{ccc}
       s^2+v_1^2-v_2^2-v_3^2 & 2v_1v_2+2sv_3 & 2v_1v_3-2sv_2 \\
       2v_1v_2-2sv_3 & s^2-v_1^2+v_2^2-v_3^2 & 2v_2v_3+2sv_1 \\
-      2v_1v_3+2sv_2 &2v_2v_3-2sv_1 & s^2-v_1^2-v_2^2+v_3^2
+      2v_1v_3+2sv_2 &2v_2v_3-2sv_1 & s^2-v_1^2-v_2^2+v_3^2  
     \end{array}
    \right]
   \f]
-
+  
   First we find \f$s\f$:
   \f[
    R_{11} + R_{22} + R_{33} + R_{44} = 4s^2
@@ -150,57 +152,59 @@ Quaternion::Quaternion(const Matrix &R)
    v_3 = \frac{R_{21}-R_{12}}{4s}
   \f]
 
-  The sign of \f$s\f$ cannot be determined. Depending on the choice of the sign
-  for s the sign of \f$v\f$ change as well. Thus the quaternions \f$q\f$ and
+  The sign of \f$s\f$ cannot be determined. Depending on the choice of the sign 
+  for s the sign of \f$v\f$ change as well. Thus the quaternions \f$q\f$ and 
   \f$-q\f$ represent the same rotation, but the interpolation curve changed with
-  the choice of the sign.
+  the choice of the sign. 
   A positive sign has been chosen.
 */
 {
-  if ((R.Nrows() == 3) && (R.Ncols() == 3) || (R.Nrows() == 4) && (R.Ncols() == 4))
-  {
-    Real tmp = fabs(R(1, 1) + R(2, 2) + R(3, 3) + 1);
-    s_ = 0.5 * sqrt(tmp);
-    if (v_.Nrows() != 3)
-      v_ = ColumnVector(3);
+   if( (R.Nrows() == 3) && (R.Ncols() == 3) ||
+         (R.Nrows() == 4) && (R.Ncols() == 4) )
+   {
+      Real tmp = fabs(R(1,1) + R(2,2) + R(3,3) + 1);
+      s_ = 0.5*sqrt(tmp);
+      if(v_.Nrows() != 3)
+         v_ = ColumnVector(3);
 
-    if (s_ > EPSILON)
-    {
-      v_(1) = (R(3, 2) - R(2, 3)) / (4 * s_);
-      v_(2) = (R(1, 3) - R(3, 1)) / (4 * s_);
-      v_(3) = (R(2, 1) - R(1, 2)) / (4 * s_);
-    }
-    else
-    {
-      // |w| <= 1/2
-      static int s_iNext[3] = {2, 3, 1};
-      int i = 1;
-      if (R(2, 2) > R(1, 1))
-        i = 2;
-      if (R(3, 3) > R(2, 2))
-        i = 3;
-      int j = s_iNext[i - 1];
-      int k = s_iNext[j - 1];
+      if(s_ > EPSILON)
+      {
+         v_(1) = (R(3,2)-R(2,3))/(4*s_);
+         v_(2) = (R(1,3)-R(3,1))/(4*s_);
+         v_(3) = (R(2,1)-R(1,2))/(4*s_);
+      }
+      else
+      {
+         // |w| <= 1/2
+         static int s_iNext[3] = { 2, 3, 1 };
+         int i = 1;
+         if ( R(2,2) > R(1,1) )
+            i = 2;
+         if ( R(3,3) > R(2,2) )
+            i = 3;
+         int j = s_iNext[i-1];
+         int k = s_iNext[j-1];
 
-      Real fRoot = sqrt(R(i, i) - R(j, j) - R(k, k) + 1.0);
+         Real fRoot = sqrt(R(i,i)-R(j,j)-R(k,k) + 1.0);
 
-      Real *tmp[3] = {&v_(1), &v_(2), &v_(3)};
-      *tmp[i - 1] = 0.5 * fRoot;
-      fRoot = 0.5 / fRoot;
-      s_ = (R(k, j) - R(j, k)) * fRoot;
-      *tmp[j - 1] = (R(j, i) + R(i, j)) * fRoot;
-      *tmp[k - 1] = (R(k, i) + R(i, k)) * fRoot;
-    }
-  }
-  else
-    cerr << "Quaternion::Quaternion: matrix input is not 3x3 or 4x4" << endl;
+         Real *tmp[3] = { &v_(1), &v_(2), &v_(3) };
+         *tmp[i-1] = 0.5*fRoot;
+         fRoot = 0.5/fRoot;
+         s_ = (R(k,j)-R(j,k))*fRoot;
+         *tmp[j-1] = (R(j,i)+R(i,j))*fRoot;
+         *tmp[k-1] = (R(k,i)+R(i,k))*fRoot;
+      }
+
+   }
+   else
+      cerr << "Quaternion::Quaternion: matrix input is not 3x3 or 4x4" << endl;
 }
 
-Quaternion Quaternion::operator+(const Quaternion &rhs) const
+Quaternion Quaternion::operator+(const Quaternion & rhs)const
 /*!
   @brief Overload + operator.
 
-  The quaternion addition is
+  The quaternion addition is 
   \f[
   q_1 + q_2 = [s_1, v_1] + [s_2, v_2] = [s_1+s_2, v_1+v_2]
   \f]
@@ -209,18 +213,18 @@ Quaternion Quaternion::operator+(const Quaternion &rhs) const
   \f$q_2\f$ are unit quaternions.
 */
 {
-  Quaternion q;
-  q.s_ = s_ + rhs.s_;
-  q.v_ = v_ + rhs.v_;
+   Quaternion q;
+   q.s_ = s_ + rhs.s_;
+   q.v_ = v_ + rhs.v_;
 
-  return q;
+   return q;
 }
 
-Quaternion Quaternion::operator-(const Quaternion &rhs) const
+Quaternion Quaternion::operator-(const Quaternion & rhs)const
 /*!
   @brief Overload - operator.
 
-  The quaternion soustraction is
+  The quaternion soustraction is 
   \f[
   q_1 - q_2 = [s_1, v_1] - [s_2, v_2] = [s_1-s_2, v_1-v_2]
   \f]
@@ -229,14 +233,14 @@ Quaternion Quaternion::operator-(const Quaternion &rhs) const
   \f$q_2\f$ are unit quaternions.
 */
 {
-  Quaternion q;
-  q.s_ = s_ - rhs.s_;
-  q.v_ = v_ - rhs.v_;
+   Quaternion q;
+   q.s_ = s_ - rhs.s_;
+   q.v_ = v_ - rhs.v_;
 
-  return q;
+   return q;
 }
 
-Quaternion Quaternion::operator*(const Quaternion &rhs) const
+Quaternion Quaternion::operator*(const Quaternion & rhs)const
 /*!
   @brief Overload * operator.
 
@@ -248,33 +252,35 @@ Quaternion Quaternion::operator*(const Quaternion &rhs) const
   where \f$\cdot\f$ and \f$\times\f$ denote the scalar and vector product
   in \f$R^3\f$ respectively.
 
-  If \f$q_1\f$ and \f$q_2\f$ are unit quaternions, then q will also be a
+  If \f$q_1\f$ and \f$q_2\f$ are unit quaternions, then q will also be a 
   unit quaternion.
 */
 {
-  Quaternion q;
-  q.s_ = s_ * rhs.s_ - DotProduct(v_, rhs.v_);
-  q.v_ = s_ * rhs.v_ + rhs.s_ * v_ + CrossProduct(v_, rhs.v_);
+   Quaternion q;
+   q.s_ = s_ * rhs.s_ - DotProduct(v_, rhs.v_);
+   q.v_ = s_ * rhs.v_ + rhs.s_ * v_ + CrossProduct(v_, rhs.v_);
 
-  return q;
+   return q;
 }
 
-Quaternion Quaternion::operator/(const Quaternion &rhs) const
+
+Quaternion Quaternion::operator/(const Quaternion & rhs)const
 //! @brief Overload / operator.
 {
-  return *this * rhs.i();
+    return *this*rhs.i();
 }
 
-void Quaternion::set_v(const ColumnVector &v)
+
+void Quaternion::set_v(const ColumnVector & v)
 //! @brief Set quaternion vector part.
 {
-  if (v.Nrows() == 3)
-    v_ = v;
-  else
-    cerr << "Quaternion::set_v: input has a wrong size." << endl;
+   if(v.Nrows() == 3)
+      v_ = v;
+   else
+       cerr << "Quaternion::set_v: input has a wrong size." << endl;
 }
 
-Quaternion Quaternion::conjugate() const
+Quaternion Quaternion::conjugate()const
 /*!
   @brief Conjugate.
 
@@ -282,14 +288,14 @@ Quaternion Quaternion::conjugate() const
   \f$q^{*} = [s, -v]\f$
 */
 {
-  Quaternion q;
-  q.s_ = s_;
-  q.v_ = -1 * v_;
+   Quaternion q;
+   q.s_ = s_;
+   q.v_ = -1*v_;
 
-  return q;
+   return q;
 }
 
-Real Quaternion::norm() const
+Real Quaternion::norm()const 
 /*!
   @brief Return the quaternion norm.
 
@@ -298,23 +304,23 @@ Real Quaternion::norm() const
   N(q) = s^2 + v\cdot v
   \f]
 */
-{
-  return (sqrt(s_ * s_ + DotProduct(v_, v_)));
+{ 
+  return( sqrt(s_*s_ + DotProduct(v_, v_)) );
 }
 
-Quaternion &Quaternion::unit()
+Quaternion & Quaternion::unit()
 //! @brief Normalize a quaternion.
 {
-  Real tmp = norm();
-  if (tmp > EPSILON)
-  {
-    s_ = s_ / tmp;
-    v_ = v_ / tmp;
-  }
-  return *this;
+   Real tmp = norm();
+   if(tmp > EPSILON)
+   {
+      s_ = s_/tmp;
+      v_ = v_/tmp;
+   }
+   return *this;
 }
 
-Quaternion Quaternion::i() const
+Quaternion Quaternion::i()const 
 /*!
   @brief Quaternion inverse.
   \f[
@@ -323,8 +329,8 @@ Quaternion Quaternion::i() const
   where \f$q^{*}\f$ and \f$N(q)\f$ are the quaternion
   conjugate and the quaternion norm respectively.
 */
-{
-  return conjugate() / norm();
+{ 
+    return conjugate()/norm();
 }
 
 Quaternion Quaternion::exp() const
@@ -336,48 +342,50 @@ Quaternion Quaternion::exp() const
   is defined by \f$q = [\cos(\theta),v \sin(\theta)]\f$.
 */
 {
-  Quaternion q;
-  Real theta = sqrt(DotProduct(v_, v_)), sin_theta = sin(theta);
+   Quaternion q;
+   Real theta = sqrt(DotProduct(v_,v_)),
+                sin_theta = sin(theta);
 
-  q.s_ = cos(theta);
-  if (fabs(sin_theta) > EPSILON)
-    q.v_ = v_ * sin_theta / theta;
-  else
-    q.v_ = v_;
+   q.s_ = cos(theta);
+   if ( fabs(sin_theta) > EPSILON)
+      q.v_ = v_*sin_theta/theta;
+   else
+      q.v_ = v_;
 
-  return q;
+   return q;
 }
 
 Quaternion Quaternion::power(const Real t) const
 {
-  Quaternion q = (Log() * t).exp();
+   Quaternion q = (Log()*t).exp();
 
-  return q;
+   return q;
 }
 
-Quaternion Quaternion::Log() const
+Quaternion Quaternion::Log()const
 /*!
   @brief Logarithm of a unit quaternion.
 
-  The logarithm function of a unit quaternion
-  \f$q = [\cos(\theta), v \sin(\theta)]\f$ is defined as
-  \f$log(q) = [0, v\theta]\f$. The result is not necessary
+  The logarithm function of a unit quaternion 
+  \f$q = [\cos(\theta), v \sin(\theta)]\f$ is defined as 
+  \f$log(q) = [0, v\theta]\f$. The result is not necessary 
   a unit quaternion.
 */
 {
-  Quaternion q;
-  q.s_ = 0;
-  Real theta = acos(s_), sin_theta = sin(theta);
+   Quaternion q;
+   q.s_ = 0;
+   Real theta = acos(s_),
+                sin_theta = sin(theta);
 
-  if (fabs(sin_theta) > EPSILON)
-    q.v_ = v_ / sin_theta * theta;
-  else
-    q.v_ = v_;
+   if ( fabs(sin_theta) > EPSILON)
+      q.v_ = v_/sin_theta*theta;
+   else
+      q.v_ = v_;
 
-  return q;
+   return q;
 }
 
-Quaternion Quaternion::dot(const ColumnVector &w, const short sign) const
+Quaternion Quaternion::dot(const ColumnVector & w, const short sign)const
 /*!
   @brief Quaternion time derivative.
 
@@ -405,54 +413,54 @@ Quaternion Quaternion::dot(const ColumnVector &w, const short sign) const
   \f]
 */
 {
-  Quaternion q;
-  Matrix tmp;
+   Quaternion q;
+   Matrix tmp;
 
-  tmp = -0.5 * v_.t() * w;
-  q.s_ = tmp(1, 1);
-  q.v_ = 0.5 * E(sign) * w;
+   tmp = -0.5*v_.t()*w;
+   q.s_ = tmp(1,1);
+   q.v_ = 0.5*E(sign)*w;
 
-  return q;
+   return q;
 }
 
-ReturnMatrix Quaternion::E(const short sign) const
+ReturnMatrix Quaternion::E(const short sign)const
 /*!
   @brief Matrix E.
 
   See Quaternion::dot for explanation.
 */
 {
-  Matrix E(3, 3), I(3, 3);
-  I << threebythreeident;
+   Matrix E(3,3), I(3,3);
+   I << threebythreeident;
 
-  if (sign == BODY_FRAME)
-    E = s_ * I + x_prod_matrix(v_);
-  else
-    E = s_ * I - x_prod_matrix(v_);
+   if(sign == BODY_FRAME)
+      E = s_*I + x_prod_matrix(v_);
+   else
+      E = s_*I - x_prod_matrix(v_);
 
-  E.Release();
-  return E;
+   E.Release();
+   return E;
 }
 
-Real Quaternion::dot_prod(const Quaternion &q) const
+Real Quaternion::dot_prod(const Quaternion & q)const
 /*!
   @brief Quaternion dot product.
 
-  The dot product of quaternion is defined by
+  The dot product of quaternion is defined by  
   \f[
   q_1\cdot q_2 = s_1s_2 + v_1 \cdot v_2
   \f]
 */
 {
-  return (s_ * q.s_ + v_(1) * q.v_(1) + v_(2) * q.v_(2) + v_(3) * q.v_(3));
+   return (s_*q.s_ + v_(1)*q.v_(1) + v_(2)*q.v_(2) + v_(3)*q.v_(3));
 }
 
-ReturnMatrix Quaternion::R() const
+ReturnMatrix Quaternion::R()const
 /*!
   @brief Rotation matrix from a unit quaternion.
 
   \f$p'=qpq^{-1} = Rp\f$ where \f$p\f$ is a vector, \f$R\f$ a rotation
-  matrix and \f$q\f$ q quaternion. The rotation matrix obtained from a
+  matrix and \f$q\f$ q quaternion. The rotation matrix obtained from a 
   quaternion is then
   \f[
   R(s,v) = (s^2 - v^Tv)I + 2vv^T - 2s S(v)
@@ -463,173 +471,177 @@ ReturnMatrix Quaternion::R() const
     \begin{array}{ccc}
       s^2+v_1^2-v_2^2-v_3^2 & 2v_1v_2+2sv_3 & 2v_1v_3-2sv_2 \\
       2v_1v_2-2sv_3 & s^2-v_1^2+v_2^2-v_3^2 & 2v_2v_3+2sv_1 \\
-      2v_1v_3+2sv_2 &2v_2v_3-2sv_1 & s^2-v_1^2-v_2^2+v_3^2
+      2v_1v_3+2sv_2 &2v_2v_3-2sv_1 & s^2-v_1^2-v_2^2+v_3^2  
     \end{array}
    \right]
   \f]
   where \f$S(\cdot)\f$ is the cross product matrix defined by
   \f[
-    S(u) =
+    S(u) = 
      \left[
       \begin{array}{ccc}
         0 & -u_3 & u_2 \\
-  u_3 &0 & -u_1  \\
-  -u_2 & u_1 & 0 \\
+	u_3 &0 & -u_1  \\
+	-u_2 & u_1 & 0 \\
       \end{array}
      \right]
   \f]
 */
 {
-  Matrix R(3, 3);
-  R << threebythreeident;
-  R = (1 - 2 * DotProduct(v_, v_)) * R + 2 * v_ * v_.t() + 2 * s_ * x_prod_matrix(v_);
+   Matrix R(3,3);
+   R << threebythreeident;
+   R = (1 - 2*DotProduct(v_, v_))*R + 2*v_*v_.t() + 2*s_*x_prod_matrix(v_);
 
-  R.Release();
-  return R;
+   R.Release();
+   return R;
 }
 
-ReturnMatrix Quaternion::T() const
+ReturnMatrix Quaternion::T()const
 /*!
   @brief Transformation matrix from a quaternion.
 
   See Quaternion::R() for equations.
 */
 {
-  Matrix T(4, 4);
-  T << fourbyfourident;
-  T.SubMatrix(1, 3, 1, 3) =
-      (1 - 2 * DotProduct(v_, v_)) * T.SubMatrix(1, 3, 1, 3) + 2 * v_ * v_.t() + 2 * s_ * x_prod_matrix(v_);
-  T.Release();
-  return T;
+   Matrix T(4,4);
+   T << fourbyfourident;
+   T.SubMatrix(1,3,1,3) = (1 - 2*DotProduct(v_, v_))*T.SubMatrix(1,3,1,3)
+                          + 2*v_*v_.t() + 2*s_*x_prod_matrix(v_);
+   T.Release();
+   return T;
 }
 
 // -------------------------------------------------------------------------------------
 
-Quaternion operator*(const Real c, const Quaternion &q)
+Quaternion operator*(const Real c, const Quaternion & q)
 /*!
   @brief Overload * operator, multiplication by a scalar.
 
   \f$q = [s, v]\f$ and let \f$r \in R\f$. Then
   \f$rq = qr = [r, 0][s, v] = [rs, rv]\f$
 
-  The result is not necessarily a unit quaternion even if \f$q\f$
+  The result is not necessarily a unit quaternion even if \f$q\f$ 
   is a unit quaternions.
 */
 {
-  Quaternion out;
-  out.set_s(q.s() * c);
-  out.set_v(q.v() * c);
-  return out;
+    Quaternion out;
+    out.set_s(q.s() * c);
+    out.set_v(q.v() * c);
+   return out;
 }
 
-Quaternion operator*(const Quaternion &q, const Real c)
+Quaternion operator*(const Quaternion & q, const Real c)
 /*!
   @brief Overload * operator, multiplication by a scalar.
 */
 {
-  return operator*(c, q);
+   return operator*(c, q);
 }
 
-Quaternion operator/(const Real c, const Quaternion &q)
+
+Quaternion operator/(const Real c, const Quaternion & q)
 /*!
   @brief Overload / operator, division by a scalar.
 
   Same explanation as multiplication by scaler.
 */
 {
-  Quaternion out;
-  out.set_s(q.s() / c);
-  out.set_v(q.v() / c);
-  return out;
+    Quaternion out;
+    out.set_s(q.s() / c);
+    out.set_v(q.v() / c);
+   return out;
 }
 
-Quaternion operator/(const Quaternion &q, const Real c)
+Quaternion operator/(const Quaternion & q, const Real c)
 {
-  return operator/(c, q);
+    return operator/(c, q);
 }
 
-ReturnMatrix Omega(const Quaternion &q, const Quaternion &q_dot)
+ReturnMatrix Omega(const Quaternion & q, const Quaternion & q_dot)
 /*!
   @brief Return angular velocity from a quaternion and it's time derivative
 
   See Quaternion::dot for explanation.
 */
 {
-  Matrix A, B, M;
-  UpperTriangularMatrix U;
-  ColumnVector w(3);
-  A = 0.5 * q.E(BASE_FRAME);
-  B = q_dot.v();
-  if (A.Determinant())
-  {
-    QRZ(A, U);  // QR decomposition
-    QRZ(A, B, M);
-    w = U.i() * M;
-  }
-  else
-    w = 0;
+   Matrix A, B, M;
+   UpperTriangularMatrix U;
+   ColumnVector w(3);
+   A = 0.5*q.E(BASE_FRAME);
+   B = q_dot.v();
+   if(A.Determinant())
+   {
+      QRZ(A,U);             //QR decomposition
+      QRZ(A,B,M);
+      w = U.i()*M;
+   }
+   else
+      w = 0;
 
-  w.Release();
-  return w;
+   w.Release();
+   return w;
 }
 
-short Integ_quat(Quaternion &dquat_present, Quaternion &dquat_past, Quaternion &quat, const Real dt)
+short Integ_quat(Quaternion & dquat_present, Quaternion & dquat_past,
+                 Quaternion & quat, const Real dt)
 //! @brief Trapezoidal quaternion integration.
 {
-  if (dt < 0)
-  {
-    cerr << "Integ_Trap(quat1, quat2, dt): dt < 0. dt is set to 0." << endl;
-    return -1;
-  }
+   if (dt < 0)
+   {
+      cerr << "Integ_Trap(quat1, quat2, dt): dt < 0. dt is set to 0." << endl;
+      return -1;
+   }
 
-  // Quaternion algebraic constraint
-  //  Real Klambda = 0.5*(1 - quat.norm_sqr());
+   // Quaternion algebraic constraint
+   //  Real Klambda = 0.5*(1 - quat.norm_sqr());
 
-  dquat_present.set_s(dquat_present.s());  //+ Klambda*quat.s());
-  dquat_present.set_v(dquat_present.v());  //+ Klambda*quat.v());
+   dquat_present.set_s(dquat_present.s() );//+ Klambda*quat.s());
+   dquat_present.set_v(dquat_present.v() ); //+ Klambda*quat.v());
 
-  quat.set_s(quat.s() + Integ_Trap_quat_s(dquat_present, dquat_past, dt));
-  quat.set_v(quat.v() + Integ_Trap_quat_v(dquat_present, dquat_past, dt));
+   quat.set_s(quat.s() + Integ_Trap_quat_s(dquat_present, dquat_past, dt));
+   quat.set_v(quat.v() + Integ_Trap_quat_v(dquat_present, dquat_past, dt));
 
-  dquat_past.set_s(dquat_present.s());
-  dquat_past.set_v(dquat_present.v());
+   dquat_past.set_s(dquat_present.s());
+   dquat_past.set_v(dquat_present.v());
 
-  quat.unit();
+   quat.unit();
 
-  return 0;
+   return 0;
 }
 
-Real Integ_Trap_quat_s(const Quaternion &present, Quaternion &past, const Real dt)
+Real Integ_Trap_quat_s(const Quaternion & present, Quaternion & past,
+                       const Real dt)
 //! @brief Trapezoidal quaternion scalar part integration.
 {
-  Real integ = 0.5 * (present.s() + past.s()) * dt;
-  past.set_s(present.s());
-  return integ;
+   Real integ = 0.5*(present.s()+past.s())*dt;
+   past.set_s(present.s());
+   return integ;
 }
 
-ReturnMatrix Integ_Trap_quat_v(const Quaternion &present, Quaternion &past, const Real dt)
+ReturnMatrix Integ_Trap_quat_v(const Quaternion & present, Quaternion & past,
+                               const Real dt)
 //! @brief Trapezoidal quaternion vector part integration.
 {
-  ColumnVector integ = 0.5 * (present.v() + past.v()) * dt;
-  past.set_v(present.v());
-  integ.Release();
-  return integ;
+   ColumnVector integ = 0.5*(present.v()+past.v())*dt;
+   past.set_v(present.v());
+   integ.Release();
+   return integ;
 }
 
-Quaternion Slerp(const Quaternion &q0, const Quaternion &q1, const Real t)
+Quaternion Slerp(const Quaternion & q0, const Quaternion & q1, const Real t)
 /*!
   @brief Spherical Linear Interpolation.
 
   Cite_:Dam
 
-  The quaternion \f$q(t)\f$ interpolate the quaternions \f$q_0\f$
+  The quaternion \f$q(t)\f$ interpolate the quaternions \f$q_0\f$ 
   and \f$q_1\f$ given the parameter \f$t\f$ along the quaternion sphere.
   \f[
    q(t) = c_0(t)q_0 + c_1(t)q_1
   \f]
   where \f$c_0\f$ and \f$c_1\f$ are real functions with \f$0\leq t \leq 1\f$.
-  As \f$t\f$ varies between 0 and 1. the values \f$q(t)\f$ varies uniformly
-  along the circular arc from \f$q_0\f$ and \f$q_1\f$. The angle between
+  As \f$t\f$ varies between 0 and 1. the values \f$q(t)\f$ varies uniformly 
+  along the circular arc from \f$q_0\f$ and \f$q_1\f$. The angle between 
   \f$q(t)\f$ and \f$q_0\f$ is \f$\cos(t\theta)\f$ and the angle between
   \f$q(t)\f$ and \f$q_1\f$ is \f$\cos((1-t)\theta)\f$. Taking the dot product
   of \f$q(t)\f$ and \f$q_0\f$ yields
@@ -668,16 +680,17 @@ Quaternion Slerp(const Quaternion &q0, const Quaternion &q1, const Real t)
   by the interpolated rotations.
 */
 {
-  if ((t < 0) || (t > 1))
-    cerr << "Slerp(q0, q1, t): t < 0 or t > 1. t is set to 0." << endl;
+   if( (t < 0) || (t > 1) )
+      cerr << "Slerp(q0, q1, t): t < 0 or t > 1. t is set to 0." << endl;
 
-  if (q0.dot_prod(q1) >= 0)
-    return q0 * ((q0.i() * q1).power(t));
-  else
-    return q0 * ((q0.i() * -1 * q1).power(t));
+   if(q0.dot_prod(q1) >= 0)
+      return q0*((q0.i()*q1).power(t));
+   else
+      return  q0*((q0.i()*-1*q1).power(t));
 }
 
-Quaternion Slerp_prime(const Quaternion &q0, const Quaternion &q1, const Real t)
+Quaternion Slerp_prime(const Quaternion & q0, const Quaternion & q1,
+                       const Real t)
 /*!
   @brief Spherical Linear Interpolation derivative.
 
@@ -700,23 +713,24 @@ Quaternion Slerp_prime(const Quaternion &q0, const Quaternion &q1, const Real t)
 */
 
 {
-  if ((t < 0) || (t > 1))
-    cerr << "Slerp_prime(q0, q1, t): t < 0 or t > 1. t is set to 0." << endl;
+   if( (t < 0) || (t > 1) )
+      cerr << "Slerp_prime(q0, q1, t): t < 0 or t > 1. t is set to 0." << endl;
 
-  if (q0.dot_prod(q1) >= 0)
-    return Slerp(q0, q1, t) * (q0.i() * q1).Log();
-  else
-    return Slerp(q0, q1, t) * (q0.i() * -1 * q1).Log();
+   if(q0.dot_prod(q1) >= 0)
+      return Slerp(q0, q1, t)*(q0.i()*q1).Log();
+   else
+      return Slerp(q0, q1, t)*(q0.i()*-1*q1).Log();
 }
 
-Quaternion Squad(const Quaternion &p, const Quaternion &a, const Quaternion &b, const Quaternion &q, const Real t)
+Quaternion Squad(const Quaternion & p, const Quaternion & a, const Quaternion & b,
+                 const Quaternion & q, const Real t)
 /*!
   @brief Spherical Cubic Interpolation.
 
   Cite_: Dam
 
-  Let four quaternions be \f$q_i\f$ (p), \f$s_i\f$ (a), \f$s_{i+1}\f$ (b) and \f$q_{i+1}\f$
-  (q) be the ordered vertices of a quadrilateral. Obtain c from \f$q_i\f$ to \f$q_{i+1}\f$
+  Let four quaternions be \f$q_i\f$ (p), \f$s_i\f$ (a), \f$s_{i+1}\f$ (b) and \f$q_{i+1}\f$ 
+  (q) be the ordered vertices of a quadrilateral. Obtain c from \f$q_i\f$ to \f$q_{i+1}\f$ 
   interpolation. Obtain d from \f$s_i\f$ to \f$s_{i+1}\f$ interpolation. Obtain e,
   the final result, from c to d interpolation.
   \f[
@@ -728,13 +742,14 @@ Quaternion Squad(const Quaternion &p, const Quaternion &a, const Quaternion &b, 
   \f]
 */
 {
-  if ((t < 0) || (t > 1))
-    cerr << "Squad(p,a,b,q, t): t < 0 or t > 1. t is set to 0." << endl;
+   if( (t < 0) || (t > 1) )
+      cerr << "Squad(p,a,b,q, t): t < 0 or t > 1. t is set to 0." << endl;
 
-  return Slerp(Slerp(p, q, t), Slerp(a, b, t), 2 * t * (1 - t));
+   return Slerp(Slerp(p,q,t),Slerp(a,b,t),2*t*(1-t));
 }
 
-Quaternion Squad_prime(const Quaternion &p, const Quaternion &a, const Quaternion &b, const Quaternion &q, const Real t)
+Quaternion Squad_prime(const Quaternion & p, const Quaternion & a, const Quaternion & b,
+                       const Quaternion & q, const Real t)
 /*!
   @brief Spherical Cubic Interpolation derivative.
 
@@ -756,7 +771,7 @@ Quaternion Squad_prime(const Quaternion &p, const Quaternion &a, const Quaternio
   \f[
   \frac{d}{dt}(q(t))^{f(t)} = f'(t)(q(t))^{f(t)}log(q) + f(t)(q(t))^{f(t)-1}q'(t)
   \f]
-  Using these last three equations Squad derivative can be define. Let
+  Using these last three equations Squad derivative can be define. Let 
   \f$U(t)=Slerp(p,q,t)\f$, \f$V(t)=Slerp(q,b,t)\f$, \f$W(t)=U(t)^{-1}V(t)\f$. We then
   have \f$Squad(p,a,b,q,t)=Slerp(U(t),V(t),2t(1-t))=U(t)W(t)^{2t(1-t)}\f$
 
@@ -771,24 +786,34 @@ Quaternion Squad_prime(const Quaternion &p, const Quaternion &a, const Quaternio
     + U'\Big[W^{2t(1-t)} \Big]
   \f]
   where \f$U'=Ulog(p^{-1}q)\f$, \f$V'=Vlog(a^{-1},b)\f$, \f$W'=U^{-1}V'-U^{-2}U'V\f$
-
+  
 
   The result is not necessarily a unit quaternion even if all the input quaternions are unit.
 */
 {
-  if ((t < 0) || (t > 1))
-    cerr << "Squad_prime(p,a,b,q, t): t < 0 or t > 1. t is set to 0." << endl;
+   if( (t < 0) || (t > 1) )
+      cerr << "Squad_prime(p,a,b,q, t): t < 0 or t > 1. t is set to 0." << endl;
 
-  Quaternion q_squad, U = Slerp(p, q, t), V = Slerp(a, b, t), W = U.i() * V, U_prime = U * (p.i() * q).Log(),
-                      V_prime = V * (a.i() * b).Log(), W_prime = U.i() * V_prime - U.power(-2) * U_prime * V;
+   Quaternion q_squad,
+   U = Slerp(p, q, t),
+       V = Slerp(a, b, t),
+           W = U.i()*V,
+               U_prime = U*(p.i()*q).Log(),
+                         V_prime = V*(a.i()*b).Log(),
+                                   W_prime = U.i()*V_prime - U.power(-2)*U_prime*V;
 
-  q_squad = U * (W.power(2 * t * (1 - t)) * W.Log() * (2 - 4 * t) +
-                 W.power(2 * t * (1 - t) - 1) * W_prime * 2 * t * (1 - t)) +
-            U_prime * (W.power(2 * t * (1 - t)));
+   q_squad = U*( W.power(2*t*(1-t))*W.Log()*(2-4*t) + W.power(2*t*(1-t)-1)*W_prime*2*t*(1-t) )
+             + U_prime*( W.power(2*t*(1-t)) );
 
-  return q_squad;
+   return q_squad;
 }
 
 #ifdef use_namespace
 }
 #endif
+
+
+
+
+
+

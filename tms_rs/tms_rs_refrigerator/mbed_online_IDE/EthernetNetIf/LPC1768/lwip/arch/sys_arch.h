@@ -11,8 +11,8 @@ typedef unsigned int u32_t;
 extern "C" {
 #endif
 
-// DG 2010
-void sys_init(void);     /* To be called first */
+//DG 2010
+void sys_init(void); /* To be called first */
 u32_t sys_jiffies(void); /* since power up. */
 
 /** Returns the current time in milliseconds,
@@ -22,5 +22,6 @@ u32_t sys_now(void);
 #ifdef __cplusplus
 }
 #endif
+
 
 #endif /* __LWIP_ARCH_CC_H__ */

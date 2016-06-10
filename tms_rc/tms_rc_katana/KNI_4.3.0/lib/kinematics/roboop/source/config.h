@@ -37,7 +37,7 @@ Revision_history:
    -Added clear function. Suggested by Sylvain Marleau.
 
 2004/08/10: Etienne Lachance
-   -Removed select_real and add_real functions in order to make config.h/cpp
+   -Removed select_real and add_real functions in order to make config.h/cpp 
     independent of ROBOOP.
    -Removed using ROBOOP namespace
 
@@ -60,9 +60,10 @@ Revision_history:
 //! @brief RCS/CVS version.
 static const char header_config_rcsid[] = "$Id: config.h,v 1.18 2006/05/16 19:24:26 gourdeau Exp $";
 
+
 #ifdef _MSC_VER                  // Microsoft
-#pragma warning(disable : 4786)  // Disable decorated name truncation warnings
-#pragma warning(disable : 4503)  // Disable decorated name truncation warnings
+#pragma warning (disable:4786)  // Disable decorated name truncation warnings 
+#pragma warning (disable:4503)  // Disable decorated name truncation warnings 
 #endif
 #include <iostream>
 #include <string>
@@ -74,116 +75,120 @@ static const char header_config_rcsid[] = "$Id: config.h,v 1.18 2006/05/16 19:24
 #include <sstream>
 #include <vector>
 
+
 //! @brief Return when can not open file.
-#define CAN_NOT_OPEN_FILE -1
+#define CAN_NOT_OPEN_FILE                     -1
 
 //! @brief Return when can not create a file.
-#define CAN_NOT_CREATE_FILE -2
+#define CAN_NOT_CREATE_FILE                   -2
+
 
 //! @brief Basic data element used in Config class.
-typedef struct Data
-{
-  std::string section;
-  std::string parameter;
-  std::string value;
+typedef struct Data{
+   std::string section;
+   std::string parameter;
+   std::string value;
 } Data;
 
 //! @brief Configuration data type.
 typedef std::vector< Data > Conf_data;
 
 //! @brief Handle configuration files.
-class Config
-{
+class Config {
+
 public:
-  Config(const bool bPrintErrorMessages = true);
-  short read_conf(std::ifstream &inconffile);
-  void clear();
-  void print();
+    Config(const bool bPrintErrorMessages = true);
+    short read_conf(std::ifstream & inconffile);
+    void clear();
+    void print();
 
-  bool section_exists(const std::string &section) const;
-  bool parameter_exists(const std::string &section, const std::string &parameter) const;
+    bool section_exists(const std::string & section) const;
+    bool parameter_exists(const std::string & section, const std::string & parameter) const;
 
-  template < typename T >
-  bool select(const std::string &section, const std::string &parameter, T &value) const
-  /*!
-      @brief Get a parameter data, of a certain section, into the string value.
-      @return false if the data can not be found and true otherwise.
-  */
-  {
-    for (Conf_data::const_iterator iter = conf.begin(); iter != conf.end(); ++iter)
+
+    template<typename T> bool select(const std::string & section, const std::string & parameter,
+                                     T & value) const
+    /*!
+        @brief Get a parameter data, of a certain section, into the string value.
+        @return false if the data can not be found and true otherwise.
+    */
     {
-      if ((iter->section == section) && (iter->parameter == parameter))
-      {
+        for(Conf_data::const_iterator iter = conf.begin(); iter != conf.end(); ++iter)
+        {
+            if( (iter->section == section) && (iter->parameter == parameter) )
+            {
+                try
+                {
+                    value = boost::lexical_cast<T>(iter->value);
+                }
+                catch (boost::bad_lexical_cast & e)
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    short write_conf(std::ofstream & outconffile, const std::string & file_title,
+                     const int space_between_column);
+
+    template <typename T> bool add(const std::string & section, const std::string & parameter, 
+                                   const T & value)
+    /*!
+        @brief Added the value(string) of the parameter in the section in the 
+               configuration data.
+        The functions will added the parameter and the section if it does not already exist.
+     */
+    {
+        Data dataSet;
+        dataSet.section = section;
+        dataSet.parameter = parameter;
         try
         {
-          value = boost::lexical_cast< T >(iter->value);
+            dataSet.value = boost::lexical_cast<std::string>(value);
         }
-        catch (boost::bad_lexical_cast &e)
+        catch (boost::bad_lexical_cast & e)
         {
-          return false;
-        }
-        return true;
-      }
-    }
-    return false;
-  }
-
-  short write_conf(std::ofstream &outconffile, const std::string &file_title, const int space_between_column);
-
-  template < typename T >
-  bool add(const std::string &section, const std::string &parameter, const T &value)
-  /*!
-      @brief Added the value(string) of the parameter in the section in the
-             configuration data.
-      The functions will added the parameter and the section if it does not already exist.
-   */
-  {
-    Data dataSet;
-    dataSet.section = section;
-    dataSet.parameter = parameter;
-    try
-    {
-      dataSet.value = boost::lexical_cast< std::string >(value);
-    }
-    catch (boost::bad_lexical_cast &e)
-    {
-      return false;
-    }
-
-    for (Conf_data::iterator iterConf = conf.begin(); iterConf != conf.end(); ++iterConf)
-    {
-      if (section == iterConf->section)  // section already exist
-      {
-        if (parameter == iterConf->parameter)  // parameter already exist
-        {
-          try
-          {
-            iterConf->value = boost::lexical_cast< std::string >(value);
-          }
-          catch (boost::bad_lexical_cast &e)
-          {
             return false;
-          }
         }
-        // parameter does not exist
-        for (Conf_data::iterator iterConf2 = iterConf; iterConf2 != conf.end(); ++iterConf2)
+
+        for(Conf_data::iterator iterConf = conf.begin(); iterConf != conf.end(); ++iterConf)
         {
-          if (section != iterConf2->section)
-          {
-            conf.insert(iterConf2, dataSet);
-            return true;
-          }
+            if(section == iterConf->section) // section already exist
+            {
+                if(parameter == iterConf->parameter) // parameter already exist
+                {
+                    try
+                    {
+                        iterConf->value = boost::lexical_cast<std::string>(value);
+                    }
+                    catch (boost::bad_lexical_cast & e)
+                    {
+                        return false;
+                    }
+                }
+                // parameter does not exist
+                for(Conf_data::iterator iterConf2 = iterConf; iterConf2 != conf.end(); ++iterConf2)
+                {
+                    if(section != iterConf2->section)
+                    {
+                        conf.insert(iterConf2, dataSet);
+                        return true;
+                    }
+                }
+            }
         }
-      }
+        // section and parameter does not exist.
+        conf.push_back(dataSet);
+        return true;
     }
-    // section and parameter does not exist.
-    conf.push_back(dataSet);
-    return true;
-  }
 
 private:
-  Conf_data conf;            //!< Data store from/to configuration file.
-  bool bPrintErrorMessages;  //!< Print error messages on stderr.
+   Conf_data conf;            //!< Data store from/to configuration file.
+   bool bPrintErrorMessages;  //!< Print error messages on stderr. 
 };
 
-#endif
+#endif 
+

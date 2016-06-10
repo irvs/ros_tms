@@ -63,12 +63,10 @@ pthread_t thread_pub;
 pthread_mutex_t mutex_update_kalman = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_socket = PTHREAD_MUTEX_INITIALIZER;
 
-class MachinePose_s
-{
-private:
-public:
-  MachinePose_s()
-  {
+class MachinePose_s {
+ private:
+ public:
+  MachinePose_s() {
     ROS_DEBUG("In Mimamorukun Constructor");
     this->pos_vicon.x = 0.0;
     this->pos_vicon.y = 0.0;
@@ -90,10 +88,7 @@ public:
     this->vel_fusioned.theta = 0.0;
     kalman = new Kalman(6, 3, 3);
   };
-  ~MachinePose_s()
-  {
-    delete kalman;
-  };
+  ~MachinePose_s() { delete kalman; };
   void updateOdom();
   void updateVicon();
   void updateCompFilter();
@@ -122,45 +117,19 @@ public:
   // bool goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/);
 
   Kalman *kalman;
-  enum InfoType
-  {
-    VELOCITY,
-    POSISION
-  };
+  enum InfoType { VELOCITY, POSISION };
   geometry_msgs::Pose2D UpdatePosition(geometry_msgs::Pose2D tpose, InfoType Info);
 } mchn_pose;
 
-int Dist2Pulse(int dist)
-{
-  return ((float)dist) / DIST_PER_PULSE;
-}
-int Pulse2Dist(int pulse)
-{
-  return ((float)pulse) * DIST_PER_PULSE;
-}
-double Rad2Deg(double rad)
-{
-  return rad * (180.0) / M_PI;
-}
-double Deg2Rad(double deg)
-{
-  return deg * M_PI / 180.0;
-}
+int Dist2Pulse(int dist) { return ((float)dist) / DIST_PER_PULSE; }
+int Pulse2Dist(int pulse) { return ((float)pulse) * DIST_PER_PULSE; }
+double Rad2Deg(double rad) { return rad * (180.0) / M_PI; }
+double Deg2Rad(double deg) { return deg * M_PI / 180.0; }
 // double Deg2Rad(double deg) { return deg * 3 / 180.0; }
-double MM2M(double mm)
-{
-  return mm * 0.001;
-}
-double M2MM(double M)
-{
-  return M * 1000;
-}
-double sqr(double val)
-{
-  return pow(val, 2);
-}
-double Limit(double val, double max, double min)
-{
+double MM2M(double mm) { return mm * 0.001; }
+double M2MM(double M) { return M * 1000; }
+double sqr(double val) { return pow(val, 2); }
+double Limit(double val, double max, double min) {
   if (val > max)
     return max;
   else if (min > val)
@@ -168,41 +137,33 @@ double Limit(double val, double max, double min)
   else
     return val;
 }
-double nomalizeAng(double rad)
-{
-  while (rad > M_PI)
-  {  //角度を-180°~180°(-π~π)の範囲に合わせる
+double nomalizeAng(double rad) {
+  while (rad > M_PI) {  //角度を-180°~180°(-π~π)の範囲に合わせる
     rad = rad - (2 * M_PI);
   }
-  while (rad < -M_PI)
-  {
+  while (rad < -M_PI) {
     rad = rad + (2 * M_PI);
   }
   return rad;
 }
 
-void MachinePose_s::updateVicon()
-{
+void MachinePose_s::updateVicon() {
   tms_msg_db::TmsdbGetData srv;
   srv.request.tmsdb.id = 2007;
   srv.request.tmsdb.sensor = 3001;
-  if (!db_client.call(srv))
-  {
+  if (!db_client.call(srv)) {
     ROS_ERROR("Failed to get vicon data from DB via tms_db_reader");
-  }
-  else if (srv.response.tmsdb.empty())
-  {
+  } else if (srv.response.tmsdb.empty()) {
     ROS_ERROR("DB response empty");
-  }
-  else
-  {
-    boost::posix_time::ptime set_time = boost::posix_time::time_from_string(srv.response.tmsdb[0].time);
+  } else {
+    boost::posix_time::ptime set_time =
+        boost::posix_time::time_from_string(srv.response.tmsdb[0].time);
     ros::Time ros_now = ros::Time::now() + ros::Duration(9 * 60 * 60);
     boost::posix_time::ptime now = ros_now.toBoost();
     // cout << "time:" << now-set_time << "\n";
     // cout << "3sec:" << boost::posix_time::time_duration(0,0,3,0) << "\n";
-    if (boost::posix_time::time_duration(0, 0, 3, 0) > now - set_time)
-    {  // check if data is fresh (in last 3sec)
+    if (boost::posix_time::time_duration(0, 0, 3, 0) >
+        now - set_time) {  // check if data is fresh (in last 3sec)
       this->pos_vicon.x = srv.response.tmsdb[0].x;
       this->pos_vicon.y = srv.response.tmsdb[0].y;
       this->pos_vicon.theta = Deg2Rad(srv.response.tmsdb[0].ry);
@@ -211,8 +172,7 @@ void MachinePose_s::updateVicon()
   return;
 }
 
-void MachinePose_s::updateOdom()
-{
+void MachinePose_s::updateOdom() {
   // update Encoder value
   long int tmpENC_L = 0;
   long int tmpENC_R = 0;
@@ -237,10 +197,8 @@ void MachinePose_s::updateOdom()
   static long int ENC_L_old = 0;
   double detLp /*,r , dX ,dY,dL*/;
 
-  if (fabs(ENC_L - ENC_L_old) > ENC_MAX / 2)
-    ENC_L_old -= ENC_MAX + 1;
-  if (fabs(ENC_R - ENC_R_old) > ENC_MAX / 2)
-    ENC_R_old -= ENC_MAX + 1;
+  if (fabs(ENC_L - ENC_L_old) > ENC_MAX / 2) ENC_L_old -= ENC_MAX + 1;
+  if (fabs(ENC_R - ENC_R_old) > ENC_MAX / 2) ENC_R_old -= ENC_MAX + 1;
 
   //エンコーダーの位置での前回からの移動距離dL_R,dL_Lを算出
   double dL_L = (double)(ENC_L - ENC_L_old) * (-DIST_PER_PULSE);
@@ -270,8 +228,7 @@ void MachinePose_s::updateOdom()
  *   arg_speed: forward speed   [mm/sec]
  *   arg_theta: CCW turn speed  [radian/sec]
  * ----------------------------------*/
-void spinWheel(/*double arg_speed, double arg_theta*/)
-{
+void spinWheel(/*double arg_speed, double arg_theta*/) {
   double arg_speed = mchn_pose.tgtTwist.linear.x;
   double arg_theta = mchn_pose.tgtTwist.angular.z;
   // ROS_INFO("X:%4.2f   Theta:%4.2f",arg_speed,arg_theta);
@@ -281,8 +238,8 @@ void spinWheel(/*double arg_speed, double arg_theta*/)
   val_R = (int)Limit(val_R, (double)SPEED_MAX, (double)-SPEED_MAX);
   printf("val_L:%2.f   val_R:%2.f", val_L, val_R);
 
-  string cmd_L = boost::lexical_cast< string >(val_L);
-  string cmd_R = boost::lexical_cast< string >(val_R);
+  string cmd_L = boost::lexical_cast<string>(val_L);
+  string cmd_R = boost::lexical_cast<string>(val_R);
 
   string message;
   message = "@SS1," + cmd_L + "@SS2," + cmd_R;
@@ -301,15 +258,13 @@ void spinWheel(/*double arg_speed, double arg_theta*/)
 //     mchn_pose.tgtPose = *cmd_pose;
 // }
 
-bool receiveGoalPose(tms_msg_rc::rc_robot_control::Request &req, tms_msg_rc::rc_robot_control::Response &res)
-{
-  if (1 != req.unit)
-  {                  // Is not vicle unit
-    res.result = 0;  // SRV_UNIT_ERR;
+bool receiveGoalPose(tms_msg_rc::rc_robot_control::Request &req,
+                     tms_msg_rc::rc_robot_control::Response &res) {
+  if (1 != req.unit) {  // Is not vicle unit
+    res.result = 0;     // SRV_UNIT_ERR;
     return true;
   }
-  if (15 != req.cmd)
-  {
+  if (15 != req.cmd) {
     res.result = 0;  // SRV_CMD_ERR;
     return true;
   }
@@ -321,8 +276,7 @@ bool receiveGoalPose(tms_msg_rc::rc_robot_control::Request &req, tms_msg_rc::rc_
   // }
   // ros::Rate r(4);
   ros::Rate r(ROS_RATE);
-  while (ros::ok())
-  {
+  while (ros::ok()) {
     ROS_DEBUG("doing goPose");
     printf("pos x:%4.2lf y:%4.2lf th:%4.2lf     \n", mchn_pose.pos_vicon.x, mchn_pose.pos_vicon.y,
            Rad2Deg(mchn_pose.pos_vicon.theta));
@@ -332,8 +286,7 @@ bool receiveGoalPose(tms_msg_rc::rc_robot_control::Request &req, tms_msg_rc::rc_
     mchn_pose.updateVicon();
     spinWheel();
     mchn_pose.postPose();
-    if (isArrived)
-      break;
+    if (isArrived) break;
     r.sleep();
   }
   // while(1){
@@ -362,34 +315,27 @@ bool receiveGoalPose(tms_msg_rc::rc_robot_control::Request &req, tms_msg_rc::rc_
 // }
 
 bool is_human_detected = false;
-void HumanTrackerCallback(const visualization_msgs::MarkerArray::ConstPtr &arg)
-{
+void HumanTrackerCallback(const visualization_msgs::MarkerArray::ConstPtr &arg) {
   is_human_detected = !arg->markers.empty();
-  if (is_human_detected)
-  {
+  if (is_human_detected) {
     mchn_pose.tgtTwist.linear.x = 0.0;
     mchn_pose.tgtTwist.angular.z = 0.0;
   }
 }
 
-void receiveJoy(const sensor_msgs::Joy::ConstPtr &joy)
-{
+void receiveJoy(const sensor_msgs::Joy::ConstPtr &joy) {
   // ROS_INFO("Rrecieve joy");
-  if (is_human_detected)
-  {
+  if (is_human_detected) {
     ROS_INFO("human detected!!");
     mchn_pose.tgtTwist.linear.x = 0.0;
     mchn_pose.tgtTwist.angular.z = 0.0;
-  }
-  else
-  {
+  } else {
     mchn_pose.tgtTwist.linear.x = joy->axes[1] * 300;   // 600;
     mchn_pose.tgtTwist.angular.z = joy->axes[3] * 0.7;  // 1;
   }
 }
 
-bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/)
-{
+bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/) {
   // original PID feedback on error of Angle and Distance
   const double KPang = TURN_KP;  // 1.0;
   const double KDang = 0;
@@ -406,8 +352,7 @@ bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/)
   // double errorNY = errorX * sin(-theta) +  errorY * cos(-theta);
   double errorNT = nomalizeAng(targetT - theta);
 
-  if (this->tgtPose.x == 0.0 && this->tgtPose.y == 0.0)
-  {  // mokutekiti
+  if (this->tgtPose.x == 0.0 && this->tgtPose.y == 0.0) {  // mokutekiti
     errorNX /*= errorNY */ = errorNT = 0.0;
   }
   double tmp_spd = KPdist * errorNX;
@@ -416,22 +361,18 @@ bool MachinePose_s::goPose(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/)
   tmp_turn = Limit(tmp_turn, 30, -30);
   double distance = sqrt(sqr(errorX) + sqr(errorY));
   printf("spd:%+8.2lf turn:%+4.1lf", tmp_spd, tmp_turn);
-  if (distance <= ARV_DIST /* && 60>fabs(Rad2Deg(errorNT))*/)
-  {
+  if (distance <= ARV_DIST /* && 60>fabs(Rad2Deg(errorNT))*/) {
     this->tgtTwist.angular.z = 0;
     this->tgtTwist.linear.x = 0;
     return true;
-  }
-  else
-  {
+  } else {
     this->tgtTwist.angular.z = Deg2Rad(tmp_turn);
     this->tgtTwist.linear.x = tmp_spd;
     return false;
   }
 }
 
-bool MachinePose_s::postPose()
-{
+bool MachinePose_s::postPose() {
   // @todo publish pose data
   /*    tms_msg_db::TmsdbStamped db_msg;
       tms_msg_db::Tmsdb tmpData;
@@ -456,15 +397,12 @@ bool MachinePose_s::postPose()
   return true;
 }
 
-void *vicon_update(void *ptr)
-{
+void *vicon_update(void *ptr) {
   // ros::Rate r(30);
   ros::Rate r(ROS_RATE);
-  while (ros::ok())
-  {
+  while (ros::ok()) {
     mchn_pose.updateVicon();
-    if (1000 < mchn_pose.pos_vicon.x && 1000 < mchn_pose.pos_vicon.y)
-    {
+    if (1000 < mchn_pose.pos_vicon.x && 1000 < mchn_pose.pos_vicon.y) {
       pthread_mutex_lock(&mutex_update_kalman);
       mchn_pose.UpdatePosition(mchn_pose.pos_vicon, MachinePose_s::POSISION);
       pthread_mutex_unlock(&mutex_update_kalman);
@@ -473,12 +411,10 @@ void *vicon_update(void *ptr)
   }
 }
 
-void *odom_update(void *ptr)
-{
+void *odom_update(void *ptr) {
   // ros::Rate r(30);
   ros::Rate r(ROS_RATE);
-  while (ros::ok())
-  {
+  while (ros::ok()) {
     mchn_pose.updateOdom();
     pthread_mutex_lock(&mutex_update_kalman);
     mchn_pose.UpdatePosition(mchn_pose.vel_odom, MachinePose_s::VELOCITY);
@@ -487,16 +423,14 @@ void *odom_update(void *ptr)
   }
 }
 
-void *publish_pose(void *ptr)
-{
+void *publish_pose(void *ptr) {
   static ros::NodeHandle nh("~");
-  static ros::Publisher pub = nh.advertise< geometry_msgs::PoseStamped >("kalman_pose", 1);
+  static ros::Publisher pub = nh.advertise<geometry_msgs::PoseStamped>("kalman_pose", 1);
   geometry_msgs::PoseStamped p;
   p.header.frame_id = "/odom";
   p.pose.position.z = 0;
   ros::Rate r(ROS_RATE);
-  while (ros::ok())
-  {
+  while (ros::ok()) {
     p.pose.position.x = mchn_pose.pos_vicon.x;
     p.pose.position.y = mchn_pose.pos_vicon.y;
     p.pose.orientation = tf::createQuaternionMsgFromYaw(mchn_pose.pos_vicon.theta);
@@ -506,8 +440,7 @@ void *publish_pose(void *ptr)
   }
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   ROS_INFO("wc_controller");
   ros::init(argc, argv, "wc_controller");
   ros::NodeHandle n;
@@ -516,49 +449,43 @@ int main(int argc, char **argv)
   string s_Kp_, s_Ki_, s_Kd_;
   ros::NodeHandle nh_param("~");
   string tmp_ip;
-  nh_param.param< string >("IP_ADDR", tmp_ip, "192.168.11.99");
-  nh_param.param< int >("spin_Kp", Kp_, 4800);
-  nh_param.param< int >("spin_Ki", Ki_, /*30*/ 100);
-  nh_param.param< int >("spin_Kd", Kd_, 40000);
-  nh_param.param< double >("spd_Kp", SPD_KP, 2.0);
-  nh_param.param< double >("turn_Kp", TURN_KP, 1.0);
-  nh_param.param< int >("arv_dist", ARV_DIST, 200);
+  nh_param.param<string>("IP_ADDR", tmp_ip, "192.168.11.99");
+  nh_param.param<int>("spin_Kp", Kp_, 4800);
+  nh_param.param<int>("spin_Ki", Ki_, /*30*/ 100);
+  nh_param.param<int>("spin_Kd", Kd_, 40000);
+  nh_param.param<double>("spd_Kp", SPD_KP, 2.0);
+  nh_param.param<double>("turn_Kp", TURN_KP, 1.0);
+  nh_param.param<int>("arv_dist", ARV_DIST, 200);
   // acces like "mimamorukun_controller/spd_Kp"
   client_socket.init(tmp_ip, 54300);
-  s_Kp_ = boost::lexical_cast< string >(Kp_);
-  s_Ki_ = boost::lexical_cast< string >(Ki_);
-  s_Kd_ = boost::lexical_cast< string >(Kd_);
+  s_Kp_ = boost::lexical_cast<string>(Kp_);
+  s_Ki_ = boost::lexical_cast<string>(Ki_);
+  s_Kd_ = boost::lexical_cast<string>(Kd_);
 
   ros::NodeHandle nh;
   ros::Subscriber sub = nh.subscribe("/visualization_marker_array", 100, HumanTrackerCallback);
 
-  try
-  {
+  try {
     string reply;
-    try
-    {
+    try {
       // koyuusinndou 3Hz at Kp = 8000
       // client_socket << "@CR1@CR2@SM1,1@SM2,1@PP1,50@PP2,50@PI1,100@PI2,100@PD1,10@PD2,10";
-      client_socket << "@CR1@CR2@SM1,1@SM2,1@PP1," + s_Kp_ + "@PP2," + s_Kp_ + "@PI1," + s_Ki_ + "@PI2," + s_Ki_ +
-                           "@PD1," + s_Kd_ + "@PD2," + s_Kd_;
+      client_socket << "@CR1@CR2@SM1,1@SM2,1@PP1," + s_Kp_ + "@PP2," + s_Kp_ + "@PI1," + s_Ki_ +
+                           "@PI2," + s_Ki_ + "@PD1," + s_Kd_ + "@PD2," + s_Kd_;
       client_socket >> reply;
-    }
-    catch (SocketException &)
-    {
+    } catch (SocketException &) {
     }
     cout << "Response:" << reply << "\n";
     ;
-  }
-  catch (SocketException &e)
-  {
+  } catch (SocketException &e) {
     cout << "Exception was caught:" << e.description() << "\n";
   }
 
-  db_client = n.serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader/dbreader");
+  db_client = n.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader/dbreader");
   // db_pub    = nh2.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data", 10);
   // ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Twist>("/cmd_vel", 1,
   // receiveCmdVel);
-  ros::Subscriber cmd_vel_sub = n.subscribe< sensor_msgs::Joy >("/joy", 1, receiveJoy);
+  ros::Subscriber cmd_vel_sub = n.subscribe<sensor_msgs::Joy>("/joy", 1, receiveJoy);
   // ros::Subscriber cmd_vel_sub = n.subscribe<geometry_msgs::Pose2D>("/mkun_goal_pose", 1,
   // receiveGoalPose);
   ros::ServiceServer service = n.advertiseService("mkun_goal_pose", receiveGoalPose);
@@ -567,31 +494,27 @@ int main(int argc, char **argv)
       last_time       = ros::Time::now();*/
 
   mchn_pose.updateVicon();
-  printf("initial val  x:%4.2lf y:%4.2lf th:%4.2lf\n\r", mchn_pose.pos_vicon.x, mchn_pose.pos_vicon.y,
-         Rad2Deg(mchn_pose.pos_vicon.theta));
+  printf("initial val  x:%4.2lf y:%4.2lf th:%4.2lf\n\r", mchn_pose.pos_vicon.x,
+         mchn_pose.pos_vicon.y, Rad2Deg(mchn_pose.pos_vicon.theta));
   mchn_pose.setCurrentPosition(mchn_pose.pos_vicon);
 
-  if (pthread_create(&thread_vicon, NULL, vicon_update, NULL))
-  {
+  if (pthread_create(&thread_vicon, NULL, vicon_update, NULL)) {
     cout << "error creating thread." << endl;
     abort();
   }
 
-  if (pthread_create(&thread_odom, NULL, odom_update, NULL))
-  {
+  if (pthread_create(&thread_odom, NULL, odom_update, NULL)) {
     cout << "error creating thread." << endl;
     abort();
   }
 
-  if (pthread_create(&thread_pub, NULL, publish_pose, NULL))
-  {
+  if (pthread_create(&thread_pub, NULL, publish_pose, NULL)) {
     cout << "error creating thread." << endl;
     abort();
   }
 
   ros::Rate r(ROS_RATE);
-  while (n.ok())
-  {
+  while (n.ok()) {
     spinWheel(/*joy_cmd_spd,joy_cmd_turn*/);
 
     //        mchn_pose.goPose();
@@ -613,8 +536,8 @@ int main(int argc, char **argv)
 }
 
 /*****************************************************************************************************/
-geometry_msgs::Pose2D MachinePose_s::UpdatePosition(geometry_msgs::Pose2D tpose, MachinePose_s::InfoType Info)
-{
+geometry_msgs::Pose2D MachinePose_s::UpdatePosition(geometry_msgs::Pose2D tpose,
+                                                    MachinePose_s::InfoType Info) {
   static int count = 0;
   static double posA[6][6];  // 位置の状態行列
   static double velA[6][6];  // 速度の状態行列
@@ -622,11 +545,9 @@ geometry_msgs::Pose2D MachinePose_s::UpdatePosition(geometry_msgs::Pose2D tpose,
   static double velC[3][6];  // 速度の観測行列
   // Kalman kalman(6,3,3); //状態、観測、入力変数。順にn,m,l
 
-  if (kalman == NULL)
-    return pos_fusioned;
+  if (kalman == NULL) return pos_fusioned;
 
-  if (count == 0)
-  {
+  if (count == 0) {
     // 初期化 (システム雑音，観測雑音，積分時間)
     kalman->init(0.1, 0.1, 1.0);
     kalman->setX(0, pos_fusioned.x);
@@ -637,24 +558,18 @@ geometry_msgs::Pose2D MachinePose_s::UpdatePosition(geometry_msgs::Pose2D tpose,
     memset(posC, 0, sizeof(posC));
     memset(velC, 0, sizeof(velC));
 
-    for (int i = 0; i < 6; i++)
-      posA[i][i] = 1.0;
-    for (int i = 0; i < 6; i++)
-      velA[i][i] = 1.0;
-    for (int i = 0; i < 3; i++)
-      velA[i][i + 3] = 1.0;
-    for (int i = 0; i < 3; i++)
-      posC[i][i] = 1.0;
-    for (int i = 0; i < 3; i++)
-      velC[i][i + 3] = 1.0;
+    for (int i = 0; i < 6; i++) posA[i][i] = 1.0;
+    for (int i = 0; i < 6; i++) velA[i][i] = 1.0;
+    for (int i = 0; i < 3; i++) velA[i][i + 3] = 1.0;
+    for (int i = 0; i < 3; i++) posC[i][i] = 1.0;
+    for (int i = 0; i < 3; i++) velC[i][i + 3] = 1.0;
   }
 
   // 観測値のセット
   double obs[3] = {tpose.x, tpose.y, tpose.theta};
   double input[3] = {0, 0, 0};
 
-  switch (Info)
-  {
+  switch (Info) {
     case MachinePose_s::POSISION:
       // 位置を観測する場合
       kalman->setA((double *)&posA);
@@ -682,45 +597,21 @@ geometry_msgs::Pose2D MachinePose_s::UpdatePosition(geometry_msgs::Pose2D tpose,
   return pos_fusioned;
 }
 
-void MachinePose_s::setCurrentPosition(geometry_msgs::Pose2D pose)
-{
-  pos_fusioned = pose;
-}
+void MachinePose_s::setCurrentPosition(geometry_msgs::Pose2D pose) { pos_fusioned = pose; }
 
-geometry_msgs::Pose2D MachinePose_s::getCurrentPosition()
-{
-  return pos_fusioned;
-}
+geometry_msgs::Pose2D MachinePose_s::getCurrentPosition() { return pos_fusioned; }
 
-double MachinePose_s::getCurrentPositionX()
-{
-  return pos_fusioned.x;
-}
+double MachinePose_s::getCurrentPositionX() { return pos_fusioned.x; }
 
-double MachinePose_s::getCurrentPositionY()
-{
-  return pos_fusioned.y;
-}
+double MachinePose_s::getCurrentPositionY() { return pos_fusioned.y; }
 
-double MachinePose_s::getCurrentTheta()
-{
-  return pos_fusioned.theta;
-}
+double MachinePose_s::getCurrentTheta() { return pos_fusioned.theta; }
 
-double MachinePose_s::getCurrentVelocityX()
-{
-  return vel_fusioned.x;
-}
+double MachinePose_s::getCurrentVelocityX() { return vel_fusioned.x; }
 
-double MachinePose_s::getCurrentVelocityY()
-{
-  return vel_fusioned.y;
-}
+double MachinePose_s::getCurrentVelocityY() { return vel_fusioned.y; }
 
-double MachinePose_s::getCurrentOmega()
-{
-  return vel_fusioned.theta;
-}
+double MachinePose_s::getCurrentOmega() { return vel_fusioned.theta; }
 
 // bool MachinePose_s::goPose2(/*const geometry_msgs::Pose2D::ConstPtr& cmd_pose*/) {
 //     /* Kanayama, Y.; Kimura, Y.; Miyazaki, F.; Noguchi, T.; ,

@@ -6,7 +6,7 @@
 // @version: Ver0.0.4 (since 2015.07.22)
 // @date   : 2015.08.26
 //------------------------------------------------------------------------------
-// include for ROS
+//include for ROS
 #include <ros/ros.h>
 #include <unistd.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -16,7 +16,7 @@
 #include <sensor_msgs/JointState.h>
 #include <tms_msg_ss/SkeletonArray.h>
 
-// include for std
+//include for std
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -39,7 +39,7 @@ using namespace boost;
 //------------------------------------------------------------------------------
 class DbStatePublisher
 {
-  //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 private:
   // ROS NodeHandle
   ros::NodeHandle nh;
@@ -49,8 +49,8 @@ private:
   // ROS Topic Subscriber
   ros::Subscriber data_sub;
   // ROS Topic Publisher
-  ros::Publisher state_pub;
-  ros::Publisher skeleton_pub;
+  ros::Publisher  state_pub;
+  ros::Publisher  skeleton_pub;
 
   ros::ServiceClient get_data_client_;
   tf::TransformBroadcaster br;
@@ -58,16 +58,18 @@ private:
 
   //------------------------------------------------------------------------------
 public:
-  DbStatePublisher() : nh_priv("~"), is_debug(false)
+  DbStatePublisher() :
+    nh_priv("~"),
+    is_debug(false)
   {
-    // Init parameter
+    //Init parameter
     nh_priv.param("is_debug", is_debug, is_debug);
-    // Init target name
+    //Init target name
     ROS_ASSERT(initDbStatePublisher());
-    data_sub = nh.subscribe("/tms_db_publisher", 1, &DbStatePublisher::dbTFCallback, this);
-    state_pub = nh.advertise< sensor_msgs::JointState >("/joint_states", 10);
-    get_data_client_ = nh.serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader");
-    skeleton_pub = nh.advertise< tms_msg_ss::SkeletonArray >("integrated_skeleton_stream", 1);
+    data_sub  = nh.subscribe("/tms_db_publisher", 1,  &DbStatePublisher::dbTFCallback, this);
+    state_pub = nh.advertise<sensor_msgs::JointState>("/joint_states", 10);
+    get_data_client_ = nh.serviceClient<tms_msg_db::TmsdbGetData>("/tms_db_reader");
+    skeleton_pub = nh.advertise<tms_msg_ss::SkeletonArray>("integrated_skeleton_stream", 1);
   }
 
   //----------------------------------------------------------------------------
@@ -76,8 +78,9 @@ public:
     ROS_ASSERT(shutdownDbStatePublisher());
   }
 
-  //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 private:
+
   bool initDbStatePublisher()
   {
     ROS_INFO("tms_db_state_publisher : Init OK!\n");
@@ -92,58 +95,55 @@ private:
 
   //----------------------------------------------------------------------------
   // void dbTFCallback(const ros::MessageEvent<tms_msg_db::TmsdbStamped const>& event)
-  void dbTFCallback(const tms_msg_db::TmsdbStamped::ConstPtr &msg)
+  void dbTFCallback(const tms_msg_db::TmsdbStamped::ConstPtr& msg)
   {
     uint32_t id, oID, sensor, state, place;
-    double posX, posY, posZ, rotR, rotP, rotY;
+    double posX,posY,posZ,rotR,rotP,rotY;
     sensor_msgs::JointState state_data;
     std::string joint;
 
-    if (msg->tmsdb.size() == 0)
+    if (msg->tmsdb.size()==0)
       return;
 
     bool type;
-    nh.getParam("/is_real", type);
+    nh.getParam("/is_real",type);
 
-    for (uint32_t i = 0; i < msg->tmsdb.size(); i++)
+    for (uint32_t i=0; i<msg->tmsdb.size(); i++)
     {
-      id = msg->tmsdb[i].id;
-      sensor = msg->tmsdb[i].sensor;
-      state = msg->tmsdb[i].state;
-      place = msg->tmsdb[i].place;
-      joint = msg->tmsdb[i].joint;
+      id      = msg->tmsdb[i].id;
+      sensor  = msg->tmsdb[i].sensor;
+      state   = msg->tmsdb[i].state;
+      place   = msg->tmsdb[i].place;
+      joint   = msg->tmsdb[i].joint;
 
-      if (id == 2003 && ((type == true && sensor == 3003) || (type == false && sensor == 3005)))  // smartpal5-2
+      if (id==2003 && ((type==true && sensor==3003)||(type==false && sensor==3005))) // smartpal5-2
       {
-        if (state == 1)
+        if (state==1)
         {
           posX = msg->tmsdb[i].x;
           posY = msg->tmsdb[i].y;
           rotY = msg->tmsdb[i].ry;
-          double g_jR[7] = {0.0, -0.08, 0.0, 0.0, 0.0, 0.0, 0.0};
-          double g_jL[7] = {0.0, -0.08, 0.0, 0.0, 0.0, 0.0, 0.0};
+          double g_jR[7] = {0.0,-0.08,0.0,0.0,0.0,0.0,0.0};
+          double g_jL[7] = {0.0,-0.08,0.0,0.0,0.0,0.0,0.0};
           double g_gripper_right = 0.3;
           double g_gripper_left = 0.3;
 
-          if (joint != "")
-          {
-            std::vector< std::string > v_joint;
+          if(joint!=""){
+            std::vector<std::string> v_joint;
             v_joint.clear();
-            boost::split(v_joint, joint, boost::is_any_of(";"));
+            boost::split(v_joint,joint,boost::is_any_of(";"));
             std::stringstream ss;
-            for (int i = 0; i < 7; i++)
-            {
+            for(int i=0;i<7;i++){
               ss.clear();
-              ss << v_joint.at(2 + i);
+              ss << v_joint.at(2+i);
               ss >> g_jR[i];
             }
             ss.clear();
             ss << v_joint.at(9);
             ss >> g_gripper_right;
-            for (int i = 0; i < 7; i++)
-            {
+            for(int i=0;i<7;i++){
               ss.clear();
-              ss << v_joint.at(10 + i);
+              ss << v_joint.at(10+i);
               ss >> g_jL[i];
             }
             ss.clear();
@@ -165,11 +165,11 @@ private:
           state_data.name.push_back("lumbar_upper_joint");
           state_data.position.push_back(0);
           // state_data.name.push_back("head_camera_joint");
-          // state_data.position.push_back(0);
+          //state_data.position.push_back(0);
           state_data.name.push_back("l_arm_j1_joint");
           state_data.position.push_back(g_jL[0]);
           state_data.name.push_back("l_arm_j2_joint");
-          state_data.position.push_back(g_jL[1]);  //(0.08);
+          state_data.position.push_back(g_jL[1]);//(0.08);
           state_data.name.push_back("l_arm_j3_joint");
           state_data.position.push_back(g_jL[2]);
           state_data.name.push_back("l_arm_j4_joint");
@@ -209,15 +209,15 @@ private:
         }
       }
 
-      if (id == 2007)  // wheelchair
+      if (id==2007) // wheelchair
       {
-        if (state != 0)
+        if (state!=0)
         {
           posX = msg->tmsdb[i].x;
           posY = msg->tmsdb[i].y;
           rotY = msg->tmsdb[i].ry;
 
-          if (posX == 0.0 && posY == 0.0)
+          if(posX == 0.0 && posY == 0.0)
           {
             continue;
           }
@@ -234,15 +234,15 @@ private:
         }
       }
 
-      if (id == 2009)  // refrigerator
+      if (id==2009) // refrigerator
       {
-        if (state != 0)
+        if (state!=0)
         {
           posX = msg->tmsdb[i].x;
           posY = msg->tmsdb[i].y;
           rotY = msg->tmsdb[i].ry;
 
-          if (posX == 0.0 && posY == 0.0)
+          if(posX == 0.0 && posY == 0.0)
           {
             continue;
           }
@@ -259,15 +259,15 @@ private:
         }
       }
 
-      if (id == 6004)  // chair
+      if (id==6004) // chair
       {
-        if (state != 0)
+        if (state!=0)
         {
           posX = msg->tmsdb[i].x;
           posY = msg->tmsdb[i].y;
           rotY = msg->tmsdb[i].ry;
 
-          if (posX == 0.0 && posY == 0.0)
+          if(posX == 0.0 && posY == 0.0)
           {
             continue;
           }
@@ -284,15 +284,15 @@ private:
         }
       }
 
-      if (id == 6007)  // meeting_chair1
+      if (id==6007) // meeting_chair1
       {
-        if (state != 0)
+        if (state!=0)
         {
           posX = msg->tmsdb[i].x;
           posY = msg->tmsdb[i].y;
           rotY = msg->tmsdb[i].ry;
 
-          if (posX == 0.0 && posY == 0.0)
+          if(posX == 0.0 && posY == 0.0)
           {
             continue;
           }
@@ -309,15 +309,15 @@ private:
         }
       }
 
-      if (id == 6008)  // meeting_chair2
+      if (id==6008) // meeting_chair2
       {
-        if (state != 0)
+        if (state!=0)
         {
           posX = msg->tmsdb[i].x;
           posY = msg->tmsdb[i].y;
           rotY = msg->tmsdb[i].ry;
 
-          if (posX == 0.0 && posY == 0.0)
+          if(posX == 0.0 && posY == 0.0)
           {
             continue;
           }
@@ -334,15 +334,15 @@ private:
         }
       }
 
-      if (id == 6009)  // meeting_chair3
+      if (id==6009) // meeting_chair3
       {
-        if (state != 0)
+        if (state!=0)
         {
           posX = msg->tmsdb[i].x;
           posY = msg->tmsdb[i].y;
           rotY = msg->tmsdb[i].ry;
 
-          if (posX == 0.0 && posY == 0.0)
+          if(posX == 0.0 && posY == 0.0)
           {
             continue;
           }
@@ -359,15 +359,15 @@ private:
         }
       }
 
-      if (id == 6010)  // meeting_chair4
+      if (id==6010) // meeting_chair4
       {
-        if (state != 0)
+        if (state!=0)
         {
           posX = msg->tmsdb[i].x;
           posY = msg->tmsdb[i].y;
           rotY = msg->tmsdb[i].ry;
 
-          if (posX == 0.0 && posY == 0.0)
+          if(posX == 0.0 && posY == 0.0)
           {
             continue;
           }
@@ -384,15 +384,15 @@ private:
         }
       }
 
-      if (id == 6018)  // wagon
+      if (id==6018) // wagon
       {
-        if (state == 1)
+        if (state==1)
         {
           posX = msg->tmsdb[i].x;
           posY = msg->tmsdb[i].y;
           rotY = msg->tmsdb[i].ry;
 
-          if (posX == 0.0 && posY == 0.0)
+          if(posX == 0.0 && posY == 0.0)
           {
             continue;
           }
@@ -409,29 +409,27 @@ private:
         }
       }
 
-      if (id == 1002)  // moverio
+      if(id==1002) //moverio
       {
-        if (state == 1)
-        {
+        if(state==1){
           posX = msg->tmsdb[i].x;
           posY = msg->tmsdb[i].y;
           rotR = msg->tmsdb[i].rr;
           rotP = msg->tmsdb[i].rp;
           rotY = msg->tmsdb[i].ry;
 
-          if (posX == 0.0 && posY == 0.0)
+          if(posX == 0.0 && posY == 0.0)
           {
             continue;
           }
           else
           {
-            transform.setOrigin(tf::Vector3(posX, posY, 1.1));
-            transform.setRotation(tf::Quaternion(0, 0, -1.5708 + rotY));
-            br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world_link", "Body"));
+            transform.setOrigin(tf::Vector3(posX,posY,1.1));
+            transform.setRotation(tf::Quaternion(0,0,-1.5708+rotY));
+            br.sendTransform(tf::StampedTransform(transform,ros::Time::now(),"world_link","Body"));
           }
-        }
-        else
-        {
+        }else{
+
         }
       }
 
@@ -473,9 +471,9 @@ private:
       //   }
       // }
 
-      if (id == 7001)  // chipstar_red
+      if(id==7001) //chipstar_red
       {
-        if (state != 0)
+        if(state != 0)
         {
           posX = msg->tmsdb[i].x;
           posY = msg->tmsdb[i].y;
@@ -484,7 +482,7 @@ private:
           rotP = msg->tmsdb[i].rp;
           rotY = msg->tmsdb[i].ry;
 
-          if (posX == 0.0 && posY == 0.0)
+          if(posX == 0.0 && posY == 0.0)
           {
             continue;
           }
@@ -514,7 +512,7 @@ private:
 //------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
-  // Init ROS node
+  //Init ROS node
   ros::init(argc, argv, "tms_db_state_publisher");
   DbStatePublisher dsp;
 
@@ -523,4 +521,4 @@ int main(int argc, char **argv)
 }
 
 //------------------------------------------------------------------------------
-// EOF
+//EOF

@@ -18,19 +18,21 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+
 /****************************************************************************/
 #ifndef _CDLBASE_H_
 #define _CDLBASE_H_
 /****************************************************************************/
 
-#if !defined(BYTE_DECLARED)
+#if !defined (BYTE_DECLARED)
 #define BYTE_DECLARED
-typedef unsigned char byte;  //!< type specification (8 bit)
+typedef unsigned char byte;	//!< type specification (8 bit)
 #endif
 
 //--------------------------------------------------------------------------//
 
 #include "common/dllexport.h"
+
 
 //--------------------------------------------------------------------------//
 
@@ -42,30 +44,31 @@ typedef unsigned char byte;  //!< type specification (8 bit)
  * easier.
  */
 
-class DLLDIR CCdlBase
-{
+class DLLDIR CCdlBase {
+
 public:
-  /*! \brief Pure function to send data
-   *
-   * This function is pure and should always be overwritten by classes
-   * inheriting from 'CCdlBase'. As the name proposes the function should
-   * contain a sending behavour from the device.
-   */
-  virtual int send(const void* _buf, int _sz) = 0;
-  /*! \brief Pure function to receive data
-   *
-   * This function is pure and should always be overwritten by classes in-
-   * heriting from 'CCdlBase'. As the name proposes the function should
-   * contain a sending behavour from the device.
-   */
-  virtual int recv(void* _buf, int _sz) = 0;
-  /*! \brief destructor
-   *
-   * This class is only an interface
-   */
-  virtual ~CCdlBase(){};
+
+	/*! \brief Pure function to send data
+	 *
+	 * This function is pure and should always be overwritten by classes
+	 * inheriting from 'CCdlBase'. As the name proposes the function should
+	 * contain a sending behavour from the device.
+	 */
+	virtual int  send(const void* _buf, int _sz)	= 0;
+	/*! \brief Pure function to receive data
+	 *
+	 * This function is pure and should always be overwritten by classes in-
+	 * heriting from 'CCdlBase'. As the name proposes the function should
+	 * contain a sending behavour from the device.
+	 */
+	virtual int  recv(void* _buf, int _sz)		= 0;
+	/*! \brief destructor
+	 *
+	 * This class is only an interface
+	 */
+	virtual ~CCdlBase() {};
 };
 
 /****************************************************************************/
-#endif  //_CDLBASE_H_
+#endif //_CDLBASE_H_
 /****************************************************************************/
