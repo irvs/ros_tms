@@ -91,7 +91,7 @@ public:
     , kSmartPal4CollisionThreshold_(0.4)
     , kKobukiCollisionThreshold_(0.2)
     , kKKPCollisionThreshold_(0.4)
-    , kMimamorukunCollisionThreshold_(0.4)
+    , kMimamorukunCollisionThreshold_(0.85)
     , kRobotControlWagonDist_(0.4)
     , kSmoothVoronoiPathThreshold_(0.1)
     , kPushWagonPathThreshold_(0.2)
@@ -319,6 +319,24 @@ private:
     marker.color.b = 0.0f;
     marker.color.a = 1.0;
     //
+
+
+    visualization_msgs::Marker delete_olds;
+    delete_olds.action = (uint8_t)3;  // なぜか"visualization_msgs::Marker::DELETEALL"が見つからないので直接定数代入
+    markers.markers.push_back(delete_olds);
+    for (unsigned int i = 1; i < smooth_path.size() - 1; i++)
+    {
+      marker.id = i;
+      marker.points.resize(2);
+      marker.points[0].x = smooth_path[i][0];
+      marker.points[0].y = smooth_path[i][1];
+      marker.points[0].z = 0.03;
+      marker.points[1].x = smooth_path[i + 1][0];
+      marker.points[1].y = smooth_path[i + 1][1];
+      marker.points[1].z = 0.03;
+      markers.markers.push_back(marker);
+    }
+    //
     //
     visualization_msgs::Marker mesh;
     visualization_msgs::MarkerArray meshs;
@@ -333,24 +351,11 @@ private:
     mesh.color.g = 0.6;
     mesh.color.b = 0.6;
     mesh.color.a = 1.0;
-    //
-
-    for (unsigned int i = 0; i < smooth_path.size() - 1; i++)
-    {
-      marker.id = i;
-      marker.points.resize(2);
-      marker.points[0].x = smooth_path[i][0];
-      marker.points[0].y = smooth_path[i][1];
-      marker.points[0].z = 0.03;
-      marker.points[1].x = smooth_path[i + 1][0];
-      marker.points[1].y = smooth_path[i + 1][1];
-      marker.points[1].z = 0.03;
-      markers.markers.push_back(marker);
-    }
 
     tf2::Quaternion q;
 
-    for (unsigned int i = 0; i < smooth_path.size(); i++)
+    meshs.markers.push_back(delete_olds);
+    for (unsigned int i = 1; i < smooth_path.size(); i++)
     {
       mesh.id = i;
       mesh.pose.position.x = smooth_path[i][0];
