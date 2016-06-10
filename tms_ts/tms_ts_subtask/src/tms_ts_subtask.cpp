@@ -975,8 +975,9 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
                                rp_srv.request.goal_pos.y);
 
           if (error_th > PI)
-            else if (error_th < -PI) error_th = error_th - 2 * PI;
-          error_th = error_th + 2 * PI;
+            error_th = error_th - 2 * PI;
+          else if (error_th < -PI)
+            error_th = error_th + 2 * PI;
 
           ROS_INFO("error_x:%f,error_y:%f,error_th:%f, error_dis:%f", error_x, error_y, error_th, error_dis);
           if (error_x <= 0.01 && error_y <= 0.01 && (error_th >= -0.05 && error_th <= 0.05))
