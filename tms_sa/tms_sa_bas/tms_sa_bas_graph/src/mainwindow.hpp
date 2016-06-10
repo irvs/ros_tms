@@ -31,65 +31,62 @@
 //------------------------------------------------------------------------------
 namespace bas_graph
 {
-
 //------------------------------------------------------------------------------
 // Implementation [MainWindow]
 //------------------------------------------------------------------------------
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    MainWindow(int argc, char** argv, QWidget *parent = 0);
-    ~MainWindow();
-    void showNoMasterMessage();
-
+  MainWindow(int argc, char **argv, QWidget *parent = 0);
+  ~MainWindow();
+  void showNoMasterMessage();
 
 public Q_SLOTS:
-    void plotGraph();
-    void captureEvent();
-    void exportAnalysePlot();
-    void exportResultPlot();
-    void exportPlot(int iPlotID);
-    void updateZoom1();
-    void updateZoom2();
-    void updateMove1();
-    void updateMove2();
-
+  void plotGraph();
+  void captureEvent();
+  void exportAnalysePlot();
+  void exportResultPlot();
+  void exportPlot(int iPlotID);
+  void updateZoom1();
+  void updateZoom2();
+  void updateMove1();
+  void updateMove2();
 
 private:
-    void createActions();
-    void createToolBars();
-    void readSettings();
-    void writeSettings();
+  void createActions();
+  void createToolBars();
+  void readSettings();
+  void writeSettings();
 
-    void resizeEvent(QResizeEvent *event);
-    void closeEvent(QCloseEvent *event);
+  void resizeEvent(QResizeEvent *event);
+  void closeEvent(QCloseEvent *event);
 
-    QToolBar *toolBar;
-    QAction *captureAct;
-    QAction *analysePlotSaveAct;
-    QAction *resultPlotSaveAct;
+  QToolBar *toolBar;
+  QAction *captureAct;
+  QAction *analysePlotSaveAct;
+  QAction *resultPlotSaveAct;
 
-    QNode qNode;
+  QNode qNode;
 
-    QwtPlot *qwtAnalysePlot;
-    QwtPlot *qwtResultPlot;
+  QwtPlot *qwtAnalysePlot;
+  QwtPlot *qwtResultPlot;
 
-    QwtPlotCurve *qwtCurveBehaviorWalking;
-    QwtPlotCurve *qwtCurveBehaviorSitting;
-    QwtPlotCurve *qwtCurveBehaviorSleeping;
-    QwtPlotCurve *qwtCurveBehaviorMerged;
+  QwtPlotCurve *qwtCurveBehaviorWalking;
+  QwtPlotCurve *qwtCurveBehaviorSitting;
+  QwtPlotCurve *qwtCurveBehaviorSleeping;
+  QwtPlotCurve *qwtCurveBehaviorMerged;
 
-    QwtPlotZoomer *zoomer1;
-    QwtPlotZoomer *zoomer2;
+  QwtPlotZoomer *zoomer1;
+  QwtPlotZoomer *zoomer2;
 
-    QwtPlotPanner *panner1;
-    QwtPlotPanner *panner2;
+  QwtPlotPanner *panner1;
+  QwtPlotPanner *panner2;
 };
 
 //------------------------------------------------------------------------------
-}       // namespace bas_graph
+}  // namespace bas_graph
 #endif  // MAIN_WINDOW_HPP
 
 //------------------------------------------------------------------------------

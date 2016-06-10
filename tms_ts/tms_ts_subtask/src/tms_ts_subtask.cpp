@@ -204,8 +204,8 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req, tms_msg_rp:
   SubtaskData sd;
   //    sd.type = grasp::TmsRpBar::production_version_;
   bool type;
-  nh1.getParam("/is_real", type);
-  sd.type = type;  // sim = false , real = true
+  // sd.type = type; //sim = false , real = true
+  sd.type = req.type;
   sd.robot_id = req.robot_id;
   sd.arg_type = (int)req.arg.at(0);
   sd.v_arg.clear();
@@ -463,7 +463,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
   }
 
   srv.request.tmsdb.id = sd.arg_type;
-  srv.request.tmsdb.sensor = 3001;
 
   // if (sd.type == false)
   //   srv.request.tmsdb.sensor = 3005;
@@ -556,6 +555,8 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
   }
   else if (sd.arg_type > 1000 && sd.arg_type < 2000)  // person
   {
+    // srv.request.tmsdb.sensor = 3001;
+    srv.request.tmsdb.state = 1;
     ROS_INFO("person ID:%d", sd.arg_type);
     if (get_data_client_.call(srv))
     {
@@ -564,18 +565,32 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
       double person_yaw = srv.response.tmsdb[0].ry;  // + 1.570796;
       ROS_INFO("x=%f y=%f ry=%f", person_x, person_y, person_yaw);
 
-      rp_srv.request.goal_pos.x = person_x + 1.0 * cos(person_yaw);
-      rp_srv.request.goal_pos.y = person_y + 1.0 * sin(person_yaw);
-
-      if (person_yaw > 0)
-        rp_srv.request.goal_pos.th = person_yaw - 3.141592;
+      if (person_x > 9.300 && person_x < 11.000 && person_y > 2.400 && person_y < 3.200)
+      {  // in the bed
+        ROS_INFO("humen in the bed");
+        rp_srv.request.goal_pos.x = 10.3;
+        rp_srv.request.goal_pos.y = 3.7;
+        rp_srv.request.goal_pos.z = 0.0;
+        rp_srv.request.goal_pos.th = -1.57079633;
+        rp_srv.request.goal_pos.roll = 0.0;
+        rp_srv.request.goal_pos.pitch = 0.0;
+        rp_srv.request.goal_pos.yaw = 0.0;
+      }
       else
-        rp_srv.request.goal_pos.th = person_yaw + 3.141592;
+      {
+        rp_srv.request.goal_pos.x = person_x + 1.0 * cos(person_yaw);
+        rp_srv.request.goal_pos.y = person_y + 1.0 * sin(person_yaw);
 
-      rp_srv.request.goal_pos.z = 0.0;
-      rp_srv.request.goal_pos.roll = 0.0;
-      rp_srv.request.goal_pos.pitch = 0.0;
-      rp_srv.request.goal_pos.yaw = 0.0;
+        if (person_yaw > 0)
+          rp_srv.request.goal_pos.th = person_yaw - 3.141592;
+        else
+          rp_srv.request.goal_pos.th = person_yaw + 3.141592;
+
+        rp_srv.request.goal_pos.z = 0.0;
+        rp_srv.request.goal_pos.roll = 0.0;
+        rp_srv.request.goal_pos.pitch = 0.0;
+        rp_srv.request.goal_pos.yaw = 0.0;
+      }
     }
     else
     {
@@ -586,11 +601,14 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
   }
   else if (sd.arg_type > 7000 && sd.arg_type < 8000)  // ObjectID
   {
+    // srv.request.tmsdb.sensor = 3018;
+    srv.request.tmsdb.state = 1;
     ROS_INFO("Argument IDtype is Object%d!\n", sd.arg_type);
     if (get_data_client_.call(srv))
     {
       ROS_INFO("place is %d\n", srv.response.tmsdb[0].place);
-      if (srv.response.tmsdb[0].place > 6000 && srv.response.tmsdb[0].place < 7000)
+      if ((srv.response.tmsdb[0].place > 2000 && srv.response.tmsdb[0].place < 3000) ||
+          (srv.response.tmsdb[0].place > 6000 && srv.response.tmsdb[0].place < 7000))
       {
         srv.request.tmsdb.id = srv.response.tmsdb[0].place + sid_;
 
@@ -773,7 +791,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
             }
             else
             {
-              sleep(0.7);
+              sleep(1);
               // if (sd.robot_id == 2002)
               // {
               //	 sleep(0.7);
@@ -957,8 +975,8 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
                                rp_srv.request.goal_pos.y);
 
           if (error_th > PI)
-            error_th = error_th - 2 * PI;
           else if (error_th < -PI)
+            error_th = error_th - 2 * PI;
             error_th = error_th + 2 * PI;
 
           ROS_INFO("error_x:%f,error_y:%f,error_th:%f, error_dis:%f", error_x, error_y, error_th, error_dis);
@@ -1008,6 +1026,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
   tms_msg_db::Tmsdb assign_data;
   s_srv.request.type = 1;  // for subtask state update;
   s_srv.request.state = 0;
+  int furniture_id;
 
   nh1.setParam("planning_mode", 1);  // stop ROS-TMS viewer
 
@@ -1056,7 +1075,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
     if (get_data_client_.call(srv))
     {
       std::string obj_name = srv.response.tmsdb[0].name;
-      int furniture_id = srv.response.tmsdb[0].place;
+      furniture_id = srv.response.tmsdb[0].place;
 
       cout << obj_name << ", " << furniture_id << endl;
 
@@ -1081,6 +1100,38 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
   else
   {
     ROS_INFO("Robot cannot grasp this object! Wrong id:%d\n", sd.arg_type);
+  }
+
+  if (furniture_id == 2009 && sd.type == false)
+  {
+    nh1.setParam("/2009_is_real", false);
+
+    tms_msg_db::TmsdbStamped db_msg;
+    tms_msg_db::Tmsdb tmpData;
+    ros::Time now = ros::Time::now() + ros::Duration(9 * 60 * 60);  // GMT +9
+
+    tmpData.time = boost::posix_time::to_iso_extended_string(now.toBoost());
+    tmpData.id = 2009;
+    tmpData.name = "refrigerator";
+    tmpData.place = 5002;
+    tmpData.sensor = 3005;
+    tmpData.state = 1;
+    tmpData.joint = "2.14";
+
+    db_msg.tmsdb.push_back(tmpData);
+    db_pub.publish(db_msg);
+
+    sleep(1);
+
+    double arg[3];
+    arg[0] = 7.3;
+    arg[1] = 5.1;
+    arg[2] = 1.57079;
+    if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg))
+    {
+      send_rc_exception(1);
+      return false;
+    }
   }
 
   cout << "set begin and end posture." << endl;
@@ -1112,7 +1163,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
 
         if (sd.type)
         {
-          sleep(0.5);
+          sleep(1);
           arg[0] = 0.0;
           if (!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg))
           {
@@ -1204,6 +1255,38 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
     }
   }
   nh1.setParam("planning_mode", 0);
+
+  if (furniture_id == 2009 && sd.type == false)
+  {
+    double arg[3];
+    arg[0] = 7.3;
+    arg[1] = 5.0;
+    arg[2] = 1.57079;
+    if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg))
+    {
+      send_rc_exception(1);
+      return false;
+    }
+
+    sleep(1);
+
+    tms_msg_db::TmsdbStamped db_msg;
+    tms_msg_db::Tmsdb tmpData;
+    ros::Time now = ros::Time::now() + ros::Duration(9 * 60 * 60);  // GMT +9
+
+    tmpData.time = boost::posix_time::to_iso_extended_string(now.toBoost());
+    tmpData.id = 2009;
+    tmpData.name = "refrigerator";
+    tmpData.place = 5002;
+    tmpData.sensor = 3005;
+    tmpData.state = 1;
+    tmpData.joint = "0";
+
+    db_msg.tmsdb.push_back(tmpData);
+    db_pub.publish(db_msg);
+
+    nh1.setParam("/2009_is_real", true);
+  }
 
   //	apprise TS_control of succeeding subtask execution
   s_srv.request.state = 1;
@@ -1492,7 +1575,7 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
 
         if (sd.type)
         {
-          sleep(0.5);
+          sleep(1);
           arg[0] = 0.0;
           if (!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg))
           {
@@ -1517,7 +1600,7 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
 
         if (sd.type)
         {
-          sleep(0.5);
+          sleep(1);
           double arg[1] = {0.0};
           if (!sp5_control(sd.type, UNIT_ALL, CMD_MOVE_TRAJECTORY, 1, arg))
           {
@@ -1625,7 +1708,7 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
 //	return true;
 //}
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   // Init ROS node
   ros::init(argc, argv, "tms_ts_subtask");

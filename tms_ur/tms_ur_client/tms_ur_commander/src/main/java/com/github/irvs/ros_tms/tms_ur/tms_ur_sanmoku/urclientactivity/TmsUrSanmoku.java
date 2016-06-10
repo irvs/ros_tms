@@ -135,7 +135,7 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 	private final String MP = "pass";
 
 	@SuppressLint("SdCardPath")
-	private final String savePath = Environment.getExternalStorageDirectory().getPath() + "/Android/data/com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.urclientactivity/";
+	private final String savePath = Environment.getExternalStorageDirectory().getPath() + "/Android/data/irvs.tms.urclientactivity/";
 	private final String saveDir = "images";
 	//=============================================
 
@@ -298,6 +298,7 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 				// We keep the last known orientation. So if the user
 				// first orient the camera then point the camera to
 				// floor/sky, we still have the correct orientation.
+				Log.d(TAG, "OrientationChanged");
 				if (orientation != ORIENTATION_UNKNOWN) {
 					orientation += 90;
 				}
@@ -305,6 +306,7 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 				if (orientation != mLastOrientation) {
 					mLastOrientation = orientation;
 				}
+				Log.d(TAG, "OrientationChanged2");
 			}
 		};
 		mOrientationListener.enable();
@@ -956,7 +958,7 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 		mParameters = mCameraDevice.getParameters();
 
 		mParameters.setPreviewSize(320, 240);
-		//		mParameters.setRotation(90);
+//		mParameters.setRotation(90);
 		mCameraDevice.setParameters(mParameters);
 
 	}
@@ -1033,13 +1035,17 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 
 				if(innerObjs.size()!=0){
 					view = inflater.inflate(R.layout.systemanswer2,null);
-					ListView lv = (ListView)view.findViewById(R.id.listview2);
+//					ListView lv = (ListView)view.findViewById(R.id.listview2);
+//
+//					TmsdbObjectListAdapter adapter = new TmsdbObjectListAdapter(com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.urclientactivity.TmsUrSanmoku.this, 0, innerObjs, savePath + saveDir);
+//					lv.requestDisallowInterceptTouchEvent(true);
+//					lv.setAdapter(adapter);
 
-					TmsdbObjectListAdapter adapter = new TmsdbObjectListAdapter(com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.urclientactivity.TmsUrSanmoku.this, 0, innerObjs, savePath + saveDir);
-					lv.requestDisallowInterceptTouchEvent(true);
-					lv.setAdapter(adapter);
+					TextView tv = (TextView)view.findViewById(R.id.textView8);
+
 					str += "この中には、";
 					for(TmsdbObject obj:innerObjs){
+						tv.setText(obj.getName());
 						str += obj.getName() + "、";
 					}
 					str += "が、あります";
@@ -1250,10 +1256,12 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 								//detectingObjsのplaceで家具を取得
 								objs.clear();
 								for(TmsdbObject object: detectingObjs){
-									if(object.getPlace()!=0){
+									Log.i("DBdata",object.getName()+object.getId());
+									if(object.getPlace()!=0 && object.getState()!=0){
 										TmsdbObject to = new TmsdbObject();
 										to.setId(object.getPlace());
 										data.sendInfo(to);
+										Log.i("DBdata2",data.getObject().getName());
 
 										Log.i("DB","objsSize:" + objs.size());
 										if(objs.size()==0) objs.add(new TmsdbObject(data.getObject()));
@@ -1268,6 +1276,8 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 										}
 									}
 								}
+
+								Log.i("DB","objsSize2:" + objs.size());
 								//objsに家具情報格納完了
 								String str = "";
 								LayoutInflater inflater
@@ -1281,14 +1291,17 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 								}
 								else{
 									view = inflater.inflate(R.layout.systemanswer,null);
-									ListView lv = (ListView)view.findViewById(R.id.listview);
-
-									TmsdbObjectListAdapter adapter = new TmsdbObjectListAdapter(com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.urclientactivity.TmsUrSanmoku.this, 0, objs, savePath + saveDir);
-									lv.setAdapter(adapter);
+									TextView tv = (TextView)view.findViewById(R.id.textView7);
+//									ListView lv = (ListView)view.findViewById(R.id.listview);
+//
+//									TmsdbObjectListAdapter adapter = new TmsdbObjectListAdapter(com.github.irvs.ros_tms.tms_ur.tms_ur_sanmoku.urclientactivity.TmsUrSanmoku.this, 0, objs, savePath + saveDir);
+//									lv.setAdapter(adapter);
 
 									str += "お探しの物品は、";
 
 									for(TmsdbObject obj:objs){
+										Log.i("db",obj.getName());
+										tv.setText(obj.getName());
 										str += obj.getName() + "、";
 									}
 

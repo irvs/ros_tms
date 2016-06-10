@@ -8,7 +8,6 @@
 #include <QtGui/QCheckBox>
 #include <qapplication.h>
 
-
 #include <qtoolbar.h>
 #include <qtoolbutton.h>
 
@@ -32,61 +31,59 @@
 //------------------------------------------------------------------------------
 namespace fss_graph
 {
-
 //------------------------------------------------------------------------------
 // Implementation [MainWindow]
 //------------------------------------------------------------------------------
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    MainWindow(int argc, char** argv, QWidget *parent = 0);
-    ~MainWindow();
-    void closeEvent(QCloseEvent *event);
-    void showNoMasterMessage();
+  MainWindow(int argc, char **argv, QWidget *parent = 0);
+  ~MainWindow();
+  void closeEvent(QCloseEvent *event);
+  void showNoMasterMessage();
 
 public Q_SLOTS:
-    void plot_graph();
-    void captureEvent();
-    void exportPlot1();
-    void exportPlot2();
-    void exportPlot3();
-    void updateZoom1();
-    void updateZoom2();
-    void updateZoom3();
-    void changeOption();
-    void refresh();
+  void plot_graph();
+  void captureEvent();
+  void exportPlot1();
+  void exportPlot2();
+  void exportPlot3();
+  void updateZoom1();
+  void updateZoom2();
+  void updateZoom3();
+  void changeOption();
+  void refresh();
 
 private:
-    QNode qnode;
-    QAction *captureAct;
-    QCheckBox *ckbViewOnlyCluster;
-    QCheckBox *ckbViewFluctuation;
-    QLineEdit *leMaxIntensity;
-    QAction *refreshAct;
-    QwtPlot *plot1;
-    QwtPlot *plot2;
-    QwtPlot *plot3;
-    QwtPlotCurve *curve1;
-    QwtPlotCurve *curve2;
-    QwtPlotCurve *curve3;
-    QwtPlotIntervalCurve *intervalCurve1;
-    QwtPlotIntervalCurve *intervalCurve2;
-    QwtPlotIntervalCurve *intervalCurve3;
+  QNode qnode;
+  QAction *captureAct;
+  QCheckBox *ckbViewOnlyCluster;
+  QCheckBox *ckbViewFluctuation;
+  QLineEdit *leMaxIntensity;
+  QAction *refreshAct;
+  QwtPlot *plot1;
+  QwtPlot *plot2;
+  QwtPlot *plot3;
+  QwtPlotCurve *curve1;
+  QwtPlotCurve *curve2;
+  QwtPlotCurve *curve3;
+  QwtPlotIntervalCurve *intervalCurve1;
+  QwtPlotIntervalCurve *intervalCurve2;
+  QwtPlotIntervalCurve *intervalCurve3;
 
-    QwtPlotZoomer *zoomer1;
-    QwtPlotZoomer *zoomer2;
-    QwtPlotZoomer *zoomer3;
+  QwtPlotZoomer *zoomer1;
+  QwtPlotZoomer *zoomer2;
+  QwtPlotZoomer *zoomer3;
 
-    QwtPlotPanner *panner1;
-    QwtPlotPanner *panner2;
-    QwtPlotPanner *panner3;
+  QwtPlotPanner *panner1;
+  QwtPlotPanner *panner2;
+  QwtPlotPanner *panner3;
 
-    bool bViewFluctuation;
-    bool bViewOnlyCluster;
-
+  bool bViewFluctuation;
+  bool bViewOnlyCluster;
 };
 //------------------------------------------------------------------------------
-}       // namespace fss_graph
+}  // namespace fss_graph
 #endif  // MAIN_WINDOW_HPP

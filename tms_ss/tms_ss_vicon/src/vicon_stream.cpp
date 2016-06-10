@@ -52,7 +52,7 @@ string Adapt(const Direction::Enum i_Direction)
 }
 
 //------------------------------------------------------------------------------
-std::string Adapt( const bool i_Value )
+std::string Adapt(const bool i_Value)
 {
   return i_Value ? "True" : "False";
 }
@@ -60,7 +60,7 @@ std::string Adapt( const bool i_Value )
 //------------------------------------------------------------------------------
 class ViconStream
 {
-//------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------
 private:
   // Sensor ID
   int32_t idSensor;
@@ -84,16 +84,19 @@ private:
   // Access client for ViconSDK
   ViconDataStreamSDK::CPP::Client MyClient;
 
-//------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------
 public:
-  ViconStream() :
-    nh_priv("~"),
-    idSensor(3001),   // vicon sensor
-    idPlace(5001),    // 988 room
-    stream_mode("ClientPull"),
-    host_name("192.168.4.151:801"),
-    frame_id("/world"),
-    update_time(0.01),  //sec
+  ViconStream()
+    : nh_priv("~")
+    , idSensor(3001)
+    ,  // vicon sensor
+    idPlace(5001)
+    ,  // 988 room
+    stream_mode("ClientPull")
+    , host_name("192.168.4.151:801")
+    , frame_id("/world")
+    , update_time(0.01)
+    ,  // sec
     isDebug(false)
   {
     // Init parameter
@@ -105,8 +108,8 @@ public:
     // Init Vicon Stream
     ROS_ASSERT(init_vicon());
     // Publishers
-    db_pub    = nh.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data", 1);
-    pose_pub  = nh_priv.advertise<tms_msg_ss::vicon_data> ("output", 1);
+    db_pub = nh.advertise< tms_msg_db::TmsdbStamped >("tms_db_data", 1);
+    pose_pub = nh_priv.advertise< tms_msg_ss::vicon_data >("output", 1);
     // TimerEvent
     update_timer = nh.createTimer(ros::Duration(update_time), &ViconStream::updateCallback, this);
   }
@@ -117,7 +120,7 @@ public:
     ROS_ASSERT(shutdown_vicon());
   }
 
-//------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------
 private:
   bool init_vicon()
   {
@@ -134,11 +137,12 @@ private:
     }
     ROS_ASSERT(MyClient.IsConnected().Connected);
     ROS_INFO_STREAM("... connected!");
-    ROS_INFO_STREAM("Setting Stream Mode to " << "ClientPull");
+    ROS_INFO_STREAM("Setting Stream Mode to "
+                    << "ClientPull");
 
     Output_SetStreamMode result;
 
-    if(stream_mode=="ClientPull")
+    if (stream_mode == "ClientPull")
     {
       result = MyClient.SetStreamMode(StreamMode::ClientPull);
     }
@@ -154,18 +158,15 @@ private:
       ros::shutdown();
     }
 
-    MyClient.SetAxisMapping( Direction::Forward,
-                             Direction::Left,
-                             Direction::Up); // 'Z-up'
+    MyClient.SetAxisMapping(Direction::Forward, Direction::Left, Direction::Up);  // 'Z-up'
 
     Output_GetAxisMapping _Output_GetAxisMapping = MyClient.GetAxisMapping();
-    ROS_INFO_STREAM(
-                    "Axis Mapping: X-" << Adapt(_Output_GetAxisMapping.XAxis) << " Y-"
-                        << Adapt(_Output_GetAxisMapping.YAxis) << " Z-" << Adapt(_Output_GetAxisMapping.ZAxis));
+    ROS_INFO_STREAM("Axis Mapping: X-" << Adapt(_Output_GetAxisMapping.XAxis) << " Y-"
+                                       << Adapt(_Output_GetAxisMapping.YAxis) << " Z-"
+                                       << Adapt(_Output_GetAxisMapping.ZAxis));
     Output_GetVersion _Output_GetVersion = MyClient.GetVersion();
-    ROS_INFO_STREAM(
-                    "Version: " << _Output_GetVersion.Major << "." << _Output_GetVersion.Minor << "."
-                        << _Output_GetVersion.Point);
+    ROS_INFO_STREAM("Version: " << _Output_GetVersion.Major << "." << _Output_GetVersion.Minor << "."
+                                << _Output_GetVersion.Point);
     return true;
   }
 
@@ -188,132 +189,130 @@ private:
     MyClient.EnableUnlabeledMarkerData();
     MyClient.EnableDeviceData();
 
-    if(isDebug)
+    if (isDebug)
     {
-      std::cout << "Segment Data Enabled: "          << Adapt( MyClient.IsSegmentDataEnabled().Enabled )         << std::endl;
-      std::cout << "Marker Data Enabled: "           << Adapt( MyClient.IsMarkerDataEnabled().Enabled )          << std::endl;
-      std::cout << "Unlabeled Marker Data Enabled: " << Adapt( MyClient.IsUnlabeledMarkerDataEnabled().Enabled ) << std::endl;
-      std::cout << "Device Data Enabled: "           << Adapt( MyClient.IsDeviceDataEnabled().Enabled )          << std::endl;
+      std::cout << "Segment Data Enabled: " << Adapt(MyClient.IsSegmentDataEnabled().Enabled) << std::endl;
+      std::cout << "Marker Data Enabled: " << Adapt(MyClient.IsMarkerDataEnabled().Enabled) << std::endl;
+      std::cout << "Unlabeled Marker Data Enabled: " << Adapt(MyClient.IsUnlabeledMarkerDataEnabled().Enabled)
+                << std::endl;
+      std::cout << "Device Data Enabled: " << Adapt(MyClient.IsDeviceDataEnabled().Enabled) << std::endl;
     }
 
-    if(isDebug) std::cout << "Waiting for new frame...";
-    while( MyClient.GetFrame().Result != Result::Success )
+    if (isDebug)
+      std::cout << "Waiting for new frame...";
+    while (MyClient.GetFrame().Result != Result::Success)
     {
       std::cout << "." << std::endl;
     }
 
     // Get the frame number
     Output_GetFrameNumber _Output_GetFrameNumber = MyClient.GetFrameNumber();
-    if(isDebug) std::cout << "Frame Number: " << _Output_GetFrameNumber.FrameNumber << std::endl;
+    if (isDebug)
+      std::cout << "Frame Number: " << _Output_GetFrameNumber.FrameNumber << std::endl;
 
     // Count the number of subjects
     unsigned int SubjectCount = MyClient.GetSubjectCount().SubjectCount;
-    if(isDebug) std::cout << "Subjects (" << SubjectCount << "):" << std::endl;
+    if (isDebug)
+      std::cout << "Subjects (" << SubjectCount << "):" << std::endl;
 
-    ros::Time now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+    ros::Time now = ros::Time::now() + ros::Duration(9 * 60 * 60);  // GMT +9
     tms_msg_db::TmsdbStamped db_msg;
-    db_msg.header.frame_id  = frame_id;
-    db_msg.header.stamp     = now;
+    db_msg.header.frame_id = frame_id;
+    db_msg.header.stamp = now;
 
     ///////////////////////////////////////////////////////////////////
-    for( unsigned int SubjectIndex = 0 ; SubjectIndex < SubjectCount ; ++SubjectIndex )
+    for (unsigned int SubjectIndex = 0; SubjectIndex < SubjectCount; ++SubjectIndex)
     {
-      if(isDebug) std::cout << "  Subject #" << SubjectIndex << std::endl;
+      if (isDebug)
+        std::cout << "  Subject #" << SubjectIndex << std::endl;
 
       // Get the subject name
-      std::string SubjectName = MyClient.GetSubjectName( SubjectIndex ).SubjectName;
-      if(isDebug) std::cout << "    Name: " << SubjectName << std::endl;
+      std::string SubjectName = MyClient.GetSubjectName(SubjectIndex).SubjectName;
+      if (isDebug)
+        std::cout << "    Name: " << SubjectName << std::endl;
 
       // Get the root segment
-      std::string RootSegment = MyClient.GetSubjectRootSegmentName( SubjectName ).SegmentName;
-      if(isDebug) std::cout << "    Root Segment: " << RootSegment << std::endl;
+      std::string RootSegment = MyClient.GetSubjectRootSegmentName(SubjectName).SegmentName;
+      if (isDebug)
+        std::cout << "    Root Segment: " << RootSegment << std::endl;
 
       // Count the number of segments
-      unsigned int SegmentCount = MyClient.GetSegmentCount( SubjectName ).SegmentCount;
-      if(isDebug) std::cout << "    Segments (" << SegmentCount << "):" << std::endl;
+      unsigned int SegmentCount = MyClient.GetSegmentCount(SubjectName).SegmentCount;
+      if (isDebug)
+        std::cout << "    Segments (" << SegmentCount << "):" << std::endl;
 
-      for( unsigned int SegmentIndex = 0 ; SegmentIndex < SegmentCount ; ++SegmentIndex )
+      for (unsigned int SegmentIndex = 0; SegmentIndex < SegmentCount; ++SegmentIndex)
       {
-        if(isDebug) std::cout << "      Segment #" << SegmentIndex << std::endl;
+        if (isDebug)
+          std::cout << "      Segment #" << SegmentIndex << std::endl;
 
         // Get the segment name
-        std::string SegmentName = MyClient.GetSegmentName( SubjectName, SegmentIndex ).SegmentName;
-        if(isDebug) std::cout << "        Name: " << SegmentName << std::endl;
+        std::string SegmentName = MyClient.GetSegmentName(SubjectName, SegmentIndex).SegmentName;
+        if (isDebug)
+          std::cout << "        Name: " << SegmentName << std::endl;
 
         // Get the global segment translation
         Output_GetSegmentGlobalTranslation _Output_GetSegmentGlobalTranslation =
-          MyClient.GetSegmentGlobalTranslation( SubjectName, SegmentName );
-        if(isDebug) std::cout << "        Global Translation: (" << _Output_GetSegmentGlobalTranslation.Translation[ 0 ]  << ", "
-                                                     << _Output_GetSegmentGlobalTranslation.Translation[ 1 ]  << ", "
-                                                     << _Output_GetSegmentGlobalTranslation.Translation[ 2 ]  << ") "
-                                                     << Adapt( _Output_GetSegmentGlobalTranslation.Occluded ) << std::endl;
-
-
+            MyClient.GetSegmentGlobalTranslation(SubjectName, SegmentName);
+        if (isDebug)
+          std::cout << "        Global Translation: (" << _Output_GetSegmentGlobalTranslation.Translation[0] << ", "
+                    << _Output_GetSegmentGlobalTranslation.Translation[1] << ", "
+                    << _Output_GetSegmentGlobalTranslation.Translation[2] << ") "
+                    << Adapt(_Output_GetSegmentGlobalTranslation.Occluded) << std::endl;
 
         // Get the global segment rotation in quaternion co-ordinates
         Output_GetSegmentGlobalRotationQuaternion _Output_GetSegmentGlobalRotationQuaternion =
-          MyClient.GetSegmentGlobalRotationQuaternion( SubjectName, SegmentName );
-        if(isDebug) std::cout << "        Global Rotation Quaternion: (" << _Output_GetSegmentGlobalRotationQuaternion.Rotation[ 0 ]     << ", "
-                                                             << _Output_GetSegmentGlobalRotationQuaternion.Rotation[ 1 ]     << ", "
-                                                             << _Output_GetSegmentGlobalRotationQuaternion.Rotation[ 2 ]     << ", "
-                                                             << _Output_GetSegmentGlobalRotationQuaternion.Rotation[ 3 ]     << ") "
-                                                             << Adapt( _Output_GetSegmentGlobalRotationQuaternion.Occluded ) << std::endl;
+            MyClient.GetSegmentGlobalRotationQuaternion(SubjectName, SegmentName);
+        if (isDebug)
+          std::cout << "        Global Rotation Quaternion: (" << _Output_GetSegmentGlobalRotationQuaternion.Rotation[0]
+                    << ", " << _Output_GetSegmentGlobalRotationQuaternion.Rotation[1] << ", "
+                    << _Output_GetSegmentGlobalRotationQuaternion.Rotation[2] << ", "
+                    << _Output_GetSegmentGlobalRotationQuaternion.Rotation[3] << ") "
+                    << Adapt(_Output_GetSegmentGlobalRotationQuaternion.Occluded) << std::endl;
 
         // Get the global segment rotation in EulerXYZ co-ordinates
         Output_GetSegmentGlobalRotationEulerXYZ _Output_GetSegmentGlobalRotationEulerXYZ =
-          MyClient.GetSegmentGlobalRotationEulerXYZ( SubjectName, SegmentName );
-        if(isDebug) std::cout << "        Global Rotation EulerXYZ: (" << _Output_GetSegmentGlobalRotationEulerXYZ.Rotation[ 0 ]     << ", "
-                                                           << _Output_GetSegmentGlobalRotationEulerXYZ.Rotation[ 1 ]     << ", "
-                                                           << _Output_GetSegmentGlobalRotationEulerXYZ.Rotation[ 2 ]     << ") "
-                                                           << Adapt( _Output_GetSegmentGlobalRotationEulerXYZ.Occluded ) << std::endl;
-
+            MyClient.GetSegmentGlobalRotationEulerXYZ(SubjectName, SegmentName);
+        if (isDebug)
+          std::cout << "        Global Rotation EulerXYZ: (" << _Output_GetSegmentGlobalRotationEulerXYZ.Rotation[0]
+                    << ", " << _Output_GetSegmentGlobalRotationEulerXYZ.Rotation[1] << ", "
+                    << _Output_GetSegmentGlobalRotationEulerXYZ.Rotation[2] << ") "
+                    << Adapt(_Output_GetSegmentGlobalRotationEulerXYZ.Occluded) << std::endl;
 
         tms_msg_ss::vicon_data pose_msg;
-        now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+        now = ros::Time::now() + ros::Duration(9 * 60 * 60);  // GMT +9
 
-        pose_msg.header.frame_id  = frame_id;
-        pose_msg.header.stamp     = now;
-        pose_msg.measuredTime     = now;
-        pose_msg.subjectName      = SubjectName;
-        pose_msg.segmentName      = SegmentName;
-        pose_msg.translation.x    = _Output_GetSegmentGlobalTranslation.Translation[0];
-        pose_msg.translation.y    = _Output_GetSegmentGlobalTranslation.Translation[1];
-        pose_msg.translation.z    = _Output_GetSegmentGlobalTranslation.Translation[2];
-        pose_msg.rotation.x       = _Output_GetSegmentGlobalRotationQuaternion.Rotation[0];
-        pose_msg.rotation.y       = _Output_GetSegmentGlobalRotationQuaternion.Rotation[1];
-        pose_msg.rotation.z       = _Output_GetSegmentGlobalRotationQuaternion.Rotation[2];
-        pose_msg.rotation.w       = _Output_GetSegmentGlobalRotationQuaternion.Rotation[3];
-        pose_msg.eulerXYZ[0]      = _Output_GetSegmentGlobalRotationEulerXYZ.Rotation[0];
-        pose_msg.eulerXYZ[1]      = _Output_GetSegmentGlobalRotationEulerXYZ.Rotation[1];
-        pose_msg.eulerXYZ[2]      = _Output_GetSegmentGlobalRotationEulerXYZ.Rotation[2];
+        pose_msg.header.frame_id = frame_id;
+        pose_msg.header.stamp = now;
+        pose_msg.measuredTime = now;
+        pose_msg.subjectName = SubjectName;
+        pose_msg.segmentName = SegmentName;
+        pose_msg.translation.x = _Output_GetSegmentGlobalTranslation.Translation[0];
+        pose_msg.translation.y = _Output_GetSegmentGlobalTranslation.Translation[1];
+        pose_msg.translation.z = _Output_GetSegmentGlobalTranslation.Translation[2];
+        pose_msg.rotation.x = _Output_GetSegmentGlobalRotationQuaternion.Rotation[0];
+        pose_msg.rotation.y = _Output_GetSegmentGlobalRotationQuaternion.Rotation[1];
+        pose_msg.rotation.z = _Output_GetSegmentGlobalRotationQuaternion.Rotation[2];
+        pose_msg.rotation.w = _Output_GetSegmentGlobalRotationQuaternion.Rotation[3];
+        pose_msg.eulerXYZ[0] = _Output_GetSegmentGlobalRotationEulerXYZ.Rotation[0];
+        pose_msg.eulerXYZ[1] = _Output_GetSegmentGlobalRotationEulerXYZ.Rotation[1];
+        pose_msg.eulerXYZ[2] = _Output_GetSegmentGlobalRotationEulerXYZ.Rotation[2];
 
         pose_pub.publish(pose_msg);
 
-        std::cout << _Output_GetFrameNumber.FrameNumber << "::" << SegmentName <<std::endl;
+        std::cout << _Output_GetFrameNumber.FrameNumber << "::" << SegmentName << std::endl;
 
         //----------------------------------------------------------------------
         // publish to tms_db_writer
         int32_t id = 0;
         tms_msg_db::Tmsdb tmpData;
 
-        // if(SubjectName.compare("oculus2") == 0)         id = 1001; // person_1_oculus
-        // else if(SubjectName.compare("moverio") == 0)    id = 1002; // person_2_moverio
-        // else if(SubjectName.compare("sp4") == 0)        id = 2001;
-        // else if(SubjectName.compare("sp5_1") == 0)      id = 2002;
-        // else if(SubjectName.compare("sp5_2") == 0)      id = 2003;
-        // else if(SubjectName.compare("kobuki") == 0)     id = 2005;
-        // else if(SubjectName.compare("kxp") == 0)        id = 2006;
-        // else if(SubjectName.compare("wheelchair") == 0) id = 2007;
-        // else if(SubjectName.compare("ardrone1") == 0)   id = 2008;
-        // else if(SubjectName.compare("wagon") == 0)      id = 6018;
-        // else id = -1;
-
         std::string name;
-        std::vector<std::string> v_name;
+        std::vector< std::string > v_name;
         v_name.clear();
-        boost::split(v_name,SubjectName,boost::is_any_of("#"));
+        boost::split(v_name, SubjectName, boost::is_any_of("#"));
 
-        if(v_name.size()==2)
+        if (v_name.size() == 2)
         {
           std::stringstream ss;
           ss << v_name.at(0);
@@ -321,25 +320,49 @@ private:
           name = v_name.at(1).c_str();
         }
 
-
-        if(id != 0)
+        if (id == 2009)
         {
-          now = ros::Time::now() + ros::Duration(9*60*60); // GMT +9
+          now = ros::Time::now() + ros::Duration(9 * 60 * 60);  // GMT +9
 
-          tmpData.time    = boost::posix_time::to_iso_extended_string(now.toBoost());
-          tmpData.id      = id;
-          tmpData.name    = name;
-          // Vicon DataStream SDK: Positions are expressed in millimeters.
-          tmpData.x       = pose_msg.translation.x / 1000;
-          tmpData.y       = pose_msg.translation.y / 1000;
-          tmpData.z       = pose_msg.translation.z / 1000;
+          tmpData.time = boost::posix_time::to_iso_extended_string(now.toBoost());
+          tmpData.id = id;
+          tmpData.name = name;
+          tmpData.x = pose_msg.translation.x / 1000;
+          tmpData.y = pose_msg.translation.y / 1000;
+          tmpData.z = pose_msg.translation.z / 1000;
           // Vicon DataStream SDK: Rotations are expressed in radians.
-          tmpData.rr      = pose_msg.eulerXYZ[0];
-          tmpData.rp      = pose_msg.eulerXYZ[1];
-          tmpData.ry      = pose_msg.eulerXYZ[2];
-          tmpData.place   = idPlace;
-          tmpData.sensor  = idSensor;
-          tmpData.state   = 1;
+          tmpData.rr = pose_msg.eulerXYZ[0];
+          tmpData.rp = pose_msg.eulerXYZ[1];
+          tmpData.ry = pose_msg.eulerXYZ[2];
+          tmpData.place = idPlace;
+          tmpData.sensor = idSensor;
+          tmpData.state = 1;
+
+          std::stringstream ss;
+          ss.clear();
+          ss << pose_msg.eulerXYZ[2];
+          tmpData.joint = ss.str();
+
+          db_msg.tmsdb.push_back(tmpData);
+        }
+        else if (id != 0 && pose_msg.translation.x != 0 && pose_msg.translation.y != 0)
+        {
+          now = ros::Time::now() + ros::Duration(9 * 60 * 60);  // GMT +9
+
+          tmpData.time = boost::posix_time::to_iso_extended_string(now.toBoost());
+          tmpData.id = id;
+          tmpData.name = name;
+          // Vicon DataStream SDK: Positions are expressed in millimeters.
+          tmpData.x = pose_msg.translation.x / 1000;
+          tmpData.y = pose_msg.translation.y / 1000;
+          tmpData.z = pose_msg.translation.z / 1000;
+          // Vicon DataStream SDK: Rotations are expressed in radians.
+          tmpData.rr = pose_msg.eulerXYZ[0];
+          tmpData.rp = pose_msg.eulerXYZ[1];
+          tmpData.ry = pose_msg.eulerXYZ[2];
+          tmpData.place = idPlace;
+          tmpData.sensor = idSensor;
+          tmpData.state = 1;
 
           db_msg.tmsdb.push_back(tmpData);
         }
@@ -381,4 +404,4 @@ int main(int argc, char** argv)
 }
 
 //------------------------------------------------------------------------------
-//EOF
+// EOF

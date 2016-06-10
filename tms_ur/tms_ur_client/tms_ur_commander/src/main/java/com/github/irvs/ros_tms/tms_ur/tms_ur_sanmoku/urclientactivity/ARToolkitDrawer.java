@@ -116,7 +116,7 @@ public class ARToolkitDrawer
 	static {
 		System.loadLibrary("yuv420sp2rgb");
 	}
-	public static native void decodeYUV420SP(int[] rgb, byte[] yuv420sp, int width, int height, int type);
+//	public static native void decodeYUV420SP(int[] rgb, byte[] yuv420sp, int width, int height, int type);
 	public static native void decodeYUV420SP(byte[] rgb, byte[] yuv420sp, int width, int height, int type);
 
 	/**
@@ -244,6 +244,7 @@ public class ARToolkitDrawer
 
 		// start coordinates calculation.
 		byte[] buf = new byte[width * height * 3];
+//		int[] buf = new int[width * height * 3];
 
 		// assume YUV420SP
 		long time1 = SystemClock.uptimeMillis();

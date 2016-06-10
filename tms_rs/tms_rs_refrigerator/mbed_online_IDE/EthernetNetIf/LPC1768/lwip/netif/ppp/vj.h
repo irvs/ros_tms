@@ -29,7 +29,7 @@
 #include "lwip/tcp_impl.h"
 
 #define MAX_SLOTS 16 /* must be > 2 and < 256 */
-#define MAX_HDR   128
+#define MAX_HDR 128
 
 /*
  * Compressed packet format:
@@ -43,7 +43,7 @@
  * sequence number changes, one change per bit set in the header
  * (there may be no changes and there are two special cases where
  * the receiver implicitly knows what changed -- see below).
- * 
+ *
  * There are 5 numbers which can change (they are always inserted
  * in the following order): TCP urgent pointer, window,
  * acknowlegement, sequence number and IP ID.  (The urgent pointer
@@ -75,10 +75,10 @@
  */
 
 /* packet types */
-#define TYPE_IP               0x40
+#define TYPE_IP 0x40
 #define TYPE_UNCOMPRESSED_TCP 0x70
-#define TYPE_COMPRESSED_TCP   0x80
-#define TYPE_ERROR            0x00
+#define TYPE_COMPRESSED_TCP 0x80
+#define TYPE_ERROR 0x00
 
 /* Bits in first octet of compressed packet */
 #define NEW_C 0x40 /* flag bits for what changed in a packet */
@@ -89,12 +89,11 @@
 #define NEW_U 0x01
 
 /* reserved, special-case values of above */
-#define SPECIAL_I (NEW_S|NEW_W|NEW_U) /* echoed interactive traffic */
-#define SPECIAL_D (NEW_S|NEW_A|NEW_W|NEW_U) /* unidirectional data */
-#define SPECIALS_MASK (NEW_S|NEW_A|NEW_W|NEW_U)
+#define SPECIAL_I (NEW_S | NEW_W | NEW_U)         /* echoed interactive traffic */
+#define SPECIAL_D (NEW_S | NEW_A | NEW_W | NEW_U) /* unidirectional data */
+#define SPECIALS_MASK (NEW_S | NEW_A | NEW_W | NEW_U)
 
 #define TCP_PUSH_BIT 0x10
-
 
 /*
  * "state" data for each active tcp conversation on the wire.  This is
@@ -102,21 +101,23 @@
  * we saw from the conversation together with a small identifier
  * the transmit & receive ends of the line use to locate saved header.
  */
-struct cstate {
+struct cstate
+{
   struct cstate *cs_next; /* next most recently used state (xmit only) */
   u_short cs_hlen;        /* size of hdr (receive only) */
   u_char cs_id;           /* connection # associated with this state */
   u_char cs_filler;
-  union {
+  union
+  {
     char csu_hdr[MAX_HDR];
-    struct ip_hdr csu_ip;     /* ip/tcp hdr from most recent packet */
+    struct ip_hdr csu_ip; /* ip/tcp hdr from most recent packet */
   } vjcs_u;
 };
 #define cs_ip vjcs_u.csu_ip
 #define cs_hdr vjcs_u.csu_hdr
 
-
-struct vjstat {
+struct vjstat
+{
   unsigned long vjs_packets;        /* outbound packets */
   unsigned long vjs_compressed;     /* outbound compressed packets */
   unsigned long vjs_searches;       /* searches for connection state */
@@ -130,13 +131,14 @@ struct vjstat {
 /*
  * all the state data for one serial line (we need one of these per line).
  */
-struct vjcompress {
-  struct cstate *last_cs;          /* most recently used tstate */
-  u_char last_recv;                /* last rcvd conn. id */
-  u_char last_xmit;                /* last sent conn. id */
+struct vjcompress
+{
+  struct cstate *last_cs; /* most recently used tstate */
+  u_char last_recv;       /* last rcvd conn. id */
+  u_char last_xmit;       /* last sent conn. id */
   u_short flags;
   u_char maxSlotIndex;
-  u_char compressSlot;             /* Flag indicating OK to compress slot ID. */
+  u_char compressSlot; /* Flag indicating OK to compress slot ID. */
 #if LINK_STATS
   struct vjstat stats;
 #endif
@@ -147,10 +149,10 @@ struct vjcompress {
 /* flag values */
 #define VJF_TOSS 1U /* tossing rcvd frames because of input err */
 
-extern void  vj_compress_init    (struct vjcompress *comp);
-extern u_int vj_compress_tcp     (struct vjcompress *comp, struct pbuf *pb);
-extern void  vj_uncompress_err   (struct vjcompress *comp);
-extern int   vj_uncompress_uncomp(struct pbuf *nb, struct vjcompress *comp);
-extern int   vj_uncompress_tcp   (struct pbuf **nb, struct vjcompress *comp);
+extern void vj_compress_init(struct vjcompress *comp);
+extern u_int vj_compress_tcp(struct vjcompress *comp, struct pbuf *pb);
+extern void vj_uncompress_err(struct vjcompress *comp);
+extern int vj_uncompress_uncomp(struct pbuf *nb, struct vjcompress *comp);
+extern int vj_uncompress_tcp(struct pbuf **nb, struct vjcompress *comp);
 
 #endif /* VJ_H */

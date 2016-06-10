@@ -31,39 +31,44 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 
-#include <tms_msg_ts/ts_req.h> // from UR
-#include <tms_msg_db/TmsdbGetData.h> // to DB
+#include <tms_msg_ts/ts_req.h>        // from UR
+#include <tms_msg_db/TmsdbGetData.h>  // to DB
 
 namespace tms_ts_nodelet
 {
-
 class ROS_TMS_TS : public nodelet::Nodelet
 {
 public:
-  ROS_TMS_TS() : sid(100000), robot_id(0), object_id(0), user_id(0), place_id(0),
-  import("#!/usr/bin/env python\n\n"
-		  "import roslib; roslib.load_manifest('tms_ts_smach')\n"
-		  "import rospy\n"
-		  "import smach\n"
-		  "import smach_ros\n\n"
-		  "from smach_ros import ServiceState\n"
-		  "from smach import Concurrence\n\n"
-		  "from tms_msg_rp.srv import *\n"
-		  "from tms_msg_ts.srv import *\n\n"),
-  main_function1("def main():\n"
-		  "    rospy.init_node('tms_ts_smach_executive"),
-  main_function2("')\n\n"
-		  "    sm_root = smach.StateMachine(['succeeded','aborted','preempted'])\n\n"
-		  "    with sm_root:\n\n"),
-  introspection_server("    sis = smach_ros.IntrospectionServer('tms_ts_smach_test',"
-		  " sm_root, '/ROS_TMS')\n"
-		  "    sis.start()\n\n"
-		  "    outcome = sm_root.execute()\n\n"
-		  "    rospy.spin()\n"
-		  "    sis.stop()\n\n"
-		  "if __name__ == '__main__':\n"
-		  "    main()\n")
-  {}
+  ROS_TMS_TS()
+    : sid(100000)
+    , robot_id(0)
+    , object_id(0)
+    , user_id(0)
+    , place_id(0)
+    , import("#!/usr/bin/env python\n\n"
+             "import roslib; roslib.load_manifest('tms_ts_smach')\n"
+             "import rospy\n"
+             "import smach\n"
+             "import smach_ros\n\n"
+             "from smach_ros import ServiceState\n"
+             "from smach import Concurrence\n\n"
+             "from tms_msg_rp.srv import *\n"
+             "from tms_msg_ts.srv import *\n\n")
+    , main_function1("def main():\n"
+                     "    rospy.init_node('tms_ts_smach_executive")
+    , main_function2("')\n\n"
+                     "    sm_root = smach.StateMachine(['succeeded','aborted','preempted'])\n\n"
+                     "    with sm_root:\n\n")
+    , introspection_server("    sis = smach_ros.IntrospectionServer('tms_ts_smach_test',"
+                           " sm_root, '/ROS_TMS')\n"
+                           "    sis.start()\n\n"
+                           "    outcome = sm_root.execute()\n\n"
+                           "    rospy.spin()\n"
+                           "    sis.stop()\n\n"
+                           "if __name__ == '__main__':\n"
+                           "    main()\n")
+  {
+  }
 
 private:
   virtual void onInit();
@@ -72,6 +77,8 @@ private:
 
   std::string IntToString(int number);
   int StringToInt(std::string str);
+
+  std::string BoolToString(bool b);
 
   int ArrayPush(std::string *stack, std::string data, int *sp, size_t n);
   std::string ArrayPop(std::string *stack, int *sp);
@@ -101,23 +108,23 @@ private:
   const std::string main_function1, main_function2;
   const std::string introspection_server;
 
-  struct StateData {
-  	int state_id;
-  	std::string state_name;
-  	std::vector<int> arg;
-  	int cc_subtasks; // num of CC subtasks
-  	};
+  struct StateData
+  {
+    int state_id;
+    std::string state_name;
+    std::vector< int > arg;
+    int cc_subtasks;  // num of CC subtasks
+  };
 
-  std::vector<StateData> state_data;
+  std::vector< StateData > state_data;
 
   std::string file_name;
   std::string generated_container;
   std::string generated_main;
 
-  ros::ServiceServer service; // connect to UR
-  ros::ServiceClient db_reader_client; // connect to DB
+  ros::ServiceServer service;           // connect to UR
+  ros::ServiceClient db_reader_client;  // connect to DB
 };
-
 
 PLUGINLIB_DECLARE_CLASS(tms_ts_nodelet, ROS_TMS_TS, tms_ts_nodelet::ROS_TMS_TS, nodelet::Nodelet);
 }

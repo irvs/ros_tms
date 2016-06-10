@@ -19,7 +19,7 @@
 #include <geometry_msgs/Point.h>
 #include <stdio.h>
 
-//kobukiの初期位置を保持するための大域変数
+// kobukiの初期位置を保持するための大域変数
 double x;
 double y;
 double th;
@@ -36,14 +36,11 @@ double v_ori_th;
 double distance(double x0, double y0, double x1, double y1);
 double quaternion_to_enler(double z, double w);
 
-void pub_vel(double angular,double linear);
-void vicon_sysCallback(const tms_msg_ss::vicon_data::ConstPtr& msg);
-void odomCallback(const nav_msgs::Odometry::ConstPtr& msg);
+void pub_vel(double angular, double linear);
+void vicon_sysCallback(const tms_msg_ss::vicon_data::ConstPtr &msg);
+void odomCallback(const nav_msgs::Odometry::ConstPtr &msg);
 
 bool getKobukiInfo(double *robot_x, double *robot_y, double *robot_th);
-bool callback(tms_msg_rc::rc_robot_control::Request  &req,
-		tms_msg_rc::rc_robot_control::Response &res);
-
-
+bool callback(tms_msg_rc::rc_robot_control::Request &req, tms_msg_rc::rc_robot_control::Response &res);
 
 #endif /* KOBUKI_CONTROL_H_ */

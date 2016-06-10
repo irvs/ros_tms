@@ -18,8 +18,10 @@ import sys
 import math
 import time
 import datetime
-import rospy
 import subprocess
+import rospy
+import tf2_ros
+import tf2_geometry_msgs
 
 from tms_msg_db.msg import TmsdbStamped
 from tms_msg_db.msg import Tmsdb
@@ -75,8 +77,10 @@ NONE = 0
 EXIST = 1
 
 LC_MAX_SENSOR_NUM = 4
-D_COUT = sys.stdout.write   #デバッグ用アウトプット
+D_COUT = sys.stdout.write  # デバッグ用アウトプット
 
+tfBuffer = tf2_ros.Buffer(rospy.Duration(1200.0))
+listener = tf2_ros.TransformListener(tfBuffer)
 
 class CLoadCell(object):
 
@@ -392,7 +396,7 @@ class CIntelCab(object):
         for index, cObj in enumerate(self.TagObjList):
             print "{0:>3}:  UID->".format(index + 1),
             print cObj.mUID,
-            print "  Weight={0:>4}  X={1:.0f} Y={2:.0f}".format(cObj.mWeight, cObj.mX, cObj.mY),
+            print "  Weight={0:>4}  X={1:.3f} Y={2:.3f}".format(cObj.mWeight, cObj.mX, cObj.mY),
             print "<{0}:{1}>".format(cObj.mName, cObj.mComment)
 
     def UpdateObj(self):
@@ -477,34 +481,53 @@ class CIntelCab(object):
         return value, cInOut
 
 
+def getWorldFramePos(x, y):
+    global tfBuffer
+    offset_x = rospy.get_param('~offset_x')
+    offset_y = rospy.get_param('~offset_y')
+    offset_z = rospy.get_param('~offset_z')
+    frame_id = rospy.get_param('~frame_id')
+    world = "world_link"
+    pos = tf2_geometry_msgs.PointStamped()
+    pos.header.stamp = rospy.Time()
+    pos.header.frame_id = frame_id
+    pos.point.x = x + offset_x
+    pos.point.y = y + offset_y
+    pos.point.z = offset_z
+    while not tfBuffer.can_transform(pos.header.frame_id, world, pos.header.stamp):
+        pass
+    ret = tfBuffer.transform(pos, world, timeout=rospy.Duration(1.0))
+    return ret
+
+
 def main():
     print "Hello World"
     rfidValue = dict()
-    rfidValue["E00401004E17F97A"] = 7001
-    rfidValue["E00401004E180E50"] = 7002
-    rfidValue["E00401004E180E58"] = 7003
-    rfidValue["E00401004E180E60"] = 7004
-    rfidValue["E00401004E180E68"] = 7005
-    rfidValue["E00401004E180EA0"] = 7006
-    rfidValue["E00401004E180EA8"] = 7007
-    rfidValue["E00401004E181C88"] = 7008
-    rfidValue["E00401004E181C87"] = 7009
-    rfidValue["E00401004E181C7F"] = 7010
-    rfidValue["E00401004E181C77"] = 7011
-    rfidValue["E00401004E181C3F"] = 7012
-    rfidValue["E00401004E181C37"] = 7013
-    rfidValue["E00401004E180E47"] = 7014
-    rfidValue["E00401004E180E3F"] = 7015
-    rfidValue["E00401004E180E37"] = 7016
-    rfidValue["E00401004E1805BD"] = 7017
-    rfidValue["E00401004E180585"] = 7018
-    rfidValue["E00401004E18057D"] = 7019
-    rfidValue["E00401004E17EF3F"] = 7020
-    rfidValue["E00401004E17EF37"] = 7021
-    rfidValue["E00401004E17EF2F"] = 7022
-    rfidValue["E00401004E17EF27"] = 7023
-    rfidValue["E00401004E17EEEF"] = 7024
-    rfidValue["E00401004E17EEE7"] = 7025
+    rfidValue["E00401004E17F97A"] = {"id":7001, "name":"chipstar_red"}
+    rfidValue["E00401004E180E50"] = {"id":7002, "name":"chipstar_orange"}
+    rfidValue["E00401004E180E58"] = {"id":7003, "name":"chipstar_green"}
+    rfidValue["E00401004E180E60"] = {"id":7004, "name":"greentea_bottle"}
+    rfidValue["E00401004E180E68"] = {"id":7005, "name":"soukentea_bottle"}
+    rfidValue["E00401004E180EA0"] = {"id":7006, "name":"cancoffee"}
+    rfidValue["E00401004E180EA8"] = {"id":7007, "name":"seasoner_bottle"}
+    rfidValue["E00401004E181C88"] = {"id":7008, "name":"dispenser"}
+    rfidValue["E00401004E181C87"] = {"id":7009, "name":"soysauce_bottle_black"}
+    rfidValue["E00401004E181C7F"] = {"id":7010, "name":"soysauce_bottle_blue"}
+    rfidValue["E00401004E181C77"] = {"id":7011, "name":"soysauce_bottle_white"}
+    rfidValue["E00401004E181C3F"] = {"id":7012, "name":"pepper_bottle_black"}
+    rfidValue["E00401004E181C37"] = {"id":7013, "name":"pepper_bottle_red"}
+    rfidValue["E00401004E180E47"] = {"id":7014, "name":"sake_bottle"}
+    rfidValue["E00401004E180E3F"] = {"id":7015, "name":"teapot"}
+    rfidValue["E00401004E180E37"] = {"id":7016, "name":"chawan"}
+    rfidValue["E00401004E1805BD"] = {"id":7017, "name":"teacup1"}
+    rfidValue["E00401004E180585"] = {"id":7018, "name":"teacup2"}
+    rfidValue["E00401004E18057D"] = {"id":7019, "name":"cup1"}
+    rfidValue["E00401004E17EF3F"] = {"id":7020, "name":"cup2"}
+    rfidValue["E00401004E17EF37"] = {"id":7021, "name":"mugcup"}
+    rfidValue["E00401004E17EF2F"] = {"id":7022, "name":"remote"}
+    rfidValue["E00401004E17EF27"] = {"id":7023, "name":"book_red"}
+    rfidValue["E00401004E17EEEF"] = {"id":7024, "name":"book_blue"}
+    rfidValue["E00401004E17EEE7"] = {"id":7025, "name":"dish"}
 
     # init ROS
     rospy.init_node('ibs', anonymous=True)
@@ -515,8 +538,12 @@ def main():
         print "ros param 'idSensor' isn't exist"
     if not rospy.has_param('~idPlace'):
         print "ros param 'idPlace' isn't exist"
-    if not rospy.has_param('~z'):
-        print "ros param 'z' isn't exist"
+    if not rospy.has_param('~offset_x'):
+        print "ros param 'offset_x' isn't exist"
+    if not rospy.has_param('~offset_y'):
+        print "ros param 'offset_y' isn't exist"
+    if not rospy.has_param('~offset_z'):
+        print "ros param 'offset_z' isn't exist"
     if not rospy.has_param('~frame_id'):
         print "ros param 'frame_id' isn't exist"
     if not rospy.has_param('~loadcell_points/x'):
@@ -527,18 +554,16 @@ def main():
     # rosparam取得
     idSensor = rospy.get_param('~idSensor')
     idPlace = rospy.get_param('~idPlace')
-    z = rospy.get_param('~z')
-    frame_id = rospy.get_param('~frame_id')
     PORT_LC0 = rospy.get_param("~PORT_LC0", "/dev/ttyACM0")
     PORT_TR = rospy.get_param("~PORT_TR", "/dev/ttyUSB0")
     xpos0 = rospy.get_param('~loadcell_points/x', (0.0, 1000.0, 0.0, 1000.0))
     ypos0 = rospy.get_param('~loadcell_points/y', (0.0, 0.0, 1000.0, 1000.0))
 
     # 仮想COMポートへのアクセス権取得
-    cmd_chmod = "sudo -S chmod a+rw "+PORT_LC0
-    print cmd_chmod+"\n",   subprocess.check_output(cmd_chmod.split(" "))
-    cmd_chmod = "sudo -S chmod a+rw "+PORT_TR
-    print cmd_chmod+"\n",   subprocess.check_output(cmd_chmod.split(" "))
+    cmd_chmod = "sudo -S chmod a+rw " + PORT_LC0
+    print cmd_chmod + "\n",   subprocess.check_output(cmd_chmod.split(" "))
+    cmd_chmod = "sudo -S chmod a+rw " + PORT_TR
+    print cmd_chmod + "\n",   subprocess.check_output(cmd_chmod.split(" "))
 
     # xpos0 = (16.0, 407.0, 16.0, 407.0)
     # ypos0 = (16.0, 16.0, 244.0, 244.0)
@@ -587,36 +612,36 @@ def main():
             change_flag = False
             # 毎回初期化し，庫内にある物品だけ値を更新して送信する
             msg = TmsdbStamped()
-            msg.header.frame_id = frame_id
+            msg.header.frame_id = "world_link"
             msg.header.stamp = rospy.get_rostime() + rospy.Duration(9 * 60 * 60)
-            for i in xrange(MAX_OBJECT_NUM):
+            now = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
+
+            for tag,v in sorted(rfidValue.items(), key=lambda x: x[1]["id"]):
                 time.sleep(0.001)
                 tmp_db = Tmsdb()
-                tmp_db.time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
-                tmp_db.id = i + 7001  # 物品IDは 7001 から
-                tmp_db.x = -1.0
-                tmp_db.y = -1.0
-                tmp_db.z = -1.0
+                tmp_db.time = now
+                tmp_db.id = v["id"]
+                tmp_db.name = v["name"]
                 tmp_db.place = idPlace
                 tmp_db.sensor = idSensor
-                tmp_db.state = NONE  # 知的収納庫内に 0:存在しない, 1:存在する
+                tmp_db.tag = tag
+                exist_rfids = [rfid.mUID for rfid in cIntelCab.TagObjList]
+                if tag in exist_rfids:  # 収納庫内に存在
+                    tmp_db.state = EXIST
+                    world_pos = getWorldFramePos(cObj.mX, cObj.mY)
+                    tmp_db.x = world_pos.point.x
+                    tmp_db.y = world_pos.point.y
+                    tmp_db.z = world_pos.point.z
+                    tmp_db.weight = cObj.mWeight                
+                else :                  # 収納庫内に存在しない
+                    tmp_db.state = NONE                
+                    tmp_db.x = -1.0
+                    tmp_db.y = -1.0
+                    tmp_db.z = -1.0
                 msg.tmsdb.append(tmp_db)
-
-            for j in xrange(len(cIntelCab.TagObjList)):
-                cObj = cIntelCab.TagObjList[j]
-                vi = rfidValue[cObj.mUID] - 7001
-                time.sleep(0.001)  # 1ms
-                msg.tmsdb[vi].time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
-                msg.tmsdb[vi].id = rfidValue[cObj.mUID]
-                msg.tmsdb[vi].state = EXIST
-                msg.tmsdb[vi].x = cObj.mX
-                msg.tmsdb[vi].y = cObj.mY
-                msg.tmsdb[vi].z = z
-                msg.tmsdb[vi].weight = cObj.mWeight
             cIntelCab.PrintObjInfo()
             db_pub.publish(msg)
     return 0
 
 if __name__ == '__main__':
     main()
-

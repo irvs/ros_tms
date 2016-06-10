@@ -16,6 +16,15 @@
             <option value="$PROJECT_DIR$/tms_ur_sanmoku" />
           </set>
         </option>
+        <option name="myModules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/tms_ur_arviewer" />
+            <option value="$PROJECT_DIR$/tms_ur_commander" />
+            <option value="$PROJECT_DIR$/tms_ur_dbbrowser" />
+            <option value="$PROJECT_DIR$/tms_ur_sanmoku" />
+          </set>
+        </option>
       </GradleProjectSettings>
     </option>
   </component>

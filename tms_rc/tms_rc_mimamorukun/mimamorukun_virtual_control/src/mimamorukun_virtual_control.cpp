@@ -18,13 +18,15 @@ double g_t = -90.0;  // -90
 double g_r_state = 1;
 
 //------------------------------------------------------------------------------
-int8_t VehicleMoveLinearAbs(double x_mm, double y_mm, double theta_deg) {
+int8_t VehicleMoveLinearAbs(double x_mm, double y_mm, double theta_deg)
+{
   bool ret = true;
 
   g_x = x_mm;
   g_y = y_mm;
   g_t = theta_deg;
-  if (g_t < -180) g_t = g_t + 360;
+  if (g_t < -180)
+    g_t = g_t + 360;
 
   printf("vehicleMoveLinearAbs(%0.1fmm, %0.1fmm, %0.1fdeg) result:", g_x, g_y, g_t);
   ret ? printf("Success\n") : printf("Failure\n");
@@ -36,12 +38,14 @@ int8_t VehicleMoveLinearAbs(double x_mm, double y_mm, double theta_deg) {
 }
 
 //------------------------------------------------------------------------------
-bool robotControl(tms_msg_rc::rc_robot_control::Request &req,
-                  tms_msg_rc::rc_robot_control::Response &res) {
-  switch (req.unit) {
+bool robotControl(tms_msg_rc::rc_robot_control::Request &req, tms_msg_rc::rc_robot_control::Response &res)
+{
+  switch (req.unit)
+  {
     //----------------------------------------------------------------------------
     case 1:  // Vehivle
-      switch (req.cmd) {
+      switch (req.cmd)
+      {
         case 15:
           res.result = VehicleMoveLinearAbs(req.arg[0], req.arg[1], req.arg[2]);
           break;
@@ -60,20 +64,22 @@ bool robotControl(tms_msg_rc::rc_robot_control::Request &req,
 }
 
 //------------------------------------------------------------------------------
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   //--------------------------------------------------------------------------
   ros::init(argc, argv, "mimamorukun_virtual_control");
   ros::NodeHandle nh;
   ros::ServiceServer service = nh.advertiseService("mimamorukun_virtual_control", robotControl);
 
-  pose_publisher = nh.advertise<tms_msg_db::TmsdbStamped>("tms_db_data", 10);
+  pose_publisher = nh.advertise< tms_msg_db::TmsdbStamped >("tms_db_data", 10);
 
   // kobuki initialize
   printf("Virtual MIMAMORUKUN initialization has been completed.\n\n");
   ros::Rate loop_rate(10);  // 10Hz frequency (0.1 sec)
 
   //--------------------------------------------------------------------------
-  while (ros::ok()) {
+  while (ros::ok())
+  {
     ros::Time now = ros::Time::now() + ros::Duration(9 * 60 * 60);  // GMT +9
     double secs = now.toSec();
     // ROS_INFO("r1|Time:%f,x:%f,y:%f,ry:%f", secs,g_x,g_y,g_t);
