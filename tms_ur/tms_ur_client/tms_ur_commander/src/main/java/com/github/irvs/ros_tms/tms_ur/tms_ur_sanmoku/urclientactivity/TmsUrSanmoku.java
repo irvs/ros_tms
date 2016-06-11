@@ -1214,6 +1214,9 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 
 							tv.setText(str);
 
+							str = "以下の命令を実行します";
+							speechText(str);
+
 							data.sendCommand(task_id,robot_id,user_id,place_id,object_id);
 
 							sublayout.removeAllViews();
