@@ -110,20 +110,25 @@ class SubTaskPick:
         # Set a limit on the number of pick attempts before bailing
         max_pick_attempts = 10
         # Give the scene a chance to catch up
-        rospy.sleep(1)
+        rospy.sleep(0.2)
 
         target_id = str(req.object_id)
         scene.remove_world_object(target_id)
         scene.remove_attached_object(GRIPPER_FRAME, target_id)
 
-        rospy.sleep(1)
+        rospy.sleep(0.2)
 
         arm.set_named_target('l_arm_init')
         arm.go()
         gripper.set_joint_value_target(GRIPPER_NEUTRAL)
         gripper.go()
 
-        rospy.sleep(1)
+        rospy.sleep(0.2)
+
+        if target.offset_x==0 and target.offset_y==0 and target.offset_x==0:
+            target.offset_x = 0.033;
+            target.offset_y = 0.033;
+            target.offset_z = 0.083;
 
         target_size = [(target.offset_x*2), (target.offset_y*2), (target.offset_z*2)]
         #target_size = [0.03, 0.03, 0.12]
@@ -142,7 +147,7 @@ class SubTaskPick:
 
         scene.add_box(target_id, target_pose, target_size)
 
-        rospy.sleep(1)
+        rospy.sleep(0.2)
 
         print(target_pose.pose.position.x)
         print(target_pose.pose.position.y)
