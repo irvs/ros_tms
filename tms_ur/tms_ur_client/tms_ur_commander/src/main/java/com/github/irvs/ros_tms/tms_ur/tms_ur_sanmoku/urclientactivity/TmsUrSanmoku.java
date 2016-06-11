@@ -1004,9 +1004,11 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 		//何か見つかっている
 		if(m_View.getFurnitureIndex()!=0){
 			String name = m_View.getFurnitureName();
+			Log.i("arname",name);
 			int fIndex = 0;
 			data.sendFurniture();
 			for(TmsdbObject furniture : data.getFurnitureArray()){
+				Log.i("furniturename",furniture.getName());
 				if(!name.equals(furniture.getName())){
 					fIndex++;
 				}
