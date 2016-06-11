@@ -22,7 +22,7 @@ email: etienne.lachance@polymtl.ca or richard.gourdeau@polymtl.ca
 
 Reference:
 
-[1] J.C.K. Chou, "Quaternion Kinematic and Dynamic Differential Equations", 
+[1] J.C.K. Chou, "Quaternion Kinematic and Dynamic Differential Equations",
     IEEE Transaction on Robotics and Automation, vol 8, p53-64.
 
 [2] S. Chiaverini, B. Siciliano, "The Unit Quaternion: A Useful Tool for
@@ -51,7 +51,7 @@ Revision_history:
     -Added support for newmat's use_namespace #define, using ROBOOP namespace
 
 2005/11/06: Etienne Lachance
-    - No need to provide a copy constructor and the assignment operator 
+    - No need to provide a copy constructor and the assignment operator
       (operator=) for Quaternion class. Instead we use the one provide by the
       compiler.
 
@@ -61,7 +61,6 @@ Revision_history:
       q2 = q1 * c
 ------------------------------------------------------------------------------
 */
-
 
 #ifndef QUATERNION_H
 #define QUATERNION_H
@@ -77,8 +76,9 @@ static const char header_quat_rcsid[] = "$Id: quaternion.h,v 1.12 2005/11/15 19:
 #include "robot.h"
 
 #ifdef use_namespace
-namespace ROBOOP {
-  using namespace NEWMAT;
+namespace ROBOOP
+{
+using namespace NEWMAT;
 #endif
 
 #define BASE_FRAME 0
@@ -92,65 +92,69 @@ namespace ROBOOP {
 class Quaternion
 {
 public:
-   Quaternion();
-   Quaternion(const Real angle_in_rad, const ColumnVector & axis);
-   Quaternion(const Real s, const Real v1, const Real v2,
-              const Real v3);
-   Quaternion(const Matrix & R);
+  Quaternion();
+  Quaternion(const Real angle_in_rad, const ColumnVector &axis);
+  Quaternion(const Real s, const Real v1, const Real v2, const Real v3);
+  Quaternion(const Matrix &R);
 
-   Quaternion   operator+(const Quaternion & q)const;
-   Quaternion   operator-(const Quaternion & q)const;
-   Quaternion   operator*(const Quaternion & q)const;
-   Quaternion   operator/(const Quaternion & q)const;
-   Quaternion   conjugate()const;
+  Quaternion operator+(const Quaternion &q) const;
+  Quaternion operator-(const Quaternion &q) const;
+  Quaternion operator*(const Quaternion &q) const;
+  Quaternion operator/(const Quaternion &q) const;
+  Quaternion conjugate() const;
 
-//   Quaternion   i()const { return conjugate(); }
-   Quaternion   i()const;
-   Quaternion & unit(); 
-   Quaternion   exp() const;
-   Quaternion   power(const Real t) const;
-   Quaternion   Log() const;
+  //   Quaternion   i()const { return conjugate(); }
+  Quaternion i() const;
+  Quaternion &unit();
+  Quaternion exp() const;
+  Quaternion power(const Real t) const;
+  Quaternion Log() const;
 
-   Quaternion   dot(const ColumnVector & w, const short sign)const;
-   ReturnMatrix E(const short sign)const;
+  Quaternion dot(const ColumnVector &w, const short sign) const;
+  ReturnMatrix E(const short sign) const;
 
-   Real         norm()const;
-   Real         dot_prod(const Quaternion & q)const;
-   Real         s()const { return s_; }        //!< Return scalar part.
-   void         set_s(const Real s){ s_ = s; } //!< Set scalar part.
-   ReturnMatrix v()const { return v_; }        //!< Return vector part.
-   void         set_v(const ColumnVector & v); //!< Set vector part.
-   ReturnMatrix R()const;
-   ReturnMatrix T()const;
+  Real norm() const;
+  Real dot_prod(const Quaternion &q) const;
+  Real s() const
+  {
+    return s_;
+  }  //!< Return scalar part.
+  void set_s(const Real s)
+  {
+    s_ = s;
+  }  //!< Set scalar part.
+  ReturnMatrix v() const
+  {
+    return v_;
+  }                                   //!< Return vector part.
+  void set_v(const ColumnVector &v);  //!< Set vector part.
+  ReturnMatrix R() const;
+  ReturnMatrix T() const;
 
 private:
-   Real s_;         //!< Quaternion scalar part.
-   ColumnVector v_; //!< Quaternion vector part.
+  Real s_;          //!< Quaternion scalar part.
+  ColumnVector v_;  //!< Quaternion vector part.
 };
 
 // ----------------------------------------------------------------------------
 
-Quaternion  operator*(const Real c, const Quaternion & rhs);
-Quaternion  operator*(const Quaternion & lhs, const Real c);
-Quaternion  operator/(const Real c, const Quaternion & rhs);
-Quaternion  operator/(const Quaternion & lhs, const Real c);
+Quaternion operator*(const Real c, const Quaternion &rhs);
+Quaternion operator*(const Quaternion &lhs, const Real c);
+Quaternion operator/(const Real c, const Quaternion &rhs);
+Quaternion operator/(const Quaternion &lhs, const Real c);
 
-ReturnMatrix Omega(const Quaternion & q, const Quaternion & q_dot);
+ReturnMatrix Omega(const Quaternion &q, const Quaternion &q_dot);
 
-short Integ_quat(Quaternion & dquat_present, Quaternion & dquat_past,
-                 Quaternion & quat, const Real dt);
-Real Integ_Trap_quat_s(const Quaternion & present, Quaternion & past,
-                       const Real dt);
-ReturnMatrix Integ_Trap_quat_v(const Quaternion & present, Quaternion & past,
-                               const Real dt);
+short Integ_quat(Quaternion &dquat_present, Quaternion &dquat_past, Quaternion &quat, const Real dt);
+Real Integ_Trap_quat_s(const Quaternion &present, Quaternion &past, const Real dt);
+ReturnMatrix Integ_Trap_quat_v(const Quaternion &present, Quaternion &past, const Real dt);
 
-Quaternion Slerp(const Quaternion & q0, const Quaternion & q1, const Real t);
-Quaternion Slerp_prime(const Quaternion & q0, const Quaternion & q1, const Real t);
+Quaternion Slerp(const Quaternion &q0, const Quaternion &q1, const Real t);
+Quaternion Slerp_prime(const Quaternion &q0, const Quaternion &q1, const Real t);
 
-Quaternion Squad(const Quaternion & p, const Quaternion & a, const Quaternion & b,
-                 const Quaternion & q, const Real t);
-Quaternion Squad_prime(const Quaternion & p, const Quaternion & a, const Quaternion & b,
-                       const Quaternion & q, const Real t);
+Quaternion Squad(const Quaternion &p, const Quaternion &a, const Quaternion &b, const Quaternion &q, const Real t);
+Quaternion Squad_prime(const Quaternion &p, const Quaternion &a, const Quaternion &b, const Quaternion &q,
+                       const Real t);
 
 #ifdef use_namespace
 }

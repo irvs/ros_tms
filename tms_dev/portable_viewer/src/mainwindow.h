@@ -21,39 +21,40 @@
 
 class Viewer;
 
-namespace Ui {
+namespace Ui
+{
 class MainWindow;
 }
 
 //------------------------------------------------------------------------------
 class MainWindow : public QMainWindow, private Ui_MainWindow
 {
-    Q_OBJECT
-    
-public:
-    MainWindow(QNode *node, QWidget *parent = 0);
-    ~MainWindow();
+  Q_OBJECT
 
-    int window_count;
+public:
+  MainWindow(QNode *node, QWidget *parent = 0);
+  ~MainWindow();
+
+  int window_count;
 
 private Q_SLOTS:
-    void viewData();
-    void clear_Image();
-    void reload_Image();
-    void track_Nothing();
-    void track_Gradual_disappear();
-    void track_All_remind();
-    void grid_On();
-    void grid_Off();
-    void laser_on();
-    void laser_off();
+  void viewData();
+  void clear_Image();
+  void reload_Image();
+  void track_Nothing();
+  void track_Gradual_disappear();
+  void track_All_remind();
+  void grid_On();
+  void grid_Off();
+  void laser_on();
+  void laser_off();
 
 private:
-    Viewer *viewer;
-    QNode  *qnode;
+  Viewer *viewer;
+  QNode *qnode;
 };
 
 //------------------------------------------------------------------------------
-#endif // MAINWINDOW_H
+#endif  // MAINWINDOW_H
 
 //------------------------------------------------------------------------------

@@ -6,6 +6,6 @@
 #include "kinematics.h"
 //#include <iostream>
 
-namespace AnaGuess {
-
-} // namespace
+namespace AnaGuess
+{
+}  // namespace

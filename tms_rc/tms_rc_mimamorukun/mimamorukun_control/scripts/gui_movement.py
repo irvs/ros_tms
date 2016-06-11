@@ -3,6 +3,7 @@
 
 import os, sys
 from PyQt4 import QtGui, QtCore
+import argparse
 import rospy
 #import roslib
 from tms_msg_rs.srv import *
@@ -10,6 +11,7 @@ from tms_msg_db.msg import TmsdbStamped
 from tms_msg_db.msg import Tmsdb
 import tms_msg_db.srv
 import tms_msg_rp.srv
+import tms_msg_rc.srv
 
 SCRIPT_PATH = os.path.abspath(os.path.dirname(__file__))
 MAP_PATH = '/images/map.jpg'
@@ -21,6 +23,7 @@ MAP_ORIGN = QtCore.QPoint(0.0, 400.0)
 MAP_SIZE = QtCore.QPoint(780.0, 437.0)
 # ROOM_SIZE = QtCore.QPoint(16000.0, 9000.0)
 ROOM_SIZE = QtCore.QPoint(15000.0, 8000.0)
+ARGS = {}
 
 
 class MainWidget(QtGui.QWidget):
@@ -115,14 +118,24 @@ class MainWidget(QtGui.QWidget):
             print ("Service call failed: %s" % e)
 
     def startMoving(self):
-        try:
-            srv_client = rospy.ServiceProxy("/rp_cmd",
-                                            tms_msg_rp.srv.rp_cmd)
+        srv_client = None
+        req = None
+        if not ARGS.direct:
+            srv_client = rospy.ServiceProxy("/rp_cmd", tms_msg_rp.srv.rp_cmd)
             req = tms_msg_rp.srv.rp_cmdRequest()
             req.command = 9001   # move
             req.type = True      # not sim, in Real World.But this param isn't used yet
             req.robot_id = 2007  # ID of mimamorukun
             req.arg = [-1, self.tgt_pos.x()*0.001, self.tgt_pos.y()*0.001, 0]
+        else :
+            srv_client = rospy.ServiceProxy("/mkun_goal_pose", tms_msg_rc.srv.rc_robot_control)
+            req = tms_msg_rc.srv.rc_robot_controlRequest()
+            req.unit = 1
+            req.cmd = 15
+            req.arg.append(self.tgt_pos.x()*0.001)  # x
+            req.arg.append(self.tgt_pos.y()*0.001)  # y
+            req.arg.append(0.0)                     # theta
+        try:
             res = srv_client(req)
             print ("cmd result:", res.result)
             self.status = ""  #"Moving"
@@ -144,6 +157,12 @@ class MainWidget(QtGui.QWidget):
 
 def main():
     print ("\x1b[32mHello World\x1b[39m")
+    global ARGS
+    p = argparse.ArgumentParser(description="vicon用オブジェクトの編集（平行移動のみ）")
+    p.add_argument("-d", "--direct", action='store_true', default=False, help='移動先座標を直接指定')
+    ARGS = p.parse_args()
+    # print args.direct
+
     app = QtGui.QApplication(sys.argv)
     mnw = MainWidget()
     mnw.bt_quit.clicked.connect(app.quit)

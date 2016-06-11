@@ -37,7 +37,7 @@ Revision_history:
    -Added clear function. Suggested by Sylvain Marleau.
 
 2004/08/10: Etienne Lachance
-   -Removed select_real and add_real functions in order to make config.h/cpp 
+   -Removed select_real and add_real functions in order to make config.h/cpp
     independent of ROBOOP.
    -Removed using ROBOOP namespace
 
@@ -50,7 +50,7 @@ Revision_history:
 -------------------------------------------------------------------------------
 */
 
-/*! 
+/*!
   @file config.cpp
   @brief Configuration class functions.
 */
@@ -58,28 +58,27 @@ Revision_history:
 //! @brief RCS/CVS version.
 static const char rcsid[] = "$Id: config.cpp,v 1.20 2006/05/16 19:24:26 gourdeau Exp $";
 
-
 #include "config.h"
 
 using namespace std;
 
-Config::Config(const bool bPrintErrorMessages_) 
+Config::Config(const bool bPrintErrorMessages_)
 //! @brief Constructor.
 {
-   bPrintErrorMessages = bPrintErrorMessages_;
+  bPrintErrorMessages = bPrintErrorMessages_;
 }
 
-short Config::read_conf(ifstream & inconffile)
+short Config::read_conf(ifstream& inconffile)
 /*!
   @brief Read a configuration file.
 
-  This function reads the configuration file specified in 
+  This function reads the configuration file specified in
   the constructor parameter. The information is stored in the
   variable conf.
 
-  A configuration file contains section(s) (between [ ]), and the 
-  section(s) contains parameter(s) with there respective value(s). 
-  The section and the parameter are always access via a string. Below 
+  A configuration file contains section(s) (between [ ]), and the
+  section(s) contains parameter(s) with there respective value(s).
+  The section and the parameter are always access via a string. Below
   is an exemple: one section named PUMA560_mDH, and two parameters.
 
   [PUMA560_mDH]
@@ -87,116 +86,118 @@ short Config::read_conf(ifstream & inconffile)
   dof:        6
 */
 {
-   //std::ifstream inconffile(filename.c_str(), std::ios::in);
+  // std::ifstream inconffile(filename.c_str(), std::ios::in);
 
-   if(inconffile)
-   {
-      string temp;
-      unsigned int tmpPos;
-      Data data;
-      getline(inconffile, temp);
+  if (inconffile)
+  {
+    string temp;
+    unsigned int tmpPos;
+    Data data;
+    getline(inconffile, temp);
 
-      while( !inconffile.eof() )
+    while (!inconffile.eof())
+    {
+      // Is-it comment line?
+      if (temp.substr(0, 1) != "#")
       {
-	 // Is-it comment line?
-         if(temp.substr(0,1) != "#")
-         {
-	    // Is-it a section name?
-            if(temp.substr(0,1) == "[") // [section]
-            {
-	       // Search for the end of the section name and ignore the rest of the line.
- 	       tmpPos = temp.find("]");
-	       if (tmpPos != string::npos)
-		 {
-		   data.section = temp.substr(1, tmpPos-1); // remove []
-		   // Read the next line, it's should be a parameter.
-		   getline(inconffile, temp);
-		   // Be sure that is not another section name.
-		   while( (temp.substr(0,1) != "[") &&
-			  (!inconffile.eof()) )
-		     {
-		       if(temp.substr(0,1) != "#") // ignore comments
-			 {
-			   if(temp.find(":") != string::npos)
-			     {
-			       istringstream inputString(temp);
-			       inputString >> data.parameter >> data.value;
-			       string tmp_value;
-			       while(inputString >> tmp_value)
-			       {
-				   data.value.append(" ");
-				   data.value.append(tmp_value);
-			       }
-			       // Find ":" in parameter.
-			       tmpPos = data.parameter.find(":");
-			       if (tmpPos != string::npos)
-				 // remove ":" a the end of parameter
-				 data.parameter = data.parameter.substr(0, tmpPos);
-			       else
-				 {
-				   inputString >> data.value;
-				   string tmp_value;
-				   while(inputString >> tmp_value)
-				   {
-				       data.value.append(" ");
-				       data.value.append(tmp_value);
-				   }
-				 }
-
-			       // Add data to the config vector
-			       conf.push_back(data);
-			     }
-
-			   // Read the next line.
-			   getline(inconffile, temp);
-			 }
-		       else
-			 {
-			   // Ignore comments and read the next line.
-			   getline(inconffile, temp);
-			 }
-		     }
-		 }
-            }
-         }
-         if(temp.substr(0,1) != "[") {
+        // Is-it a section name?
+        if (temp.substr(0, 1) == "[")  // [section]
+        {
+          // Search for the end of the section name and ignore the rest of the line.
+          tmpPos = temp.find("]");
+          if (tmpPos != string::npos)
+          {
+            data.section = temp.substr(1, tmpPos - 1);  // remove []
+            // Read the next line, it's should be a parameter.
             getline(inconffile, temp);
-         }
+            // Be sure that is not another section name.
+            while ((temp.substr(0, 1) != "[") && (!inconffile.eof()))
+            {
+              if (temp.substr(0, 1) != "#")  // ignore comments
+              {
+                if (temp.find(":") != string::npos)
+                {
+                  istringstream inputString(temp);
+                  inputString >> data.parameter >> data.value;
+                  string tmp_value;
+                  while (inputString >> tmp_value)
+                  {
+                    data.value.append(" ");
+                    data.value.append(tmp_value);
+                  }
+                  // Find ":" in parameter.
+                  tmpPos = data.parameter.find(":");
+                  if (tmpPos != string::npos)
+                    // remove ":" a the end of parameter
+                    data.parameter = data.parameter.substr(0, tmpPos);
+                  else
+                  {
+                    inputString >> data.value;
+                    string tmp_value;
+                    while (inputString >> tmp_value)
+                    {
+                      data.value.append(" ");
+                      data.value.append(tmp_value);
+                    }
+                  }
+
+                  // Add data to the config vector
+                  conf.push_back(data);
+                }
+
+                // Read the next line.
+                getline(inconffile, temp);
+              }
+              else
+              {
+                // Ignore comments and read the next line.
+                getline(inconffile, temp);
+              }
+            }
+          }
+        }
       }
-   }
-   else
-   {
-      if (bPrintErrorMessages)
+      if (temp.substr(0, 1) != "[")
       {
-          cerr << "Config::read_conf: invalid input ifstream " << endl;
+        getline(inconffile, temp);
       }
-      return CAN_NOT_OPEN_FILE;
-   }
-   return 0;
+    }
+  }
+  else
+  {
+    if (bPrintErrorMessages)
+    {
+      cerr << "Config::read_conf: invalid input ifstream " << endl;
+    }
+    return CAN_NOT_OPEN_FILE;
+  }
+  return 0;
 }
 
 void Config::clear()
 //! @brief Clear the data buffer.
 {
-    conf.clear();
+  conf.clear();
 }
 
 void Config::print()
 //! @brief Print the configuration data.
 {
   string tmpSection;
-  for(Conf_data::iterator iter = conf.begin(); iter != conf.end(); ++iter)
+  for (Conf_data::iterator iter = conf.begin(); iter != conf.end(); ++iter)
+  {
+    if (tmpSection != iter->section)
     {
-      if (tmpSection != iter->section)
-	{
-	  //Beginning of a section
-	  tmpSection = iter->section;
-	  cout << "\n[" << tmpSection << "]" << endl;
-	  cout << iter->parameter+":" << " " << iter->value << endl;
-	}
-      else
-	  cout << iter->parameter+":" << " " << iter->value << endl;
+      // Beginning of a section
+      tmpSection = iter->section;
+      cout << "\n[" << tmpSection << "]" << endl;
+      cout << iter->parameter + ":"
+           << " " << iter->value << endl;
     }
+    else
+      cout << iter->parameter + ":"
+           << " " << iter->value << endl;
+  }
 }
 
 bool Config::section_exists(const string& section) const
@@ -205,10 +206,10 @@ bool Config::section_exists(const string& section) const
   @return true if @a section is found
 */
 {
-	for(Conf_data::const_iterator iter = conf.begin(); iter != conf.end(); ++iter)
-		if(iter->section == section)
-			return true;
-	return false;
+  for (Conf_data::const_iterator iter = conf.begin(); iter != conf.end(); ++iter)
+    if (iter->section == section)
+      return true;
+  return false;
 }
 
 bool Config::parameter_exists(const string& section, const string& parameter) const
@@ -217,14 +218,13 @@ bool Config::parameter_exists(const string& section, const string& parameter) co
   @return true if @a parameter is found within @a section
 */
 {
-	for(Conf_data::const_iterator iter = conf.begin(); iter != conf.end(); ++iter)
-		if( (iter->section == section) && (iter->parameter == parameter) )
-			return true;
-	return false;
+  for (Conf_data::const_iterator iter = conf.begin(); iter != conf.end(); ++iter)
+    if ((iter->section == section) && (iter->parameter == parameter))
+      return true;
+  return false;
 }
 
-short Config::write_conf(ofstream & outconffile, const string & file_title,
-                         const int space_between_column)
+short Config::write_conf(ofstream& outconffile, const string& file_title, const int space_between_column)
 /*!
   @brief Write the configuration information, contained in conf, on disk.
   @param filename: Configuration file name.
@@ -232,34 +232,33 @@ short Config::write_conf(ofstream & outconffile, const string & file_title,
   @param space_between_column: Number of blanks between : (of a parameter) and it's value.
 */
 {
-   if(outconffile)
-   {                     // file header
-      outconffile << "# ---------------------------------------------------" << endl;
-      outconffile << "# " << file_title << endl;
-      outconffile << "# ---------------------------------------------------" << endl;
-      outconffile << endl;
+  if (outconffile)
+  {  // file header
+    outconffile << "# ---------------------------------------------------" << endl;
+    outconffile << "# " << file_title << endl;
+    outconffile << "# ---------------------------------------------------" << endl;
+    outconffile << endl;
 
-      string section = "";
+    string section = "";
 
-      for(Conf_data::iterator iterConf = conf.begin(); iterConf != conf.end(); ++iterConf)
+    for (Conf_data::iterator iterConf = conf.begin(); iterConf != conf.end(); ++iterConf)
+    {
+      if (section != iterConf->section)
       {
-         if(section != iterConf->section)
-         {
-            section = iterConf->section;
-            outconffile << "\n[" << section << "]\n" << endl;
-         }
-	 outconffile << setw(space_between_column-iterConf->parameter.size()) 
-		     << iterConf->parameter + ":" << " " << iterConf->value << endl;
+        section = iterConf->section;
+        outconffile << "\n[" << section << "]\n" << endl;
       }
-      return 0;
-   }
-   else
-   {
-      if (bPrintErrorMessages)
-      {
-          cerr << "Config::write_conf: invalid input ofstream " << endl;
-      }
-      return CAN_NOT_CREATE_FILE;
-   }
+      outconffile << setw(space_between_column - iterConf->parameter.size()) << iterConf->parameter + ":"
+                  << " " << iterConf->value << endl;
+    }
+    return 0;
+  }
+  else
+  {
+    if (bPrintErrorMessages)
+    {
+      cerr << "Config::write_conf: invalid input ofstream " << endl;
+    }
+    return CAN_NOT_CREATE_FILE;
+  }
 }
-

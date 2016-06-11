@@ -6,18 +6,14 @@
          command="$(find xacro)/xacro.py '$(find rostms_description)/urdf/all_components.urdf.xacro'" />
 
   <!-- robot_state_publisher -->
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" >
+  <node name="robot_state_publisher_tracker" pkg="robot_state_publisher" type="robot_state_publisher" >
     <param name="tf_prefix" value="" />
   </node>
 
   <!-- joint_state_publisher -->
-  <node name="tms_db_state_publisher" pkg="tms_db_state_publisher" type="tms_db_state_publisher"/>
-
-<!--   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <param name="use_gui" value="true" />
-  </node>  -->
+  <node name="tms_db_state_publisher_tracker" pkg="tms_db_state_publisher" type="tms_db_state_publisher"/>
 
   <!-- RViz -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rostms_description)/rviz_config/rviz_config.rviz" respawn="true" />
+  <node name="rviz_tracker" pkg="rviz" type="rviz" args="-d $(find rostms_description)/rviz_config/rviz_config.rviz" respawn="true" />
 
 </launch>

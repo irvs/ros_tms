@@ -25,5 +25,5 @@ int n = 0;
 typedef pcl::PointXYZRGB PointType1;
 typedef pcl::PointXYZI PointType2;
 
-sensor_msgs::PointCloud2::Ptr client (new sensor_msgs::PointCloud2 ());
-sensor_msgs::Image::Ptr image (new sensor_msgs::Image);
+sensor_msgs::PointCloud2::Ptr client(new sensor_msgs::PointCloud2());
+sensor_msgs::Image::Ptr image(new sensor_msgs::Image);

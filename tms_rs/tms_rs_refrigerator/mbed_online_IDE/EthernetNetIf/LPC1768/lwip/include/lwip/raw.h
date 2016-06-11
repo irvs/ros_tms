@@ -57,10 +57,10 @@ struct raw_pcb;
  * If returning 1, the callback is responsible for freeing the pbuf
  * if it's not used any more.
  */
-typedef u8_t (*raw_recv_fn)(void *arg, struct raw_pcb *pcb, struct pbuf *p,
-    ip_addr_t *addr);
+typedef u8_t (*raw_recv_fn)(void *arg, struct raw_pcb *pcb, struct pbuf *p, ip_addr_t *addr);
 
-struct raw_pcb {
+struct raw_pcb
+{
   /* Common members of all PCB types */
   IP_PCB;
 
@@ -76,17 +76,17 @@ struct raw_pcb {
 
 /* The following functions is the application layer interface to the
    RAW code. */
-struct raw_pcb * raw_new        (u8_t proto);
-void             raw_remove     (struct raw_pcb *pcb);
-err_t            raw_bind       (struct raw_pcb *pcb, ip_addr_t *ipaddr);
-err_t            raw_connect    (struct raw_pcb *pcb, ip_addr_t *ipaddr);
+struct raw_pcb *raw_new(u8_t proto);
+void raw_remove(struct raw_pcb *pcb);
+err_t raw_bind(struct raw_pcb *pcb, ip_addr_t *ipaddr);
+err_t raw_connect(struct raw_pcb *pcb, ip_addr_t *ipaddr);
 
-void             raw_recv       (struct raw_pcb *pcb, raw_recv_fn recv, void *recv_arg);
-err_t            raw_sendto     (struct raw_pcb *pcb, struct pbuf *p, ip_addr_t *ipaddr);
-err_t            raw_send       (struct raw_pcb *pcb, struct pbuf *p);
+void raw_recv(struct raw_pcb *pcb, raw_recv_fn recv, void *recv_arg);
+err_t raw_sendto(struct raw_pcb *pcb, struct pbuf *p, ip_addr_t *ipaddr);
+err_t raw_send(struct raw_pcb *pcb, struct pbuf *p);
 
 /* The following functions are the lower layer interface to RAW. */
-u8_t             raw_input      (struct pbuf *p, struct netif *inp);
+u8_t raw_input(struct pbuf *p, struct netif *inp);
 #define raw_init() /* Compatibility define, not init needed. */
 
 #ifdef __cplusplus
