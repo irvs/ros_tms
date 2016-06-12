@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-import rospy, sys
+import rospy
+import sys
 import moveit_commander
 from geometry_msgs.msg import PoseStamped, Pose
 from moveit_commander import MoveGroupCommander, PlanningSceneInterface
@@ -25,9 +26,11 @@ GRIPPER_EFFORT = [1.0]
 
 REFERENCE_FRAME = 'world_link'
 
-INIT_ARM_VALUE = [0.0, -0.08,0.0,0.0,0.0,0.0,0.0]
+INIT_ARM_VALUE = [0.0, -0.08, 0.0, 0.0, 0.0, 0.0, 0.0]
+
 
 class SubTaskPlace:
+
     def __init__(self):
         # Initialize the move_group API
         moveit_commander.roscpp_initialize(sys.argv)
@@ -51,7 +54,7 @@ class SubTaskPlace:
             res = tms_db_reader(temp_dbdata)
             target = res.tmsdb[0]
         except rospy.ServiceException, e:
-            print "Service call failed: %s"%e
+            print "Service call failed: %s" % e
             self.shutdown()
 
         print(target.name)
@@ -121,7 +124,7 @@ class SubTaskPlace:
         # Repeat until we succeed or run out of attempts
         while result != MoveItErrorCodes.SUCCESS and n_attempts < max_place_attempts:
             n_attempts += 1
-            rospy.loginfo("Place attempt: " +  str(n_attempts))
+            rospy.loginfo("Place attempt: " + str(n_attempts))
             for place in places:
                 result = arm.place(target_id, place)
                 print(result)

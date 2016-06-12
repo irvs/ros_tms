@@ -13,6 +13,7 @@ pub = rospy.Publisher("mimamorukun/cmd_vel", Twist, queue_size=10)
 
 GOAL = None
 
+
 def main():
     print ("\x1b[32mHello World\x1b[39m")
     rospy.init_node('wheelchair_voronoi_follower')
@@ -28,9 +29,9 @@ def main():
     while not rospy.is_shutdown():
         if None == GOAL:
             continue
-        KPang = 0.2 # 1.0
+        KPang = 0.2  # 1.0
         KDang = 0
-        KPdist = 0.1 # 2.0
+        KPdist = 0.1  # 2.0
         KDdist = 0
         ARV_DIST = 0.25
 
@@ -42,15 +43,14 @@ def main():
         errorNX = errorX * cos(-pose.theta) - errorY * sin(-pose.theta)
         errorNT = normalizeAng(targetT - pose.theta)
 
-
         tmp_spd = limit(KPdist * errorNX, 100, -100)
         tmp_turn = limit(KPang * degrees(errorNT), 30, -30)
         # print "spd:{0} turn:{1}".format(tmp_spd, tmp_turn)
 
         twist = Twist()
-        distance = sqrt(errorX**2 + errorY**2)
+        distance = sqrt(errorX ** 2 + errorY ** 2)
         rospy.loginfo("dist:{0}".format(distance))
-        rospy.loginfo("psd:{0}  turn:{1}".format(tmp_spd,tmp_turn))
+        rospy.loginfo("psd:{0}  turn:{1}".format(tmp_spd, tmp_turn))
         if distance <= ARV_DIST:
             twist.angular.z = 0
             twist.linear.x = 0

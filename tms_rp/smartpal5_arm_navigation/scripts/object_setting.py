@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-import rospy, sys
+import rospy
+import sys
 import moveit_commander
 from geometry_msgs.msg import PoseStamped, Pose
 from moveit_commander import MoveGroupCommander, PlanningSceneInterface
@@ -13,7 +14,9 @@ from tms_msg_db.srv import *
 
 REFERENCE_FRAME = 'world_link'
 
+
 class ObjectSetting:
+
     def __init__(self):
         moveit_commander.roscpp_initialize(sys.argv)
         rospy.init_node('object_setting')
@@ -34,7 +37,7 @@ class ObjectSetting:
             tms_db_reader = rospy.ServiceProxy('tms_db_reader', TmsdbGetData)
             res = tms_db_reader(temp_dbdata)
         except rospy.ServiceException, e:
-            print "Service call failed: %s"%e
+            print "Service call failed: %s" % e
             self.shutdown()
 
         print(res.tmsdb)
@@ -43,7 +46,7 @@ class ObjectSetting:
         scene.remove_world_object(target_id)
         scene.remove_attached_object("l_end_effector_link", target_id)
 
-        target_size = [(res.tmsdb[0].offset_x*2), (res.tmsdb[0].offset_y*2), (res.tmsdb[0].offset_z*2)]
+        target_size = [(res.tmsdb[0].offset_x * 2), (res.tmsdb[0].offset_y * 2), (res.tmsdb[0].offset_z * 2)]
         target_pose = PoseStamped()
         target_pose.header.frame_id = REFERENCE_FRAME
         target_pose.pose.position.x = res.tmsdb[0].x
@@ -63,7 +66,7 @@ class ObjectSetting:
         moveit_commander.roscpp_shutdown()
         moveit_commander.os._exit(0)
 
-    def setColor(self, name, r, g, b, a = 0.9):
+    def setColor(self, name, r, g, b, a=0.9):
         color = ObjectColor()
         color.id = name
         color.color.r = r

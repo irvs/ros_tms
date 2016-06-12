@@ -82,6 +82,7 @@ D_COUT = sys.stdout.write  # デバッグ用アウトプット
 tfBuffer = tf2_ros.Buffer(rospy.Duration(1200.0))
 listener = tf2_ros.TransformListener(tfBuffer)
 
+
 class CLoadCell(object):
 
     def __init__(self, port):
@@ -503,31 +504,31 @@ def getWorldFramePos(x, y):
 def main():
     print "Hello World"
     rfidValue = dict()
-    rfidValue["E00401004E17F97A"] = {"id":7001, "name":"chipstar_red"}
-    rfidValue["E00401004E180E50"] = {"id":7002, "name":"chipstar_orange"}
-    rfidValue["E00401004E180E58"] = {"id":7003, "name":"chipstar_green"}
-    rfidValue["E00401004E180E60"] = {"id":7004, "name":"greentea_bottle"}
-    rfidValue["E00401004E180E68"] = {"id":7005, "name":"soukentea_bottle"}
-    rfidValue["E00401004E180EA0"] = {"id":7006, "name":"cancoffee"}
-    rfidValue["E00401004E180EA8"] = {"id":7007, "name":"seasoner_bottle"}
-    rfidValue["E00401004E181C88"] = {"id":7008, "name":"dispenser"}
-    rfidValue["E00401004E181C87"] = {"id":7009, "name":"soysauce_bottle_black"}
-    rfidValue["E00401004E181C7F"] = {"id":7010, "name":"soysauce_bottle_blue"}
-    rfidValue["E00401004E181C77"] = {"id":7011, "name":"soysauce_bottle_white"}
-    rfidValue["E00401004E181C3F"] = {"id":7012, "name":"pepper_bottle_black"}
-    rfidValue["E00401004E181C37"] = {"id":7013, "name":"pepper_bottle_red"}
-    rfidValue["E00401004E180E47"] = {"id":7014, "name":"sake_bottle"}
-    rfidValue["E00401004E180E3F"] = {"id":7015, "name":"teapot"}
-    rfidValue["E00401004E180E37"] = {"id":7016, "name":"chawan"}
-    rfidValue["E00401004E1805BD"] = {"id":7017, "name":"teacup1"}
-    rfidValue["E00401004E180585"] = {"id":7018, "name":"teacup2"}
-    rfidValue["E00401004E18057D"] = {"id":7019, "name":"cup1"}
-    rfidValue["E00401004E17EF3F"] = {"id":7020, "name":"cup2"}
-    rfidValue["E00401004E17EF37"] = {"id":7021, "name":"mugcup"}
-    rfidValue["E00401004E17EF2F"] = {"id":7022, "name":"remote"}
-    rfidValue["E00401004E17EF27"] = {"id":7023, "name":"book_red"}
-    rfidValue["E00401004E17EEEF"] = {"id":7024, "name":"book_blue"}
-    rfidValue["E00401004E17EEE7"] = {"id":7025, "name":"dish"}
+    rfidValue["E00401004E17F97A"] = {"id": 7001, "name": "chipstar_red"}
+    rfidValue["E00401004E180E50"] = {"id": 7002, "name": "chipstar_orange"}
+    rfidValue["E00401004E180E58"] = {"id": 7003, "name": "chipstar_green"}
+    rfidValue["E00401004E180E60"] = {"id": 7004, "name": "greentea_bottle"}
+    rfidValue["E00401004E180E68"] = {"id": 7005, "name": "soukentea_bottle"}
+    rfidValue["E00401004E180EA0"] = {"id": 7006, "name": "cancoffee"}
+    rfidValue["E00401004E180EA8"] = {"id": 7007, "name": "seasoner_bottle"}
+    rfidValue["E00401004E181C88"] = {"id": 7008, "name": "dispenser"}
+    rfidValue["E00401004E181C87"] = {"id": 7009, "name": "soysauce_bottle_black"}
+    rfidValue["E00401004E181C7F"] = {"id": 7010, "name": "soysauce_bottle_blue"}
+    rfidValue["E00401004E181C77"] = {"id": 7011, "name": "soysauce_bottle_white"}
+    rfidValue["E00401004E181C3F"] = {"id": 7012, "name": "pepper_bottle_black"}
+    rfidValue["E00401004E181C37"] = {"id": 7013, "name": "pepper_bottle_red"}
+    rfidValue["E00401004E180E47"] = {"id": 7014, "name": "sake_bottle"}
+    rfidValue["E00401004E180E3F"] = {"id": 7015, "name": "teapot"}
+    rfidValue["E00401004E180E37"] = {"id": 7016, "name": "chawan"}
+    rfidValue["E00401004E1805BD"] = {"id": 7017, "name": "teacup1"}
+    rfidValue["E00401004E180585"] = {"id": 7018, "name": "teacup2"}
+    rfidValue["E00401004E18057D"] = {"id": 7019, "name": "cup1"}
+    rfidValue["E00401004E17EF3F"] = {"id": 7020, "name": "cup2"}
+    rfidValue["E00401004E17EF37"] = {"id": 7021, "name": "mugcup"}
+    rfidValue["E00401004E17EF2F"] = {"id": 7022, "name": "remote"}
+    rfidValue["E00401004E17EF27"] = {"id": 7023, "name": "book_red"}
+    rfidValue["E00401004E17EEEF"] = {"id": 7024, "name": "book_blue"}
+    rfidValue["E00401004E17EEE7"] = {"id": 7025, "name": "dish"}
 
     # init ROS
     rospy.init_node('ibs', anonymous=True)
@@ -616,7 +617,7 @@ def main():
             msg.header.stamp = rospy.get_rostime() + rospy.Duration(9 * 60 * 60)
             now = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
 
-            for tag,v in sorted(rfidValue.items(), key=lambda x: x[1]["id"]):
+            for tag, v in sorted(rfidValue.items(), key=lambda x: x[1]["id"]):
                 time.sleep(0.001)
                 tmp_db = Tmsdb()
                 tmp_db.time = now
@@ -632,9 +633,9 @@ def main():
                     tmp_db.x = world_pos.point.x
                     tmp_db.y = world_pos.point.y
                     tmp_db.z = world_pos.point.z
-                    tmp_db.weight = cObj.mWeight                
-                else :                  # 収納庫内に存在しない
-                    tmp_db.state = NONE                
+                    tmp_db.weight = cObj.mWeight
+                else:                  # 収納庫内に存在しない
+                    tmp_db.state = NONE
                     tmp_db.x = -1.0
                     tmp_db.y = -1.0
                     tmp_db.z = -1.0

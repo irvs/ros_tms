@@ -14,11 +14,12 @@ import copy
 from bson import json_util
 from bson.objectid import ObjectId
 
+
 def msg_to_document(msg):
     msg_dict = {}
     slot_types = []
 
-    if hasattr(msg,'_slot_types'):
+    if hasattr(msg, '_slot_types'):
         slot_types = msg._slot_types
     else:
         slot_types = [None] * len(msg.__slots__)
@@ -27,6 +28,7 @@ def msg_to_document(msg):
         msg_dict[attr] = sanitize_value(attr, getattr(msg, attr), type)
 
     return msg_dict
+
 
 def sanitize_value(attr, v, type):
     if isinstance(v, str):
@@ -44,7 +46,7 @@ def sanitize_value(attr, v, type):
     elif isinstance(v, genpy.rostime.Time):
         return msg_to_document(v)
     elif isinstance(v, genpy.rostime.Duration):
-         return msg_to_document(v)
+        return msg_to_document(v)
     elif isinstance(v, list):
         result = []
         for t in v:
@@ -55,6 +57,7 @@ def sanitize_value(attr, v, type):
         return result
     else:
         return v
+
 
 def check_connection(db_host, db_port):
     try:
@@ -67,14 +70,16 @@ def check_connection(db_host, db_port):
         rospy.loginfo("Could not connect to mongo server %s:%d" % (db_host, db_port))
         return False
 
+
 def document_to_msg(document, TYPE):
     msg = TYPE()
-    _fill_msg(msg,document)
+    _fill_msg(msg, document)
     return msg
 
-def _fill_msg(msg,dic):
+
+def _fill_msg(msg, dic):
     for i in dic:
-        if isinstance(dic[i],dict):
-            _fill_msg(getattr(msg,i),dic[i])
+        if isinstance(dic[i], dict):
+            _fill_msg(getattr(msg, i), dic[i])
         else:
-            setattr(msg,i,dic[i])
+            setattr(msg, i, dic[i])
