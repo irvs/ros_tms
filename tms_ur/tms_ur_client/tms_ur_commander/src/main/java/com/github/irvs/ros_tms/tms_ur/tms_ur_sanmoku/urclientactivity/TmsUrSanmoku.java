@@ -1004,9 +1004,11 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 		//何か見つかっている
 		if(m_View.getFurnitureIndex()!=0){
 			String name = m_View.getFurnitureName();
+			Log.i("arname",name);
 			int fIndex = 0;
 			data.sendFurniture();
 			for(TmsdbObject furniture : data.getFurnitureArray()){
+				Log.i("furniturename",furniture.getName());
 				if(!name.equals(furniture.getName())){
 					fIndex++;
 				}
@@ -1211,6 +1213,9 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 							}
 
 							tv.setText(str);
+
+							str = "以下の命令を実行します";
+							speechText(str);
 
 							data.sendCommand(task_id,robot_id,user_id,place_id,object_id);
 
