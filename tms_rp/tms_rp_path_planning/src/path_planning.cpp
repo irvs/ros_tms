@@ -320,7 +320,6 @@ private:
     marker.color.a = 1.0;
     //
 
-
     visualization_msgs::Marker delete_olds;
     delete_olds.action = (uint8_t)3;  // なぜか"visualization_msgs::Marker::DELETEALL"が見つからないので直接定数代入
     markers.markers.push_back(delete_olds);
