@@ -59,7 +59,7 @@ class TmsDbWriter():
                     upsert=True
                 )
                 # print(result)
-            except rospy.ServiceException, e:
+            except rospy.ServiceException as e:
                 print "ServiceException: %s" % e
 
     def writeInitData(self):

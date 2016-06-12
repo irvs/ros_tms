@@ -28,7 +28,7 @@ dev.port = PORT
 def main():
     print "Hello World"
     cmd_chmod = "sudo chmod a+rw " + PORT
-    print cmd_chmod + "\n",   subprocess.check_output(cmd_chmod.split(" "))
+    print cmd_chmod + "\n", subprocess.check_output(cmd_chmod.split(" "))
     dev.open()
     pub = {}
     pub[KEYS[0]] = rospy.Publisher('afe/blood_pressue', Int32, queue_size=10)

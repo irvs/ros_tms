@@ -26,7 +26,7 @@ def main():
             if 0 < len(res.tmsdb):
                 print datetime.datetime.now(),
                 print"x:%4f  y:%4f z:%4f" % (res.tmsdb[0].x, res.tmsdb[0].y, res.tmsdb[0].ry)
-        except rospy.ServiceException, e:
+        except rospy.ServiceException as e:
             print ("Service call failed: %s" % e)
         r.sleep()
     pass

@@ -37,7 +37,7 @@ def sanitize_value(attr, v, type):
         else:
             try:
                 v = unicode(v, "utf-8")
-            except UnicodeDecodeError, e:
+            except UnicodeDecodeError as e:
                 v = Binary(v)
         return v
 

@@ -38,7 +38,7 @@ def main():
         res = db_client(req)
         if 0 < len(res.tmsdb):
             print (res.tmsdb[0].note)
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         print "Service call failed: %s" % e
     while True:
         pass

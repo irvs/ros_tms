@@ -25,6 +25,7 @@ import tf2_geometry_msgs
 
 from tms_msg_db.msg import TmsdbStamped
 from tms_msg_db.msg import Tmsdb
+from functools import reduce
 
 LC_MAX_SENSOR_NUM = 4
 LC_GET_WEIGHT_CNT = 5
@@ -562,9 +563,9 @@ def main():
 
     # 仮想COMポートへのアクセス権取得
     cmd_chmod = "sudo -S chmod a+rw " + PORT_LC0
-    print cmd_chmod + "\n",   subprocess.check_output(cmd_chmod.split(" "))
+    print cmd_chmod + "\n", subprocess.check_output(cmd_chmod.split(" "))
     cmd_chmod = "sudo -S chmod a+rw " + PORT_TR
-    print cmd_chmod + "\n",   subprocess.check_output(cmd_chmod.split(" "))
+    print cmd_chmod + "\n", subprocess.check_output(cmd_chmod.split(" "))
 
     # xpos0 = (16.0, 407.0, 16.0, 407.0)
     # ypos0 = (16.0, 16.0, 244.0, 244.0)

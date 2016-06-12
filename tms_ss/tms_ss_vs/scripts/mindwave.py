@@ -28,8 +28,8 @@ def main():
     cmd_bind = "sudo rfcomm bind " + RFCOMM_NUM + " " + BT_ADDR
     cmd_chmod = "sudo chmod a+rw /dev/rfcomm" + RFCOMM_NUM
     print cmd_release + "\n", subprocess.check_output(cmd_release.split(" "))
-    print cmd_bind + "\n",    subprocess.check_output(cmd_bind.split(" "))
-    print cmd_chmod + "\n",   subprocess.check_output(cmd_chmod.split(" "))
+    print cmd_bind + "\n", subprocess.check_output(cmd_bind.split(" "))
+    print cmd_chmod + "\n", subprocess.check_output(cmd_chmod.split(" "))
     dev = MindWaveMobile(DEV_PORT)
 
     # init ROS
@@ -120,7 +120,7 @@ class MindWaveMobile(object):
                     self.meditation = val
 
     def update(self):
-        while 1:
+        while True:
             if not self.wait_sync():
                 continue
             self.in_buffer.pop(0)   # perge sync bytes

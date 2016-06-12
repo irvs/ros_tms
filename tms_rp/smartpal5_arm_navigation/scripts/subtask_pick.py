@@ -76,7 +76,7 @@ class SubTaskPick:
             tms_db_reader = rospy.ServiceProxy('tms_db_reader', TmsdbGetData)
             res = tms_db_reader(temp_dbdata)
             target = res.tmsdb[0]
-        except rospy.ServiceException, e:
+        except rospy.ServiceException as e:
             print "Service call failed: %s" % e
             self.shutdown()
 

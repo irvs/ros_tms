@@ -115,7 +115,7 @@ class MainWidget(QtGui.QWidget):
                     -self.wc_pos.y() * 1.0 / ROOM_SIZE.y() * MAP_SIZE.y() + MAP_ORIGN.y())
                 # print(wc_mark_pos)
                 self.wc_lbl.move(wc_mark_pos - self.wc_lbl.rect().center())
-        except rospy.ServiceException, e:
+        except rospy.ServiceException as e:
             print ("Service call failed: %s" % e)
 
     def startMoving(self):
@@ -140,7 +140,7 @@ class MainWidget(QtGui.QWidget):
             res = srv_client(req)
             print ("cmd result:", res.result)
             self.status = ""  # "Moving"
-        except rospy.ServiceException, e:
+        except rospy.ServiceException as e:
             print ("Service call failed: %s" % e)
 
     def draw(self):

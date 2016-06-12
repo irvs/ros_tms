@@ -91,7 +91,7 @@ def getCurrentPose():
         pose.x = res.tmsdb[0].x
         pose.y = res.tmsdb[0].y
         pose.theta = res.tmsdb[0].ry
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         print ("Service call failed: %s" % e)
     return pose
 

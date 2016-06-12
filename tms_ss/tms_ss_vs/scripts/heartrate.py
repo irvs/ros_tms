@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     # init device
     cmd_chmod = "sudo chmod a+rw " + DEV_PORT
-    print cmd_chmod + "\n",   subprocess.check_output(cmd_chmod.split(" "))
+    print cmd_chmod + "\n", subprocess.check_output(cmd_chmod.split(" "))
     dev = serial.Serial(port=DEV_PORT, baudrate=9600)
 
     # init ROS
