@@ -1,18 +1,18 @@
-#
+############################################################################################
 # Katana450 KNI Python Interface Demo
 # Copyright (C) 2008 Neuronics AG
 # PKE/JHA, 2008
-#
+############################################################################################
 """
 This Skript demonstrates the use of the KNI library through the Python wrapper
 For API doc, read the kni_wrapper doc or the kni_wrapper.h file.
 """
-#
+#############################################################################################
 import sys
 sys.path.append("../")
 import KNI
 from KNI import TMovement
-#
+#############################################################################################
 
 import KNI
 KNI.initKatana("../../configfiles450/katana6M90T.cfg", "192.168.1.1")
@@ -80,4 +80,4 @@ KNI.executeMovement(home)
 
 KNI.allMotorsOff()
 
-#
+#############################################################################################

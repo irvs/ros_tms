@@ -23,14 +23,12 @@ import NETWORK_SETTING
 
 # -----------------------------------------------------------------------------
 # Calculation of quaternion
-
-
 def q_mul(a, b):
     c = np.array([
-        a[3] * b[0] + a[0] * b[3] + a[1] * b[2] - a[2] * b[1],
-        a[3] * b[1] - a[0] * b[2] + a[1] * b[3] + a[2] * b[0],
-        a[3] * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * b[3],
-        a[3] * b[3] - a[0] * b[0] - a[1] * b[1] - a[2] * b[2]
+        a[3]*b[0] + a[0]*b[3] + a[1]*b[2] - a[2]*b[1],
+        a[3]*b[1] - a[0]*b[2] + a[1]*b[3] + a[2]*b[0],
+        a[3]*b[2] + a[0]*b[1] - a[1]*b[0] + a[2]*b[3],
+        a[3]*b[3] - a[0]*b[0] - a[1]*b[1] - a[2]*b[2]
     ])
     return c
 
@@ -46,15 +44,15 @@ def q_inv(a):
 
 def q_toMat(a):
     b = np.empty((3, 3), float)
-    b[0, 0] = a[3] * a[3] - a[0] * a[0] - a[1] * a[1] - a[2] * a[2]
-    b[0, 1] = 2.0 * (a[0] * a[1] - a[3] * a[2])
-    b[0, 2] = 2.0 * (a[0] * a[2] + a[3] * a[1])
-    b[1, 0] = 2.0 * (a[0] * a[1] + a[3] * a[2])
-    b[1, 1] = a[3] * a[3] - a[0] * a[0] + a[1] * a[1] - a[2] * a[2]
-    b[1, 2] = 2.0 * (a[1] * a[2] - a[3] * a[0])
-    b[2, 0] = 2.0 * (a[0] * a[2] - a[3] * a[1])
-    b[2, 1] = 2.0 * (a[1] * a[2] + a[3] * a[0])
-    b[2, 2] = a[3] * a[3] - a[0] * a[0] - a[1] * a[1] + a[2] * a[2]
+    b[0, 0] = a[3]*a[3]-a[0]*a[0]-a[1]*a[1]-a[2]*a[2]
+    b[0, 1] = 2.0*(a[0]*a[1]-a[3]*a[2])
+    b[0, 2] = 2.0*(a[0]*a[2]+a[3]*a[1])
+    b[1, 0] = 2.0*(a[0]*a[1]+a[3]*a[2])
+    b[1, 1] = a[3]*a[3]-a[0]*a[0]+a[1]*a[1]-a[2]*a[2]
+    b[1, 2] = 2.0*(a[1]*a[2]-a[3]*a[0])
+    b[2, 0] = 2.0*(a[0]*a[2]-a[3]*a[1])
+    b[2, 1] = 2.0*(a[1]*a[2]+a[3]*a[0])
+    b[2, 2] = a[3]*a[3]-a[0]*a[0]-a[1]*a[1]+a[2]*a[2]
     return b
 
 
@@ -64,7 +62,7 @@ class SkeletonStream:
 
     # -------------------------------------------------------------------------
     def __init__(self, index):
-        self.camera_id = index + 1
+        self.camera_id = index+1
         self.port = NETWORK_SETTING.PORT
         self.bufsize = 16383
         self.gotOffset = False
@@ -72,7 +70,7 @@ class SkeletonStream:
     # -------------------------------------------------------------------------
     def __getOffset(self):
         try:
-            offset = OffsetManager.OffsetManager(self.camera_id - 1)
+            offset = OffsetManager.OffsetManager(self.camera_id-1)
             translation, rotation = offset.read()
             self.offsetT = np.array([
                 translation[0],
@@ -192,7 +190,7 @@ class SkeletonStream:
 
         while not rospy.is_shutdown():
             json_str, ip_addr = SkeletonStream.sock.recvfrom(self.bufsize)
-            if ip_addr[0] == NETWORK_SETTING.IP_LIST[self.camera_id - 1]:
+            if ip_addr[0] == NETWORK_SETTING.IP_LIST[self.camera_id-1]:
                 print('-----')
                 self.__setFromJSONToSkeleton(json_str)
                 rospy.loginfo('\n-----\nSending skeleton {0}\n  Camera: {1}\n  FaceState: {2}'
@@ -216,12 +214,12 @@ if __name__ == '__main__':
             print('=== Usage ===\n[command] [host_ip] [camera_id_list ...]\n')
             print('--IP_LIST (refer NETWORK_SETTING.py)')
             for i in range(0, NETWORK_SETTING.length):
-                print('  {0}: {1}'.format(i + 1, NETWORK_SETTING.IP_LIST[i]))
+                print('  {0}: {1}'.format(i+1, NETWORK_SETTING.IP_LIST[i]))
             quit()
         else:
             localhost = sys.argv[1]
             pid_list = []
-            SkeletonStream.process_list = [int(i) - 1 for i in sys.argv[2:]]
+            SkeletonStream.process_list = [int(i)-1 for i in sys.argv[2:]]
             SkeletonStream.sock = socket.socket(socket.AF_INET,
                                                 socket.SOCK_DGRAM)
             try:

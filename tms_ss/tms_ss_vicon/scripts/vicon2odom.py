@@ -5,9 +5,10 @@ import rospay
 from geometry_msgs.msg import Odometry
 from tms_msg_ss.msg import vicon_data
 
-subjectname = ''
-segmentname = ''
+subjectname=''
+segmentname=''
 pub = rospy.Publisher('odom', Odometry, queue_size=10)
+
 
 
 def main():
@@ -21,11 +22,12 @@ def main():
 
 
 def callback(vicon):
-    if segmentname != vicon.segmentname or subjectname != vicon.subjectname:
-        return
+    if segmentname!=vicon.segmentname or subjectname!=vicon.subjectname:
+         return
 
     # vicon_data -> Odometry conversion
     pub.publish(odom)
+
 
 
 if __name__ == '__main__':

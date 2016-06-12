@@ -5,7 +5,7 @@ import xml.etree.ElementTree as et
 import argparse
 import linecache
 
-# xmlメモ
+#xmlメモ
 # <タグ 属性1="value1" 属性2="value2">     ⇠親
 #     <子タグ2 属性3="value3">text</タグ2>  ⇠子
 # </タグ>
@@ -38,13 +38,12 @@ def main():
     #     print child.attrib["POSITION"]
 
     for marker in root.iter("Marker"):
-        pos = map(float, marker.attrib["POSITION"].split(" "))
+        pos = map(float,marker.attrib["POSITION"].split(" "))
         print pos
         pos[0] += offset["x"]
         pos[1] += offset["y"]
         pos[2] += offset["z"]
-        marker.attrib["POSITION"] = "{0} {1} {2}".format(
-            pos[0], pos[1], pos[2])
+        marker.attrib["POSITION"] = "{0} {1} {2}".format(pos[0], pos[1], pos[2])
 
     for parameter in root.iter("Parameter"):
         axis = parameter.attrib["NAME"][-1]
@@ -63,7 +62,7 @@ def main():
     tree.write(args.out_file, xml_declaration=None)
 
     # 特殊なヘッダーしてるせいでライブラリから書けなかった．手動で書き足す．
-    with open(args.out_file, "r+") as f:
+    with open(args.out_file,"r+") as f:
         old = f.read()
         f.seek(0)
         f.write('<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n\n')

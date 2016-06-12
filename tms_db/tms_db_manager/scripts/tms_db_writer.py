@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import rospy
 import genpy
-import pymongo  # https://api.mongodb.org/python/2.6.3/
+import pymongo # https://api.mongodb.org/python/2.6.3/
 import json
 import copy
 from bson import json_util
@@ -14,19 +14,17 @@ import tms_db_manager.tms_db_util as db_util
 client = pymongo.MongoClient('localhost:27017')
 db = client.rostmsdb
 
-
 class TmsDbWriter():
-
     def __init__(self):
         rospy.init_node("tms_db_writer")
         rospy.on_shutdown(self.shutdown)
         db_host = 'localhost'
         db_port = 27017
-        self.is_connected = db_util.check_connection(db_host, db_port)
+        self.is_connected = db_util.check_connection(db_host, db_port);
         if not self.is_connected:
             raise Exception("Problem of connection")
         rospy.Subscriber("tms_db_data", TmsdbStamped, self.dbWriteCallback)
-        self.writeInitData()
+        self.writeInitData();
 
     def dbWriteCallback(self, msg):
         # rospy.loginfo("writing the one msg")
@@ -49,25 +47,23 @@ class TmsDbWriter():
                 # store into data collection
                 # print(doc['name'])
                 db.history.insert(doc)
-                result = db.now.find(
-                    {"name": doc['name'], "sensor": doc['sensor']})
+                result = db.now.find({"name": doc['name'],"sensor": doc['sensor']})
                 print(result.count())
                 if result.count() >= 1:
                     del doc['_id']
                 result = db.now.update(
-                    {"name": doc['name'], "sensor": doc['sensor']},
+                    {"name": doc['name'],"sensor": doc['sensor']},
                     doc,
                     upsert=True
                 )
                 # print(result)
             except rospy.ServiceException, e:
-                print "ServiceException: %s" % e
+                print "ServiceException: %s"%e
 
     def writeInitData(self):
-        cursor = db.default.find(
-            {"$or": [{"type": "furniture"}, {"type": "robot"}]})
+        cursor = db.default.find({"$or":[{"type": "furniture"}, {"type": "robot"}]})
         # for doc in cursor:
-        # print(doc['name'])
+        #     # print(doc['name'])
         #     result = db.now.update(
         #         {"name": doc['name']},
         #         doc,

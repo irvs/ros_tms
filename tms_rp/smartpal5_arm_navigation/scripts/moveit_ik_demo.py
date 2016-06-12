@@ -21,8 +21,7 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import rospy
-import sys
+import rospy, sys
 import moveit_commander
 from control_msgs.msg import GripperCommand
 from moveit_msgs.msg import RobotTrajectory
@@ -45,9 +44,7 @@ GRIPPER_EFFORT = [1.0]
 
 REFERENCE_FRAME = 'world_link'
 
-
 class MoveItFKDemo:
-
     def __init__(self):
         # Initialize the move_group API and node
         moveit_commander.roscpp_initialize(sys.argv)

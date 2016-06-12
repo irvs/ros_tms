@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-import rospy
-import sys
+import rospy, sys
 import moveit_commander
 from geometry_msgs.msg import PoseStamped, Pose
 from moveit_commander import MoveGroupCommander, PlanningSceneInterface
@@ -26,19 +25,16 @@ GRIPPER_EFFORT = [1.0]
 
 REFERENCE_FRAME = 'world_link'
 
-INIT_ARM_VALUE = [0.0, -0.08, 0.0, 0.0, 0.0, 0.0, 0.0]
-
+INIT_ARM_VALUE = [0.0, -0.08,0.0,0.0,0.0,0.0,0.0]
 
 class SubTaskPlace:
-
     def __init__(self):
         # Initialize the move_group API
         moveit_commander.roscpp_initialize(sys.argv)
         rospy.init_node('subtask_place')
         rospy.on_shutdown(self.shutdown)
 
-        self.place_srv = rospy.Service(
-            'subtask_place', rp_place, self.placeSrvCallback)
+        self.place_srv = rospy.Service('subtask_place', rp_place, self.placeSrvCallback)
 
     def placeSrvCallback(self, req):
         rospy.loginfo("Received the service call!")
@@ -55,7 +51,7 @@ class SubTaskPlace:
             res = tms_db_reader(temp_dbdata)
             target = res.tmsdb[0]
         except rospy.ServiceException, e:
-            print "Service call failed: %s" % e
+            print "Service call failed: %s"%e
             self.shutdown()
 
         print(target.name)
@@ -125,7 +121,7 @@ class SubTaskPlace:
         # Repeat until we succeed or run out of attempts
         while result != MoveItErrorCodes.SUCCESS and n_attempts < max_place_attempts:
             n_attempts += 1
-            rospy.loginfo("Place attempt: " + str(n_attempts))
+            rospy.loginfo("Place attempt: " +  str(n_attempts))
             for place in places:
                 result = arm.place(target_id, place)
                 print(result)
@@ -141,8 +137,7 @@ class SubTaskPlace:
             rospy.loginfo("Success the place operation")
             ret.result = True
         else:
-            rospy.loginfo(
-                "Place operation failed after " + str(n_attempts) + " attempts.")
+            rospy.loginfo("Place operation failed after " + str(n_attempts) + " attempts.")
             ret.result = False
 
         return ret

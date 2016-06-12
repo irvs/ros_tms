@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-import rospy
-import sys
+import rospy, sys
 import moveit_commander
 from geometry_msgs.msg import PoseStamped, Pose
 from moveit_commander import MoveGroupCommander, PlanningSceneInterface
@@ -25,17 +24,14 @@ REFERENCE_FRAME = 'world_link'
 
 GRIPPER_OPEN_VAL = [-1.0]
 
-
 class SubTaskRelease:
-
     def __init__(self):
         # Initialize the move_group API
         moveit_commander.roscpp_initialize(sys.argv)
         rospy.init_node('subtask_release')
         rospy.on_shutdown(self.shutdown)
 
-        self.release_srv = rospy.Service(
-            'subtask_release', rp_release, self.ReleaseSrvCallback)
+        self.release_srv = rospy.Service('subtask_release', rp_release, self.ReleaseSrvCallback)
 
     def ReleaseSrvCallback(self, req):
         rospy.loginfo("Received the service call!")
@@ -54,7 +50,7 @@ class SubTaskRelease:
         result = gripper.go()
         arm.detach_object()
         gripper.detach_object()
-        scene.remove_attached_object(GRIPPER_FRAME, str(req.object_id))
+        scene.remove_attached_object(GRIPPER_FRAME,str(req.object_id))
         scene.remove_world_object(str(req.object_id))
         result = True
 

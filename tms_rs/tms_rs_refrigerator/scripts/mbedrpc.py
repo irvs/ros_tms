@@ -1,39 +1,35 @@
-# mbedRPC.py - mbed RPC interface for Python
+#mbedRPC.py - mbed RPC interface for Python
 #
-# Copyright (c) 2010 ARM Ltd
+##Copyright (c) 2010 ARM Ltd
+##
+##Permission is hereby granted, free of charge, to any person obtaining a copy
+##of this software and associated documentation files (the "Software"), to deal
+##in the Software without restriction, including without limitation the rights
+##to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+##copies of the Software, and to permit persons to whom the Software is
+##furnished to do so, subject to the following conditions:
+## 
+##The above copyright notice and this permission notice shall be included in
+##all copies or substantial portions of the Software.
+## 
+##THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+##IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+##FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+##AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+##LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+##OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+##THE SOFTWARE.
 #
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-#
-# Example:
+#Example:
 #>from mbedRPC import*
 #>mbed = SerialRPC("COM5",9600);
 #>myled = DigitalOut(LED1);
 #>myled.write(1)
-#>
+#> 
 
-import serial
-import urllib2
-import time
-
+import serial, urllib2, time
 
 class pin():
-
         def __init__(self, id):
                 self.name = id
 
@@ -70,29 +66,26 @@ p29 = pin("p29")
 p30 = pin("p30")
 
 
-# mbed super class
+#mbed super class
 class mbed:
-
     def __init__(self):
             print("This will work as a demo but no transport mechanism has been selected")
-
+        
     def rpc(self, name, method, args):
             print("Superclass method not overridden")
 
-# Transport mechanisms, derived from mbed
-
+#Transport mechanisms, derived from mbed
 
 class SerialRPC(mbed):
 
-    def __init__(self, port, baud):
+    def __init__(self,port, baud):
         self.ser = serial.Serial(port)
         self.ser.setBaudrate(baud)
 
-        def rpc(self, name, method, args):
-                self.ser.write(
-                    "/" + name + "/" + method + " " + " ".join(args) + "\n")
-                return self.ser.readline().strip()
 
+        def rpc(self, name, method, args):
+                self.ser.write("/" + name + "/" + method + " " + " ".join(args) + "\n")
+                return self.ser.readline().strip()
 
 class HTTPRPC(mbed):
 
@@ -100,22 +93,21 @@ class HTTPRPC(mbed):
         self.host = "http://" + ip
 
     def rpc(self, name, method, args):
-        response = urllib2.urlopen(
-            self.host + "/rpc/" + name + "/" + method + "," + ",".join(args))
+        response = urllib2.urlopen(self.host + "/rpc/" + name + "/" + method + "," + ",".join(args))
         return response.read().strip()
 
 
-# mbed Interfaces
+#mbed Interfaces
 
 class DigitalOut():
 
-    def __init__(self, this_mbed, mpin):
+    def __init__(self, this_mbed , mpin):
         self.mbed = this_mbed
         if isinstance(mpin, str):
             self.name = mpin
         elif isinstance(mpin, pin):
             self.name = self.mbed.rpc("DigitalOut", "new", [mpin.name])
-
+ 
     def __del__(self):
         r = self.mbed.rpc(self.name, "delete", [])
 
@@ -125,11 +117,10 @@ class DigitalOut():
     def read(self):
         r = self.mbed.rpc(self.name, "read", [])
         return int(r)
-
-
+      
 class AnalogIn():
 
-    def __init__(self, this_mbed, mpin):
+    def __init__(self, this_mbed , mpin):
         self.mbed = this_mbed
         if isinstance(mpin, str):
             self.name = mpin
@@ -138,7 +129,7 @@ class AnalogIn():
 
     def __del__(self):
         r = self.mbed.rpc(self.name, "delete", [])
-
+        
     def read(self):
         r = self.mbed.rpc(self.name, "read", [])
         return float(r)
@@ -147,10 +138,9 @@ class AnalogIn():
         r = self.mbed.rpc(self.name, "read_u16", [])
         return int(r)
 
-
 class AnalogOut():
 
-    def __init__(self, this_mbed, mpin):
+    def __init__(self, this_mbed , mpin):
         self.mbed = this_mbed
         if isinstance(mpin, str):
             self.name = mpin
@@ -170,10 +160,9 @@ class AnalogOut():
         r = self.mbed.rpc(self.name, "read", [])
         return float(r)
 
-
 class DigitalIn():
 
-    def __init__(self, this_mbed, mpin):
+    def __init__(self, this_mbed , mpin):
         self.mbed = this_mbed
         if isinstance(mpin, str):
             self.name = mpin
@@ -187,10 +176,9 @@ class DigitalIn():
         r = self.mbed.rpc(self.name, "read", [])
         return int(r)
 
-
 class PwmOut():
-
-    def __init__(self, this_mbed, mpin):
+    
+    def __init__(self, this_mbed , mpin):
         self.mbed = this_mbed
         if isinstance(mpin, str):
             self.name = mpin
@@ -209,32 +197,31 @@ class PwmOut():
 
     def period(self, value):
         r = self.mbed.rpc(self.name, "period", [str(value)])
-
+        
     def period_ms(self, value):
         r = self.mbed.rpc(self.name, "period_ms", [str(value)])
 
     def period_us(self, value):
         r = self.mbed.rpc(self.name, "period_us", [str(value)])
-
+        
     def puslewidth(self, value):
         r = self.mbed.rpc(self.name, "pulsewidth", [str(value)])
-
+        
     def puslewidth_ms(self, value):
         r = self.mbed.rpc(self.name, "pulsewidth_ms", [str(value)])
 
     def puslewidth_us(self, value):
         r = self.mbed.rpc(self.name, "pulsewidth_us", [str(value)])
 
-
 class Serial():
-
-    def __init__(self, this_mbed, tx, rx=""):
+        
+    def __init__(self, this_mbed , tx, rx = ""):
         self.mbed = this_mbed
         if isinstance(tx, str):
             self.name = mpin
         elif isinstance(mpin, pin):
             self.name = self.mbed.rpc("Serial", "new", [tx.name, rx.name])
-
+             
     def __del__(self):
         r = self.mbed.rpc(self.name, "delete", [])
 
@@ -242,16 +229,15 @@ class Serial():
         r = self.mbed.rpc(self.name, "putc", [str(value)])
 
     def puts(self, value):
-        r = self.mbed.rpc(self.name, "puts", ["\"" + str(value) + "\""])
+        r = self.mbed.rpc(self.name, "puts", [ "\"" + str(value) + "\""])
 
     def getc(self):
         r = self.mbed.rpc(self.name, "getc", [])
         return int(r)
 
-
 class RPCFunction():
 
-    def __init__(self, this_mbed, name):
+    def __init__(self, this_mbed , name):
         self.mbed = this_mbed
         if isinstance(name, str):
             self.name = name
@@ -267,10 +253,9 @@ class RPCFunction():
         r = self.mbed.rpc(self.name, "run", [input])
         return r
 
-
 class RPCVariable():
 
-    def __init__(self, this_mbed, name):
+    def __init__(self, this_mbed , name):
         self.mbed = this_mbed
         if isinstance(name, str):
             self.name = name
@@ -284,7 +269,6 @@ class RPCVariable():
     def read(self):
         r = self.mbed.rpc(self.name, "read", [])
         return r
-
 
 def wait(s):
     time.sleep(s)

@@ -21,8 +21,7 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import rospy
-import sys
+import rospy, sys
 import moveit_commander
 from moveit_commander import MoveGroupCommander, RobotCommander
 from moveit_msgs.msg import Constraints, OrientationConstraint, PositionConstraint
@@ -43,9 +42,7 @@ GRIPPER_EFFORT = [1.0]
 
 REFERENCE_FRAME = 'world_link'
 
-
 class MoveItDemo:
-
     def __init__(self):
         # Initialize the move_group API
         moveit_commander.roscpp_initialize(sys.argv)

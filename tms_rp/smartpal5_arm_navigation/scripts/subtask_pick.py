@@ -22,8 +22,7 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import rospy
-import sys
+import rospy, sys
 import moveit_commander
 from geometry_msgs.msg import PoseStamped, Pose
 from moveit_commander import MoveGroupCommander, PlanningSceneInterface
@@ -48,20 +47,17 @@ GRIPPER_EFFORT = [1.0]
 
 REFERENCE_FRAME = 'world_link'
 
-INIT_ARM_VALUE = [0.0, -0.17, 0.0, 0.0, 0.0, 0.0, 0.0]
-GRASP_ARM_VALUE = [0.0, -0.2, 0.0, 0.0, 0.0, 0.0, 0.0]
-
+INIT_ARM_VALUE = [0.0, -0.17,0.0,0.0,0.0,0.0,0.0]
+GRASP_ARM_VALUE = [0.0, -0.2,0.0,0.0,0.0,0.0,0.0]
 
 class SubTaskPick:
-
     def __init__(self):
         # Initialize the move_group API
         moveit_commander.roscpp_initialize(sys.argv)
         rospy.init_node('subtask_pick')
         rospy.on_shutdown(self.shutdown)
 
-        self.pick_srv = rospy.Service(
-            'subtask_pick', rp_pick, self.pickSrvCallback)
+        self.pick_srv = rospy.Service('subtask_pick', rp_pick, self.pickSrvCallback)
 
     def pickSrvCallback(self, req):
         rospy.loginfo("Received the service call!")
@@ -78,7 +74,7 @@ class SubTaskPick:
             res = tms_db_reader(temp_dbdata)
             target = res.tmsdb[0]
         except rospy.ServiceException, e:
-            print "Service call failed: %s" % e
+            print "Service call failed: %s"%e
             self.shutdown()
 
         print(target.name)
@@ -129,15 +125,14 @@ class SubTaskPick:
 
         rospy.sleep(0.2)
 
-        if target.offset_x == 0 and target.offset_y == 0 and target.offset_x == 0:
-            target.offset_x = 0.033
-            target.offset_y = 0.033
-            target.offset_z = 0.083
+        if target.offset_x==0 and target.offset_y==0 and target.offset_x==0:
+            target.offset_x = 0.033;
+            target.offset_y = 0.033;
+            target.offset_z = 0.083;
 
-        target_size = [(target.offset_x * 2), (
-            target.offset_y * 2), (target.offset_z * 2)]
-        # target_size = [0.03, 0.03, 0.12]
-        # target_size = [0.07, 0.07, 0.14]
+        target_size = [(target.offset_x*2), (target.offset_y*2), (target.offset_z*2)]
+        #target_size = [0.03, 0.03, 0.12]
+        #target_size = [0.07, 0.07, 0.14]
         target_pose = PoseStamped()
         target_pose.header.frame_id = REFERENCE_FRAME
         target_pose.pose.position.x = target.x
@@ -165,6 +160,7 @@ class SubTaskPick:
         grasp_pose.pose.position.x -= target_size[0] / 2.0 + 0.01
         grasp_pose.pose.position.y -= target_size[1] / 2.0
 
+
         # Generate a list of grasps
         grasps = self.make_grasps(grasp_pose, [target_id])
         # Publish the grasp poses so they can be viewed in RViz
@@ -178,7 +174,7 @@ class SubTaskPick:
         # Repeat until we succeed or run out of attempts
         while result != MoveItErrorCodes.SUCCESS and n_attempts < max_pick_attempts:
             n_attempts += 1
-            rospy.loginfo("Pick attempt: " + str(n_attempts))
+            rospy.loginfo("Pick attempt: " +  str(n_attempts))
             result = arm.pick(target_id, grasps)
             print(result)
             rospy.sleep(0.05)
@@ -191,8 +187,7 @@ class SubTaskPick:
             rospy.loginfo("Success the pick operation")
             ret.result = True
         else:
-            rospy.loginfo(
-                "Pick operation failed after " + str(n_attempts) + " attempts.")
+            rospy.loginfo("Pick operation failed after " + str(n_attempts) + " attempts.")
             ret.result = False
 
         return ret
@@ -251,10 +246,8 @@ class SubTaskPick:
         g.grasp_posture = self.make_gripper_posture(GRIPPER_CLOSED)
 
         # Set the approach and retreat parameters as desired
-        g.pre_grasp_approach = self.make_gripper_translation(
-            0.1, 0.2, [0.0, 1.0, 0.0])
-        g.post_grasp_retreat = self.make_gripper_translation(
-            0.1, 0.2, [0.0, 0.0, 1.0])
+        g.pre_grasp_approach = self.make_gripper_translation(0.1, 0.2, [0.0, 1.0, 0.0])
+        g.post_grasp_retreat = self.make_gripper_translation(0.1, 0.2, [0.0, 0.0, 1.0])
 
         # Set the first grasp pose to the input pose
         g.grasp_pose = initial_pose_stamped
@@ -274,7 +267,7 @@ class SubTaskPick:
                 # Create a quaternion from the Euler angles
                 q = quaternion_from_euler(0, p, y)
 
-                # Set the grasp pose orientation accordingly
+                # # Set the grasp pose orientation accordingly
                 g.grasp_pose.pose.orientation.x = q[0]
                 g.grasp_pose.pose.orientation.y = q[1]
                 g.grasp_pose.pose.orientation.z = q[2]

@@ -21,17 +21,14 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import rospy
-import sys
+import rospy, sys
 import moveit_commander
 from control_msgs.msg import GripperCommand
 
 GROUP_NAME_ARM = 'l_arm'
 GROUP_NAME_GRIPPER = 'l_gripper'
 
-
 class MoveItFKDemo:
-
     def __init__(self):
         # Initialize the move_group API and node
         moveit_commander.roscpp_initialize(sys.argv)
