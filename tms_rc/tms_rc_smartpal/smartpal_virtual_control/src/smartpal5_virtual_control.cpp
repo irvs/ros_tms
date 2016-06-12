@@ -1117,7 +1117,7 @@ void ObjectDataUpdate(const moveit_msgs::PlanningScene &msg)
       current_pos_data.place = 5002;
       current_pos_data.sensor = 3005;
       current_pos_data.probability = 1.0;
-      current_pos_data.state = 0;//1;
+      current_pos_data.state = 0;  // 1;
 
       db_msg.tmsdb.push_back(current_pos_data);
       pose_publisher.publish(db_msg);

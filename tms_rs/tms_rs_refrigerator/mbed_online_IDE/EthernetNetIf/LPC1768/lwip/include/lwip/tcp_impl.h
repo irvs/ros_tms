@@ -305,11 +305,10 @@ struct tcp_seg
   u8_t chksum_swapped;
 #endif /* TCP_CHECKSUM_ON_COPY */
   u8_t flags;
-#define TF_SEG_OPTS_MSS (u8_t)0x01U /* Include MSS option. */
-#define TF_SEG_OPTS_TS (u8_t)0x02U  /* Include timestamp option. */
-#define TF_SEG_DATA_CHECKSUMMED                                                                                        \
-  (u8_t)0x04U /* ALL data (not the header) is checksummed into 'chksum' */
-  struct tcp_hdr *tcphdr; /* the TCP header */
+#define TF_SEG_OPTS_MSS (u8_t)0x01U         /* Include MSS option. */
+#define TF_SEG_OPTS_TS (u8_t)0x02U          /* Include timestamp option. */
+#define TF_SEG_DATA_CHECKSUMMED (u8_t)0x04U /* ALL data is checksummed into 'chksum' */
+  struct tcp_hdr *tcphdr;                   /* the TCP header */
 };
 
 #define LWIP_TCP_OPT_LENGTH(flags) (flags & TF_SEG_OPTS_MSS ? 4 : 0) + (flags & TF_SEG_OPTS_TS ? 12 : 0)
