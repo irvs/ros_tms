@@ -7,7 +7,7 @@
 # @author : Akio Shigekane, Pyo
 # @version: Ver1.1.1 (since 2012.00.00)
 # @date   : 2015.2.25
-# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 
 '''
     @todo readujust threshold of GetWeightDiff
@@ -82,6 +82,7 @@ D_COUT = sys.stdout.write  # デバッグ用アウトプット
 tfBuffer = tf2_ros.Buffer(rospy.Duration(1200.0))
 listener = tf2_ros.TransformListener(tfBuffer)
 
+
 class CLoadCell(object):
 
     def __init__(self, port):
@@ -117,7 +118,8 @@ class CLoadCell(object):
             self.__ser.write(str(sensor_id))
             tmp = self.__ser.readline()
             # print tmp
-            buf.append(int(tmp.replace("O", "").replace("K", "").replace('"', "")) * 5)
+            buf.append(
+                int(tmp.replace("O", "").replace("K", "").replace('"', "")) * 5)
         self.__ClosePort()
         return reduce(lambda x, y: x + y, buf) / len(buf)
 
@@ -129,7 +131,8 @@ class CLoadCell(object):
         for i in xrange(num):
             for j in xrange(len(self.__mPreSensorsWeight)):
                 self.__mPreSensorsWeight[j] += self.GetWeight(j)
-        self.__mPreSensorsWeight = map(lambda x: x / num, self.__mPreSensorsWeight)
+        self.__mPreSensorsWeight = map(
+            lambda x: x / num, self.__mPreSensorsWeight)
 
     def SetSensorPos(self, sensor_num, x_list, y_list):
         self.__mSensorNum = sensor_num
@@ -140,7 +143,8 @@ class CLoadCell(object):
     def GetWeightDiff(self, threshold=20):
         # 出力が安定するまで待つ
         pre = [0] * self.__mSensorNum
-        buf = [[0 for i in range(LC_MAX_SENSOR_NUM)] for j in range(LC_GET_WEIGHT_CNT)]
+        buf = [[0 for i in range(LC_MAX_SENSOR_NUM)]
+               for j in range(LC_GET_WEIGHT_CNT)]
         for i in xrange(self.__mSensorNum):
             pre[i] = self.GetWeight(i)
         cnt = 0    # 繰り返し回数
@@ -227,7 +231,8 @@ class CTR3(object):
             print "TR3: SendCommandError . SetAntenna"
             self.__ser.read(size=100)
             return -1
-        # self.__mActiveAntenna = buf[5]  # TODO: get true active antenna number
+        # self.__mActiveAntenna = buf[5]  # TODO: get true active antenna
+        # number
         self.__ClosePort()
         return buf[5]
 
@@ -337,12 +342,14 @@ class CTR3(object):
 
         # IDにあってpreIDにない => 追加された物品ID
         # type: [str]
-        increase = list(set(self.__mUIDs[self.__mActiveAntenna]) - set(preUIDs))
+        increase = list(
+            set(self.__mUIDs[self.__mActiveAntenna]) - set(preUIDs))
         # print set(self.__mUIDs[self.__mActiveAntenna]), set(preUIDs)
 
         # preIDにあってIDにない => 取り除かれた物品ID
         # type: [str]
-        decrease = list(set(preUIDs) - set(self.__mUIDs[self.__mActiveAntenna]))
+        decrease = list(
+            set(preUIDs) - set(self.__mUIDs[self.__mActiveAntenna]))
 
         # 増減なし
         if (len(increase) == 0) and (len(decrease) == 0):
@@ -383,8 +390,9 @@ class CTagOBJ(object):
 
 class CIntelCab(object):
 
-    def __init__(self, lc_port="/dev/ttyACM0", lc_xpos=(0.0, 0.0, 0.0, 0.0), lc_ypos=(0.0, 0.0, 0.0, 0.0),
-                 tr_port="/dev/ttyUSB0", tr_antenna=TR3_ANT1):
+    def __init__(
+        self, lc_port="/dev/ttyACM0", lc_xpos=(0.0, 0.0, 0.0, 0.0), lc_ypos=(0.0, 0.0, 0.0, 0.0),
+            tr_port="/dev/ttyUSB0", tr_antenna=TR3_ANT1):
         self.cLoadCell = CLoadCell(lc_port)
         self.cLoadCell.SetSensorPos(len(lc_xpos), lc_xpos, lc_ypos)
         self.cTR3 = CTR3(tr_port, tr_antenna)
@@ -434,7 +442,8 @@ class CIntelCab(object):
             value = IC_OBJECT_OUT
 
         # ロードセルの増減チェック
-        cObj.mWeight, cObj.mX, cObj.mY, cObj.mDiffs = self.cLoadCell.GetWeightDiff()
+        cObj.mWeight, cObj.mX, cObj.mY, cObj.mDiffs = self.cLoadCell.GetWeightDiff(
+        )
 
         print "mWeight:{0}   InOutLC:{1}".format(cObj.mWeight, self.__InOutLC),
         if (cObj.mWeight > 0) and (self.__InOutTag > 0):
@@ -471,7 +480,8 @@ class CIntelCab(object):
             for i in xrange(len(self.TagObjList)):
                 sum = 0
                 for j in xrange(LC_MAX_SENSOR_NUM):
-                    sum += abs(abs(self.TagObjList[i].mDiffs[j]) - abs(cObj.mDiffs[j]))
+                    sum += abs(
+                        abs(self.TagObjList[i].mDiffs[j]) - abs(cObj.mDiffs[j]))
                 if sum < comp:
                     comp = sum
                     cnt = i
@@ -503,31 +513,34 @@ def getWorldFramePos(x, y):
 def main():
     print "Hello World"
     rfidValue = dict()
-    rfidValue["E00401004E17F97A"] = {"id":7001, "name":"chipstar_red"}
-    rfidValue["E00401004E180E50"] = {"id":7002, "name":"chipstar_orange"}
-    rfidValue["E00401004E180E58"] = {"id":7003, "name":"chipstar_green"}
-    rfidValue["E00401004E180E60"] = {"id":7004, "name":"greentea_bottle"}
-    rfidValue["E00401004E180E68"] = {"id":7005, "name":"soukentea_bottle"}
-    rfidValue["E00401004E180EA0"] = {"id":7006, "name":"cancoffee"}
-    rfidValue["E00401004E180EA8"] = {"id":7007, "name":"seasoner_bottle"}
-    rfidValue["E00401004E181C88"] = {"id":7008, "name":"dispenser"}
-    rfidValue["E00401004E181C87"] = {"id":7009, "name":"soysauce_bottle_black"}
-    rfidValue["E00401004E181C7F"] = {"id":7010, "name":"soysauce_bottle_blue"}
-    rfidValue["E00401004E181C77"] = {"id":7011, "name":"soysauce_bottle_white"}
-    rfidValue["E00401004E181C3F"] = {"id":7012, "name":"pepper_bottle_black"}
-    rfidValue["E00401004E181C37"] = {"id":7013, "name":"pepper_bottle_red"}
-    rfidValue["E00401004E180E47"] = {"id":7014, "name":"sake_bottle"}
-    rfidValue["E00401004E180E3F"] = {"id":7015, "name":"teapot"}
-    rfidValue["E00401004E180E37"] = {"id":7016, "name":"chawan"}
-    rfidValue["E00401004E1805BD"] = {"id":7017, "name":"teacup1"}
-    rfidValue["E00401004E180585"] = {"id":7018, "name":"teacup2"}
-    rfidValue["E00401004E18057D"] = {"id":7019, "name":"cup1"}
-    rfidValue["E00401004E17EF3F"] = {"id":7020, "name":"cup2"}
-    rfidValue["E00401004E17EF37"] = {"id":7021, "name":"mugcup"}
-    rfidValue["E00401004E17EF2F"] = {"id":7022, "name":"remote"}
-    rfidValue["E00401004E17EF27"] = {"id":7023, "name":"book_red"}
-    rfidValue["E00401004E17EEEF"] = {"id":7024, "name":"book_blue"}
-    rfidValue["E00401004E17EEE7"] = {"id":7025, "name":"dish"}
+    rfidValue["E00401004E17F97A"] = {"id": 7001, "name": "chipstar_red"}
+    rfidValue["E00401004E180E50"] = {"id": 7002, "name": "chipstar_orange"}
+    rfidValue["E00401004E180E58"] = {"id": 7003, "name": "chipstar_green"}
+    rfidValue["E00401004E180E60"] = {"id": 7004, "name": "greentea_bottle"}
+    rfidValue["E00401004E180E68"] = {"id": 7005, "name": "soukentea_bottle"}
+    rfidValue["E00401004E180EA0"] = {"id": 7006, "name": "cancoffee"}
+    rfidValue["E00401004E180EA8"] = {"id": 7007, "name": "seasoner_bottle"}
+    rfidValue["E00401004E181C88"] = {"id": 7008, "name": "dispenser"}
+    rfidValue["E00401004E181C87"] = {
+        "id": 7009, "name": "soysauce_bottle_black"}
+    rfidValue["E00401004E181C7F"] = {
+        "id": 7010, "name": "soysauce_bottle_blue"}
+    rfidValue["E00401004E181C77"] = {
+        "id": 7011, "name": "soysauce_bottle_white"}
+    rfidValue["E00401004E181C3F"] = {"id": 7012, "name": "pepper_bottle_black"}
+    rfidValue["E00401004E181C37"] = {"id": 7013, "name": "pepper_bottle_red"}
+    rfidValue["E00401004E180E47"] = {"id": 7014, "name": "sake_bottle"}
+    rfidValue["E00401004E180E3F"] = {"id": 7015, "name": "teapot"}
+    rfidValue["E00401004E180E37"] = {"id": 7016, "name": "chawan"}
+    rfidValue["E00401004E1805BD"] = {"id": 7017, "name": "teacup1"}
+    rfidValue["E00401004E180585"] = {"id": 7018, "name": "teacup2"}
+    rfidValue["E00401004E18057D"] = {"id": 7019, "name": "cup1"}
+    rfidValue["E00401004E17EF3F"] = {"id": 7020, "name": "cup2"}
+    rfidValue["E00401004E17EF37"] = {"id": 7021, "name": "mugcup"}
+    rfidValue["E00401004E17EF2F"] = {"id": 7022, "name": "remote"}
+    rfidValue["E00401004E17EF27"] = {"id": 7023, "name": "book_red"}
+    rfidValue["E00401004E17EEEF"] = {"id": 7024, "name": "book_blue"}
+    rfidValue["E00401004E17EEE7"] = {"id": 7025, "name": "dish"}
 
     # init ROS
     rospy.init_node('ibs', anonymous=True)
@@ -613,10 +626,11 @@ def main():
             # 毎回初期化し，庫内にある物品だけ値を更新して送信する
             msg = TmsdbStamped()
             msg.header.frame_id = "world_link"
-            msg.header.stamp = rospy.get_rostime() + rospy.Duration(9 * 60 * 60)
+            msg.header.stamp = rospy.get_rostime() + rospy.Duration(
+                9 * 60 * 60)
             now = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
 
-            for tag,v in sorted(rfidValue.items(), key=lambda x: x[1]["id"]):
+            for tag, v in sorted(rfidValue.items(), key=lambda x: x[1]["id"]):
                 time.sleep(0.001)
                 tmp_db = Tmsdb()
                 tmp_db.time = now
@@ -632,9 +646,9 @@ def main():
                     tmp_db.x = world_pos.point.x
                     tmp_db.y = world_pos.point.y
                     tmp_db.z = world_pos.point.z
-                    tmp_db.weight = cObj.mWeight                
-                else :                  # 収納庫内に存在しない
-                    tmp_db.state = NONE                
+                    tmp_db.weight = cObj.mWeight
+                else:                  # 収納庫内に存在しない
+                    tmp_db.state = NONE
                     tmp_db.x = -1.0
                     tmp_db.y = -1.0
                     tmp_db.z = -1.0

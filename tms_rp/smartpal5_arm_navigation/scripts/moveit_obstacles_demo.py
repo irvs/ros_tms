@@ -21,10 +21,11 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import rospy, sys
+import rospy
+import sys
 import moveit_commander
 from moveit_commander import MoveGroupCommander, PlanningSceneInterface
-from moveit_msgs.msg import  PlanningScene, ObjectColor
+from moveit_msgs.msg import PlanningScene, ObjectColor
 from geometry_msgs.msg import PoseStamped, Pose
 from tf.transformations import quaternion_from_euler
 
@@ -43,7 +44,9 @@ GRIPPER_EFFORT = [1.0]
 
 REFERENCE_FRAME = 'world_link'
 
+
 class MoveItDemo:
+
     def __init__(self):
         # Initialize the move_group API
         moveit_commander.roscpp_initialize(sys.argv)
@@ -54,7 +57,8 @@ class MoveItDemo:
         scene = PlanningSceneInterface()
 
         # Create a scene publisher to push changes to the scene
-        self.scene_pub = rospy.Publisher('planning_scene', PlanningScene, queue_size=5)
+        self.scene_pub = rospy.Publisher(
+            'planning_scene', PlanningScene, queue_size=5)
 
         # Create a dictionary to hold object colors
         self.colors = dict()
@@ -121,7 +125,8 @@ class MoveItDemo:
         box1_pose.header.frame_id = REFERENCE_FRAME
         box1_pose.pose.position.x = 0.3
         box1_pose.pose.position.y = 0
-        box1_pose.pose.position.z = table_ground + table_size[2] + box1_size[2] / 2.0
+        box1_pose.pose.position.z = table_ground + \
+            table_size[2] + box1_size[2] / 2.0
         box1_pose.pose.orientation.w = 1.0
         scene.add_box(box1_id, box1_pose, box1_size)
 
@@ -129,7 +134,8 @@ class MoveItDemo:
         box2_pose.header.frame_id = REFERENCE_FRAME
         box2_pose.pose.position.x = 0.3
         box2_pose.pose.position.y = 0.25
-        box2_pose.pose.position.z = table_ground + table_size[2] + box2_size[2] / 2.0
+        box2_pose.pose.position.z = table_ground + \
+            table_size[2] + box2_size[2] / 2.0
         box2_pose.pose.orientation.w = 1.0
         scene.add_box(box2_id, box2_pose, box2_size)
 
@@ -146,7 +152,8 @@ class MoveItDemo:
         target_pose.header.frame_id = REFERENCE_FRAME
         target_pose.pose.position.x = 0.22
         target_pose.pose.position.y = 0.14
-        target_pose.pose.position.z = table_pose.pose.position.z + table_size[2] + 0.05
+        target_pose.pose.position.z = table_pose.pose.position.z + \
+            table_size[2] + 0.05
 
         q = quaternion_from_euler(0, 0, -1.57079633)
         target_pose.pose.orientation.x = q[0]
@@ -174,7 +181,7 @@ class MoveItDemo:
         moveit_commander.os._exit(0)
 
     # Set the color of an object
-    def setColor(self, name, r, g, b, a = 0.9):
+    def setColor(self, name, r, g, b, a=0.9):
         # Initialize a MoveIt color object
         color = ObjectColor()
 

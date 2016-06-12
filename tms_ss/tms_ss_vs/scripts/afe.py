@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-## @file    afe.py
+# @file    afe.py
 #  @brief   OEL blood stream sensor node
 #  @author  Akio Shigekane
 #  @date    2015.3.3
@@ -21,14 +21,14 @@ KEYS = (u"Raw", u"HBR")
 dev = serial.Serial(
     port=None,
     baudrate=115200,
-    )
+)
 dev.port = PORT
 
 
 def main():
     print "Hello World"
-    cmd_chmod = "sudo chmod a+rw "+PORT
-    print cmd_chmod+"\n",   subprocess.check_output(cmd_chmod.split(" "))
+    cmd_chmod = "sudo chmod a+rw " + PORT
+    print cmd_chmod + "\n",   subprocess.check_output(cmd_chmod.split(" "))
     dev.open()
     pub = {}
     pub[KEYS[0]] = rospy.Publisher('afe/blood_pressue', Int32, queue_size=10)
@@ -53,7 +53,7 @@ def main():
             pprint.pprint(in_dic)
             for key, val in in_dic.items():
                 # pub[key].publish(val)
-                est[key] = est_K[key]*est[key] + (1-est_K[key])*val
+                est[key] = est_K[key] * est[key] + (1 - est_K[key]) * val
                 pub[key].publish(est[key])
         except:
             print traceback.format_exc()

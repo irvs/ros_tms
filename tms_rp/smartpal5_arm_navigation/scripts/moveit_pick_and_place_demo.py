@@ -22,7 +22,8 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import rospy, sys
+import rospy
+import sys
 import moveit_commander
 from geometry_msgs.msg import PoseStamped, Pose
 from moveit_commander import MoveGroupCommander, PlanningSceneInterface
@@ -48,7 +49,9 @@ GRIPPER_EFFORT = [1.0]
 
 REFERENCE_FRAME = 'world_link'
 
+
 class MoveItDemo:
+
     def __init__(self):
         # Initialize the move_group API
         moveit_commander.roscpp_initialize(sys.argv)
@@ -146,7 +149,8 @@ class MoveItDemo:
         target_pose.header.frame_id = REFERENCE_FRAME
         target_pose.pose.position.x = 3.35
         target_pose.pose.position.y = 4.2
-        target_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0
+        target_pose.pose.position.z = table_ground + \
+            table_size[2] + target_size[2] / 2.0
         q = quaternion_from_euler(0, 0, -1.57079633)
         target_pose.pose.orientation.x = q[0]
         target_pose.pose.orientation.y = q[1]
@@ -173,7 +177,8 @@ class MoveItDemo:
         place_pose.header.frame_id = REFERENCE_FRAME
         place_pose.pose.position.x = 3.35
         place_pose.pose.position.y = 4.3
-        place_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0
+        place_pose.pose.position.z = table_ground + \
+            table_size[2] + target_size[2] / 2.0
         q = quaternion_from_euler(0, 0, -1.57079633)
         place_pose.pose.orientation.x = q[0]
         place_pose.pose.orientation.y = q[1]
@@ -201,7 +206,7 @@ class MoveItDemo:
         # Repeat until we succeed or run out of attempts
         while result != MoveItErrorCodes.SUCCESS and n_attempts < max_pick_attempts:
             n_attempts += 1
-            rospy.loginfo("Pick attempt: " +  str(n_attempts))
+            rospy.loginfo("Pick attempt: " + str(n_attempts))
             result = arm.pick(target_id, grasps)
             print('pick result')
             print(result)
@@ -220,7 +225,7 @@ class MoveItDemo:
             # Repeat until we succeed or run out of attempts
             while result != MoveItErrorCodes.SUCCESS and n_attempts < max_place_attempts:
                 n_attempts += 1
-                rospy.loginfo("Place attempt: " +  str(n_attempts))
+                rospy.loginfo("Place attempt: " + str(n_attempts))
                 for place in places:
                     result = arm.place(target_id, place)
                     print('place result')
@@ -230,9 +235,11 @@ class MoveItDemo:
                 rospy.sleep(0.2)
 
             if result != MoveItErrorCodes.SUCCESS:
-                rospy.loginfo("Place operation failed after " + str(n_attempts) + " attempts.")
+                rospy.loginfo(
+                    "Place operation failed after " + str(n_attempts) + " attempts.")
         else:
-            rospy.loginfo("Pick operation failed after " + str(n_attempts) + " attempts.")
+            rospy.loginfo(
+                "Pick operation failed after " + str(n_attempts) + " attempts.")
 
         # Return the arm to the "resting" pose stored in the SRDF file
         arm.set_named_target('l_arm_init')
@@ -304,8 +311,10 @@ class MoveItDemo:
         g.grasp_posture = self.make_gripper_posture(GRIPPER_CLOSED)
 
         # Set the approach and retreat parameters as desired
-        g.pre_grasp_approach = self.make_gripper_translation(0.01, 0.2, [0.0, 1.0, 0.0])
-        g.post_grasp_retreat = self.make_gripper_translation(0.1, 0.2, [0.0, 0.0, 1.0])
+        g.pre_grasp_approach = self.make_gripper_translation(
+            0.01, 0.2, [0.0, 1.0, 0.0])
+        g.post_grasp_retreat = self.make_gripper_translation(
+            0.1, 0.2, [0.0, 0.0, 1.0])
 
         # Set the first grasp pose to the input pose
         g.grasp_pose = initial_pose_stamped
@@ -325,7 +334,7 @@ class MoveItDemo:
                 # Create a quaternion from the Euler angles
                 # q = quaternion_from_euler(0, p, y)
 
-                # # Set the grasp pose orientation accordingly
+                # Set the grasp pose orientation accordingly
                 # g.grasp_pose.pose.orientation.x = q[0]
                 # g.grasp_pose.pose.orientation.y = q[1]
                 # g.grasp_pose.pose.orientation.z = q[2]
@@ -388,7 +397,7 @@ class MoveItDemo:
                         # Create a quaternion from the Euler angles
                         # q = quaternion_from_euler(0, p, y)
 
-                        # # Set the place pose orientation accordingly
+                        # Set the place pose orientation accordingly
                         # place.pose.orientation.x = q[0]
                         # place.pose.orientation.y = q[1]
                         # place.pose.orientation.z = q[2]
@@ -407,7 +416,7 @@ class MoveItDemo:
         return places
 
     # Set the color of an object
-    def setColor(self, name, r, g, b, a = 0.9):
+    def setColor(self, name, r, g, b, a=0.9):
         # Initialize a MoveIt color object
         color = ObjectColor()
 
