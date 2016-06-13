@@ -1264,7 +1264,7 @@ SurfaceHolder.Callback,TextToSpeech.OnInitListener{
 									Log.i("DBdata",object.getName()+object.getId());
 									if(object.getPlace()!=0 && object.getState()!=0){
 										TmsdbObject to = new TmsdbObject();
-										to.setId(object.getPlace());
+										to.setId(object.getPlace()+100000);
 										data.sendInfo(to);
 										Log.i("DBdata2",data.getObject().getName());
 
