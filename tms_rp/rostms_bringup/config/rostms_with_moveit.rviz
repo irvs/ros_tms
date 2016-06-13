@@ -25,7 +25,7 @@ Visualization Manager:
       Cell Size: 1
       Class: rviz/Grid
       Color: 160; 160; 164
-      Enabled: true
+      Enabled: false
       Line Style:
         Line Width: 0.03
         Value: Lines
@@ -38,7 +38,7 @@ Visualization Manager:
       Plane: XY
       Plane Cell Count: 59
       Reference Frame: <Fixed Frame>
-      Value: true
+      Value: false
     - Class: moveit_rviz_plugin/MotionPlanning
       Enabled: true
       Move Group Namespace: ""
@@ -560,7 +560,7 @@ Visualization Manager:
             Show Trail: false
             Value: true
           bsen_wall_link:
-            Alpha: 1
+            Alpha: 0.5
             Show Axes: false
             Show Trail: false
             Value: true
@@ -982,13 +982,13 @@ Visualization Manager:
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /dynamic_map_marker
       Name: DynamicMap
       Namespaces:
-        dynamic_map: true
+        {}
       Queue Size: 100
-      Value: true
+      Value: false
     - Class: rviz/MarkerArray
       Enabled: false
       Marker Topic: /robot_path_marker
@@ -1156,6 +1156,38 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: visualization_marker_array
+      Name: MarkerArray
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: false
+      Marker Topic: /laser_visualization1
+      Name: MarkerArray
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: false
+    - Class: rviz/MarkerArray
+      Enabled: false
+      Marker Topic: /laser_visualization2
+      Name: MarkerArray
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: false
+    - Class: rviz/MarkerArray
+      Enabled: false
+      Marker Topic: /laser_visualization3
+      Name: MarkerArray
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -1171,36 +1203,36 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 9.14203
+      Distance: 10.9082
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 9.03851
-        Y: 2.74727
-        Z: 5.31122e-06
+        X: 7.20052
+        Y: 1.70343
+        Z: 9.11324e-06
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.7548
+      Pitch: 0.844796
       Target Frame: world_link
       Value: XYOrbit (rviz)
-      Yaw: 4.48494
+      Yaw: 4.53812
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 876
+  Height: 1062
   Help:
     collapsed: false
   Hide Left Dock: false
   Hide Right Dock: false
   Motion Planning:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000100000000000002b100000326fc0200000005fb000000100044006900730070006c006100790073010000002800000137000000dd00fffffffb0000000800480065006c00700000000342000000bb0000007600fffffffb0000000a0056006900650077007300000003b0000000b0000000b000fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e00670100000165000001e9000001cc00ffffff000003480000032600000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000001000000000000024b000003e3fc0200000005fb000000100044006900730070006c006100790073010000002800000210000000dd00fffffffb0000000800480065006c00700000000342000000bb0000007600fffffffb0000000a0056006900650077007300000003b0000000b0000000b000fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e0067010000023e000001cd000001b100ffffff000004fe000003e300000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Views:
     collapsed: false
-  Width: 1535
-  X: 65
-  Y: 24
+  Width: 1871
+  X: 41
+  Y: -11

@@ -54,15 +54,18 @@ add_executable(urg_single_tracker src/urg_single_tracker.cpp include/target.cpp 
 add_executable(change_nan src/change_nan.cpp)
 add_executable(visualize src/tracker_visualization.cpp)
 add_executable(laser_visualize src/laser_visualization.cpp)
+add_executable(laser_visualize_multi src/laser_visualization_multi.cpp)
 
 add_dependencies(urg_tracker tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
 add_dependencies(urg_single_tracker tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
 add_dependencies(change_nan tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
 add_dependencies(visualize tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
 add_dependencies(laser_visualize tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
+add_dependencies(laser_visualize_multi tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
 
 target_link_libraries(urg_tracker ${catkin_LIBRARIES} yaml-cpp)
 target_link_libraries(urg_single_tracker ${catkin_LIBRARIES} yaml-cpp)
 target_link_libraries(change_nan ${catkin_LIBRARIES})
 target_link_libraries(visualize ${catkin_LIBRARIES})
 target_link_libraries(laser_visualize ${catkin_LIBRARIES})
+target_link_libraries(laser_visualize_multi ${catkin_LIBRARIES})

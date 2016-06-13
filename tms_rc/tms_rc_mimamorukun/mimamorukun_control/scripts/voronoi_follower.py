@@ -15,6 +15,7 @@ GOAL = None
 
 
 def main():
+    global GOAL
     print ("\x1b[32mHello World\x1b[39m")
     rospy.init_node('wheelchair_voronoi_follower')
 
@@ -54,7 +55,6 @@ def main():
         if distance <= ARV_DIST:
             twist.angular.z = 0
             twist.linear.x = 0
-            global GOAL
             GOAL = None
         else:
             twist.angular.z = radians(tmp_turn)
