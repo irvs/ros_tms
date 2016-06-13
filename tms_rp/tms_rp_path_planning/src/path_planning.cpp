@@ -91,7 +91,7 @@ public:
     , kSmartPal4CollisionThreshold_(0.4)
     , kKobukiCollisionThreshold_(0.2)
     , kKKPCollisionThreshold_(0.4)
-    , kMimamorukunCollisionThreshold_(0.85)
+    , kMimamorukunCollisionThreshold_(0.6)
     , kRobotControlWagonDist_(0.4)
     , kSmoothVoronoiPathThreshold_(0.1)
     , kPushWagonPathThreshold_(0.2)
