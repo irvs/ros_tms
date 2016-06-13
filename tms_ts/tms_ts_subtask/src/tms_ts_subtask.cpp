@@ -3,9 +3,6 @@
 using namespace std;
 using namespace boost;
 
-map< int, bool > MOVE_IS_WORKING;
-map< int, bool > MOVE_IS_WAITING;
-
 double sp5arm_init_arg[26] = {
     0.0, 0.0,   0.175, 0.175,  // waist
     0.0, -0.17, 0.0,   0.0,   0.0,   0.0,
@@ -14,9 +11,9 @@ double sp5arm_init_arg[26] = {
     0.0, 0.175, -0.2,  0.175, 0.175  // left arm
 };                                   // rad
 
-tms_rp::TmsRpSubtask *tms_rp::TmsRpSubtask::instance()
+tms_rp::TmsRpSubtask* tms_rp::TmsRpSubtask::instance()
 {
-  static tms_rp::TmsRpSubtask *instance = new tms_rp::TmsRpSubtask();
+  static tms_rp::TmsRpSubtask* instance = new tms_rp::TmsRpSubtask();
   return instance;
 }
 
@@ -25,6 +22,7 @@ tms_rp::TmsRpSubtask::TmsRpSubtask()
   sid_ = 100000;
   rp_subtask_server = nh1.advertiseService("rp_cmd", &TmsRpSubtask::subtask, this);
 
+  rp_cmd_client = nh1.serviceClient< tms_msg_rp::rp_cmd >("rp_cmd");
   get_data_client_ = nh1.serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader");
   sp5_control_client_ = nh1.serviceClient< tms_msg_rc::rc_robot_control >("sp5_control");
   sp5_virtual_control_client = nh1.serviceClient< tms_msg_rc::rc_robot_control >("sp5_virtual_control");
@@ -109,8 +107,8 @@ void tms_rp::TmsRpSubtask::send_rc_exception(int error_type)
   state_client.call(rc_s_srv);
 }
 
-bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string &robot_name,
-                                         tms_msg_rp::rps_voronoi_path_planning &rp_srv)
+bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string& robot_name,
+                                         tms_msg_rp::rps_voronoi_path_planning& rp_srv)
 {
   tms_msg_db::TmsdbGetData srv;
 
@@ -199,7 +197,7 @@ bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string &r
   return true;
 }
 
-bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req, tms_msg_rp::rp_cmd::Response &res)
+bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request& req, tms_msg_rp::rp_cmd::Response& res)
 {
   SubtaskData sd;
   //    sd.type = grasp::TmsRpBar::production_version_;
@@ -218,22 +216,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req, tms_msg_rp:
     case 9001:  // move
     {
       ROS_INFO("[tms_rp]move command\n");
-      if (0 == MOVE_IS_WORKING.count(sd.robot_id))
-      {
-        MOVE_IS_WORKING[sd.robot_id] = false;  //初実行初期値設定
-        MOVE_IS_WAITING[sd.robot_id] = false;
-      }
-      bool *working = &MOVE_IS_WORKING.at(sd.robot_id);
-      bool *waiting = &MOVE_IS_WAITING.at(sd.robot_id);
-
-      while (!*working)
-      {
-        ROS_INFO("waiting for previous thread exiting");
-        *waiting = true;
-      }
-      *working = true;
       boost::thread mo_th(boost::bind(&TmsRpSubtask::move, this, sd));
-      *waiting = false;
       break;
     }
     case 9002:  // grasp
@@ -308,7 +291,7 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req, tms_msg_rp:
 }
 
 // service caller to sp5_(virtual_)control
-bool tms_rp::TmsRpSubtask::sp5_control(bool type, int unit, int cmd, int arg_size, double *arg)
+bool tms_rp::TmsRpSubtask::sp5_control(bool type, int unit, int cmd, int arg_size, double* arg)
 {
   tms_msg_rc::rc_robot_control sp_control_srv;
 
@@ -463,9 +446,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
   }
 
   srv.request.tmsdb.id = sd.arg_type;
-
-  // if (sd.type == false)
-  //   srv.request.tmsdb.sensor = 3005;
 
   if (sd.arg_type == -1)  // move (x,y,th)
   {
@@ -718,11 +698,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
       while (1)
       {
         ROS_INFO("result:%d, message:%s", rp_srv.response.success, rp_srv.response.message.c_str());
-        if (MOVE_IS_WAITING.at(sd.robot_id))
-        {
-          MOVE_IS_WORKING.at(sd.robot_id) = false;
-          return 0;
-        }
         // call virtual_controller
 
         switch (sd.robot_id)
@@ -776,7 +751,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
                 send_rc_exception(1);
                 return false;
               }
-              usleep(300000);  // sleep(1.0);
+              sleep(1.0);
             }
 
             if (sd.type)
@@ -791,7 +766,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
             }
             else
             {
-              usleep(300000);  // sleep(1);
+              sleep(1);
               // if (sd.robot_id == 2002)
               // {
               //	 sleep(0.7);
@@ -806,31 +781,32 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
           }
           case 2005:  // kobuki
           {
-            // 	tms_msg_rc::rc_robot_control kobuki_srv;
-            // 	kobuki_srv.request.arg.resize(3);
-            // 	kobuki_srv.request.arg[0] = rp_srv.response.VoronoiPath[i].x;
-            // 	kobuki_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
-            // 	kobuki_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
-            //
-            // 	if (sd.type == true) {
-            // 		kobuki_srv.request.cmd = 0;
-            // 		if (kobuki_actual_control_client.call(kobuki_srv)) ROS_INFO("result: %d", kobuki_srv.response.result);
-            // 		else {
-            // 			ROS_ERROR("Failed to call service kobuki_move");
-            // 			return false;
-            // 		}
-            // 	} else {
-            // 		kobuki_srv.request.unit = 1;
-            // 		kobuki_srv.request.cmd = 15;
-            // 		if (kobuki_virtual_control_client.call(kobuki_srv)) ROS_INFO("result: %d",
+            //			    		tms_msg_rc::rc_robot_control kobuki_srv;
+            //			    		kobuki_srv.request.arg.resize(3);
+            //			    		kobuki_srv.request.arg[0] = rp_srv.response.VoronoiPath[i].x;
+            //			    		kobuki_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
+            //			    		kobuki_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
+
+            //			    		if (sd.type == true) {
+            //				    		kobuki_srv.request.cmd = 0;
+            //				    		if (kobuki_actual_control_client.call(kobuki_srv)) ROS_INFO("result: %d",
             // kobuki_srv.response.result);
-            // 		else {
-            // 			ROS_ERROR("Failed to call service virtual_kobuki_move");
-            // 			return false;
-            // 		}
-            // 		sleep(0.7);
-            // 	}
-            // break;
+            //				    		else {
+            //				    			ROS_ERROR("Failed to call service kobuki_move");
+            //				    			return false;
+            //				    		}
+            //			    		} else {
+            //				    		kobuki_srv.request.unit = 1;
+            //				    		kobuki_srv.request.cmd = 15;
+            //				    		if (kobuki_virtual_control_client.call(kobuki_srv)) ROS_INFO("result: %d",
+            // kobuki_srv.response.result);
+            //				    		else {
+            //				    			ROS_ERROR("Failed to call service virtual_kobuki_move");
+            //				    			return false;
+            //				    		}
+            //				    		sleep(0.7);
+            //			    		}
+            break;
           }
           case 2006:  // kxp
           {
@@ -894,7 +870,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
             double dis = distance(rp_srv.response.VoronoiPath[i - 1].x, rp_srv.response.VoronoiPath[i - 1].y,
                                   rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
 
-            //  遠くの目的地店を選ぶ
             while (dis <= 0.25)
             {
               i += 2;
@@ -1345,10 +1320,9 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
 
     if (grasping_id == 0)
     {
-      ROS_WARN("cannot found grasping_id");
-      // s_srv.request.error_msg = "cannot found grasping_id";
-      // state_client.call(s_srv);
-      // return false;
+      s_srv.request.error_msg = "cannot found grasping_id";
+      state_client.call(s_srv);
+      return false;
     }
   }
   else
@@ -1709,7 +1683,7 @@ bool tms_rp::TmsRpSubtask::release(SubtaskData sd)
 //	return true;
 //}
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   // Init ROS node
   ros::init(argc, argv, "tms_ts_subtask");
