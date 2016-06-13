@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<NemuriScanStateInfo Ver="3.0.0.0">
+  <StateInfo>
+    <ViewPosition>0</ViewPosition>
+    <UpdateTime>2016-05-30 18:30:10</UpdateTime>
+    <SerialNumber Model="1.1.0">W15G0231</SerialNumber>
+    <Name>山田太郎</Name>
+    <Memo>居室名</Memo>
+    <MotionTrigger>0</MotionTrigger>
+    <RespTrigger>1</RespTrigger>
+    <HeartTrigger>0</HeartTrigger>
+    <AlarmSetting>00-00-00-00-01-05-1e-00-28-8c-03-00-00-00</AlarmSetting>
+    <FormColor>0</FormColor>
+    <State>state_wake</State>
+  </StateInfo>
+</NemuriScanStateInfo>
