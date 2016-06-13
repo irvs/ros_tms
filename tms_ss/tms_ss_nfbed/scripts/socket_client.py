@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 class NemuriScanner():
     def __init__(self, config):
         self.xml     = config.xml_path
-        self.address = (config.client.IP, config.PORT)
+        self.address = (config.server.IP, config.PORT)
         self.client  = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect(self.address)
         print 'NemuriScanner launched!'

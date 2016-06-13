@@ -12,7 +12,7 @@ from config import config
 # A class to monitor user's sleep state continuously
 class NemuriScannerBridge:
     def __init__(self, config):
-        self.address = (config.client.IP, config.PORT)
+        self.address = (config.server.IP, config.PORT)
         self.server  = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server.bind(self.address)

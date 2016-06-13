@@ -11,9 +11,9 @@ config = edict()
 config.client = edict()
 config.server = edict()
 
-config.client.IP = 'localhost'
-config.server.IP = 'localhost'
+# config.client.IP = 'localhost'
+config.server.IP = '192.168.4.96'
 
 config.PORT = 49552
 
-config.xml_path = './sample_data/NemuriScanStateInfo.xml'
+config.xml_path = 'C:/Users/nemuriscan/Desktop/NemuriScanLog/NemuriScanStateInfo.xml'
