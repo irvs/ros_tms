@@ -226,16 +226,14 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req, tms_msg_rp:
       bool *working = &MOVE_IS_WORKING.at(sd.robot_id);
       bool *waiting = &MOVE_IS_WAITING.at(sd.robot_id);
 
-      while (*working)
+      while (!*working)
       {
         ROS_INFO("waiting for previous thread exiting");
         *waiting = true;
       }
       *working = true;
-      *waiting = false;
       boost::thread mo_th(boost::bind(&TmsRpSubtask::move, this, sd));
-      *working = false;
-      mo_th.join();
+      *waiting = false;
       break;
     }
     case 9002:  // grasp
@@ -722,7 +720,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
         ROS_INFO("result:%d, message:%s", rp_srv.response.success, rp_srv.response.message.c_str());
         if (MOVE_IS_WAITING.at(sd.robot_id))
         {
-          ROS_INFO("got new 'move' task with same robot_id");
+          MOVE_IS_WORKING.at(sd.robot_id) = false;
           return 0;
         }
         // call virtual_controller
