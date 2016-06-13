@@ -80,6 +80,7 @@ EXIST = 1
 LC_MAX_SENSOR_NUM = 4
 D_COUT = sys.stdout.write  # デバッグ用アウトプット
 
+rospy.init_node('ibs', anonymous=True)
 tfBuffer = tf2_ros.Buffer(rospy.Duration(1200.0))
 listener = tf2_ros.TransformListener(tfBuffer)
 
@@ -532,7 +533,7 @@ def main():
     rfidValue["E00401004E17EEE7"] = {"id": 7025, "name": "dish"}
 
     # init ROS
-    rospy.init_node('ibs', anonymous=True)
+    # rospy.init_node('ibs', anonymous=True)
     db_pub = rospy.Publisher('tms_db_data', TmsdbStamped, queue_size=10)
 
     # rosparamが設定されてるかチェック
