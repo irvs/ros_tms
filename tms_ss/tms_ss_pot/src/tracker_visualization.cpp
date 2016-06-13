@@ -14,8 +14,8 @@
 #include "iostream"
 #include "math.h"
 
-#define GRAB_POINT 4
-#define WINDOW_TIME 4.0
+#define GRAB_POINT 3
+#define WINDOW_TIME 1.0
 
 ros::Publisher pub;
 ros::Subscriber sub;
@@ -229,7 +229,7 @@ void visualization_callback(const tms_msg_ss::tracking_points::ConstPtr &msg)
             marker.color.a = 0.4;
             marker.lifetime = ros::Duration(0.001);
 
-            markerArray.markers.push_back(marker);
+            //markerArray.markers.push_back(marker);
             z_id++;
 
             if (object_id_max < z_id)

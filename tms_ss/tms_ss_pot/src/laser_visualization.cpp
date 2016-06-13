@@ -41,21 +41,6 @@ float colorset[14][4] = {{1, 0, 0, 0},
 
 void laser_visualization_callback(const sensor_msgs::LaserScan::ConstPtr &scan)
 {
-  /*
-  sensor_msgs::LaserScan Laser;
-  Laser.header.seq      = scan->header.seq;
-  Laser.header.stamp    = scan->header.stamp;
-  Laser.header.frame_id = scan->header.frame_id;
-  Laser.angle_min       = scan->angle_min;
-  Laser.angle_max       = scan->angle_max;
-  Laser.angle_increment = scan->angle_increment;
-  Laser.time_increment  = scan->time_increment;
-  Laser.scan_time       = scan->scan_time;
-  Laser.range_min       = scan->range_min;
-  Laser.range_max       = scan->range_max;
-  Laser.ranges          = scan->ranges;
-  */
-
   visualization_msgs::MarkerArray markerArray;
 
   double laser_x = 7.75;
@@ -89,7 +74,7 @@ void laser_visualization_callback(const sensor_msgs::LaserScan::ConstPtr &scan)
     visualization_msgs::Marker marker;
     uint32_t laser_line = visualization_msgs::Marker::LINE_STRIP;
 
-    marker.header.frame_id = "/world";
+    marker.header.frame_id = "/world_link";
     marker.header.stamp = ros::Time::now();
     marker.id = id;
     id++;
@@ -126,7 +111,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "laser_visualization");
   ros::NodeHandle n;
   pub = n.advertise< visualization_msgs::MarkerArray >("laser_visualization", 1);
-  sub = n.subscribe("/LaserTracker1", 1, laser_visualization_callback);
+  sub = n.subscribe("pot_urg1/LaserTracker", 1, laser_visualization_callback);
   ros::spin();
   return 0;
 }
