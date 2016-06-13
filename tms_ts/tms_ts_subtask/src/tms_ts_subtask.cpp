@@ -234,8 +234,8 @@ bool tms_rp::TmsRpSubtask::subtask(tms_msg_rp::rp_cmd::Request &req, tms_msg_rp:
       *working = true;
       *waiting = false;
       boost::thread mo_th(boost::bind(&TmsRpSubtask::move, this, sd));
-      // *working = false;
-      // mo_th.join();
+      *working = false;
+      mo_th.join();
       break;
     }
     case 9002:  // grasp
@@ -454,7 +454,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
   tms_msg_ts::ts_state_control s_srv;
   s_srv.request.type = 1;  // for subtask state update;
   s_srv.request.state = 0;
-  bool *working = &MOVE_IS_WORKING.at(sd.robot_id);
 
   rp_srv.request.robot_id = sd.robot_id;
   std::string robot_name("");
@@ -501,7 +500,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
         {
           s_srv.request.error_msg = "This robot cannot move to the slate point";
           state_client.call(s_srv);
-          *working = false;
           return false;
         }
       }
@@ -547,7 +545,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
       {
         s_srv.request.error_msg = "There are incorrect data in DB. Check furniture's etcdata";
         state_client.call(s_srv);
-        *working = false;
         return false;
       }
     }
@@ -555,7 +552,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
     {
       s_srv.request.error_msg = "Failed to call service tms_db_get_current_furniture_data";
       state_client.call(s_srv);
-      *working = false;
       return false;
     }
   }
@@ -602,7 +598,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
     {
       s_srv.request.error_msg = "Failed to get data";
       state_client.call(s_srv);
-      *working = false;
       return false;
     }
   }
@@ -640,7 +635,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
             {
               s_srv.request.error_msg = "This robot cannot move to the slate point";
               state_client.call(s_srv);
-              *working = false;
               return false;
             }
           }
@@ -687,7 +681,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
           {
             s_srv.request.error_msg = "There are incorrect data in DB! Check furniture's etcdata";
             state_client.call(s_srv);
-            *working = false;
             return false;
           }
         }
@@ -695,7 +688,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
         {
           s_srv.request.error_msg = "Failed to call service tms_db_get_current_furniture_data";
           state_client.call(s_srv);
-          *working = false;
           return false;
         }
       }
@@ -703,7 +695,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
       {
         s_srv.request.error_msg = "Object is in unexpected place";
         state_client.call(s_srv);
-        *working = false;
         return false;
       }
     }
@@ -712,7 +703,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
   {
     s_srv.request.error_msg = "An Illegal arg_type number";
     state_client.call(s_srv);
-    *working = false;
     return false;
   }
 
