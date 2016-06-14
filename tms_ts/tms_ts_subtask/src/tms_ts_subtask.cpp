@@ -751,7 +751,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
                 send_rc_exception(1);
                 return false;
               }
-              sleep(1.0);
+              sleep(0.3);
             }
 
             if (sd.type)
@@ -766,7 +766,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
             }
             else
             {
-              sleep(1);
+              sleep(0.3);
               // if (sd.robot_id == 2002)
               // {
               //	 sleep(0.7);
