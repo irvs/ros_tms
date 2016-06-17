@@ -70,6 +70,7 @@ class SubTaskPick:
         target = Tmsdb()
 
         temp_dbdata.id = req.object_id
+        temp_dbdata.state = 1
 
         rospy.wait_for_service('tms_db_reader')
         try:
@@ -128,7 +129,7 @@ class SubTaskPick:
 
         rospy.sleep(0.2)
 
-        if target.offset_x == 0 and target.offset_y == 0 and target.offset_x == 0:
+        if target.offset_x < 0.01 and target.offset_y < 0.01 and target.offset_x < 0.01:
             target.offset_x = 0.033
             target.offset_y = 0.033
             target.offset_z = 0.083

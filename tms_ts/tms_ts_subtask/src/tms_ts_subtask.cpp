@@ -751,7 +751,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
                 send_rc_exception(1);
                 return false;
               }
-              sleep(0.3);
+              usleep(300000);//sleep(0.3);
             }
 
             if (sd.type)
@@ -766,7 +766,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
             }
             else
             {
-              sleep(0.3);
+              usleep(300000);//sleep(0.3);
               // if (sd.robot_id == 2002)
               // {
               //	 sleep(0.7);
@@ -1046,6 +1046,7 @@ bool tms_rp::TmsRpSubtask::grasp(SubtaskData sd)
   if (sd.arg_type > 7000 && sd.arg_type < 8000)
   {
     srv.request.tmsdb.id = sd.arg_type;
+    srv.request.tmsdb.state = 1;
 
     if (get_data_client_.call(srv))
     {

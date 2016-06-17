@@ -338,12 +338,12 @@
           <mesh filename="package://environmental_model/model/refrigerator.dae"/>
         </geometry>
       </visual>
-      <collision>
+      <!-- <collision>
         <geometry>
           <box size="0.5 0.47 0.05"/>
         </geometry>
         <origin xyz="-0.32 0.235 1.09" rpy="0 0 0"/>
-      </collision>
+      </collision> -->
     </link>
 
     <joint name="refrigerator_door_joint" type="continuous">
