@@ -1,0 +1,7 @@
+<launch>
+  <group ns="mimamorukun">
+    <include file="$(find tms_rc_mimamorukun_control)/launch/includes/minimal.launch.xml"/>
+    <include file="$(find tms_rc_mimamorukun_control)/launch/includes/ekf_odom_imu.launch.xml"/>
+    <node pkg="myahrs_driver" type="myahrs_driver" name="myahrs_driver"/>
+  </group>
+</launch>
