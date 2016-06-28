@@ -14,6 +14,7 @@ import tms_db_manager.tms_db_util as db_util
 client = pymongo.MongoClient('localhost:27017')
 db = client.rostmsdb
 
+
 class TmsDbWriter():
 
     def __init__(self):
@@ -33,7 +34,7 @@ class TmsDbWriter():
             try:
                 doc = db_util.msg_to_document(tmsdb)
                 print(doc['id'])
-                if rospy.get_param("backup"):
+                if rospy.get_param("backup") == "true":
                     db.history.insert(doc)
                 result = db.now.find({"name": doc['name'], "sensor": doc['sensor']})
                 print(result.count())
