@@ -45,7 +45,7 @@ class SubTaskRelease:
 
         scene = PlanningSceneInterface()
 
-        rospy.sleep(1)
+        rospy.sleep(0.1)
 
         result = None
 
