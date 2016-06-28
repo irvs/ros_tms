@@ -5,8 +5,7 @@
   <group if="$(arg is_backup)">
     <node pkg="tms_db_manager" type="tms_db_reader.py"   name="tms_db_reader">
     </node>
-    <node pkg="tms_db_manager" type="tms_db_writer.py"   name="tms_db_writer">
-      <param name="backup" value="true"/>
+    <node pkg="tms_db_manager" type="tms_db_writer.py"   name="tms_db_writer" args="$(arg is_backup)">
     </node>
     <node pkg="tms_db_manager" type="tms_db_backuper.py"  name="tms_db_backuper">
     </node>
@@ -17,8 +16,7 @@
   <group unless="$(arg is_backup)">
     <node pkg="tms_db_manager" type="tms_db_reader.py"   name="tms_db_reader">
     </node>
-    <node pkg="tms_db_manager" type="tms_db_writer.py"   name="tms_db_writer">
-      <param name="backup" value="false"/>
+    <node pkg="tms_db_manager" type="tms_db_writer.py"   name="tms_db_writer" args="$(arg is_backup)">
     </node>
     <node pkg="tms_db_manager" type="tms_db_publisher.py"  name="tms_db_publisher">
     </node>
