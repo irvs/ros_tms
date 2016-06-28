@@ -1,11 +1,27 @@
 <?xml version="1.0"?>
 <launch>
-  <node pkg="tms_db_manager" type="tms_db_reader.py"   name="tms_db_reader">
-  </node>
-  <node pkg="tms_db_manager" type="tms_db_writer.py"   name="tms_db_writer">
-  </node>
-  <node pkg="tms_db_manager" type="tms_db_backuper.py"  name="tms_db_backuper">
-  </node>
-  <node pkg="tms_db_manager" type="tms_db_publisher.py"  name="tms_db_publisher">
-  </node>
+  <arg name="is_backup" default="false"/>
+
+  <group if="$(arg is_backup)">
+    <node pkg="tms_db_manager" type="tms_db_reader.py"   name="tms_db_reader">
+    </node>
+    <node pkg="tms_db_manager" type="tms_db_writer.py"   name="tms_db_writer">
+      <param name="backup" value="true"/>
+    </node>
+    <node pkg="tms_db_manager" type="tms_db_backuper.py"  name="tms_db_backuper">
+    </node>
+    <node pkg="tms_db_manager" type="tms_db_publisher.py"  name="tms_db_publisher">
+    </node>
+  </group>
+
+  <group unless="$(arg is_backup)">
+    <node pkg="tms_db_manager" type="tms_db_reader.py"   name="tms_db_reader">
+    </node>
+    <node pkg="tms_db_manager" type="tms_db_writer.py"   name="tms_db_writer">
+      <param name="backup" value="false"/>
+    </node>
+    <node pkg="tms_db_manager" type="tms_db_publisher.py"  name="tms_db_publisher">
+    </node>
+  </group>
+
 </launch>
