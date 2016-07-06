@@ -5,6 +5,7 @@ import genpy
 import pymongo  # https://api.mongodb.org/python/2.6.3/
 import json
 import copy
+import sys
 from bson import json_util
 from bson.objectid import ObjectId
 from datetime import *
@@ -14,9 +15,7 @@ import tms_db_manager.tms_db_util as db_util
 client = pymongo.MongoClient('localhost:27017')
 db = client.rostmsdb
 
-
 class TmsDbWriter():
-
     def __init__(self):
         rospy.init_node("tms_db_writer")
         rospy.on_shutdown(self.shutdown)
@@ -33,26 +32,12 @@ class TmsDbWriter():
         for tmsdb in msg.tmsdb:
             try:
                 doc = db_util.msg_to_document(tmsdb)
-                # store into db of history
-                # rospy.loginfo("store into db of history")
-                print(doc['id'])
-                #---------------------------------------------------------
-                # if doc['name'] == "":
-                #     print("nameempty")
-                #     if doc['id'] == 2003:
-                #         doc['name'] = "smartpal5_2"
-                #         print(doc['name'])
-                #     if doc['id'] == 1002:
-                #         doc['name'] = "person_2_moverio"
-                #         print(doc['name'])
-                #---------------------------------------------------------
-                # store into data collection
-                # print(doc['name'])
-                db.history.insert(doc)
-                result = db.now.find({"name": doc['name'], "sensor": doc['sensor']})
-                print(result.count())
-                if result.count() >= 1:
-                    del doc['_id']
+                print(doc)
+                if sys.argv[1] =="true":
+                    db.history.insert(doc)
+                    result = db.now.find({"name": doc['name'], "sensor": doc['sensor']})
+                    if result.count() >= 1:
+                        del doc['_id']
                 result = db.now.update(
                     {"name": doc['name'], "sensor": doc['sensor']},
                     doc,

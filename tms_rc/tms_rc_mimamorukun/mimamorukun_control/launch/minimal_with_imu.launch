@@ -1,0 +1,8 @@
+<launch>
+  <group ns="mimamorukun">
+    <node  args="0 0 0 0 0 0 base_footprint base_link 100" name="tf_pub" pkg="tf" type="static_transform_publisher"/>
+    <include file="$(find tms_rc_mimamorukun_control)/launch/includes/minimal.launch.xml"/>
+    <node pkg="myahrs_driver" type="myahrs_driver" name="myahrs_driver"/>
+    <include file="$(find tms_rc_mimamorukun_control)/launch/includes/ekf_odom_imu.launch.xml"/>
+  </group>
+</launch>

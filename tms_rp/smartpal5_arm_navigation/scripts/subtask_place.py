@@ -85,13 +85,11 @@ class SubTaskPlace:
         # Allow 5 seconds per planning attempt
         arm.set_planning_time(5)
         # Set a limit on the number of place attempts
-        max_place_attempts = 10
+        max_place_attempts = 5
         # Give the scene a chance to catch up
-        rospy.sleep(2)
+        rospy.sleep(0.05)
 
         target_id = str(req.object_id)
-
-        rospy.sleep(1)
 
         target_pose = PoseStamped()
         target_pose.header.frame_id = REFERENCE_FRAME

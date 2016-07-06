@@ -36,6 +36,8 @@ using std::vector;
 using namespace std;
 using namespace boost;
 
+const int inf = -100000;
+
 //------------------------------------------------------------------------------
 class DbStatePublisher
 {
@@ -114,6 +116,35 @@ private:
       state = msg->tmsdb[i].state;
       place = msg->tmsdb[i].place;
       joint = msg->tmsdb[i].joint;
+
+      if (id == 1002)  // moverio
+      {
+        if (state == 1)
+        {
+          posX = msg->tmsdb[i].x;
+          posY = msg->tmsdb[i].y;
+          rotR = msg->tmsdb[i].rr;
+          rotP = msg->tmsdb[i].rp;
+          rotY = msg->tmsdb[i].ry;
+
+          if (posX == 0.0 && posY == 0.0)
+          {
+            continue;
+          }
+          else if (posX > 9.300 && posX < 11.000 && posY > 2.400 && posY < 3.200)  // in the bed
+          {
+            transform.setOrigin(tf::Vector3(10.52, 2.71, 0.42));
+            transform.setRotation(tf::Quaternion(1.5708, 0, 1.5708));
+            br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world_link", "Body"));
+          }
+          else
+          {
+            transform.setOrigin(tf::Vector3(posX, posY, 1.1));
+            transform.setRotation(tf::Quaternion(0, 0, -1.5708 + rotY));
+            br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world_link", "Body"));
+          }
+        }
+      }
 
       if (id == 2003 && ((type2003 == true && sensor == 3001) || (type2003 == false && sensor == 3005)))  // smartpal5-2
       {
@@ -402,76 +433,6 @@ private:
         }
       }
 
-      if (id == 1002)  // moverio
-      {
-        if (state == 1)
-        {
-          posX = msg->tmsdb[i].x;
-          posY = msg->tmsdb[i].y;
-          rotR = msg->tmsdb[i].rr;
-          rotP = msg->tmsdb[i].rp;
-          rotY = msg->tmsdb[i].ry;
-
-          if (posX == 0.0 && posY == 0.0)
-          {
-            continue;
-          }
-          else if (posX > 9.300 && posX < 11.000 && posY > 2.400 && posY < 3.200)  // in the bed
-          {
-            transform.setOrigin(tf::Vector3(10.52, 2.71, 0.42));
-            transform.setRotation(tf::Quaternion(1.5708, 0, 1.5708));
-            br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world_link", "Body"));
-          }
-          else
-          {
-            transform.setOrigin(tf::Vector3(posX, posY, 1.1));
-            transform.setRotation(tf::Quaternion(0, 0, -1.5708 + rotY));
-            br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world_link", "Body"));
-          }
-        }
-        else
-        {
-        }
-      }
-
-      // if (id==1001) //person
-      // {
-      //   if (state==1)
-      //   {
-      //     posX = msg->tmsdb[i].x;
-      //     posY = msg->tmsdb[i].y;
-      //     rotY = msg->tmsdb[i].ry;
-      //
-      //     if(posX == 0.0 && posY == 0.0)
-      //     {
-      //       continue;
-      //     }
-      //     else
-      //     {
-      //       // tms_msg_ss::SkeletonArray skeletons;
-      //       // skeletons.data.resize(1);
-      //       // skeletons.data[0].user_id = 1001;
-      //       // skeletons.data[0].position.resize(25);
-      //       // skeletons.data[0].orientation.resize(25);
-      //       // skeletons.data[0].confidence.resize(25);
-      //       // for(int i=0; i<25; i++)
-      //       // {
-      //       //   skeletons.data[0].position[i].x = 0.0;
-      //       //   skeletons.data[0].position[i].y = 0.0;
-      //       //   skeletons.data[0].position[i].z = 0.0;
-      //       //   skeletons.data[0].orientation[i].w = 1.0;
-      //       //   skeletons.data[0].orientation[i].x = 0.0;
-      //       //   skeletons.data[0].orientation[i].y = 0.0;
-      //       //   skeletons.data[0].orientation[i].z = 0.0;
-      //       //   skeletons.data[0].confidence[i] = 0;
-      //       // }
-      //       // skeletons.data[0].position[0].x = posX;
-      //       // skeletons.data[0].position[0].y = posY;
-      //       // skeleton_pub.publish(skeletons);
-      //     }
-      //   }
-      // }
-
       if (id == 7001)  // chipstar_red
       {
         if (state != 0)
@@ -503,6 +464,28 @@ private:
             state_data.position.push_back(rotP);
             state_data.position.push_back(rotR);
           }
+        }
+        else if(state == 0)
+        {
+          posX = inf;
+          posY = inf;
+          posZ = inf;
+          rotR = 0;
+          rotP = 0;
+          rotY = 0;
+          state_data.header.stamp = ros::Time::now();
+          state_data.name.push_back("chipstar_red_x_joint");
+          state_data.name.push_back("chipstar_red_y_joint");
+          state_data.name.push_back("chipstar_red_z_joint");
+          state_data.name.push_back("chipstar_red_yaw_joint");
+          state_data.name.push_back("chipstar_red_pitch_joint");
+          state_data.name.push_back("chipstar_red_roll_joint");
+          state_data.position.push_back(posX);
+          state_data.position.push_back(posY);
+          state_data.position.push_back(posZ);
+          state_data.position.push_back(rotY);
+          state_data.position.push_back(rotP);
+          state_data.position.push_back(rotR);
         }
       }
       if (id == 7004)  // greentea_bottle
@@ -537,6 +520,28 @@ private:
             state_data.position.push_back(rotR);
           }
         }
+        else if(state == 0)
+        {
+          posX = inf;
+          posY = inf;
+          posZ = inf;
+          rotR = 0;
+          rotP = 0;
+          rotY = 0;
+          state_data.header.stamp = ros::Time::now();
+          state_data.name.push_back("greentea_bottle_x_joint");
+          state_data.name.push_back("greentea_bottle_y_joint");
+          state_data.name.push_back("greentea_bottle_z_joint");
+          state_data.name.push_back("greentea_bottle_yaw_joint");
+          state_data.name.push_back("greentea_bottle_pitch_joint");
+          state_data.name.push_back("greentea_bottle_roll_joint");
+          state_data.position.push_back(posX);
+          state_data.position.push_back(posY);
+          state_data.position.push_back(posZ);
+          state_data.position.push_back(rotY);
+          state_data.position.push_back(rotP);
+          state_data.position.push_back(rotR);
+        }
       }
       if (id == 7006)  // cancoffee
       {
@@ -570,6 +575,28 @@ private:
             state_data.position.push_back(rotR);
           }
         }
+        else if(state == 0)
+        {
+          posX = inf;
+          posY = inf;
+          posZ = inf;
+          rotR = 0;
+          rotP = 0;
+          rotY = 0;
+          state_data.header.stamp = ros::Time::now();
+          state_data.name.push_back("cancoffee_x_joint");
+          state_data.name.push_back("cancoffee_y_joint");
+          state_data.name.push_back("cancoffee_z_joint");
+          state_data.name.push_back("cancoffee_yaw_joint");
+          state_data.name.push_back("cancoffee_pitch_joint");
+          state_data.name.push_back("cancoffee_roll_joint");
+          state_data.position.push_back(posX);
+          state_data.position.push_back(posY);
+          state_data.position.push_back(posZ);
+          state_data.position.push_back(rotY);
+          state_data.position.push_back(rotP);
+          state_data.position.push_back(rotR);
+        }
       }
       if (id == 7009)  // soysauce_bottle_black
       {
@@ -602,6 +629,28 @@ private:
             state_data.position.push_back(rotP);
             state_data.position.push_back(rotR);
           }
+        }
+        else if(state == 0)
+        {
+          posX = inf;
+          posY = inf;
+          posZ = inf;
+          rotR = 0;
+          rotP = 0;
+          rotY = 0;
+          state_data.header.stamp = ros::Time::now();
+          state_data.name.push_back("soysauce_bottle_black_x_joint");
+          state_data.name.push_back("soysauce_bottle_black_y_joint");
+          state_data.name.push_back("soysauce_bottle_black_z_joint");
+          state_data.name.push_back("soysauce_bottle_black_yaw_joint");
+          state_data.name.push_back("soysauce_bottle_black_pitch_joint");
+          state_data.name.push_back("soysauce_bottle_black_roll_joint");
+          state_data.position.push_back(posX);
+          state_data.position.push_back(posY);
+          state_data.position.push_back(posZ);
+          state_data.position.push_back(rotY);
+          state_data.position.push_back(rotP);
+          state_data.position.push_back(rotR);
         }
       }
     }
