@@ -1,8 +1,0 @@
-moveit_setup_assistant_config:
-  URDF:
-    package: smartpal5_description
-    relative_path: urdf/smartpal5.urdf
-  SRDF:
-    relative_path: config/smartpal5.srdf
-  CONFIG:
-    generated_timestamp: 1441009018

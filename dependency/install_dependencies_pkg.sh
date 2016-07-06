@@ -20,11 +20,11 @@ libqhull-dev \
 liblapack-dev \
 libqwt-dev \
 freeglut3-dev \
-ros-indigo-move-base \
-ros-indigo-kobuki-msgs \
-ros-indigo-kobuki* \
-ros-indigo-amcl \
-ros-indigo-urg-node \
-ros-indigo-moveit-full \
-ros-indigo-smach-viewer \
+ros-kinetic-move-base \
+ros-kinetic-kobuki-msgs \
+ros-kinetic-kobuki* \
+ros-kinetic-amcl \
+#ros-kinetic-urg-node \
+#ros-kinetic-moveit-full \
+#ros-kinetic-smach-viewer \
 mongodb
