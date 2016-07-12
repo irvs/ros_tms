@@ -26,7 +26,7 @@ include_directories(
 )
 
 add_executable(rps_manager src/rps.cpp)
-add_dependencies(rps_manager tms_ss_ps_gencpp 
+add_dependencies(rps_manager
 tms_msg_ss_gencpp 
 tms_msg_db_gencpp
 tms_msg_rp_gencpp)

@@ -27,7 +27,7 @@ include_directories(
 
  add_executable(kxp_virtual_control src/kxp_virtual_control.cpp)
 
- add_dependencies(kxp_virtual_control DEPENDS tms_msg_rc_gencpp tms_msg_db_gencpp)
+ add_dependencies(tms_msg_rc_gencpp tms_msg_db_gencpp)
 
  target_link_libraries(kxp_virtual_control
    ${catkin_LIBRARIES}

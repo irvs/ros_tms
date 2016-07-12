@@ -27,7 +27,7 @@ include_directories(
 ## Declare a cpp executable
  add_executable(mimamorukun_virtual_control src/mimamorukun_virtual_control.cpp)
 
- add_dependencies(mimamorukun_virtual_control DEPENDS tms_msg_rc_gencpp tms_msg_db_gencpp)
+ add_dependencies(tms_msg_rc_gencpp tms_msg_db_gencpp)
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(mimamorukun_virtual_control
