@@ -27,6 +27,8 @@
 #include <boost/algorithm/string.hpp>
 #include <tf/transform_broadcaster.h>
 
+#include "picojson.h"
+
 // #define rad2deg(x)	((x)*(180.0)/M_PI)
 // #define deg2rad(x)	((x)*M_PI/180.0)
 
@@ -57,6 +59,7 @@ private:
   ros::ServiceClient get_data_client_;
   tf::TransformBroadcaster br;
   tf::Transform transform;
+  int nfbed_state=0;
 
   //------------------------------------------------------------------------------
 public:
@@ -99,7 +102,7 @@ private:
     uint32_t id, oID, sensor, state, place;
     double posX, posY, posZ, rotR, rotP, rotY;
     sensor_msgs::JointState state_data;
-    std::string joint;
+    std::string joint,note;
 
     if (msg->tmsdb.size() == 0)
       return;
@@ -116,6 +119,7 @@ private:
       state = msg->tmsdb[i].state;
       place = msg->tmsdb[i].place;
       joint = msg->tmsdb[i].joint;
+      note = msg->tmsdb[i].note;
 
       if (id == 1002)  // moverio
       {
@@ -280,6 +284,23 @@ private:
           state_data.header.stamp = ros::Time::now();
           state_data.name.push_back("refrigerator_door_joint");
           state_data.position.push_back(rotY);
+        }
+      }
+
+      if (id == 3020) //nursingcare_bed
+      {
+        picojson::value v;
+        std::string err;
+        const char* json = note.c_str();
+        picojson::parse(v, json, json + strlen(json), &err);
+        if(err.empty())
+        {
+          picojson::object& o = v.get<picojson::object>();
+          std::string slstate = o["sleepstate"].get<std::string>().c_str();
+
+          if(strcmp(slstate.c_str(),"\\state_off")) nfbed_state=0;
+          else if(strcmp(slstate.c_str(),"\\state_up")) nfbed_state=1;
+          else if(strcmp(slstate.c_str(),"\\state_wake")) nfbed_state=2;
         }
       }
 
