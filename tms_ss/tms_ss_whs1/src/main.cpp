@@ -35,6 +35,8 @@ int main(int argc, char **argv)
 	int s_len;
 	struct sockaddr_in s_address;
 
+	ROS_INFO("tms_ss_whs1 ready...");
+
 	sock=socket(AF_INET,SOCK_DGRAM,0);
 	s_address.sin_family=AF_INET;
 	s_address.sin_addr.s_addr=INADDR_ANY;
