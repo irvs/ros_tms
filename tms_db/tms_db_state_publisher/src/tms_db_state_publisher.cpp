@@ -15,6 +15,7 @@
 #include <tms_msg_db/TmsdbGetData.h>
 #include <sensor_msgs/JointState.h>
 #include <tms_msg_ss/SkeletonArray.h>
+#include <visualization_msgs/Marker.h>
 
 // include for std
 #include <stdio.h>
@@ -25,6 +26,7 @@
 #include <vector>
 #include <map>
 #include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <tf/transform_broadcaster.h>
 
 #include "picojson.h"
@@ -39,6 +41,7 @@ using namespace std;
 using namespace boost;
 
 const int inf = -100000;
+#define PI 3.14159265
 
 //------------------------------------------------------------------------------
 class DbStatePublisher
@@ -56,6 +59,8 @@ private:
   ros::Publisher state_pub;
   ros::Publisher skeleton_pub;
   ros::Publisher skeleton_joint_pub;
+  ros::Publisher marker_pub;
+  ros::Publisher heartrate_pub;
 
   ros::ServiceClient get_data_client_;
   tf::TransformBroadcaster br;
@@ -75,6 +80,8 @@ public:
     get_data_client_ = nh.serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader");
     skeleton_pub = nh.advertise< tms_msg_ss::SkeletonArray >("integrated_skeleton_stream", 1);
     skeleton_joint_pub = nh.advertise< sensor_msgs::JointState >("/sim/joint_states",10);
+    marker_pub = nh.advertise<visualization_msgs::Marker>("visualization_marker", 10);
+    heartrate_pub = nh.advertise<visualization_msgs::Marker>("heartrate",10);
   }
 
   //----------------------------------------------------------------------------
@@ -497,6 +504,79 @@ private:
           else if(strcmp(slstate.c_str(),"state_wake")==0) nfbed_state=2;
           else nfbed_state=3;
         }
+      }
+
+      if (id == 3021) //whs1
+      {
+        tms_msg_db::TmsdbGetData srv;
+        srv.request.tmsdb.id = 1002;
+        get_data_client_.call(srv);
+        if(srv.response.tmsdb[0].x > 9.300 && srv.response.tmsdb[0].x < 11.000 && srv.response.tmsdb[0].y > 2.400 && srv.response.tmsdb[0].y < 3.200)
+        {
+          posX = 11.15; //in the bed
+          posY = 2.57;
+          posZ = 0.5;
+          rotY = 0;
+        }else
+        {
+          rotY = srv.response.tmsdb[0].ry - PI;
+          posX = srv.response.tmsdb[0].x - 0.05*cos(rotY) + 0.15*sin(rotY);
+          posY = srv.response.tmsdb[0].y - 0.15*cos(rotY) - 0.05*sin(rotY);
+          posZ = 1.7;
+        }
+        visualization_msgs::Marker points;
+        visualization_msgs::Marker heartrate;
+        points.header.frame_id = "/world_link";
+        points.header.stamp = ros::Time::now();
+        points.type = visualization_msgs::Marker::LINE_STRIP;
+        points.action = visualization_msgs::Marker::ADD;
+        points.scale.x = 0.005;
+        points.color.r = 0;
+        points.color.g = 1;
+        points.color.b = 0;
+        points.color.a = 1;
+        heartrate.header.frame_id = "/world_link";
+        heartrate.header.stamp = ros::Time::now();
+        heartrate.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
+        heartrate.action = visualization_msgs::Marker::ADD;
+        heartrate.scale.x = 0.005;
+        heartrate.color.r = 1;
+        heartrate.color.g = 0;
+        heartrate.color.b = 0;
+        heartrate.color.a = 1;
+        heartrate.text = "test";
+        heartrate.pose.position.x = posX - 0.35*sin(rotY);
+        heartrate.pose.position.y = posY + 0.35*cos(rotY);
+        heartrate.pose.position.z = posZ + 0.1;
+        heartrate.scale.z = 0.08;
+        picojson::value v;
+        std::string err;
+        const char* json = note.c_str();
+        picojson::parse(v,json,json+strlen(json),&err);
+        if(err.empty())
+        {
+          picojson::object& o = v.get<picojson::object>();
+          int temp = o["temp"].get<double>();
+          int rate = o["rate"].get<double>();
+          std::stringstream ss;
+          ss << rate;
+          heartrate.text = ss.str();
+          picojson::array& array = o["wave"].get<picojson::array>();
+          std::vector<int> wavelist;
+          for (picojson::array::iterator it2 = array.begin(); it2 != array.end(); it2++) {
+            wavelist.push_back(it2->get<double>());
+          }
+          for(int i=0;i<wavelist.size()-1;i++)
+          {
+            geometry_msgs::Point p;
+            p.x = posX - (wavelist.size()-i)*0.003*sin(rotY);
+            p.y = posY + (wavelist.size()-i)*0.003*cos(rotY);
+            p.z = posZ + wavelist[i]*0.0003;
+            points.points.push_back(p);
+          }
+        }
+        marker_pub.publish(points);
+        heartrate_pub.publish(heartrate);
       }
 
       if (id == 6004)  // chair
