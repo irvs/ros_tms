@@ -1,9 +1,9 @@
 <launch>
   <arg  default="1" name="linear_axis"/>
   <arg  default="0" name="angular_axis"/>
-  <arg  default="1.0" name="linear_scale"/>
-  <arg  default="1.0" name="angular_scale"/>
-  <arg  default="4" name="deadman_button"/>
+  <arg  default="0.2" name="linear_scale"/>
+  <arg  default="0.5" name="angular_scale"/>
+  <arg  default="5" name="deadman_button"/>
   <arg  default="0" name="enable_button"/>
   <arg  default="1" name="disable_button"/>
   <arg  default="10" name="spin_frequency"/>
@@ -28,7 +28,7 @@
     </node>
 
 <!--- ROS joystick driver -->
-    <node  name="joystick" output="screen" pkg="joy" type="joy_node"/>
+    <node  name="joystick" output="screen" pkg="joy" type="joy_node" />
       <param name="joy_node/dev" value="/dev/input/js0"/>
   </group>
 </launch>
