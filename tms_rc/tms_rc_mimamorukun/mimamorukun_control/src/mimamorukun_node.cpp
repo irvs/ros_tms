@@ -19,7 +19,8 @@ using namespace std;
 ClientSocket client_socket("", 54300);
 const int ENC_MAX = 3932159;
 const int SPEED_MAX = 32767;
-const float DIST_PER_PULSE = 0.552486;  // mm par pulse
+// const float DIST_PER_PULSE = 0.552486;  // mm par pulse
+const float DIST_PER_PULSE = 0.144 * 4.0;  // mm par pulse, 説明書の値参照
 const int WHEEL_DIST = 544;
 bool is_publish_tf;
 // const int WHEEL_DIST = 570;             // 533;
