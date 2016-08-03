@@ -3,6 +3,7 @@
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Pose2D.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <std_msgs/Int32.h>
 
 #include "ClientSocket.h"
 #include "SocketException.h"
@@ -133,6 +134,15 @@ void MachinePose_s::updateOdom()
     ENC_R = tmpENC_R - (ENC_MAX + 1);
   else
     ENC_R = tmpENC_R;
+
+  static ros::NodeHandle nh;
+  static ros::Publisher pub_l = nh.advertise< std_msgs::Int32 >("enc_l", 10);
+  static ros::Publisher pub_r = nh.advertise< std_msgs::Int32 >("enc_r", 10);
+  std_msgs::Int32 tmp;
+  tmp.data = ENC_L;
+  pub_l.publish(tmp);
+  tmp.data = ENC_R;
+  pub_r.publish(tmp);
 
   static long int ENC_R_old = 0;
   static long int ENC_L_old = 0;
