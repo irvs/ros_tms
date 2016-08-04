@@ -33,7 +33,7 @@
       <param name="odom0_differential" value="false"/>
       <param name="imu0_differential" value="false"/>
       <param name="odom1_relative" value="false"/>
-      <param name="imu0_relative" value="false"/>
+      <param name="imu0_relative" value="true"/>
       <param name="imu0_remove_gravitational_acceleration" value="true"/>
 
       <param name="print_diagnostics" value="true"/>
