@@ -2,8 +2,8 @@
 <!-- オドメトリのchild_frame_idがEKF推定後の座標系のframe_idになっていないとバグるので注意 -->
 <!-- @todo: トピック名を相対パスに -->
 <launch>
-  <env name="ROSCONSOLE_CONFIG_FILE"
-       value="$(find for_testing)/use_debug_level.conf"/>
+  <!--<env name="ROSCONSOLE_CONFIG_FILE"
+       value="$(find for_testing)/use_debug_level.conf"/>-->
     <node pkg="robot_localization" type="ekf_localization_node" name="ekf_relative" clear_params="true" output="screen">
       <param name="frequency" value="10"/>
       <param name="sensor_timeout" value="10.0"/>
@@ -16,8 +16,8 @@
 
       <param name="transform_time_offset" value="0.0"/>
 
-      <param name="odom0" value="/mimamorukun/odom"/>
-      <param name="imu0" value="/imu/data"/>
+      <param name="odom0" value="odom"/>
+      <param name="imu0" value="imu/data"/>
       <rosparam param="odom0_config">[false, false, false,
                                       false, false, false,
                                       true,  false, false,
