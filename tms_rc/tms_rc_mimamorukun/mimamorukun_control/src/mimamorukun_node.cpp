@@ -172,12 +172,14 @@ void MachinePose_s::updateOdom()
 
   m_Odom.pose.pose.position.x += MM2M(dX);
   m_Odom.pose.pose.position.y += MM2M(dY);
-  tf::Quaternion q1;
-  tf::quaternionMsgToTF(m_Odom.pose.pose.orientation, q1);
-  tf::Quaternion q2;
-  tf::quaternionMsgToTF(tf::createQuaternionMsgFromYaw(POS_SIGMA), q2);
-  q1 *= q2;
-  tf::quaternionTFToMsg(q1.normalized(), m_Odom.pose.pose.orientation);
+  // tf::Quaternion q1;
+  // tf::quaternionMsgToTF(m_Odom.pose.pose.orientation, q1);
+  // tf::Quaternion q2;
+  // tf::quaternionMsgToTF(tf::createQuaternionMsgFromYaw(POS_SIGMA), q2);
+  // q1 *= q2;
+  const static double ang_initial = (ENC_L*DIST_PER_PULSE_L + ENC_R*DIST_PER_PULSE_R)/WHEEL_DIST;
+  const double ang = (ENC_L*DIST_PER_PULSE_L + ENC_R*DIST_PER_PULSE_R)/WHEEL_DIST - ang_initial;
+  m_Odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(ang);
   m_Odom.twist.twist.linear.x = MM2M(dL) * (double)ROS_RATE;
   m_Odom.twist.twist.linear.y = 0.0;
   m_Odom.twist.twist.angular.z = POS_SIGMA * (double)ROS_RATE;
