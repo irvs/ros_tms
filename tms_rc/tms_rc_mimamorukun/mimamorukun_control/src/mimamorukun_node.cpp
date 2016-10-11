@@ -3,6 +3,7 @@
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Pose2D.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <std_msgs/Int32.h>
 
 #include "ClientSocket.h"
 #include "SocketException.h"
@@ -19,8 +20,11 @@ using namespace std;
 ClientSocket client_socket("", 54300);
 const int ENC_MAX = 3932159;
 const int SPEED_MAX = 32767;
-const float DIST_PER_PULSE = 0.552486;  // mm par pulse
-const int WHEEL_DIST = 544;
+// const float DIST_PER_PULSE = 0.552486;  // mm par pulse
+float DIST_PER_PULSE = 0.144 * 4.0;  // mm par pulse, 説明書の値参照
+float DIST_PER_PULSE_L = DIST_PER_PULSE;
+float DIST_PER_PULSE_R = DIST_PER_PULSE;
+int WHEEL_DIST = 544;
 bool is_publish_tf;
 // const int WHEEL_DIST = 570;             // 533;
 
@@ -58,14 +62,14 @@ public:
 
 } mchn_pose;
 
-int Dist2Pulse(int dist)
+float Dist2Pulse(int dist)
 {
   return ((float)dist) / DIST_PER_PULSE;
 }
-int Pulse2Dist(int pulse)
-{
-  return ((float)pulse) * DIST_PER_PULSE;
-}
+// float Pulse2Dist(int pulse, float dist_par_pulse)
+// {
+//   return ((float)pulse) * dist_par_pulse;
+// }
 double Rad2Deg(double rad)
 {
   return rad * (180.0) / M_PI;
@@ -133,6 +137,15 @@ void MachinePose_s::updateOdom()
   else
     ENC_R = tmpENC_R;
 
+  static ros::NodeHandle nh;
+  static ros::Publisher pub_l = nh.advertise< std_msgs::Int32 >("enc_l", 10);
+  static ros::Publisher pub_r = nh.advertise< std_msgs::Int32 >("enc_r", 10);
+  std_msgs::Int32 tmp;
+  tmp.data = ENC_L;
+  pub_l.publish(tmp);
+  tmp.data = ENC_R;
+  pub_r.publish(tmp);
+
   static long int ENC_R_old = 0;
   static long int ENC_L_old = 0;
   double detLp /*,r , dX ,dY,dL*/;
@@ -143,8 +156,8 @@ void MachinePose_s::updateOdom()
     ENC_R_old -= ENC_MAX + 1;
 
   //エンコーダーの位置での前回からの移動距離dL_R,dL_Lを算出
-  double dL_L = (double)(ENC_L - ENC_L_old) * (-DIST_PER_PULSE);
-  double dL_R = (double)(ENC_R - ENC_R_old) * DIST_PER_PULSE;
+  double dL_L = (double)(ENC_L - ENC_L_old) * (-DIST_PER_PULSE_L);
+  double dL_R = (double)(ENC_R - ENC_R_old) * DIST_PER_PULSE_R;
 
   //角速度SIGMAを算出
   double POS_SIGMA = (dL_R - dL_L) / WHEEL_DIST;
@@ -159,12 +172,14 @@ void MachinePose_s::updateOdom()
 
   m_Odom.pose.pose.position.x += MM2M(dX);
   m_Odom.pose.pose.position.y += MM2M(dY);
-  tf::Quaternion q1;
-  tf::quaternionMsgToTF(m_Odom.pose.pose.orientation, q1);
-  tf::Quaternion q2;
-  tf::quaternionMsgToTF(tf::createQuaternionMsgFromYaw(POS_SIGMA), q2);
-  q1 *= q2;
-  tf::quaternionTFToMsg(q1.normalized(), m_Odom.pose.pose.orientation);
+  // tf::Quaternion q1;
+  // tf::quaternionMsgToTF(m_Odom.pose.pose.orientation, q1);
+  // tf::Quaternion q2;
+  // tf::quaternionMsgToTF(tf::createQuaternionMsgFromYaw(POS_SIGMA), q2);
+  // q1 *= q2;
+  const static double ang_initial = (ENC_L*DIST_PER_PULSE_L + ENC_R*DIST_PER_PULSE_R)/WHEEL_DIST;
+  const double ang = (ENC_L*DIST_PER_PULSE_L + ENC_R*DIST_PER_PULSE_R)/WHEEL_DIST - ang_initial;
+  m_Odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(ang);
   m_Odom.twist.twist.linear.x = MM2M(dL) * (double)ROS_RATE;
   m_Odom.twist.twist.linear.y = 0.0;
   m_Odom.twist.twist.angular.z = POS_SIGMA * (double)ROS_RATE;
@@ -174,7 +189,7 @@ void MachinePose_s::updateOdom()
   m_Odom.twist.covariance.at(14) = 1000000;
   m_Odom.twist.covariance.at(21) = 1000000;
   m_Odom.twist.covariance.at(28) = 1000000;
-  m_Odom.twist.covariance.at(35) = sqr(0.05 * POS_SIGMA);
+  m_Odom.twist.covariance.at(35) = sqr(0.05 * POS_SIGMA + 0.05* (dL_R + dL_L) / WHEEL_DIST);
   m_Odom.pose.covariance.at(0) += sqr(0.05 * MM2M(dX));
   m_Odom.pose.covariance.at(7) += sqr(0.05 * MM2M(dY));
   m_Odom.pose.covariance.at(14) = 1000000;
@@ -286,6 +301,10 @@ int main(int argc, char **argv)
   s_Ki_ = boost::lexical_cast< string >(Ki_);
   s_Kd_ = boost::lexical_cast< string >(Kd_);
   nh_param.param< bool >("publish_tf", is_publish_tf, true);
+  nh_param.param< float >("dist_par_pulse_l", DIST_PER_PULSE_L, DIST_PER_PULSE_L);
+  nh_param.param< float >("dist_par_pulse_r", DIST_PER_PULSE_R, DIST_PER_PULSE_R);
+  DIST_PER_PULSE = 0.5*(DIST_PER_PULSE_L+DIST_PER_PULSE_R);
+  nh_param.param< int >("wheel_dist", WHEEL_DIST, WHEEL_DIST);
 
   try
   {

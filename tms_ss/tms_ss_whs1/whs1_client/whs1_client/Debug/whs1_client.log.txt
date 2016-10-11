@@ -1,0 +1,7 @@
+﻿  main.cpp
+  socket.cpp
+  whs1.cpp
+  コードを生成中...
+  .NETFramework,Version=v4.5.2.AssemblyAttributes.cpp
+  whs1_client.vcxproj -> C:\Users\nemuriscan\Desktop\whs1_client\Debug\whs1_client.exe
+  whs1_client.vcxproj -> C:\Users\nemuriscan\Desktop\whs1_client\Debug\whs1_client.pdb (Full PDB)
