@@ -10,7 +10,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES vicon_stream
   CATKIN_DEPENDS roscpp
-  DEPENDS system_lib
+  #DEPENDS system_lib
 )
 
 ###########

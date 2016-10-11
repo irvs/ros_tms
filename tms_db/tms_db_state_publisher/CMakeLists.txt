@@ -13,7 +13,7 @@ catkin_package(
   # INCLUDE_DIRS include
   LIBRARIES tms_db_state_publisher
   CATKIN_DEPENDS roscpp std_msgs sensor_msgs tms_msg_db
-  DEPENDS system_lib
+  #DEPENDS system_lib
 )
 
 include_directories(

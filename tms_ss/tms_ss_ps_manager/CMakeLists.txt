@@ -15,7 +15,7 @@ catkin_package(
 #  INCLUDE_DIRS include
    LIBRARIES tms_ss_ps_manager
    CATKIN_DEPENDS message_runtime roscpp std_msgs
-   DEPENDS system_lib
+  # DEPENDS system_lib
 )
 
 ###########

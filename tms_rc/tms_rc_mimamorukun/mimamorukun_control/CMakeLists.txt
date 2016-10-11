@@ -16,7 +16,7 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES kobuki_virtual_control
   CATKIN_DEPENDS geometry_msgs roscpp tms_msg_db tms_msg_rc nav_msgs
-  DEPENDS system_lib
+ # DEPENDS system_lib
   CATKIN_DEPENDS tf
 )
 

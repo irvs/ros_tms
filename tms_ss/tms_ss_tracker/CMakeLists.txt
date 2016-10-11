@@ -13,7 +13,7 @@ find_package(Boost REQUIRED COMPONENTS thread)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES tms_ss_tracker
-  DEPENDS system_lib eigen opencv
+ # DEPENDS system_lib eigen opencv
   CATKIN_DEPENDS roscpp message_runtime tms_msg_ss
 )
 

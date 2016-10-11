@@ -15,7 +15,7 @@ catkin_package(
    #INCLUDE_DIRS include
    #LIBRARIES smartpal_simple_task
    CATKIN_DEPENDS roscpp geometry_msgs nav_msgs message_runtime
-   DEPENDS system_lib
+   #DEPENDS system_lib
 )
 
 ###########
