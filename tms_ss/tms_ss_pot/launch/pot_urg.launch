@@ -1,0 +1,11 @@
+<launch>
+  <group ns="pot_urg2">
+    <node pkg="urg_node" name="urg_node" type="urg_node">
+      <param name="serial_port" value="/dev/ttyACM0" />
+      <param name="angle_min" value="-1.832595714595" />
+      <param name="angle_max" value=" 1.832595714595" />
+    </node>
+    <node pkg="tms_ss_pot" name="change_nan" type="change_nan">
+    </node>
+  </group>
+</launch>
