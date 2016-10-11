@@ -24,7 +24,7 @@ ros-kinetic-move-base \
 ros-kinetic-kobuki-msgs \
 ros-kinetic-kobuki* \
 ros-kinetic-amcl \
-#ros-kinetic-urg-node \
+ros-kinetic-urg-node \
 #ros-kinetic-moveit-full \
 #ros-kinetic-smach-viewer \
 mongodb

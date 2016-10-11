@@ -28,8 +28,6 @@ include_directories(
 
 add_executable(tms_ss_whs1 src/main.cpp)
 
-add_dependencies(tms_ss_whs1 tms_ss_whs1_generate_messages_cpp)
-
 target_link_libraries(tms_ss_whs1
    ${catkin_LIBRARIES}
 )
