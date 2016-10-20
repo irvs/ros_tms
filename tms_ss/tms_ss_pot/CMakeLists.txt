@@ -14,8 +14,13 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   )
 
-find_package(Qt4 4.6 REQUIRED COMPONENTS QtCore QtGui)
-include(${QT_USE_FILE})
+#find_package(Qt5 REQUIRED COMPONENTS QtCore QtGui)
+#include(${QT_USE_FILE})
+
+find_package(Qt5Widgets)
+find_package(Qt5Core)
+find_package(Qt5Gui)
+
 find_package(Boost REQUIRED COMPONENTS thread)
 
 ###################################

@@ -5,11 +5,11 @@ cmake-curses-gui \
 libboost-all-dev \
 libeigen3-dev \
 libeigen3-doc \
-libqt4-dev \
-libqt4-opengl-dev \
-qt4-dev-tools \
-qt4-qtconfig \
-qt4-doc-html \
+#libqt4-dev \
+#libqt4-opengl-dev \
+#qt4-dev-tools \
+#qt4-qtconfig \
+qt5-doc-html \
 libode-dev \
 libomniorb4-dev \
 libcos4-dev \
