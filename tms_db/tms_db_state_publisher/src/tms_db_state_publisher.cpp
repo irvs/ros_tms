@@ -285,7 +285,9 @@ private:
           }
           else
           {
-            transform.setOrigin(tf::Vector3(posX, posY, 1.1));
+            double height = 1.1*cos(whsPitch)*cos(whsRoll);
+            if(height<0.1) height = 0.1;
+            transform.setOrigin(tf::Vector3(posX, posY, height));
             // transform.setRotation(tf::Quaternion(0, 0, -1.5708 + rotY));
             // transform.setRotation(tf::Quaternion(whsRoll,whsPitch,-1.5708));
             transform.setRotation(tf::Quaternion(whsPitch,whsRoll,-1.5708));

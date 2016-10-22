@@ -18,6 +18,7 @@
 #define DB_WRITE 10
 #define PEAK 800
 #define NOT_PEAK 600
+#define PI 3.14159265
 
 using namespace std;
 
@@ -63,10 +64,7 @@ int main(int argc, char **argv)
 	while(ros::ok()){
 		memcpy(&rfds2,&rfds,sizeof(fd_set));
 		n=select(sock+1,&rfds2,NULL,NULL,&tv);
-		if(n==0){
-			ROS_INFO("timeout");
-		}
-		else if(FD_ISSET(sock,&rfds2)){
+		if(FD_ISSET(sock,&rfds2)){
 			int rcvmsg[3];
 			n = recvfrom(sock,rcvmsg,sizeof(rcvmsg),0,NULL,NULL);
 			if(n<0){
@@ -79,11 +77,20 @@ int main(int argc, char **argv)
 				acc_y = (rcvmsg[2]>>16)*0.01;
 				acc_z = (((short)(rcvmsg[2]&0xffff)<<16)>>16)*0.01;
 
-				if(acc_y == 0.0) roll = 0;
-				else roll = atan(acc_x/acc_y);
 				double G = sqrt(acc_x*acc_x+acc_y*acc_y+acc_z*acc_z);
-				if(G == 0.0) pitch = 0;
-			  else pitch = asin(-acc_z/G);
+				if(acc_y < 0){
+					roll = asin(-acc_x/G);
+					pitch = atan(acc_z/acc_y);
+				}
+					// }else if(acc_y > 0){
+					// 	roll = asin(acc_x/G);
+					// 	pitch = atan(acc_z/-acc_y);
+					// }
+				// }else{
+				// 	pitch = asin(-acc_z/G);
+				// 	if(pitch>-0.1&&pitch<0.1) roll = PI*0.5;
+				// 	else roll = 0;
+				// }
 
 				ROS_INFO("rate:%d roll:%f pitch:%f acc_x:%f acc_y:%f acc_z:%f",rate,roll,pitch,acc_x,acc_y,acc_z);
 
