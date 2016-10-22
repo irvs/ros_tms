@@ -67,6 +67,8 @@ private:
   tf::Transform transform;
   int nfbed_state=0;
 
+  double whsRoll,whsPitch;
+
   //------------------------------------------------------------------------------
 public:
   DbStatePublisher() : nh_priv("~"), is_debug(false)
@@ -284,7 +286,10 @@ private:
           else
           {
             transform.setOrigin(tf::Vector3(posX, posY, 1.1));
-            transform.setRotation(tf::Quaternion(0, 0, -1.5708 + rotY));
+            // transform.setRotation(tf::Quaternion(0, 0, -1.5708 + rotY));
+            // transform.setRotation(tf::Quaternion(whsRoll,whsPitch,-1.5708));
+            transform.setRotation(tf::Quaternion(whsPitch,whsRoll,-1.5708));
+
             br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world_link", "Body"));
             sensor_msgs::JointState skeleton_joint;
             skeleton_joint.header.stamp = ros::Time::now();
@@ -524,6 +529,9 @@ private:
           posY = srv.response.tmsdb[0].y - 0.15*cos(rotY) - 0.05*sin(rotY);
           posZ = 1.7;
         }
+        whsRoll = msg->tmsdb[i].rr;
+        whsPitch = msg->tmsdb[i].rp;
+
         visualization_msgs::Marker points;
         visualization_msgs::Marker heartrate;
         points.header.frame_id = "/world_link";
