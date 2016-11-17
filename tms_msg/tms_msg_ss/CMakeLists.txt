@@ -54,6 +54,7 @@ add_message_files(
   SkeletonArray.msg
   CameraPosture.msg
   SkeletonStreamWrapper.msg
+  Beacon.msg
 )
 
 add_service_files(
