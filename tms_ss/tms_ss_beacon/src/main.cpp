@@ -27,7 +27,7 @@ beacon rasp_pi[N];
 #define dist2(var1, var2) (sqr(var1[0]-var2[0])+sqr(var1[1]-var2[1])+sqr(var1[2]-var2[2])) // square of distance
 
 //#define LOGGING
-//#define DEBUG
+// #define DEBUG 1
 
 Vector3d calc_position(vector<beacon> beacons, Vector3d initpos)
 {
@@ -40,6 +40,7 @@ Vector3d calc_position(vector<beacon> beacons, Vector3d initpos)
 	MatrixXd K(n, n);
 	MatrixXd Sigma(n, n);
 	VectorXd Error(3);
+	double gain = 0.01;//0.1;
 
 	pos = initpos;
 
@@ -98,9 +99,9 @@ Vector3d calc_position(vector<beacon> beacons, Vector3d initpos)
 		}
 
 		// reNew parent position
-		pos[0] += Error(0);
-		pos[1] += Error(1);
-		pos[2] += Error(2);
+		pos[0] += gain * Error(0);
+		pos[1] += gain * Error(1);
+		pos[2] += gain * Error(2);
 
 #if DEBUG
 		cout << "Error " << sqrt(sqr(Error(0)) + sqr(Error(1)) + sqr(Error(2))) << endl;
@@ -143,6 +144,32 @@ void drawRaspi(beacon pi,int id,float r,float g,float b,float a)
 	marker_pub.publish(marker);
 }
 
+void drawPos(Vector3d pos,int id,float r,float g,float b,float a)
+{
+	uint32_t shape = visualization_msgs::Marker::CYLINDER;
+	visualization_msgs::Marker marker;
+	marker.header.frame_id = "/world_link";
+	marker.header.stamp = ros::Time::now();
+	marker.ns = "beacon";
+	marker.id = id;
+	marker.type = shape;
+	marker.action = visualization_msgs::Marker::ADD;
+
+	marker.pose.position.x = pos[0];
+	marker.pose.position.y = pos[1];
+	marker.pose.position.z = 0.8;
+
+	marker.scale.x = marker.scale.y = 0.2;
+	marker.scale.z = 1.6;
+
+	marker.color.r = r;
+	marker.color.g = g;
+	marker.color.b = b;
+	marker.color.a = a;
+	marker.lifetime = ros::Duration();
+	marker_pub.publish(marker);
+}
+
 void Callback(const tms_msg_ss::Beacon &msg)
 {
 	ROS_INFO("callback");
@@ -168,6 +195,8 @@ void Callback(const tms_msg_ss::Beacon &msg)
 	// pos = calc_position(rasp_pis, pos);
 	// ROS_INFO("calcend");
 	// ROS_INFO("pos:(%f,%f,%f)",pos[0],pos[1],pos[2]);
+	//
+	// drawPos(pos,10,1.0,1.0,1.0,1.0);
 }
 
 
@@ -180,15 +209,15 @@ int main(int argc, char **argv)
 
 	ROS_INFO("READY");
 
-	rasp_pi[0].loc << 1, 0, 0;
-	rasp_pi[1].loc << 0, 1, 0;
-	rasp_pi[2].loc << -1, 0, 0;
-	rasp_pi[3].loc << 0, -1, 1;
+	rasp_pi[0].loc << 7.66, 5.62, 0.82;
+	rasp_pi[1].loc << 10.12, 3.90, 0.58;
+	rasp_pi[2].loc << 8.74, 0.31, 0.92;
+	rasp_pi[3].loc << 5.65, 1.66, 0.73;
 
-	rasp_pi[0].r = 0.72;
-	rasp_pi[1].r = 1;
-	rasp_pi[2].r = 1;
-	rasp_pi[3].r = 1.44;
+	rasp_pi[0].r = 3;
+	rasp_pi[1].r = 1.5;
+	rasp_pi[2].r = 2;
+	rasp_pi[3].r = 4;
 
 	ros::spin();
 
