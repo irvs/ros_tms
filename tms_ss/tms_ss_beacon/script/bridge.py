@@ -9,7 +9,7 @@ from tms_msg_ss.msg import Beacon
 PORT=9090
 UUID="b9407f30f5f8466eaff925556b57fe6d"
 MAJOR=10000
-ALPHA=0.075#0.1
+ALPHA=0.15#0.1
 
 class ReceiveBeacon:
 	dist = {}

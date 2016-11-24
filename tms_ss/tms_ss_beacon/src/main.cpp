@@ -26,6 +26,8 @@ beacon rasp_pi[N];
 #define sqr(var) ((var)*(var))
 #define dist2(var1, var2) (sqr(var1[0]-var2[0])+sqr(var1[1]-var2[1])+sqr(var1[2]-var2[2])) // square of distance
 
+#define REPEAT_LIMIT 1000
+
 //#define LOGGING
 // #define DEBUG 1
 
@@ -43,8 +45,10 @@ Vector3d calc_position(vector<beacon> beacons, Vector3d initpos)
 	double gain = 0.01;//0.1;
 
 	pos = initpos;
+	int repeat = 0;
 
-	while (true) {
+	while (repeat < REPEAT_LIMIT) {
+		repeat++;
 		A.setZero();
 		L.setZero();
 		SigmaL.setZero();
@@ -184,19 +188,19 @@ void Callback(const tms_msg_ss::Beacon &msg)
 	drawRaspi(rasp_pi[2],2,0.0,1.0,1.0,0.2);
 	drawRaspi(rasp_pi[3],3,1.0,1.0,0.0,0.2);
 
-	// rasp_pis.clear();
-	// rasp_pis.push_back(rasp_pi[0]);
-	// rasp_pis.push_back(rasp_pi[1]);
-	// rasp_pis.push_back(rasp_pi[2]);
-	// rasp_pis.push_back(rasp_pi[3]);
-	//
-	// Vector3d pos(0, 0, 0);
-	// ROS_INFO("calc");
-	// pos = calc_position(rasp_pis, pos);
-	// ROS_INFO("calcend");
-	// ROS_INFO("pos:(%f,%f,%f)",pos[0],pos[1],pos[2]);
-	//
-	// drawPos(pos,10,1.0,1.0,1.0,1.0);
+	rasp_pis.clear();
+	rasp_pis.push_back(rasp_pi[0]);
+	rasp_pis.push_back(rasp_pi[1]);
+	rasp_pis.push_back(rasp_pi[2]);
+	rasp_pis.push_back(rasp_pi[3]);
+
+	Vector3d pos(0, 0, 0);
+	ROS_INFO("calc");
+	pos = calc_position(rasp_pis, pos);
+	ROS_INFO("calcend");
+	ROS_INFO("pos:(%f,%f,%f)",pos[0],pos[1],pos[2]);
+
+	drawPos(pos,10,1.0,1.0,1.0,1.0);
 }
 
 
