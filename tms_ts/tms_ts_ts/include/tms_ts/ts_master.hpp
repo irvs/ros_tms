@@ -43,6 +43,8 @@ public:
                             int priority, int thread_num);
   std::string CreateRunCmd(int thread_num);
   bool ExecuteCmd(const char *buf);
+  boost::thread *threads[MAX_TASK_NUM * 2];
+  bool addThread(int thread_num,const char* arg1,const char* arg2);
 
   // TMS TASK
   struct Task
