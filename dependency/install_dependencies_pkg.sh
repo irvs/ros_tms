@@ -21,7 +21,8 @@ ros-kinetic-kobuki-msgs \
 ros-kinetic-kobuki* \
 ros-kinetic-amcl \
 ros-kinetic-urg-node \
-mongodb 
+mongodb \
+ros-kinetic-moveit
 #libqt4-dev \
 #libqt4-opengl-dev \
 #qt4-dev-tools \

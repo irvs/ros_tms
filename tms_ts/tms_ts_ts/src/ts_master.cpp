@@ -84,6 +84,7 @@ std::string TmsTsMaster::CreateSrvCall(long long int rostime, int task_id, int r
                                        int place_id, int priority, int thread_num)
 {
   // std::string s_rostime = boost::lexical_cast<std::string>(rostime);
+  ROS_INFO("CreateSrvCall");
   std::string s_rostime("0");
   // string s_task_id = IntToString(task_id);
   std::string s_task_id = boost::lexical_cast< std::string >(task_id);
@@ -138,6 +139,7 @@ bool TmsTsMaster::ExecuteCmd(const char *buf)
 {
   int ret;
   std::cout << buf << std::endl;  // subtask
+  ROS_INFO("ExecuteCmd buf:%s",buf);
 
   ret = system(buf);
 
@@ -308,6 +310,8 @@ int main(int argc, char **argv)
           std::string srv_req = ts.CreateSrvCall(at_rostime(), at_taskID0(), at_robotID0(), at_objectID0(),
                                                  at_userID0(), at_placeID0(), at_priority(), i);
           task_list_.pop_front();
+          ROS_INFO("CreateRunCmd:%s",(ts.CreateRunCmd(i)).c_str());
+          ROS_INFO("srv_req:%s",srv_req.c_str());
           // run node with threads[i]
           threads[i] = new boost::thread(boost::bind(&TmsTsMaster::ExecuteCmd, &ts, (ts.CreateRunCmd(i)).c_str()));
           // service call to nodelet_node from threads[i+MAX_TASK_NUM]
