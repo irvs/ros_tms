@@ -6,6 +6,7 @@ libboost-all-dev \
 libeigen3-dev \
 libeigen3-doc \
 qt5-doc-html \
+qt5-default \
 libode-dev \
 libomniorb4-dev \
 libcos4-dev \
@@ -22,10 +23,4 @@ ros-kinetic-kobuki* \
 ros-kinetic-amcl \
 ros-kinetic-urg-node \
 mongodb \
-ros-kinetic-moveit
-#libqt4-dev \
-#libqt4-opengl-dev \
-#qt4-dev-tools \
-#qt4-qtconfig \
-#ros-kinetic-moveit-full \
-#ros-kinetic-smach-viewer \
+ros-kinetic-moveit 

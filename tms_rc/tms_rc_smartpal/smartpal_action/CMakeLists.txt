@@ -35,7 +35,7 @@ set(libname CnoidSmartpalActionPlugin)
 ## Qt specific configuration ##
 ###############################
 
-find_package(Qt5 REQUIRED)
+find_package(Qt5Core REQUIRED)
 set(QT_USE_QTOPENGL TRUE)
 #include(${QT_USE_FILE})
 include_directories(${QT_INCLUDE_DIR} ${QT_OPENGL_INCLUDE_DIR})
