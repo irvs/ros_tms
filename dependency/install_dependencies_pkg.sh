@@ -25,6 +25,6 @@ ros-indigo-kobuki-msgs \
 ros-indigo-kobuki* \
 ros-indigo-amcl \
 ros-indigo-urg-node \
-ros-indigo-moveit-full \
+ros-indigo-moveit \
 ros-indigo-smach-viewer \
 mongodb

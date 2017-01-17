@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 catkin_package(
-  INCLUDE_DIRS include
+#  INCLUDE_DIRS include
   LIBRARIES tms_ss_beacon
   CATKIN_DEPENDS rospy roscpp
   DEPENDS system_lib eigen
