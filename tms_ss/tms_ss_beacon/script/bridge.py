@@ -9,7 +9,7 @@ from tms_msg_ss.msg import Beacon
 PORT=9090
 UUID="b9407f30f5f8466eaff925556b57fe6d"
 MAJOR=10000
-ALPHA=0.15#0.1
+ALPHA=1#0.15#0.1
 
 class ReceiveBeacon:
 	dist = {}
@@ -26,18 +26,19 @@ class ReceiveBeacon:
 			data = json.loads(rcv)
 			if(data["uuid"]==UUID and data["major"]==MAJOR):
 				distance = pow(10,float(data["measuredPower"]-data["rssi"])/20.0)
-				key = str(data["my_id"]) + ":" + str(data["minor"])
-				if(key in self.dist):
-					self.dist[key] = ALPHA * distance + (1-ALPHA) * self.dist[key]
-				else:
-					self.dist[key] = distance
-				msg = Beacon()
-				msg.pi_id = data["my_id"]
-				msg.minor_id = data["minor"]
-				msg.distance = round(self.dist[key],2)
-				self.pub.publish(msg)
-				print self.dist
-				print str(data["minor"]) + " ,distance=" + str(round(self.dist[key],2)) + "m" + " ,raw=" + str(round(distance,2))
+				if(distance>0.3 and distance<8.0):
+					key = str(data["my_id"]) + ":" + str(data["minor"])
+					if(key in self.dist):
+						self.dist[key] = ALPHA * distance + (1-ALPHA) * self.dist[key]
+					else:
+						self.dist[key] = distance
+					msg = Beacon()
+					msg.pi_id = data["my_id"]
+					msg.minor_id = data["minor"]
+					msg.distance = round(self.dist[key],2)
+					self.pub.publish(msg)
+					print self.dist
+					print str(data["minor"]) + " ,distance=" + str(round(self.dist[key],2)) + "m" + " ,raw=" + str(round(distance,2))
 
 node = ReceiveBeacon()
 node.run()

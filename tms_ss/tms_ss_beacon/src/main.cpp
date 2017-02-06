@@ -5,6 +5,7 @@
 #include <fstream>
 #include <Eigen/Dense>
 #include <tms_msg_ss/Beacon.h>
+#include "kalman-Ndof.hpp"
 
 using namespace std;
 using namespace Eigen;
@@ -21,6 +22,7 @@ typedef struct {
 
 vector<beacon> rasp_pis;
 beacon rasp_pi[N];
+Kalman *kalman;
 
 #define SD_DIST 0.1 // Error of beacon [m]
 #define sqr(var) ((var)*(var))
@@ -47,8 +49,10 @@ Vector3d calc_position(vector<beacon> beacons, Vector3d initpos)
 	pos = initpos;
 	int repeat = 0;
 
-	while (repeat < REPEAT_LIMIT) {
+	while (1) {
 		repeat++;
+		if(repeat>REPEAT_LIMIT)
+			break;
 		A.setZero();
 		L.setZero();
 		SigmaL.setZero();
@@ -150,7 +154,7 @@ void drawRaspi(beacon pi,int id,float r,float g,float b,float a)
 
 void drawPos(Vector3d pos,int id,float r,float g,float b,float a)
 {
-	uint32_t shape = visualization_msgs::Marker::CYLINDER;
+	uint32_t shape = visualization_msgs::Marker::SPHERE;
 	visualization_msgs::Marker marker;
 	marker.header.frame_id = "/world_link";
 	marker.header.stamp = ros::Time::now();
@@ -161,10 +165,10 @@ void drawPos(Vector3d pos,int id,float r,float g,float b,float a)
 
 	marker.pose.position.x = pos[0];
 	marker.pose.position.y = pos[1];
-	marker.pose.position.z = 0.8;
+	marker.pose.position.z = pos[2];//0.8
 
 	marker.scale.x = marker.scale.y = 0.2;
-	marker.scale.z = 1.6;
+	marker.scale.z = 0.2;//1.6
 
 	marker.color.r = r;
 	marker.color.g = g;
@@ -174,10 +178,13 @@ void drawPos(Vector3d pos,int id,float r,float g,float b,float a)
 	marker_pub.publish(marker);
 }
 
+ros::Time last_time;
+ros::Time now;
+Vector3d pos(8,3,0.8);
+Vector3d last_pos(8,3,0.8);
+Vector3d kf_pos(8,3,0.8);
 void Callback(const tms_msg_ss::Beacon &msg)
 {
-	ROS_INFO("callback");
-
 	if(msg.pi_id<N)
 		rasp_pi[msg.pi_id].r = msg.distance;
 
@@ -194,13 +201,72 @@ void Callback(const tms_msg_ss::Beacon &msg)
 	rasp_pis.push_back(rasp_pi[2]);
 	rasp_pis.push_back(rasp_pi[3]);
 
-	Vector3d pos(0, 0, 0);
+	last_pos = pos;
 	ROS_INFO("calc");
 	pos = calc_position(rasp_pis, pos);
 	ROS_INFO("calcend");
 	ROS_INFO("pos:(%f,%f,%f)",pos[0],pos[1],pos[2]);
 
+	if(pos[0]==0&&pos[1]==0&&pos[2]==0){
+		return;
+	}
+
+	last_time = now;
+	now = ros::Time::now();
+	double delta_t = (now.sec+now.nsec*0.000000001)-(last_time.sec+last_time.nsec*0.000000001);
+	ROS_INFO("callback:%f",delta_t);
+
 	drawPos(pos,10,1.0,1.0,1.0,1.0);
+
+	double velX = (pos[0]-last_pos[0])/delta_t;
+	double velY = (pos[1]-last_pos[1])/delta_t;
+	double velZ = (pos[2]-last_pos[2])/delta_t;
+
+	static int count = 0;
+
+	if(kalman == NULL)
+		return;
+
+	if(count==0)
+	{
+		count++;
+		return;
+	}
+	else if(count==1)
+	{
+		kalman->init(0.1,1.0,0.1);//(0.1,0.1,1.0);
+		double C[3][6];
+		memset(C,0,sizeof(C));
+		C[0][0]=C[1][1]=C[2][2]=1;
+		kalman->setC((double *)&C);
+		kalman->setX(0,pos[0]);
+		kalman->setX(1,pos[1]);
+		kalman->setX(2,pos[2]);
+		kalman->setX(3,velX);
+		kalman->setX(4,velY);
+		kalman->setX(5,velZ);
+
+		count++;
+	}
+
+	double A[3][6];
+	memset(A,0,sizeof(A));
+	A[0][0]=A[1][1]=A[2][2]=1;
+	A[0][3]=A[1][4]=A[2][5]=delta_t;
+
+	double obs[6]={pos[0],pos[1],pos[2],velX,velY,velZ};
+	double input[3]={0,0,0};
+
+	kalman->update(obs,input);
+
+	kf_pos[0]=kalman->getX(0);
+	kf_pos[1]=kalman->getX(1);
+	kf_pos[2]=kalman->getX(2);
+
+
+	ROS_INFO("kf_pos:(%f,%f,%f)",kf_pos[0],kf_pos[1],kf_pos[2]);
+
+	drawPos(kf_pos,11,1.0,0.0,0.0,1.0);
 }
 
 
@@ -208,6 +274,11 @@ int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "tms_ss_beacon");
 	ros::NodeHandle nh;
+
+	kalman = new Kalman(6,6,3);
+
+	now = ros::Time::now();
+
 	beacon_sub = nh.subscribe("/tms_ss_beacon",1,&Callback);
 	marker_pub = nh.advertise<visualization_msgs::Marker>("visualization_marker",1);
 
