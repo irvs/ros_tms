@@ -4,10 +4,11 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(tms_msg_rc)
 
-find_package(catkin REQUIRED COMPONENTS 
+find_package(catkin REQUIRED COMPONENTS
   std_msgs
   message_generation
 )
+
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -16,7 +17,9 @@ add_message_files(
   FILES
   robot_current_data.msg
   tag_data.msg
+  odom_rad.msg
   katana_pos.msg
+  arduino_serial.msg
 )
 
 add_service_files(
