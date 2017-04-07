@@ -9,6 +9,8 @@
 
 #include <tms_msg_ss/Skeleton.h>
 
+using namespace std;
+
 typedef enum
 {
   SpineBase,

@@ -188,8 +188,8 @@ void *Processing(void *ptr)
 
             cvmSet(laser.m_LRFPos[n][i], 0, 0, range * cos(deg2rad(theta)));
             cvmSet(laser.m_LRFPos[n][i], 1, 0, range * sin(deg2rad(theta)));
-            cvmMul(m_Rotate, laser.m_LRFPos[n][i], Temp);     //
-            cvmAdd(m_Translate, Temp, laser.m_LRFPos[n][i]);  //
+            cvMatMul(m_Rotate, laser.m_LRFPos[n][i], Temp);     //
+            cvAdd(m_Translate, Temp, laser.m_LRFPos[n][i]);  //
             laser.m_LRFPoints[n][i].x = cvmGet(laser.m_LRFPos[n][i], 0, 0) * 1000.0;
             laser.m_LRFPoints[n][i].y = cvmGet(laser.m_LRFPos[n][i], 1, 0) * 1000.0;
           }
@@ -207,8 +207,8 @@ void *Processing(void *ptr)
 
             cvmSet(laser.m_LRFClsPos[n][i], 0, 0, range * cos(deg2rad(theta)));
             cvmSet(laser.m_LRFClsPos[n][i], 1, 0, range * sin(deg2rad(theta)));
-            cvmMul(m_Rotate, laser.m_LRFClsPos[n][i], Temp);     //
-            cvmAdd(m_Translate, Temp, laser.m_LRFClsPos[n][i]);  //
+            cvMatMul(m_Rotate, laser.m_LRFClsPos[n][i], Temp);     //
+            cvAdd(m_Translate, Temp, laser.m_LRFClsPos[n][i]);  //
             laser.m_LRFClsPoints[n][i].x = cvmGet(laser.m_LRFClsPos[n][i], 0, 0) * 1000.0;
             laser.m_LRFClsPoints[n][i].y = cvmGet(laser.m_LRFClsPos[n][i], 1, 0) * 1000.0;
           }

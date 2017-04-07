@@ -14,7 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   robot_state_publisher
   tms_msg_ss
 )
-find_package(Eigen REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 
 ###################################

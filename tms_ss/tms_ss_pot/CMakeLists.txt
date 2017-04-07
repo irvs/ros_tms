@@ -5,8 +5,8 @@ project(tms_ss_pot)
 ## packege  find   configuration ##
 ###################################
 
-find_package(catkin REQUIRED COMPONENTS 
-  roscpp 
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
   sensor_msgs
   tms_msg_ss
   tms_msg_db
@@ -14,8 +14,13 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   )
 
-find_package(Qt4 4.6 REQUIRED COMPONENTS QtCore QtGui)
-include(${QT_USE_FILE})
+#find_package(Qt5 REQUIRED COMPONENTS QtCore QtGui)
+#include(${QT_USE_FILE})
+
+find_package(Qt5Widgets)
+find_package(Qt5Core)
+find_package(Qt5Gui)
+
 find_package(Boost REQUIRED COMPONENTS thread)
 
 ###################################
@@ -25,7 +30,7 @@ catkin_package(
     INCLUDE_DIRS include
     LIBRARIES tms_ss_pot
     CATKIN_DEPENDS message_runtime roscpp std_msgs
-    DEPENDS system_lib
+    #DEPENDS system_lib
 )
 
 ###########
@@ -49,19 +54,19 @@ include_directories(
     include/multiple_particle_filter.cpp
  )
 
-add_executable(urg_tracker src/urg_tracker.cpp include/target.cpp include/laser.cpp include/particle_filter.cpp include/multiple_particle_filter.cpp)
-add_executable(urg_single_tracker src/urg_single_tracker.cpp include/target.cpp include/laser.cpp include/particle_filter.cpp include/multiple_particle_filter.cpp)
-add_executable(change_nan src/change_nan.cpp)
-add_executable(visualize src/tracker_visualization.cpp)
-add_executable(laser_visualize src/laser_visualization.cpp)
-add_executable(laser_visualize_multi src/laser_visualization_multi.cpp)
+add_executable(urg_tracker src/urg_tracker.cpp include/target.cpp include/laser.cpp include/particle_filter.cpp include/multiple_particle_filter.cpp include/condens/condens.cpp)
+add_executable(urg_single_tracker src/urg_single_tracker.cpp include/target.cpp include/laser.cpp include/particle_filter.cpp include/multiple_particle_filter.cpp include/condens/condens.cpp)
+add_executable(change_nan src/change_nan.cpp include/condens/condens.cpp)
+add_executable(visualize src/tracker_visualization.cpp include/condens/condens.cpp)
+add_executable(laser_visualize src/laser_visualization.cpp include/condens/condens.cpp)
+add_executable(laser_visualize_multi src/laser_visualization_multi.cpp include/condens/condens.cpp)
 
-add_dependencies(urg_tracker tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
-add_dependencies(urg_single_tracker tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
-add_dependencies(change_nan tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
-add_dependencies(visualize tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
-add_dependencies(laser_visualize tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
-add_dependencies(laser_visualize_multi tms_ss_pot_gencpp tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
+add_dependencies(urg_tracker tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
+add_dependencies(urg_single_tracker tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
+add_dependencies(change_nan tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
+add_dependencies(visualize tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
+add_dependencies(laser_visualize tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
+add_dependencies(laser_visualize_multi tms_msg_ss_gencpp tms_msg_db_gencpp tms_msg_rp_gencpp)
 
 target_link_libraries(urg_tracker ${catkin_LIBRARIES} yaml-cpp)
 target_link_libraries(urg_single_tracker ${catkin_LIBRARIES} yaml-cpp)

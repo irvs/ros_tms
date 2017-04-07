@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
+#include <iostream>
 
 class Config
 {

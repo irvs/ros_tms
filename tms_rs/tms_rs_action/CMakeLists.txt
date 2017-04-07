@@ -15,7 +15,7 @@ catkin_package(
    #INCLUDE_DIRS include
    #LIBRARIES smartpal_simple_task
    CATKIN_DEPENDS roscpp geometry_msgs nav_msgs message_runtime
-   DEPENDS system_lib
+   #DEPENDS system_lib
 )
 
 ###########
@@ -33,7 +33,7 @@ add_executable(smartpal_simple_task
     src/tms_rs_simple_task.cpp 
 )
 
-add_dependencies(smartpal_simple_task DEPENDS tms_msg_rs_gencpp tms_msg_rp_gencpp tms_msg_db_gencpp)
+add_dependencies(tms_msg_rs_gencpp tms_msg_rp_gencpp tms_msg_db_gencpp)
 
 target_link_libraries(smartpal_simple_task ${catkin_LIBRARIES})
 
@@ -42,7 +42,7 @@ add_executable(simpletask_service
     src/simpletask_service.cpp 
 )
 
-add_dependencies(simpletask_service DEPENDS tms_msg_rs_gencpp tms_msg_rp_gencpp tms_msg_db_gencpp)
+add_dependencies(tms_msg_rs_gencpp tms_msg_rp_gencpp tms_msg_db_gencpp)
 
 target_link_libraries(simpletask_service ${catkin_LIBRARIES})
 

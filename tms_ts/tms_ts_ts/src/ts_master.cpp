@@ -84,6 +84,7 @@ std::string TmsTsMaster::CreateSrvCall(long long int rostime, int task_id, int r
                                        int place_id, int priority, int thread_num)
 {
   // std::string s_rostime = boost::lexical_cast<std::string>(rostime);
+  ROS_INFO("CreateSrvCall");
   std::string s_rostime("0");
   // string s_task_id = IntToString(task_id);
   std::string s_task_id = boost::lexical_cast< std::string >(task_id);
@@ -147,6 +148,7 @@ bool TmsTsMaster::ExecuteCmd(const char *buf)
     ROS_ERROR("Shut down system call\n");
     return false;
   }
+  ROS_INFO("return true");
   return true;
 }
 
@@ -275,6 +277,17 @@ bool TmsTsMaster::stsCallback(tms_msg_ts::ts_state_control::Request &req, tms_ms
   }
 }
 
+bool TmsTsMaster::addThread(int thread_num,const char* arg1,const char* arg2)
+{
+  bool has_completed;
+  threads[thread_num] = new boost::thread(boost::bind(&TmsTsMaster::ExecuteCmd, this, arg1));
+  // service call to nodelet_node from threads[i+MAX_TASK_NUM]
+  has_completed = threads[thread_num]->timed_join(td);
+  threads[thread_num+MAX_TASK_NUM] = new boost::thread(boost::bind(&TmsTsMaster::ExecuteCmd, this, arg2));
+  // service call to nodelet_node from threads[i+MAX_TASK_NUM]
+  has_completed = threads[thread_num+MAX_TASK_NUM]->timed_join(td);
+}
+
 int main(int argc, char **argv)
 {
   task_list_.clear();
@@ -286,9 +299,8 @@ int main(int argc, char **argv)
   boost::thread thread0(boost::bind(&TmsTsMaster::ExecuteCmd, &ts, manager.c_str()));
   boost::thread thread1(boost::bind(&TmsTsMaster::ros_spin, &ts));
   // thread array for running task
-  boost::thread *threads[MAX_TASK_NUM * 2];
+  // boost::thread *threads[MAX_TASK_NUM * 2];
 
-  bool has_completed;
   ros::Rate loop_rate(1);  // 1Hz
 
   while (ros::ok())
@@ -308,11 +320,13 @@ int main(int argc, char **argv)
           std::string srv_req = ts.CreateSrvCall(at_rostime(), at_taskID0(), at_robotID0(), at_objectID0(),
                                                  at_userID0(), at_placeID0(), at_priority(), i);
           task_list_.pop_front();
+          ts.addThread(i,(ts.CreateRunCmd(i)).c_str(),srv_req.c_str());
+
           // run node with threads[i]
-          threads[i] = new boost::thread(boost::bind(&TmsTsMaster::ExecuteCmd, &ts, (ts.CreateRunCmd(i)).c_str()));
-          // service call to nodelet_node from threads[i+MAX_TASK_NUM]
-          has_completed = threads[i]->timed_join(td);
-          threads[i + MAX_TASK_NUM] = new boost::thread(boost::bind(&TmsTsMaster::ExecuteCmd, &ts, srv_req.c_str()));
+          // threads[i] = new boost::thread(boost::bind(&TmsTsMaster::ExecuteCmd, &ts, (ts.CreateRunCmd(i)).c_str()));
+          // // service call to nodelet_node from threads[i+MAX_TASK_NUM]
+          // has_completed = threads[i]->timed_join(td);
+          // threads[i + MAX_TASK_NUM] = new boost::thread(boost::bind(&TmsTsMaster::ExecuteCmd, &ts, srv_req.c_str()));
           break;
         }
         else if (i == MAX_TASK_NUM - 1)

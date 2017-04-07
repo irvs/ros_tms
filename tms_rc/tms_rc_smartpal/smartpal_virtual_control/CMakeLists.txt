@@ -17,7 +17,7 @@ catkin_package(
    #INCLUDE_DIRS include
    #LIBRARIES smartpal_control
    CATKIN_DEPENDS roscpp tf geometry_msgs nav_msgs message_runtime
-   DEPENDS system_lib
+   #DEPENDS system_lib
 )
 
 ###########
@@ -35,6 +35,6 @@ add_executable(smartpal_virtual_control
     src/smartpal5_virtual_control.cpp
 )
 
-add_dependencies(smartpal_virtual_control DEPENDS tms_msg_rc_gencpp tms_msg_db_gencpp)
+add_dependencies(tms_msg_rc_gencpp tms_msg_db_gencpp)
 
  target_link_libraries(smartpal_virtual_control ${catkin_LIBRARIES})

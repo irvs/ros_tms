@@ -4,8 +4,7 @@
 <!-- |    EDITING THIS FILE BY HAND IS NOT RECOMMENDED                                 | -->
 <!-- =================================================================================== -->
 <!-- All components of ROS-TMS project -->
-<robot name="rostms" xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <!-- Import common properties -->
+<robot name="rostms" xmlns:xacro="http://ros.org/wiki/xacro">
   <!-- Used for fixing all components to 'world' frame of RViz and Gazebo 'world' -->
   <link name="world_link"/>
   <joint name="world_bsen_room_joint" type="fixed">
@@ -18,8 +17,6 @@
     <child link="smartpal5_link"/>
     <origin rpy="0 0 0" xyz="0 0 0"/>
   </joint>
-  <!-- Defines the components tags -->
-  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <!--  Environment -->
   <link name="bsen_room_link">
     <visual>
@@ -304,7 +301,7 @@
   <joint name="refrigerator_joint" type="fixed">
     <parent link="bsen_room_link"/>
     <child link="refrigerator_link"/>
-    <origin rpy="0 0 -1.57079633" xyz="7.0 5.52 0.0"/>
+    <origin rpy="0 0 -1.57079633" xyz="6.94 5.53 -0.01"/>
   </joint>
   <link name="refrigerator_link">
     <visual>
@@ -312,9 +309,48 @@
         <mesh filename="package://environmental_model/model/refrigerator.dae"/>
       </geometry>
     </visual>
+    <!-- <collision>
+        <geometry>
+          <box size="0.5 0.47 0.05"/>
+        </geometry>
+        <origin xyz="-0.32 0.235 1.09" rpy="0 0 0"/>
+      </collision> -->
   </link>
-  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
-  <!-- meeting_chair -->
+  <joint name="refrigerator_door_joint" type="continuous">
+    <parent link="refrigerator_link"/>
+    <child link="refrigerator_door_link"/>
+    <origin rpy="0 0 0" xyz="-0.035 0.45 1.06"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <link name="refrigerator_door_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/refrigerator_door.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.001" radius="0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="meeting_door_joint" type="fixed">
+    <parent link="bsen_room_link"/>
+    <child link="meeting_door_link"/>
+    <origin rpy="0 0 3.14159" xyz="1.94 3.035 1.31"/>
+  </joint>
+  <link name="meeting_door_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/meeting_door.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.03 1.23 0.9"/>
+      </geometry>
+    </collision>
+  </link>
   <!-- chair -->
   <link name="chair_x_link"/>
   <joint name="chair_x_joint" type="prismatic">
@@ -390,7 +426,6 @@
         <origin xyz="0.0 0.0 0.56" rpy="0 0 0"/>
       </collision>
     </link> -->
-  <!-- Add meeting_chair -->
   <link name="meeting_chair1_x_link"/>
   <joint name="meeting_chair1_x_joint" type="prismatic">
     <parent link="world_link"/>
@@ -612,6 +647,12 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0. 0. 0."/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.001" radius="0.001"/>
+      </geometry>
+      <origin rpy="0. 0. 0." xyz="0 0 0"/>
+    </collision>
   </link>
   <!-- greentea_bottle -->
   <link name="greentea_bottle_x_link"/>
@@ -662,6 +703,12 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0. 0. 0."/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.001" radius="0.001"/>
+      </geometry>
+      <origin rpy="0. 0. 0." xyz="0 0 0"/>
+    </collision>
   </link>
   <!-- cancoffee -->
   <link name="cancoffee_x_link"/>
@@ -712,6 +759,12 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0. 0. 0."/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.001" radius="0.001"/>
+      </geometry>
+      <origin rpy="0. 0. 0." xyz="0 0 0"/>
+    </collision>
   </link>
   <!-- soysauce_bottle_black -->
   <link name="soysauce_bottle_black_x_link"/>
@@ -762,8 +815,13 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0. 0. 0."/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.001" radius="0.001"/>
+      </geometry>
+      <origin rpy="0. 0. 0." xyz="0 0 0"/>
+    </collision>
   </link>
-  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <!-- ros_control plugin -->
   <gazebo>
     <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
@@ -819,7 +877,6 @@
   </gazebo>
   <gazebo reference="r_gripper_thumb_link">
   </gazebo>
-  <xacro:robots_sim/>
   <!-- Base, Vehicle -->
   <link name="smartpal5_link"/>
   <joint name="smartpal5_x_joint" type="prismatic">

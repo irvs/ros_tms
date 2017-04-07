@@ -14,7 +14,7 @@ catkin_package(
   # INCLUDE_DIRS include
   LIBRARIES tms_ss_vs
   CATKIN_DEPENDS rospy std_msgs tms_msg_db
-  DEPENDS system_lib
+ # DEPENDS system_lib
 )
 
 ###########

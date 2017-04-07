@@ -4,6 +4,7 @@
 #include <vector>
 #include <string.h>
 #include <pthread.h>
+#include <iostream>
 
 #include <opencv/cv.h>
 #include <opencv/highgui.h>

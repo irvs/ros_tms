@@ -65,7 +65,7 @@ void laser_visualization_callback1(const sensor_msgs::LaserScan::ConstPtr &scan)
     theta = scan->angle_increment * i + scan->angle_min;
     cvmSet(Temp, 0, 0, scan->ranges[i] * cos(theta));
     cvmSet(Temp, 1, 0, scan->ranges[i] * sin(theta));
-    cvmMul(m_Rotate, Temp, Temp2);
+    cvMatMul(m_Rotate, Temp, Temp2);
     laser_point_x = cvmGet(Temp2, 0, 0);
     laser_point_y = cvmGet(Temp2, 1, 0);
     laser_point_x = laser_point_x + laser_x;
@@ -132,7 +132,7 @@ void laser_visualization_callback2(const sensor_msgs::LaserScan::ConstPtr &scan)
     theta = scan->angle_increment * i + scan->angle_min;
     cvmSet(Temp, 0, 0, scan->ranges[i] * cos(theta));
     cvmSet(Temp, 1, 0, scan->ranges[i] * sin(theta));
-    cvmMul(m_Rotate, Temp, Temp2);
+    cvMatMul(m_Rotate, Temp, Temp2);
     laser_point_x = cvmGet(Temp2, 0, 0);
     laser_point_y = cvmGet(Temp2, 1, 0);
     laser_point_x = laser_point_x + laser_x;
@@ -199,7 +199,7 @@ void laser_visualization_callback3(const sensor_msgs::LaserScan::ConstPtr &scan)
     theta = scan->angle_increment * i + scan->angle_min;
     cvmSet(Temp, 0, 0, scan->ranges[i] * cos(theta));
     cvmSet(Temp, 1, 0, scan->ranges[i] * sin(theta));
-    cvmMul(m_Rotate, Temp, Temp2);
+    cvMatMul(m_Rotate, Temp, Temp2);
     laser_point_x = cvmGet(Temp2, 0, 0);
     laser_point_y = cvmGet(Temp2, 1, 0);
     laser_point_x = laser_point_x + laser_x;
