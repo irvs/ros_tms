@@ -9,11 +9,11 @@
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
-  
+
   <build_depend>roscpp</build_depend>
   <build_depend>tms_msg_ss</build_depend>
   <build_depend>tms_msg_db</build_depend>
-  <build_depend>std_msgs</build_depend>  
+  <build_depend>std_msgs</build_depend>
   <build_depend>message_generation</build_depend>
 
 
@@ -22,7 +22,7 @@
   <run_depend>tms_msg_db</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>message_runtime</run_depend>
-  
+
 
   <export>
   </export>
