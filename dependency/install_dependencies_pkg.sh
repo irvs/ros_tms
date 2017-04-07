@@ -18,9 +18,8 @@ liblapack-dev \
 libqwt-dev \
 freeglut3-dev \
 ros-kinetic-move-base \
-ros-kinetic-kobuki-msgs \
 ros-kinetic-kobuki* \
 ros-kinetic-amcl \
 ros-kinetic-urg-node \
 mongodb \
-ros-kinetic-moveit 
+ros-kinetic-moveit
