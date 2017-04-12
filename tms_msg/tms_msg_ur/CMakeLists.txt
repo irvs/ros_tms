@@ -14,6 +14,7 @@ find_package(
 ################################################
 add_message_files(
   FILES
+  julius_msg.msg
 )
 
 add_service_files(

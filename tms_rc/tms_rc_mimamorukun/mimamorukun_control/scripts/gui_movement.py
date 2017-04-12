@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
+'''
+みまもる君を操作するGUIを表示
+'''
+
 import os
 import sys
 from PyQt4 import QtGui, QtCore

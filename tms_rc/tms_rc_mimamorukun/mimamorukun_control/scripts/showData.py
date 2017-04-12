@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
+'''
+DBに保存されているみまもる君の座標を表示
+'''
+
 
 import rospy
 import tms_msg_db.srv

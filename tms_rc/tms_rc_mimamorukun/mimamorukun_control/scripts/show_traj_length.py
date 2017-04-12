@@ -1,6 +1,11 @@
 #! /usr/bin/env python
 # -*- coding:utf-8 -*-
 
+"""
+両車輪の合計移動距離を表示
+ロータリーエンコーダの調整に利用
+"""
+
 import rospy
 import tf
 import tf2_ros

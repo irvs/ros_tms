@@ -5,7 +5,6 @@
 <!-- =================================================================================== -->
 <!-- All components of ROS-TMS project -->
 <robot name="rostms" xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller" xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface" xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor" xmlns:xacro="http://ros.org/wiki/xacro">
-  <!-- Import common properties -->
   <!-- Used for fixing all components to 'world' frame of RViz and Gazebo 'world' -->
   <link name="world_link"/>
   <joint name="world_bsen_room_joint" type="fixed">
@@ -18,8 +17,6 @@
     <child link="smartpal5_link"/>
     <origin rpy="0 0 0" xyz="0 0 0"/>
   </joint>
-  <!-- Defines the components tags -->
-  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <!--  Environment -->
   <link name="bsen_room_link">
     <visual>
@@ -312,12 +309,12 @@
         <mesh filename="package://environmental_model/model/refrigerator.dae"/>
       </geometry>
     </visual>
-    <!-- <collision>
-        <geometry>
-          <box size="0.5 0.47 0.05"/>
-        </geometry>
-        <origin xyz="-0.32 0.235 1.09" rpy="0 0 0"/>
-      </collision> -->
+    <collision>
+      <geometry>
+        <box size="0.5 0.47 0.05"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="-0.32 0.235 1.09"/>
+    </collision>
   </link>
   <joint name="refrigerator_door_joint" type="continuous">
     <parent link="refrigerator_link"/>
@@ -354,8 +351,6 @@
       </geometry>
     </collision>
   </link>
-  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
-  <!-- meeting_chair -->
   <!-- chair -->
   <link name="chair_x_link"/>
   <joint name="chair_x_joint" type="prismatic">
@@ -431,7 +426,6 @@
         <origin xyz="0.0 0.0 0.56" rpy="0 0 0"/>
       </collision>
     </link> -->
-  <!-- Add meeting_chair -->
   <link name="meeting_chair1_x_link"/>
   <joint name="meeting_chair1_x_joint" type="prismatic">
     <parent link="world_link"/>
@@ -828,7 +822,6 @@
       <origin rpy="0. 0. 0." xyz="0 0 0"/>
     </collision>
   </link>
-  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <!-- ros_control plugin -->
   <gazebo>
     <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
@@ -884,7 +877,6 @@
   </gazebo>
   <gazebo reference="r_gripper_thumb_link">
   </gazebo>
-  <xacro:robots_sim/>
   <!-- Base, Vehicle -->
   <link name="smartpal5_link"/>
   <joint name="smartpal5_x_joint" type="prismatic">
