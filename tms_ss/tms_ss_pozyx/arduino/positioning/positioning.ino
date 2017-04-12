@@ -58,7 +58,7 @@ void loop(){
 
 // prints the coordinates for either humans or for processing
 void printCoordinates(coordinates_t coor,euler_angles_t ang, uint16_t network_id){
-  Serial.print(network_id, HEX);
+  Serial.print(network_id);
   Serial.print(",");
   Serial.print(coor.x);
   Serial.print(",");
@@ -70,7 +70,8 @@ void printCoordinates(coordinates_t coor,euler_angles_t ang, uint16_t network_id
   Serial.print(",");
   Serial.print(ang.pitch);
   Serial.print(",");
-  Serial.println(ang.heading);
+  Serial.print(ang.heading);
+  Serial.print("\n");
 }
 
 // function to manually set the anchor coordinates
