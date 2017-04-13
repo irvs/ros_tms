@@ -35,6 +35,7 @@ add_executable(smartpal_virtual_control
     src/smartpal5_virtual_control.cpp
 )
 
-add_dependencies(tms_msg_rc_gencpp tms_msg_db_gencpp)
+ add_dependencies(smartpal_virtual_control tms_msg_rc_generate_messages_cpp)
+#add_dependencies(tms_msg_rc_gencpp tms_msg_db_gencpp)
 
  target_link_libraries(smartpal_virtual_control ${catkin_LIBRARIES})
