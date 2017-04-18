@@ -14,7 +14,6 @@
 #include <unistd.h>
 #include <time.h>
 
-#define DEVNAME "/dev/ttyACM2"
 #define BAUDRATE B115200
 #define BUFSIZE 256
 
@@ -31,7 +30,14 @@ int main(int argc, char **argv)
   ros::NodeHandle n;
   ros::Publisher pos_pub = n.advertise<geometry_msgs::PoseStamped>("pozyx",1000);
 
-	int fd = open(DEVNAME, O_RDWR | O_NOCTTY);
+  if(argc < 2){
+    ROS_ERROR("invalid number of arguments");
+    ROS_ERROR("please enter devname");
+    return 0;
+  }
+  const char *devname = argv[1];
+
+	int fd = open(devname, O_RDWR | O_NOCTTY);
 	if(fd<0){
 		ROS_ERROR("cannot open device");
 		return 0;
@@ -57,14 +63,15 @@ int main(int argc, char **argv)
 	  std::vector<std::string> v_data;
 	  v_data.clear();
     boost::split(v_data,data,boost::is_any_of(","));
-    if(v_data.size()==7){    
+    if(v_data.size()==7){
       int id = atoi(v_data.at(0).c_str());
       double X = 0.001*atoi(v_data.at(1).c_str());
       double Y = 0.001*atoi(v_data.at(2).c_str());
       double Z = 0.001*atoi(v_data.at(3).c_str());
-      double rr = atof(v_data.at(4).c_str());
-      double rp = atof(v_data.at(5).c_str());
-      double ry = atof(v_data.at(6).c_str());
+      double rr = DEG2RAD(atof(v_data.at(4).c_str()));
+      double rp = DEG2RAD(atof(v_data.at(5).c_str()));
+      double ry = DEG2RAD(atof(v_data.at(6).c_str()));
+      ROS_INFO("%d,%f,%f,%f,%f,%f,%f",id,X,Y,Z,rr,rp,ry);
       tf::Quaternion q = tf::createQuaternionFromRPY(rr,rp,ry);
 
       geometry_msgs::PoseStamped msg;
