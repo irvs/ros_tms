@@ -44,11 +44,13 @@ void setup(){
 void loop(){
   for (int i = 0; i < num_tags; i++){
     coordinates_t position;
-    euler_angles_t angles;
+//    euler_angles_t angles;
+    quaternion_t q;
     int status = Pozyx.doRemotePositioning(tags[i], &position, dimension, height, algorithm);
-    Pozyx.getEulerAngles_deg(&angles,tags[i]);
+//    Pozyx.getEulerAngles_deg(&angles,tags[i]);
+    Pozyx.getQuaternion(&q,tags[i]);
     if (status == POZYX_SUCCESS){
-      printCoordinates(position, angles, tags[i]);
+      printCoordinates(position, q, tags[i]);
     }else{
       //printErrorCode("positioning", tags[i]);
       setAnchorsManual();
@@ -57,7 +59,7 @@ void loop(){
 }
 
 // prints the coordinates for either humans or for processing
-void printCoordinates(coordinates_t coor,euler_angles_t ang, uint16_t network_id){
+void printCoordinates(coordinates_t coor,quaternion_t q, uint16_t network_id){
   Serial.print(network_id);
   Serial.print(",");
   Serial.print(coor.x);
@@ -66,11 +68,13 @@ void printCoordinates(coordinates_t coor,euler_angles_t ang, uint16_t network_id
   Serial.print(",");
   Serial.print(coor.z);
   Serial.print(",");
-  Serial.print(ang.roll);
+  Serial.print(q.x);
   Serial.print(",");
-  Serial.print(ang.pitch);
+  Serial.print(q.y);
   Serial.print(",");
-  Serial.print(ang.heading);
+  Serial.print(q.z);
+  Serial.print(",");
+  Serial.print(q.weight);
   Serial.print("\n");
 }
 
