@@ -7,9 +7,6 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
-add_message_files(
-  FILES
-)
 
 
 catkin_package(

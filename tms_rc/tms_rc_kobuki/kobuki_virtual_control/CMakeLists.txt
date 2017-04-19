@@ -27,7 +27,8 @@ include_directories(
 ## Declare a cpp executable
  add_executable(kobuki_virtual_control src/kobuki_virtual_control.cpp)
 
- add_dependencies(tms_msg_rc_gencpp tms_msg_db_gencpp)
+ add_dependencies(kobuki_virtual_control tms_msg_rc_generate_messages_cpp)
+ #add_dependencies(tms_msg_rc_gencpp tms_msg_db_gencpp)
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(kobuki_virtual_control
