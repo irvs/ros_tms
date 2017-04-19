@@ -132,7 +132,7 @@ private:
       joint = msg->tmsdb[i].joint;
       note = msg->tmsdb[i].note;
 
-      if (id == 1002)  // moverio
+      if (id == 1100)  // pozyx
       {
         if (state == 1)
         {
@@ -285,10 +285,10 @@ private:
           }
           else
           {
-            double height = 1.1*cos(whsPitch)*cos(whsRoll);
+            double height = 1.1*cos(rotP)*cos(rotR);
             if(height<0.1) height = 0.1;
             transform.setOrigin(tf::Vector3(posX, posY, height));
-            transform.setRotation(tf::Quaternion(0, 0, -1.5708 + rotY));
+            transform.setRotation(tf::Quaternion(rotP*cos(rotY)+rotR*sin(rotY), rotR*cos(rotY)-rotP*sin(rotY), rotY-1.5708));
             // transform.setRotation(tf::Quaternion(whsPitch,whsRoll,-1.5708));
 
             br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world_link", "Body"));

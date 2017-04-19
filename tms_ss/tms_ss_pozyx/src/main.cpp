@@ -14,7 +14,12 @@
 #include <unistd.h>
 #include <time.h>
 #include "kalman-Ndof.hpp"
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <tms_msg_db/TmsdbGetData.h>
+#include <tms_msg_db/TmsdbStamped.h>
+#include <tms_msg_db/Tmsdb.h>
 
+#define DEVNAME "/dev/arduino"
 #define BAUDRATE B115200
 #define BUFSIZE 256
 
@@ -30,16 +35,10 @@ int main(int argc, char **argv)
 {
   ros::init(argc,argv,"tms_ss_pozyx");
   ros::NodeHandle n;
-  ros::Publisher pos_pub = n.advertise<geometry_msgs::PoseStamped>("pozyx",1000);
+  ros::Publisher db_pub = n.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data",1000);
+  std::string frame_id("/world");
 
-  if(argc < 2){
-    ROS_ERROR("invalid number of arguments");
-    ROS_ERROR("please enter devname");
-    return 0;
-  }
-  const char *devname = argv[1];
-
-	int fd = open(devname, O_RDWR | O_NOCTTY);
+	int fd = open(DEVNAME, O_RDWR | O_NOCTTY);
 	if(fd<0){
 		ROS_ERROR("cannot open device");
 		return 0;
@@ -109,21 +108,6 @@ int main(int argc, char **argv)
       pitch2=roll-PI/2;
       yaw2=yaw-PI/2;
 
-      tf::Quaternion q = tf::createQuaternionFromRPY(roll2,pitch2,yaw2);
-
-      // rr = DEG2RAD(atof(v_data.at(4).c_str()));
-      // rp = DEG2RAD(atof(v_data.at(5).c_str()));
-      // ry = DEG2RAD(atof(v_data.at(6).c_str()));
-      // if(rr==0&&rp==0&&ry==0){
-      //   rr=prerr;
-      //   rp=prerp;
-      //   ry=prery;
-      // }
-      // // ry-=PI/2;
-      // // rp+=PI/2;
-      // rr+=PI/2;
-      // ry+=PI/2;
-
       //kalman_filter
       last_time = now;
       now = ros::Time::now();
@@ -170,19 +154,42 @@ int main(int argc, char **argv)
 
       //----------------
 
-      // tf::Quaternion q = tf::createQuaternionFromRPY(rr,rp,ry);
+      ros::Time db_time = ros::Time::now() + ros::Duration(9*60*60);
+      tms_msg_db::TmsdbStamped db_msg;
 
-      geometry_msgs::PoseStamped msg;
-      msg.header.frame_id = "world_link";
-      msg.header.stamp = ros::Time::now();
-      msg.pose.position.x = kfX;
-      msg.pose.position.y = kfY;
-      msg.pose.position.z = 1.3;
-      msg.pose.orientation.x = q.x();
-      msg.pose.orientation.y = q.y();
-      msg.pose.orientation.z = q.z();
-      msg.pose.orientation.w = q.w();
-      pos_pub.publish(msg);
+      db_msg.header.frame_id = frame_id;
+      db_msg.header.stamp = db_time;
+      db_msg.tmsdb.clear();
+      tms_msg_db::Tmsdb tmpData;
+
+      tmpData.time = boost::posix_time::to_iso_extended_string(db_time.toBoost());
+      tmpData.name = "person_pozyx1";
+      tmpData.id = 1100;
+      tmpData.place = 5001;
+      tmpData.sensor = 0;
+      tmpData.state = 1;
+      tmpData.x = kfX;
+      tmpData.y = kfY;
+      tmpData.z = 1.3;
+      tmpData.rr = roll2;
+      tmpData.rp = pitch2;
+      tmpData.ry = yaw2;
+
+      db_msg.tmsdb.push_back(tmpData);
+      db_pub.publish(db_msg);
+
+
+      // geometry_msgs::PoseStamped msg;
+      // msg.header.frame_id = "world_link";
+      // msg.header.stamp = ros::Time::now();
+      // msg.pose.position.x = kfX;
+      // msg.pose.position.y = kfY;
+      // msg.pose.position.z = 1.3;
+      // msg.pose.orientation.x = q.x();
+      // msg.pose.orientation.y = q.y();
+      // msg.pose.orientation.z = q.z();
+      // msg.pose.orientation.w = q.w();
+      // pos_pub.publish(msg);
     }
   }
   return 0;
