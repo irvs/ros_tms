@@ -5,13 +5,22 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  message_generation
 )
 
+add_message_files(
+  FILES
+  julius_msg.msg
+)
 
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 catkin_package(
 #  INCLUDE_DIRS include
    LIBRARIES tms_ur_listener
-   CATKIN_DEPENDS roscpp rospy std_msgs
+   CATKIN_DEPENDS roscpp rospy std_msgs message_generation
 #  DEPENDS system_lib
 )

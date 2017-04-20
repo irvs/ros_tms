@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import rospy
-from tms_msg_ur.msg import julius_msg
+from tms_ur_listener.msg import julius_msg
 from std_msgs.msg import Bool
 from std_msgs.msg import String
 
