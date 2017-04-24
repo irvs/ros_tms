@@ -3,6 +3,7 @@
 import rospy
 from tms_ur_listener.msg import julius_msg
 from std_msgs.msg import Bool
+from std_msgs.msg import String
 import os
 import sys
 import socket
@@ -12,11 +13,14 @@ import subprocess
 import shlex
 import time
 
+
 julius_path = '/usr/local/bin/julius'
 jconf_path = '/home/pi/dictation-kit-v4.3.1-linux/tms.jconf'
 julius = None
 julius_socket = None
-
+adinrec_path = '/usr/local/bin/adinrec'
+wav_file = 'rec.wav'
+gs_filename = 'gs://ros-tms/rec.wav'
 
 def invoke_julius():
     print 'INFO : invoke julius'
@@ -73,33 +77,50 @@ def invoke_julius_set():
     sf = julius_socket.makefile('rb')
     return (julius, julius_socket, sf)
 
+
 def power_callback(data):
     rospy.loginfo(data)
-    if data.data == False:
+    global julius,julius_sockat,sf
+    global speaker_pub
+    if data.data == True:
+        rospy.loginfo("invoke julius")
+        delete_socket(julius_socket)
+        julius, julius_socket, sf = invoke_julius_set()
+    else:
         rospy.loginfo("DIE julius")
         kill_julius(julius)
-        print "====================="
-        time.sleep(2.0)
-        print "====================="
-        time.sleep(2.0)
+        time.sleep(0.5)
+        print "listen command"
+        args = adinrec_path + ' ' + wav_file
+        ret = subprocess.check_output(shlex.split(args))
+        speak = String()
+        speak.data = "\sound2"
+        speaker_pub.publish(speak)
+        print "recording succeed"
+        args = ['gsutil','cp',wav_file,gs_filename]
+        ret = subprocess.check_output(args)
+        args = ['gcloud','auth','print-access-token']
+        token = subprocess.check_output(args)
+        args = 'curl -s -k -H "Content-Type: application/json" -H "Authorization: Bearer '+token.rstrip('\n')+'" https://speech.googleapis.com/v1beta1/speech:syncrecognize -d @sync-request.json'
+        print args
+        ret = subprocess.check_output(shlex.split(args))
+        print ret
 
 def main():
     rospy.init_node("tms_ur_listener_client",anonymous=True)
+    global speaker_pub
+    speaker_pub = rospy.Publisher("speaker",String,queue_size=10)
     pub = rospy.Publisher('julius_msg',julius_msg,queue_size=10)
     rate = rospy.Rate(100)
     rospy.Subscriber("julius_power",Bool,power_callback)
-    
-    global julius
-    global julius_socket
+
+    global julius,julius_sockat,sf
     julius, julius_socket, sf = invoke_julius_set()
 
     reResult = re.compile(u'WHYPO WORD="(\S*)" .* CM="(\d\.\d*)"')
 
     while not rospy.is_shutdown():
-        if julius.poll() is not None:
-            delete_socket(julius_socket)
-            julius, julius_socket, sf = invoke_julius_set()
-        else:
+        if julius.poll() is None:
             line = sf.readline().decode('utf-8')
             print line
             tmp = reResult.search(line)
@@ -109,17 +130,6 @@ def main():
                 msg.data = tmp.group(1)
                 msg.value = float(tmp.group(2))
                 pub.publish(msg)
-                #print tmp.group(1)
-                # print line
-                #if float(tmp.group(2)) > 0.8:
-                 #   print 'WARN : DIE julius, call WATSON'
-                  #  kill_julius(julius)
-                   # delete_socket(julius_socket)
-                    #print '====================================='
-                    #time.sleep(2.0)
-                    #print '====================================='
-                    #time.sleep(2.0)
-                    #print '====================================='
         rate.sleep()
     rospy.loginfo("exit")
 

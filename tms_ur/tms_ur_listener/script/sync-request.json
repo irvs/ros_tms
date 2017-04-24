@@ -1,0 +1,10 @@
+{
+  'config': {
+      'encoding':'LINEAR16',
+      'sampleRate': 16000,
+      'languageCode': 'ja-UP'
+  },
+  'audio': {
+      'uri' : 'gs://ros-tms/rec.wav'
+  }
+}
