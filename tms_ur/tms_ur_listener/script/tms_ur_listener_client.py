@@ -12,6 +12,7 @@ import re
 import subprocess
 import shlex
 import time
+import json
 
 
 julius_path = '/usr/local/bin/julius'
@@ -81,7 +82,7 @@ def invoke_julius_set():
 def power_callback(data):
     rospy.loginfo(data)
     global julius,julius_sockat,sf
-    global speaker_pub
+    global speaker_pub,pub
     if data.data == True:
         rospy.loginfo("invoke julius")
         delete_socket(julius_socket)
@@ -105,10 +106,17 @@ def power_callback(data):
         print args
         ret = subprocess.check_output(shlex.split(args))
         print ret
+        json_dict = json.loads(ret,"utf-8")
+        script = json_dict["results"][0]["alternatives"][0]["transcript"]
+        val = 10.0+float(json_dict["results"][0]["alternatives"][0]["confidence"])
+        msg = julius_msg()
+        msg.data = script
+        msg.value = val
+        pub.publish(msg)
 
 def main():
     rospy.init_node("tms_ur_listener_client",anonymous=True)
-    global speaker_pub
+    global speaker_pub,pub
     speaker_pub = rospy.Publisher("speaker",String,queue_size=10)
     pub = rospy.Publisher('julius_msg',julius_msg,queue_size=10)
     rate = rospy.Rate(100)

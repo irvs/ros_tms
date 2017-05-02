@@ -146,7 +146,7 @@ private:
           {
             continue;
           }
-          else if (posX > 9.300 && posX < 11.000 && posY > 2.400 && posY < 3.200)  // in the bed
+          else if (posX > 9.300 && posX < 11.000 && posY > 2.200 && posY < 3.300)  // in the bed
           {
             if(nfbed_state==0||nfbed_state==2)
             {

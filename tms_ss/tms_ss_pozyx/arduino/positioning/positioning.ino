@@ -20,11 +20,16 @@
 int num_tags = 1;
 uint16_t tags[1] = {0x6077};                        
 
-uint8_t num_anchors = 4;                                    // the number of anchors
-uint16_t anchors[4] = {0x680A, 0x6822, 0x683B, 0x685D};     // the network id of the anchors: change these to the network ids of your anchors.
-int32_t anchors_x[4] = {6580, 9775, 11050, 4831};               // anchor x-coorindates in mm
-int32_t anchors_y[4] = {6220, 5800, 100, 100};                  // anchor y-coordinates in mm
-int32_t heights[4] = {2440, 2530, 2320, 2370};              // anchor z-coordinates in mm
+//uint8_t num_anchors = 8;                                    // the number of anchors
+//uint16_t anchors[8] = {0x605B, 0x680A, 0x6822, 0x6031, 0x6173, 0x683B, 0x685D, 0x603B};     // the network id of the anchors: change these to the network ids of your anchors.
+//int32_t anchors_x[8] = {985, 6498, 9786, 14738, 14643, 11058, 4834, 208};               // anchor x-coorindates in mm
+//int32_t anchors_y[8] = {4659, 6181, 5781, 5553, 357, 117, 117, 3018};                  // anchor y-coordinates in mm
+//int32_t heights[8] = {2400, 2425, 2525, 2505, 2375, 2320, 2365, 2410};              // anchor z-coordinates in mm
+uint8_t num_anchors = 8;                                    // the number of anchors
+uint16_t anchors[8] = {0x680A, 0x6822, 0x683B, 0x685D, 0x6031, 0x6173, 0x605B, 0x603B};     // the network id of the anchors: change these to the network ids of your anchors.
+int32_t anchors_x[8] = {6498, 9786,11058, 4834, 14738, 14643, 985, 208};               // anchor x-coorindates in mm
+int32_t anchors_y[8] = {6181, 5781, 117, 117, 5553, 357, 4659, 3018};                  // anchor y-coordinates in mm
+int32_t heights[8] = {2425, 2525, 2320, 2365, 2505, 2375, 2400, 2410};              // anchor z-coordinates in mm
 
 uint8_t algorithm = POZYX_POS_ALG_UWB_ONLY;             // positioning algorithm to use
 uint8_t dimension = POZYX_2D;                           // positioning dimension
