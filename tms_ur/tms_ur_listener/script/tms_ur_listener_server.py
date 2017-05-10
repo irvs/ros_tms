@@ -37,8 +37,13 @@ class TmsUrListener():
             task_id = 0
             robot_id = 0
             object_id = 0
-            user_id = 0
+            user_id = 1100
             place_id = 0
+            announce = ""
+            robot_name = ""
+            object_name = ""
+            user_name = "太郎さん"
+            place_name = ""
             if verb != '':
                 temp_dbdata = Tmsdb()
                 target = Tmsdb()
@@ -49,6 +54,7 @@ class TmsUrListener():
                     res = tms_db_reader(temp_dbdata)
                     target = res.tmsdb[0]
                     task_id = target.id
+                    announce = target.announce
                 except rospy.ServiceException as e:
                     print "Service call failed: %s" % e
 
@@ -62,6 +68,7 @@ class TmsUrListener():
                     res = tms_db_reader(temp_dbdata)
                     target = res.tmsdb[0]
                     robot_id = target.id
+                    robot_name = target.announce
                 except rospy.ServiceException as e:
                     print "Service call failed: %s" % e
 
@@ -76,24 +83,47 @@ class TmsUrListener():
                     target = res.tmsdb[0]
                     if target.type == 'object':
                         object_id = target.id
+                        object_name = target.announce
                     elif target.type == 'person':
                         user_id = target.id
+                        user_name = target.announce
                     elif target.type == 'furniture':
                         place_id = target.id
+                        place_name = target.announce
                 except rospy.ServiceException as e:
                     print "Service call failed: %s" % e
 
+            anc_list = announce.split("$")
+            announce = ""
+            for anc in anc_list:
+                if anc == "robot":
+                    announce += robot_name
+                elif anc == "object":
+                    announce += object_name
+                elif anc == "user":
+                    announce += user_name
+                elif anc == "place":
+                    announce += place_name
+                else:
+                    announce += anc
+
+            print announce
+            speak = String()
+            speak.data = announce
+            self.speaker_pub.publish(speak)
+
             print 'send command'
-            rospy.wait_for_service('tms_ts_master')
+            try:
+                rospy.wait_for_service('tms_ts_master', timeout=2.0)
+            except rospy.ROSException:
+                print "tms_ts_master timeout"
             try:
                 tms_ts_master = rospy.ServiceProxy('tms_ts_master',ts_req)
                 res = tms_ts_master(0,task_id,robot_id,object_id,user_id,place_id,0)
                 print res
             except rospy.ServiceException as e:
                 print "Service call failed: %s" % e
-            # speak = String()
-            # speak.data = data.data
-            # self.speaker_pub.publish(speak)
+
         elif data.value > 0.8:
             if data.data in ['スマートパル','見守る君','TMS']:
                 rospy.loginfo("call robot name")

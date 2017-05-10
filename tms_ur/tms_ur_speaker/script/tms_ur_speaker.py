@@ -9,8 +9,9 @@ def jtalk(t):
     mech=['-x','/var/lib/mecab/dic/open-jtalk/naist-jdic']
     htsvoice=['-m','/usr/share/hts-voice/mei/mei_normal.htsvoice']
     speed=['-r','1.0']
+    quality=['-a','0.57']
     outwav=['-ow','open_jtalk.wav']
-    cmd=open_jtalk+mech+htsvoice+speed+outwav
+    cmd=open_jtalk+mech+htsvoice+speed+quality+outwav
     c = subprocess.Popen(cmd,stdin=subprocess.PIPE)
     c.stdin.write(t)
     c.stdin.close()
@@ -32,7 +33,7 @@ def main():
     rospy.loginfo("ready")
     rospy.spin()
     rospy.loginfo("exit")
-    
+
 if __name__ == '__main__':
     try:
         main()
