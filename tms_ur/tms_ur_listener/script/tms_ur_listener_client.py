@@ -98,10 +98,20 @@ def power_callback(data):
         speak.data = "\sound2"
         speaker_pub.publish(speak)
         print "recording succeed"
-        args = ['gsutil','cp',wav_file,gs_filename]
-        ret = subprocess.check_output(args)
-        args = ['gcloud','auth','print-access-token']
-        token = subprocess.check_output(args)
+
+        procs=[]
+        proc=subprocess.Popen(['gsutil','cp',wav_file,gs_filename],stdout=subprocess.PIPE)
+        procs.append(proc)
+        proc=subprocess.Popen(['gcloud','auth','print-access-token'],stdout=subprocess.PIPE)
+        procs.append(proc)
+        for proc in procs:
+            token = proc.communicate()[0]
+            print token
+        # args = ['gsutil','cp',wav_file,gs_filename]
+        # ret = subprocess.check_output(args)
+        # args = ['gcloud','auth','print-access-token']
+        # token = subprocess.check_output(args)
+
         args = 'curl -s -k -H "Content-Type: application/json" -H "Authorization: Bearer '+token.rstrip('\n')+'" https://speech.googleapis.com/v1beta1/speech:syncrecognize -d @sync-request.json'
         print args
         ret = subprocess.check_output(shlex.split(args))

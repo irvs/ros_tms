@@ -19,7 +19,7 @@
 #include <tms_msg_db/TmsdbStamped.h>
 #include <tms_msg_db/Tmsdb.h>
 
-#define DEVNAME "/dev/arduino"
+#define DEVNAME "/dev/ttyACM3"
 #define BAUDRATE B115200
 #define BUFSIZE 256
 
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
         continue;
       }else if(count==1){
         // 初期化 (システム雑音，観測雑音，積分時間)
-        kalman->init(0.1,1.5,0.1);//(0.1,1.0,0.1);
+        kalman->init(0.1,1.5,0.5);//(0.1,1.0,0.1);
         double C[6][6];
         memset(C,0,sizeof(C));
         C[0][0]=C[1][1]=C[2][2]=1;
