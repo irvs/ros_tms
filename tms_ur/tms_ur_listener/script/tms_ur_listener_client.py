@@ -109,18 +109,18 @@ def power_callback(data):
         for proc in procs:
             token = proc.communicate()[0]
             print token
-        # args = ['gsutil','cp',wav_file,gs_filename]
-        # ret = subprocess.check_output(args)
-        # args = ['gcloud','auth','print-access-token']
-        # token = subprocess.check_output(args)
 
         args = 'curl -s -k -H "Content-Type: application/json" -H "Authorization: Bearer '+token.rstrip('\n')+'" https://speech.googleapis.com/v1beta1/speech:syncrecognize -d @sync-request.json'
         print args
         ret = subprocess.check_output(shlex.split(args))
         print ret
         json_dict = json.loads(ret,"utf-8")
-        script = json_dict["results"][0]["alternatives"][0]["transcript"]
-        val = 10.0+float(json_dict["results"][0]["alternatives"][0]["confidence"])
+        if "results" in json_dict:
+            script = json_dict["results"][0]["alternatives"][0]["transcript"]
+            val = 10.0+float(json_dict["results"][0]["alternatives"][0]["confidence"])
+        else:
+            script = ""
+            val = 10.0
         msg = julius_msg()
         msg.data = script
         msg.value = val
