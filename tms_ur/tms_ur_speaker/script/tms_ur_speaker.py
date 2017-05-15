@@ -21,7 +21,9 @@ def jtalk(t):
 
 def callback(data):
     rospy.loginfo(data)
-    if data.data[0]=='\\':
+    if data.data == '':
+        return
+    elif data.data[0]=='\\':
         aplay = ['aplay','-q',data.data[1:]+'.wav']
         wr = subprocess.Popen(aplay)
     else:

@@ -85,8 +85,10 @@ def power_callback(data):
     global speaker_pub,pub
     if data.data == True:
         rospy.loginfo("invoke julius")
-        delete_socket(julius_socket)
         julius, julius_socket, sf = invoke_julius_set()
+        speak = String()
+        speak.data = "\sound3"
+        speaker_pub.publish(speak)
     else:
         rospy.loginfo("DIE julius")
         kill_julius(julius)
