@@ -4,6 +4,7 @@ import rospy
 from tms_ur_listener.msg import julius_msg
 from std_msgs.msg import Bool
 from std_msgs.msg import String
+from std_msgs.msg import Empty
 import os
 import sys
 import socket
@@ -20,7 +21,7 @@ jconf_path = '/home/pi/dictation-kit-v4.3.1-linux/tms.jconf'
 julius = None
 julius_socket = None
 adinrec_path = '/usr/local/bin/adinrec'
-wav_file = 'rec.wav'
+wav_file = '/home/pi/catkin_ws/src/tms_ur_listener/script/rec.wav'
 gs_filename = 'gs://ros-tms/rec.wav'
 
 def invoke_julius():
@@ -87,52 +88,52 @@ def power_callback(data):
         rospy.loginfo("invoke julius")
         julius, julius_socket, sf = invoke_julius_set()
         speak = String()
-        speak.data = "\sound3"
-        speaker_pub.publish(speak)
     else:
         rospy.loginfo("DIE julius")
         kill_julius(julius)
-        time.sleep(0.5)
-        print "listen command"
-        args = adinrec_path + ' ' + wav_file
-        ret = subprocess.check_output(shlex.split(args))
-        speak = String()
-        speak.data = "\sound2"
-        speaker_pub.publish(speak)
-        print "recording succeed"
 
-        procs=[]
-        proc=subprocess.Popen(['gsutil','cp',wav_file,gs_filename],stdout=subprocess.PIPE)
-        procs.append(proc)
-        proc=subprocess.Popen(['gcloud','auth','print-access-token'],stdout=subprocess.PIPE)
-        procs.append(proc)
-        for proc in procs:
-            token = proc.communicate()[0]
-            print token
+def gSpeech_callback(data):
+    print "listen command"
+    args = adinrec_path + ' ' + wav_file
+    ret = subprocess.check_output(shlex.split(args))
+    speak = String()
+    speak.data = "\sound2"
+    speaker_pub.publish(speak)
+    print "recording succeed"
 
-        args = 'curl -s -k -H "Content-Type: application/json" -H "Authorization: Bearer '+token.rstrip('\n')+'" https://speech.googleapis.com/v1beta1/speech:syncrecognize -d @sync-request.json'
-        print args
-        ret = subprocess.check_output(shlex.split(args))
-        print ret
-        json_dict = json.loads(ret,"utf-8")
-        if "results" in json_dict:
-            script = json_dict["results"][0]["alternatives"][0]["transcript"]
-            val = 10.0+float(json_dict["results"][0]["alternatives"][0]["confidence"])
-        else:
-            script = ""
-            val = 10.0
-        msg = julius_msg()
-        msg.data = script
-        msg.value = val
-        pub.publish(msg)
+    procs=[]
+    proc=subprocess.Popen(['gsutil','cp',wav_file,gs_filename],stdout=subprocess.PIPE)
+    procs.append(proc)
+    proc=subprocess.Popen(['gcloud','auth','print-access-token'],stdout=subprocess.PIPE)
+    procs.append(proc)
+    for proc in procs:
+        token = proc.communicate()[0]
+        print token
+
+    args = 'curl -s -k -H "Content-Type: application/json" -H "Authorization: Bearer '+token.rstrip('\n')+'" https://speech.googleapis.com/v1beta1/speech:syncrecognize -d @/home/pi/catkin_ws/src/tms_ur_listener/script/sync-request.json'
+    print args
+    ret = subprocess.check_output(shlex.split(args))
+    print ret
+    json_dict = json.loads(ret,"utf-8")
+    if "results" in json_dict:
+        script = json_dict["results"][0]["alternatives"][0]["transcript"]
+        val = 10.0+float(json_dict["results"][0]["alternatives"][0]["confidence"])
+    else:
+        script = ""
+        val = 10.0
+    msg = julius_msg()
+    msg.data = script
+    msg.value = val
+    pub.publish(msg)
 
 def main():
     rospy.init_node("tms_ur_listener_client",anonymous=True)
     global speaker_pub,pub
-    speaker_pub = rospy.Publisher("speaker",String,queue_size=10)
+    speaker_pub = rospy.Publisher("/speaker",String,queue_size=10)
     pub = rospy.Publisher('julius_msg',julius_msg,queue_size=10)
     rate = rospy.Rate(100)
-    rospy.Subscriber("julius_power",Bool,power_callback)
+    rospy.Subscriber("/julius_power",Bool,power_callback)
+    rospy.Subscriber("gSpeech",Empty,gSpeech_callback)
 
     global julius,julius_sockat,sf
     julius, julius_socket, sf = invoke_julius_set()

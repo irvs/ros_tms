@@ -3,6 +3,7 @@
 import rospy
 from tms_ur_listener.msg import julius_msg
 from std_msgs.msg import Bool
+from std_msgs.msg import Empty
 from std_msgs.msg import String
 from janome.tokenizer import Tokenizer
 from tms_msg_db.msg import Tmsdb
@@ -11,7 +12,8 @@ from tms_msg_ts.srv import ts_req
 import time
 
 trigger = ['スマートパル','見守る君','TMS']
-error_msg1 = "すみません。聞き取れませんでした。"
+error_msg0 = "すみません。聞き取れませんでした。"
+error_msg1 = "すみません。よくわかりませんでした。"
 error_msg2 = "エラーが発生したため、処理を中断します"
 sid = 100000
 
@@ -19,17 +21,50 @@ class TmsUrListener():
     def __init__(self):
         rospy.init_node("tms_ur_listener")
         rospy.on_shutdown(self.shutdown)
-        rospy.Subscriber("julius_msg",julius_msg,self.callback)
+        rospy.Subscriber("/pi0/julius_msg",julius_msg,self.callback, callback_args=0)
+        rospy.Subscriber("/pi1/julius_msg",julius_msg,self.callback, callback_args=1)
+        rospy.Subscriber("/pi2/julius_msg",julius_msg,self.callback, callback_args=2)
+        rospy.Subscriber("/pi3/julius_msg",julius_msg,self.callback, callback_args=3)
+        rospy.Subscriber("/pi4/julius_msg",julius_msg,self.callback, callback_args=4)
+        rospy.Subscriber("/pi5/julius_msg",julius_msg,self.callback, callback_args=5)
+        self.gSpeech_pi0 = rospy.Publisher("/pi0/gSpeech",Empty,queue_size=1)
+        self.gSpeech_pi1 = rospy.Publisher("/pi1/gSpeech",Empty,queue_size=1)
+        self.gSpeech_pi2 = rospy.Publisher("/pi2/gSpeech",Empty,queue_size=1)
+        self.gSpeech_pi3 = rospy.Publisher("/pi3/gSpeech",Empty,queue_size=1)
+        self.gSpeech_pi4 = rospy.Publisher("/pi4/gSpeech",Empty,queue_size=1)
+        self.gSpeech_pi5 = rospy.Publisher("/pi5/gSpeech",Empty,queue_size=1)
+        self.gSpeech_launched = False
+
+
         self.power_pub = rospy.Publisher("julius_power",Bool,queue_size=10)
         self.speaker_pub = rospy.Publisher("speaker",String,queue_size=10)
         self.t = Tokenizer()
         self.robot_name = ''
         print 'tms_ur_listener_server ready...'
 
-    def julius_power(self,data):
+    def julius_power(self,data,t=0):
         msg = Bool()
         msg.data = data
+        time.sleep(t)
         self.power_pub.publish(msg)
+        if data == True:
+            time.sleep(1.5)
+            self.speaker('\sound3')
+
+    def launch_gSpeech(self,id):
+        msg = Empty()
+        if id == 0:
+            self.gSpeech_pi0.publish(msg)
+        elif id == 1:
+            self.gSpeech_pi1.publish(msg)
+        elif id == 2:
+            self.gSpeech_pi2.publish(msg)
+        elif id == 3:
+            self.gSpeech_pi3.publish(msg)
+        elif id == 4:
+            self.gSpeech_pi4.publish(msg)
+        else:
+            self.gSpeech_pi5.publish(msg)
 
     def speaker(self,data):
         speak = String()
@@ -46,7 +81,6 @@ class TmsUrListener():
             return target
         except rospy.ServiceException as e:
             print "Service call failed: %s" % e
-            self.speaker(error_msg2)
             return None
 
     def tag_reader(self,data):
@@ -54,9 +88,15 @@ class TmsUrListener():
         temp_dbdata.tag=data
         return self.db_reader(temp_dbdata)
 
-    def callback(self, data):
+    def callback(self, data, id):
+        rospy.loginfo(str(id))
         rospy.loginfo(data)
         if data.value >= 10.0: #google speech api
+            self.gSpeech_launched = False
+            if data.data == "":
+                self.speaker(error_msg0)
+                self.julius_power(True,5)
+                return
             rospy.loginfo("get command!")
             tokens = self.t.tokenize(data.data.decode('utf-8'))
             nouns = []
@@ -75,6 +115,8 @@ class TmsUrListener():
                 for noun in nouns:
                     target = self.tag_reader(noun)
                     if target is None:
+                        self.speaker(error_msg2)
+                        self.julius_power(True,5)
                         return
                     if target.type == 'task':
                         task_id = target.id
@@ -93,6 +135,8 @@ class TmsUrListener():
                         print noun
                         target = self.tag_reader(noun)
                         if target is None:
+                            self.speaker(error_msg2)
+                            self.julius_power(True,5)
                             return
                         if target.type == 'object':
                             object_id = target.id
@@ -103,6 +147,8 @@ class TmsUrListener():
                     temp_dbdata.state = 1
                     target = self.db_reader(temp_dbdata)
                     if target is None:
+                        self.speaker(error_msg2)
+                        self.julius_power(True,5)
                         return
                     place_id = target.place
 
@@ -110,22 +156,25 @@ class TmsUrListener():
                     temp_dbdata.id = place_id + sid
                     target = self.db_reader(temp_dbdata)
                     if target is None:
+                        self.speaker(error_msg2)
+                        self.julius_power(True,5)
                         return
                     place_name = target.announce
 
                     if object_name == "" or place_name == "":
                         self.speaker(error_msg1)
+                        self.julius_power(True,5)
                         return
 
                     announce = object_name + "は、" + place_name + "にあります。"
                     print announce
                     self.speaker(announce)
-                    time.sleep(5)
-                    self.julius_power(True)
+                    self.julius_power(True,5)
 
             else: #robot function
                 if verb=='' or self.robot_name=='':
                     self.speaker(error_msg1)
+                    self.julius_power(True,5)
                     return
                 task_id = 0
                 robot_id = 0
@@ -140,12 +189,16 @@ class TmsUrListener():
 
                 target = self.tag_reader(verb)
                 if target is None:
+                    self.speaker(error_msg2)
+                    self.julius_power(True,5)
                     return
                 task_id = target.id
                 announce = target.announce
 
                 target = self.tag_reader(self.robot_name)
                 if target is None:
+                    self.speaker(error_msg2)
+                    self.julius_power(True,5)
                     return
                 robot_id = target.id
                 robot_name = target.announce
@@ -153,6 +206,8 @@ class TmsUrListener():
                 for noun in nouns:
                     target = self.tag_reader(noun)
                     if target is None:
+                        self.speaker(error_msg2)
+                        self.julius_power(True,5)
                         return
                     if target.type == 'object':
                         object_id = target.id
@@ -170,21 +225,25 @@ class TmsUrListener():
                     if anc == "robot":
                         if robot_id==0:
                             self.speaker(error_msg1)
+                            self.julius_power(True,5)
                             return
                         announce += robot_name
                     elif anc == "object":
                         if object_id==0:
                             self.speaker(error_msg1)
+                            self.julius_power(True,5)
                             return
                         announce += object_name
                     elif anc == "user":
                         if user_id==0:
                             self.speaker(error_msg1)
+                            self.julius_power(True,5)
                             return
                         announce += user_name
                     elif anc == "place":
                         if place_id==0:
                             self.speaker(error_msg1)
+                            self.julius_power(True,5)
                             return
                         announce += place_name
                     else:
@@ -206,16 +265,19 @@ class TmsUrListener():
                 except rospy.ServiceException as e:
                     print "Service call failed: %s" % e
 
-                time.sleep(5)
-                self.julius_power(True)
+                self.julius_power(True,5)
 
         elif data.value > 0.8: #Julius
             if data.data in trigger:
-                rospy.loginfo("call robot name")
-                rospy.loginfo("kill julius!!")
-                self.robot_name = data.data
-                self.julius_power(False)
-                self.speaker("\sound1")
+                if self.gSpeech_launched == False:
+                    rospy.loginfo("call robot name on raspi:%d",id)
+                    rospy.loginfo("kill julius!!")
+                    self.robot_name = data.data
+                    self.julius_power(False)
+                    self.speaker("\sound1")
+                    time.sleep(0.5)
+                    self.launch_gSpeech(id)
+                    self.gSpeech_launched = True
 
     def shutdown(self):
         rospy.loginfo("Stopping the node")
