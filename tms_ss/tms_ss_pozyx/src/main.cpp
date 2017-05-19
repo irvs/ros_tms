@@ -19,7 +19,7 @@
 #include <tms_msg_db/TmsdbStamped.h>
 #include <tms_msg_db/Tmsdb.h>
 
-#define DEVNAME "/dev/ttyACM3"
+#define DEVNAME "/dev/arduino"
 #define BAUDRATE B115200
 #define BUFSIZE 256
 

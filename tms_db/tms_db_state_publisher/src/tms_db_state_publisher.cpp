@@ -28,6 +28,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <tf/transform_broadcaster.h>
+#include <tf/transform_listener.h>
 
 #include "picojson.h"
 
@@ -42,6 +43,11 @@ using namespace boost;
 
 const int inf = -100000;
 #define PI 3.14159265
+
+#define BED_X1 9.3
+#define BED_X2 11.0
+#define BED_Y1 2.2
+#define BED_Y2 3.3
 
 //------------------------------------------------------------------------------
 class DbStatePublisher
@@ -65,6 +71,7 @@ private:
   ros::ServiceClient get_data_client_;
   tf::TransformBroadcaster br;
   tf::Transform transform;
+  tf::TransformListener listener;
   int nfbed_state=0;
 
   double whsRoll,whsPitch;
@@ -146,12 +153,18 @@ private:
           {
             continue;
           }
-          else if (posX > 9.300 && posX < 11.000 && posY > 2.200 && posY < 3.300)  // in the bed
+          else if (posX > BED_X1 && posX < BED_X2 && posY > BED_Y1 && posY < BED_Y2)  // in the bed
           {
             if(nfbed_state==0||nfbed_state==2)
             {
-              transform.setOrigin(tf::Vector3(10.52, 2.71, 0.42));
-              transform.setRotation(tf::Quaternion(1.5708, 0, 1.5708));
+              double height = 1.1*cos(rotP)*cos(rotR);
+              if(height<0.1) height = 0.1;
+              height+=0.3;
+              transform.setOrigin(tf::Vector3(posX, posY, height));
+              transform.setRotation(tf::Quaternion(rotP*cos(rotY)+rotR*sin(rotY), rotR*cos(rotY)-rotP*sin(rotY), rotY-1.5708));
+
+              // transform.setOrigin(tf::Vector3(10.52, 2.71, 0.42));
+              // transform.setRotation(tf::Quaternion(1.5708, 0, 1.5708));
               br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world_link", "Body"));
               sensor_msgs::JointState skeleton_joint;
               skeleton_joint.header.stamp = ros::Time::now();
@@ -217,8 +230,14 @@ private:
             }
             else if(nfbed_state==1)
             {
-              transform.setOrigin(tf::Vector3(10.30, 2.71, 0.67));
-              transform.setRotation(tf::Quaternion(0, 0, 1.5708));
+              double height = 1.1*cos(rotP)*cos(rotR);
+              if(height<0.1) height = 0.1;
+              height+=0.67;
+              transform.setOrigin(tf::Vector3(posX, posY, height));
+              transform.setRotation(tf::Quaternion(rotP*cos(rotY)+rotR*sin(rotY), rotR*cos(rotY)-rotP*sin(rotY), rotY-1.5708));
+
+              // transform.setOrigin(tf::Vector3(10.30, 2.71, 0.67));
+              // transform.setRotation(tf::Quaternion(0, 0, 1.5708));
               br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world_link", "Body"));
               sensor_msgs::JointState skeleton_joint;
               skeleton_joint.header.stamp = ros::Time::now();
@@ -512,24 +531,45 @@ private:
         }
       }
 
-      if (id == 3021) //whs1
+      if (id == 3021 && state == 1) //whs1
       {
         tms_msg_db::TmsdbGetData srv;
-        srv.request.tmsdb.id = 1002;
+        srv.request.tmsdb.id = 1100;
         get_data_client_.call(srv);
-        if(srv.response.tmsdb[0].x > 9.300 && srv.response.tmsdb[0].x < 11.000 && srv.response.tmsdb[0].y > 2.400 && srv.response.tmsdb[0].y < 3.200)
+        // if(srv.response.tmsdb[0].x > BED_X1 && srv.response.tmsdb[0].x < BED_X2 && srv.response.tmsdb[0].y > BED_Y1 && srv.response.tmsdb[0].y < BED_Y2)
+        // {
+        //   posX = 11.15; //in the bed
+        //   posY = 2.57;
+        //   posZ = 0.5;
+        //   rotY = 0;
+        // }else
+        // {
+        //   rotY = srv.response.tmsdb[0].ry - PI;
+        //   posX = srv.response.tmsdb[0].x - 0.05*cos(rotY) + 0.15*sin(rotY);
+        //   posY = srv.response.tmsdb[0].y - 0.15*cos(rotY) - 0.05*sin(rotY);
+        //   posZ = 1.7;
+        // }
+
+        // tf::StampedTransform transform;
+        // try{
+        //   listener.lookupTransform("/Head","/world_link",ros::Time(0),transform);
+        //   double tfx = transform.getOrigin().x();
+        //   double tfy = transform.getOrigin().y();
+        //   ROS_INFO("%d,%d",tfx,tfy);
+        // }catch(tf::TransformException &ex){
+        //   ROS_ERROR("%s",ex.what());
+        //   continue;
+        // }
+
+        rotY = srv.response.tmsdb[0].ry - PI;
+        posX = srv.response.tmsdb[0].x - 0.05*cos(rotY) + 0.15*sin(rotY);
+        posY = srv.response.tmsdb[0].y - 0.15*cos(rotY) - 0.05*sin(rotY);
+        double height = 0.3+1.4*cos(srv.response.tmsdb[0].rp)*cos(srv.response.tmsdb[0].rr);
+        if(srv.response.tmsdb[0].x > BED_X1 && srv.response.tmsdb[0].x < BED_X2 && srv.response.tmsdb[0].y > BED_Y1 && srv.response.tmsdb[0].y < BED_Y2)
         {
-          posX = 11.15; //in the bed
-          posY = 2.57;
-          posZ = 0.5;
-          rotY = 0;
-        }else
-        {
-          rotY = srv.response.tmsdb[0].ry - PI;
-          posX = srv.response.tmsdb[0].x - 0.05*cos(rotY) + 0.15*sin(rotY);
-          posY = srv.response.tmsdb[0].y - 0.15*cos(rotY) - 0.05*sin(rotY);
-          posZ = 1.7;
+          height+=0.3;
         }
+        posZ = height;
         whsRoll = msg->tmsdb[i].rr;
         whsPitch = msg->tmsdb[i].rp;
 
@@ -557,7 +597,7 @@ private:
         heartrate.pose.position.x = posX - 0.35*sin(rotY);
         heartrate.pose.position.y = posY + 0.35*cos(rotY);
         heartrate.pose.position.z = posZ + 0.1;
-        heartrate.scale.z = 0.08;
+        heartrate.scale.z = 0.12;
         picojson::value v;
         std::string err;
         const char* json = note.c_str();
