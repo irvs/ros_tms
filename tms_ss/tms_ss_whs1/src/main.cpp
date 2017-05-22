@@ -153,6 +153,9 @@ public:
 		s_address.sin_family=AF_INET;
 		s_address.sin_addr.s_addr=INADDR_ANY;
 		s_address.sin_port=htons(PORT);
+		const int on = 1;
+		setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+    setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on));
 		bind(sock,(struct sockaddr *)&s_address,sizeof(s_address));
 		// int val=1;
 		// ioctl(sock,FIONBIO,&val);
