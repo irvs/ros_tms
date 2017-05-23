@@ -45,7 +45,6 @@ public:
 			int rcvmsg[3];
 			int n = recv(sock,rcvmsg,sizeof(rcvmsg),0);
 			if(n<1){
-				ROS_WARN("recv error");
 				continue;
 			}
 			p_msec=msec;
@@ -157,8 +156,8 @@ public:
 		setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
     setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on));
 		bind(sock,(struct sockaddr *)&s_address,sizeof(s_address));
-		// int val=1;
-		// ioctl(sock,FIONBIO,&val);
+		int val=1;
+		ioctl(sock,FIONBIO,&val);
 		ROS_INFO("tms_ss_whs1 ready...");
 	}
 };

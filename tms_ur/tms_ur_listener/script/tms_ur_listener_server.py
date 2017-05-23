@@ -10,6 +10,9 @@ from tms_msg_db.msg import Tmsdb
 from tms_msg_db.srv import TmsdbGetData
 from tms_msg_ts.srv import ts_req
 import time
+import subprocess
+import shlex
+import json
 
 trigger = ['スマートパル','見守る君','TMS']
 error_msg0 = "すみません。聞き取れませんでした。"
@@ -38,7 +41,7 @@ class TmsUrListener():
 
         self.power_pub = rospy.Publisher("julius_power",Bool,queue_size=10)
         self.speaker_pub = rospy.Publisher("speaker",String,queue_size=10)
-        self.t = Tokenizer()
+        self.tok = Tokenizer()
         self.robot_name = ''
         print 'tms_ur_listener_server ready...'
 
@@ -98,7 +101,7 @@ class TmsUrListener():
                 self.julius_power(True,5)
                 return
             rospy.loginfo("get command!")
-            tokens = self.t.tokenize(data.data.decode('utf-8'))
+            tokens = self.tok.tokenize(data.data.decode('utf-8'))
             nouns = []
             verb = ''
             for token in tokens:
@@ -120,6 +123,7 @@ class TmsUrListener():
                         return
                     if target.type == 'task':
                         task_id = target.id
+                        announce = target.announce
                         nouns.remove(noun)
 
                 print task_id
@@ -166,11 +170,71 @@ class TmsUrListener():
                         self.julius_power(True,5)
                         return
 
-                    announce = object_name + "は、" + place_name + "にあります。"
+                    anc_list = announce.split("$")
+                    announce = ""
+                    for anc in anc_list:
+                        if anc == "object":
+                            announce += object_name
+                        elif anc == "place":
+                            announce += place_name
+                        else:
+                            announce += anc
+
                     print announce
                     self.speaker(announce)
                     self.julius_power(True,5)
+                elif task_id==8101: #weather_forecast
+                    place = "福岡市"
+                    date = ""
+                    weather = ""
+                    for noun in nouns:
+                        if noun in ['今日','明日','明後日']:
+                            date = noun
+                    if date == "":
+                        self.speaker(error_msg1)
+                        self.julius_power(True,5)
+                        return
+                    # for noun in nouns:
+                    #     print noun
+                    #     if noun in ['今日','明日','明後日']:
+                    #         date = noun
+                    #         args = "curl -s http://weather.livedoor.com/forecast/webservice/json/v1\?city\=400010 | jq -r '.forecasts[] | select(.dateLabel == \""+noun+"\").telop'"
+                    #         print args
+                    #         ret = subprocess.check_output(shlex.split(args))
+                    #         print ret
+                    #         weather = ret
+                    #         break
+                    args = "curl -s http://weather.livedoor.com/forecast/webservice/json/v1\?city\=400010"
+                    ret = subprocess.check_output(shlex.split(args))
+                    json_dict = json.loads(ret,"utf-8")
+                    if "forecasts" in json_dict:
+                        if date == '今日':
+                            weather = json_dict["forecasts"][0]["telop"].encode('utf-8')
+                        elif date == '明日':
+                            weather = json_dict["forecasts"][1]["telop"].encode('utf-8')
+                        elif date == '明後日':
+                            weather = json_dict["forecasts"][2]["telop"].encode('utf-8')
 
+                    if weather == "":
+                        self.speaker(error_msg1)
+                        self.julius_power(True,5)
+                        return
+
+                    anc_list = announce.split("$")
+                    announce = ""
+                    for anc in anc_list:
+                        if anc == "place":
+                            announce += place
+                        elif anc == "date":
+                            announce += date
+                        elif anc == "weather":
+                            announce += weather
+                        else:
+                            announce += anc
+
+                    print announce
+                    self.speaker(announce)
+                    self.julius_power(True,5)
             else: #robot function
                 if verb=='' or self.robot_name=='':
                     self.speaker(error_msg1)
