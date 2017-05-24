@@ -82,15 +82,15 @@ def invoke_julius_set():
 
 def power_callback(data):
     rospy.loginfo(data)
-    global julius,julius_sockat,sf
+    global julius,julius_socket,sf
     global speaker_pub,pub
     if data.data == True:
         rospy.loginfo("invoke julius")
         julius, julius_socket, sf = invoke_julius_set()
-        speak = String()
     else:
         rospy.loginfo("DIE julius")
         kill_julius(julius)
+        delete_socket(julius_socket)
 
 def gSpeech_callback(data):
     print "listen command"
@@ -135,14 +135,18 @@ def main():
     rospy.Subscriber("/julius_power",Bool,power_callback)
     rospy.Subscriber("gSpeech",Empty,gSpeech_callback)
 
-    global julius,julius_sockat,sf
+    global julius,julius_socket,sf
     julius, julius_socket, sf = invoke_julius_set()
 
     reResult = re.compile(u'WHYPO WORD="(\S*)" .* CM="(\d\.\d*)"')
 
     while not rospy.is_shutdown():
         if julius.poll() is None:
-            line = sf.readline().decode('utf-8')
+            try:
+                line = sf.readline().decode('utf-8')
+            except socket.timeout:
+                line = ""
+                continue;
             print line
             tmp = reResult.search(line)
             if tmp:
@@ -153,6 +157,8 @@ def main():
                 pub.publish(msg)
         rate.sleep()
     rospy.loginfo("exit")
+    kill_julius(julius)
+    delete_socket(julius_socket)
 
 
 if __name__ == '__main__':

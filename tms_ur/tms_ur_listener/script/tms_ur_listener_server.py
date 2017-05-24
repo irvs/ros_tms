@@ -194,16 +194,7 @@ class TmsUrListener():
                         self.speaker(error_msg1)
                         self.julius_power(True,5)
                         return
-                    # for noun in nouns:
-                    #     print noun
-                    #     if noun in ['今日','明日','明後日']:
-                    #         date = noun
-                    #         args = "curl -s http://weather.livedoor.com/forecast/webservice/json/v1\?city\=400010 | jq -r '.forecasts[] | select(.dateLabel == \""+noun+"\").telop'"
-                    #         print args
-                    #         ret = subprocess.check_output(shlex.split(args))
-                    #         print ret
-                    #         weather = ret
-                    #         break
+
                     args = "curl -s http://weather.livedoor.com/forecast/webservice/json/v1\?city\=400010"
                     ret = subprocess.check_output(shlex.split(args))
                     json_dict = json.loads(ret,"utf-8")
@@ -212,7 +203,7 @@ class TmsUrListener():
                             weather = json_dict["forecasts"][0]["telop"].encode('utf-8')
                         elif date == '明日':
                             weather = json_dict["forecasts"][1]["telop"].encode('utf-8')
-                        elif date == '明後日':
+                        elif date == '明後日' or date == 'あさって':
                             weather = json_dict["forecasts"][2]["telop"].encode('utf-8')
 
                     if weather == "":
@@ -283,6 +274,11 @@ class TmsUrListener():
                         place_id = target.id
                         place_name = target.announce
 
+                if task_id==0:
+                    self.speaker(error_msg1)
+                    self.julius_power(True,5)
+                    return
+
                 anc_list = announce.split("$")
                 announce = ""
                 for anc in anc_list:
@@ -334,6 +330,7 @@ class TmsUrListener():
         elif data.value > 0.8: #Julius
             if data.data in trigger:
                 if self.gSpeech_launched == False:
+                    self.gSpeech_launched = True
                     rospy.loginfo("call robot name on raspi:%d",id)
                     rospy.loginfo("kill julius!!")
                     self.robot_name = data.data
@@ -341,7 +338,6 @@ class TmsUrListener():
                     self.speaker("\sound1")
                     time.sleep(0.5)
                     self.launch_gSpeech(id)
-                    self.gSpeech_launched = True
 
     def shutdown(self):
         rospy.loginfo("Stopping the node")
