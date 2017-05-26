@@ -129,6 +129,7 @@ class TmsUrListener():
                 print task_id
                 if task_id == 0:
                     self.speaker(error_msg1)
+                    self.julius_power(True,5)
                     return
                 if task_id == 8100: #search_object
                     object_id = 0

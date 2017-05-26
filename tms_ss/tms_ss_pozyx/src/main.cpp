@@ -36,6 +36,7 @@ int main(int argc, char **argv)
   ros::init(argc,argv,"tms_ss_pozyx");
   ros::NodeHandle n;
   ros::Publisher db_pub = n.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data",1000);
+  ros::Publisher pos_pub = n.advertise<geometry_msgs::PoseStamped> ("pozyx",1000);
   std::string frame_id("/world");
 
 	int fd = open(DEVNAME, O_RDWR | O_NOCTTY);
@@ -44,6 +45,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 	ROS_INFO("device opened");
+
 	struct termios tio;
 	memset(&tio,0,sizeof(tio));
 	tio.c_cflag = CS8 | CLOCAL | CREAD;
@@ -124,7 +126,7 @@ int main(int argc, char **argv)
         continue;
       }else if(count==1){
         // 初期化 (システム雑音，観測雑音，積分時間)
-        kalman->init(0.15,0.7,0.08);//(0.1,1.0,0.1);//(0.1,1.5,0.5);//(0.1,1.0,0.1);
+        kalman->init(0.15,0.7,0.08);
         double C[6][6];
         memset(C,0,sizeof(C));
         C[0][0]=C[1][1]=C[2][2]=1;
@@ -179,18 +181,17 @@ int main(int argc, char **argv)
       db_msg.tmsdb.push_back(tmpData);
       db_pub.publish(db_msg);
 
-
-      // geometry_msgs::PoseStamped msg;
-      // msg.header.frame_id = "world_link";
-      // msg.header.stamp = ros::Time::now();
-      // msg.pose.position.x = kfX;
-      // msg.pose.position.y = kfY;
-      // msg.pose.position.z = 1.3;
-      // msg.pose.orientation.x = q.x();
-      // msg.pose.orientation.y = q.y();
-      // msg.pose.orientation.z = q.z();
-      // msg.pose.orientation.w = q.w();
-      // pos_pub.publish(msg);
+      geometry_msgs::PoseStamped msg;
+      msg.header.frame_id = "world_link";
+      msg.header.stamp = ros::Time::now();
+      msg.pose.position.x = kfX;
+      msg.pose.position.y = kfY;
+      msg.pose.position.z = kfZ;
+      msg.pose.orientation.x = qx;
+      msg.pose.orientation.y = qy;
+      msg.pose.orientation.z = qz;
+      msg.pose.orientation.w = qw;
+      pos_pub.publish(msg);
     }
   }
   return 0;
