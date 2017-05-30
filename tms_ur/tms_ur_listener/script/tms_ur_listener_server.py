@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import rospy
 from tms_ur_listener.msg import julius_msg
+from tms_ur_speaker.srv import *
 from std_msgs.msg import Bool
 from std_msgs.msg import Empty
 from std_msgs.msg import String
@@ -13,6 +14,8 @@ import time
 import subprocess
 import shlex
 import json
+import datetime
+import threading
 
 trigger = ['スマートパル','見守る君','TMS']
 error_msg0 = "すみません。聞き取れませんでした。"
@@ -37,7 +40,7 @@ class TmsUrListener():
         self.gSpeech_pi4 = rospy.Publisher("/pi4/gSpeech",Empty,queue_size=1)
         self.gSpeech_pi5 = rospy.Publisher("/pi5/gSpeech",Empty,queue_size=1)
         self.gSpeech_launched = False
-
+        self.timer = threading.Timer(1,self.alarm)
 
         self.power_pub = rospy.Publisher("julius_power",Bool,queue_size=10)
         self.speaker_pub = rospy.Publisher("speaker",String,queue_size=10)
@@ -45,10 +48,26 @@ class TmsUrListener():
         self.robot_name = ''
         print 'tms_ur_listener_server ready...'
 
+    def alarm(self):
+        while True:
+            print "alarm"
+            self.speaker('\sound4')
+            time.sleep(1.5)
+            temp_dbdata=Tmsdb()
+            temp_dbdata.id = 1100
+            temp_dbdata.state = 1
+            target = self.db_reader(temp_dbdata)
+            if target is None:
+                self.announce(error_msg2)
+                return
+            print 'rp:'+str(target.rp)
+            if target.rp>-0.2:
+                break
+
     def julius_power(self,data,t=0):
         msg = Bool()
         msg.data = data
-        time.sleep(t)
+        time.sleep(float(t))
         self.power_pub.publish(msg)
         if data == True:
             time.sleep(1.5)
@@ -74,6 +93,16 @@ class TmsUrListener():
         speak.data = data
         self.speaker_pub.publish(speak)
 
+    def announce(self,data):
+        rospy.wait_for_service('speaker_srv', timeout=1.0)
+        time = 0
+        try:
+            speak = rospy.ServiceProxy('speaker_srv',speaker_srv)
+            time = speak(data)
+        except rospy.ServiceException, e:
+            print "Service call failed: %s" % e
+        self.julius_power(True,time.sec)
+
     def db_reader(self,data):
         target=Tmsdb()
         rospy.wait_for_service('tms_db_reader')
@@ -97,8 +126,7 @@ class TmsUrListener():
         if data.value >= 10.0: #google speech api
             self.gSpeech_launched = False
             if data.data == "":
-                self.speaker(error_msg0)
-                self.julius_power(True,5)
+                self.announce(error_msg0)
                 return
             rospy.loginfo("get command!")
             tokens = self.tok.tokenize(data.data.decode('utf-8'))
@@ -109,27 +137,32 @@ class TmsUrListener():
                 if token.part_of_speech.split(',')[0] == u'動詞':
                     verb += token.base_form.encode('utf-8')
                 elif token.part_of_speech.split(',')[0] == u'名詞':
-                    nouns.append(token.base_form.encode('utf-8'))
+                    if token.part_of_speech.split(',')[1] == u'数':
+                        nouns.append(token.surface.encode('utf-8'))
+                    else:
+                        nouns.append(token.base_form.encode('utf-8'))
             print str(nouns).decode('string-escape')
             print verb
             if self.robot_name == 'TMS': #tms function
                 task_id = 0
                 announce = ""
+                nouns.append(verb)
                 for noun in nouns:
                     target = self.tag_reader(noun)
                     if target is None:
-                        self.speaker(error_msg2)
-                        self.julius_power(True,5)
+                        self.announce(error_msg2)
                         return
                     if target.type == 'task':
                         task_id = target.id
                         announce = target.announce
                         nouns.remove(noun)
 
-                print task_id
+                print "task_id:" + str(task_id)
                 if task_id == 0:
-                    self.speaker(error_msg1)
-                    self.julius_power(True,5)
+                    self.announce(error_msg1)
+                    #############################################################
+
+                    #############################################################
                     return
                 if task_id == 8100: #search_object
                     object_id = 0
@@ -140,8 +173,7 @@ class TmsUrListener():
                         print noun
                         target = self.tag_reader(noun)
                         if target is None:
-                            self.speaker(error_msg2)
-                            self.julius_power(True,5)
+                            self.announce(error_msg2)
                             return
                         if target.type == 'object':
                             object_id = target.id
@@ -152,8 +184,7 @@ class TmsUrListener():
                     temp_dbdata.state = 1
                     target = self.db_reader(temp_dbdata)
                     if target is None:
-                        self.speaker(error_msg2)
-                        self.julius_power(True,5)
+                        self.announce(error_msg2)
                         return
                     place_id = target.place
 
@@ -161,14 +192,12 @@ class TmsUrListener():
                     temp_dbdata.id = place_id + sid
                     target = self.db_reader(temp_dbdata)
                     if target is None:
-                        self.speaker(error_msg2)
-                        self.julius_power(True,5)
+                        self.announce(error_msg2)
                         return
                     place_name = target.announce
 
                     if object_name == "" or place_name == "":
-                        self.speaker(error_msg1)
-                        self.julius_power(True,5)
+                        self.announce(error_msg1)
                         return
 
                     anc_list = announce.split("$")
@@ -182,8 +211,7 @@ class TmsUrListener():
                             announce += anc
 
                     print announce
-                    self.speaker(announce)
-                    self.julius_power(True,5)
+                    self.announce(announce)
                 elif task_id==8101: #weather_forecast
                     place = "福岡市"
                     date = ""
@@ -192,8 +220,7 @@ class TmsUrListener():
                         if noun in ['今日','明日','明後日']:
                             date = noun
                     if date == "":
-                        self.speaker(error_msg1)
-                        self.julius_power(True,5)
+                        self.announce(error_msg1)
                         return
 
                     args = "curl -s http://weather.livedoor.com/forecast/webservice/json/v1\?city\=400010"
@@ -208,8 +235,7 @@ class TmsUrListener():
                             weather = json_dict["forecasts"][2]["telop"].encode('utf-8')
 
                     if weather == "":
-                        self.speaker(error_msg1)
-                        self.julius_power(True,5)
+                        self.announce(error_msg1)
                         return
 
                     anc_list = announce.split("$")
@@ -225,12 +251,71 @@ class TmsUrListener():
                             announce += anc
 
                     print announce
-                    self.speaker(announce)
-                    self.julius_power(True,5)
+                    self.announce(announce)
+                elif task_id==8102: #set_alarm
+                    today = datetime.datetime.today()
+                    print 'now:' + today.strftime("%Y/%m/%d %H:%M:%S")
+                    if today.hour < 6:
+                        date = 0
+                    else:
+                        date = 1
+                    hour = -1
+                    minute = 0
+                    for i,noun in enumerate(nouns):
+                        if noun == "今日":
+                            date = 0
+                        elif noun == "明日" and today.hour > 6:
+                            date = 1
+                        elif noun == "時" and i>0:
+                            if nouns[i-1].isdigit():
+                                hour = int(nouns[i-1])
+                                if i>1 and nouns[i-2] == "夜":
+                                    hour += 12
+                        elif noun == "時半" and i>0:
+                            if nouns[i-1].isdigit():
+                                hour = int(nouns[i-1])
+                                minute = 30
+                                if i>1 and nouns[i-2] == "夜":
+                                    hour += 12
+                        elif noun == "分":
+                            if nouns[i-1].isdigit():
+                                minute = int(nouns[i-1])
+                    print "d:"+str(date)+" h:"+str(hour)+" m:"+str(minute)
+                    if hour == -1:
+                        self.announce(error_msg1)
+                        return
+
+                    tgt_time = datetime.datetime(today.year,today.month,today.day,hour,minute,0,0)
+                    tgt_time += datetime.timedelta(1)
+                    print 'tgt_time:' + tgt_time.strftime("%Y/%m/%d %H:%M:%S")
+
+                    offset = tgt_time - today
+
+                    print 'offset_sec:' + str(offset.seconds)
+
+                    if offset.seconds < 0:
+                        self.announce(error_msg1)
+                        return
+
+                    self.timer = threading.Timer(offset.seconds,self.alarm)
+                    self.timer.start()
+
+                    anc_list = announce.split("$")
+                    announce = ""
+                    for anc in anc_list:
+                        if anc == "date":
+                            announce += str(tgt_time.month)+"月"+str(tgt_time.day)+"日"
+                        elif anc == "time":
+                            announce += str(tgt_time.hour)+"時"+str(tgt_time.minute)+"分"
+                        else:
+                            announce += anc
+
+                    print announce
+                    self.announce(announce)
+
             else: #robot function
                 if verb=='' or self.robot_name=='':
-                    self.speaker(error_msg1)
-                    self.julius_power(True,5)
+                    self.announce(error_msg1)
                     return
                 task_id = 0
                 robot_id = 0
@@ -245,16 +330,14 @@ class TmsUrListener():
 
                 target = self.tag_reader(verb)
                 if target is None:
-                    self.speaker(error_msg2)
-                    self.julius_power(True,5)
+                    self.announce(error_msg2)
                     return
                 task_id = target.id
                 announce = target.announce
 
                 target = self.tag_reader(self.robot_name)
                 if target is None:
-                    self.speaker(error_msg2)
-                    self.julius_power(True,5)
+                    self.announce(error_msg2)
                     return
                 robot_id = target.id
                 robot_name = target.announce
@@ -262,8 +345,7 @@ class TmsUrListener():
                 for noun in nouns:
                     target = self.tag_reader(noun)
                     if target is None:
-                        self.speaker(error_msg2)
-                        self.julius_power(True,5)
+                        self.announce(error_msg2)
                         return
                     if target.type == 'object':
                         object_id = target.id
@@ -276,8 +358,7 @@ class TmsUrListener():
                         place_name = target.announce
 
                 if task_id==0:
-                    self.speaker(error_msg1)
-                    self.julius_power(True,5)
+                    self.announce(error_msg1)
                     return
 
                 anc_list = announce.split("$")
@@ -285,33 +366,29 @@ class TmsUrListener():
                 for anc in anc_list:
                     if anc == "robot":
                         if robot_id==0:
-                            self.speaker(error_msg1)
-                            self.julius_power(True,5)
+                            self.announce(error_msg1)
                             return
                         announce += robot_name
                     elif anc == "object":
                         if object_id==0:
-                            self.speaker(error_msg1)
-                            self.julius_power(True,5)
+                            self.announce(error_msg1)
                             return
                         announce += object_name
                     elif anc == "user":
                         if user_id==0:
-                            self.speaker(error_msg1)
-                            self.julius_power(True,5)
+                            self.announce(error_msg1)
                             return
                         announce += user_name
                     elif anc == "place":
                         if place_id==0:
-                            self.speaker(error_msg1)
-                            self.julius_power(True,5)
+                            self.announce(error_msg1)
                             return
                         announce += place_name
                     else:
                         announce += anc
 
                 print announce
-                self.speaker(announce)
+                self.announce(announce)
 
                 print 'send command'
                 try:
@@ -325,8 +402,6 @@ class TmsUrListener():
                     print res
                 except rospy.ServiceException as e:
                     print "Service call failed: %s" % e
-
-                self.julius_power(True,5)
 
         elif data.value > 0.8: #Julius
             if data.data in trigger:

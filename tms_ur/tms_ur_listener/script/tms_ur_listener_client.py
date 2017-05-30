@@ -83,7 +83,6 @@ def invoke_julius_set():
 def power_callback(data):
     rospy.loginfo(data)
     global julius,julius_socket,sf
-    global speaker_pub,pub
     if data.data == True:
         rospy.loginfo("invoke julius")
         julius, julius_socket, sf = invoke_julius_set()

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import rospy
+from tms_ur_speaker.srv import *
 from std_msgs.msg import String
 import subprocess
 
@@ -19,19 +20,36 @@ def jtalk(t):
     aplay = ['aplay','-q','open_jtalk.wav']
     wr = subprocess.Popen(aplay)
 
-def callback(data):
-    rospy.loginfo(data)
-    if data.data == '':
-        return
-    elif data.data[0]=='\\':
-        aplay = ['aplay','-q',data.data[1:]+'.wav']
+def speak(data):
+    if data == '':
+        return 0
+    elif data[0]=='\\':
+        aplay = ['aplay','-q',data[1:]+'.wav']
         wr = subprocess.Popen(aplay)
+        soxi = ['soxi','-D',data[1:]+'.wav']
+        ret = subprocess.check_output(soxi)
+        print ret
+        return ret
     else:
-        jtalk(data.data)
+        jtalk(data)
+        soxi = ['soxi','-D','open_jtalk.wav']
+        ret = subprocess.check_output(soxi)
+        print ret
+        return ret
+
+def callback(data):
+    print data.data
+    speak(data.data)
+
+def callback_srv(req):
+    print req.data
+    ret = speak(req.data)
+    return speaker_srvResponse(float(ret))
 
 def main():
     rospy.init_node("tms_ur_speaker",anonymous=True)
     rospy.Subscriber("speaker",String,callback)
+    rospy.Service('speaker_srv',speaker_srv,callback_srv)
     rospy.loginfo("ready")
     rospy.spin()
     rospy.loginfo("exit")
