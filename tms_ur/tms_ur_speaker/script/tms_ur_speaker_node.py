@@ -24,9 +24,9 @@ def speak(data):
     if data == '':
         return 0
     elif data[0]=='\\':
-        aplay = ['aplay','-q',data[1:]+'.wav']
+        aplay = ['aplay','-q','/home/pi/catkin_ws/src/tms_ur_speaker/script/'+data[1:]+'.wav']
         wr = subprocess.Popen(aplay)
-        soxi = ['soxi','-D',data[1:]+'.wav']
+        soxi = ['soxi','-D','/home/pi/catkin_ws/src/tms_ur_speaker/script/'+data[1:]+'.wav']
         ret = subprocess.check_output(soxi)
         print ret
         return ret

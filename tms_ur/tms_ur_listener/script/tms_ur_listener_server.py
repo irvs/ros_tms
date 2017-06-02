@@ -117,8 +117,9 @@ class TmsUrListener():
 
     def tag_reader(self,data):
         temp_dbdata = Tmsdb()
-        temp_dbdata.tag=data
-        return self.db_reader(temp_dbdata)
+        temp_dbdata.tag='「'+data+'」'
+        target = self.db_reader(temp_dbdata)
+        return target
 
     def callback(self, data, id):
         rospy.loginfo(str(id))
@@ -137,10 +138,10 @@ class TmsUrListener():
                 if token.part_of_speech.split(',')[0] == u'動詞':
                     verb += token.base_form.encode('utf-8')
                 elif token.part_of_speech.split(',')[0] == u'名詞':
-                    if token.part_of_speech.split(',')[1] == u'数':
-                        nouns.append(token.surface.encode('utf-8'))
-                    else:
+                    if token.base_form.encode('utf-8') != "*":
                         nouns.append(token.base_form.encode('utf-8'))
+                    else:
+                        nouns.append(token.surface.encode('utf-8'))
             print str(nouns).decode('string-escape')
             print verb
             if self.robot_name == 'TMS': #tms function
@@ -266,16 +267,14 @@ class TmsUrListener():
                             date = 0
                         elif noun == "明日" and today.hour > 6:
                             date = 1
-                        elif noun == "時" and i>0:
+                        elif noun in ["時","時半"] and i>0:
                             if nouns[i-1].isdigit():
                                 hour = int(nouns[i-1])
-                                if i>1 and nouns[i-2] == "夜":
+                                if noun == "時半":
+                                    minute = 30
+                                if i>1 and nouns[i-2] == "午後" and hour <=12:
                                     hour += 12
-                        elif noun == "時半" and i>0:
-                            if nouns[i-1].isdigit():
-                                hour = int(nouns[i-1])
-                                minute = 30
-                                if i>1 and nouns[i-2] == "夜":
+                                elif i>1 and nouns[i-2] == "夜" and hour <=12 and hour>=6:
                                     hour += 12
                         elif noun == "分":
                             if nouns[i-1].isdigit():
@@ -333,6 +332,7 @@ class TmsUrListener():
                     self.announce(error_msg2)
                     return
                 task_id = target.id
+                print task_id
                 announce = target.announce
 
                 target = self.tag_reader(self.robot_name)
@@ -387,9 +387,6 @@ class TmsUrListener():
                     else:
                         announce += anc
 
-                print announce
-                self.announce(announce)
-
                 print 'send command'
                 try:
                     rospy.wait_for_service('tms_ts_master', timeout=2.0)
@@ -402,6 +399,10 @@ class TmsUrListener():
                     print res
                 except rospy.ServiceException as e:
                     print "Service call failed: %s" % e
+
+                print announce
+                self.announce(announce)
+
 
         elif data.value > 0.8: #Julius
             if data.data in trigger:
