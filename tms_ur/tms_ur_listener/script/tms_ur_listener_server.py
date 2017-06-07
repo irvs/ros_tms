@@ -94,6 +94,7 @@ class TmsUrListener():
         self.speaker_pub.publish(speak)
 
     def announce(self,data):
+        print data
         rospy.wait_for_service('speaker_srv', timeout=1.0)
         time = 0
         try:
@@ -211,14 +212,13 @@ class TmsUrListener():
                         else:
                             announce += anc
 
-                    print announce
                     self.announce(announce)
                 elif task_id==8101: #weather_forecast
                     place = "福岡市"
                     date = ""
                     weather = ""
                     for noun in nouns:
-                        if noun in ['今日','明日','明後日']:
+                        if noun in ['今日','明日','明後日','あさって']:
                             date = noun
                     if date == "":
                         self.announce(error_msg1)
@@ -251,7 +251,6 @@ class TmsUrListener():
                         else:
                             announce += anc
 
-                    print announce
                     self.announce(announce)
                 elif task_id==8102: #set_alarm
                     today = datetime.datetime.today()
@@ -309,7 +308,6 @@ class TmsUrListener():
                         else:
                             announce += anc
 
-                    print announce
                     self.announce(announce)
 
             else: #robot function
@@ -400,7 +398,6 @@ class TmsUrListener():
                 except rospy.ServiceException as e:
                     print "Service call failed: %s" % e
 
-                print announce
                 self.announce(announce)
 
 

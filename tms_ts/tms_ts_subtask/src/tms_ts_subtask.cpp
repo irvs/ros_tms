@@ -529,7 +529,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
     double person_yaw = srv.response.tmsdb[0].ry;  // + 1.570796;
     ROS_INFO("x=%f y=%f ry=%f", person_x, person_y, person_yaw);
 
-    if (person_x > 9.300 && person_x < 11.000 && person_y > 2.400 && person_y < 3.200)
+    if (person_x > 9.300 && person_x < 11.000 && person_y > 2.200 && person_y < 3.300)
     {  // in the bed
       ROS_INFO("humen in the bed");
       rp_srv.request.goal_pos.x = 10.3;

@@ -14,6 +14,8 @@ import subprocess
 import shlex
 import time
 import json
+import base64
+import threading
 
 
 julius_path = '/usr/local/bin/julius'
@@ -100,14 +102,15 @@ def gSpeech_callback(data):
     speaker_pub.publish(speak)
     print "recording succeed"
 
-    procs=[]
-    proc=subprocess.Popen(['gsutil','cp',wav_file,gs_filename],stdout=subprocess.PIPE)
-    procs.append(proc)
-    proc=subprocess.Popen(['gcloud','auth','print-access-token'],stdout=subprocess.PIPE)
-    procs.append(proc)
-    for proc in procs:
-        token = proc.communicate()[0]
-        print token
+    file = open(wav_file,'rt').read()
+    enc = base64.b64encode(file)
+    print "enc success"
+
+    data = "{'config':{'encoding':'LINEAR16','sampleRate':16000,'languageCode':'ja-UP'},'audio':{'content':'" + enc + "'}}"
+    json_file = open('/home/pi/catkin_ws/src/tms_ur_listener/script/sync-request.json','w')
+    json_file.write(data)
+    json_file.close()
+    print "write json_file"
 
     args = 'curl -s -k -H "Content-Type: application/json" -H "Authorization: Bearer '+token.rstrip('\n')+'" https://speech.googleapis.com/v1beta1/speech:syncrecognize -d @/home/pi/catkin_ws/src/tms_ur_listener/script/sync-request.json'
     print args
@@ -120,10 +123,19 @@ def gSpeech_callback(data):
     else:
         script = ""
         val = 10.0
+        
     msg = julius_msg()
     msg.data = script
     msg.value = val
     pub.publish(msg)
+
+def get_token():
+    global token
+    args = 'gcloud auth print-access-token'
+    token = subprocess.check_output(shlex.split(args))
+    print token
+    t=threading.Timer(600,get_token)
+    t.start()
 
 def main():
     rospy.init_node("tms_ur_listener_client",anonymous=True)
@@ -138,6 +150,9 @@ def main():
     julius, julius_socket, sf = invoke_julius_set()
 
     reResult = re.compile(u'WHYPO WORD="(\S*)" .* CM="(\d\.\d*)"')
+
+    t=threading.Thread(target=get_token)
+    t.start()
 
     while not rospy.is_shutdown():
         if julius.poll() is None:
