@@ -17,7 +17,7 @@ import json
 import datetime
 import threading
 
-trigger = ['スマートパル','見守る君','TMS']
+trigger = ['ROS-TMS']
 error_msg0 = "すみません。聞き取れませんでした。"
 error_msg1 = "すみません。よくわかりませんでした。"
 error_msg2 = "エラーが発生したため、処理を中断します"
@@ -45,7 +45,6 @@ class TmsUrListener():
         self.power_pub = rospy.Publisher("julius_power",Bool,queue_size=10)
         self.speaker_pub = rospy.Publisher("speaker",String,queue_size=10)
         self.tok = Tokenizer()
-        self.robot_name = ''
         print 'tms_ur_listener_server ready...'
 
     def alarm(self):
@@ -132,7 +131,7 @@ class TmsUrListener():
                 return
             rospy.loginfo("get command!")
             tokens = self.tok.tokenize(data.data.decode('utf-8'))
-            nouns = []
+            words = []
             verb = ''
             for token in tokens:
                 print token
@@ -140,225 +139,188 @@ class TmsUrListener():
                     verb += token.base_form.encode('utf-8')
                 elif token.part_of_speech.split(',')[0] == u'名詞':
                     if token.base_form.encode('utf-8') != "*":
-                        nouns.append(token.base_form.encode('utf-8'))
+                        words.append(token.base_form.encode('utf-8'))
                     else:
-                        nouns.append(token.surface.encode('utf-8'))
-            print str(nouns).decode('string-escape')
-            print verb
-            if self.robot_name == 'TMS': #tms function
-                task_id = 0
-                announce = ""
-                nouns.append(verb)
-                for noun in nouns:
-                    target = self.tag_reader(noun)
-                    if target is None:
-                        self.announce(error_msg2)
-                        return
-                    if target.type == 'task':
-                        task_id = target.id
-                        announce = target.announce
-                        nouns.remove(noun)
+                        words.append(token.surface.encode('utf-8'))
+            if verb != '':
+                words.append(verb)
+            print str(words).decode('string-escape')
+            task_id = 0
+            robot_id = 0
+            object_id = 0
+            user_id = 1100
+            place_id = 0
+            announce = ""
+            robot_name = ""
+            object_name = ""
+            user_name = "太郎さん"
+            place_name = ""
+            other_words = []
 
-                print "task_id:" + str(task_id)
-                if task_id == 0:
-                    self.announce(error_msg1)
-                    #############################################################
-
-                    #############################################################
+            for word in words:
+                target = self.tag_reader(word)
+                if target is None:
+                    self.announce(error_msg2)
                     return
-                if task_id == 8100: #search_object
-                    object_id = 0
-                    place_id = 0
-                    object_name = ""
-                    place_name = ""
-                    for noun in nouns:
-                        print noun
-                        target = self.tag_reader(noun)
-                        if target is None:
-                            self.announce(error_msg2)
-                            return
-                        if target.type == 'object':
-                            object_id = target.id
-                            object_name = target.announce
-
-                    temp_dbdata=Tmsdb()
-                    temp_dbdata.id = object_id
-                    temp_dbdata.state = 1
-                    target = self.db_reader(temp_dbdata)
-                    if target is None:
-                        self.announce(error_msg2)
-                        return
-                    place_id = target.place
-
-                    temp_dbdata=Tmsdb()
-                    temp_dbdata.id = place_id + sid
-                    target = self.db_reader(temp_dbdata)
-                    if target is None:
-                        self.announce(error_msg2)
-                        return
+                if target.type == 'task':
+                    task_id = target.id
+                    announce = target.announce
+                elif target.type == 'robot':
+                    robot_id = target.id
+                    robot_name = target.announce
+                elif target.type == 'object':
+                    object_id = target.id
+                    object_name = target.announce
+                elif target.type == 'person':
+                    user_id = target.id
+                    user_name = target.announce
+                elif target.type == 'furniture':
+                    place_id = target.id
                     place_name = target.announce
+                else:
+                    other_words.append(word)
 
-                    if object_name == "" or place_name == "":
-                        self.announce(error_msg1)
-                        return
+            print "task_id:" + str(task_id)
+            print "robot_id:" + str(robot_id)
+            print "object_id:" + str(robot_id)
+            print "user_id:" + str(user_id)
+            print "place_id:" + str(place_id)
 
-                    anc_list = announce.split("$")
-                    announce = ""
-                    for anc in anc_list:
-                        if anc == "object":
-                            announce += object_name
-                        elif anc == "place":
-                            announce += place_name
-                        else:
-                            announce += anc
+            if task_id == 0:
+                ############################################
 
-                    self.announce(announce)
-                elif task_id==8101: #weather_forecast
-                    place = "福岡市"
-                    date = ""
-                    weather = ""
-                    for noun in nouns:
-                        if noun in ['今日','明日','明後日','あさって']:
-                            date = noun
-                    if date == "":
-                        self.announce(error_msg1)
-                        return
-
-                    args = "curl -s http://weather.livedoor.com/forecast/webservice/json/v1\?city\=400010"
-                    ret = subprocess.check_output(shlex.split(args))
-                    json_dict = json.loads(ret,"utf-8")
-                    if "forecasts" in json_dict:
-                        if date == '今日':
-                            weather = json_dict["forecasts"][0]["telop"].encode('utf-8')
-                        elif date == '明日':
-                            weather = json_dict["forecasts"][1]["telop"].encode('utf-8')
-                        elif date == '明後日' or date == 'あさって':
-                            weather = json_dict["forecasts"][2]["telop"].encode('utf-8')
-
-                    if weather == "":
-                        self.announce(error_msg1)
-                        return
-
-                    anc_list = announce.split("$")
-                    announce = ""
-                    for anc in anc_list:
-                        if anc == "place":
-                            announce += place
-                        elif anc == "date":
-                            announce += date
-                        elif anc == "weather":
-                            announce += weather
-                        else:
-                            announce += anc
-
-                    self.announce(announce)
-                elif task_id==8102: #set_alarm
-                    today = datetime.datetime.today()
-                    print 'now:' + today.strftime("%Y/%m/%d %H:%M:%S")
-                    if today.hour < 6:
-                        date = 0
-                    else:
-                        date = 1
-                    hour = -1
-                    minute = 0
-                    for i,noun in enumerate(nouns):
-                        if noun == "今日":
-                            date = 0
-                        elif noun == "明日" and today.hour > 6:
-                            date = 1
-                        elif noun in ["時","時半"] and i>0:
-                            if nouns[i-1].isdigit():
-                                hour = int(nouns[i-1])
-                                if noun == "時半":
-                                    minute = 30
-                                if i>1 and nouns[i-2] == "午後" and hour <=12:
-                                    hour += 12
-                                elif i>1 and nouns[i-2] == "夜" and hour <=12 and hour>=6:
-                                    hour += 12
-                        elif noun == "分":
-                            if nouns[i-1].isdigit():
-                                minute = int(nouns[i-1])
-                    print "d:"+str(date)+" h:"+str(hour)+" m:"+str(minute)
-                    if hour == -1:
-                        self.announce(error_msg1)
-                        return
-
-                    tgt_time = datetime.datetime(today.year,today.month,today.day,hour,minute,0,0)
-                    tgt_time += datetime.timedelta(1)
-                    print 'tgt_time:' + tgt_time.strftime("%Y/%m/%d %H:%M:%S")
-
-                    offset = tgt_time - today
-
-                    print 'offset_sec:' + str(offset.seconds)
-
-                    if offset.seconds < 0:
-                        self.announce(error_msg1)
-                        return
-
-                    self.timer = threading.Timer(offset.seconds,self.alarm)
-                    self.timer.start()
-
-                    anc_list = announce.split("$")
-                    announce = ""
-                    for anc in anc_list:
-                        if anc == "date":
-                            announce += str(tgt_time.month)+"月"+str(tgt_time.day)+"日"
-                        elif anc == "time":
-                            announce += str(tgt_time.hour)+"時"+str(tgt_time.minute)+"分"
-                        else:
-                            announce += anc
-
-                    self.announce(announce)
-
-            else: #robot function
-                if verb=='' or self.robot_name=='':
-                    self.announce(error_msg1)
-                    return
-                task_id = 0
-                robot_id = 0
-                object_id = 0
-                user_id = 1100
+                ############################################
+                self.announce(error_msg1)
+                return
+            elif task_id == 8100: #search_object
                 place_id = 0
-                announce = ""
-                robot_name = ""
-                object_name = ""
-                user_name = "太郎さん"
                 place_name = ""
-
-                target = self.tag_reader(verb)
+                temp_dbdata = Tmsdb()
+                temp_dbdata.id = object_id
+                temp_dbdata.state = 1
+                target = self.db_reader(temp_dbdata)
                 if target is None:
                     self.announce(error_msg2)
                     return
-                task_id = target.id
-                print task_id
-                announce = target.announce
+                place_id = target.place
 
-                target = self.tag_reader(self.robot_name)
+                temp_dbdata = Tmsdb()
+                temp_dbdata.id = place_id + sid
+                target = self.db_reader(temp_dbdata)
                 if target is None:
                     self.announce(error_msg2)
                     return
-                robot_id = target.id
-                robot_name = target.announce
+                place_name = target.announce
 
-                for noun in nouns:
-                    target = self.tag_reader(noun)
-                    if target is None:
-                        self.announce(error_msg2)
-                        return
-                    if target.type == 'object':
-                        object_id = target.id
-                        object_name = target.announce
-                    elif target.type == 'person':
-                        user_id = target.id
-                        user_name = target.announce
-                    elif target.type == 'furniture':
-                        place_id = target.id
-                        place_name = target.announce
-
-                if task_id==0:
+                if object_name == "" or place_name == "":
                     self.announce(error_msg1)
                     return
 
+                anc_list = announce.split("$")
+                announce = ""
+                for anc in anc_list:
+                    if anc == "object":
+                        announce += object_name
+                    elif anc == "place":
+                        announce += place_name
+                    else:
+                        announce += anc
+                self.announce(announce)
+            elif task_id == 8101: #weather_forecast
+                place = "福岡市"
+                date = ""
+                weather = ""
+                for word in other_words:
+                    if word in ['今日','明日','明後日','あさって']:
+                        date = word
+                if date == "":
+                    self.announce(error_msg1)
+                    return
+
+                args = "curl -s http://weather.livedoor.com/forecast/webservice/json/v1\?city\=400010"
+                ret = subprocess.check_output(shlex.split(args))
+                json_dict = json.loads(ret,"utf-8")
+                if "forecasts" in json_dict:
+                    if date == '今日':
+                        weather = json_dict["forecasts"][0]["telop"].encode('utf-8')
+                    elif date == '明日':
+                        weather = json_dict["forecasts"][1]["telop"].encode('utf-8')
+                    elif date == '明後日' or date == 'あさって':
+                        weather = json_dict["forecasts"][2]["telop"].encode('utf-8')
+                if weather == "":
+                    self.announce(error_msg1)
+                    return
+
+                anc_list = announce.split("$")
+                announce = ""
+                for anc in anc_list:
+                    if anc == "place":
+                        announce += place
+                    elif anc == "date":
+                        announce += date
+                    elif anc == "weather":
+                        announce += weather
+                    else:
+                        announce += anc
+                self.announce(announce)
+
+            elif task_id == 8102: #set_alarm
+                today = datetime.datetime.today()
+                print 'now:' + today.strftime("%Y/%m/%d %H:%M:%S")
+                if today.hour < 6:
+                    date = 0
+                else:
+                    date = 1
+                hour = -1
+                minute = 0
+                for i,word in enumerate(other_words):
+                    if word == "今日":
+                        date = 0
+                    elif word == "明日" and today.hour > 6:
+                        date = 1
+                    elif word in ["時","時半"] and i>0:
+                        if words[i-1].isdigit():
+                            hour = int(words[i-1])
+                            if word == "時半":
+                                minute = 30
+                            if i>1 and words[i-2] == "午後" and hour <=12:
+                                hour += 12
+                            elif i>1 and words[i-2] == "夜" and hour <=12 and hour>=6:
+                                hour += 12
+                    elif word == "分":
+                        if words[i-1].isdigit():
+                            minute = int(words[i-1])
+                print "d:"+str(date)+" h:"+str(hour)+" m:"+str(minute)
+                if hour == -1:
+                    self.announce(error_msg1)
+                    return
+
+                tgt_time = datetime.datetime(today.year,today.month,today.day,hour,minute,0,0)
+                tgt_time += datetime.timedelta(1)
+                print 'tgt_time:' + tgt_time.strftime("%Y/%m/%d %H:%M:%S")
+                offset = tgt_time - today
+                print 'offset_sec:' + str(offset.seconds)
+
+                if offset.seconds < 0:
+                    self.announce(error_msg1)
+                    return
+
+                self.timer = threading.Timer(offset.seconds,self.alarm)
+                self.timer.start()
+
+                anc_list = announce.split("$")
+                announce = ""
+                for anc in anc_list:
+                    if anc == "date":
+                        announce += str(tgt_time.month)+"月"+str(tgt_time.day)+"日"
+                    elif anc == "time":
+                        announce += str(tgt_time.hour)+"時"+str(tgt_time.minute)+"分"
+                    else:
+                        announce += anc
+
+                self.announce(announce)
+
+            else: #robot_task
                 anc_list = announce.split("$")
                 announce = ""
                 for anc in anc_list:
@@ -387,7 +349,7 @@ class TmsUrListener():
 
                 print 'send command'
                 try:
-                    rospy.wait_for_service('tms_ts_master', timeout=2.0)
+                    rospy.wait_for_service('tms_ts_master', timeout=1.0)
                 except rospy.ROSException:
                     print "tms_ts_master is not work"
 
@@ -400,14 +362,12 @@ class TmsUrListener():
 
                 self.announce(announce)
 
-
         elif data.value > 0.8: #Julius
             if data.data in trigger:
                 if self.gSpeech_launched == False:
                     self.gSpeech_launched = True
-                    rospy.loginfo("call robot name on raspi:%d",id)
+                    rospy.loginfo("call trigger on raspi:%d",id)
                     rospy.loginfo("kill julius!!")
-                    self.robot_name = data.data
                     self.julius_power(False)
                     self.speaker("\sound1")
                     time.sleep(0.5)
