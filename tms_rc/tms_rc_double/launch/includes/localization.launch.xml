@@ -1,0 +1,15 @@
+<launch>
+  <arg name="is_real" default="true"/>
+  <!--自己位置推定-->
+  <node pkg="chairbot_selfdrive" type="pot_pose_pf" name="pot_pose_pf" output="screen">
+    <remap from="observation_point" to="/lrf_pose" />
+  </node>
+  <include file="$(find chairbot_selfdrive)/launch/velodyne_matcher.launch" />
+  <!--"map"->"odom"-->
+  <include file="$(find chairbot_selfdrive)/launch/includes/pose2frame.launch.xml" />
+  <!--velodyneを起動-->
+  <!--バッテリー不足で再起動することが多いので別コマンドに変更-->
+  <!--<group if="$(arg is_real)">
+    <include file="$(find velodyne_pointcloud)/launch/32e_points.launch" />
+  </group>-->
+</launch>

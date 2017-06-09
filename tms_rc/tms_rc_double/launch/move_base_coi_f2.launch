@@ -1,0 +1,20 @@
+<launch>
+  <group ns="double_control">
+    <!--点群マップ，グリッドマップ-->
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find tms_rc_double)/resources/map_coi_f2.yaml" />
+
+    <!--static transform-->
+    <include file="$(find tms_rc_double)/launch/includes/tf_common.launch.xml" />
+    <node pkg="tf2_ros" type="static_transform_publisher" args="2.661 -2.515 0 0.64228116473391323555 0 0 map world" name="tf_world"/>
+
+    <!--自己位置推定-->
+    <node pkg="tms_ss_vicon" type="vicon_stream" name="vicon_stream" />
+    <node pkg="tms_rc_double" type="vicon2pose" name="vicon2pose" args="vicon_pose:=initialpose" />
+    <include file="$(find tms_rc_double)/launch/includes/localization.launch.xml">
+      <arg name="is_real" value="true" />
+    </include>
+
+    <!-- Move base -->
+    <include file="$(find tms_rc_double)/launch/includes/move_base.launch.xml" />
+  </group>
+</launch>
