@@ -13,8 +13,8 @@
 #include "geometry_msgs/Twist.h"
 //#include "ncurses.h"
 
-#define LINEAR_CHANGE 0.1
-#define ANGLE_CHANGE 1.8
+#define LINEAR_CHANGE 0.05 /*0.1*/
+#define ANGLE_CHANGE 0.2 /*1.8*/
 
 //main function
 int main(int argc, char **argv)
