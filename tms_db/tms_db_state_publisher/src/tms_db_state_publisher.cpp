@@ -44,10 +44,6 @@ using namespace boost;
 const int inf = -100000;
 #define PI 3.14159265
 
-#define BED_X1 9.3
-#define BED_X2 11.0
-#define BED_Y1 2.2
-#define BED_Y2 3.3
 
 //------------------------------------------------------------------------------
 class DbStatePublisher
@@ -143,6 +139,7 @@ private:
         {
           posX = msg->tmsdb[i].x;
           posY = msg->tmsdb[i].y;
+          posZ = msg->tmsdb[i].z;
           rotR = msg->tmsdb[i].rr;
           rotP = msg->tmsdb[i].rp;
           rotY = msg->tmsdb[i].ry;
@@ -151,160 +148,9 @@ private:
           {
             continue;
           }
-          else if (posX > BED_X1 && posX < BED_X2 && posY > BED_Y1 && posY < BED_Y2)  // in the bed
-          {
-            if(nfbed_state==0||nfbed_state==2)
-            {
-              double height = 1.1*cos(rotP)*cos(rotR);
-              if(height<0.1) height = 0.1;
-              height+=0.3;
-              transform.setOrigin(tf::Vector3(posX, posY, height));
-              transform.setRotation(tf::Quaternion(rotP*cos(rotY)+rotR*sin(rotY), rotR*cos(rotY)-rotP*sin(rotY), rotY-1.5708));
-
-              // transform.setOrigin(tf::Vector3(10.52, 2.71, 0.42));
-              // transform.setRotation(tf::Quaternion(1.5708, 0, 1.5708));
-              br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world_link", "Body"));
-              sensor_msgs::JointState skeleton_joint;
-              skeleton_joint.header.stamp = ros::Time::now();
-              skeleton_joint.name.push_back("R_ARM_JOINT1");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_ARM_JOINT2");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_ARM_JOINT3");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_ARM_JOINT4");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_ARM_JOINT5");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_ARM_JOINT6");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_ARM_JOINT7");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_ARM_JOINT1");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_ARM_JOINT2");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_ARM_JOINT3");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_ARM_JOINT4");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_ARM_JOINT5");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_ARM_JOINT6");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_ARM_JOINT7");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("NECK_JOINT0");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("NECK_JOINT1");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("NECK_JOINT2");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_LEG_JOINT1");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_LEG_JOINT2");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_LEG_JOINT3");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_LEG_JOINT4");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_LEG_JOINT5");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_LEG_JOINT6");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_LEG_JOINT1");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_LEG_JOINT2");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_LEG_JOINT3");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_LEG_JOINT4");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_LEG_JOINT5");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_LEG_JOINT6");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint_pub.publish(skeleton_joint);
-            }
-            else if(nfbed_state==1)
-            {
-              double height = 1.1*cos(rotP)*cos(rotR);
-              if(height<0.1) height = 0.1;
-              height+=0.67;
-              transform.setOrigin(tf::Vector3(posX, posY, height));
-              transform.setRotation(tf::Quaternion(rotP*cos(rotY)+rotR*sin(rotY), rotR*cos(rotY)-rotP*sin(rotY), rotY-1.5708));
-
-              // transform.setOrigin(tf::Vector3(10.30, 2.71, 0.67));
-              // transform.setRotation(tf::Quaternion(0, 0, 1.5708));
-              br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world_link", "Body"));
-              sensor_msgs::JointState skeleton_joint;
-              skeleton_joint.header.stamp = ros::Time::now();
-              skeleton_joint.name.push_back("R_ARM_JOINT1");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_ARM_JOINT2");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_ARM_JOINT3");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_ARM_JOINT4");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_ARM_JOINT5");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_ARM_JOINT6");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_ARM_JOINT7");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_ARM_JOINT1");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_ARM_JOINT2");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_ARM_JOINT3");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_ARM_JOINT4");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_ARM_JOINT5");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_ARM_JOINT6");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_ARM_JOINT7");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("NECK_JOINT0");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("NECK_JOINT1");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("NECK_JOINT2");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_LEG_JOINT1");
-              skeleton_joint.position.push_back(-1.53);
-              skeleton_joint.name.push_back("R_LEG_JOINT2");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_LEG_JOINT3");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_LEG_JOINT4");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_LEG_JOINT5");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("R_LEG_JOINT6");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_LEG_JOINT1");
-              skeleton_joint.position.push_back(-1.53);
-              skeleton_joint.name.push_back("L_LEG_JOINT2");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_LEG_JOINT3");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_LEG_JOINT4");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_LEG_JOINT5");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint.name.push_back("L_LEG_JOINT6");
-              skeleton_joint.position.push_back(0);
-              skeleton_joint_pub.publish(skeleton_joint);
-            }
-          }
           else
           {
-            double height = 1.1*cos(rotP)*cos(rotR);
-            if(height<0.1) height = 0.1;
-            transform.setOrigin(tf::Vector3(posX, posY, height));
+            transform.setOrigin(tf::Vector3(posX, posY, posZ));
             transform.setRotation(tf::Quaternion(rotP*cos(rotY)+rotR*sin(rotY), rotR*cos(rotY)-rotP*sin(rotY), rotY-1.5708));
             // transform.setRotation(tf::Quaternion(whsPitch,whsRoll,-1.5708));
 

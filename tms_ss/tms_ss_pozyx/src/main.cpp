@@ -31,6 +31,11 @@ using namespace boost;
 
 Kalman *kalman;
 
+#define BED_X1 9.33
+#define BED_X2 10.7
+#define BED_Y1 2.3
+#define BED_Y2 3.1
+
 int main(int argc, char **argv)
 {
   ros::init(argc,argv,"tms_ss_pozyx");
@@ -168,15 +173,23 @@ int main(int argc, char **argv)
       tmpData.time = boost::posix_time::to_iso_extended_string(db_time.toBoost());
       tmpData.name = "person_pozyx1";
       tmpData.id = 1100;
-      tmpData.place = 5001;
       tmpData.sensor = 0;
       tmpData.state = 1;
       tmpData.x = kfX;
       tmpData.y = kfY;
-      tmpData.z = 1.3;
       tmpData.rr = roll2;
       tmpData.rp = pitch2;
       tmpData.ry = yaw2;
+      double height = 1.1*cos(pitch2)*cos(roll2);
+      if(height<0.1) height = 0.1;
+
+      if(kfX > BED_X1 && kfX < BED_X2 && kfY > BED_Y1 && kfY < BED_Y2){
+        tmpData.place = 6017;
+        tmpData.z = height+0.3;
+      }else{
+        tmpData.place = 5001;
+        tmpData.z = height;
+      }
 
       db_msg.tmsdb.push_back(tmpData);
       db_pub.publish(db_msg);

@@ -16,6 +16,7 @@ import shlex
 import json
 import datetime
 import threading
+import urllib
 
 trigger = ['ROS-TMS']
 error_msg0 = "すみません。聞き取れませんでした。"
@@ -45,6 +46,12 @@ class TmsUrListener():
         self.power_pub = rospy.Publisher("julius_power",Bool,queue_size=10)
         self.speaker_pub = rospy.Publisher("speaker",String,queue_size=10)
         self.tok = Tokenizer()
+
+        f = open('/home/rts/apikey','r')
+        for line in f:
+            self.apikey = line.replace('\n','')
+
+        f.close()
         print 'tms_ur_listener_server ready...'
 
     def alarm(self):
@@ -187,10 +194,17 @@ class TmsUrListener():
             print "place_id:" + str(place_id)
 
             if task_id == 0:
-                ############################################
-
-                ############################################
-                self.announce(error_msg1)
+                print 'ask docomo Q&A api'
+                print data.data
+                urlenc = urllib.quote(data.data)
+                args = "curl -s 'https://api.apigw.smt.docomo.ne.jp/knowledgeQA/v1/ask?APIKEY=" + self.apikey + "&q=" + urlenc + "'"
+                ret = subprocess.check_output(shlex.split(args))
+                json_dict = json.loads(ret,"utf-8")
+                announce = "すみません、わかりませんでした。"
+                if "message" in json_dict:
+                    print json_dict["message"]["textForDisplay"]
+                    announce = json_dict["message"]["textForSpeech"]
+                self.announce(announce)
                 return
             elif task_id == 8100: #search_object
                 place_id = 0
