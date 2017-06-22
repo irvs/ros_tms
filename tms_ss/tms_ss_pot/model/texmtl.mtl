@@ -1,0 +1,13 @@
+# Created By Carrara 7.0
+
+#地図
+newmtl map
+Ns 1
+d 1
+Ni 0.001
+illum 2
+Ka 1 1 1
+Kd 1 1 1
+Ks 1 1 1
+map_Kd map.png
+
