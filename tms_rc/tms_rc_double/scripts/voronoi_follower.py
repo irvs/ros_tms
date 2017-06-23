@@ -15,7 +15,7 @@ GOAL = None
 def main():
     global GOAL
     print "Double_voronoi_follower"
-    rospy.init_node ('wheelchair_voronoi_follower')
+    rospy.init_node ('double_voronoi_follower')
 
     rospy.wait_for_service('/tms_db_reader')
 
