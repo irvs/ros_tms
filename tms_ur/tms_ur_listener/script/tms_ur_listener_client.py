@@ -123,7 +123,7 @@ def gSpeech_callback(data):
     else:
         script = ""
         val = 10.0
-        
+
     msg = julius_msg()
     msg.data = script
     msg.value = val
@@ -135,6 +135,7 @@ def get_token():
     token = subprocess.check_output(shlex.split(args))
     print token
     t=threading.Timer(600,get_token)
+    t.setDaemon(True)
     t.start()
 
 def main():
@@ -152,6 +153,7 @@ def main():
     reResult = re.compile(u'WHYPO WORD="(\S*)" .* CM="(\d\.\d*)"')
 
     t=threading.Thread(target=get_token)
+    t.setDaemon(True)
     t.start()
 
     while not rospy.is_shutdown():

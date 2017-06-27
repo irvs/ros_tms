@@ -972,6 +972,9 @@ int main(int argc, char **argv)
   smartpal->gripperSetServo(GripperL, ON);
   smartpal->lumbaSetServo(ON);
 
+  smartpal->armSetServo(ArmR, ON);
+  smartpal->armSetServo(ArmL, ON);
+
   smartpal->armGetSoftLimit(ArmL);
 
   ros::Time tNow;

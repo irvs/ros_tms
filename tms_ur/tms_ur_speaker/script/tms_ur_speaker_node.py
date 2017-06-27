@@ -31,7 +31,8 @@ def speak(data):
         print ret
         return ret
     else:
-        jtalk(data)
+        talk = data.replace(',','')
+        jtalk(talk)
         soxi = ['soxi','-D','open_jtalk.wav']
         ret = subprocess.check_output(soxi)
         print ret

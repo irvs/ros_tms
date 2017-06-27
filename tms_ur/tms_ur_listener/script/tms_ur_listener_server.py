@@ -319,7 +319,7 @@ class TmsUrListener():
                     self.announce(error_msg1)
                     return
 
-                self.timer = threading.Timer(offset.seconds,self.alarm)
+                self.timer = threading.Timer(15,self.alarm)#(offset.seconds,self.alarm)
                 self.timer.start()
 
                 anc_list = announce.split("$")
