@@ -5,8 +5,8 @@
             <author>VCGLab</author>
             <authoring_tool>VCGLib | MeshLab</authoring_tool>
         </contributor>
-        <created>月 6 5 07:11:11 2017 GMT</created>
-        <modified>月 6 5 07:11:11 2017 GMT</modified>
+        <created>水 6月 14 09:28:21 2017 GMT</created>
+        <modified>水 6月 14 09:28:21 2017 GMT</modified>
         <up_axis>Y_UP</up_axis>
     </asset>
     <library_images>
@@ -25,7 +25,7 @@
                 <newparam sid="texture0-surface">
                     <surface type="2D">
                         <init_from>texture0</init_from>
-                        <format>R8G8B8</format>
+                        <format>A8R8G8B8</format>
                     </surface>
                 </newparam>
                 <newparam sid="texture0-sampler">
@@ -49,7 +49,7 @@
         <geometry id="shape0-lib" name="shape0">
             <mesh>
                 <source id="shape0-lib-positions" name="position">
-                    <float_array id="shape0-lib-positions-array" count="12">0 0 0 15 0 0 15 7.6 0 0 7.6 0</float_array>
+                    <float_array id="shape0-lib-positions-array" count="12">0 0 0 2.5 0 0 2.5 3 0 0 3 0</float_array>
                     <technique_common>
                         <accessor count="4" source="#shape0-lib-positions-array" stride="3">
                             <param name="X" type="float"/>

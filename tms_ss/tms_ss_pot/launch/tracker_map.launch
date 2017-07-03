@@ -2,14 +2,16 @@
     <node pkg="tms_ss_pot" name="urg_tracker" type="urg_tracker" output="screen" />
     <node pkg="tms_ss_pot" name="visualize" type="visualize" />
 
+  <!-- Simple Map -->
   <!-- parameter setting for robot_description -->
-  <param name="robot_description"
-         command="$(find xacro)/xacro.py '$(find tms_ss_pot)/urdf/all_components.urdf.xacro'" />
+  <!--<param name="robot_description"
+         command="$(find xacro)/xacro.py '$(find tms_ss_pot)/urdf/all_components.urdf.xacro'" />-->
 
   <!-- robot_state_publisher -->
-  <node name="robot_state_publisher_tracker" pkg="robot_state_publisher" type="robot_state_publisher" >
+  <!--<node name="robot_state_publisher_tracker" pkg="robot_state_publisher" type="robot_state_publisher" >
     <param name="tf_prefix" value="" />
-  </node>
+  </node>-->
+  <!-- Simple Map End -->
 
   <!-- joint_state_publisher -->
   <node name="tms_db_state_publisher_tracker" pkg="tms_db_state_publisher" type="tms_db_state_publisher"/>
@@ -18,12 +20,12 @@
  1.5707 0 0 /world_link /map 100"/>
 
   <!-- Map server -->
-  <arg name="map_file" default="$(find tms_ss_pot)/maps/map_954/map.yaml"/>
+  <arg name="map_file" default="$(find tms_ss_pot)/maps/map_928/map.yaml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)">
   <param name="frame_id" value="map" />
   </node>
 
   <!-- RViz -->
-  <node name="rviz_tracker" pkg="rviz" type="rviz" args="-d $(find rostms_description)/rviz_config/rviz_config.rviz" respawn="true" />
+  <node name="rviz_tracker" pkg="rviz" type="rviz" args="-d $(find tms_ss_pot)/rviz_config.rviz" respawn="true" />
 
 </launch>

@@ -1,5 +1,3 @@
-// Target.cpp : ŽÀ‘•ƒtƒ@ƒCƒ‹
-//
 #ifdef WIN32
 #pragma warning(disable : 4996)
 #endif
@@ -13,8 +11,6 @@
 
 #include "define.h"
 #include "target.h"
-
-// CTarget
 
 CTarget::CTarget()
 {

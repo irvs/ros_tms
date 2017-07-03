@@ -111,7 +111,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "laser_visualization");
   ros::NodeHandle n;
   pub = n.advertise< visualization_msgs::MarkerArray >("laser_visualization", 1);
-  sub = n.subscribe("pot_urg1/LaserTracker", 1, laser_visualization_callback);
+  sub = n.subscribe("LaserTracker1", 1, laser_visualization_callback);
   ros::spin();
   return 0;
 }
