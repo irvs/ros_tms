@@ -1,14 +1,15 @@
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
 import rospy
 from geometry_msgs.msg import Pose2D, Twist
-from tms_msg_rc_srv import rc_robot_control, rc_robot_controlResponse
+from tms_msg_rc.srv import rc_robot_control, rc_robot_controlResponse
 from tms_msg_db.srv import TmsdbGetData, TmsdbGetDataRequest
 
 import datetime
 import pymongo
 from math import sin, cos, atan2, pi, radians, degrees, sqrt
-pub = rospy.Publisher("tms_rc_double/cmd_vel_mux/input/keyop)
+pub = rospy.Publisher("cmd_vel_mux/input/keyop",Twist,queue_size = 10)
 
 GOAL = None
 
