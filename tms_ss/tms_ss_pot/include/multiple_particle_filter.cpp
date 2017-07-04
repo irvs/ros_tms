@@ -115,7 +115,7 @@ void CMultipleParticleFilter::update(CLaser *Laser)
           pf.SetID(m_ID++);
           pf.update();
 
-	        if(!isnan(pf.state[0]) && !isnan(pf.state[1]))
+          if(!isnan(pf.state[0]) && !isnan(pf.state[1]))
           m_ParticleFilter.push_back(pf);
 
         }

@@ -1,6 +1,8 @@
 <launch>
-    <node pkg="tms_ss_pot" name="urg_tracker" type="urg_tracker" output="screen" />
-    <node pkg="tms_ss_pot" name="visualize" type="visualize" />
+
+  <!-- Tracker and Visualizer -->
+  <node pkg="tms_ss_pot" name="urg_tracker" type="urg_tracker" output="screen" />
+  <node pkg="tms_ss_pot" name="visualize" type="visualize" />
 
   <!-- Simple Map -->
   <!-- parameter setting for robot_description -->
@@ -14,10 +16,11 @@
   <!-- Simple Map End -->
 
   <!-- joint_state_publisher -->
-  <node name="tms_db_state_publisher_tracker" pkg="tms_db_state_publisher" type="tms_db_state_publisher"/>
+  <!-- <node name="tms_db_state_publisher_tracker" pkg="tms_db_state_publisher" type="tms_db_state_publisher"/> -->
 
+  <!-- TF -->
   <node pkg="tf" type="static_transform_publisher" name="world_2_map" args="0 0 0
- 1.5707 0 0 /world_link /map 100"/>
+  1.5707 0 0 /world_link /map 100"/>
 
   <!-- Map server -->
   <arg name="map_file" default="$(find tms_ss_pot)/maps/map_928/map.yaml"/>
