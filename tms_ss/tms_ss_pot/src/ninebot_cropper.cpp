@@ -46,6 +46,8 @@ void poseCallback(const geometry_msgs::PoseStamped &ninebot_position){
   // Get Ninebot position
   ninebot_x = ninebot_position.pose.position.x;
   ninebot_y = ninebot_position.pose.position.y;
+  //Debug
+  std::cout << "ninebot_x: " << ninebot_x << " ninebot_y: " << ninebot_y << std::endl;
 }
 
 
