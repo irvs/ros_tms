@@ -16,12 +16,12 @@ public:
   {
     // set default value
     n_of_particles = 100;
-    max_lrf_range = 5.6;
-    min_lrf_range = 0.2;
-    target_area[0] = -4.5;
-    target_area[1] = -4.5;
-    target_area[2] = 4.5;
-    target_area[3] = 4.5;
+    max_lrf_range = 30.0;
+    min_lrf_range = 0.1;
+    target_area[0] = -10.0;
+    target_area[1] = -10.0;
+    target_area[2] = 10.0;
+    target_area[3] = 10.0;
     m_sigma = 100.0;
     pos_noise = 0.05;
     vel_noise = 0.05;
@@ -34,7 +34,8 @@ public:
     m_min_distance = 1000.0;  // 1000mm------------------------
     m_initial_dist = 500.0;   // 500mm-------------------------
 
-    std::string filepath = "/home/kurt/catkin_ws/src/ros_tms/tms_ss/tms_ss_pot/config.yaml";
+    std::string filepath = "/home/common/catkin_ws/src/ros_tms/tms_ss/tms_ss_pot/config.yaml";
+
     std::cout << "filepath " << filepath << std::endl;
     try
     {
@@ -63,6 +64,7 @@ public:
           target_area[3] = config["target_area"].as< double >();
         }
       }
+
       if (config["m_sigma"])
         m_sigma = config["m_sigma"].as< double >();
       if (config["pos_noise"])
@@ -81,7 +83,6 @@ public:
       if (config["m_initial_dist"])
         m_initial_dist = config["m_initial_dist"].as< double >();
 
-      // std::cout << "max_vel" << max_vel << std::endl;
     }
     catch (YAML::BadFile& e)
     {

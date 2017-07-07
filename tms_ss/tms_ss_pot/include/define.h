@@ -1,8 +1,7 @@
-// host define.h
 #pragma once
 
 #define MAX_CONNECT 4
-#define MAX_DATA_SIZE_LRF 700
+#define MAX_DATA_SIZE_LRF 1000 /*700*/
 #define MAX_TRACKING_OBJECT 20
 
 //#define MAX_LRF_RANGE 55.0 // LRFの最大計測範囲

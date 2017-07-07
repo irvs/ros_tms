@@ -1,10 +1,4 @@
-//------------------------------------------------------------------------------
-// @file   : tracker_visualization.cpp
-// @brief  : visulaize function
-// @author : Watanabe Yuuta
-// @version: Ver0.1.1
-// @date   : 2015.07.31
-//------------------------------------------------------------------------------
+
 #include "ros/ros.h"
 #include "stdio.h"
 #include "tms_msg_ss/tracking_points.h"

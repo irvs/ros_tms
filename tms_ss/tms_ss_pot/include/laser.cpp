@@ -49,11 +49,8 @@ CLaser::CLaser()
     m_BackLRFDataRing[n].resize(m_ring);
     for (int i = 0; i < m_ring; i++)
     {
-      //			m_BackLRFDataRing[n][i].reserve(m_cnMaxDataSizeLRF);
       m_BackLRFDataRing[n][i] = zero;
     }
-    //		m_BackLRFDataAve[n].reserve(m_cnMaxDataSizeLRF);
-    //		m_BackLRFDataVar[n].reserve(m_cnMaxDataSizeLRF);
     m_BackLRFDataAve[n] = zero;
     m_BackLRFDataVar[n] = zero;
   }
@@ -100,31 +97,40 @@ int CLaser::GetLRFParam()
     LRFParam param;
     if (m_bNodeActive[n])
     {
+      // Set Pole Positions
       switch (n)
       {
         case 0:
-          param.tx = 7.75;
-          param.ty = 5.55;
-          param.tz = 0.0;
-          param.rx = 0.0;
-          param.ry = 0.0;
-          param.rz = -90.0;
-          break;
-        case 1:
-          param.tx = 11.50;
-          param.ty = 4.0;
+          param.tx = 0.0;
+          param.ty = 0.0;
           param.tz = 0.0;
           param.rx = 0.0;
           param.ry = 0.0;
           param.rz = 0.0;
           break;
-        case 2:
-          param.tx = 8.55;
-          param.ty = 0.15;
+        case 1:
+          param.tx = 4.5;
+          param.ty = 2.0;
           param.tz = 0.0;
           param.rx = 0.0;
           param.ry = 0.0;
-          param.rz = 90.0;
+          param.rz = 180.0;
+          break;
+        case 2:
+          param.tx = 4.0;
+          param.ty = 9.5;
+          param.tz = 0.0;
+          param.rx = 0.0;
+          param.ry = 0.0;
+          param.rz = 180.0;
+          break;
+        case 3:
+          param.tx = 1.75;
+          param.ty = 9.5;
+          param.tz = 0.0;
+          param.rx = 0.0;
+          param.ry = 0.0;
+          param.rz = 0.0;
           break;
       }
       CopyMemory(&m_LRFParam[n], &param, sizeof(LRFParam));
@@ -147,17 +153,6 @@ int CLaser::GetBackLRFData()
     if (m_bNodeActive[n])
     {
       m_BackLRFData[n] = m_LRFData[n];
-      /*
-            m_BackLRFData[n].clear();
-            m_BackLRFData[n] = scanData;
-            for(int cnt=0;cnt<backcnt;cnt++){
-              for(int i=0; i<scanData.size(); i++)
-                m_BackLRFData[n][i] += scanData[i];
-            }
-            for(int i=0; i<scanData.size(); i++)
-              m_BackLRFData[n][i] /= backcnt;
-            }
-      */
     }
   }
   return 0;
@@ -226,7 +221,6 @@ int CLaser::IsFrontFData(double currentdata, double backdata_ave, double backdat
     double prob = exp(-diff * diff / 2.0 / backdata_var) / sqrt(2.0 * M_PI * backdata_var);
     if (prob < min_prob)
     {
-      // std::cout << currentdata << " " << backdata_ave << " " << sqrt(backdata_var) << " prob " << prob << std::endl;
       return 1;
     }
   }

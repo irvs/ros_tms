@@ -1,9 +1,3 @@
-//-----------------------------------------------------------
-// @file   : pot_ctrl.cpp
-// @author : Watanabe Yuuta
-// @version: Ver0.1.4 (since 2014.05.02)
-// @date   : 2016.06.09
-//-----------------------------------------------------------
 
 #include <ros/ros.h>
 #include <pthread.h>
@@ -17,6 +11,7 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <tms_msg_ss/tracking_points.h>
 #include <tms_msg_ss/tracking_grid.h>
+#include <sensor_msgs/PointCloud.h>
 
 pthread_mutex_t mutex_laser = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
@@ -33,29 +28,34 @@ pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 // PORTABLE_PARAMETOR-------------------------
 #define ORIGIN_X 0.0
 #define ORIGIN_Y 0.0
-#define MAX_FIELD_X 15.0
-#define MAX_FIELD_Y 7.0
-#define PORTABLE_POSITION_X 10.0
-#define PORTABLE_POSITION_Y 0.0
+#define MAX_FIELD_X 5.0
+#define MAX_FIELD_Y 10.0
 //-------------------------------------------
+
+ros::Publisher pub_cloud; //Added
 
 // LASER_PARAMETOR----------------------------
 std::vector< float > scanData1;
 std::vector< float > scanData2;
 std::vector< float > scanData3;
+std::vector< float > scanData4;
 CLaser laser;
 bool CallbackCalled1 = false;
 bool CallbackCalled2 = false;
 bool CallbackCalled3 = false;
+bool CallbackCalled4 = false;
 int nStep1 = 700;
 int nStep2 = 700;
 int nStep3 = 700;
+int nStep4 = 700;
 double StartAngle1 = -90.0;
 double StartAngle2 = -90.0;
 double StartAngle3 = -90.0;
+double StartAngle4 = -90.0;
 double DivAngle1 = 0.35;
 double DivAngle2 = 0.35;
 double DivAngle3 = 0.35;
+double DivAngle4 = 0.35;
 //--------------------------------------------
 
 void *Visualization(void *ptr)
@@ -78,17 +78,14 @@ void *Visualization(void *ptr)
     {
       if (laser.m_pTarget[i] != NULL)
       {
-        if (laser.m_pTarget[i]->cnt < 80)
+		    if (laser.m_pTarget[i]->cnt < 20)
         {
-          continue;
+        continue;
         }
 
         ID = (laser.m_pTarget[i]->id);
-        // X  = -(laser.m_pTarget[i]->py) + PORTABLE_POSITION_X * 1000.0;
-        // Y  =  (laser.m_pTarget[i]->px) + PORTABLE_POSITION_Y * 1000.0;
         X = (laser.m_pTarget[i]->px);
         Y = (laser.m_pTarget[i]->py);
-        // std::cout << " x " << X << " y "  << Y << std::endl;
 
         if (ORIGIN_X < X && X < MAX_FIELD_X * 1000.0 && ORIGIN_Y < Y && Y < MAX_FIELD_Y * 1000.0)
         {
@@ -119,7 +116,8 @@ void *Processing(void *ptr)
   laser.m_bNodeActive[0] = true;
   laser.m_bNodeActive[1] = true;
   laser.m_bNodeActive[2] = true;
-  laser.m_nConnectNum = 3;
+  laser.m_bNodeActive[3] = true;
+  laser.m_nConnectNum = 4;
   laser.GetLRFParam();
 
   if (laser.m_bNodeActive[0])
@@ -131,16 +129,22 @@ void *Processing(void *ptr)
   if (laser.m_bNodeActive[2])
     while (!CallbackCalled3)
       r.sleep();
+  if (laser.m_bNodeActive[3])
+    while (!CallbackCalled4)
+      r.sleep();
 
   laser.m_nStep[0] = nStep1;
   laser.m_nStep[1] = nStep2;
   laser.m_nStep[2] = nStep3;
+  laser.m_nStep[3] = nStep4;
   laser.m_StartAngle[0] = StartAngle1;
   laser.m_StartAngle[1] = StartAngle2;
   laser.m_StartAngle[2] = StartAngle3;
+  laser.m_StartAngle[3] = StartAngle4;
   laser.m_DivAngle[0] = DivAngle1;
   laser.m_DivAngle[1] = DivAngle2;
   laser.m_DivAngle[2] = DivAngle3;
+  laser.m_DivAngle[3] = DivAngle4;
   /**********************************/
 
   CvMat *m_Rotate = cvCreateMat(2, 2, CV_64F);
@@ -166,7 +170,6 @@ void *Processing(void *ptr)
             laser.m_LRFData[n].resize(scanData1.size());
             for (int i = 0; i < scanData1.size(); i++)
               laser.m_LRFData[n][i] = scanData1[i];
-            // std::cout << "msg to scanData1" << std::endl;
           }
           else if (n == 1)
           {
@@ -174,7 +177,6 @@ void *Processing(void *ptr)
             laser.m_LRFData[n].resize(scanData2.size());
             for (int i = 0; i < scanData2.size(); i++)
               laser.m_LRFData[n][i] = scanData2[i];
-            // std::cout << "msg to scanData2" << std::endl;
           }
           else if (n == 2)
           {
@@ -182,8 +184,15 @@ void *Processing(void *ptr)
             laser.m_LRFData[n].resize(scanData3.size());
             for (int i = 0; i < scanData3.size(); i++)
               laser.m_LRFData[n][i] = scanData3[i];
-            // std::cout << "msg to scanData3" << std::endl;
           }
+          else if (n == 3)
+          {
+            laser.m_LRFData[n].clear();
+            laser.m_LRFData[n].resize(scanData4.size());
+            for (int i = 0; i < scanData4.size(); i++)
+              laser.m_LRFData[n][i] = scanData4[i];
+          }
+
           pthread_mutex_unlock(&mutex_laser);
         }
       }
@@ -194,13 +203,17 @@ void *Processing(void *ptr)
     std::cout << "Back range data is stored" << std::endl;
   }
 
-  int iteration = 0;
   while (ros::ok())
   {
     if (laser.m_bResetBackRangeData == false)
     {
       for (int n = 0; n < laser.m_cnMaxConnect; n++)
       {
+        // Added
+        sensor_msgs::PointCloud cloud;
+        cloud.header.stamp = ros::Time::now();
+        cloud.header.frame_id = "world_link";
+
         if (laser.m_bNodeActive[n])
         {
           pthread_mutex_lock(&mutex_laser);
@@ -214,7 +227,7 @@ void *Processing(void *ptr)
               laser.m_LRFData[n][i] = scanData1[i];
             }
           }
-          if (n == 1)
+          else if (n == 1)
           {
             laser.m_LRFData[n].clear();
             laser.m_LRFData[n].resize(scanData2.size());
@@ -223,13 +236,22 @@ void *Processing(void *ptr)
               laser.m_LRFData[n][i] = scanData2[i];
             }
           }
-          if (n == 2)
+          else if (n == 2)
           {
             laser.m_LRFData[n].clear();
             laser.m_LRFData[n].resize(scanData3.size());
             for (int i = 0; i < scanData3.size(); i++)
             {
               laser.m_LRFData[n][i] = scanData3[i];
+            }
+          }
+          else if (n == 3)
+          {
+            laser.m_LRFData[n].clear();
+            laser.m_LRFData[n].resize(scanData4.size());
+            for (int i = 0; i < scanData4.size(); i++)
+            {
+              laser.m_LRFData[n][i] = scanData4[i];
             }
           }
 
@@ -245,6 +267,9 @@ void *Processing(void *ptr)
           laser.m_LRFPoints[n].clear();
           laser.m_LRFPoints[n].resize(laser.m_DiffLRFData[n].size());
 
+          //Added
+          cloud.points.resize(laser.m_DiffLRFData[n].size());
+
           for (int i = 0; i < laser.m_DiffLRFData[n].size(); i++)
           {
             count = laser.m_DiffLRFData[n][i].n;
@@ -253,11 +278,19 @@ void *Processing(void *ptr)
 
             cvmSet(laser.m_LRFPos[n][i], 0, 0, range * cos(deg2rad(theta)));
             cvmSet(laser.m_LRFPos[n][i], 1, 0, range * sin(deg2rad(theta)));
-            cvMatMul(m_Rotate, laser.m_LRFPos[n][i], Temp);     //
-            cvAdd(m_Translate, Temp, laser.m_LRFPos[n][i]);  //
+            cvMatMul(m_Rotate, laser.m_LRFPos[n][i], Temp);
+            cvAdd(m_Translate, Temp, laser.m_LRFPos[n][i]);
+
+            // Added
+            cloud.points[i].x = cvmGet(laser.m_LRFPos[n][i], 0, 0);
+            cloud.points[i].y = cvmGet(laser.m_LRFPos[n][i], 1, 0);
+            cloud.points[i].z = 0.0;
+
             laser.m_LRFPoints[n][i].x = cvmGet(laser.m_LRFPos[n][i], 0, 0) * 1000.0;
             laser.m_LRFPoints[n][i].y = cvmGet(laser.m_LRFPos[n][i], 1, 0) * 1000.0;
           }
+          // Added
+          pub_cloud.publish(cloud);
 
           // Number of clusters
           std::cout << "Number of clusters " << laser.m_LRFClsData[n].size() << std::endl;
@@ -276,38 +309,12 @@ void *Processing(void *ptr)
             cvAdd(m_Translate, Temp, laser.m_LRFClsPos[n][i]);  //
             laser.m_LRFClsPoints[n][i].x = cvmGet(laser.m_LRFClsPos[n][i], 0, 0) * 1000.0;
             laser.m_LRFClsPoints[n][i].y = cvmGet(laser.m_LRFClsPos[n][i], 1, 0) * 1000.0;
-
-            // std::cout << "n " << n << " " << laser.m_LRFClsPoints[n][i].x << " " << laser.m_LRFClsPoints[n][i].y <<
-            // std::endl;
           }
 
           pthread_mutex_unlock(&mutex_laser);
         }
       }
     }
-    std::vector< double > class_point_x;
-    std::vector< double > class_point_y;
-
-    for (int n = 0; n < laser.m_cnMaxConnect; n++)
-    {
-      for (int i = 0; i < laser.m_LRFClsData[n].size(); i++)
-      {
-        class_point_x.push_back(laser.m_LRFClsPoints[n][i].x);
-        class_point_y.push_back(laser.m_LRFClsPoints[n][i].y);
-      }
-    }
-
-    laser.m_LRFClsPoints[0].clear();
-    laser.m_LRFClsPoints[0].resize(class_point_x.size());
-
-    for (int i = 0; i < class_point_x.size(); i++)
-    {
-      laser.m_LRFClsPoints[0][i].x = class_point_x[i];
-      laser.m_LRFClsPoints[0][i].y = class_point_y[i];
-    }
-
-    class_point_x.clear();
-    class_point_y.clear();
 
     system("clear");
 
@@ -315,10 +322,7 @@ void *Processing(void *ptr)
     m_PF.update(&laser);
     pthread_mutex_unlock(&mutex_target);
 
-    // if (!(iteration % UPDATE)) laser.GetBackLRFDataGaussian();
-
     r.sleep();
-    iteration++;
   }
 
   cvReleaseMat(&Temp);
@@ -355,7 +359,7 @@ void LaserSensingCallback2(const sensor_msgs::LaserScan::ConstPtr &scan)
     DivAngle2 = scan->angle_increment * 180.0 / M_PI;
     std::cout << "nStep2 " << nStep2 << " StartAngle2 " << StartAngle2 << " DivAngle2 " << DivAngle2 << std::endl;
   }
-  if (scanData1.size() == 0)
+  if (scanData2.size() == 0)
     scanData2.resize(num);
   scanData2 = scan->ranges;
   pthread_mutex_unlock(&mutex_laser);
@@ -373,15 +377,34 @@ void LaserSensingCallback3(const sensor_msgs::LaserScan::ConstPtr &scan)
     DivAngle3 = scan->angle_increment * 180.0 / M_PI;
     std::cout << "nStep3 " << nStep3 << " StartAngle3 " << StartAngle3 << " DivAngle3 " << DivAngle3 << std::endl;
   }
-  if (scanData1.size() == 0)
+  if (scanData3.size() == 0)
     scanData3.resize(num);
   scanData3 = scan->ranges;
   pthread_mutex_unlock(&mutex_laser);
   CallbackCalled3 = true;
 }
 
+void LaserSensingCallback4(const sensor_msgs::LaserScan::ConstPtr &scan)
+{
+  pthread_mutex_lock(&mutex_laser);
+  int num = floor((scan->angle_max - scan->angle_min) / scan->angle_increment) + 1;
+  if (CallbackCalled4 == false)
+  {
+    nStep4 = num;
+    StartAngle4 = scan->angle_min * 180.0 / M_PI;
+    DivAngle4 = scan->angle_increment * 180.0 / M_PI;
+    std::cout << "nStep4 " << nStep4 << " StartAngle4 " << StartAngle4 << " DivAngle4 " << DivAngle4 << std::endl;
+  }
+  if (scanData4.size() == 0)
+    scanData4.resize(num);
+  scanData4 = scan->ranges;
+  pthread_mutex_unlock(&mutex_laser);
+  CallbackCalled4 = true;
+}
+
 int main(int argc, char **argv)
 {
+
   Config::is();
 
   pthread_t thread_p;
@@ -391,9 +414,11 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "urg_tracker");
   ros::NodeHandle n;
   ros::Publisher pub = n.advertise< tms_msg_ss::tracking_points >("tracking_points", 10);
-  ros::Subscriber sub1 = n.subscribe("pot_urg1/LaserTracker", 1000, LaserSensingCallback1);
-  ros::Subscriber sub2 = n.subscribe("pot_urg2/LaserTracker", 1000, LaserSensingCallback2);
-  ros::Subscriber sub3 = n.subscribe("pot_urg3/LaserTracker", 1000, LaserSensingCallback3);
+  pub_cloud = n.advertise< sensor_msgs::PointCloud > ("cloud_p2sen", 10); // Added
+  ros::Subscriber sub1 = n.subscribe("/LaserTracker1", 1000, LaserSensingCallback1);
+  ros::Subscriber sub2 = n.subscribe("/LaserTracker2", 1000, LaserSensingCallback2);
+  ros::Subscriber sub3 = n.subscribe("/LaserTracker3", 1000, LaserSensingCallback3);
+  ros::Subscriber sub4 = n.subscribe("/LaserTracker4", 1000, LaserSensingCallback4);
 
   if (pthread_create(&thread_v, NULL, Visualization, (void *)&pub))
   {
@@ -425,6 +450,7 @@ int main(int argc, char **argv)
   scanData1.clear();
   scanData2.clear();
   scanData3.clear();
+  scanData4.clear();
 
   return 0;
 }

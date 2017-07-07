@@ -1,6 +1,3 @@
-// Laser.h : CLaser クラスのインターフェイス
-//
-
 #pragma once
 
 #ifndef M_PI

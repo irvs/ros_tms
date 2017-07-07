@@ -1,5 +1,3 @@
-// ParticleFilter.cpp : �����t�@�C��
-//
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -24,8 +22,9 @@ extern pthread_mutex_t mutex_target;
 CMultipleParticleFilter::CMultipleParticleFilter()
 {
   m_max_ID = Config::is()->m_max_ID;
-  m_min_distance = Config::is()->m_min_distance;  // 1000mm�ȏ㗣��ďo�������Ƃ������A�V����PF�𐶐�
-  m_initial_dist = Config::is()->m_initial_dist;  // 500mm�l���Ƀp�[�e�B�N���������z�u
+  m_min_distance = Config::is()->m_min_distance;  // 1000mm以上離れて出現したときだけ、新しいPFを生成
+  m_initial_dist = Config::is()->m_initial_dist;  // 500mm四方にパーティクルを初期配置
+  m_max_lost_count = 10;  // 何回連続でデータが得られなかったか
 
   m_ID = 0;
 }
@@ -40,20 +39,26 @@ void CMultipleParticleFilter::update(CLaser *Laser)
   m_pLaser = Laser;
   double obs[2], p[2];
 
-  for (int n = 0; n < 1; n++)
+  // 失探知した回数のカウンタを増やす もし，以下でパーティクルフィルタが更新，生成されたら，0にリセットされる
+  for (vector< CPF >::iterator it = m_ParticleFilter.begin(); it != m_ParticleFilter.end(); ++it)
+  {
+    it->IncLostCnt();
+  }
+
+  for (int n = 0; n < m_pLaser->m_cnMaxConnect; n++)
   {
     if (m_pLaser->m_bNodeActive[n])
     {
-      std::vector< int > label(m_pLaser->m_LRFClsPoints[n].size(), -1);  // �N���X�^�ɑΉ�����p�[�e�B�N���t�B���^�̔ԍ�
-      int pn = m_ParticleFilter.size();                                  // ���݂̃p�[�e�B�N���t�B���^�̌�
+      std::vector< int > label(m_pLaser->m_LRFClsPoints[n].size(), -1);  // クラスタに対応するパーティクルフィルタの番号
+      int pn = m_ParticleFilter.size();                                  // 現在のパーティクルフィルタの個数
 
       for (int j = 0; j < m_pLaser->m_LRFClsPoints[n].size(); j++)
       {
-        // �N���X�^��\�_
+        // クラスタ代表点
         obs[0] = m_pLaser->m_LRFClsPoints[n][j].x;
         obs[1] = m_pLaser->m_LRFClsPoints[n][j].y;
 
-        // �N���X�^���ɁC��ԋ߂��p�[�e�B�N���t�B���^��T��
+        // クラスタ毎に，一番近いパーティクルフィルタを探す
         double min_r = 1e10;
         int np = 0;
         for (vector< CPF >::iterator it = m_ParticleFilter.begin(); it != m_ParticleFilter.end(); ++it, ++np)
@@ -63,21 +68,23 @@ void CMultipleParticleFilter::update(CLaser *Laser)
 
           double r = sqrt(pow(p[0] - obs[0], 2) + pow(p[1] - obs[1], 2));
 
+          // クラスタと既存のパーティクルフィルタとの距離がm_min_distance以下なら，既存のパーティクルフィルタに紐づけ
           if (min_r > r && r < m_min_distance)
           {
             min_r = r;
-            label[j] = np;
+            label[j] = np; // 対応したパーティクルフィルタの番号を保存
           }
         }
 
-        // �����C�N���X�^�ɑΉ�����p�[�e�B�N���t�B���^���Ȃ������Ƃ�
+        // もし，クラスタに対応するパーティクルフィルタがなかったとき
         if (min_r >= m_min_distance)
         {
-          label[j] = pn++;
+          label[j] = pn++; // 新たにパーティクルフィルタを生成するために，新規の番号を与える
         }
+
       }
 
-      std::vector< int > flg(pn, -1);  // �N���X�^�ɑΉ�����p�[�e�B�N���t�B���^�̔ԍ�
+
       for (int j = 0; j < m_pLaser->m_LRFClsPoints[n].size(); j++)
       {
         if (label[j] < 0)
@@ -86,6 +93,7 @@ void CMultipleParticleFilter::update(CLaser *Laser)
         }
         else if (label[j] < m_ParticleFilter.size())
         {
+          // 既存のパーティクルフィルタを更新
           obs[0] = m_pLaser->m_LRFClsPoints[n][j].x;
           obs[1] = m_pLaser->m_LRFClsPoints[n][j].y;
           m_ParticleFilter[label[j]].SetTarget(obs);
@@ -93,6 +101,7 @@ void CMultipleParticleFilter::update(CLaser *Laser)
         }
         else
         {
+          // 新たにパーティクルフィルタを生成
           CPF pf;
           int d = Config::is()->particle_area * 1000;
           obs[0] = m_pLaser->m_LRFClsPoints[n][j].x;
@@ -105,37 +114,44 @@ void CMultipleParticleFilter::update(CLaser *Laser)
           pf.SetTarget(obs);
           pf.SetID(m_ID++);
           pf.update();
+
+          if(!isnan(pf.state[0]) && !isnan(pf.state[1]))
           m_ParticleFilter.push_back(pf);
+
         }
-        flg[label[j]] = 1;
-      }
-
-      int np = 0;
-      for (vector< CPF >::iterator it = m_ParticleFilter.begin(); it != m_ParticleFilter.end(); ++it, ++np)
-      {
-        if (flg[np] < 0)
-        {
-          it->clear();
-          it = m_ParticleFilter.erase(it);
-          if (it == m_ParticleFilter.end())
-            break;
-        }
-      }
-
-      for (int i = 0; i < MAX_TRACKING_OBJECT; i++)
-      {
-        delete m_pLaser->m_pTarget[i];
-        m_pLaser->m_pTarget[i] = NULL;
-      }
-
-      np = 0;
-      for (vector< CPF >::iterator it = m_ParticleFilter.begin(); it != m_ParticleFilter.end(); ++it, ++np)
-      {
-        m_pLaser->m_pTarget[np] = new CTarget();
-        m_pLaser->m_pTarget[np]->id = it->GetID();
-        m_pLaser->m_pTarget[np]->cnt = it->GetCnt();
-        m_pLaser->m_pTarget[np]->SetPosi(it->state[0], it->state[1]);
       }
     }
   }
+
+  for (vector< CPF >::iterator it = m_ParticleFilter.begin(); it != m_ParticleFilter.end(); ++it)
+  {
+
+    // 多数回，更新も生成もされていないパーティクルフィルタを消去
+    if (it->GetLostCnt() >= m_max_lost_count)
+    {
+      it->clear();
+      it = m_ParticleFilter.erase(it);
+      if (it == m_ParticleFilter.end())
+        break;
+    }
+  }
+
+  // 追跡結果（m_pTarget）の情報を更新
+  for (int i = 0; i < MAX_TRACKING_OBJECT; i++)
+  {
+    delete m_pLaser->m_pTarget[i];
+    m_pLaser->m_pTarget[i] = NULL;
+  }
+
+  int np = 0;
+  for (vector< CPF >::iterator it = m_ParticleFilter.begin(); it != m_ParticleFilter.end(); ++it, ++np)
+  {
+    m_pLaser->m_pTarget[np] = new CTarget();
+    m_pLaser->m_pTarget[np]->id = it->GetID();
+    m_pLaser->m_pTarget[np]->cnt = it->GetCnt();
+    m_pLaser->m_pTarget[np]->SetPosi(it->state[0], it->state[1]);
+  }
+
+  std::cout << "Total number of particle filters " << m_ParticleFilter.size() << std::endl;
+
 }

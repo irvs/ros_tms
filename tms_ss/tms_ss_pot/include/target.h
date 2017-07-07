@@ -1,7 +1,5 @@
 #pragma once
 
-// CTarget
-
 class CTarget
 {
 public:

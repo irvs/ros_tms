@@ -1,5 +1,3 @@
-// ParticleFilter.cpp :
-//
 #ifdef WIN32
 #pragma warning(disable : 4996)
 #endif
@@ -17,7 +15,7 @@ CPF::CPF()
   m_sigma = Config::is()->m_sigma;
   Dimension = 4;
   Num_of_particles = Config::is()->n_of_particles;
-  Area[0] = Config::is()->target_area[0] * 1000.0;  //
+  Area[0] = Config::is()->target_area[0] * 1000.0;
   Area[1] = Config::is()->target_area[1] * 1000.0;
   Area[2] = Config::is()->target_area[2] * 1000.0;
   Area[3] = Config::is()->target_area[3] * 1000.0;
@@ -26,8 +24,9 @@ CPF::CPF()
   m_ID = -1;
   particle_filter = NULL;
   m_cnt = 0;
-  Noise[0] = Config::is()->pos_noise * 1000.0;  //
-  Noise[1] = Config::is()->vel_noise * 1000.0;  //
+  Noise[0] = Config::is()->pos_noise * 1000.0;
+  Noise[1] = Config::is()->vel_noise * 1000.0;
+  m_lostcnt = 0;
 }
 
 CPF::~CPF()
@@ -115,7 +114,7 @@ void CPF::update()
     }
     else
     {
-      // �ޓx�̌v�Z
+      // 尤度の計算
       particle_filter->flConfidence[i] = likelihood(p);
     }
   }
@@ -128,6 +127,8 @@ void CPF::update()
   state[3] = particle_filter->State[3];
 
   m_cnt++;
+
+  m_lostcnt = 0;
 }
 
 double CPF::likelihood(double p[2])
@@ -150,4 +151,15 @@ int CPF::GetID()
 int CPF::GetCnt()
 {
   return m_cnt;
+}
+
+int CPF::GetLostCnt()
+{
+  return m_lostcnt;
+}
+
+int CPF::IncLostCnt()
+{
+  m_lostcnt ++;
+  return m_lostcnt;
 }

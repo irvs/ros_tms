@@ -15,4 +15,6 @@ protected:
   double m_min_distance;
   double m_initial_dist;
   int m_ID;
+  int m_max_lost_count;
+
 };

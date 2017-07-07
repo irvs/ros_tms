@@ -21,6 +21,8 @@ public:
   void SetID(int ID);
   int GetID();
   int GetCnt();
+  int IncLostCnt();
+  int GetLostCnt();
 
   // protected:
   CvConDensation* particle_filter;
@@ -33,6 +35,7 @@ public:
   int m_ID;
   int m_cnt;
   double Noise[2];
+  int m_lostcnt;
 
   double likelihood(double p[2]);
 };

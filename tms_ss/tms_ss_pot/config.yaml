@@ -1,6 +1,7 @@
-max_lrf_range: 4.0
-min_lrf_range: 0.2
-target_area: [ 0.0, 0.0, 15.0, 7.0 ]
+#max_lrf_range: 4.0
+max_lrf_range: 30.0
+min_lrf_range: 0.1
+target_area: [ 0.0, 0.0, 5.0, 10.0 ]
 m_min_distance: 1000
 max_vel: 100.0
 m_sigma: 200.0
