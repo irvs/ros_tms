@@ -1,14 +1,15 @@
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
 import rospy
 from geometry_msgs.msg import Pose2D, Twist
-from tms_msg_rc_srv import rc_robot_control, rc_robot_controlResponse
+from tms_msg_rc.srv import rc_robot_control, rc_robot_controlResponse
 from tms_msg_db.srv import TmsdbGetData, TmsdbGetDataRequest
 
 import datetime
 import pymongo
 from math import sin, cos, atan2, pi, radians, degrees, sqrt
-pub = rospy.Publisher("tms_rc_double/cmd_vel_mux/input/keyop)
+pub = rospy.Publisher("cmd_vel_mux/input/keyop",Twist,queue_size = 10)
 
 GOAL = None
 
@@ -21,49 +22,62 @@ def main():
 
     service = rospy.Service(
         "double_goal_pose" , rc_robot_control, goalPoseCallBack)
-    
-    r = rospy.rate(10)
+
+    r = rospy.Rate(10)
     while not rospy.is_shutdown():
         if None == GOAL:
             continue
-        KPang = 0.2
+        KPang = 1
         KDang = 0
-        KPdist = 0.1
+        KPdist =1.5
         KDdist = 0
-        ARV_DIST = 0.25
+        ARV_DIST = 0.2
 
         pose = getCurrentPose()
-        errorX = GOAL.x - pose.x
-        errorY = GOAL.y - pose.y
-        targetT = atan2(errorY, errorX)
-
-        errorNX = errorX * cos(-pose.theta) - errorY * sin(-pose.theta)
-        errorNT = normalizeAng(targetT - pose.theta)
-
-        tmp_spd = limit(KPdist * errorNX, 100, -100)
-        tmp_turn = limit(KPang * degrees(errorNT), 30, -30)
-
         twist = Twist()
-        distance = sqrt(errorX ** 2 + errorY **2)
-        rospy.loginfo("dist:{0}".format(distance))
-        rospy.loginfo("psd:{0}" "turn:{1}".format(tmp_spd, tmp_turn))
-        if distance <= ARV_DIST:
-            twist.angular.z = 0
-            twist.linear.x = 0
-            GOAL = None
+
+        if GOAL.x == 0 and GOAL.y == 0:
+            errorT = GOAL.theta - pose.theta
+            if errorT > -0.2 and errorT < 0.2:
+                twist.angular.z = 0
+                twist.linear.x = 0
+                GOAL = None
+            else:
+                tmp_turn = limit(KPang * errorT,1,-1)
+                rospy.loginfo("turn:{0}".format(tmp_turn))
+                twist.angular.z = tmp_turn
+                twist.linear.x = 0
         else:
-            twist.angular.z = radians(tmp_turn)
-            twist.linear.x = tmp_spd
+            errorX = GOAL.x - pose.x
+            errorY = GOAL.y - pose.y
+            targetT = atan2(errorY, errorX)
+
+            errorNX = errorX * cos(-pose.theta) - errorY * sin(-pose.theta)
+            errorNT = normalizeAng(targetT - pose.theta)
+
+            tmp_spd = limit(KPdist * errorNX, 1, -1)
+            tmp_turn = limit(KPang * errorNT, 1, -1)
+
+            distance = sqrt(errorX ** 2 + errorY **2)
+            rospy.loginfo("dist:{0}".format(distance))
+            rospy.loginfo("spd:{0}" "turn:{1}".format(tmp_spd, tmp_turn))
+            if distance <= ARV_DIST:
+                twist.angular.z = 0
+                twist.linear.x = 0
+                GOAL = None
+            else:
+                twist.angular.z = tmp_turn
+                twist.linear.x = tmp_spd
         pub.publish(twist)
         r.sleep()
 
 def goalPoseCallBack(req):
-    
+
     global GOAL
     GOAL = Pose2D()
     GOAL.x = req.arg[0]
     GOAL.y = req.arg[1]
-    GOAL.theta = radians(req.arg[2])
+    GOAL.theta = req.arg[2]
 
     return rc_robot_controlResponse()
 
@@ -80,11 +94,11 @@ def getCurrentPose():
             return pose
         pose.x = res.tmsdb[0].x
         pose.y = res.tmsdb[0].y
-        pose.theta = res.tmsdb.ry
+        pose.theta = res.tmsdb[0].ry
 
     except rospy.ServiceException as e:
         print "Service call failed: %s" %e
-    
+
     return pose
 
 

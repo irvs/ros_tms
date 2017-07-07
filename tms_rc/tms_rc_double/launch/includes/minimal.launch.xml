@@ -6,8 +6,6 @@
     <remap from="/tms_rc_double/cmd_vel_mux/output/cmd_vel" to="cmd_vel"/>
   </node>
   <node name="driver" output="screen" pkg="tms_rc_double" type="double_control">
-
-
     <param name="turn_Kp" value="0.5"/>
     <param name="publish_tf" value="$(arg publish_tf)"/>
     <param name="base_footprint_param" value="$(arg base_footprint)" />
