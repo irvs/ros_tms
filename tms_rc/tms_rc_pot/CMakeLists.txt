@@ -43,6 +43,7 @@ include_directories(
 #--------------------------------------------------------------------------
 add_executable(portable_tf_node_first src/portable_tf_first.cpp)
 add_dependencies(portable_tf_node_first tf_first_generate_messages_cpp)
+add_dependencies(portable_tf_node_first tms_msg_rc_generate_messages_cpp)
 target_link_libraries(portable_tf_node_first ${catkin_LIBRARIES})
 
 #--------------------------------------------------------------------------
@@ -92,5 +93,3 @@ target_link_libraries(portable_virtual_laser ${catkin_LIBRARIES})
 add_executable(portable_virtual_laser2 src/portable_virtual_laser2.cpp)
 add_dependencies(portable_virtual_laser2 tms_msg_rc_gencpp)
 target_link_libraries(portable_virtual_laser2 ${catkin_LIBRARIES})
-
-
