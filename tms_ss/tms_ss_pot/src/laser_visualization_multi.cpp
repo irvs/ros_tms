@@ -13,21 +13,6 @@
 
 #define PI 3.1415926535897932384626433832795
 
-// LRF_POSITIONS----------
-#define LRF1_X 0.0
-#define LRF1_Y 0.0
-#define LRF1_ANGLE 0.0
-#define LRF2_X 4.5
-#define LRF2_Y 2.0
-#define LRF2_ANGLE PI
-#define LRF3_X 4.0
-#define LRF3_Y 9.5
-#define LRF3_ANGLE PI
-#define LRF4_X 1.75
-#define LRF4_Y 9.5
-#define LRF4_ANGLE 0.0
-//----------------------
-
 ros::Publisher  pub1,pub2,pub3,pub4;
 ros::Subscriber sub1,sub2,sub3,sub4;
 
@@ -63,10 +48,10 @@ void laser_visualization_callback1(const sensor_msgs::LaserScan::ConstPtr &scan)
   CvMat *Temp2 = cvCreateMat(2, 1, CV_64F);
   double theta;
 
-  cvmSet(m_Rotate, 0, 0,  cos(laser_theta));
-  cvmSet(m_Rotate, 0, 1, -sin(laser_theta));
-  cvmSet(m_Rotate, 1, 0,  sin(laser_theta));
-  cvmSet(m_Rotate, 1, 1,  cos(laser_theta));
+  cvmSet(m_Rotate, 0, 0,  cos(deg2rad(laser_theta)));
+  cvmSet(m_Rotate, 0, 1, -sin(deg2rad(laser_theta)));
+  cvmSet(m_Rotate, 1, 0,  sin(deg2rad(laser_theta)));
+  cvmSet(m_Rotate, 1, 1,  cos(deg2rad(laser_theta)));
 
   int id = 0;
 
@@ -142,10 +127,10 @@ void laser_visualization_callback2(const sensor_msgs::LaserScan::ConstPtr &scan)
   CvMat *Temp2 = cvCreateMat(2, 1, CV_64F);
   double theta;
 
-  cvmSet(m_Rotate, 0, 0,  cos(laser_theta));
-  cvmSet(m_Rotate, 0, 1, -sin(laser_theta));
-  cvmSet(m_Rotate, 1, 0,  sin(laser_theta));
-  cvmSet(m_Rotate, 1, 1,  cos(laser_theta));
+  cvmSet(m_Rotate, 0, 0,  cos(deg2rad(laser_theta)));
+  cvmSet(m_Rotate, 0, 1, -sin(deg2rad(laser_theta)));
+  cvmSet(m_Rotate, 1, 0,  sin(deg2rad(laser_theta)));
+  cvmSet(m_Rotate, 1, 1,  cos(deg2rad(laser_theta)));
 
   int id = 0;
 
@@ -216,10 +201,10 @@ void laser_visualization_callback3(const sensor_msgs::LaserScan::ConstPtr &scan)
   CvMat *Temp2 = cvCreateMat(2, 1, CV_64F);
   double theta;
 
-  cvmSet(m_Rotate, 0, 0,  cos(laser_theta));
-  cvmSet(m_Rotate, 0, 1, -sin(laser_theta));
-  cvmSet(m_Rotate, 1, 0,  sin(laser_theta));
-  cvmSet(m_Rotate, 1, 1,  cos(laser_theta));
+  cvmSet(m_Rotate, 0, 0,  cos(deg2rad(laser_theta)));
+  cvmSet(m_Rotate, 0, 1, -sin(deg2rad(laser_theta)));
+  cvmSet(m_Rotate, 1, 0,  sin(deg2rad(laser_theta)));
+  cvmSet(m_Rotate, 1, 1,  cos(deg2rad(laser_theta)));
 
   int id = 0;
 
@@ -290,10 +275,10 @@ void laser_visualization_callback4(const sensor_msgs::LaserScan::ConstPtr &scan)
   CvMat *Temp2 = cvCreateMat(2, 1, CV_64F);
   double theta;
 
-  cvmSet(m_Rotate, 0, 0,  cos(laser_theta));
-  cvmSet(m_Rotate, 0, 1, -sin(laser_theta));
-  cvmSet(m_Rotate, 1, 0,  sin(laser_theta));
-  cvmSet(m_Rotate, 1, 1,  cos(laser_theta));
+  cvmSet(m_Rotate, 0, 0,  cos(deg2rad(laser_theta)));
+  cvmSet(m_Rotate, 0, 1, -sin(deg2rad(laser_theta)));
+  cvmSet(m_Rotate, 1, 0,  sin(deg2rad(laser_theta)));
+  cvmSet(m_Rotate, 1, 1,  cos(deg2rad(laser_theta)));
 
   int id = 0;
 

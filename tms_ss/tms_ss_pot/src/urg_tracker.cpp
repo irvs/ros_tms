@@ -113,10 +113,10 @@ void *Processing(void *ptr)
 
   laser.Init();
   /**********************************/
-  laser.m_bNodeActive[0] = true;
-  laser.m_bNodeActive[1] = true;
-  laser.m_bNodeActive[2] = true;
-  laser.m_bNodeActive[3] = true;
+  laser.m_bNodeActive[0] = Config::is()->lrf_active[0];
+  laser.m_bNodeActive[1] = Config::is()->lrf_active[1];
+  laser.m_bNodeActive[2] = Config::is()->lrf_active[2];
+  laser.m_bNodeActive[3] = Config::is()->lrf_active[3];
   laser.m_nConnectNum = 4;
   laser.GetLRFParam();
 
