@@ -5,7 +5,8 @@ max_lrf_range: #LRFの最大計測範囲
 min_lrf_range:
  0.1
 target_area: #ターゲットの存在範囲
- [ 0.0, 0.0, 5.0, 10.0 ]
+ #[ 0.0, 0.0, 5.0, 10.0 ]
+ [ -5.0, -5.0, 20.0, 25.0 ]
 particle_area: #クラスタを中心にパーティクルを散布する範囲(0.1m 四方)
  0.1
 m_sigma: #尤度計算用の分散
@@ -21,12 +22,16 @@ m_min_distance: #クラスタと既存のPFとの距離が1000mm以下なら,既
 m_min_distance: #500mm四方にパーティクルを初期配置
  500
 lrf1_pos: #LRF1の座標(x, y, yaw[deg])
+ #[ 0.0, 0.0, 0.0 ]
  [ 0.0, 0.0, 0.0 ]
 lrf2_pos: #LRF2の座標(x, y, yaw[deg])
- [ 4.5, 2.0, 180.0 ]
+ #[ 4.5, 2.0, 180.0 ]
+ [ 0.0, 18.95, 270.0 ]
 lrf3_pos: #LRF3の座標(x, y, yaw[deg])
- [ 4.5, 9.0, 180.0 ]
+ #[ 4.5, 9.0, 180.0 ]
+ [ 21.88, 18.18, 270.0 ]
 lrf4_pos: #LRF4の座標(x, y, yaw[deg])
  [ 1.75, 9.5, 0.0 ]
 lrf_active: # LRFを使用するかどうか
- [ true, true, true, true ]
+ #[ true, true, true, true ]
+ [ true, true, true, false ]
