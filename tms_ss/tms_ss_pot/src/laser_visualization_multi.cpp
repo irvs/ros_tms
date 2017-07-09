@@ -9,6 +9,7 @@
 #include "math.h"
 #include <sensor_msgs/LaserScan.h>
 #include "opencv/cv.h"
+#include "define.h"
 
 #define PI 3.1415926535897932384626433832795
 
@@ -51,9 +52,9 @@ void laser_visualization_callback1(const sensor_msgs::LaserScan::ConstPtr &scan)
 {
   visualization_msgs::MarkerArray markerArray;
 
-  double laser_x     = LRF1_X;
-  double laser_y     = LRF1_Y;
-  double laser_theta = LRF1_ANGLE;
+  double laser_x     = Config::is()->lrf1_pos[0];
+  double laser_y     = Config::is()->lrf1_pos[1];
+  double laser_theta = Config::is()->lrf1_pos[2];
   double laser_point_x;
   double laser_point_y;
 
@@ -130,9 +131,9 @@ void laser_visualization_callback2(const sensor_msgs::LaserScan::ConstPtr &scan)
 {
   visualization_msgs::MarkerArray markerArray;
 
-  double laser_x     = LRF2_X;
-  double laser_y     = LRF2_Y;
-  double laser_theta = LRF2_ANGLE;
+  double laser_x     = Config::is()->lrf2_pos[0];
+  double laser_y     = Config::is()->lrf2_pos[1];
+  double laser_theta = Config::is()->lrf2_pos[2];
   double laser_point_x;
   double laser_point_y;
 
@@ -204,9 +205,9 @@ void laser_visualization_callback3(const sensor_msgs::LaserScan::ConstPtr &scan)
 {
   visualization_msgs::MarkerArray markerArray;
 
-  double laser_x     = LRF3_X;
-  double laser_y     = LRF3_Y;
-  double laser_theta = LRF3_ANGLE;
+  double laser_x     = Config::is()->lrf3_pos[0];
+  double laser_y     = Config::is()->lrf3_pos[1];
+  double laser_theta = Config::is()->lrf3_pos[2];
   double laser_point_x;
   double laser_point_y;
 
@@ -278,9 +279,9 @@ void laser_visualization_callback4(const sensor_msgs::LaserScan::ConstPtr &scan)
 {
   visualization_msgs::MarkerArray markerArray;
 
-  double laser_x     = LRF4_X;
-  double laser_y     = LRF4_Y;
-  double laser_theta = LRF4_ANGLE;
+  double laser_x     = Config::is()->lrf4_pos[0];
+  double laser_y     = Config::is()->lrf4_pos[1];
+  double laser_theta = Config::is()->lrf4_pos[2];
   double laser_point_x;
   double laser_point_y;
 

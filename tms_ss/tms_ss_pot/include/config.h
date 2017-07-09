@@ -3,6 +3,7 @@
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 #include <iostream>
+#include <cstdlib>
 
 class Config
 {
@@ -34,9 +35,10 @@ public:
     m_min_distance = 1000.0;  // 1000mm------------------------
     m_initial_dist = 500.0;   // 500mm-------------------------
 
-    std::string filepath = "/home/common/catkin_ws/src/ros_tms/tms_ss/tms_ss_pot/config.yaml";
-
+    std::string home = std::getenv("HOME");
+    std::string filepath = home + "/catkin_ws/src/ros_tms/tms_ss/tms_ss_pot/config.yaml";
     std::cout << "filepath " << filepath << std::endl;
+
     try
     {
       YAML::Node config = YAML::LoadFile(filepath);
@@ -83,6 +85,32 @@ public:
       if (config["m_initial_dist"])
         m_initial_dist = config["m_initial_dist"].as< double >();
 
+      // Get LRF Pos
+      if (config["lrf1_pos"]) {
+          if (config["lrf1_pos"].IsSequence()) {
+          for (int i = 0; i < 3; i++)
+            lrf1_pos[i] = config["lrf1_pos"][i].as< double >();
+        }
+      }
+      if (config["lrf2_pos"]) {
+        if (config["lrf2_pos"].IsSequence()) {
+          for (int i = 0; i < 3; i++)
+            lrf2_pos[i] = config["lrf2_pos"][i].as< double >();
+        }
+      }
+      if (config["lrf3_pos"]) {
+        if (config["lrf3_pos"].IsSequence()) {
+          for (int i = 0; i < 3; i++)
+            lrf3_pos[i] = config["lrf3_pos"][i].as< double >();
+        }
+      }
+      if (config["lrf4_pos"]) {
+        if (config["lrf4_pos"].IsSequence()) {
+          for (int i = 0; i < 3; i++)
+            lrf4_pos[i] = config["lrf4_pos"][i].as< double >();
+        }
+      }
+
     }
     catch (YAML::BadFile& e)
     {
@@ -107,4 +135,9 @@ public:
   int m_max_ID;
   double m_min_distance;
   double m_initial_dist;
+
+  double lrf1_pos[3];
+  double lrf2_pos[3];
+  double lrf3_pos[3];
+  double lrf4_pos[3];
 };

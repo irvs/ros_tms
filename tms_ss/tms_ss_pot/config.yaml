@@ -1,8 +1,22 @@
-#max_lrf_range: 4.0
-max_lrf_range: 30.0
-min_lrf_range: 0.1
-target_area: [ 0.0, 0.0, 5.0, 10.0 ]
-m_min_distance: 1000
-max_vel: 100.0
-m_sigma: 200.0
-n_of_particles: 100
+max_lrf_range: # LRFの最大計測範囲
+30.0
+min_lrf_range:
+0.1
+target_area:
+[ 0.0, 0.0, 5.0, 10.0 ]
+m_min_distance:
+1000
+max_vel:
+100.0
+m_sigma: # 尤度計算用の分散
+200.0
+n_of_particles: # パーティクル数
+100
+lrf1_pos: # LRF1の座標(x, y, yaw[deg])
+[ 0.0, 0.0, 0.0]
+lrf2_pos: # LRF2の座標(x, y, yaw[deg])
+[ 4.5, 2.0, 180.0]
+lrf3_pos: # LRF3の座標(x, y, yaw[deg])
+[ 4.5, 9.0, 180.0]
+lrf4_pos: # LRF4の座標(x, y, yaw[deg])
+[ 1.75, 9.5, 0.0]
