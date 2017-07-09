@@ -25,13 +25,6 @@ pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 #include "particle_filter.h"
 #include "multiple_particle_filter.h"
 
-// PORTABLE_PARAMETOR-------------------------
-#define ORIGIN_X 0.0
-#define ORIGIN_Y 0.0
-#define MAX_FIELD_X 5.0
-#define MAX_FIELD_Y 10.0
-//-------------------------------------------
-
 ros::Publisher pub_cloud; //Added
 
 // LASER_PARAMETOR----------------------------
@@ -63,6 +56,10 @@ void *Visualization(void *ptr)
   int ID;
   float X;
   float Y;
+  double ORIGIN_X = Config::is()->target_area[0];
+  double ORIGIN_Y = Config::is()->target_area[1];
+  double MAX_FIELD_X = Config::is()->target_area[2];
+  double MAX_FIELD_Y = Config::is()->target_area[3];
   ros::Rate r(10);
   ros::Publisher *pub = (ros::Publisher *)ptr;
   int latest_id = 0;
@@ -212,7 +209,8 @@ void *Processing(void *ptr)
         // Added
         sensor_msgs::PointCloud cloud;
         cloud.header.stamp = ros::Time::now();
-        cloud.header.frame_id = "world_link";
+        //cloud.header.frame_id = "world_link";
+        cloud.header.frame_id = "map1";
 
         if (laser.m_bNodeActive[n])
         {
@@ -305,8 +303,8 @@ void *Processing(void *ptr)
 
             cvmSet(laser.m_LRFClsPos[n][i], 0, 0, range * cos(deg2rad(theta)));
             cvmSet(laser.m_LRFClsPos[n][i], 1, 0, range * sin(deg2rad(theta)));
-            cvMatMul(m_Rotate, laser.m_LRFClsPos[n][i], Temp);     //
-            cvAdd(m_Translate, Temp, laser.m_LRFClsPos[n][i]);  //
+            cvMatMul(m_Rotate, laser.m_LRFClsPos[n][i], Temp);
+            cvAdd(m_Translate, Temp, laser.m_LRFClsPos[n][i]);
             laser.m_LRFClsPoints[n][i].x = cvmGet(laser.m_LRFClsPos[n][i], 0, 0) * 1000.0;
             laser.m_LRFClsPoints[n][i].y = cvmGet(laser.m_LRFClsPos[n][i], 1, 0) * 1000.0;
           }
