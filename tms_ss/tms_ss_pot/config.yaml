@@ -26,12 +26,12 @@ lrf1_pos: #LRF1の座標(x, y, yaw[deg])
  [ 0.0, 0.0, 0.0 ]
 lrf2_pos: #LRF2の座標(x, y, yaw[deg])
  #[ 4.5, 2.0, 180.0 ]
- [ 0.0, 18.95, 270.0 ]
+ [ 1.0, 18.5, 270.0 ]
 lrf3_pos: #LRF3の座標(x, y, yaw[deg])
  #[ 4.5, 9.0, 180.0 ]
- [ 21.88, 18.18, 270.0 ]
+ [ 22.25, 14.5, 270.0 ]
 lrf4_pos: #LRF4の座標(x, y, yaw[deg])
- [ 1.75, 9.5, 0.0 ]
+ #[ 1.75, 9.5, 0.0 ]
 lrf_active: # LRFを使用するかどうか
  #[ true, true, true, true ]
  [ true, true, true, false ]

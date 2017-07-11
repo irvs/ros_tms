@@ -82,7 +82,7 @@ void laser_visualization_callback1(const sensor_msgs::LaserScan::ConstPtr &scan)
     id++;
     marker.type = laser_line;
     marker.action = visualization_msgs::Marker::ADD;
-    marker.scale.x = 0.02;
+    marker.scale.x = 0.05;
     marker.color.r = 0;
     marker.color.g = 0;
     marker.color.b = 1;
@@ -156,7 +156,7 @@ void laser_visualization_callback2(const sensor_msgs::LaserScan::ConstPtr &scan)
     id++;
     marker.type = laser_line;
     marker.action = visualization_msgs::Marker::ADD;
-    marker.scale.x = 0.02;
+    marker.scale.x = 0.05;
     marker.color.r = 0;
     marker.color.g = 1;
     marker.color.b = 0;
@@ -230,7 +230,7 @@ void laser_visualization_callback3(const sensor_msgs::LaserScan::ConstPtr &scan)
     id++;
     marker.type = laser_line;
     marker.action = visualization_msgs::Marker::ADD;
-    marker.scale.x = 0.02;
+    marker.scale.x = 0.05;
     marker.color.r = 1;
     marker.color.g = 0;
     marker.color.b = 0;
@@ -304,7 +304,7 @@ void laser_visualization_callback4(const sensor_msgs::LaserScan::ConstPtr &scan)
     id++;
     marker.type = laser_line;
     marker.action = visualization_msgs::Marker::ADD;
-    marker.scale.x = 0.02;
+    marker.scale.x = 0.05;
     marker.color.r = 1;
     marker.color.g = 1;
     marker.color.b = 0;

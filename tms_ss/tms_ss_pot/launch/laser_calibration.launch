@@ -13,6 +13,6 @@
 </node>-->
 
   <!-- RViz -->
-  <node name="rviz_tracker" pkg="rviz" type="rviz" args="-d $(find tms_ss_pot)/rviz_config.rviz" respawn="true" />
+  <node name="rviz_tracker" pkg="rviz" type="rviz" args="-d $(find tms_ss_pot)/rviz/laser_calib.rviz" respawn="true" />
 
 </launch>

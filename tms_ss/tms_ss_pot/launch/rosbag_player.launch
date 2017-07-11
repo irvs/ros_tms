@@ -1,18 +1,12 @@
 <launch>
   <!-- LaserScanから移動体追跡の様子を再現 -->
-
-  <!-- TF -->
-  <!--<node pkg="tf" type="static_transform_publisher" name="world_2_map" args="0 0 0
-  1.5707 0 0 /world_link /map 100"/>-->
-
-  <!-- Map server -->
-  <!--<arg name="map_file" default="$(find tms_ss_pot)/maps/map_928/map.yaml"/>
-  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)">
-  <param name="frame_id" value="map" />
-  </node>-->
-
   <param name="/use_sim_time" value="true"/>
-  <node name="rviz_tracker" pkg="rviz" type="rviz" args="-d $(find tms_ss_pot)/rviz_config.rviz"/>
+
+  <arg name="path" default="$(env HOME)/rosbag/" />
+  <arg name="file" />
+  <node pkg="rosbag" type="play" name="player" output="screen" args="--clock --delay=5 --pause $(arg path)$(arg file)" />
+
+  <node name="rviz_tracker" pkg="rviz" type="rviz" args="-d $(find tms_ss_pot)/rviz/tracker_config.rviz"/>
   <node pkg="tms_ss_pot" name="urg_tracker" type="urg_tracker" output="screen"/>
   <node pkg="tms_ss_pot" name="visualize" type="visualize"/>
 
