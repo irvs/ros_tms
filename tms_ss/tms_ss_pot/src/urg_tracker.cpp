@@ -56,10 +56,10 @@ void *Visualization(void *ptr)
   int ID;
   float X;
   float Y;
-  double ORIGIN_X = Config::is()->target_area[0];
-  double ORIGIN_Y = Config::is()->target_area[1];
-  double MAX_FIELD_X = Config::is()->target_area[2];
-  double MAX_FIELD_Y = Config::is()->target_area[3];
+  double ORIGIN_X = Config::is()->target_area[0] * 1000.0;
+  double ORIGIN_Y = Config::is()->target_area[1] * 1000.0;
+  double MAX_FIELD_X = Config::is()->target_area[2] * 1000.0;
+  double MAX_FIELD_Y = Config::is()->target_area[3] * 1000.0;
   ros::Rate r(10);
   ros::Publisher *pub = (ros::Publisher *)ptr;
   int latest_id = 0;
@@ -84,7 +84,7 @@ void *Visualization(void *ptr)
         X = (laser.m_pTarget[i]->px);
         Y = (laser.m_pTarget[i]->py);
 
-        if (ORIGIN_X < X && X < MAX_FIELD_X * 1000.0 && ORIGIN_Y < Y && Y < MAX_FIELD_Y * 1000.0)
+        if (ORIGIN_X < X && X < MAX_FIELD_X && ORIGIN_Y < Y && Y < MAX_FIELD_Y)
         {
           grid.id = ID;
           grid.x = X / 1000;
