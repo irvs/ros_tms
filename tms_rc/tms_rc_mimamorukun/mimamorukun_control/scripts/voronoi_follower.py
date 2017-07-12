@@ -30,9 +30,9 @@ def main():
     while not rospy.is_shutdown():
         if None == GOAL:
             continue
-        KPang = 0.25  # 1.0
+        KPang = 0.07  # 1.0
         KDang = 0
-        KPdist = 0.5  # 2.0
+        KPdist = 0.3  # 2.0
         KDdist = 0
         ARV_DIST = 0.25
 

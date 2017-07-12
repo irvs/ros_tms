@@ -413,6 +413,7 @@ bool tms_rp::TmsRpSubtask::update_obj(int id, double x, double y, double z, doub
 //	return kxp_setpose_client.call(empty);
 //}
 
+
 //------------------------------------------------------------------------------
 // Subtask functions that is started in a thread
 bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
@@ -444,6 +445,50 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
     rp_srv.request.goal_pos.roll = 0.0;
     rp_srv.request.goal_pos.pitch = 0.0;
     rp_srv.request.goal_pos.yaw = sd.v_arg.at(3);
+  }
+  else if (sd.arg_type > 1000 && sd.arg_type < 2000)  // person
+  {
+    // srv.request.tmsdb.sensor = 3001;
+    srv.request.tmsdb.state = 1;
+    ROS_INFO("person ID:%d", sd.arg_type);
+    if(!get_data_client_.call(srv))
+    {
+      s_srv.request.error_msg = "Failed to get data";
+      state_client.call(s_srv);
+      return false;
+    }
+    double person_x = srv.response.tmsdb[0].x;
+    double person_y = srv.response.tmsdb[0].y;
+    double person_yaw = srv.response.tmsdb[0].ry;  // + 1.570796;
+    int place = srv.response.tmsdb[0].place;
+    ROS_INFO("x=%f y=%f ry=%f place=%d", person_x, person_y, person_yaw,place);
+
+    if (place == 6017)
+    {  // in the bed
+      ROS_INFO("humen in the bed");
+      rp_srv.request.goal_pos.x = 10.3;
+      rp_srv.request.goal_pos.y = 3.7;
+      rp_srv.request.goal_pos.z = 0.0;
+      rp_srv.request.goal_pos.th = -1.57079633;
+      rp_srv.request.goal_pos.roll = 0.0;
+      rp_srv.request.goal_pos.pitch = 0.0;
+      rp_srv.request.goal_pos.yaw = 0.0;
+    }
+    else
+    {
+      rp_srv.request.goal_pos.x = person_x + 0.5 * cos(person_yaw);
+      rp_srv.request.goal_pos.y = person_y + 0.5 * sin(person_yaw);
+
+      if (person_yaw > 0)
+      rp_srv.request.goal_pos.th = person_yaw - 3.141592;
+      else
+      rp_srv.request.goal_pos.th = person_yaw + 3.141592;
+
+      rp_srv.request.goal_pos.z = 0.0;
+      rp_srv.request.goal_pos.roll = 0.0;
+      rp_srv.request.goal_pos.pitch = 0.0;
+      rp_srv.request.goal_pos.yaw = 0.0;
+    }
   }
   else if ((sd.arg_type > 2000 && sd.arg_type < 3000) || (sd.arg_type > 6000 && sd.arg_type < 7000))  // RobotID or FurnitureID
   {
@@ -513,49 +558,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
     rp_srv.request.goal_pos.roll = 0.0;
     rp_srv.request.goal_pos.pitch = 0.0;
     rp_srv.request.goal_pos.yaw = 0.0;
-  }
-  else if (sd.arg_type > 1000 && sd.arg_type < 2000)  // person
-  {
-    // srv.request.tmsdb.sensor = 3001;
-    srv.request.tmsdb.state = 1;
-    ROS_INFO("person ID:%d", sd.arg_type);
-    if(!get_data_client_.call(srv))
-    {
-      s_srv.request.error_msg = "Failed to get data";
-      state_client.call(s_srv);
-      return false;
-    }
-    double person_x = srv.response.tmsdb[0].x;
-    double person_y = srv.response.tmsdb[0].y;
-    double person_yaw = srv.response.tmsdb[0].ry;  // + 1.570796;
-    ROS_INFO("x=%f y=%f ry=%f", person_x, person_y, person_yaw);
-
-    if (person_x > 9.300 && person_x < 11.000 && person_y > 2.200 && person_y < 3.300)
-    {  // in the bed
-      ROS_INFO("humen in the bed");
-      rp_srv.request.goal_pos.x = 10.3;
-      rp_srv.request.goal_pos.y = 3.7;
-      rp_srv.request.goal_pos.z = 0.0;
-      rp_srv.request.goal_pos.th = -1.57079633;
-      rp_srv.request.goal_pos.roll = 0.0;
-      rp_srv.request.goal_pos.pitch = 0.0;
-      rp_srv.request.goal_pos.yaw = 0.0;
-    }
-    else
-    {
-      rp_srv.request.goal_pos.x = person_x + 0.5 * cos(person_yaw);
-      rp_srv.request.goal_pos.y = person_y + 0.5 * sin(person_yaw);
-
-      if (person_yaw > 0)
-      rp_srv.request.goal_pos.th = person_yaw - 3.141592;
-      else
-      rp_srv.request.goal_pos.th = person_yaw + 3.141592;
-
-      rp_srv.request.goal_pos.z = 0.0;
-      rp_srv.request.goal_pos.roll = 0.0;
-      rp_srv.request.goal_pos.pitch = 0.0;
-      rp_srv.request.goal_pos.yaw = 0.0;
-    }
   }
   else if (sd.arg_type > 7000 && sd.arg_type < 8000)  // ObjectID
   {

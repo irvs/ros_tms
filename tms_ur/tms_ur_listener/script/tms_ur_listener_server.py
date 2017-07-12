@@ -10,6 +10,7 @@ from janome.tokenizer import Tokenizer
 from tms_msg_db.msg import Tmsdb
 from tms_msg_db.srv import TmsdbGetData
 from tms_msg_ts.srv import ts_req
+import requests
 import time
 import subprocess
 import shlex
@@ -333,6 +334,32 @@ class TmsUrListener():
                         announce += anc
 
                 self.announce(announce)
+            elif task_id == 8103:
+                url = "http://192.168.100.101/codemari_kyudai/CodemariServlet?deviceID=9999&locale=ja&cmd=%251CFLP%"
+                onoff = ""
+                if "つける" in other_words:
+                    print "light on"
+                    onoff = "付け"
+                    url += "2003"
+                elif "消す" in other_words:
+                    print "light off"
+                    onoff = "消し"
+                    url += "2005"
+                else:
+                    self.announce(error_msg1)
+                    return
+
+                anc_list = announce.split("$")
+                announce = ""
+                for anc in anc_list:
+                    if anc == "onoff":
+                        announce += onoff
+                    else:
+                        announce += anc
+                self.announce(announce)
+
+                res = requests.get(url)
+                print res.text
 
             else: #robot_task
                 anc_list = announce.split("$")
