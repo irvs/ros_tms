@@ -109,28 +109,28 @@ int CLaser::GetLRFParam()
           param.rz = Config::is()->lrf1_pos[2];
           break;
         case 1:
-        param.tx = Config::is()->lrf2_pos[0];
-        param.ty = Config::is()->lrf2_pos[1];
-        param.tz = 0.0;
-        param.rx = 0.0;
-        param.ry = 0.0;
-        param.rz = Config::is()->lrf2_pos[2];
+          param.tx = Config::is()->lrf2_pos[0];
+          param.ty = Config::is()->lrf2_pos[1];
+          param.tz = 0.0;
+          param.rx = 0.0;
+          param.ry = 0.0;
+          param.rz = Config::is()->lrf2_pos[2];
           break;
         case 2:
-        param.tx = Config::is()->lrf3_pos[0];
-        param.ty = Config::is()->lrf3_pos[1];
-        param.tz = 0.0;
-        param.rx = 0.0;
-        param.ry = 0.0;
-        param.rz = Config::is()->lrf3_pos[2];
+          param.tx = Config::is()->lrf3_pos[0];
+          param.ty = Config::is()->lrf3_pos[1];
+          param.tz = 0.0;
+          param.rx = 0.0;
+          param.ry = 0.0;
+          param.rz = Config::is()->lrf3_pos[2];
           break;
         case 3:
-        param.tx = Config::is()->lrf4_pos[0];
-        param.ty = Config::is()->lrf4_pos[1];
-        param.tz = 0.0;
-        param.rx = 0.0;
-        param.ry = 0.0;
-        param.rz = Config::is()->lrf4_pos[2];
+          param.tx = Config::is()->lrf4_pos[0];
+          param.ty = Config::is()->lrf4_pos[1];
+          param.tz = 0.0;
+          param.rx = 0.0;
+          param.ry = 0.0;
+          param.rz = Config::is()->lrf4_pos[2];
           break;
       }
       CopyMemory(&m_LRFParam[n], &param, sizeof(LRFParam));
@@ -314,7 +314,8 @@ int CLaser::GetDiffLRFCluster(int n)
       }
       else
       {
-        if (sflg > 1)
+        //if (sflg > 1)
+        if (sflg >= 1)
         {
           c.n = sp + sflg / 2;
           c.range = m_LRFData[n][c.n];
