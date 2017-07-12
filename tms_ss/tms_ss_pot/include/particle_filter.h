@@ -1,4 +1,3 @@
-
 #include "condens/condens.hpp"
 
 #ifndef M_PI

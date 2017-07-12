@@ -125,7 +125,6 @@ void CMultipleParticleFilter::update(CLaser *Laser)
 
   for (vector< CPF >::iterator it = m_ParticleFilter.begin(); it != m_ParticleFilter.end(); ++it)
   {
-
     // 多数回，更新も生成もされていないパーティクルフィルタを消去
     if (it->GetLostCnt() >= m_max_lost_count)
     {

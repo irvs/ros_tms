@@ -3,6 +3,7 @@
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 #include <iostream>
+#include <cstdlib>
 
 class Config
 {
@@ -16,6 +17,7 @@ public:
   {
     // set default value
     n_of_particles = 100;
+    update = 10000; // ?
     max_lrf_range = 30.0;
     min_lrf_range = 0.1;
     target_area[0] = -10.0;
@@ -26,17 +28,15 @@ public:
     pos_noise = 0.05;
     vel_noise = 0.05;
     particle_area = 0.1;
-    update = 10000;
-
     max_vel = 100.0;
-
     m_max_ID = 100;
-    m_min_distance = 1000.0;  // 1000mm------------------------
-    m_initial_dist = 500.0;   // 500mm-------------------------
+    m_min_distance = 1000.0;
+    m_initial_dist = 500.0;
 
-    std::string filepath = "/home/common/catkin_ws/src/ros_tms/tms_ss/tms_ss_pot/config.yaml";
-
+    std::string home = std::getenv("HOME");
+    std::string filepath = home + "/catkin_ws/src/ros_tms/tms_ss/tms_ss_pot/config.yaml";
     std::cout << "filepath " << filepath << std::endl;
+
     try
     {
       YAML::Node config = YAML::LoadFile(filepath);
@@ -75,13 +75,44 @@ public:
         particle_area = config["particle_area"].as< double >();
       if (config["max_vel"])
         max_vel = config["max_vel"].as< double >();
-
       if (config["m_max_ID"])
         m_max_ID = config["m_max_ID"].as< int >();
       if (config["m_min_distance"])
         m_min_distance = config["m_min_distance"].as< double >();
       if (config["m_initial_dist"])
         m_initial_dist = config["m_initial_dist"].as< double >();
+
+      // Get LRF Pos
+      if (config["lrf1_pos"]) {
+          if (config["lrf1_pos"].IsSequence()) {
+          for (int i = 0; i < 3; i++)
+            lrf1_pos[i] = config["lrf1_pos"][i].as< double >();
+        }
+      }
+      if (config["lrf2_pos"]) {
+        if (config["lrf2_pos"].IsSequence()) {
+          for (int i = 0; i < 3; i++)
+            lrf2_pos[i] = config["lrf2_pos"][i].as< double >();
+        }
+      }
+      if (config["lrf3_pos"]) {
+        if (config["lrf3_pos"].IsSequence()) {
+          for (int i = 0; i < 3; i++)
+            lrf3_pos[i] = config["lrf3_pos"][i].as< double >();
+        }
+      }
+      if (config["lrf4_pos"]) {
+        if (config["lrf4_pos"].IsSequence()) {
+          for (int i = 0; i < 3; i++)
+            lrf4_pos[i] = config["lrf4_pos"][i].as< double >();
+        }
+      }
+      if (config["lrf_active"]) {
+          if (config["lrf_active"].IsSequence()) {
+          for (int i = 0; i < 4; i++)
+            lrf_active[i] = config["lrf_active"][i].as< bool >();
+        }
+      }
 
     }
     catch (YAML::BadFile& e)
@@ -93,6 +124,7 @@ public:
       std::cerr << e.what() << std::endl;
     }
   }
+
   int n_of_particles;
   int update;
   double max_lrf_range;
@@ -102,9 +134,13 @@ public:
   double pos_noise;
   double vel_noise;
   double particle_area;
-
   double max_vel;
   int m_max_ID;
   double m_min_distance;
   double m_initial_dist;
+  double lrf1_pos[3];
+  double lrf2_pos[3];
+  double lrf3_pos[3];
+  double lrf4_pos[3];
+  bool lrf_active[4];
 };
