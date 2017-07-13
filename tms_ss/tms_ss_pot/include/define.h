@@ -1,12 +1,13 @@
 #pragma once
 
-#define MAX_CONNECT 4
+#define MAX_CONNECT 5
 #define MAX_DATA_SIZE_LRF 1000
 #define MAX_TRACKING_OBJECT 20
 
 #define MIN_DIFF_DIST 0.02          // 0.02  // 前景とみなす背景からの距離（Gaussianでは使わない）
-#define MIN_OBJ_PROB 0.00000000001  // 0.005  // 前景とみなす確率（Gaussianで使う）
-#define N_RING 1000                 // Gaussianの計算に使うデータ数
+//#define MIN_OBJ_PROB 0.00000000001  // 0.005  // 前景とみなす確率（Gaussianで使う）
+#define MIN_OBJ_PROB 0.005
+#define N_RING 1000               // Gaussianの計算に使うデータ数
 
 #ifndef M_PI
 #define M_PI 3.1415926535897932384626433832795

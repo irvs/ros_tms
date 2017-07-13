@@ -107,9 +107,15 @@ public:
             lrf4_pos[i] = config["lrf4_pos"][i].as< double >();
         }
       }
+      if (config["lrf5_pos"]) {
+        if (config["lrf5_pos"].IsSequence()) {
+          for (int i = 0; i < 3; i++)
+            lrf5_pos[i] = config["lrf5_pos"][i].as< double >();
+        }
+      }
       if (config["lrf_active"]) {
           if (config["lrf_active"].IsSequence()) {
-          for (int i = 0; i < 4; i++)
+          for (int i = 0; i < 5; i++)
             lrf_active[i] = config["lrf_active"][i].as< bool >();
         }
       }
@@ -142,5 +148,6 @@ public:
   double lrf2_pos[3];
   double lrf3_pos[3];
   double lrf4_pos[3];
-  bool lrf_active[4];
+  double lrf5_pos[3];
+  bool lrf_active[5];
 };

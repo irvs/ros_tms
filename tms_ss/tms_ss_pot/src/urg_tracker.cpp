@@ -32,23 +32,28 @@ std::vector< float > scanData1;
 std::vector< float > scanData2;
 std::vector< float > scanData3;
 std::vector< float > scanData4;
+std::vector< float > scanData5;
 CLaser laser;
 bool CallbackCalled1 = false;
 bool CallbackCalled2 = false;
 bool CallbackCalled3 = false;
 bool CallbackCalled4 = false;
+bool CallbackCalled5 = false;
 int nStep1 = 700;
 int nStep2 = 700;
 int nStep3 = 700;
 int nStep4 = 700;
+int nStep5 = 700;
 double StartAngle1 = -90.0;
 double StartAngle2 = -90.0;
 double StartAngle3 = -90.0;
 double StartAngle4 = -90.0;
+double StartAngle5 = -90.0;
 double DivAngle1 = 0.35;
 double DivAngle2 = 0.35;
 double DivAngle3 = 0.35;
 double DivAngle4 = 0.35;
+double DivAngle5 = 0.35;
 //--------------------------------------------
 
 void *Visualization(void *ptr)
@@ -114,7 +119,8 @@ void *Processing(void *ptr)
   laser.m_bNodeActive[1] = Config::is()->lrf_active[1];
   laser.m_bNodeActive[2] = Config::is()->lrf_active[2];
   laser.m_bNodeActive[3] = Config::is()->lrf_active[3];
-  laser.m_nConnectNum = 4;
+  laser.m_bNodeActive[4] = Config::is()->lrf_active[4];
+  laser.m_nConnectNum = 5;
   laser.GetLRFParam();
 
   if (laser.m_bNodeActive[0])
@@ -129,19 +135,25 @@ void *Processing(void *ptr)
   if (laser.m_bNodeActive[3])
     while (!CallbackCalled4)
       r.sleep();
+  if (laser.m_bNodeActive[4])
+    while (!CallbackCalled5)
+      r.sleep();
 
   laser.m_nStep[0] = nStep1;
   laser.m_nStep[1] = nStep2;
   laser.m_nStep[2] = nStep3;
   laser.m_nStep[3] = nStep4;
+  laser.m_nStep[4] = nStep5;
   laser.m_StartAngle[0] = StartAngle1;
   laser.m_StartAngle[1] = StartAngle2;
   laser.m_StartAngle[2] = StartAngle3;
   laser.m_StartAngle[3] = StartAngle4;
+  laser.m_StartAngle[4] = StartAngle5;
   laser.m_DivAngle[0] = DivAngle1;
   laser.m_DivAngle[1] = DivAngle2;
   laser.m_DivAngle[2] = DivAngle3;
   laser.m_DivAngle[3] = DivAngle4;
+  laser.m_DivAngle[4] = DivAngle5;
   /**********************************/
 
   CvMat *m_Rotate = cvCreateMat(2, 2, CV_64F);
@@ -161,33 +173,37 @@ void *Processing(void *ptr)
         {
           pthread_mutex_lock(&mutex_laser);
 
-          if (n == 0)
-          {
-            laser.m_LRFData[n].clear();
-            laser.m_LRFData[n].resize(scanData1.size());
-            for (int i = 0; i < scanData1.size(); i++)
-              laser.m_LRFData[n][i] = scanData1[i];
-          }
-          else if (n == 1)
-          {
-            laser.m_LRFData[n].clear();
-            laser.m_LRFData[n].resize(scanData2.size());
-            for (int i = 0; i < scanData2.size(); i++)
-              laser.m_LRFData[n][i] = scanData2[i];
-          }
-          else if (n == 2)
-          {
-            laser.m_LRFData[n].clear();
-            laser.m_LRFData[n].resize(scanData3.size());
-            for (int i = 0; i < scanData3.size(); i++)
-              laser.m_LRFData[n][i] = scanData3[i];
-          }
-          else if (n == 3)
-          {
-            laser.m_LRFData[n].clear();
-            laser.m_LRFData[n].resize(scanData4.size());
-            for (int i = 0; i < scanData4.size(); i++)
-              laser.m_LRFData[n][i] = scanData4[i];
+          switch(n){
+            case 0:
+              laser.m_LRFData[n].clear();
+              laser.m_LRFData[n].resize(scanData1.size());
+              for (int i = 0; i < scanData1.size(); i++)
+                laser.m_LRFData[n][i] = scanData1[i];
+              break;
+            case 1:
+              laser.m_LRFData[n].clear();
+              laser.m_LRFData[n].resize(scanData2.size());
+              for (int i = 0; i < scanData2.size(); i++)
+                laser.m_LRFData[n][i] = scanData2[i];
+              break;
+            case 2:
+              laser.m_LRFData[n].clear();
+              laser.m_LRFData[n].resize(scanData3.size());
+              for (int i = 0; i < scanData3.size(); i++)
+                laser.m_LRFData[n][i] = scanData3[i];
+              break;
+            case 3:
+              laser.m_LRFData[n].clear();
+              laser.m_LRFData[n].resize(scanData4.size());
+              for (int i = 0; i < scanData4.size(); i++)
+                laser.m_LRFData[n][i] = scanData4[i];
+              break;
+            case 4:
+              laser.m_LRFData[n].clear();
+              laser.m_LRFData[n].resize(scanData5.size());
+              for (int i = 0; i < scanData5.size(); i++)
+                laser.m_LRFData[n][i] = scanData5[i];
+              break;
           }
 
           pthread_mutex_unlock(&mutex_laser);
@@ -216,41 +232,37 @@ void *Processing(void *ptr)
         {
           pthread_mutex_lock(&mutex_laser);
 
-          if (n == 0)
-          {
-            laser.m_LRFData[n].clear();
-            laser.m_LRFData[n].resize(scanData1.size());
-            for (int i = 0; i < scanData1.size(); i++)
-            {
-              laser.m_LRFData[n][i] = scanData1[i];
-            }
-          }
-          else if (n == 1)
-          {
-            laser.m_LRFData[n].clear();
-            laser.m_LRFData[n].resize(scanData2.size());
-            for (int i = 0; i < scanData2.size(); i++)
-            {
-              laser.m_LRFData[n][i] = scanData2[i];
-            }
-          }
-          else if (n == 2)
-          {
-            laser.m_LRFData[n].clear();
-            laser.m_LRFData[n].resize(scanData3.size());
-            for (int i = 0; i < scanData3.size(); i++)
-            {
-              laser.m_LRFData[n][i] = scanData3[i];
-            }
-          }
-          else if (n == 3)
-          {
-            laser.m_LRFData[n].clear();
-            laser.m_LRFData[n].resize(scanData4.size());
-            for (int i = 0; i < scanData4.size(); i++)
-            {
-              laser.m_LRFData[n][i] = scanData4[i];
-            }
+          switch(n){
+            case 0:
+              laser.m_LRFData[n].clear();
+              laser.m_LRFData[n].resize(scanData1.size());
+              for (int i = 0; i < scanData1.size(); i++)
+                laser.m_LRFData[n][i] = scanData1[i];
+              break;
+            case 1:
+              laser.m_LRFData[n].clear();
+              laser.m_LRFData[n].resize(scanData2.size());
+              for (int i = 0; i < scanData2.size(); i++)
+                laser.m_LRFData[n][i] = scanData2[i];
+              break;
+            case 2:
+              laser.m_LRFData[n].clear();
+              laser.m_LRFData[n].resize(scanData3.size());
+              for (int i = 0; i < scanData3.size(); i++)
+                laser.m_LRFData[n][i] = scanData3[i];
+              break;
+            case 3:
+              laser.m_LRFData[n].clear();
+              laser.m_LRFData[n].resize(scanData4.size());
+              for (int i = 0; i < scanData4.size(); i++)
+                laser.m_LRFData[n][i] = scanData4[i];
+              break;
+            case 4:
+              laser.m_LRFData[n].clear();
+              laser.m_LRFData[n].resize(scanData5.size());
+              for (int i = 0; i < scanData5.size(); i++)
+                laser.m_LRFData[n][i] = scanData5[i];
+              break;
           }
 
           laser.GetDiffLRFCluster(n);
@@ -400,6 +412,24 @@ void LaserSensingCallback4(const sensor_msgs::LaserScan::ConstPtr &scan)
   CallbackCalled4 = true;
 }
 
+void LaserSensingCallback5(const sensor_msgs::LaserScan::ConstPtr &scan)
+{
+  pthread_mutex_lock(&mutex_laser);
+  int num = floor((scan->angle_max - scan->angle_min) / scan->angle_increment) + 1;
+  if (CallbackCalled5 == false)
+  {
+    nStep5 = num;
+    StartAngle5 = scan->angle_min * 180.0 / M_PI;
+    DivAngle5 = scan->angle_increment * 180.0 / M_PI;
+    std::cout << "nStep5 " << nStep5 << " StartAngle5 " << StartAngle5 << " DivAngle5 " << DivAngle5 << std::endl;
+  }
+  if (scanData5.size() == 0)
+    scanData5.resize(num);
+  scanData5 = scan->ranges;
+  pthread_mutex_unlock(&mutex_laser);
+  CallbackCalled5 = true;
+}
+
 int main(int argc, char **argv)
 {
 
@@ -417,6 +447,7 @@ int main(int argc, char **argv)
   ros::Subscriber sub2 = n.subscribe("/LaserTracker2", 1000, LaserSensingCallback2);
   ros::Subscriber sub3 = n.subscribe("/LaserTracker3", 1000, LaserSensingCallback3);
   ros::Subscriber sub4 = n.subscribe("/LaserTracker4", 1000, LaserSensingCallback4);
+  ros::Subscriber sub5 = n.subscribe("/LaserTracker5", 1000, LaserSensingCallback5);
 
   if (pthread_create(&thread_v, NULL, Visualization, (void *)&pub))
   {
@@ -449,6 +480,7 @@ int main(int argc, char **argv)
   scanData2.clear();
   scanData3.clear();
   scanData4.clear();
+  scanData5.clear();
 
   return 0;
 }
