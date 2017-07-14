@@ -1,6 +1,6 @@
 #pragma once
 
-#define MAX_CONNECT 5
+#define MAX_CONNECT 4
 #define MAX_DATA_SIZE_LRF 1000
 #define MAX_TRACKING_OBJECT 20
 

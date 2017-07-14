@@ -1,9 +1,3 @@
-//----------------------------------------------------------
-// @file   : pot_ctrl.cpp
-// @author : Watanabe Yuuta
-// @version: Ver0.1.4 (since 2014.05.02)
-// @date   : 2016.06.09
-//----------------------------------------------------------
 
 #include <ros/ros.h>
 #include <pthread.h>
@@ -35,8 +29,6 @@ pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 #define ORIGIN_Y 0.0
 #define MAX_FIELD_X 15.0
 #define MAX_FIELD_Y 7.0
-#define PORTABLE_POSITION_X 10.0
-#define PORTABLE_POSITION_Y 0.0
 //-------------------------------------------
 
 // LASER_PARAMETOR----------------------------
@@ -77,11 +69,14 @@ void *Visualization(void *ptr)
         X = (laser.m_pTarget[i]->px);
         Y = (laser.m_pTarget[i]->py);
 
-        grid.id = ID;
-        grid.x = X / 1000;
-        grid.y = Y / 1000;
+        if (ORIGIN_X < X && X < MAX_FIELD_X * 1000 && ORIGIN_Y < Y && Y < MAX_FIELD_Y * 1000)
+        {
+          grid.id = ID;
+          grid.x = X / 1000;
+          grid.y = Y / 1000;
 
-        points.tracking_grid.push_back(grid);
+          points.tracking_grid.push_back(grid);
+        }
       }
     }
     pthread_mutex_unlock(&mutex_target);
@@ -188,8 +183,8 @@ void *Processing(void *ptr)
 
             cvmSet(laser.m_LRFPos[n][i], 0, 0, range * cos(deg2rad(theta)));
             cvmSet(laser.m_LRFPos[n][i], 1, 0, range * sin(deg2rad(theta)));
-            cvMatMul(m_Rotate, laser.m_LRFPos[n][i], Temp);     //
-            cvAdd(m_Translate, Temp, laser.m_LRFPos[n][i]);  //
+            cvMatMul(m_Rotate, laser.m_LRFPos[n][i], Temp);
+            cvAdd(m_Translate, Temp, laser.m_LRFPos[n][i]);
             laser.m_LRFPoints[n][i].x = cvmGet(laser.m_LRFPos[n][i], 0, 0) * 1000.0;
             laser.m_LRFPoints[n][i].y = cvmGet(laser.m_LRFPos[n][i], 1, 0) * 1000.0;
           }
@@ -217,29 +212,6 @@ void *Processing(void *ptr)
         }
       }
     }
-    std::vector< double > class_point_x;
-    std::vector< double > class_point_y;
-
-    for (int n = 0; n < laser.m_cnMaxConnect; n++)
-    {
-      for (int i = 0; i < laser.m_LRFClsData[n].size(); i++)
-      {
-        class_point_x.push_back(laser.m_LRFClsPoints[n][i].x);
-        class_point_y.push_back(laser.m_LRFClsPoints[n][i].y);
-      }
-    }
-
-    laser.m_LRFClsPoints[0].clear();
-    laser.m_LRFClsPoints[0].resize(class_point_x.size());
-
-    for (int i = 0; i < class_point_x.size(); i++)
-    {
-      laser.m_LRFClsPoints[0][i].x = class_point_x[i];
-      laser.m_LRFClsPoints[0][i].y = class_point_y[i];
-    }
-
-    class_point_x.clear();
-    class_point_y.clear();
 
     system("clear");
 

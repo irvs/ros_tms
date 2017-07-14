@@ -132,14 +132,6 @@ int CLaser::GetLRFParam()
           param.ry = 0.0;
           param.rz = Config::is()->lrf4_pos[2];
           break;
-        case 4:
-          param.tx = Config::is()->lrf5_pos[0];
-          param.ty = Config::is()->lrf5_pos[1];
-          param.tz = 0.0;
-          param.rx = 0.0;
-          param.ry = 0.0;
-          param.rz = Config::is()->lrf5_pos[2];
-          break;
       }
       CopyMemory(&m_LRFParam[n], &param, sizeof(LRFParam));
     }

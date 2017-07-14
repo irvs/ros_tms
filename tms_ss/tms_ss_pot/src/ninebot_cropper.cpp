@@ -7,6 +7,7 @@
 
 #define MARGIN 0.5  // Ninebot Width 546mm, Depth 262mm
 #define INVALID_POS -999.9999
+#define ROT_ANGLE -M_PI / 2
 
 ros::Publisher pub;
 double ninebot_x, ninebot_y;
@@ -30,8 +31,8 @@ void cloudCallback(const sensor_msgs::PointCloud &cloud_in){
     float temp_x = cloud_in.points.at(i).x;
     float temp_y = cloud_in.points.at(i).y;
 
-    cloud_out.points.at(i).x = temp_x * cos(-M_PI / 2) - temp_y * sin(-M_PI / 2);
-    cloud_out.points.at(i).y = temp_x * sin(-M_PI / 2) - temp_y * cos(-M_PI / 2);
+    cloud_out.points.at(i).x = temp_x * cos(ROT_ANGLE) - temp_y * sin(ROT_ANGLE);
+    cloud_out.points.at(i).y = temp_x * sin(ROT_ANGLE) + temp_y * cos(ROT_ANGLE);
   }
 
   // Delete point (Set invalid value)
