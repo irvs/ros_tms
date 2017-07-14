@@ -149,7 +149,6 @@ void *Processing(void *ptr)
   CvMat *Temp = cvCreateMat(2, 1, CV_64F);
   int count;
   double theta, range;
-  int UPDATE = Config::is()->update;
 
   if (laser.m_bResetBackRangeData == true)
   {
