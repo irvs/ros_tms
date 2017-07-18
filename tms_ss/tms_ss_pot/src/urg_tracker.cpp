@@ -12,6 +12,8 @@
 #include <tms_msg_ss/tracking_points.h>
 #include <tms_msg_ss/tracking_grid.h>
 #include <sensor_msgs/PointCloud.h>
+#include <people_msgs/Person.h>
+#include <people_msgs/People.h>
 
 pthread_mutex_t mutex_laser = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
@@ -26,6 +28,7 @@ pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 #include "multiple_particle_filter.h"
 
 ros::Publisher pub_cloud; //Added
+ros::Publisher pub_people;
 
 // LASER_PARAMETOR----------------------------
 std::vector< float > scanData1;
@@ -69,6 +72,12 @@ void *Visualization(void *ptr)
     tms_msg_ss::tracking_grid grid;
     tms_msg_ss::tracking_points points;
 
+    // Added
+    people_msgs::Person person_data;
+    people_msgs::People people_data;
+    people_data.header.stamp = ros::Time::now();
+    people_data.header.frame_id = "map1";
+
     pthread_mutex_lock(&mutex_target);
 
     for (int i = 0; i < MAX_TRACKING_OBJECT; i++)
@@ -90,12 +99,19 @@ void *Visualization(void *ptr)
           grid.x = X / 1000;
           grid.y = Y / 1000;
 
+          // Added
+          person_data.name = "hogehoge";
+          person_data.position.x = grid.x;
+          person_data.position.y = grid.y;
+          people_data.people.push_back(person_data);
+
           points.tracking_grid.push_back(grid);
         }
       }
     }
     pthread_mutex_unlock(&mutex_target);
 
+    pub_people.publish(people_data); // Added
     pub->publish(points);
     r.sleep();
   }
@@ -204,10 +220,10 @@ void *Processing(void *ptr)
       for (int n = 0; n < laser.m_cnMaxConnect; n++)
       {
         // Added
-        sensor_msgs::PointCloud cloud;
-        cloud.header.stamp = ros::Time::now();
-        //cloud.header.frame_id = "world_link";
-        cloud.header.frame_id = "map1";
+        // sensor_msgs::PointCloud cloud;
+        // cloud.header.stamp = ros::Time::now();
+        // //cloud.header.frame_id = "world_link";
+        // cloud.header.frame_id = "map1";
 
         if (laser.m_bNodeActive[n])
         {
@@ -253,7 +269,7 @@ void *Processing(void *ptr)
           laser.m_LRFPoints[n].resize(laser.m_DiffLRFData[n].size());
 
           //Added
-          cloud.points.resize(laser.m_DiffLRFData[n].size());
+          // cloud.points.resize(laser.m_DiffLRFData[n].size());
 
           for (int i = 0; i < laser.m_DiffLRFData[n].size(); i++)
           {
@@ -267,15 +283,15 @@ void *Processing(void *ptr)
             cvAdd(m_Translate, Temp, laser.m_LRFPos[n][i]);
 
             // Added
-            cloud.points[i].x = cvmGet(laser.m_LRFPos[n][i], 0, 0);
-            cloud.points[i].y = cvmGet(laser.m_LRFPos[n][i], 1, 0);
-            cloud.points[i].z = 0.0;
+            // cloud.points[i].x = cvmGet(laser.m_LRFPos[n][i], 0, 0);
+            // cloud.points[i].y = cvmGet(laser.m_LRFPos[n][i], 1, 0);
+            // cloud.points[i].z = 0.0;
 
             laser.m_LRFPoints[n][i].x = cvmGet(laser.m_LRFPos[n][i], 0, 0) * 1000.0;
             laser.m_LRFPoints[n][i].y = cvmGet(laser.m_LRFPos[n][i], 1, 0) * 1000.0;
           }
           // Added
-          pub_cloud.publish(cloud);
+          // pub_cloud.publish(cloud);
 
           // Number of clusters
           std::cout << "Number of clusters " << laser.m_LRFClsData[n].size() << std::endl;
@@ -399,7 +415,8 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "urg_tracker");
   ros::NodeHandle n;
   ros::Publisher pub = n.advertise< tms_msg_ss::tracking_points >("tracking_points", 10);
-  pub_cloud = n.advertise< sensor_msgs::PointCloud > ("cloud_p2sen", 10); // Added
+  //pub_cloud = n.advertise< sensor_msgs::PointCloud > ("cloud_p2sen", 10); // Added
+  pub_people = n.advertise< people_msgs::People > ("tracking_people", 10);
   ros::Subscriber sub1 = n.subscribe("/LaserTracker1", 1000, LaserSensingCallback1);
   ros::Subscriber sub2 = n.subscribe("/LaserTracker2", 1000, LaserSensingCallback2);
   ros::Subscriber sub3 = n.subscribe("/LaserTracker3", 1000, LaserSensingCallback3);

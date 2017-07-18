@@ -58,19 +58,19 @@ Visualization Manager:
       Marker Topic: visualization_marker_array
       Name: MarkerArray
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Alpha: 0.699999988
       Class: rviz/Map
       Color Scheme: map
       Draw Behind: false
-      Enabled: false
+      Enabled: true
       Name: Map
       Topic: /map
       Unreliable: false
       Use Timestamp: false
-      Value: false
+      Value: true
     - Class: rviz/MarkerArray
       Enabled: false
       Marker Topic: /laser_visualization1
@@ -127,24 +127,24 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 27.5891514
+      Distance: 25.1287594
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 9.80293941
-        Y: 6.26393127
-        Z: -0.759344876
+        X: 3.63253951
+        Y: 3.38663006
+        Z: -1.75330722
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.499796391
+      Pitch: 1.56979632
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.03927612
+      Yaw: 4.70928097
     Saved: ~
 Window Geometry:
   Displays:
@@ -162,5 +162,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1680
-  X: 1920
+  X: 240
   Y: 24

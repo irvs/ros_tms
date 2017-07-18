@@ -314,8 +314,8 @@ int CLaser::GetDiffLRFCluster(int n)
       }
       else
       {
-        //if (sflg > 1)
-        if (sflg >= 1)
+        if (sflg > 1)
+        //if (sflg >= 1)
         {
           c.n = sp + sflg / 2;
           c.range = m_LRFData[n][c.n];

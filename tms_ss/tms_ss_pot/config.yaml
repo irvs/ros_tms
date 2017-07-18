@@ -8,7 +8,8 @@ target_area: #ターゲットの存在範囲
  # 928
  #[ 0.0, 0.0, 5.0, 10.0 ]
  # Huis Ten Bosch
- [ 0.0, 0.0, 20.0, 40.0 ]
+ #[ 0.0, 0.0, 20.0, 40.0 ]
+ [ 0.0, 0.0, 5.0, 10.0 ]
 particle_area: #クラスタを中心にパーティクルを散布する範囲(0.1m 四方)
  0.1
 m_sigma: #尤度計算用の分散
@@ -21,7 +22,7 @@ max_vel:
  100.0
 m_min_distance: #クラスタと既存のPFとの距離が1000mm以下なら,既存のPFに紐付け
  1000
-m_min_distance: #500mm四方にパーティクルを初期配置
+m_initial_dist: #500mm四方にパーティクルを初期配置
  500
 lrf1_pos: #LRF1の座標(x, y, yaw[deg])
  [ 0.0, 0.0, 0.0 ]
@@ -29,17 +30,20 @@ lrf2_pos: #LRF2の座標(x, y, yaw[deg])
  # 928
  #[ 4.5, 2.0, 180.0 ]
  # Huis Ten Bosch
- [ 1.0, 18.5, 270.0 ]
+ #[ 1.0, 18.5, 270.0 ]
+ [ 4.5, 2.0, 180.0 ]
 lrf3_pos: #LRF3の座標(x, y, yaw[deg])
  # 928
  #[ 4.5, 9.0, 180.0 ]
  # Huis Ten Bosch
- [ 22.35, 14.7, 270.0 ]
+ #[ 22.35, 14.7, 270.0 ]
+ [ 4.1, 9.55, 180.0 ]
 lrf4_pos: #LRF4の座標(x, y, yaw[deg])
  # 928
- #[ 1.75, 9.5, 0.0 ]
+ [ 1.85, 9.55, 0.0 ]
 lrf_active: # LRFを使用するかどうか
  # 928
  #[ true, true, true, true ]
  # Huis Ten Bosch
- [ true, true, true, false ]
+ #[ true, true, true, false ]
+ [ true, true, true, true ]
