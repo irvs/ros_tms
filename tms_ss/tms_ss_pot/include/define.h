@@ -14,6 +14,7 @@
 #endif
 
 #define deg2rad(x) ((double)x * M_PI / 180.0)
+#define rad2deg(x) ((double)x * 180.0 / M_PI)
 
 typedef struct _LRFParam
 {

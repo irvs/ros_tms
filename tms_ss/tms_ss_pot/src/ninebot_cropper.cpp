@@ -5,8 +5,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <people_msgs/People.h>
 
-
-#define MARGIN 0.5  // Ninebot Width 546mm, Depth 262mm
+#define MARGIN 1.0  // Ninebot Width 546mm, Depth 262mm
 #define INVALID_POS -999.9999
 #define ROT_ANGLE -M_PI / 2
 
@@ -26,8 +25,10 @@ double ninebot_x, ninebot_y;
 //     }
 //   }
 //
-//   // Coordinate Transformation
 //   sensor_msgs::PointCloud cloud_out = cloud_in;
+//   cloud_out.header.frame_id = "map1";
+//
+//   // Coordinate Transformation
 //   for(int i = 0; i < cloud_out.points.size(); ++i){
 //     float temp_x = cloud_in.points.at(i).x;
 //     float temp_y = cloud_in.points.at(i).y;
@@ -46,7 +47,6 @@ double ninebot_x, ninebot_y;
 //   }
 //
 //   pub.publish(cloud_out);
-//
 // }
 
 void peopleCallback(const people_msgs::People &people_in){
@@ -62,8 +62,10 @@ void peopleCallback(const people_msgs::People &people_in){
     }
   }
 
-  // Coordinate Transformation
   people_msgs::People people_out = people_in;
+  people_out.header.frame_id = "map1";
+
+  // Coordinate Transformation
   for(int i = 0; i < people_out.people.size(); ++i){
     float temp_x = people_out.people.at(i).position.x;
     float temp_y = people_out.people.at(i).position.y;
@@ -82,28 +84,25 @@ void peopleCallback(const people_msgs::People &people_in){
   }
 
   pub.publish(people_out);
-
 }
 
 void poseCallback(const geometry_msgs::PoseStamped &ninebot_position){
   // Get Ninebot position
   ninebot_x = ninebot_position.pose.position.x;
   ninebot_y = ninebot_position.pose.position.y;
-
 }
 
-
 int main(int argc, char** argv){
-  ROS_INFO("Hello");
   ros::init(argc, argv, "ninebot_cropper");
   ros::NodeHandle nh;
 
   //ros::Subscriber cloud_sub = nh.subscribe("cloud_p2sen", 10, cloudCallback);
-  ros::Subscriber people_sub = nh.subscribe("tracking_people", 10, peopleCallback);
+  ros::Subscriber people_sub = nh.subscribe("people_p2sen", 10, peopleCallback);
   ros::Subscriber pose_sub = nh.subscribe("ninebot_pos", 10, poseCallback);
 
   //pub = nh.advertise<sensor_msgs::PointCloud>("cloud_ninebot_cropped", 10);
   pub = nh.advertise<people_msgs::People>("people_ninebot_cropped", 10);
 
   ros::spin();
+  return 0;
 }

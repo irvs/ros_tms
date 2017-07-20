@@ -14,6 +14,7 @@
 #include <sensor_msgs/PointCloud.h>
 #include <people_msgs/Person.h>
 #include <people_msgs/People.h>
+#include <boost/lexical_cast.hpp>
 
 pthread_mutex_t mutex_laser = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
@@ -27,8 +28,8 @@ pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 #include "particle_filter.h"
 #include "multiple_particle_filter.h"
 
-ros::Publisher pub_cloud; //Added
-ros::Publisher pub_people;
+//ros::Publisher pub_cloud;
+ros::Publisher pub_people; //Added
 
 // LASER_PARAMETOR----------------------------
 std::vector< float > scanData1;
@@ -59,10 +60,10 @@ void *Visualization(void *ptr)
   int ID;
   float X;
   float Y;
-  double ORIGIN_X = Config::is()->target_area[0] * 1000.0;
-  double ORIGIN_Y = Config::is()->target_area[1] * 1000.0;
-  double MAX_FIELD_X = Config::is()->target_area[2] * 1000.0;
-  double MAX_FIELD_Y = Config::is()->target_area[3] * 1000.0;
+  double ORIGIN_X = Config::is()->target_area[0];
+  double ORIGIN_Y = Config::is()->target_area[1];
+  double MAX_FIELD_X = Config::is()->target_area[2];
+  double MAX_FIELD_Y = Config::is()->target_area[3];
   ros::Rate r(10);
   ros::Publisher *pub = (ros::Publisher *)ptr;
   int latest_id = 0;
@@ -76,7 +77,6 @@ void *Visualization(void *ptr)
     people_msgs::Person person_data;
     people_msgs::People people_data;
     people_data.header.stamp = ros::Time::now();
-    people_data.header.frame_id = "map1";
 
     pthread_mutex_lock(&mutex_target);
 
@@ -90,22 +90,21 @@ void *Visualization(void *ptr)
         }
 
         ID = (laser.m_pTarget[i]->id);
-        X = (laser.m_pTarget[i]->px);
-        Y = (laser.m_pTarget[i]->py);
+        X = (laser.m_pTarget[i]->px) / 1000;
+        Y = (laser.m_pTarget[i]->py) / 1000;
 
         if (ORIGIN_X < X && X < MAX_FIELD_X && ORIGIN_Y < Y && Y < MAX_FIELD_Y)
         {
           grid.id = ID;
-          grid.x = X / 1000;
-          grid.y = Y / 1000;
+          grid.x = X;
+          grid.y = Y;
+          points.tracking_grid.push_back(grid);
 
           // Added
-          person_data.name = "hogehoge";
-          person_data.position.x = grid.x;
-          person_data.position.y = grid.y;
+          person_data.name = boost::lexical_cast<std::string>(ID);
+          person_data.position.x = X;
+          person_data.position.y = Y;
           people_data.people.push_back(person_data);
-
-          points.tracking_grid.push_back(grid);
         }
       }
     }
@@ -222,8 +221,6 @@ void *Processing(void *ptr)
         // Added
         // sensor_msgs::PointCloud cloud;
         // cloud.header.stamp = ros::Time::now();
-        // //cloud.header.frame_id = "world_link";
-        // cloud.header.frame_id = "map1";
 
         if (laser.m_bNodeActive[n])
         {
@@ -285,7 +282,6 @@ void *Processing(void *ptr)
             // Added
             // cloud.points[i].x = cvmGet(laser.m_LRFPos[n][i], 0, 0);
             // cloud.points[i].y = cvmGet(laser.m_LRFPos[n][i], 1, 0);
-            // cloud.points[i].z = 0.0;
 
             laser.m_LRFPoints[n][i].x = cvmGet(laser.m_LRFPos[n][i], 0, 0) * 1000.0;
             laser.m_LRFPoints[n][i].y = cvmGet(laser.m_LRFPos[n][i], 1, 0) * 1000.0;
@@ -338,8 +334,8 @@ void LaserSensingCallback1(const sensor_msgs::LaserScan::ConstPtr &scan)
   if (CallbackCalled1 == false)
   {
     nStep1 = num;
-    StartAngle1 = scan->angle_min * 180.0 / M_PI;
-    DivAngle1 = scan->angle_increment * 180.0 / M_PI;
+    StartAngle1 = rad2deg(scan->angle_min);
+    DivAngle1 = rad2deg(scan->angle_increment);
     std::cout << "nStep1 " << nStep1 << " StartAngle1 " << StartAngle1 << " DivAngle1 " << DivAngle1 << std::endl;
   }
   if (scanData1.size() == 0)
@@ -356,8 +352,8 @@ void LaserSensingCallback2(const sensor_msgs::LaserScan::ConstPtr &scan)
   if (CallbackCalled2 == false)
   {
     nStep2 = num;
-    StartAngle2 = scan->angle_min * 180.0 / M_PI;
-    DivAngle2 = scan->angle_increment * 180.0 / M_PI;
+    StartAngle2 = rad2deg(scan->angle_min);
+    DivAngle2 = rad2deg(scan->angle_increment);
     std::cout << "nStep2 " << nStep2 << " StartAngle2 " << StartAngle2 << " DivAngle2 " << DivAngle2 << std::endl;
   }
   if (scanData2.size() == 0)
@@ -374,8 +370,8 @@ void LaserSensingCallback3(const sensor_msgs::LaserScan::ConstPtr &scan)
   if (CallbackCalled3 == false)
   {
     nStep3 = num;
-    StartAngle3 = scan->angle_min * 180.0 / M_PI;
-    DivAngle3 = scan->angle_increment * 180.0 / M_PI;
+    StartAngle3 = rad2deg(scan->angle_min);
+    DivAngle3 = rad2deg(scan->angle_increment);
     std::cout << "nStep3 " << nStep3 << " StartAngle3 " << StartAngle3 << " DivAngle3 " << DivAngle3 << std::endl;
   }
   if (scanData3.size() == 0)
@@ -392,8 +388,8 @@ void LaserSensingCallback4(const sensor_msgs::LaserScan::ConstPtr &scan)
   if (CallbackCalled4 == false)
   {
     nStep4 = num;
-    StartAngle4 = scan->angle_min * 180.0 / M_PI;
-    DivAngle4 = scan->angle_increment * 180.0 / M_PI;
+    StartAngle4 = rad2deg(scan->angle_min);
+    DivAngle4 = rad2deg(scan->angle_increment);
     std::cout << "nStep4 " << nStep4 << " StartAngle4 " << StartAngle4 << " DivAngle4 " << DivAngle4 << std::endl;
   }
   if (scanData4.size() == 0)
@@ -416,7 +412,7 @@ int main(int argc, char **argv)
   ros::NodeHandle n;
   ros::Publisher pub = n.advertise< tms_msg_ss::tracking_points >("tracking_points", 10);
   //pub_cloud = n.advertise< sensor_msgs::PointCloud > ("cloud_p2sen", 10); // Added
-  pub_people = n.advertise< people_msgs::People > ("tracking_people", 10);
+  pub_people = n.advertise< people_msgs::People > ("people_p2sen", 10);
   ros::Subscriber sub1 = n.subscribe("/LaserTracker1", 1000, LaserSensingCallback1);
   ros::Subscriber sub2 = n.subscribe("/LaserTracker2", 1000, LaserSensingCallback2);
   ros::Subscriber sub3 = n.subscribe("/LaserTracker3", 1000, LaserSensingCallback3);

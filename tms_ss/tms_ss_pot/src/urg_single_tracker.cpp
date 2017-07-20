@@ -232,8 +232,8 @@ void LaserSensingCallback1(const sensor_msgs::LaserScan::ConstPtr &scan)
   if (CallbackCalled1 == false)
   {
     nStep1 = num;
-    StartAngle1 = scan->angle_min * 180.0 / M_PI;
-    DivAngle1 = scan->angle_increment * 180.0 / M_PI;
+    StartAngle1 = rad2deg(scan->angle_min);
+    DivAngle1 = rad2deg(scan->angle_increment);
     std::cout << "nStep1 " << nStep1 << " StartAngle1 " << StartAngle1 << " DivAngle1 " << DivAngle1 << std::endl;
   }
   if (scanData1.size() == 0)

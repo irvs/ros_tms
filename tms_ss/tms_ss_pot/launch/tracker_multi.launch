@@ -1,8 +1,11 @@
 <launch>
 
-  <!-- Tracker and Visualizer -->
+  <!-- Tracker -->
   <node pkg="tms_ss_pot" name="urg_tracker" type="urg_tracker" output="screen" />
+  <!-- Visualizer -->
   <node pkg="tms_ss_pot" name="visualize" type="visualize" />
+  <!-- Cropper -->
+  <node pkg="tms_ss_pot" name="ninebot_cropper" type="ninebot_cropper" />
 
   <!-- parameter setting for robot_description -->
   <!--<param name="robot_description"
