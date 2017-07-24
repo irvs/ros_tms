@@ -152,6 +152,8 @@ class TmsUrListener():
                         words.append(token.surface.encode('utf-8'))
             if verb != '':
                 words.append(verb)
+            if "言う" in words: #「〇〇に行って」が「〇〇に言って」と認識される
+                words.append("行く")
             print str(words).decode('string-escape')
             task_id = 0
             robot_id = 0

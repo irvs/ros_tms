@@ -58,6 +58,27 @@ tms_rp::TmsRpSubtask::~TmsRpSubtask()
 {
 }
 
+double tms_rp::TmsRpSubtask::RadianNormalize(double rad)
+{
+  while(rad > PI)
+    rad -= 2 * PI;
+  while(rad < -PI)
+    rad += 2 * PI;
+
+  return rad;
+}
+
+double tms_rp::TmsRpSubtask::DiffRadian(double rad1,double rad2)
+{
+  rad1 = RadianNormalize(rad1);
+  rad2 = RadianNormalize(rad2);
+
+  double rad = rad2 - rad1;
+  rad = RadianNormalize(rad);
+
+  return rad;
+}
+
 double tms_rp::TmsRpSubtask::distance(double x1, double y1, double x2, double y2)
 {
   double dis;
@@ -466,13 +487,85 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
     if (place == 6017)
     {  // in the bed
       ROS_INFO("humen in the bed");
-      rp_srv.request.goal_pos.x = 10.3;
-      rp_srv.request.goal_pos.y = 3.7;
+      srv.request.tmsdb.id = 6017 + sid_;
+
+      if(!get_data_client_.call(srv))
+      {
+        s_srv.request.error_msg = "Failed to call service tms_db_get_current_furniture_data";
+        state_client.call(s_srv);
+        return false;
+      }
+      std::string etcdata = srv.response.tmsdb[0].etcdata;
+      ROS_INFO("etc_data = %s", etcdata.c_str());
+      std::vector< std::string > v_etcdata;
+      v_etcdata.clear();
+      boost::split(v_etcdata, etcdata, boost::is_any_of(";"));
+
+      for (int i = 0; i < v_etcdata.size(); i++)
+      {
+        ROS_INFO("v_etcdata[%d]=%s", i, v_etcdata.at(i).c_str());
+      }
+
+      int i = 0;
+      while (robot_name != v_etcdata.at(i))
+      {
+        i += 2;
+        if (i >= v_etcdata.size())
+        {
+          s_srv.request.error_msg = "This robot cannot move to the slate point";
+          state_client.call(s_srv);
+          return false;
+        }
+      }
+
+      std::string argdata = v_etcdata.at(i + 1);
+      std::vector< std::string > v_argdata;
+      v_argdata.clear();
+      boost::split(v_argdata, argdata, boost::is_any_of(","));  // v_argdata[0, 1, 2] = [goal_x, goal_y, goal_th]
+
+      if(v_argdata.size() != 3)
+      {
+        s_srv.request.error_msg = "There are incorrect data in DB! Check furniture's etcdata";
+        state_client.call(s_srv);
+        return false;
+      }
+      // string to double
+      std::stringstream ss;
+      double d_x, d_y, d_th;
+
+      // goal_x
+      ss << v_argdata.at(0);
+      ss >> d_x;  // string to double
+      rp_srv.request.goal_pos.x = d_x;
+      ROS_INFO("goal_x = [%f]  ", d_x);
+
+      // goal_y
+      ss.clear();
+      ss.str("");
+      ss << v_argdata.at(1);
+      ss >> d_y;
+      rp_srv.request.goal_pos.y = d_y;
+      ROS_INFO("goal_y = [%f]  ", d_y);
+
+      // goal_th
+      ss.clear();
+      ss.str("");
+      ss << v_argdata.at(2);
+      ss >> d_th;
+      rp_srv.request.goal_pos.th = d_th;
+      ROS_INFO("goal_th = [%f]  ", d_th);
+
       rp_srv.request.goal_pos.z = 0.0;
-      rp_srv.request.goal_pos.th = -1.57079633;
       rp_srv.request.goal_pos.roll = 0.0;
       rp_srv.request.goal_pos.pitch = 0.0;
       rp_srv.request.goal_pos.yaw = 0.0;
+      // rp_srv.request.goal_pos.x = 10.3;
+      // rp_srv.request.goal_pos.y = 3.7;
+      // rp_srv.request.goal_pos.z = 0.0;
+      // rp_srv.request.goal_pos.th = -1.57079633;
+      // rp_srv.request.goal_pos.roll = 0.0;
+      // rp_srv.request.goal_pos.pitch = 0.0;
+      // rp_srv.request.goal_pos.yaw = 0.0;
     }
     else
     {
@@ -722,19 +815,6 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
               return false;
             }
           }
-        }
-        else
-        {
-          if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg))
-          {
-            send_rc_exception(1);
-            return false;
-          }
-          usleep(300000);//sleep(0.3);
-        }
-
-        if (sd.type)
-        {
           for (int i = 0; i < 5; i++)
           {
             if (sp5_control(sd.type, UNIT_ALL, SET_ODOM, 1, arg))
@@ -743,184 +823,189 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
             send_rc_exception(0);
           }
         }
-        else
+        else //if sd.type == false
         {
+          if (!sp5_control(sd.type, UNIT_VEHICLE, CMD_MOVE_ABS, 3, arg))
+          {
+            send_rc_exception(1);
+            return false;
+          }
           usleep(300000);//sleep(0.3);
-          // if (sd.robot_id == 2002)
-          // {
-          //	 sleep(0.7);
-          // }
-          // else if (sd.robot_id == 2003)
-          // {
-          //   ROS_INFO("Please use ID 2002 when smartpal5's simulation");
-          //	 return false;
-          // }
+          usleep(300000);
         }
-        break;
-      }
-      case 2005:  // kobuki
-      {
-        //			    		tms_msg_rc::rc_robot_control kobuki_srv;
-        //			    		kobuki_srv.request.arg.resize(3);
-        //			    		kobuki_srv.request.arg[0] = rp_srv.response.VoronoiPath[i].x;
-        //			    		kobuki_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
-        //			    		kobuki_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
 
-        //			    		if (sd.type == true) {
-        //				    		kobuki_srv.request.cmd = 0;
-        //				    		if (kobuki_actual_control_client.call(kobuki_srv)) ROS_INFO("result: %d",
-        // kobuki_srv.response.result);
-        //				    		else {
-        //				    			ROS_ERROR("Failed to call service kobuki_move");
-        //				    			return false;
-        //				    		}
-        //			    		} else {
-        //				    		kobuki_srv.request.unit = 1;
-        //				    		kobuki_srv.request.cmd = 15;
-        //				    		if (kobuki_virtual_control_client.call(kobuki_srv)) ROS_INFO("result: %d",
-        // kobuki_srv.response.result);
-        //				    		else {
-        //				    			ROS_ERROR("Failed to call service virtual_kobuki_move");
-        //				    			return false;
-        //				    		}
-        //				    		sleep(0.7);
-        //			    		}
-        break;
-      }
-      case 2006:  // kxp
-      {
-        //			    		if (sd.type) { // actual version
-        //			    			tms_msg_rc::tms_rc_pmove move_srv;
-        //			    			double dis = distance(rp_srv.response.VoronoiPath[i-1].x,
-        // rp_srv.response.VoronoiPath[i-1].y,
-        //			    					    					rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
-        //			    			double ang = rp_srv.response.VoronoiPath[i].th - rp_srv.response.VoronoiPath[i-1].th;
-        //		    				if (ang > 180.0) ang = ang - 360.0;
-        //		    				else if (ang < -180.0) ang = ang + 360.0;
-        //			    			ROS_INFO("voronoi[%d]:(%f,%f,%f), voronoi[%d]:(%f,%f,%f)",i-1,
-        // rp_srv.response.VoronoiPath[i-1].x, rp_srv.response.VoronoiPath[i-1].y,
-        //			    					rp_srv.response.VoronoiPath[i-1].th, i, rp_srv.response.VoronoiPath[i].x,
-        // rp_srv.response.VoronoiPath[i].y, rp_srv.response.VoronoiPath[i].th);
-        //			    			if (dis != 0) {
-        //			    				ROS_INFO("cmd1:%f", dis);
-        //				    			move_srv.request.command = 1;
-        //				    			move_srv.request.pdist = dis;
-        //				    			if(kxp_mbase_client.call(move_srv)) {
-        //				    				kxp_set_odom();
-        //				    			} else {
-        //				    				ROS_ERROR("Failed to call service kxp_pioneer_control");
-        //				    				return false;
-        //				    			}
-        //			    			}
-        //			    			if (ang != 0){
-        //			    				ROS_INFO("cmd2:%f", ang);
-        //				    			move_srv.request.command = 2;
-        //				    			move_srv.request.pangle = ang;
-        //				    			if (kxp_mbase_client.call(move_srv)) {
-        //				    				kxp_set_odom();
-        //				    			} else {
-        //				    				ROS_ERROR("Failed to call service kxp_katana_control");
-        //				    				return false;
-        //				    			}
-        //			    			}
-        //			    		} else { // simulation version
-        //			    			tms_msg_rc::tms_rc_pmove kxp_srv;
-        //			    			ROS_INFO("voronoi[%d]=%f,%f,%f", i,
-        // rp_srv.response.VoronoiPath[i].x,rp_srv.response.VoronoiPath[i].y,rp_srv.response.VoronoiPath[i].th);
-        //			    			kxp_srv.request.w_x = rp_srv.response.VoronoiPath[i].x;
-        //			    			kxp_srv.request.w_y = rp_srv.response.VoronoiPath[i].y;
-        //				    		kxp_srv.request.w_th = rp_srv.response.VoronoiPath[i].th;
-        //				    		if (v_kxp_mbase_client.call(kxp_srv)) ROS_INFO("result: %d", kxp_srv.response.success);
-        //				    		else {
-        //				    			ROS_ERROR("Failed to call service kxp_mbase");
-        //				    			return false;
-        //				    		}
-        //				    		sleep(1); //temp
-        //				    	}
+        i++;
+        if (i == 2 && rp_srv.response.VoronoiPath.size() <= 2)
+        {
+          i++;
+        }
+
+        // Update Robot Path Planning
+        if (i == 3)
+        {
+          for (int cnt = 0; cnt < 5; cnt++)
+          {
+            if (get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv))
+            {
+              break;
+            }
+          }
+
+          // end determination
+          double error_x, error_y, error_th, error_dis;
+
+          error_x = fabs(rp_srv.request.start_pos.x - rp_srv.request.goal_pos.x);
+          error_y = fabs(rp_srv.request.start_pos.y - rp_srv.request.goal_pos.y);
+          error_th = fabs(rp_srv.request.start_pos.th - rp_srv.request.goal_pos.th);
+          error_dis = distance(rp_srv.request.start_pos.x, rp_srv.request.start_pos.y, rp_srv.request.goal_pos.x,rp_srv.request.goal_pos.y);
+
+          if (error_th > PI)
+          error_th = error_th - 2 * PI;
+          else if (error_th < -PI)
+          error_th = error_th + 2 * PI;
+
+          ROS_INFO("error_x:%f,error_y:%f,error_th:%f, error_dis:%f", error_x, error_y, error_th, error_dis);
+          if (error_x <= 0.01 && error_y <= 0.01 && (error_th >= -0.05 && error_th <= 0.05))
+          {
+            ROS_INFO("finish");
+            break;  // dis_error:10mm, ang_error:3deg
+          }
+
+          rp_srv.response.VoronoiPath.clear();
+          voronoi_path_planning_client_.call(rp_srv);
+
+          if (rp_srv.response.VoronoiPath.empty())
+          {
+            s_srv.request.error_msg = "Planned path is empty";
+            state_client.call(s_srv);
+            return false;
+          }
+
+          i = 1;
+        }
         break;
       }
       case 2007:  // mimamorukun
       {
-        i++;
         tms_msg_rc::rc_robot_control mkun_srv;
         mkun_srv.request.unit = 1;
-        mkun_srv.request.cmd = 15;
+        mkun_srv.request.cmd = 0;
+        mkun_srv.request.arg.resize(3);
+        int size = rp_srv.response.VoronoiPath.size();
 
-        tms_msg_db::TmsdbGetData srv;
-        srv.request.tmsdb.id = 2007;
-        srv.request.tmsdb.sensor = 3001;
-
-        if(!get_data_client_.call(srv)){
-          s_srv.request.error_msg = "Failed to get data";
-          state_client.call(s_srv);
-          return false;
-        }
-
-        double goal_dis = distance(srv.response.tmsdb[0].x,srv.response.tmsdb[0].y,rp_srv.request.goal_pos.x,rp_srv.request.goal_pos.y);
-        double dis = distance(srv.response.tmsdb[0].x, srv.response.tmsdb[0].y,rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
-        double goal_rad = rp_srv.request.goal_pos.th - srv.response.tmsdb[0].ry;
-        double rad = rp_srv.response.VoronoiPath[i].th - srv.response.tmsdb[0].ry;
-        ROS_INFO("th:%f",rp_srv.response.VoronoiPath[i].th);
-        ROS_INFO("ry:%f",srv.response.tmsdb[0].ry);
-        ROS_INFO("dis:%f rad:%f",dis,rad);
-
-        if(goal_dis<=0.4)
+        while(1)
         {
-          if(goal_rad>-0.2&&goal_rad<0.2)
-          {
-            ROS_INFO("arrive goal");
-            return true;
+          tms_msg_db::TmsdbGetData srv;
+          srv.request.tmsdb.id = 2007;
+          srv.request.tmsdb.sensor = 3001;
+          if(!get_data_client_.call(srv)){
+            s_srv.request.error_msg = "Failed to get data";
+            state_client.call(s_srv);
+            return false;
           }
-          else
+          ROS_INFO("now x:%f y:%f th:%f",srv.response.tmsdb[0].x,srv.response.tmsdb[0].y,srv.response.tmsdb[0].ry);
+          ROS_INFO("i:%d x:%f y:%f th:%f",i,rp_srv.response.VoronoiPath[i].x,rp_srv.response.VoronoiPath[i].y,rp_srv.response.VoronoiPath[i].th);
+          double goal_dis = distance(srv.response.tmsdb[0].x,srv.response.tmsdb[0].y,rp_srv.request.goal_pos.x,rp_srv.request.goal_pos.y);
+          double dis = distance(srv.response.tmsdb[0].x,srv.response.tmsdb[0].y,rp_srv.response.VoronoiPath[i].x,rp_srv.response.VoronoiPath[i].y);
+          double goal_rad = DiffRadian(srv.response.tmsdb[0].ry,rp_srv.request.goal_pos.th);
+          double rad = DiffRadian(srv.response.tmsdb[0].ry,rp_srv.response.VoronoiPath[i].th);
+          ROS_INFO("goal_dis:%f dis:%f goal_rad:%f rad:%f",goal_dis,dis,goal_rad,rad);
+
+          if(goal_dis <= 0.3)
           {
-            mkun_srv.request.arg.resize(3);
-            mkun_srv.request.arg[0] = 0;
-            mkun_srv.request.arg[1] = 0;
-            mkun_srv.request.arg[2] = rp_srv.request.goal_pos.th;
-            if(mkun_control_client.call(mkun_srv))
-              ROS_INFO("result: %d",mkun_srv.response.result);
-            else
+            while(1)
             {
-              ROS_ERROR("Failed to call service mkun_move");
-              return false;
+              tms_msg_db::TmsdbGetData srv;
+              srv.request.tmsdb.id = 2007;
+              srv.request.tmsdb.sensor = 3001;
+              if(!get_data_client_.call(srv)){
+                s_srv.request.error_msg = "Failed to get data";
+                state_client.call(s_srv);
+                return false;
+              }
+              double goal_rad = DiffRadian(srv.response.tmsdb[0].ry,rp_srv.request.goal_pos.th);
+              ROS_INFO("goal_rad:%f",goal_rad);
+              if(goal_rad > -0.2 && goal_rad < 0.2)
+              {
+                ROS_INFO("arrive goal");
+                mkun_srv.request.cmd = 10;
+                if(mkun_control_client.call(mkun_srv))
+                    ROS_INFO("result: %d",mkun_srv.response.result);
+                return true;
+                s_srv.request.state = 1;
+                state_client.call(s_srv);
+              }
+              mkun_srv.request.cmd = 1;
+              mkun_srv.request.arg[0] = 0;
+              mkun_srv.request.arg[1] = 0;
+              mkun_srv.request.arg[2] = rp_srv.request.goal_pos.th;
+              if(mkun_control_client.call(mkun_srv))
+                  ROS_INFO("result: %d",mkun_srv.response.result);
+              else
+              {
+                ROS_ERROR("Failed to call service mkun_move");
+                return false;
+              }
             }
           }
-        }
-        else
-        {
-          while (dis <= 0.25)
+
+          if((rad < -1 || rad > 1) && dis > 0.5)
           {
-            i += 2;
-            ROS_INFO("th:%f",rp_srv.response.VoronoiPath[i].th);
-            if (i > rp_srv.response.VoronoiPath.size()+1)
+            while(1)
             {
-              ROS_ERROR("Mimamorukun cannot move the next point. Exit");
-              //			    				ROS_ERROR("i > rp_srv.response.VoronoiPath.size()");
-              s_srv.request.state = 1;
-              state_client.call(s_srv);
-              return true;
-              // break;
+              tms_msg_db::TmsdbGetData srv;
+              srv.request.tmsdb.id = 2007;
+              srv.request.tmsdb.sensor = 3001;
+              if(!get_data_client_.call(srv)){
+                s_srv.request.error_msg = "Failed to get data";
+                state_client.call(s_srv);
+                return false;
+              }
+              rad = DiffRadian(srv.response.tmsdb[0].ry,rp_srv.response.VoronoiPath[i].th);
+              ROS_INFO("rad:%f",rad);
+              if(rad > -0.5 && rad < 0.5)
+                break;
+
+              mkun_srv.request.cmd = 1;
+              mkun_srv.request.arg[0] = 0;
+              mkun_srv.request.arg[1] = 0;
+              mkun_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
+              if(mkun_control_client.call(mkun_srv))
+                  ROS_INFO("result: %d",mkun_srv.response.result);
+              else
+              {
+                ROS_ERROR("Failed to call service mkun_move");
+                return false;
+              }
             }
-            dis = distance(rp_srv.response.VoronoiPath[i - 1].x, rp_srv.response.VoronoiPath[i - 1].y,rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
+          }
+
+          while(dis <= 0.35)
+          {
+            i += 1;
+            if (i >= rp_srv.response.VoronoiPath.size())
+            {
+              i = rp_srv.response.VoronoiPath.size()-1;
+              break;
+            }
+            dis = distance(srv.response.tmsdb[0].x,srv.response.tmsdb[0].y,rp_srv.response.VoronoiPath[i].x,rp_srv.response.VoronoiPath[i].y);
             ROS_INFO("dis:%f",dis);
           }
-          mkun_srv.request.arg.resize(3);
+
+          mkun_srv.request.cmd = 0;
           mkun_srv.request.arg[0] = rp_srv.response.VoronoiPath[i].x;
           mkun_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
           mkun_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
           ROS_INFO("path_size:%lu, i:%d", rp_srv.response.VoronoiPath.size(), i);
-          // if (sd.type == true) {	//real world robot
-          ROS_INFO("[i=%d] goal x=%f, y=%f, yaw=%f", i, mkun_srv.request.arg[0], mkun_srv.request.arg[1],
-          mkun_srv.request.arg[2]);
+          ROS_INFO("[i=%d] goal x=%f, y=%f, yaw=%f", i, mkun_srv.request.arg[0], mkun_srv.request.arg[1],mkun_srv.request.arg[2]);
           if (mkun_control_client.call(mkun_srv))
-          ROS_INFO("result: %d", mkun_srv.response.result);
+            ROS_INFO("result: %d", mkun_srv.response.result);
           else
           {
             ROS_ERROR("Failed to call service mimamorukun_move");
             return false;
           }
         }
-        i = 2;
         break;
       }
       case 2012:
@@ -928,85 +1013,123 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
         i++;
         tms_msg_rc::rc_robot_control double_srv;
         double_srv.request.unit = 1;
-        double_srv.request.cmd = 15;
+        double_srv.request.cmd = 0;
+        double_srv.request.arg.resize(3);
+        int size = rp_srv.response.VoronoiPath.size();
 
-        tms_msg_db::TmsdbGetData srv;
-        srv.request.tmsdb.id = 2012;
-        srv.request.tmsdb.sensor = 3001;
-
-        if(!get_data_client_.call(srv)){
-          s_srv.request.error_msg = "Failed to get data";
-          state_client.call(s_srv);
-          return false;
-        }
-
-        double goal_dis = distance(srv.response.tmsdb[0].x,srv.response.tmsdb[0].y,rp_srv.request.goal_pos.x,rp_srv.request.goal_pos.y);
-        double dis = distance(srv.response.tmsdb[0].x, srv.response.tmsdb[0].y,rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
-        double goal_rad = rp_srv.request.goal_pos.th - srv.response.tmsdb[0].ry;
-        double rad = rp_srv.response.VoronoiPath[i].th - srv.response.tmsdb[0].ry;
-        ROS_INFO("th:%f",rp_srv.response.VoronoiPath[i].th);
-        ROS_INFO("ry:%f",srv.response.tmsdb[0].ry);
-        ROS_INFO("dis:%f rad:%f",dis,rad);
-
-        if(goal_dis<=0.3)
+        while(1)
         {
-          if(goal_rad>-0.2&&goal_rad<0.2)
-          {
-            ROS_INFO("arrive goal");
-            s_srv.request.state = 1;
+          tms_msg_db::TmsdbGetData srv;
+          srv.request.tmsdb.id = 2012;
+          srv.request.tmsdb.sensor = 3001;
+          if(!get_data_client_.call(srv)){
+            s_srv.request.error_msg = "Failed to get data";
             state_client.call(s_srv);
-            return true;
+            return false;
           }
-          else
-          {
-            double_srv.request.arg.resize(3);
-            double_srv.request.arg[0] = 0;
-            double_srv.request.arg[1] = 0;
-            double_srv.request.arg[2] = rp_srv.request.goal_pos.th;
-            if (double_control_client.call(double_srv))
-              ROS_INFO("reuslt: %d",double_srv.response.result);
-            else
-            {
-              ROS_ERROR("Failed to call service double_move");
-              return false;
-            }
-          }
-        }
-        else
-        {
-          while (dis <= 0.2)
-          {
-            i += 2;
-            ROS_INFO("th:%f",rp_srv.response.VoronoiPath[i].th);
-            if (i > rp_srv.response.VoronoiPath.size()+1)
-            {
-              ROS_ERROR("double cannot move the next point. Exit");
-              return true;
-            }
-            dis = distance(srv.response.tmsdb[0].x, srv.response.tmsdb[0].y,rp_srv.response.VoronoiPath[i].x, rp_srv.response.VoronoiPath[i].y);
+          ROS_INFO("now x:%f y:%f th:%f",srv.response.tmsdb[0].x,srv.response.tmsdb[0].y,srv.response.tmsdb[0].ry);
+          ROS_INFO("i:%d x:%f y:%f th:%f",i,rp_srv.response.VoronoiPath[i].x,rp_srv.response.VoronoiPath[i].y,rp_srv.response.VoronoiPath[i].th);
+          double goal_dis = distance(srv.response.tmsdb[0].x,srv.response.tmsdb[0].y,rp_srv.request.goal_pos.x,rp_srv.request.goal_pos.y);
+          double dis = distance(srv.response.tmsdb[0].x,srv.response.tmsdb[0].y,rp_srv.response.VoronoiPath[i].x,rp_srv.response.VoronoiPath[i].y);
+          double goal_rad = DiffRadian(srv.response.tmsdb[0].ry,rp_srv.request.goal_pos.th);
+          double rad = DiffRadian(srv.response.tmsdb[0].ry,rp_srv.response.VoronoiPath[i].th);
+          ROS_INFO("goal_dis:%f dis:%f goal_rad:%f rad:%f",goal_dis,dis,goal_rad,rad);
 
+          if(goal_dis <= 0.25)
+          {
+            while(1)
+            {
+              tms_msg_db::TmsdbGetData srv;
+              srv.request.tmsdb.id = 2012;
+              srv.request.tmsdb.sensor = 3001;
+              if(!get_data_client_.call(srv)){
+                s_srv.request.error_msg  = "Failed to get data";
+                state_client.call(s_srv);
+                return false;
+              }
+              double goal_rad = DiffRadian(srv.response.tmsdb[0].ry,rp_srv.request.goal_pos.th);
+              ROS_INFO("goal_rad:%f",goal_rad);
+              if(goal_rad > -0.2 && goal_rad < 0.2)
+              {
+                ROS_INFO("arrive goal");
+                double_srv.request.cmd = 10;
+                if(double_control_client.call(double_srv))
+                  ROS_INFO("result: %d",double_srv.response.result);
+                s_srv.request.state = 1;
+                state_client.call(s_srv);
+                return true;
+              }
+              double_srv.request.cmd = 1;
+              double_srv.request.arg[0] = 0;
+              double_srv.request.arg[1] = 0;
+              double_srv.request.arg[2] = rp_srv.request.goal_pos.th;
+              if(double_control_client.call(double_srv))
+                ROS_INFO("result: %d",double_srv.response.result);
+              else
+              {
+                ROS_ERROR("Failed to call service double_move");
+                return false;
+              }
+            }
+          }
+
+          if((rad < -1 || rad > 1) && dis > 0.5)
+          {
+            while(1)
+            {
+              tms_msg_db::TmsdbGetData srv;
+              srv.request.tmsdb.id = 2012;
+              srv.request.tmsdb.sensor = 3001;
+              if(!get_data_client_.call(srv)){
+                s_srv.request.error_msg = "Failed to get data";
+                state_client.call(s_srv);
+                return false;
+              }
+              rad = DiffRadian(srv.response.tmsdb[0].ry,rp_srv.response.VoronoiPath[i].th);
+              ROS_INFO("rad:%f",rad);
+              if(rad > -0.5 && rad < 0.5)
+                break;
+
+              double_srv.request.cmd = 1;
+              double_srv.request.arg[0] = 0;
+              double_srv.request.arg[1] = 0;
+              double_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
+              if(double_control_client.call(double_srv))
+                ROS_INFO("result: %d",double_srv.response.result);
+              else
+              {
+                ROS_ERROR("Failed to call service double_move");
+                return false;
+              }
+            }
+          }
+
+          while(dis <= 0.3)
+          {
+            i += 1;
+            if (i >= rp_srv.response.VoronoiPath.size())
+            {
+              i = rp_srv.response.VoronoiPath.size()-1;
+              break;
+            }
+            dis = distance(srv.response.tmsdb[0].x,srv.response.tmsdb[0].y,rp_srv.response.VoronoiPath[i].x,rp_srv.response.VoronoiPath[i].y);
             ROS_INFO("dis:%f",dis);
           }
-          double_srv.request.arg.resize(3);
 
+          double_srv.request.cmd = 0;
           double_srv.request.arg[0] = rp_srv.response.VoronoiPath[i].x;
           double_srv.request.arg[1] = rp_srv.response.VoronoiPath[i].y;
           double_srv.request.arg[2] = rp_srv.response.VoronoiPath[i].th;
-          ROS_INFO("path_size:%lu, i:%d", rp_srv.response.VoronoiPath.size(), i);
-          // if (sd.type == true) {	//real world robot
-          ROS_INFO("[i=%d] goal x=%f, y=%f, yaw=%f", i, double_srv.request.arg[0], double_srv.request.arg[1],
-          double_srv.request.arg[2]);
+          ROS_INFO("path size:%lu, i:%d",rp_srv.response.VoronoiPath.size(),i);
+          ROS_INFO("[i=%d] goal x=%f, y=%f, yaw=%f",i,double_srv.request.arg[0],double_srv.request.arg[1],double_srv.request.arg[2]);
           if (double_control_client.call(double_srv))
-          ROS_INFO("result: %d", double_srv.response.result);
+            ROS_INFO("result: %d", double_srv.response.result);
           else
           {
             ROS_ERROR("Failed to call service double_move");
             return false;
           }
         }
-
-
-        i=2;
         break;
       }
       default:
@@ -1015,63 +1138,10 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
         state_client.call(s_srv);
         return false;
       }
-    }
+    } //switch
 
-    i++;
-    if (i == 2 && rp_srv.response.VoronoiPath.size() <= 2)
-    {
-      i++;
-    }
 
-    // Update Robot Path Planning
-    if (i == 3)
-    {
-      for (int cnt = 0; cnt < 5; cnt++)
-      {
-        if (get_robot_pos(sd.type, sd.robot_id, robot_name, rp_srv))
-        {
-          break;
-        }
-      }
-
-      // end determination
-      double error_x, error_y, error_th, error_dis;
-
-      if (sd.robot_id == 2005 && !sd.type)
-      {
-        rp_srv.request.start_pos.th += PI;
-      }
-
-      error_x = fabs(rp_srv.request.start_pos.x - rp_srv.request.goal_pos.x);
-      error_y = fabs(rp_srv.request.start_pos.y - rp_srv.request.goal_pos.y);
-      error_th = fabs(rp_srv.request.start_pos.th - rp_srv.request.goal_pos.th);
-      error_dis = distance(rp_srv.request.start_pos.x, rp_srv.request.start_pos.y, rp_srv.request.goal_pos.x,rp_srv.request.goal_pos.y);
-
-      if (error_th > PI)
-      error_th = error_th - 2 * PI;
-      else if (error_th < -PI)
-      error_th = error_th + 2 * PI;
-
-      ROS_INFO("error_x:%f,error_y:%f,error_th:%f, error_dis:%f", error_x, error_y, error_th, error_dis);
-      if (error_x <= 0.01 && error_y <= 0.01 && (error_th >= -0.05 && error_th <= 0.05))
-      {
-        ROS_INFO("finish");
-        break;  // dis_error:10mm, ang_error:3deg
-      }
-
-      rp_srv.response.VoronoiPath.clear();
-      voronoi_path_planning_client_.call(rp_srv);
-
-      if (rp_srv.response.VoronoiPath.empty())
-      {
-        s_srv.request.error_msg = "Planned path is empty";
-        state_client.call(s_srv);
-        return false;
-      }
-
-      i = 1;
-    }
-  }
+  } //while
   //	apprise TS_control of succeeding subtask execution
   s_srv.request.state = 1;
   state_client.call(s_srv);
