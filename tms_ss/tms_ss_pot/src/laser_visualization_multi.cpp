@@ -16,7 +16,6 @@
 ros::Publisher  pub1,pub2,pub3,pub4;
 ros::Subscriber sub1,sub2,sub3,sub4;
 
-double theta = 0.0;
 
 // float colorset[14][4] = {{1, 0, 0, 0},
 //                          {0, 1, 0, 0},
@@ -46,7 +45,7 @@ void laser_visualization_callback1(const sensor_msgs::LaserScan::ConstPtr &scan)
   CvMat *m_Rotate = cvCreateMat(2, 2, CV_64F);
   CvMat *Temp = cvCreateMat(2, 1, CV_64F);
   CvMat *Temp2 = cvCreateMat(2, 1, CV_64F);
-  double theta;
+  double theta = 0.0;
 
   cvmSet(m_Rotate, 0, 0,  cos(deg2rad(laser_theta)));
   cvmSet(m_Rotate, 0, 1, -sin(deg2rad(laser_theta)));
@@ -125,7 +124,7 @@ void laser_visualization_callback2(const sensor_msgs::LaserScan::ConstPtr &scan)
   CvMat *m_Rotate = cvCreateMat(2, 2, CV_64F);
   CvMat *Temp = cvCreateMat(2, 1, CV_64F);
   CvMat *Temp2 = cvCreateMat(2, 1, CV_64F);
-  double theta;
+  double theta = 0.0;
 
   cvmSet(m_Rotate, 0, 0,  cos(deg2rad(laser_theta)));
   cvmSet(m_Rotate, 0, 1, -sin(deg2rad(laser_theta)));
@@ -199,7 +198,7 @@ void laser_visualization_callback3(const sensor_msgs::LaserScan::ConstPtr &scan)
   CvMat *m_Rotate = cvCreateMat(2, 2, CV_64F);
   CvMat *Temp = cvCreateMat(2, 1, CV_64F);
   CvMat *Temp2 = cvCreateMat(2, 1, CV_64F);
-  double theta;
+  double theta = 0.0;
 
   cvmSet(m_Rotate, 0, 0,  cos(deg2rad(laser_theta)));
   cvmSet(m_Rotate, 0, 1, -sin(deg2rad(laser_theta)));
@@ -273,7 +272,7 @@ void laser_visualization_callback4(const sensor_msgs::LaserScan::ConstPtr &scan)
   CvMat *m_Rotate = cvCreateMat(2, 2, CV_64F);
   CvMat *Temp = cvCreateMat(2, 1, CV_64F);
   CvMat *Temp2 = cvCreateMat(2, 1, CV_64F);
-  double theta;
+  double theta = 0.0;
 
   cvmSet(m_Rotate, 0, 0,  cos(deg2rad(laser_theta)));
   cvmSet(m_Rotate, 0, 1, -sin(deg2rad(laser_theta)));

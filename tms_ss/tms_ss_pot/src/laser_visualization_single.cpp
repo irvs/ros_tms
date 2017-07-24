@@ -1,10 +1,4 @@
-//------------------------------------------------------------------------------
-// @file   : laser_visualization.cpp
-// @brief  : visulaize function
-// @author : Watanabe Yuuta
-// @version: Ver0.1.1
-// @date   : 2015.07.31
-//------------------------------------------------------------------------------
+
 #include "ros/ros.h"
 #include "stdio.h"
 #include "tms_msg_ss/tracking_points.h"
@@ -21,42 +15,40 @@
 ros::Publisher pub;
 ros::Subscriber sub;
 
-double theta = 0.0;
-
-// colorset
-float colorset[14][4] = {{1, 0, 0, 0},
-                         {0, 1, 0, 0},
-                         {0, 0, 1, 0},
-                         {1, 1, 0, 0},
-                         {0, 1, 1, 0},
-                         {1, 0, 1, 0},
-                         {1, 1, 1, 0},
-                         {0.5, 0, 0, 0},
-                         {0, 0.5, 0, 0},
-                         {0, 0, 0.5, 0},
-                         {0.5, 0.5, 0, 0},
-                         {0, 0.5, 0.5, 0},
-                         {0.5, 0, 0.5, 0},
-                         {0.5, 0.5, 0.5, 0}};
+// float colorset[14][4] = {{1, 0, 0, 0},
+//                          {0, 1, 0, 0},
+//                          {0, 0, 1, 0},
+//                          {1, 1, 0, 0},
+//                          {0, 1, 1, 0},
+//                          {1, 0, 1, 0},
+//                          {1, 1, 1, 0},
+//                          {0.5, 0, 0, 0},
+//                          {0, 0.5, 0, 0},
+//                          {0, 0, 0.5, 0},
+//                          {0.5, 0.5, 0, 0},
+//                          {0, 0.5, 0.5, 0},
+//                          {0.5, 0, 0.5, 0},
+//                          {0.5, 0.5, 0.5, 0}};
 
 void laser_visualization_callback(const sensor_msgs::LaserScan::ConstPtr &scan)
 {
   visualization_msgs::MarkerArray markerArray;
 
-  double laser_x = 7.75;
-  double laser_y = 5.55;
+  double laser_x = 7.75; // LRF Pos X [m]
+  double laser_y = 5.55; // LRF Pos Y [m]
+  double laser_theta = 0.0; // Angle[rad]
   double laser_point_x;
   double laser_point_y;
 
   CvMat *m_Rotate = cvCreateMat(2, 2, CV_64F);
   CvMat *Temp = cvCreateMat(2, 1, CV_64F);
   CvMat *Temp2 = cvCreateMat(2, 1, CV_64F);
-  double theta;
+  double theta = 0.0;
 
-  cvmSet(m_Rotate, 0, 0, cos(-PI / 2.0));
-  cvmSet(m_Rotate, 0, 1, -sin(-PI / 2.0));
-  cvmSet(m_Rotate, 1, 0, sin(-PI / 2.0));
-  cvmSet(m_Rotate, 1, 1, cos(-PI / 2.0));
+  cvmSet(m_Rotate, 0, 0, cos(laser_theta));
+  cvmSet(m_Rotate, 0, 1, -sin(laser_theta));
+  cvmSet(m_Rotate, 1, 0, sin(laser_theta));
+  cvmSet(m_Rotate, 1, 1, cos(laser_theta));
 
   int id = 0;
   for (unsigned int i = 0; i < scan->ranges.size(); i++)
@@ -94,8 +86,7 @@ void laser_visualization_callback(const sensor_msgs::LaserScan::ConstPtr &scan)
     ps.x = laser_point_x;
     ps.y = laser_point_y;
     ps.z = 1.0;
-    // std::cout << id << " " << laser_x << " " << laser_y <<  " "  << laser_point_x << " " << laser_point_y <<
-    // std::endl;
+
     std::cout << scan->ranges.size() << std::endl;
     marker.points.push_back(ps);
 
