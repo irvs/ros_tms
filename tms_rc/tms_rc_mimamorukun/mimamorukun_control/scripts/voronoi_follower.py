@@ -16,6 +16,7 @@ GOAL = None
 
 def main():
     global GOAL
+    global cmd
     print ("\x1b[32mHello World\x1b[39m")
     rospy.init_node('wheelchair_voronoi_follower')
 
@@ -30,26 +31,25 @@ def main():
     while not rospy.is_shutdown():
         if None == GOAL:
             continue
-        KPang = 0.07  # 1.0
+        KPang = 0.3  # 1.0
         KDang = 0
-        KPdist = 0.3  # 2.0
+        KPdist = 0.4  # 2.0
         KDdist = 0
         ARV_DIST = 0.25
 
         pose = getCurrentPose()
         twist = Twist()
+        errorT = normalizeAng(GOAL.theta - pose.theta)
 
-        if GOAL.x == 0 and GOAL.y == 0:
-            errorT = GOAL.theta - pose.theta
-            if errorT > -0.2 and errorT < 0.2:
-                twist.angular.z = 0
-                twist.linear.x = 0
-                GOAL = None
-            else:
-                tmp_turn = limit(KPang * errorT,1,-1)
-                rospy.loginfo("turn:{0}".format(tmp_turn))
-                twist.angular.z = tmp_turn
-                twist.linear.x = 0
+        if cmd == 10:
+            twist.angular.z = 0
+            twist.linear.x = 0
+            GOAL = None
+        elif cmd == 1:
+            tmp_turn = limit(KPang * errorT,0.15,-0.15)
+            rospy.loginfo("turn:{0}".format(tmp_turn))
+            twist.angular.z = tmp_turn
+            twist.linear.x = 0
         else:
             errorX = GOAL.x - pose.x
             errorY = GOAL.y - pose.y
@@ -58,22 +58,16 @@ def main():
             errorNX = errorX * cos(-pose.theta) - errorY * sin(-pose.theta)
             errorNT = normalizeAng(targetT - pose.theta)
 
-            tmp_spd = limit(KPdist * errorNX, 1, -1)
-            tmp_turn = limit(KPang * errorNT, 1, -1)
+            tmp_spd = limit(KPdist * errorNX, 0.2, -0.2)
+            tmp_turn = limit(KPang * errorNT, 0.15, -0.15)
 
             distance = sqrt(errorX ** 2 + errorY ** 2)
             rospy.loginfo("dist:{0}".format(distance))
             rospy.loginfo("psd:{0}  turn:{1}".format(tmp_spd, tmp_turn))
-            if distance <= ARV_DIST:
-                twist.angular.z = 0
-                twist.linear.x = 0
-                GOAL = None
-            else:
-                twist.angular.z = tmp_turn
-                twist.linear.x = tmp_spd
+            twist.angular.z = tmp_turn
+            twist.linear.x = tmp_spd
         pub.publish(twist)
         r.sleep()
-
 
 def goalPoseCallback(req):
     rospy.loginfo("\x1b[32mreq:\x1b[39m{} \x1b[32m/req\x1b[39m".format(req))
@@ -83,6 +77,8 @@ def goalPoseCallback(req):
     GOAL.x = req.arg[0]
     GOAL.y = req.arg[1]
     GOAL.theta = req.arg[2]
+    global cmd
+    cmd = req.cmd
 
     return rc_robot_controlResponse()   # response is not used
 

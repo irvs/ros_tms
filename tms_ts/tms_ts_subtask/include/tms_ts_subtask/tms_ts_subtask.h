@@ -71,6 +71,8 @@ public:
   static TmsRpSubtask* instance();
   virtual ~TmsRpSubtask();
 
+  double RadianNormalize(double rad);
+  double DiffRadian(double rad1,double rad2);
   double distance(double x1, double y1, double x2, double y2);
   std::string DoubleToString(double number);
   void send_rc_exception(int error_type);
