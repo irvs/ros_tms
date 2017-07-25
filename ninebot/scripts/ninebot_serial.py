@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-#低レベルとの通信規格
-#　すべて１バイト単位で通信（１バイトを一定時間受け取れなかった場合低レベル側で停止命令が出る）
-#　上位１ビットが1の時警告ブザーを鳴らし、0の時は音は停止
-#　下位7ビットが0~126の時、63を中心とし63より小さい時はCW方向、大きいときはCCW方向へ回転
-#  127の時は静止（１２７は緊急停止として用意しているが現在のところ63と127の違いはなし）
-#  0の時:中心値 - 0.2[v] 、 63の時:中心値 + 0.2[V]が回路からNinebotへ出される。
+#--低レベルとの通信規格
+#　  全て１バイト単位で通信（１バイトを一定時間受け取れなかった場合低レベル側で停止命令が出る）
+#　  上位１ビットが1の時警告ブザーを鳴らし、0の時は音は停止
+#　  下位7ビットが0~126の時、63を中心とし63より小さい時はCW方向、大きい時はCCW方向へ回転
+#    127の時は静止（１２７は緊急停止として用意しているが現在のところ63と127の違いはなし）
+#    0の時:中心値 - 0.2[v] 、 126の時:中心値 + 0.2[V]が回路からNinebotへ出される
+#    （低レベル側では、中心値±0.2[V]までしか出ないように設定している）
 
 import serial
 import time
@@ -20,8 +21,8 @@ from geometry_msgs.msg import Twist
 from ninebot.msg       import nucleo_serial
 
 
-ANGULAR_MAX  = 0.2  #move_baseから受信する命令の角速度の絶対値の最大値
-VOLTAGE_MAX  = 0.13 #Ninebotへは中心値 ±　VOLTAGE_MAX[V]送信される(cmd.angular.z = ANGULAR_MAXのとき) MAX:0.2
+ANGULAR_MAX  = 0.2  # ninebot_smootherから受信する命令の角速度の絶対値の最大値
+VOLTAGE_MAX  = 0.13 # Ninebotへは(cmd.angular.z = ANGULAR_MAXの時に)中心値±VOLTAGE_MAX[V]送信される (MAX:0.2)
 
 K_SEND_VALUE = VOLTAGE_MAX / 0.2
 

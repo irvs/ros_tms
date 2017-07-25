@@ -8,12 +8,12 @@ from geometry_msgs.msg  import PoseStamped
 from people_msgs.msg    import People
 from sensor_msgs.msg    import PointCloud
 
-#ポールへninebotの位置を送信する際のマップの原点からの座標変換
+#ポールへninebotの位置を送信する際のマップの原点からの座標変換(ポールの原点は90度回転しているので変換する)
 POLE_SEND_X = 0
 POLE_SEND_Y = 0
 POLE_SEND_A = -1.5708
 
-#ポールから受け取った座標の原点
+#ポールから受け取った座標の原点（現在はポール側で90度回してから受け取っているため変換なし）
 BASE_POLE_X = 0
 BASE_POLE_Y = 0
 BASE_POLE_A = 0

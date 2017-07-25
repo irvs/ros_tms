@@ -15,7 +15,7 @@ find_package(Boost REQUIRED COMPONENTS thread)
 
 add_message_files(
   FILES
-  odom_rad.msg
+  #odom_rad.msg
   nucleo_serial.msg
 )
 

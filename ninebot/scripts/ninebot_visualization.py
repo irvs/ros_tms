@@ -18,8 +18,8 @@ class VisualizationClass:
     self.base_frame      = rospy.get_param('~base_frame_id', 'base_footprint1')
     self.server_frame    = rospy.get_param('~server_frame_id', 'server_map')
 
-    self.marker_pub1 = rospy.Publisher('/target_' + self.portable_frame, Marker, queue_size=10)
-    self.marker_pub2 = rospy.Publisher('target_'  + self.portable_frame, Marker, queue_size=10)
+    self.marker_pub1 = rospy.Publisher('/target_s_' + self.portable_frame, Marker, queue_size=10)
+    self.marker_pub2 = rospy.Publisher('target_'    + self.portable_frame, Marker, queue_size=10)
     
     self.start_pub   = rospy.Publisher('initialpose', PoseWithCovarianceStamped, queue_size=10)
     self.goal_pub    = rospy.Publisher('move_base_simple/goal', PoseStamped, queue_size=10)

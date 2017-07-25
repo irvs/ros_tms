@@ -9,9 +9,9 @@ from sensor_msgs.msg   import Imu
 from ninebot.msg       import nucleo_serial
 
 
-RADIUS    = 0.123  #タイヤの半径(人が乗った場合 ： 0.123, 手で押す場合 : 0.129)
-TREAD     = 0.485  #タイヤ間距離
-R_PULSE   = 4000   #エンコーダが一周した際のエンコーダ値（パルス数×4）
+RADIUS    = 0.123  # タイヤの半径(人が乗った場合 ： 0.123, 手で押す場合 : 0.129)
+TREAD     = 0.485  # タイヤ間距離
+R_PULSE   = 4000   # エンコーダが一周した際のエンコーダ値（パルス数×4）
 
 K_ENCODER = 2.0 * math.pi * RADIUS / R_PULSE
 
