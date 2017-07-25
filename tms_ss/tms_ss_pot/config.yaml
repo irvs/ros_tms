@@ -1,5 +1,7 @@
 n_of_particles: #パーティクル数
  100
+update: #背景を更新する頻度,何回ごとにUpdateするか
+ 100
 max_lrf_range: #LRFの最大計測範囲
  30.0
 min_lrf_range:
