@@ -17,6 +17,7 @@ public:
   {
     // set default value
     n_of_particles = 100;
+    update = 100;
     max_lrf_range = 30.0;
     min_lrf_range = 0.1;
     target_area[0] = -10.0;
@@ -42,6 +43,8 @@ public:
 
       if (config["n_of_particles"])
         n_of_particles = config["n_of_particles"].as< int >();
+      if (config["update"])
+        update = config["update"].as< int >();
       if (config["max_lrf_range"])
         max_lrf_range = config["max_lrf_range"].as< double >();
       if (config["min_lrf_range"])
@@ -123,6 +126,7 @@ public:
   }
 
   int n_of_particles;
+  int update;
   double max_lrf_range;
   double min_lrf_range;
   double target_area[4];

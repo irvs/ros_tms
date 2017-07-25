@@ -164,6 +164,7 @@ void *Processing(void *ptr)
   CvMat *Temp = cvCreateMat(2, 1, CV_64F);
   int count;
   double theta, range;
+  int UPDATE = Config::is()->update;
 
   if (laser.m_bResetBackRangeData == true)
   {
@@ -212,6 +213,7 @@ void *Processing(void *ptr)
     std::cout << "Back range data is stored" << std::endl;
   }
 
+  int iteration = 0;
   while (ros::ok())
   {
     if (laser.m_bResetBackRangeData == false)
@@ -318,6 +320,11 @@ void *Processing(void *ptr)
     pthread_mutex_lock(&mutex_target);
     m_PF.update(&laser);
     pthread_mutex_unlock(&mutex_target);
+
+    if(!(++iteration % UPDATE)){
+      laser.GetBackLRFDataGaussian();
+      iteration = 0;
+    }
 
     r.sleep();
   }
