@@ -145,6 +145,7 @@ void CMultipleParticleFilter::update(CLaser *Laser)
   int np = 0;
   for (vector< CPF >::iterator it = m_ParticleFilter.begin(); it != m_ParticleFilter.end(); ++it, ++np)
   {
+    if(np >= MAX_TRACKING_OBJECT) break;
     m_pLaser->m_pTarget[np] = new CTarget();
     m_pLaser->m_pTarget[np]->id = it->GetID();
     m_pLaser->m_pTarget[np]->cnt = it->GetCnt();
