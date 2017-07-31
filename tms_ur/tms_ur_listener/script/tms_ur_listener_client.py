@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import rospy
 from tms_ur_listener.msg import julius_msg
+from tms_ur_listener.srv import *
 from std_msgs.msg import Bool
 from std_msgs.msg import String
 from std_msgs.msg import Empty
@@ -93,7 +94,7 @@ def power_callback(data):
         kill_julius(julius)
         delete_socket(julius_socket)
 
-def gSpeech_callback(data):
+def gSpeech_callback(req):
     print "listen command"
     args = adinrec_path + ' ' + wav_file
     ret = subprocess.check_output(shlex.split(args))
@@ -119,15 +120,20 @@ def gSpeech_callback(data):
     json_dict = json.loads(ret,"utf-8")
     if "results" in json_dict:
         script = json_dict["results"][0]["alternatives"][0]["transcript"]
-        val = 10.0+float(json_dict["results"][0]["alternatives"][0]["confidence"])
+        val = float(json_dict["results"][0]["alternatives"][0]["confidence"])
     else:
         script = ""
-        val = 10.0
+        val = 0.0
 
-    msg = julius_msg()
-    msg.data = script
-    msg.value = val
-    pub.publish(msg)
+    resp = gSpeech_msgResponse()
+    resp.data = script
+    resp.value = val
+    return resp
+
+    # msg = julius_msg()
+    # msg.data = script
+    # msg.value = val
+    # pub.publish(msg)
 
 def get_token():
     global token
@@ -145,7 +151,8 @@ def main():
     pub = rospy.Publisher('julius_msg',julius_msg,queue_size=10)
     rate = rospy.Rate(100)
     rospy.Subscriber("/julius_power",Bool,power_callback)
-    rospy.Subscriber("gSpeech",Empty,gSpeech_callback)
+    # rospy.Subscriber("gSpeech",Empty,gSpeech_callback)
+    rospy.Service("gSpeech",gSpeech_msg,gSpeech_callback)
 
     global julius,julius_socket,sf
     julius, julius_socket, sf = invoke_julius_set()

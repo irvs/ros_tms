@@ -13,6 +13,11 @@ add_message_files(
   julius_msg.msg
 )
 
+add_service_files(
+  FILES
+  gSpeech_msg.srv
+)
+
 generate_messages(
   DEPENDENCIES
   std_msgs

@@ -22,4 +22,5 @@ ros-kinetic-kobuki* \
 ros-kinetic-amcl \
 ros-kinetic-urg-node \
 mongodb \
-ros-kinetic-moveit
+ros-kinetic-moveit \
+ros-kinetic-people-msgs
