@@ -5,7 +5,7 @@
   <!-- Visualizer -->
   <node pkg="tms_ss_pot" name="visualize" type="visualize" />
   <!-- Cropper -->
-  <node pkg="tms_ss_pot" name="ninebot_cropper" type="ninebot_cropper" />
+  <node pkg="tms_ss_pot" name="ninebot_cropper" type="ninebot_cropper" output="screen" />
 
   <!-- parameter setting for robot_description -->
   <!--<param name="robot_description"
@@ -21,15 +21,12 @@
 
   <!-- TF -->
   <node pkg="tf" type="static_transform_publisher" name="world_2_map" args="0 0 0
-  1.5707 0 0 /world_link /map 100"/>
+  0 0 0 /world_link /map 100"/>
 
   <!-- Map server -->
-  <arg name="map_file" default="$(find tms_ss_pot)/maps/map_928/map.yaml"/>
+  <arg name="map_file" default="$(find tms_ss_pot)/maps/map_coi_hall/map.yaml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)">
   <param name="frame_id" value="map" />
   </node>
-
-  <!-- RViz -->
-  <node name="rviz_tracker" pkg="rviz" type="rviz" args="-d $(find tms_ss_pot)/rviz/tracker_config.rviz" respawn="true" />
 
 </launch>

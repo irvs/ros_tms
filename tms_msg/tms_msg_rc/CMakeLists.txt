@@ -19,7 +19,7 @@ add_message_files(
   tag_data.msg
   odom_rad.msg
   katana_pos.msg
-  arduino_serial.msg
+  arduino_serial.msg 
 )
 
 add_service_files(

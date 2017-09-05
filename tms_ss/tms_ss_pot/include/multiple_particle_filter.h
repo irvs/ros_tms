@@ -16,5 +16,6 @@ protected:
   double m_initial_dist;
   int m_ID;
   int m_max_lost_count;
+  double Area[4];
 
 };

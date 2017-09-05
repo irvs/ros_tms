@@ -24,14 +24,14 @@ public:
     target_area[1] = -10.0;
     target_area[2] = 10.0;
     target_area[3] = 10.0;
-    m_sigma = 100.0;
+    m_sigma = 0.01*0.01;
     pos_noise = 0.05;
     vel_noise = 0.05;
     particle_area = 0.1;
-    max_vel = 100.0;
+    max_vel = 0.1;
     m_max_ID = 100;
-    m_min_distance = 1000.0;
-    m_initial_dist = 500.0;
+    m_min_distance = 1.0;
+    m_initial_dist = 0.5;
 
     std::string home = std::getenv("HOME");
     std::string filepath = home + "/catkin_ws/src/ros_tms/tms_ss/tms_ss_pot/config.yaml";

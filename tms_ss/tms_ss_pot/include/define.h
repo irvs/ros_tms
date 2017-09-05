@@ -1,7 +1,7 @@
 #pragma once
 
 #define MAX_CONNECT 4
-#define MAX_DATA_SIZE_LRF 1000
+#define MAX_DATA_SIZE_LRF 2000
 #define MAX_TRACKING_OBJECT 20
 
 #define MIN_DIFF_DIST 0.02          // 0.02  // 前景とみなす背景からの距離（Gaussianでは使わない）
