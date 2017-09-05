@@ -18,7 +18,7 @@ import sys
 import termios
 from std_msgs.msg      import String
 from geometry_msgs.msg import Twist
-from ninebot.msg       import nucleo_serial
+from tms_msg_rc.msg    import nucleo_serial
 
 
 ANGULAR_MAX  = 0.2  # ninebot_smootherから受信する命令の角速度の絶対値の最大値

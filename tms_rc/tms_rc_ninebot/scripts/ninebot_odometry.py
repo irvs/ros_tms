@@ -9,7 +9,7 @@ import threading
 
 from nav_msgs.msg      import Odometry
 from sensor_msgs.msg   import Imu
-from ninebot.msg       import nucleo_serial
+from tms_msg_rc.msg    import nucleo_serial
 
 RADIUS    = 0.123  # タイヤの半径(人が乗った場合 ： 0.123, 手で押す場合 : 0.129)
 TREAD     = 0.485  # タイヤ間距離

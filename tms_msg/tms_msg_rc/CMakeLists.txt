@@ -20,6 +20,7 @@ add_message_files(
   odom_rad.msg
   katana_pos.msg
   arduino_serial.msg 
+  nucleo_serial.msg 
 )
 
 add_service_files(
@@ -37,6 +38,7 @@ add_service_files(
   katana_pos_single.srv
   gripper_action.srv
   robot_control.srv
+  nav_command.srv
 )
 
 generate_messages(

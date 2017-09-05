@@ -6,7 +6,7 @@ import tf
 import math
 from geometry_msgs.msg  import PoseStamped
 from actionlib_msgs.msg import GoalID
-from ninebot.msg        import nucleo_serial
+from tms_msg_rc.msg     import nucleo_serial
 #from std_msgs.msg	    import Float64
 
 import subprocess

@@ -12,8 +12,8 @@ from actionlib_msgs.msg import GoalID
 from actionlib_msgs.msg import GoalStatusArray
 from geometry_msgs.msg  import Twist
 from std_srvs.srv       import Empty
-from ninebot.srv        import nav_command
-from ninebot.srv        import nav_commandResponse
+from tms_msg_rc.srv     import nav_command
+from tms_msg_rc.srv     import nav_commandResponse
 
 class LedControlClass:
   def __init__(self):
