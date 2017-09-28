@@ -107,7 +107,7 @@ def gSpeech_callback(req):
     enc = base64.b64encode(file)
     print "enc success"
 
-    data = "{'config':{'encoding':'LINEAR16','sampleRate':16000,'languageCode':'ja-UP'},'audio':{'content':'" + enc + "'}}"
+    data = "{'config':{'encoding':'LINEAR16','sampleRate':16000,'languageCode':'ja-JP'},'audio':{'content':'" + enc + "'}}"
     json_file = open('/home/pi/catkin_ws/src/tms_ur_listener/script/sync-request.json','w')
     json_file.write(data)
     json_file.close()
