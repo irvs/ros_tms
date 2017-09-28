@@ -45,7 +45,7 @@ void LaserSensingCallback(const sensor_msgs::LaserScan::ConstPtr &scan)
     }
     else if (isnan(scan->ranges[scan->ranges.size() - i - 1]))
     {
-      Laser.ranges[scan->ranges.size() - i - 1] = 5.59999999999;
+      Laser.ranges[scan->ranges.size() - i - 1] = FLT_MAX;
     }
   }
   std::cout << "number of points " << Laser.ranges.size() << std::endl;

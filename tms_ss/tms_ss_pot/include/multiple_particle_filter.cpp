@@ -22,9 +22,13 @@ extern pthread_mutex_t mutex_target;
 CMultipleParticleFilter::CMultipleParticleFilter()
 {
   m_max_ID = Config::is()->m_max_ID;
-  m_min_distance = Config::is()->m_min_distance;  // 1000mm以上離れて出現したときだけ、新しいPFを生成
-  m_initial_dist = Config::is()->m_initial_dist;  // 500mm四方にパーティクルを初期配置
-  m_max_lost_count = 10;  // 何回連続でデータが得られなかったか
+  m_min_distance = Config::is()->m_min_distance;  // 1m以上離れて出現したときだけ、新しいPFを生成
+  m_initial_dist = Config::is()->m_initial_dist;  // 0.5m四方にパーティクルを初期配置
+  m_max_lost_count = 1;  // 何回連続でデータが得られなかったか
+  Area[0] = Config::is()->target_area[0];
+  Area[1] = Config::is()->target_area[1];
+  Area[2] = Config::is()->target_area[2];
+  Area[3] = Config::is()->target_area[3];
 
   m_ID = 0;
 }
@@ -60,6 +64,7 @@ void CMultipleParticleFilter::update(CLaser *Laser)
 
         // クラスタ毎に，一番近いパーティクルフィルタを探す
         double min_r = 1e10;
+        int min_np = -1;
         int np = 0;
         for (vector< CPF >::iterator it = m_ParticleFilter.begin(); it != m_ParticleFilter.end(); ++it, ++np)
         {
@@ -67,23 +72,24 @@ void CMultipleParticleFilter::update(CLaser *Laser)
           p[1] = it->state[1];
 
           double r = sqrt(pow(p[0] - obs[0], 2) + pow(p[1] - obs[1], 2));
-
           // クラスタと既存のパーティクルフィルタとの距離がm_min_distance以下なら，既存のパーティクルフィルタに紐づけ
-          if (min_r > r && r < m_min_distance)
+          if (r < m_min_distance)
           {
-            min_r = r;
-            label[j] = np; // 対応したパーティクルフィルタの番号を保存
+            if (min_r > r) {
+               min_r = r;
+               min_np = np;
+            }
           }
         }
 
         // もし，クラスタに対応するパーティクルフィルタがなかったとき
-        if (min_r >= m_min_distance)
-        {
+        if (min_r < m_min_distance) {
+          label[j] = min_np; // 対応したパーティクルフィルタの番号を保存
+        } else {
           label[j] = pn++; // 新たにパーティクルフィルタを生成するために，新規の番号を与える
         }
 
       }
-
 
       for (int j = 0; j < m_pLaser->m_LRFClsPoints[n].size(); j++)
       {
@@ -103,9 +109,10 @@ void CMultipleParticleFilter::update(CLaser *Laser)
         {
           // 新たにパーティクルフィルタを生成
           CPF pf;
-          int d = Config::is()->particle_area * 1000;
+          //int d = Config::is()->particle_area;
           obs[0] = m_pLaser->m_LRFClsPoints[n][j].x;
           obs[1] = m_pLaser->m_LRFClsPoints[n][j].y;
+          if ((obs[0] < Area[0]) || (obs[0] >= Area[2]) || (obs[1] < Area[1]) || (obs[1] >= Area[3])) continue;
 
           int area[4] = {obs[0] - m_initial_dist / 2, obs[1] - m_initial_dist / 2, obs[0] + m_initial_dist / 2,
                          obs[1] + m_initial_dist / 2};
@@ -114,7 +121,6 @@ void CMultipleParticleFilter::update(CLaser *Laser)
           pf.SetTarget(obs);
           pf.SetID(m_ID++);
           pf.update();
-
           if(!isnan(pf.state[0]) && !isnan(pf.state[1]))
           m_ParticleFilter.push_back(pf);
 

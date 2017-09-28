@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <iostream>
+#include <sstream>
 //#include "opencv2/opencv.hpp"
 #include "opencv/cv.h"
 
@@ -77,6 +79,109 @@ CLaser::~CLaser()
     if (m_pTarget[i] != NULL)
       delete m_pTarget[i];
   }
+}
+
+bool CLaser::ReadBackgroundData() 
+{
+  /* バックグラウンドデータの読み込み */
+
+  for (int n = 0; n < m_cnMaxConnect; n++)
+  {
+    if (m_bNodeActive[n])
+    {
+      std::string home = std::getenv("HOME");
+      std::ostringstream filepath;
+      filepath << home << "/catkin_ws/src/ros_tms/tms_ss/tms_ss_pot/lrf" << n << ".yaml";
+      std::cout << "Read background data from " << filepath.str() << std::endl;
+
+      cv::FileStorage fs(filepath.str().c_str(), cv::FileStorage::READ);
+
+      if(!fs.isOpened()) {
+         std::cout << "Failed to open background data file" << std::endl;
+         return false;
+      }
+
+      cv::Mat ave, var, ring;
+      fs["average"] >> ave;
+      fs["variance"] >> var;
+      fs["ring"] >> ring;
+
+      if (ave.data && var.data && ring.data){
+        m_BackLRFDataAve[n].resize(ave.cols);
+        m_BackLRFDataVar[n].resize(var.cols);
+
+        for (int i = 0; i < ave.cols; i++)
+        {
+          m_BackLRFDataAve[n][i] = ave.at<float>(i);
+          m_BackLRFDataVar[n][i] = var.at<float>(i);
+        }
+
+        m_BackLRFDataRing[n].resize(ring.rows);
+        for(int cnt=0; cnt < ring.rows; cnt++){
+           m_BackLRFDataRing[n][cnt].resize(ring.cols);
+           for (int i = 0; i < ring.cols; i++)
+           {
+              m_BackLRFDataRing[n][cnt][i] = ring.at<float>(cnt, i);
+           }
+        }
+
+      } else {
+         fs.release();
+         std::cout << "Error in reading background data" << std::endl;
+         return false;
+      }
+
+      fs.release();
+    }
+  }
+
+  return true;
+}
+
+bool CLaser::WriteBackgroundData() 
+{
+  /* 行列ファイルの保存 */
+  for (int n = 0; n < m_cnMaxConnect; n++)
+  {
+    if (m_bNodeActive[n])
+    {
+      std::string home = std::getenv("HOME");
+      std::ostringstream filepath;
+      filepath << home << "/catkin_ws/src/ros_tms/tms_ss/tms_ss_pot/lrf" << n << ".yaml";
+      std::cout << "Write background data to " << filepath.str() << std::endl;
+
+      cv::FileStorage fs(filepath.str().c_str(), cv::FileStorage::WRITE);
+
+      if(!fs.isOpened()) {
+         std::cout << "Error in writing background data" << std::endl;
+         return false;
+      }
+
+      cv::Mat ave = cv::Mat::zeros(cv::Size(m_BackLRFDataAve[n].size(), 1), CV_32FC1);
+      cv::Mat var = cv::Mat::zeros(cv::Size(m_BackLRFDataVar[n].size(), 1), CV_32FC1);
+      cv::Mat ring = cv::Mat::zeros(cv::Size(m_BackLRFDataRing[n][0].size(), m_ring), CV_32FC1);
+
+      for (int i = 0; i < m_BackLRFDataAve[n].size(); i++)
+      {
+        ave.at<float>(i) = m_BackLRFDataAve[n][i];
+        var.at<float>(i) = m_BackLRFDataVar[n][i];
+      }
+
+      for(int cnt=0; cnt < m_ring; cnt++){
+         for (int i = 0; i < m_BackLRFDataRing[n][cnt].size(); i++)
+         {
+            ring.at<float>(cnt, i)  = m_BackLRFDataRing[n][cnt][i];
+         }
+      }
+
+      fs << "average" << ave;
+      fs << "variance" << var;
+      fs << "ring" << ring;
+
+      fs.release();
+    }
+  }
+  return true;
 }
 
 bool CLaser::Init()  // OnNewDocument()
@@ -165,6 +270,10 @@ int CLaser::GetBackLRFDataGaussian()
   {
     if (m_bNodeActive[n])
     {
+      if(count == 0){
+        m_BackLRFDataAve[n].resize(m_LRFData[n].size());
+        m_BackLRFDataVar[n].resize(m_LRFData[n].size());
+      }
       if (count < m_ring)
       {
         for (int i = 0; i < m_LRFData[n].size(); i++)
@@ -179,24 +288,41 @@ int CLaser::GetBackLRFDataGaussian()
           }
         }
       }
-      else
-      {
-        for (int i = 0; i < m_LRFData[n].size(); i++)
-        {
-          m_BackLRFDataVar[n][i] += m_BackLRFDataAve[n][i] * m_BackLRFDataAve[n][i];
-          m_BackLRFDataAve[n][i] += (-m_BackLRFDataRing[n][m_n_ring][i] + m_LRFData[n][i]) / (double)m_ring;
-          m_BackLRFDataVar[n][i] += (-m_BackLRFDataRing[n][m_n_ring][i] * m_BackLRFDataRing[n][m_n_ring][i] +
-                                     m_LRFData[n][i] * m_LRFData[n][i]) /
-                                    (double)m_ring;
-          m_BackLRFDataVar[n][i] -= m_BackLRFDataAve[n][i] * m_BackLRFDataAve[n][i];
-        }
-      }
+      else UpdateBackLRFDataGaussian();
+
+
       m_BackLRFDataRing[n][m_n_ring] = m_LRFData[n];
+
     }
   }
 
   if (++count > m_ring)
     count = m_ring;
+  m_n_ring = (++m_n_ring) % m_ring;
+
+  return 0;
+}
+
+int CLaser::UpdateBackLRFDataGaussian()
+{
+  std::cout << "Update background images" << std::endl;
+  for (int n = 0; n < m_cnMaxConnect; n++)
+  {
+    if (m_bNodeActive[n])
+    {
+      for (int i = 0; i < m_LRFData[n].size(); i++)
+      {
+        m_BackLRFDataVar[n][i] += m_BackLRFDataAve[n][i] * m_BackLRFDataAve[n][i];
+        m_BackLRFDataAve[n][i] += (-m_BackLRFDataRing[n][m_n_ring][i] + m_LRFData[n][i]) / (double)m_ring;
+        m_BackLRFDataVar[n][i] += (-m_BackLRFDataRing[n][m_n_ring][i] * m_BackLRFDataRing[n][m_n_ring][i] +
+                                   m_LRFData[n][i] * m_LRFData[n][i]) /
+                                  (double)m_ring;
+        m_BackLRFDataVar[n][i] -= m_BackLRFDataAve[n][i] * m_BackLRFDataAve[n][i];
+      }
+      m_BackLRFDataRing[n][m_n_ring] = m_LRFData[n];
+    }
+  }
+
   m_n_ring = (++m_n_ring) % m_ring;
 
   return 0;

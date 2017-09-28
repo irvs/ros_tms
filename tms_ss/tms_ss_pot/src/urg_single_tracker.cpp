@@ -24,13 +24,6 @@ pthread_mutex_t mutex_target = PTHREAD_MUTEX_INITIALIZER;
 #include "particle_filter.h"
 #include "multiple_particle_filter.h"
 
-// PORTABLE_PARAMETOR-------------------------
-#define ORIGIN_X 0.0
-#define ORIGIN_Y 0.0
-#define MAX_FIELD_X 15.0
-#define MAX_FIELD_Y 7.0
-//-------------------------------------------
-
 // LASER_PARAMETOR----------------------------
 std::vector< float > scanData1;
 CLaser laser;
@@ -45,6 +38,10 @@ void *Visualization(void *ptr)
   int ID;
   float X;
   float Y;
+  double ORIGIN_X = Config::is()->target_area[0];
+  double ORIGIN_Y = Config::is()->target_area[1];
+  double MAX_FIELD_X = Config::is()->target_area[2];
+  double MAX_FIELD_Y = Config::is()->target_area[3];
   ros::Rate r(10);
   ros::Publisher *pub = (ros::Publisher *)ptr;
   int latest_id = 0;
@@ -69,11 +66,11 @@ void *Visualization(void *ptr)
         X = (laser.m_pTarget[i]->px);
         Y = (laser.m_pTarget[i]->py);
 
-        if (ORIGIN_X < X && X < MAX_FIELD_X * 1000 && ORIGIN_Y < Y && Y < MAX_FIELD_Y * 1000)
+        if (ORIGIN_X < X && X < MAX_FIELD_X && ORIGIN_Y < Y && Y < MAX_FIELD_Y)
         {
           grid.id = ID;
-          grid.x = X / 1000;
-          grid.y = Y / 1000;
+          grid.x = X;
+          grid.y = Y;
 
           points.tracking_grid.push_back(grid);
         }
@@ -115,6 +112,8 @@ void *Processing(void *ptr)
   double theta, range;
   int UPDATE = Config::is()->update;
 
+  if(laser.ReadBackgroundData()) laser.m_bResetBackRangeData == false;
+
   if (laser.m_bResetBackRangeData == true)
   {
     for (int it = 0; it < laser.m_ring; it++)
@@ -139,6 +138,9 @@ void *Processing(void *ptr)
       r.sleep();
     }
     laser.m_bResetBackRangeData = false;
+
+    laser.WriteBackgroundData();
+
     std::cout << "Back range data is stored" << std::endl;
   }
 
@@ -172,6 +174,7 @@ void *Processing(void *ptr)
           cvmSet(m_Translate, 0, 0, laser.m_LRFParam[n].tx);
           cvmSet(m_Translate, 1, 0, laser.m_LRFParam[n].ty);
 
+          /*
           laser.m_LRFPoints[n].clear();
           laser.m_LRFPoints[n].resize(laser.m_DiffLRFData[n].size());
 
@@ -185,9 +188,10 @@ void *Processing(void *ptr)
             cvmSet(laser.m_LRFPos[n][i], 1, 0, range * sin(deg2rad(theta)));
             cvMatMul(m_Rotate, laser.m_LRFPos[n][i], Temp);
             cvAdd(m_Translate, Temp, laser.m_LRFPos[n][i]);
-            laser.m_LRFPoints[n][i].x = cvmGet(laser.m_LRFPos[n][i], 0, 0) * 1000.0;
-            laser.m_LRFPoints[n][i].y = cvmGet(laser.m_LRFPos[n][i], 1, 0) * 1000.0;
+            laser.m_LRFPoints[n][i].x = cvmGet(laser.m_LRFPos[n][i], 0, 0);
+            laser.m_LRFPoints[n][i].y = cvmGet(laser.m_LRFPos[n][i], 1, 0);
           }
+          */
 
           // Number of clusters
           std::cout << "Number of clusters " << laser.m_LRFClsData[n].size() << std::endl;
@@ -202,10 +206,10 @@ void *Processing(void *ptr)
 
             cvmSet(laser.m_LRFClsPos[n][i], 0, 0, range * cos(deg2rad(theta)));
             cvmSet(laser.m_LRFClsPos[n][i], 1, 0, range * sin(deg2rad(theta)));
-            cvMatMul(m_Rotate, laser.m_LRFClsPos[n][i], Temp);     //
-            cvAdd(m_Translate, Temp, laser.m_LRFClsPos[n][i]);  //
-            laser.m_LRFClsPoints[n][i].x = cvmGet(laser.m_LRFClsPos[n][i], 0, 0) * 1000.0;
-            laser.m_LRFClsPoints[n][i].y = cvmGet(laser.m_LRFClsPos[n][i], 1, 0) * 1000.0;
+            cvMatMul(m_Rotate, laser.m_LRFClsPos[n][i], Temp);
+            cvAdd(m_Translate, Temp, laser.m_LRFClsPos[n][i]);
+            laser.m_LRFClsPoints[n][i].x = cvmGet(laser.m_LRFClsPos[n][i], 0, 0);
+            laser.m_LRFClsPoints[n][i].y = cvmGet(laser.m_LRFClsPos[n][i], 1, 0);
           }
 
           pthread_mutex_unlock(&mutex_laser);
@@ -220,7 +224,7 @@ void *Processing(void *ptr)
     pthread_mutex_unlock(&mutex_target);
 
     if(!(++iteration % UPDATE)){
-      laser.GetBackLRFDataGaussian();
+      laser.UpdateBackLRFDataGaussian();
       iteration = 0;
     }
 
@@ -261,7 +265,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "urg_tracker");
   ros::NodeHandle n;
   ros::Publisher pub = n.advertise< tms_msg_ss::tracking_points >("tracking_points", 10);
-  ros::Subscriber sub1 = n.subscribe("/LaserTracker1", 1000, LaserSensingCallback1);
+  ros::Subscriber sub = n.subscribe("/LaserTracker1", 1000, LaserSensingCallback1);
 
   if (pthread_create(&thread_v, NULL, Visualization, (void *)&pub))
   {

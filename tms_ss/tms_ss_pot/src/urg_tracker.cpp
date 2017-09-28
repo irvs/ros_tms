@@ -90,14 +90,15 @@ void *Visualization(void *ptr)
         }
 
         ID = (laser.m_pTarget[i]->id);
-        X = (laser.m_pTarget[i]->px) / 1000;
-        Y = (laser.m_pTarget[i]->py) / 1000;
+        X = (laser.m_pTarget[i]->px);
+        Y = (laser.m_pTarget[i]->py);
 
         if (ORIGIN_X < X && X < MAX_FIELD_X && ORIGIN_Y < Y && Y < MAX_FIELD_Y)
         {
           grid.id = ID;
           grid.x = X;
           grid.y = Y;
+
           points.tracking_grid.push_back(grid);
 
           // Added
@@ -124,6 +125,7 @@ void *Processing(void *ptr)
   ros::Rate r(120);
 
   laser.Init();
+
   /**********************************/
   laser.m_bNodeActive[0] = Config::is()->lrf_active[0];
   laser.m_bNodeActive[1] = Config::is()->lrf_active[1];
@@ -165,6 +167,8 @@ void *Processing(void *ptr)
   int count;
   double theta, range;
   int UPDATE = Config::is()->update;
+
+  if(laser.ReadBackgroundData()) laser.m_bResetBackRangeData = false;
 
   if (laser.m_bResetBackRangeData == true)
   {
@@ -210,6 +214,9 @@ void *Processing(void *ptr)
       r.sleep();
     }
     laser.m_bResetBackRangeData = false;
+
+    laser.WriteBackgroundData();
+
     std::cout << "Back range data is stored" << std::endl;
   }
 
@@ -264,6 +271,7 @@ void *Processing(void *ptr)
           cvmSet(m_Translate, 0, 0, laser.m_LRFParam[n].tx);
           cvmSet(m_Translate, 1, 0, laser.m_LRFParam[n].ty);
 
+          /*
           laser.m_LRFPoints[n].clear();
           laser.m_LRFPoints[n].resize(laser.m_DiffLRFData[n].size());
 
@@ -285,14 +293,15 @@ void *Processing(void *ptr)
             // cloud.points[i].x = cvmGet(laser.m_LRFPos[n][i], 0, 0);
             // cloud.points[i].y = cvmGet(laser.m_LRFPos[n][i], 1, 0);
 
-            laser.m_LRFPoints[n][i].x = cvmGet(laser.m_LRFPos[n][i], 0, 0) * 1000.0;
-            laser.m_LRFPoints[n][i].y = cvmGet(laser.m_LRFPos[n][i], 1, 0) * 1000.0;
+            laser.m_LRFPoints[n][i].x = cvmGet(laser.m_LRFPos[n][i], 0, 0);
+            laser.m_LRFPoints[n][i].y = cvmGet(laser.m_LRFPos[n][i], 1, 0);
           }
           // Added
           // pub_cloud.publish(cloud);
+          */
 
           // Number of clusters
-          std::cout << "Number of clusters " << laser.m_LRFClsData[n].size() << std::endl;
+          // std::cout << "Number of clusters " << n << " " << laser.m_LRFClsData[n].size() << std::endl;
 
           laser.m_LRFClsPoints[n].clear();
           laser.m_LRFClsPoints[n].resize(laser.m_LRFClsData[n].size());
@@ -306,8 +315,8 @@ void *Processing(void *ptr)
             cvmSet(laser.m_LRFClsPos[n][i], 1, 0, range * sin(deg2rad(theta)));
             cvMatMul(m_Rotate, laser.m_LRFClsPos[n][i], Temp);
             cvAdd(m_Translate, Temp, laser.m_LRFClsPos[n][i]);
-            laser.m_LRFClsPoints[n][i].x = cvmGet(laser.m_LRFClsPos[n][i], 0, 0) * 1000.0;
-            laser.m_LRFClsPoints[n][i].y = cvmGet(laser.m_LRFClsPos[n][i], 1, 0) * 1000.0;
+            laser.m_LRFClsPoints[n][i].x = cvmGet(laser.m_LRFClsPos[n][i], 0, 0);
+            laser.m_LRFClsPoints[n][i].y = cvmGet(laser.m_LRFClsPos[n][i], 1, 0);
           }
 
           pthread_mutex_unlock(&mutex_laser);
@@ -315,15 +324,17 @@ void *Processing(void *ptr)
       }
     }
 
-    system("clear");
+    //system("clear");
 
     pthread_mutex_lock(&mutex_target);
     m_PF.update(&laser);
     pthread_mutex_unlock(&mutex_target);
 
-    if(!(++iteration % UPDATE)){
-      laser.GetBackLRFDataGaussian();
-      iteration = 0;
+    if(UPDATE != 0){
+      if(!(++iteration % UPDATE)){
+        laser.UpdateBackLRFDataGaussian();
+        iteration = 0;
+      }
     }
 
     r.sleep();

@@ -70,9 +70,13 @@ public:
   bool m_bResetBackRangeData;
   int GetBackLRFDataGaussian();
   int GetDiffLRFDataGaussian();
+  int UpdateBackLRFDataGaussian();
 
   int IsFrontFData(double currentdata, double backdata, double min_dist);
   int IsFrontFData(double currentdata, double backdata_ave, double backdata_var, double min_prob);
+
+  bool ReadBackgroundData();
+  bool WriteBackgroundData();
 
   int m_diff_dist;
   double m_obj_prob;

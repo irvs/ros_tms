@@ -95,6 +95,7 @@ void visualization_callback(const tms_msg_ss::tracking_points::ConstPtr &msg)
   // uint32_t shape_arrow = visualization_msgs::Marker::ARROW;
   uint32_t shape_arrow = visualization_msgs::Marker::SPHERE;
   uint32_t shape_line = visualization_msgs::Marker::LINE_STRIP;
+  uint32_t shape_mesh = visualization_msgs::Marker::MESH_RESOURCE;
 
   // gradualline
   // flag
@@ -197,6 +198,7 @@ void visualization_callback(const tms_msg_ss::tracking_points::ConstPtr &msg)
             }
             marker.id = z_id;
             marker.type = shape_arrow;
+
             marker.action = visualization_msgs::Marker::ADD;
             marker.pose.position.x = (p->xy)[z].x;
             marker.pose.position.y = (p->xy)[z].y;
@@ -246,24 +248,39 @@ void visualization_callback(const tms_msg_ss::tracking_points::ConstPtr &msg)
                 }
               }
               marker_circle.id = msg->tracking_grid[i].id;
-              marker_circle.type = shape_circle;
+//              marker_circle.type = shape_circle;
+              marker_circle.type = shape_mesh;
+
               marker_circle.action = visualization_msgs::Marker::ADD;
-              marker_circle.scale.x = 0.102;
-              marker_circle.scale.y = 0.102;
-              marker_circle.scale.z = 1.0;
-              int color_c = p->id % 14;
-              marker_circle.color.r = colorset[color_c][0];
-              marker_circle.color.g = colorset[color_c][1];
-              marker_circle.color.b = colorset[color_c][2];
-              marker_circle.color.a = 1.0;
-              marker_circle.lifetime = ros::Duration(0.5);
+
+              if(marker_circle.type == shape_mesh){
+                marker_circle.mesh_resource = "package://tms_ss_pot/meshes/WalkingMan4.dae";
+                marker_circle.mesh_use_embedded_materials = true;
+                marker_circle.scale.x = 0.025;
+                marker_circle.scale.y = 0.025;
+                marker_circle.scale.z = 0.025;
+                marker_circle.pose.position.z = 0.0;
+              } else {
+                int color_c = p->id % 14;
+                marker_circle.color.r = colorset[color_c][0];
+                marker_circle.color.g = colorset[color_c][1];
+                marker_circle.color.b = colorset[color_c][2];
+                marker_circle.color.a = 1.0;
+                marker_circle.scale.x = 0.102;
+                marker_circle.scale.y = 0.102;
+                marker_circle.scale.z = 1.0;
+                marker_circle.pose.position.z = 1.0;
+              }
+
               marker_circle.pose.position.x = (p->xy)[z].x;
               marker_circle.pose.position.y = (p->xy)[z].y;
-              marker_circle.pose.position.z = 1.0;
               marker_circle.pose.orientation.x = 0.0;
               marker_circle.pose.orientation.y = 0.0;
               marker_circle.pose.orientation.z = 0.0;
               marker_circle.pose.orientation.w = 1.0;
+
+              marker_circle.lifetime = ros::Duration(0.5);
+
               markerArray.markers.push_back(marker_circle);
             }
           }

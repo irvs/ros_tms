@@ -15,17 +15,17 @@ CPF::CPF()
   m_sigma = Config::is()->m_sigma;
   Dimension = 4;
   Num_of_particles = Config::is()->n_of_particles;
-  Area[0] = Config::is()->target_area[0] * 1000.0;
-  Area[1] = Config::is()->target_area[1] * 1000.0;
-  Area[2] = Config::is()->target_area[2] * 1000.0;
-  Area[3] = Config::is()->target_area[3] * 1000.0;
+  Area[0] = Config::is()->target_area[0];
+  Area[1] = Config::is()->target_area[1];
+  Area[2] = Config::is()->target_area[2];
+  Area[3] = Config::is()->target_area[3];
   MaxVel = Config::is()->max_vel;
   state[0] = state[1] = state[2] = state[3] = 0;
   m_ID = -1;
   particle_filter = NULL;
   m_cnt = 0;
-  Noise[0] = Config::is()->pos_noise * 1000.0;
-  Noise[1] = Config::is()->vel_noise * 1000.0;
+  Noise[0] = Config::is()->pos_noise;
+  Noise[1] = Config::is()->vel_noise;
   m_lostcnt = 0;
 }
 
