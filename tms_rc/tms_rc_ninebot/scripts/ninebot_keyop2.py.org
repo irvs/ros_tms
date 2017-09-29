@@ -6,10 +6,16 @@ import tf
 import math
 from geometry_msgs.msg  import PoseStamped
 from actionlib_msgs.msg import GoalID
+from geometry_msgs.msg  import Twist
 from tms_msg_rc.msg     import nucleo_serial
-#from std_msgs.msg	    import Float64
 
+import thread
 import subprocess
+
+
+ANGLE_CHANGE = 0.01
+ANGULAR_MAX  = 0.2
+
 
 class Getch:
     def __call__(self):
@@ -28,12 +34,11 @@ class KeyopClass:
     def __init__(self):
         rospy.init_node('ninebot_keyop', anonymous=True)
         rospy.on_shutdown(self.shutdown)
-        
+
         self.goal_frame = '/portable1/base_footprint_combined'
         self.goal_pub   = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=100)
         self.cancel_pub = rospy.Publisher('portable1/move_base/cancel', GoalID, queue_size=10)
-
-    	#self.offset_pub = rospy.Publisher('portable1/angle_offset', Float64, queue_size=10)
+        self.twist_pub  = rospy.Publisher('portable1/serial_twist', Twist, queue_size=100)
     	self.offset_pub = rospy.Publisher('portable1/nucleo_serial', nucleo_serial, queue_size=10)
 
         #rospy.set_param('/ninebot_human_follower/move_base_simple/goal', '/move_base_simple/goal')
@@ -42,7 +47,11 @@ class KeyopClass:
         offset         = nucleo_serial()
         offset.delta_t = 0.01
 
-        print('\n\nInput key (1->goal_1 / 2->goal_2 / f->follower / q->end)\n\n')
+        self.ang_vel = 0.0
+        self.manual_flag = False
+        thread.start_new_thread(self.manual_control, ())
+
+        print('\n\nInput key (1->goal_1 / 2->goal_2 / f->follower)\n\n')
 
 	self.now_time = rospy.Time.now()
         rate = rospy.Rate(100) # 100hz
@@ -50,58 +59,60 @@ class KeyopClass:
 
             getch = Getch()
             x = getch()
-            print('\r')
+            #print('\r')
 
-            if (x == 'q'):
+            if  (ord(x) == 27): # 「ESC」
                 self.shutdown()
                 break
-
             elif (ord(x) == 3): # 「CTRL + C」
                 self.shutdown()
                 break
-
             elif (x == '1'):
                 print('set goal position 1\n')
+                #self.twist_pub.publish(Twist())
                 self.goal_plotout(-2.5, 0.0, math.pi)
-
             elif (x == '2'):
                 print('set goal position 2\n')
+                #self.twist_pub.publish(Twist())
                 self.goal_plotout(2.5, 0.0, 0.0)
-
-            elif (x == '3'):
+            elif (x == '3' or x == 'w'):
                 print('cancel goal position\n')
+                self.twist_pub.publish(Twist())
                 self.cancel_pub.publish(GoalID())
-
             elif (x == 'f'):
+                self.twist_pub.publish(Twist())
                 self.cancel_pub.publish(GoalID())
                 print('start ninebot_follower\n')
                 subprocess.call("roslaunch tms_rc_ninebot ninebot_follower.launch", shell=True)
                 break
-
-            elif (x == 'a'):
-                print('set offset +\n') 
-                # offset = Float64()
-                # offset.data = 10.0
+            elif (x == 'q'):
+                print('set offset +\n')
                 offset.header.stamp = rospy.Time.now()
                 offset.raw_delta_r  =  10
                 offset.raw_delta_l  = -10
                 self.offset_pub.publish(offset)
-
-            elif (x == 'd'):
+            elif (x == 'e'):
                 print('set offset -\n')
-                # offset = Float64()
-                # offset.data = -10.0
                 offset.header.stamp = rospy.Time.now()
                 offset.raw_delta_r  = -10
                 offset.raw_delta_l  =  10
                 self.offset_pub.publish(offset)
 
-            # elif (x == 'm'):
-            #     self.cancel_pub.publish(GoalID())
-            #     print('start ninebot_manual\n')
-            #     subprocess.call("rosrun tms_rc_ninebot ninebot_manual.py", shell=True)
-            #     break
-            
+            if   (x == 'a'):
+                self.manual_flag = True
+                self.ang_vel = self.ang_vel + ANGLE_CHANGE
+            elif (x == 'd'):
+                self.manual_flag = True
+                self.ang_vel = self.ang_vel - ANGLE_CHANGE
+            elif (x == 's'):
+                self.twist_pub.publish(Twist())
+                self.manual_flag = False
+                self.ang_vel = 0.0
+                print('angular_z = ' + str(self.ang_vel) + '\n')
+            else:
+                self.manual_flag = False
+                self.ang_vel = 0
+
             rate.sleep()
 
     def goal_plotout(self, goalX, goalY, goalAngle):
@@ -118,9 +129,25 @@ class KeyopClass:
         goal.header.stamp = self.now_time
         self.goal_pub.publish(goal)
 
+    def manual_control(self):
+        key_vel = Twist()
+        rate = rospy.Rate(10)
+        while not rospy.is_shutdown():
+            if  (self.manual_flag == True):
+
+                if   self.ang_vel < -ANGULAR_MAX : self.ang_vel = -ANGULAR_MAX
+                elif self.ang_vel >  ANGULAR_MAX : self.ang_vel =  ANGULAR_MAX
+                if   abs(self.ang_vel) < 0.001   : self.ang_vel = 0.0
+
+                print('angular_z = ' + str(self.ang_vel) + '\r\n')
+                key_vel.angular.z = self.ang_vel
+                self.twist_pub.publish(key_vel)
+            rate.sleep()
+
     def shutdown(self):
         try:
             self.cancel_pub.publish(GoalID())
+            self.twist_pub.publish(Twist())
         except: pass
 
 if __name__ == '__main__':
