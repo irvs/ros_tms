@@ -6,7 +6,7 @@ import tf
 import math
 from geometry_msgs.msg  import PoseStamped
 from actionlib_msgs.msg import GoalID
-from ninebot.msg        import nucleo_serial
+from tms_msg_rc.msg     import nucleo_serial
 
 import subprocess
 
@@ -27,7 +27,7 @@ class KeyopClass:
     def __init__(self):
         rospy.init_node('ninebot_keyop', anonymous=True)
         rospy.on_shutdown(self.shutdown)
-        
+
         self.goal_frame = '/portable1/base_footprint_combined'
         self.goal_pub   = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=100)
         self.cancel_pub = rospy.Publisher('portable1/move_base/cancel', GoalID, queue_size=10)
@@ -37,7 +37,7 @@ class KeyopClass:
         offset         = nucleo_serial()
         offset.delta_t = 0.01
 
-        print('\n\nInput key (1->goal_1 / 2->goal_2 / f->follower / q->end)\n\n')
+        print('\n\nInput key (1->goal_A / 2->goal_B / 3->cancel / f->follower / q->offset+ / e->offset- / ESC->end)\n\n')
 
 	self.now_time = rospy.Time.now()
         rate = rospy.Rate(100) # 100hz
@@ -56,11 +56,11 @@ class KeyopClass:
                 break
 
             elif (x == '1'):
-                print('set goal position 1\n')
+                print('set goal position A\n')
                 self.goal_plotout(-2.5, 0.0, math.pi)
 
             elif (x == '2'):
-                print('set goal position 2\n')
+                print('set goal position B\n')
                 self.goal_plotout(2.5, 0.0, 0.0)
 
             elif (x == '3' or x == 'w' or x == 's'):
@@ -74,7 +74,7 @@ class KeyopClass:
                 break
 
             elif (x == 'q' or x == 'a'):
-                print('set offset +\n') 
+                print('set offset +\n')
                 offset.header.stamp = rospy.Time.now()
                 offset.raw_delta_r  =  10
                 offset.raw_delta_l  = -10
