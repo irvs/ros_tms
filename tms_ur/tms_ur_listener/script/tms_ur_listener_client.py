@@ -188,7 +188,7 @@ if __name__ == '__main__':
     try:
         main()
     except rospy.ROSInterruptException:
-        rospy.loginfo("ROSInterruptException");
+        rospy.loginfo("ROSInterruptException")
         kill_julius(julius)
         delete_socket(julius_socket)
         sys.exit(0)

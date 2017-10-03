@@ -6,6 +6,7 @@ from tms_ur_listener.srv import gSpeech_msg
 from tms_ur_speaker.srv import *
 from std_msgs.msg import Bool
 from std_msgs.msg import String
+from std_msgs.msg import Int32
 from janome.tokenizer import Tokenizer
 from tms_msg_db.msg import Tmsdb
 from tms_msg_db.srv import TmsdbGetData
@@ -40,6 +41,7 @@ class TmsUrListener():
 
         self.power_pub = rospy.Publisher("julius_power",Bool,queue_size=10)
         self.speaker_pub = rospy.Publisher("speaker",String,queue_size=10)
+        self.bed_pub = rospy.Publisher("rc_bed",Int32,queue_size=10)
         self.tok = Tokenizer()
 
         f = open('/home/rts/apikey','r')
@@ -103,13 +105,11 @@ class TmsUrListener():
         return tim
 
     def db_reader(self,data):
-        target=Tmsdb()
         rospy.wait_for_service('tms_db_reader')
         try:
             tms_db_reader = rospy.ServiceProxy('tms_db_reader', TmsdbGetData)
             res = tms_db_reader(data)
-            target = res.tmsdb[0]
-            return target
+            return res
         except rospy.ServiceException as e:
             print "Service call failed: %s" % e
             return None
@@ -180,23 +180,24 @@ class TmsUrListener():
         other_words = []
 
         for word in words:
-            target = self.tag_reader(word)
-            if target is None:
+            res = self.tag_reader(word)
+            if res is None:
                 tim = self.announce(error_msg2)
                 self.julius_power(True,tim.sec)
                 return
-            if target.type == 'task':
-                task_dic[target.id] = target.announce
-            elif target.type == 'robot':
-                robot_dic[target.id] = target.announce
-            elif target.type == 'object':
-                object_dic[target.id] = target.announce
-            elif target.type == 'person':
-                user_dic[target.id] = target.announce
-            elif target.type == 'furniture':
-                place_dic[target.id] = target.announce
-            else:
-                other_words.append(word)
+            for target in res.tmsdb:
+                if target.type == 'task':
+                    task_dic[target.id] = target.announce
+                elif target.type == 'robot':
+                    robot_dic[target.id] = target.announce
+                elif target.type == 'object':
+                    object_dic[target.id] = target.announce
+                elif target.type == 'person':
+                    user_dic[target.id] = target.announce
+                elif target.type == 'furniture':
+                    place_dic[target.id] = target.announce
+                else:
+                    other_words.append(word)
 
         print "task:" + str(task_dic)
         print "robot:" + str(robot_dic)
@@ -210,6 +211,8 @@ class TmsUrListener():
         elif len(task_dic) > 1:
             print "len(task_dic) > 1"
             #未実装
+            task_id = task_dic.keys()[0]
+            announce = task_dic[task_id]
 
         if task_id == 0:
             print 'ask docomo Q&A api'
@@ -397,7 +400,31 @@ class TmsUrListener():
 
             res = requests.get(url)
             print res.text
-
+        elif task_id == 8104:
+            msg = Int32()
+            cmd = ""
+            if "起こす" in words or "上げる" in words:
+                print "raise bed"
+                msg.data = 3
+                cmd = "起こし"
+            elif "寝かせる" in words or "下げる" in words:
+                print "lay bed"
+                msg.data = 4
+                cmd = "寝かせ"
+            else:
+                tim = self.announce(error_msg1)
+                self.julius_power(True,tim.sec)
+                return
+            anc_list = announce.split("$")
+            announce = ""
+            for anc in anc_list:
+                if anc == "cmd":
+                    announce += cmd
+                else:
+                    announce += anc
+            tim = self.announce(announce)
+            self.julius_power(True,tim.sec)
+            self.bed_pub.publish(msg)
         else: #robot_task
             anc_list = announce.split("$")
             announce = ""
