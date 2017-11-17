@@ -5,15 +5,10 @@
       <GradleProjectSettings>
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleHome" value="$APPLICATION_HOME_DIR$/gradle/gradle-2.10" />
-        <option name="gradleJvm" value="1.7" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/tms_ur_arviewer" />
-            <option value="$PROJECT_DIR$/tms_ur_commander" />
-            <option value="$PROJECT_DIR$/tms_ur_dbbrowser" />
-            <option value="$PROJECT_DIR$/tms_ur_sanmoku" />
+            <option value="$PROJECT_DIR$/app" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

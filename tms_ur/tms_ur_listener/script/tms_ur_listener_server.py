@@ -36,7 +36,9 @@ class TmsUrListener():
         rospy.Subscriber("/pi3/julius_msg",julius_msg,self.callback, callback_args=3)
         rospy.Subscriber("/pi4/julius_msg",julius_msg,self.callback, callback_args=4)
         rospy.Subscriber("/pi5/julius_msg",julius_msg,self.callback, callback_args=5)
+        rospy.Subscriber("/watch_msg",String,self.callback, callback_args=100)
         self.gSpeech_launched = False
+        self.julius_flag = True
         self.timer = threading.Timer(1,self.alarm)
 
         self.power_pub = rospy.Publisher("julius_power",Bool,queue_size=10)
@@ -68,13 +70,15 @@ class TmsUrListener():
                 break
 
     def julius_power(self,data,t=0):
-        msg = Bool()
-        msg.data = data
-        time.sleep(float(t))
-        self.power_pub.publish(msg)
-        if data == True:
-            time.sleep(1.5)
-            self.speaker('\sound3')
+        if self.julius_flag != data:
+            msg = Bool()
+            msg.data = data
+            time.sleep(float(t))
+            self.power_pub.publish(msg)
+            self.julius_flag = data
+            if data == True:
+                time.sleep(1.5)
+                self.speaker('\sound3')
 
     def launch_gSpeech(self,id):
         servicename = '/pi' + str(id) + '/gSpeech'
@@ -123,20 +127,20 @@ class TmsUrListener():
     def callback(self, data, id):
         rospy.loginfo(str(id))
         rospy.loginfo(data)
-        if data.data not in trigger:
-            return
-        if self.gSpeech_launched == True:
-            return
+        if id < 100:
+            if data.data not in trigger:
+                return
+            if self.gSpeech_launched == True:
+                return
+            self.gSpeech_launched = True
+            rospy.loginfo("call trigger on raspi:%d",id)
+            rospy.loginfo("kill julius!!")
+            self.julius_power(False)
+            self.speaker("\sound1")
+            time.sleep(0.5)
+            data = self.launch_gSpeech(id)
+            self.gSpeech_launched = False
 
-        self.gSpeech_launched = True
-        rospy.loginfo("call trigger on raspi:%d",id)
-        rospy.loginfo("kill julius!!")
-        self.julius_power(False)
-        self.speaker("\sound1")
-        time.sleep(0.5)
-        data = self.launch_gSpeech(id)
-
-        self.gSpeech_launched = False
         if data.data == "":
             tim = self.announce(error_msg0)
             self.julius_power(True,tim.sec)
@@ -403,14 +407,24 @@ class TmsUrListener():
         elif task_id == 8104:
             msg = Int32()
             cmd = ""
-            if "起こす" in words or "上げる" in words:
-                print "raise bed"
+            if "起こす" in words:
+                msg.data = 1
+                cmd = "を起こし"
+            elif "寝かせる" in words:
+                msg.data = 2
+                cmd = "を寝かせ"
+            elif "立てる" in words:
                 msg.data = 3
-                cmd = "起こし"
-            elif "寝かせる" in words or "下げる" in words:
-                print "lay bed"
+                cmd = "を立て"
+            elif "倒す" in words:
                 msg.data = 4
-                cmd = "寝かせ"
+                cmd = "を倒し"
+            elif "上げる" in words:
+                msg.data = 7
+                cmd = "の高さを上げ"
+            elif "下げる" in words:
+                msg.data = 8
+                cmd = "の高さを下げ"
             else:
                 tim = self.announce(error_msg1)
                 self.julius_power(True,tim.sec)

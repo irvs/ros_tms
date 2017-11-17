@@ -18,7 +18,7 @@
 ////////////////////////////////////////////////
 
 int num_tags = 1;
-uint16_t tags[1] = {0x6077};                        
+uint16_t tags[1] = {0x6076};//{0x6077};                        
 
 //uint8_t num_anchors = 8;                                    // the number of anchors
 //uint16_t anchors[8] = {0x605B, 0x680A, 0x6822, 0x6031, 0x6173, 0x683B, 0x685D, 0x603B};     // the network id of the anchors: change these to the network ids of your anchors.
