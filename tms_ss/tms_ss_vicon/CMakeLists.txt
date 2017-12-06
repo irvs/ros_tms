@@ -25,7 +25,7 @@ link_directories(${LINK_DIRECTORIES} ${PROJECT_SOURCE_DIR}/viconSDK)
 
 add_executable(vicon_stream src/vicon_stream.cpp)
 
-add_dependencies(vicon_stream tms_msg_ss_generate_messages_cpp 
+add_dependencies(vicon_stream tms_msg_ss_generate_messages_cpp
                               tms_msg_db_generate_messages_cpp)
 
 target_link_libraries(vicon_stream ${catkin_LIBRARIES} ViconDataStreamSDK_CPP)

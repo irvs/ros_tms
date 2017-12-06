@@ -79,7 +79,7 @@ Visualization Manager:
           Show Trail: false
           Value: true
         bsen_celling_link:
-          Alpha: 1
+          Alpha: 0
           Show Axes: false
           Show Trail: false
           Value: true

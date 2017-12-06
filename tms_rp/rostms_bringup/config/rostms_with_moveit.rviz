@@ -6,9 +6,12 @@ Panels:
       Expanded:
         - /MotionPlanning1
         - /MotionPlanning1/Scene Geometry1
+        - /MotionPlanning1/Scene Robot1
+        - /MotionPlanning1/Scene Robot1/Links1
+        - /MotionPlanning1/Scene Robot1/Links1/bsen_celling_link1
         - /Marker1
         - /Marker2
-      Splitter Ratio: 0.74256
+      Splitter Ratio: 0.742560029
     Tree Height: 247
   - Class: rviz/Help
     Name: Help
@@ -26,7 +29,7 @@ Visualization Manager:
       Color: 160; 160; 164
       Enabled: false
       Line Style:
-        Line Width: 0.03
+        Line Width: 0.0299999993
         Value: Lines
       Name: Grid
       Normal Cell Count: 0
@@ -41,16 +44,26 @@ Visualization Manager:
     - Class: moveit_rviz_plugin/MotionPlanning
       Enabled: true
       Move Group Namespace: ""
-      MoveIt_Goal_Tolerance: 0.1
+      MoveIt_Goal_Tolerance: 0.10000000000000001
       MoveIt_Planning_Attempts: 10
       MoveIt_Planning_Time: 5
       MoveIt_Use_Constraint_Aware_IK: true
       MoveIt_Warehouse_Host: 127.0.0.1
       MoveIt_Warehouse_Port: 33829
+      MoveIt_Workspace:
+        Center:
+          X: 0
+          Y: 0
+          Z: 0
+        Size:
+          X: 2
+          Y: 2
+          Z: 2
       Name: MotionPlanning
       Planned Path:
+        Interrupt Display: false
         Links:
-          All Links Enabled: true
+          All Links Enabled: false
           Expand Joint Details: false
           Expand Link Details: false
           Expand Tree: false
@@ -70,10 +83,10 @@ Visualization Manager:
             Show Trail: false
             Value: true
           bsen_celling_link:
-            Alpha: 0.2
+            Alpha: 1
             Show Axes: false
             Show Trail: false
-            Value: true
+            Value: false
           bsen_room_link:
             Alpha: 1
             Show Axes: false
@@ -494,7 +507,7 @@ Visualization Manager:
         Show Manipulability: false
         Show Manipulability Index: false
         Show Weight Limit: false
-        TextHeight: 0.08
+        TextHeight: 0.0799999982
       Planning Request:
         Colliding Link Color: 255; 0; 0
         Goal State Alpha: 1
@@ -512,14 +525,14 @@ Visualization Manager:
       Scene Geometry:
         Scene Alpha: 1
         Scene Color: 50; 230; 50
-        Scene Display Time: 0.2
+        Scene Display Time: 0.200000003
         Show Scene Geometry: true
         Voxel Coloring: Z-Axis
         Voxel Rendering: Occupied Voxels
       Scene Robot:
         Attached Body Color: 150; 50; 150
         Links:
-          All Links Enabled: true
+          All Links Enabled: false
           Expand Joint Details: false
           Expand Link Details: false
           Expand Tree: false
@@ -542,7 +555,7 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-            Value: true
+            Value: false
           bsen_room_link:
             Alpha: 1
             Show Axes: false
@@ -999,7 +1012,7 @@ Visualization Manager:
       Collision Enabled: false
       Enabled: true
       Links:
-        All Links Enabled: true
+        All Links Enabled: false
         Body:
           Alpha: 1
           Show Axes: false
@@ -1208,22 +1221,24 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 2.91846
+      Distance: 10.0487194
       Enable Stereo Rendering:
-        Stereo Eye Separation: 0.06
+        Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 10.9113
-        Y: 2.15786
-        Z: 9.33613e-06
+        X: 9.14282227
+        Y: 2.20936084
+        Z: 9.33612955e-06
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.0500000007
       Name: Current View
-      Near Clip Distance: 0.01
-      Pitch: 0.709796
+      Near Clip Distance: 0.00999999978
+      Pitch: 0.904795825
       Target Frame: world_link
       Value: XYOrbit (rviz)
-      Yaw: 3.73812
+      Yaw: 4.2331214
     Saved: ~
 Window Geometry:
   Displays:
@@ -1235,7 +1250,7 @@ Window Geometry:
   Hide Right Dock: false
   Motion Planning:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000100000000000002a2000003dafc0200000005fb000000100044006900730070006c00610079007301000000280000018c000000dd00fffffffb0000000800480065006c00700000000342000000bb0000007600fffffffb0000000a0056006900650077007300000003b0000000b0000000b000fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e006701000001ba00000248000001ab00ffffff00000497000003da00000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000100000000000002b8000003dafc0200000005fb000000100044006900730070006c00610079007301000000280000018c000000dd00fffffffb0000000800480065006c00700000000342000000bb0000007600fffffffb0000000a0056006900650077007300000003b0000000b0000000b000fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e006701000001ba00000248000001cc00ffffff00000481000003da00000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Views:
     collapsed: false
   Width: 1855

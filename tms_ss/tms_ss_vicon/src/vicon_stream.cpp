@@ -15,6 +15,7 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/algorithm/string.hpp>
+#include <visualization_msgs/Marker.h>
 
 #include <iostream>
 #include <fstream>
@@ -73,6 +74,7 @@ private:
   ros::Publisher db_pub;
   ros::Publisher pose_pub;
   ros::Publisher marker_pub;
+  ros::Publisher box_pub;
   // Timer
   ros::Timer update_timer;
   // Parameters:
@@ -110,6 +112,7 @@ public:
     // Publishers
     db_pub = nh.advertise< tms_msg_db::TmsdbStamped >("tms_db_data", 1);
     pose_pub = nh_priv.advertise< tms_msg_ss::vicon_data >("output", 1);
+    box_pub = nh.advertise< visualization_msgs::Marker>("checker_box",1);
     // TimerEvent
     update_timer = nh.createTimer(ros::Duration(update_time), &ViconStream::updateCallback, this);
   }
@@ -301,6 +304,28 @@ private:
         pose_pub.publish(pose_msg);
 
         std::cout << _Output_GetFrameNumber.FrameNumber << "::" << SegmentName << std::endl;
+
+        if(SubjectName == "checker_box"){
+            visualization_msgs::Marker marker;
+            marker.header.frame_id = "world_link";
+            marker.header.stamp = ros::Time();
+            marker.type = visualization_msgs::Marker::SPHERE;
+            marker.pose.position.x = pose_msg.translation.x * 0.001;
+            marker.pose.position.y = pose_msg.translation.y * 0.001;
+            marker.pose.position.z = pose_msg.translation.z * 0.001;
+            marker.pose.orientation.x = pose_msg.rotation.x;
+            marker.pose.orientation.y = pose_msg.rotation.y;
+            marker.pose.orientation.z = pose_msg.rotation.z;
+            marker.pose.orientation.w = pose_msg.rotation.w;
+            marker.scale.x = 0.5;
+            marker.scale.y = 0.5;
+            marker.scale.z = 0.5;
+            marker.color.a = 0.5;
+            marker.color.r = 1.0;
+            marker.color.g = 1.0;
+            ROS_INFO("%f,%f,%f",marker.pose.position.x,marker.pose.position.y,marker.pose.position.z);
+            box_pub.publish(marker);
+        }
 
         //----------------------------------------------------------------------
         // publish to tms_db_writer

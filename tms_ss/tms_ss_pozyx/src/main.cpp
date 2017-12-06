@@ -18,6 +18,7 @@
 #include <tms_msg_db/TmsdbGetData.h>
 #include <tms_msg_db/TmsdbStamped.h>
 #include <tms_msg_db/Tmsdb.h>
+#include <visualization_msgs/Marker.h>
 
 #define DEVNAME "/dev/arduino"
 #define BAUDRATE B115200
@@ -41,7 +42,7 @@ int main(int argc, char **argv)
   ros::init(argc,argv,"tms_ss_pozyx");
   ros::NodeHandle n;
   ros::Publisher db_pub = n.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data",1000);
-  ros::Publisher pos_pub = n.advertise<geometry_msgs::PoseStamped> ("pozyx",1000);
+  ros::Publisher pos_pub = n.advertise<visualization_msgs::Marker> ("pozyx",1000);
   std::string frame_id("/world");
 
 	int fd = open(DEVNAME, O_RDWR | O_NOCTTY);
@@ -194,9 +195,10 @@ int main(int argc, char **argv)
       db_msg.tmsdb.push_back(tmpData);
       db_pub.publish(db_msg);
 
-      geometry_msgs::PoseStamped msg;
+      visualization_msgs::Marker msg;
       msg.header.frame_id = "world_link";
-      msg.header.stamp = ros::Time::now();
+      msg.header.stamp = ros::Time();
+      msg.type = visualization_msgs::Marker::SPHERE;
       msg.pose.position.x = kfX;
       msg.pose.position.y = kfY;
       msg.pose.position.z = kfZ;
@@ -204,6 +206,11 @@ int main(int argc, char **argv)
       msg.pose.orientation.y = qy;
       msg.pose.orientation.z = qz;
       msg.pose.orientation.w = qw;
+      msg.scale.x = 0.5;
+      msg.scale.y = 0.5;
+      msg.scale.z = 0.5;
+      msg.color.a = 0.5;
+      msg.color.r = 1.0;
       pos_pub.publish(msg);
     }
   }
