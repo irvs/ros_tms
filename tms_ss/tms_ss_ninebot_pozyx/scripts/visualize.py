@@ -82,7 +82,6 @@ class VisualizeClass(object):
         markerArray_anchors = MarkerArray()
 
         for anchor in self.anchors:
-            canAppend = False
 
             marker_anchor = Marker()
             marker_anchor.header.frame_id = self.frame_id
@@ -104,15 +103,13 @@ class VisualizeClass(object):
                     marker_anchor.color.r = 0.0
                     marker_anchor.color.g = 1.0
                     marker_anchor.color.b = 0.0
-                    canAppend = True
                     break
                 else:
                     marker_anchor.color.r = 0.8
                     marker_anchor.color.g = 0.8
                     marker_anchor.color.b = 0.8
 
-            if canAppend:
-                markerArray_anchors.markers.append(marker_anchor)
+            markerArray_anchors.markers.append(marker_anchor)
 
         self.anchors_pub.publish(markerArray_anchors)
 
