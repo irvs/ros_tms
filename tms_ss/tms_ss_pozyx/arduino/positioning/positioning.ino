@@ -17,8 +17,11 @@
 ////////////////// PARAMETERS //////////////////
 ////////////////////////////////////////////////
 
-int num_tags = 1;
-uint16_t tags[1] = {0x6077};                        
+//int num_tags = 1;
+//uint16_t tags[1] = {0x6077};
+
+int num_tags = 5;
+uint16_t tags[5] = {0x6077,0x6076,0x6e28,0x6905,0x6814};                        
 
 //uint8_t num_anchors = 8;                                    // the number of anchors
 //uint16_t anchors[8] = {0x605B, 0x680A, 0x6822, 0x6031, 0x6173, 0x683B, 0x685D, 0x603B};     // the network id of the anchors: change these to the network ids of your anchors.
@@ -71,8 +74,10 @@ void setup(){
   Serial.begin(115200);
   
   Pozyx.begin();
-  
-  setAnchorsManual();
+  for (int i=0; i<num_tags;i++){
+    setAnchorsManual(tags[i]);
+  }
+
   delay(1000);
 }
 
@@ -87,7 +92,7 @@ void loop(){
       printCoordinates(position, q, tags[i]);
     }else{
       //printErrorCode("positioning", tags[i]);
-      setAnchorsManual();
+      setAnchorsManual(tags[i]);
     }
   }
 }
@@ -113,18 +118,16 @@ void printCoordinates(coordinates_t coor,quaternion_t q, uint16_t network_id){
 }
 
 // function to manually set the anchor coordinates
-void setAnchorsManual(){
-  for (int i = 0; i < num_tags; i++){
-    int status = Pozyx.clearDevices(tags[i]);
-    for(int j = 0; j < num_anchors; j++){
-      device_coordinates_t anchor;
-      anchor.network_id = anchors[j];
-      anchor.flag = 0x1; 
-      anchor.pos.x = anchors_x[j];
-      anchor.pos.y = anchors_y[j];
-      anchor.pos.z = heights[j];
-      status &= Pozyx.addDevice(anchor, tags[i]);
-    }
-    Pozyx.setSelectionOfAnchors(POZYX_ANCHOR_SEL_AUTO,num_anchors,tags[i]);
+void setAnchorsManual(uint16_t tag){
+  int status = Pozyx.clearDevices(tag);
+  for(int j = 0; j < num_anchors; j++){
+    device_coordinates_t anchor;
+    anchor.network_id = anchors[j];
+    anchor.flag = 0x1; 
+    anchor.pos.x = anchors_x[j];
+    anchor.pos.y = anchors_y[j];
+    anchor.pos.z = heights[j];
+    status &= Pozyx.addDevice(anchor, tag);
   }
+  Pozyx.setSelectionOfAnchors(POZYX_ANCHOR_SEL_AUTO,num_anchors,tag);
 }

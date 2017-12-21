@@ -95,7 +95,7 @@ public:
     idPlace(5001)
     ,  // 988 room
     stream_mode("ClientPull")
-    , host_name("192.168.4.151:801")
+    , host_name("192.168.4.53:801")
     , frame_id("/world")
     , update_time(0.01)
     ,  // sec
@@ -323,7 +323,6 @@ private:
             marker.color.a = 0.5;
             marker.color.r = 1.0;
             marker.color.g = 1.0;
-            ROS_INFO("%f,%f,%f",marker.pose.position.x,marker.pose.position.y,marker.pose.position.z);
             box_pub.publish(marker);
         }
 

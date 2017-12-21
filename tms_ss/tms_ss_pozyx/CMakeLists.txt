@@ -5,6 +5,7 @@ find_package(catkin REQUIRED COMPONENTS
   visualization_msgs
   geometry_msgs
   roscpp
+  tf
   rospy
   std_msgs
   tms_msg_db
@@ -22,9 +23,14 @@ include_directories(
 )
 
 add_executable(tms_ss_pozyx src/main.cpp)
+add_executable(tms_ss_multi_pozyx src/multi_tag.cpp)
 
 add_dependencies(tms_ss_pozyx tms_msg_db_generate_messages_cpp tms_msg_ss_generate_messages_cpp)
+add_dependencies(tms_ss_multi_pozyx tms_msg_db_generate_messages_cpp tms_msg_ss_generate_messages_cpp)
 
 target_link_libraries(tms_ss_pozyx
+	${catkin_LIBRARIES}
+	)
+target_link_libraries(tms_ss_multi_pozyx
 	${catkin_LIBRARIES}
 	)
