@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding: UTF-8
 
 import rospy
 from pypozyx import *
@@ -16,20 +17,17 @@ class VisualizeClass(object):
         rospy.Subscriber("/pozyx", PoseStamped, self.callback_tag, queue_size=1000)
         rospy.Subscriber("/positioning_anchors_id", UInt16MultiArray, self.callback_anchors, queue_size=1000)
 
-        ########## Anchors (network_id, flag, pos) ##########
+        ########## Anchors (network_id, flag, pos) ###########
 
-        anchors = [DeviceCoordinates(0x6e30, 1, Coordinates(-63422, -22248, 0)),
-                   DeviceCoordinates(0x6e39, 1, Coordinates(-51793, -18700, 0)),
-                   DeviceCoordinates(0x6e22, 1, Coordinates(-34670, -13403, 0)),
-                   DeviceCoordinates(0x6e31, 1, Coordinates(-28827, -11650, 0)),
-                   DeviceCoordinates(0x6044, 1, Coordinates(-17374, -8100, 0)),
-                   DeviceCoordinates(0x6037, 1, Coordinates(-6131, -4699, 0)),
-                   DeviceCoordinates(0x6e49, 1, Coordinates(-59680, -34253, 0)),
-                   DeviceCoordinates(0x6e23, 1, Coordinates(-48108, -30702, 0)),
-                   DeviceCoordinates(0x6e08, 1, Coordinates(-36752, -27245, 0)),
-                   DeviceCoordinates(0x6e58, 1, Coordinates(-25118, -23650, 0)),
-                   DeviceCoordinates(0x6050, 1, Coordinates(-13705, -20161, 0)),
-                   DeviceCoordinates(0x6023, 1, Coordinates(-2479, -16692, 0))]
+        anchors = [DeviceCoordinates(0x6e31, 1, Coordinates(10844+6966, -(0+42), 0)),
+           DeviceCoordinates(0x6e49, 1, Coordinates(-6966+6966, -(-42+42), 0)),
+           DeviceCoordinates(0x6e08, 1, Coordinates(-23361+6966, -(3805+42), 0)),
+           DeviceCoordinates(0x6050, 1, Coordinates(-19237+6966, -(-17218+42), 0))]
+
+        # anchors = [DeviceCoordinates(0x6044, 1, Coordinates(-19430+6966, -(-32293+42), 0)),
+        #             DeviceCoordinates(0x6e22, 1, Coordinates(-27795+6966, -(-40438+42), 0)),
+        #             DeviceCoordinates(0x6e30, 1, Coordinates(-28156+6966, -(-48587+42), 0)),
+        #             DeviceCoordinates(0x6037, 1, Coordinates(-22869+6966, -(-55671+42), 0))]
 
         ################################
 
