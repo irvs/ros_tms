@@ -1,11 +1,17 @@
 #!/usr/bin/env python
-# coding: UTF-8
+# coding:utf-8
 
 import rospy
+import sys
 from time import sleep
 from pypozyx import *
 from std_msgs.msg import UInt16MultiArray, MultiArrayLayout, MultiArrayDimension
 from geometry_msgs.msg import PoseStamped
+
+class IdWithDistance(object):
+    def __init__(self, _network_id, _distance):
+        self.network_id = _network_id
+        self.distance = _distance
 
 class LocalizeClass(object):
 
@@ -26,24 +32,38 @@ class LocalizeClass(object):
         if not remote:
             remote_id = None
 
+        distance_threshold = 40.0 # [m]
+        ranging_repetition = 10
+        ranging_interval = 1000
+
+        nr_anchors = 4
+
         ########## Anchors (network_id, flag, pos) ##########
 
-        anchors = [DeviceCoordinates(0x6e31, 1, Coordinates(10844+6966, -(0+42), 0)),
-           DeviceCoordinates(0x6e49, 1, Coordinates(-6966+6966, -(-42+42), 0)),
-           DeviceCoordinates(0x6e08, 1, Coordinates(-23361+6966, -(3805+42), 0)),
-           DeviceCoordinates(0x6050, 1, Coordinates(-19237+6966, -(-17218+42), 0))]
-
-        # anchors = [DeviceCoordinates(0x6044, 1, Coordinates(-19430+6966, -(-32293+42), 0)),
-        #             DeviceCoordinates(0x6e22, 1, Coordinates(-27795+6966, -(-40438+42), 0)),
-        #             DeviceCoordinates(0x6e30, 1, Coordinates(-28156+6966, -(-48587+42), 0)),
-        #             DeviceCoordinates(0x6037, 1, Coordinates(-22869+6966, -(-55671+42), 0))]
+        anchors = [DeviceCoordinates(0x6e30, 1, Coordinates(-63422, -22248, 0)),
+                   DeviceCoordinates(0x6e39, 1, Coordinates(-51793, -18700, 0)),
+                   DeviceCoordinates(0x6e22, 1, Coordinates(-34670, -13403, 0)),
+                   DeviceCoordinates(0x6e31, 1, Coordinates(-28827, -11650, 0)),
+                   DeviceCoordinates(0x6044, 1, Coordinates(-17374, -8100, 0)),
+                   DeviceCoordinates(0x6037, 1, Coordinates(-6131, -4699, 0)),
+                   DeviceCoordinates(0x6e49, 1, Coordinates(-59680, -34253, 0)),
+                   DeviceCoordinates(0x6e23, 1, Coordinates(-48108, -30702, 0)),
+                   DeviceCoordinates(0x6e08, 1, Coordinates(-36752, -27245, 0)),
+                   DeviceCoordinates(0x6e58, 1, Coordinates(-25118, -23650, 0)),
+                   DeviceCoordinates(0x6050, 1, Coordinates(-13705, -20161, 0)),
+                   DeviceCoordinates(0x6023, 1, Coordinates(-2479, -16692, 0))]
 
         ################################
 
         self.pozyx = PozyxSerial(serial_port)
         self.remote_id = remote_id
         self.remote = remote
+        self.distance_threshold = distance_threshold * 1000
+        self.ranging_repetition = ranging_repetition
+        self.counter = 0
+        self.ranging_interval = ranging_interval
         self.anchors = anchors
+        self.nr_anchors = nr_anchors
         self.algorithm = POZYX_POS_ALG_UWB_ONLY
         self.dimension = POZYX_2D
         self.height = 1000
@@ -76,9 +96,14 @@ class LocalizeClass(object):
             print("-----Tag-----")
             self.printUWBInfo(self.remote_id)
         print("----------------------------")
-        sleep(0.5);
+        sleep(0.5)
 
     def loop(self):
+
+        self.counter %= self.ranging_interval
+
+        if(self.counter == 0):
+            self.selectPositioningAnchors()
 
         position = Coordinates()
         orientation = Quaternion()
@@ -90,9 +115,10 @@ class LocalizeClass(object):
 
         if status == POZYX_SUCCESS:
             self.printPositioningData(position, orientation)
-            self.printPositioningAnchors()
         else:
             print("Positioning Error")
+
+        self.counter += 1
 
     def printPositioningData(self, position, orientation):
 
@@ -109,19 +135,46 @@ class LocalizeClass(object):
 
         self.tag_pub.publish(pozyx_pose)
 
-    def printPositioningAnchors(self):
+    def selectPositioningAnchors(self):
 
-        num_positioning_anchors = SingleRegister()
-        self.pozyx.getNumberOfAnchors(num_positioning_anchors, self.remote_id)
+        measured_distances = []
+        for anchor in self.anchors:
+            distances_of_an_anchor = []
+            for i in range(self.ranging_repetition):
+                range_data = DeviceRange()
+                self.pozyx.doRanging(anchor.network_id, range_data, self.remote_id)
+                if(range_data.distance != 0 and range_data.distance <= self.distance_threshold):
+                    distances_of_an_anchor.append(range_data.distance)
+            measured_distances.append(distances_of_an_anchor)
 
-        positioning_anchors = DeviceList(list_size=num_positioning_anchors[0])
-        self.pozyx.getPositioningAnchorIds(positioning_anchors, self.remote_id)
+        num_valid_anchors = 0
+        distances_average = []
 
+        for obj in measured_distances:
+            if len(obj) == 0:
+                distances_average.append(sys.maxint)
+            else:
+                distances_average.append(sum(obj)/len(obj))
+                num_valid_anchors += 1
+
+        if num_valid_anchors < self.nr_anchors:
+            return
+
+        candidate_anchors = []
+        for i in range(len(self.anchors)):
+            data = IdWithDistance(self.anchors[i].network_id, distances_average[i])
+            candidate_anchors.append(data)
+        candidate_anchors.sort(key=lambda x: x.distance)
+
+        selected_anchors = DeviceList(list_size=self.nr_anchors)
         arr = []
-        for i in range(num_positioning_anchors[0]):
-            arr.append(positioning_anchors[i])
+        for j in range(self.nr_anchors):
+            selected_anchors[j] = candidate_anchors[j].network_id
+            arr.append(selected_anchors[j])
+        self.pozyx.setPositioningAnchorIds(selected_anchors, self.remote_id)
 
         self.anchors_pub.publish(UInt16MultiArray(data=arr))
+
 
     def setAnchors(self):
 
