@@ -41,6 +41,9 @@ int main(int argc, char **argv)
   ros::Publisher pos_pub3 = n.advertise<visualization_msgs::Marker> ("pozyx3",1000);
   ros::Publisher pos_pub4 = n.advertise<visualization_msgs::Marker> ("pozyx4",1000);
   ros::Publisher pos_pub5 = n.advertise<visualization_msgs::Marker> ("pozyx5",1000);
+  ros::Publisher db_pub = n.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data",1000);
+  std::string frame_id("/world");
+
   int fd = open(DEVNAME, O_RDWR | O_NOCTTY);
   if(fd<0){
     ROS_ERROR("cannot open device");
@@ -190,7 +193,7 @@ int main(int argc, char **argv)
       msg.pose.position.y = Y0;
       msg.pose.position.z = Z0;
       pos_pub0.publish(msg);
-    }else if(id == 0x6076){
+    }else if(id == 0x6924){
       geometry_msgs::Point p;
       p.x = X1;
       p.y = Y1;
@@ -201,7 +204,7 @@ int main(int argc, char **argv)
       p.z = Z;
       msg.points.push_back(p);
       pos_pub2.publish(msg);
-    }else if(id == 0x6e28){
+    }else if(id == 0x6e3d){
       geometry_msgs::Point p;
       p.x = X1;
       p.y = Y1;
@@ -212,7 +215,7 @@ int main(int argc, char **argv)
       p.z = Z;
       msg.points.push_back(p);
       pos_pub3.publish(msg);
-    }else if(id == 0x6905){
+    }else if(id == 0x6908){
       geometry_msgs::Point p;
       p.x = X2;
       p.y = Y2;
@@ -223,7 +226,7 @@ int main(int argc, char **argv)
       p.z = Z;
       msg.points.push_back(p);
       pos_pub4.publish(msg);
-    }else if(id == 0x6814){
+    }else if(id == 0x6905){
       geometry_msgs::Point p;
       p.x = X2;
       p.y = Y2;
@@ -233,8 +236,10 @@ int main(int argc, char **argv)
       p.y = Y;
       p.z = Z;
       msg.points.push_back(p);
-      pos_pub5.publish(msg);      
+      pos_pub5.publish(msg);
     }
+
+
   }
   return 0;
 }

@@ -1,3 +1,6 @@
+#include <Pozyx.h>
+#include <Pozyx_definitions.h>
+
 // Please read the ready-to-localize tuturial together with this example.
 // https://www.pozyx.io/Documentation/Tutorials/ready_to_localize
 /**
@@ -21,7 +24,13 @@
 //uint16_t tags[1] = {0x6077};
 
 int num_tags = 5;
-uint16_t tags[5] = {0x6077,0x6076,0x6e28,0x6905,0x6814};                        
+uint16_t tags[5] = {0x6077,0x6924,0x6e3d,0x6908,0x6905};   
+
+//int num_tags = 3;
+//uint16_t tags[3] = {0x6077,0x6924,0x6e3d};   
+
+//int num_tags = 2;
+//uint16_t tags[2] = {0x607B, 0x6076};
 
 //uint8_t num_anchors = 8;                                    // the number of anchors
 //uint16_t anchors[8] = {0x605B, 0x680A, 0x6822, 0x6031, 0x6173, 0x683B, 0x685D, 0x603B};     // the network id of the anchors: change these to the network ids of your anchors.
@@ -62,9 +71,21 @@ uint16_t anchors[8] = {0x605B, 0x685D, 0x603B, 0x683B, 0x6822, 0x6031, 0x680A, 0
 int32_t anchors_x[8] = {4500, 4805, 8033, 11179, 9778, 7531, 6316, 7365};               // anchor x-coorindates in mm
 int32_t anchors_y[8] = {2884, 146, 143, 153, 5824, 5571, 6215, 2246};                  // anchor y-coordinates in mm
 int32_t heights[8] = {995, 2192, 452, 1370, 2533, 85, 1798, 3115};              // anchor z-coordinates in mm
+//
+//uint8_t num_anchors = 6;                                    // the number of anchors
+//uint16_t anchors[6] = {0x605B, 0x685D, 0x683B, 0x6822,  0x680A, 0x6173};     // the network id of the anchors: change these to the network ids of your anchors.
+//int32_t anchors_x[6] = {4500, 4805,11179, 9778, 6316, 7365};               // anchor x-coorindates in mm
+//int32_t anchors_y[6] = {2884, 146, 153, 5824, 6215, 2246};                  // anchor y-coordinates in mm
+//int32_t heights[6] = {995, 2192,1370, 2533, 1798, 3115};              // anchor z-coordinates in mm
 
+//uint8_t num_anchors = 4;                                    // the number of anchors
+//uint16_t anchors[4] = {0x685D, 0x683B, 0x6822,  0x680A};     // the network id of the anchors: change these to the network ids of your anchors.
+//int32_t anchors_x[4] = { 4805,11179, 9778, 6316};               // anchor x-coorindates in mm
+//int32_t anchors_y[4] = {146, 153, 5824, 6215};                  // anchor y-coordinates in mm
+//int32_t heights[4] = {2192,1370, 2533, 1798};              // anchor z-coordinates in mm
 
-uint8_t algorithm = POZYX_POS_ALG_UWB_ONLY;             // positioning algorithm to use
+uint8_t algorithm = POZYX_POS_ALG_TRACKING; 
+//uint8_t algorithm = POZYX_POS_ALG_UWB_ONLY;             // positioning algorithm to use
 uint8_t dimension = POZYX_3D;//POZYX_2D;                           // positioning dimension
 int32_t height = 1300;                                  // height of device, required in 2.5D positioning
 
