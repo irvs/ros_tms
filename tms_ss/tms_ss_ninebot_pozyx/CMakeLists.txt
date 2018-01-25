@@ -170,7 +170,7 @@ add_library(${PROJECT_NAME} ${SRC_FILES})
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/tms_ss_ninebot_pozyx_node.cpp)
 
-add_executable(pozyx_kalman src/kalman.cpp)
+add_executable(pozyx_kalman src/main.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

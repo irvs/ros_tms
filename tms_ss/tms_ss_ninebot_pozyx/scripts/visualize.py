@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # coding: UTF-8
 
-import rospy
+import rospy, os, yaml
 from pypozyx import *
-from std_msgs.msg import UInt16MultiArray, MultiArrayLayout, MultiArrayDimension
 from geometry_msgs.msg import PoseStamped
 from visualization_msgs.msg import Marker, MarkerArray
 
@@ -15,19 +14,26 @@ class VisualizeClass(object):
         self.anchors_pub = rospy.Publisher("pozyx_anchors_marker", MarkerArray, queue_size=1000)
 
         rospy.Subscriber("/pozyx", PoseStamped, self.callback_tag, queue_size=1000)
-        rospy.Subscriber("/positioning_anchors_id", UInt16MultiArray, self.callback_anchors, queue_size=1000)
 
         ########## Anchors (network_id, flag, pos) ###########
 
-        anchors = [DeviceCoordinates(0x6e31, 1, Coordinates(10844+6966, -(0+42), 0)),
-           DeviceCoordinates(0x6e49, 1, Coordinates(-6966+6966, -(-42+42), 0)),
-           DeviceCoordinates(0x6e08, 1, Coordinates(-23361+6966, -(3805+42), 0)),
-           DeviceCoordinates(0x6050, 1, Coordinates(-19237+6966, -(-17218+42), 0))]
+        # Load config_anchors.yaml
+        config_file = os.environ['HOME'] + "/catkin_ws/src/ros_tms/tms_ss/tms_ss_ninebot_pozyx/config_anchors.yaml"
 
-        # anchors = [DeviceCoordinates(0x6044, 1, Coordinates(-19430+6966, -(-32293+42), 0)),
-        #             DeviceCoordinates(0x6e22, 1, Coordinates(-27795+6966, -(-40438+42), 0)),
-        #             DeviceCoordinates(0x6e30, 1, Coordinates(-28156+6966, -(-48587+42), 0)),
-        #             DeviceCoordinates(0x6037, 1, Coordinates(-22869+6966, -(-55671+42), 0))]
+        with open(config_file, 'rt') as fp:
+            config_data = fp.read()
+
+        anchors_data = yaml.safe_load(config_data)
+        my_anchors = anchors_data['pozyx_anchors']
+
+        anchors = []
+
+        for m_anchor in my_anchors:
+            dev_coor = DeviceCoordinates()
+            dev_coor.network_id = m_anchor['id']
+            dev_coor.flag = 1 # Anchor
+            dev_coor.pos = Coordinates(m_anchor['coor_x'], m_anchor['coor_y'], 0)
+            anchors.append(dev_coor)
 
         ################################
 
@@ -73,14 +79,13 @@ class VisualizeClass(object):
         marker_tag.pose = data.pose
         marker_tag.lifetime = rospy.Duration()
 
+        self.publish_anchors()
         self.tag_pub.publish(marker_tag)
 
-    def callback_anchors(self, data):
-
-        markerArray_anchors = MarkerArray()
+    def publish_anchors(self):
+        markerarray = MarkerArray()
 
         for anchor in self.anchors:
-
             marker_anchor = Marker()
             marker_anchor.header.frame_id = self.frame_id
             marker_anchor.header.stamp = rospy.Time.now()
@@ -90,26 +95,17 @@ class VisualizeClass(object):
             marker_anchor.scale.x = 0.2
             marker_anchor.scale.y = 0.2
             marker_anchor.scale.z = 1.0
+            marker_anchor.color.r = 0.0
+            marker_anchor.color.g = 1.0
+            marker_anchor.color.b = 0.0
             marker_anchor.color.a = 1.0
             marker_anchor.lifetime = rospy.Duration()
-            marker_anchor.pose.position.x = anchor.pos.x * 0.001
-            marker_anchor.pose.position.y = anchor.pos.y * 0.001
-            marker_anchor.pose.position.z = 0.5
-
-            for i in range(len(data.data)):
-                if marker_anchor.id == data.data[i]:
-                    marker_anchor.color.r = 0.0
-                    marker_anchor.color.g = 1.0
-                    marker_anchor.color.b = 0.0
-                    break
-                else:
-                    marker_anchor.color.r = 0.8
-                    marker_anchor.color.g = 0.8
-                    marker_anchor.color.b = 0.8
-
-            markerArray_anchors.markers.append(marker_anchor)
-
-        self.anchors_pub.publish(markerArray_anchors)
+            marker_anchor.pose.position.x = anchor.pos.x
+            marker_anchor.pose.position.y = anchor.pos.y
+            
+            markerarray.markers.append(marker_anchor)
+        
+        self.anchors_pub.publish(markerarray)
 
 if __name__ == "__main__":
     try:

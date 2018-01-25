@@ -1,0 +1,53 @@
+# yaml内で計算はできないので注意
+
+# pozyx_anchors:
+#   - id: 0x6e31
+#     coor_x: 17810
+#     coor_y: -42
+#   - id: 0x6e49
+#     coor_x: 0
+#     coor_y: 0
+#   - id: 0x6e08
+#     coor_x: -16395
+#     coor_y: -3847
+#   - id: 0x6050
+#     coor_x: -12271
+#     coor_y: 17176
+#   - id: 0x6044
+#     coor_x: -12464
+#     coor_y: 32251
+#   - id: 0x6e22
+#     coor_x: -20829
+#     coor_y: 40396
+#   - id: 0x6e30
+#     coor_x: -21190
+#     coor_y: 48545
+#   - id: 0x6037
+#     coor_x: -15903
+#     coor_y: 55629
+
+pozyx_anchors:
+  - id: 0x6e30
+    coor_x: -17.945
+    coor_y: -3.061
+  - id: 0x6e39
+    coor_x: -29.133
+    coor_y: -4.200
+  - id: 0x6e22
+    coor_x: 11.592
+    coor_y: -2.989
+  - id: 0x6e31
+    coor_x: -7.665
+    coor_y: 4.085
+  - id: 0x6e49
+    coor_x: 9.353
+    coor_y: 5.092
+  - id: 0x6e23
+    coor_x: 0
+    coor_y: 0
+  - id: 0x6e08
+    coor_x: -19.439
+    coor_y: 4.541
+  - id: 0x6e58
+    coor_x: -33.633
+    coor_y: 3.001

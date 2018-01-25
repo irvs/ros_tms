@@ -10,9 +10,6 @@
   <!-- Static TF -->
   <node pkg="tf" type="static_transform_publisher" name="world_to_map" args="0 0 0 0 0 0 world_link map 100" />
 
-  <!-- Localize -->
-  <node name="pozyx_localize" pkg="tms_ss_ninebot_pozyx" type="localize.py" output="screen" />
-
   <!-- Kalman -->
   <node name="pozyx_kalman" pkg="tms_ss_ninebot_pozyx" type="pozyx_kalman" output="screen" />
 
