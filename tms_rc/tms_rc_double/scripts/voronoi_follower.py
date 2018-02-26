@@ -30,7 +30,7 @@ def main():
             continue
         KPang = 1
         KDang = 0
-        KPdist =1.5
+        KPdist =1.0
         KDdist = 0
         ARV_DIST = 0.2
 

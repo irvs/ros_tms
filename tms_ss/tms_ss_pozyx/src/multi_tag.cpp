@@ -73,6 +73,13 @@ int main(int argc, char **argv)
   broadcaster.sendTransform(tf::StampedTransform(transform,ros::Time(0),"pozyx_center","pozyx_crotch"));
   transform.setOrigin(tf::Vector3(0.0,0.0,0.45));
   broadcaster.sendTransform(tf::StampedTransform(transform,ros::Time(0),"pozyx_center","pozyx_head"));
+  // transform.setOrigin(tf::Vector3(0.0,0.2,0));
+  // broadcaster.sendTransform(tf::StampedTransform(transform,ros::Time(0),"pozyx_neck","pozyx_shoulder_r"));
+  // transform.setOrigin(tf::Vector3(0.0,-0.2,0));
+  // broadcaster.sendTransform(tf::StampedTransform(transform,ros::Time(0),"pozyx_neck","pozyx_shoulder_l"));
+  // transform.setOrigin(tf::Vector3(0.0,0.0,-1.1));
+  // broadcaster.sendTransform(tf::StampedTransform(transform,ros::Time(0),"pozyx_center","pozyx_leg"));
+  //
 
   int len;
   char buf[BUFSIZE];

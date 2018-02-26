@@ -6,7 +6,7 @@
   <version>0.0.1</version>
   <description>The kobuki_tf package</description>
 
-  <maintainer email="sakamoto@irvs.ait.kyushu-u.ac.jp">Junya Sakamoto</maintainer>
+  <maintainer email="kawamura@ait.kyushu-u.ac.jp">Akihiro Kawamura</maintainer>
 
   <url type="website">http://oroca.org/</url>
   <url type="git">https://github.com/oroca/oroca-ros-pkg</url>

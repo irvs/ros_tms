@@ -23,11 +23,14 @@
 //int num_tags = 1;
 //uint16_t tags[1] = {0x6077};
 
-int num_tags = 5;
-uint16_t tags[5] = {0x6077,0x6924,0x6e3d,0x6908,0x6905};   
+//int num_tags = 5;
+//uint16_t tags[5] = {0x6077,0x6924,0x6e3d,0x6908,0x6905};   
 
-//int num_tags = 3;
-//uint16_t tags[3] = {0x6077,0x6924,0x6e3d};   
+//int num_tags = 1;
+//uint16_t tags[1] = {0x6e3d};
+
+int num_tags = 3;
+uint16_t tags[3] = {0x6077,0x6924,0x6e3d};   
 
 //int num_tags = 2;
 //uint16_t tags[2] = {0x607B, 0x6076};
