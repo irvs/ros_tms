@@ -868,7 +868,9 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
           if (error_x <= 0.01 && error_y <= 0.01 && (error_th >= -0.05 && error_th <= 0.05))
           {
             ROS_INFO("finish");
-            break;  // dis_error:10mm, ang_error:3deg
+            s_srv.request.state = 1;
+            state_client.call(s_srv);
+            return true;
           }
 
           rp_srv.response.VoronoiPath.clear();
