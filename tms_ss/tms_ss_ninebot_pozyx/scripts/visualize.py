@@ -85,6 +85,9 @@ class VisualizeClass(object):
     def publish_anchors(self):
         markerarray = MarkerArray()
 
+        #offset_x = 12.838
+        #offset_y = 3.330
+
         for anchor in self.anchors:
             marker_anchor = Marker()
             marker_anchor.header.frame_id = self.frame_id
@@ -102,6 +105,9 @@ class VisualizeClass(object):
             marker_anchor.lifetime = rospy.Duration()
             marker_anchor.pose.position.x = anchor.pos.x
             marker_anchor.pose.position.y = anchor.pos.y
+
+            #marker_anchor.pose.position.x = anchor.pos.x - offset_x
+            #marker_anchor.pose.position.y = -(anchor.pos.y - offset_y)
             
             markerarray.markers.append(marker_anchor)
         
