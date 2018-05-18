@@ -1,7 +1,0 @@
-<launch>
-  <group ns="double_control">
-    <include file="$(find tms_rc_double)/launch/includes/minimal.launch.xml">
-      <arg name="publish_tf" value="true"/>
-    </include>
-  </group>
-</launch>

@@ -127,6 +127,9 @@ private:
   //	ros::ServiceClient mkun_virtual_control_client;
   ros::ServiceClient mkun_control_client;
   ros::ServiceClient double_control_client;
+  //egashira
+  ros::ServiceClient turtlebot3_control_client;
+  //
   ros::ServiceClient voronoi_path_planning_client_;
   ros::ServiceClient give_obj_client;
   //	ros::ServiceClient refrigerator_client;
