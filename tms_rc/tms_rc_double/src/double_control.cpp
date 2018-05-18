@@ -202,7 +202,7 @@ bool control_base(int command, double goal_dis, double goal_ang)
   }
   else
   {
-    ROS_ERROR("Failed to call service tms db get kobuki's data\n");
+    ROS_ERROR("Failed to call service tms db get double's data\n");
   }
 #endif
 
@@ -232,7 +232,7 @@ bool control_base(int command, double goal_dis, double goal_ang)
             }
             else
             {
-              ROS_ERROR("Failed to call service tms db get kobuki's data\n");
+              ROS_ERROR("Failed to call service tms db get double's data\n");
             }
 #endif
           }
@@ -261,7 +261,7 @@ bool control_base(int command, double goal_dis, double goal_ang)
             }
             else
             {
-              ROS_ERROR("Failed to call service tms db get kobuki's data\n");
+              ROS_ERROR("Failed to call service tms db get double's data\n");
             }
 #endif
           }
@@ -297,7 +297,7 @@ bool control_base(int command, double goal_dis, double goal_ang)
             }
             else
             {
-              ROS_ERROR("Failed to call service tms db get kobuki's data\n");
+              ROS_ERROR("Failed to call service tms db get double's data\n");
             }
 #endif
           }
@@ -326,7 +326,7 @@ bool control_base(int command, double goal_dis, double goal_ang)
             }
             else
             {
-              ROS_ERROR("Failed to call service tms db get kobuki's data\n");
+              ROS_ERROR("Failed to call service tms db get double's data\n");
             }
 #endif
           }
@@ -366,7 +366,7 @@ bool control_base(int command, double goal_dis, double goal_ang)
           }
           else
           {
-            ROS_ERROR("Failed to call service tms db get kobuki's data\n");
+            ROS_ERROR("Failed to call service tms db get double's data\n");
           }
 #endif
         }
@@ -422,7 +422,7 @@ bool callback(tms_msg_rc::rc_robot_control::Request &req, tms_msg_rc::rc_robot_c
       }
       else
       {
-        ROS_ERROR("Failed to call service tms db get kobuki's data\n");
+        ROS_ERROR("Failed to call service tms db get double's data\n");
         return false;
       }
       ROS_INFO("current_x=%fmm, current_y=%fmm, current_th=%fdeg\n", current_x, current_y, current_th);
@@ -489,7 +489,7 @@ int main(int argc, char **argv)
   db_client = n.serviceClient< tms_msg_db::TmsdbGetData >("/tms_db_reader/dbreader");
 
 #ifdef ODOM
-  // kobukiの初期位置を格納
+  // doubleの初期位置を格納
   tms_msg_db::TmsdbGetData srv;
   srv.request.tmsdb.id = 2012;  // ID : double
   if (db_client.call(srv))
@@ -500,7 +500,7 @@ int main(int argc, char **argv)
   }
   else
   {
-    ROS_ERROR("Failed to call service tms db get kobuki's data\n");
+    ROS_ERROR("Failed to call service tms db get double's data\n");
     return false;
   }
   ROS_INFO("Double's initial pos = [%fmm, %fmm, %fdeg]\n", x, y, th);
@@ -516,7 +516,7 @@ int main(int argc, char **argv)
   ros::Subscriber vicon_sub = n.subscribe("vicon_stream/output", 10, vicon_sysCallback);
   ros::Subscriber odom_sub = n.subscribe("odom", 10, odomCallback);  // Odometry情報取得
 
-//  vel_pub = n.advertise< geometry_msgs::Twist >("mobile_base/commands/velocity", 1);  // kobukiに速度を送る
+//  vel_pub = n.advertise< geometry_msgs::Twist >("mobile_base/commands/velocity", 1);  // doubleに速度を送る
   ros::waitForShutdown();
 
   return 0;
