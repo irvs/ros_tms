@@ -22,7 +22,8 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import rospy, sys
+import rospy
+import sys
 import moveit_commander
 from geometry_msgs.msg import PoseStamped, Pose
 from moveit_commander import MoveGroupCommander, PlanningSceneInterface
@@ -47,10 +48,12 @@ GRIPPER_EFFORT = [1.0]
 
 REFERENCE_FRAME = 'world_link'
 
-INIT_ARM_VALUE = [0.0, -0.17,0.0,0.0,0.0,0.0,0.0]
-GRASP_ARM_VALUE = [0.0, -0.2,0.0,0.0,0.0,0.0,0.0]
+INIT_ARM_VALUE = [0.0, -0.17, 0.0, 0.0, 0.0, 0.0, 0.0]
+GRASP_ARM_VALUE = [0.0, -0.2, 0.0, 0.0, 0.0, 0.0, 0.0]
+
 
 class SubTaskPick:
+
     def __init__(self):
         # Initialize the move_group API
         moveit_commander.roscpp_initialize(sys.argv)
@@ -67,14 +70,15 @@ class SubTaskPick:
         target = Tmsdb()
 
         temp_dbdata.id = req.object_id
+        temp_dbdata.state = 1
 
         rospy.wait_for_service('tms_db_reader')
         try:
             tms_db_reader = rospy.ServiceProxy('tms_db_reader', TmsdbGetData)
             res = tms_db_reader(temp_dbdata)
             target = res.tmsdb[0]
-        except rospy.ServiceException, e:
-            print "Service call failed: %s"%e
+        except rospy.ServiceException as e:
+            print "Service call failed: %s" % e
             self.shutdown()
 
         print(target.name)
@@ -108,31 +112,36 @@ class SubTaskPick:
         # Allow 5 seconds per planning attempt
         arm.set_planning_time(5)
         # Set a limit on the number of pick attempts before bailing
-        max_pick_attempts = 10
+        max_pick_attempts = 5
         # Give the scene a chance to catch up
-        rospy.sleep(1)
+        rospy.sleep(0.05)
 
         target_id = str(req.object_id)
         scene.remove_world_object(target_id)
         scene.remove_attached_object(GRIPPER_FRAME, target_id)
 
-        rospy.sleep(1)
+        rospy.sleep(0.05)
 
         arm.set_named_target('l_arm_init')
         arm.go()
         gripper.set_joint_value_target(GRIPPER_NEUTRAL)
         gripper.go()
 
-        rospy.sleep(1)
+        rospy.sleep(0.05)
 
-        target_size = [(target.offset_x*2), (target.offset_y*2), (target.offset_z*2)]
-        #target_size = [0.03, 0.03, 0.12]
-        #target_size = [0.07, 0.07, 0.14]
+        if target.offset_x < 0.01 and target.offset_y < 0.01 and target.offset_x < 0.01:
+            target.offset_x = 0.033
+            target.offset_y = 0.033
+            target.offset_z = 0.083
+
+        target_size = [(target.offset_x * 2), (target.offset_y * 2), (target.offset_z * 2)]
+        # target_size = [0.03, 0.03, 0.12]
+        # target_size = [0.07, 0.07, 0.14]
         target_pose = PoseStamped()
         target_pose.header.frame_id = REFERENCE_FRAME
         target_pose.pose.position.x = target.x
         target_pose.pose.position.y = target.y
-        target_pose.pose.position.z = target.z + 0.01
+        target_pose.pose.position.z = target.z + target.offset_z + 0.01
         # q = quaternion_from_euler(target.rr, target.rp, target.ry)
         q = quaternion_from_euler(0, 0, 0)
         target_pose.pose.orientation.x = q[0]
@@ -142,7 +151,7 @@ class SubTaskPick:
 
         scene.add_box(target_id, target_pose, target_size)
 
-        rospy.sleep(1)
+        rospy.sleep(0.05)
 
         print(target_pose.pose.position.x)
         print(target_pose.pose.position.y)
@@ -154,7 +163,6 @@ class SubTaskPick:
         # Shift the grasp pose by half the width of the target to center it
         grasp_pose.pose.position.x -= target_size[0] / 2.0 + 0.01
         grasp_pose.pose.position.y -= target_size[1] / 2.0
-
 
         # Generate a list of grasps
         grasps = self.make_grasps(grasp_pose, [target_id])
@@ -169,10 +177,10 @@ class SubTaskPick:
         # Repeat until we succeed or run out of attempts
         while result != MoveItErrorCodes.SUCCESS and n_attempts < max_pick_attempts:
             n_attempts += 1
-            rospy.loginfo("Pick attempt: " +  str(n_attempts))
+            rospy.loginfo("Pick attempt: " + str(n_attempts))
             result = arm.pick(target_id, grasps)
             print(result)
-            rospy.sleep(0.05)
+            rospy.sleep(0.02)
             if result != MoveItErrorCodes.SUCCESS:
                 scene.remove_attached_object(GRIPPER_FRAME, target_id)
 
@@ -262,7 +270,7 @@ class SubTaskPick:
                 # Create a quaternion from the Euler angles
                 q = quaternion_from_euler(0, p, y)
 
-                # # Set the grasp pose orientation accordingly
+                # Set the grasp pose orientation accordingly
                 g.grasp_pose.pose.orientation.x = q[0]
                 g.grasp_pose.pose.orientation.y = q[1]
                 g.grasp_pose.pose.orientation.z = q[2]

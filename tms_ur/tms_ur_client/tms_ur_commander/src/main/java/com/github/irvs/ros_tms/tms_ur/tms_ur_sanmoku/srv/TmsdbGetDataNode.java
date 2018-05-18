@@ -89,10 +89,12 @@ public class TmsdbGetDataNode extends AbstractNodeMain {
 	public int sendFurniture(){
 		Log.v(className, "getFurnitures");
 		int cnt = 0;
+		int sid = 100000;
 		result = 0;
 		isCalled = 0;
 		TmsdbGetDataRequest request = srvClient.newMessage();
 		request.getTmsdb().setType(TmsdbObject.TYPE._FURNITURE);
+		request.getTmsdb().setId(sid);
 
 		Log.v(className, "call");
 		srvClient.call(request, new ServiceResponseListener<TmsdbGetDataResponse>(){
@@ -126,6 +128,7 @@ public class TmsdbGetDataNode extends AbstractNodeMain {
 		result = 0;
 		isCalled = 0;
 		request.getTmsdb().setType(TmsdbObject.TYPE._ROBOT);
+		request.getTmsdb().setId(sid);
 		Log.v(className, "call");
 		srvClient.call(request, new ServiceResponseListener<TmsdbGetDataResponse>(){
 			@Override

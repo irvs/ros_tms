@@ -1,0 +1,32 @@
+<launch>
+
+  <!-- Tracker -->
+  <node pkg="tms_ss_pot" name="urg_tracker" type="urg_tracker" output="screen" />
+  <!-- Visualizer -->
+  <node pkg="tms_ss_pot" name="visualize" type="visualize" />
+  <!-- Cropper -->
+  <node pkg="tms_ss_pot" name="ninebot_cropper" type="ninebot_cropper" output="screen" />
+
+  <!-- parameter setting for robot_description -->
+  <!--<param name="robot_description"
+         command="$(find xacro)/xacro.py '$(find tms_ss_pot)/urdf/all_components.urdf.xacro'" />-->
+
+  <!-- robot_state_publisher -->
+  <!--<node name="robot_state_publisher_tracker" pkg="robot_state_publisher" type="robot_state_publisher" >
+    <param name="tf_prefix" value="" />
+  </node>-->
+
+  <!-- joint_state_publisher -->
+  <!-- <node name="tms_db_state_publisher_tracker" pkg="tms_db_state_publisher" type="tms_db_state_publisher"/> -->
+
+  <!-- TF -->
+  <node pkg="tf" type="static_transform_publisher" name="world_2_map" args="0 0 0
+  0 0 0 /world_link /map 100"/>
+
+  <!-- Map server -->
+  <arg name="map_file" default="$(find tms_ss_pot)/maps/map_coi_hall/map.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)">
+  <param name="frame_id" value="map" />
+  </node>
+
+</launch>

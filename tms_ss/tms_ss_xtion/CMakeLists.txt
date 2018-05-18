@@ -46,4 +46,3 @@ target_link_libraries( estimateExtrinsicParameters
   ${OpenCV_LIBRARIES}
 )
 
-add_dependencies(estimateExtrinsicParameters tms_ss_xtion_gencpp)

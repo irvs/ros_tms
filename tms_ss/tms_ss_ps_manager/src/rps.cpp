@@ -1,6 +1,6 @@
 //----------------------------------------------------------
 // @file   : rps.cpp
-// @author : Watanabe Yuuta 
+// @author : Watanabe Yuuta
 // @version: Ver0.1.4 (since 2014.05.02)
 // @date   : 2016.06.09
 //----------------------------------------------------------
@@ -19,20 +19,29 @@
 int main(int argc, char** argv)
 {
 #if 1
-//---------------------------------------------------------------------------------------
-//argv test
-//---------------------------------------------------------------------------------------
-printf("\n") ;
-	switch( *argv[1] ) {
-		case    '1':    printf("Good morning ");        break;
-		case    '2':    printf("Good evening ");        break;
-		case    '3':    printf("Good afternoon");       break;
-		default :       printf("Good afternoon");       break;
-	}
+  //---------------------------------------------------------------------------------------
+  // argv test
+  //---------------------------------------------------------------------------------------
+  printf("\n");
+  switch (*argv[1])
+  {
+    case '1':
+      printf("Good morning ");
+      break;
+    case '2':
+      printf("Good evening ");
+      break;
+    case '3':
+      printf("Good afternoon");
+      break;
+    default:
+      printf("Good afternoon");
+      break;
+  }
 
-return 0;
+  return 0;
 
-#endif 
+#endif
 
 #if 0
 //---------------------------------------------------------------------------------------

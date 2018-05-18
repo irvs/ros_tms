@@ -1,0 +1,5 @@
+{
+    "board": "arduino:avr:uno",
+    "port": "/dev/ttyACM0",
+    "sketch": "arduino/localize/localize.ino"
+}

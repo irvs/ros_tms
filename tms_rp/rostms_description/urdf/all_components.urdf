@@ -4,8 +4,7 @@
 <!-- |    EDITING THIS FILE BY HAND IS NOT RECOMMENDED                                 | -->
 <!-- =================================================================================== -->
 <!-- All components of ROS-TMS project -->
-<robot name="rostms" xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <!-- Import common properties -->
+<robot name="rostms" xmlns:xacro="http://ros.org/wiki/xacro">
   <!-- Used for fixing all components to 'world' frame of RViz and Gazebo 'world' -->
   <link name="world_link"/>
   <joint name="world_bsen_room_joint" type="fixed">
@@ -18,8 +17,6 @@
     <child link="smartpal5_link"/>
     <origin rpy="0 0 0" xyz="0 0 0"/>
   </joint>
-  <!-- Defines the components tags -->
-  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <!--  Environment -->
   <link name="bsen_room_link">
     <visual>
@@ -77,7 +74,7 @@
   <joint name="kitchen_joint" type="fixed">
     <parent link="bsen_room_link"/>
     <child link="kitchen_link"/>
-    <origin rpy="0 0 -1.57079633" xyz="9.05 5.87 0.4855"/>
+    <origin rpy="0 0 -1.57079633" xyz="9.03 5.87 0.4855"/>
   </joint>
   <link name="kitchen_link">
     <visual>
@@ -195,7 +192,7 @@
     </visual>
     <collision>
       <geometry>
-        <box size="0.5 1.3 0.43"/>
+        <box size="1.95 0.82 0.38"/>
       </geometry>
     </collision>
   </link>
@@ -253,7 +250,7 @@
   <joint name="workdesk_joint" type="fixed">
     <parent link="bsen_room_link"/>
     <child link="workdesk_link"/>
-    <origin rpy="0 0 -1.57079633" xyz="11.80 5.9 0.5"/>
+    <origin rpy="0 0 -1.57079633" xyz="11.80 5.9 0.35"/>
   </joint>
   <link name="workdesk_link">
     <visual>
@@ -287,7 +284,7 @@
   <joint name="intelingent_shelf_joint" type="fixed">
     <parent link="bsen_room_link"/>
     <child link="intelingent_shelf_link"/>
-    <origin rpy="0 0 0" xyz="11.48 4.220 0.445"/>
+    <origin rpy="0 0 0" xyz="11.65 3.970 0.005"/>
   </joint>
   <link name="intelingent_shelf_link">
     <visual>
@@ -301,8 +298,59 @@
       </geometry>
     </collision>
   </link>
-  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
-  <!-- meeting_chair -->
+  <joint name="refrigerator_joint" type="fixed">
+    <parent link="bsen_room_link"/>
+    <child link="refrigerator_link"/>
+    <origin rpy="0 0 -1.57079633" xyz="6.94 5.53 -0.01"/>
+  </joint>
+  <link name="refrigerator_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/refrigerator.dae"/>
+      </geometry>
+    </visual>
+    <!-- <collision>
+        <geometry>
+          <box size="0.5 0.47 0.05"/>
+        </geometry>
+        <origin xyz="-0.32 0.235 1.09" rpy="0 0 0"/>
+      </collision> -->
+  </link>
+  <joint name="refrigerator_door_joint" type="continuous">
+    <parent link="refrigerator_link"/>
+    <child link="refrigerator_door_link"/>
+    <origin rpy="0 0 0" xyz="-0.035 0.45 1.06"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <link name="refrigerator_door_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/refrigerator_door.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.001" radius="0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="meeting_door_joint" type="fixed">
+    <parent link="bsen_room_link"/>
+    <child link="meeting_door_link"/>
+    <origin rpy="0 0 3.14159" xyz="1.94 3.035 1.31"/>
+  </joint>
+  <link name="meeting_door_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://environmental_model/model/meeting_door.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.03 1.23 0.9"/>
+      </geometry>
+    </collision>
+  </link>
   <!-- chair -->
   <link name="chair_x_link"/>
   <joint name="chair_x_joint" type="prismatic">
@@ -339,41 +387,45 @@
     </collision>
   </link>
   <!-- refrigerator -->
-  <link name="refrigerator_x_link"/>
-  <joint name="refrigerator_x_joint" type="prismatic">
-    <parent link="world_link"/>
-    <child link="refrigerator_x_link"/>
-    <origin rpy="0 0 0" xyz="0 0 0"/>
-    <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
-  </joint>
-  <link name="refrigerator_y_link"/>
-  <joint name="refrigerator_y_joint" type="prismatic">
-    <parent link="refrigerator_x_link"/>
-    <child link="refrigerator_y_link"/>
-    <origin rpy="0 0 1.57079633" xyz="0 0 0"/>
-    <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
-  </joint>
-  <joint name="refrigerator_yaw_joint" type="continuous">
-    <parent link="refrigerator_y_link"/>
-    <child link="refrigerator_link"/>
-    <origin rpy="0 0 0" xyz="0 0 0"/>
-    <axis xyz="0 0 1"/>
-  </joint>
-  <link name="refrigerator_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://environmental_model/model/refrigerator.dae"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0.0 0.0 0.56"/>
-    </visual>
-    <collision>
-      <geometry>
-        <box size="0.6 0.5 1.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0.0 0.0 0.56"/>
-    </collision>
-  </link>
-  <!-- Add meeting_chair -->
+  <!--     <link name="refrigerator_x_link"/>
+
+    <joint name="refrigerator_x_joint" type="prismatic">
+      <parent link="world_link"/>
+      <child link="refrigerator_x_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <limit effort="1000.0" lower="0." upper="15." velocity="0.5"/>
+    </joint>
+
+    <link name="refrigerator_y_link"/>
+
+    <joint name="refrigerator_y_joint" type="prismatic">
+      <parent link="refrigerator_x_link"/>
+      <child link="refrigerator_y_link"/>
+      <origin xyz="0 0 0" rpy="0 0 1.57079633"/>
+      <limit effort="1000.0" lower="0." upper="8." velocity="0.5"/>
+    </joint>
+
+    <joint name="refrigerator_yaw_joint" type="continuous">
+      <parent link="refrigerator_y_link"/>
+      <child link="refrigerator_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+
+    <link name="refrigerator_link">
+      <visual>
+        <geometry>
+          <mesh filename="package://environmental_model/model/refrigerator.dae"/>
+        </geometry>
+        <origin xyz="0.0 0.0 0.56" rpy="0 0 0"/>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.6 0.5 1.1"/>
+        </geometry>
+        <origin xyz="0.0 0.0 0.56" rpy="0 0 0"/>
+      </collision>
+    </link> -->
   <link name="meeting_chair1_x_link"/>
   <joint name="meeting_chair1_x_joint" type="prismatic">
     <parent link="world_link"/>
@@ -595,6 +647,12 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0. 0. 0."/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.001" radius="0.001"/>
+      </geometry>
+      <origin rpy="0. 0. 0." xyz="0 0 0"/>
+    </collision>
   </link>
   <!-- greentea_bottle -->
   <link name="greentea_bottle_x_link"/>
@@ -645,6 +703,12 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0. 0. 0."/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.001" radius="0.001"/>
+      </geometry>
+      <origin rpy="0. 0. 0." xyz="0 0 0"/>
+    </collision>
   </link>
   <!-- cancoffee -->
   <link name="cancoffee_x_link"/>
@@ -695,6 +759,12 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0. 0. 0."/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.001" radius="0.001"/>
+      </geometry>
+      <origin rpy="0. 0. 0." xyz="0 0 0"/>
+    </collision>
   </link>
   <!-- soysauce_bottle_black -->
   <link name="soysauce_bottle_black_x_link"/>
@@ -745,8 +815,13 @@
       </geometry>
       <origin rpy="0 0 0" xyz="0. 0. 0."/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.001" radius="0.001"/>
+      </geometry>
+      <origin rpy="0. 0. 0." xyz="0 0 0"/>
+    </collision>
   </link>
-  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
   <!-- ros_control plugin -->
   <gazebo>
     <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
@@ -1483,7 +1558,7 @@
   <link name="wheelchair_link">
     <visual>
       <geometry>
-        <mesh filename="package://environmental_model/model/refrigerator.dae"/>
+        <mesh filename="package://environmental_model/model/wheelchair.dae"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0.0 0.0 0.56"/>
     </visual>
@@ -1495,6 +1570,5 @@
     </collision>
   </link>
   <!-- </xacro:macro> -->
-  <!-- <xacro:wheelchair/> -->
 </robot>
 

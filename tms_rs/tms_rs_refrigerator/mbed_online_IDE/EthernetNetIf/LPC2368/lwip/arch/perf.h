@@ -19,5 +19,4 @@ void perf_init(char *fname) {
 }
 #endif
 
-
 #endif /* __LWIP_ARCH_PERF_H__ */

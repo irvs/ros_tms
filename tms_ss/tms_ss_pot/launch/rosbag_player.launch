@@ -1,0 +1,13 @@
+<launch>
+  <!-- LaserScanから移動体追跡の様子を再現 -->
+  <param name="/use_sim_time" value="true"/>
+
+  <arg name="path" default="$(env HOME)/rosbag/" />
+  <arg name="file" />
+  <node pkg="rosbag" type="play" name="player" output="screen" args="--clock --delay=5 $(arg path)$(arg file)" />
+
+  <node name="rviz_tracker" pkg="rviz" type="rviz" args="-d $(find tms_ss_pot)/rviz/tracker_config.rviz"/>
+  <node pkg="tms_ss_pot" name="urg_tracker" type="urg_tracker" output="screen"/>
+  <node pkg="tms_ss_pot" name="visualize" type="visualize"/>
+
+</launch>

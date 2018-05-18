@@ -13,11 +13,11 @@ add_executable(smartpal4_control_test_move src/smartpal4_control_test_move.cpp)
 add_executable(smartpal5_control_test_getpos src/smartpal5_control_test_getpos.cpp)
 add_executable(smartpal5_control_test_move src/smartpal5_control_test_move.cpp)
 
-add_dependencies(smartpal4_control_test_getpos DEPENDS tms_msg_rc_gencpp)
-add_dependencies(smartpal4_control_test_move DEPENDS tms_msg_rc_gencpp)
+add_dependencies(smartpal4_control_test_getpos tms_msg_rc_gencpp)
+add_dependencies(smartpal4_control_test_move tms_msg_rc_gencpp)
 
-add_dependencies(smartpal5_control_test_getpos DEPENDS tms_msg_rc_gencpp)
-add_dependencies(smartpal5_control_test_move DEPENDS tms_msg_rc_gencpp)
+add_dependencies(smartpal5_control_test_getpos tms_msg_rc_gencpp)
+add_dependencies(smartpal5_control_test_move tms_msg_rc_gencpp)
 
 target_link_libraries(smartpal4_control_test_getpos ${catkin_LIBRARIES})
 target_link_libraries(smartpal4_control_test_move ${catkin_LIBRARIES})

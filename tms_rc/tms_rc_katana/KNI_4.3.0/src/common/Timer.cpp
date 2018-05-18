@@ -24,75 +24,94 @@
 #include <Windows.h>
 #endif
 
-namespace KNI {
+namespace KNI
+{
+void Timer::Set(long timeout)
+{
+  _timeout = timeout;
+}
 
-    void
-    Timer::Set(long timeout) {
-	_timeout = timeout;
-    }
-    
 #ifdef WIN32
-    void Timer::Start() {
-        _ct = clock();
-    }
+void Timer::Start()
+{
+  _ct = clock();
+}
 
-    long Timer::_ElapsedTime() const {
-        return static_cast<long>(1000.0*(static_cast<double>((clock()-_ct))/static_cast<double>(CLOCKS_PER_SEC)));
-    }
+long Timer::_ElapsedTime() const
+{
+  return static_cast< long >(1000.0 * (static_cast< double >((clock() - _ct)) / static_cast< double >(CLOCKS_PER_SEC)));
+}
 
-    Timer::Timer() : _timeout(0), _ct(0) {}
-    Timer::Timer(long timeout) : _timeout(timeout), _ct(0) {}
+Timer::Timer() : _timeout(0), _ct(0)
+{
+}
+Timer::Timer(long timeout) : _timeout(timeout), _ct(0)
+{
+}
 
 #else
 
-    Timer::Timer() : _timeout(0), _ct() {}
-    Timer::Timer(long timeout) : _timeout(timeout), _ct() {}
+Timer::Timer() : _timeout(0), _ct()
+{
+}
+Timer::Timer(long timeout) : _timeout(timeout), _ct()
+{
+}
 
-    void Timer::Start() {
-	gettimeofday(&_ct, 0);
-    }
+void Timer::Start()
+{
+  gettimeofday(&_ct, 0);
+}
 
-    long Timer::_ElapsedTime() const {
-	struct timeval end;
-	gettimeofday(&end, 0);
-	return (end.tv_sec*1000+end.tv_usec/1000) - (_ct.tv_sec*1000+_ct.tv_usec/1000);
-    }
+long Timer::_ElapsedTime() const
+{
+  struct timeval end;
+  gettimeofday(&end, 0);
+  return (end.tv_sec * 1000 + end.tv_usec / 1000) - (_ct.tv_sec * 1000 + _ct.tv_usec / 1000);
+}
 
 #endif
 
-    void 
-    Timer::Set_And_Start(long timeout) {
-        Set(timeout); 
-        Start(); 
-    }
+void Timer::Set_And_Start(long timeout)
+{
+  Set(timeout);
+  Start();
+}
 
-    bool Timer::Elapsed() const {
-	if( _timeout <= 0 ) return false; // (timeout <= 0) => INFINITE
-        if( _ElapsedTime() < _timeout) return false;
-	return true;
-    }
-    long Timer::ElapsedTime() const {
-	return _ElapsedTime();
-    }
+bool Timer::Elapsed() const
+{
+  if (_timeout <= 0)
+    return false;  // (timeout <= 0) => INFINITE
+  if (_ElapsedTime() < _timeout)
+    return false;
+  return true;
+}
+long Timer::ElapsedTime() const
+{
+  return _ElapsedTime();
+}
 
-    void Timer::WaitUntilElapsed() const {
-        if(Elapsed()) return;
-        /// WARNING: possible race-condition in sleep() if
-        /// it takes longer than 1ms between the check
-        /// and the real sleep.
-        sleep(_timeout - _ElapsedTime());
-    }
+void Timer::WaitUntilElapsed() const
+{
+  if (Elapsed())
+    return;
+  /// WARNING: possible race-condition in sleep() if
+  /// it takes longer than 1ms between the check
+  /// and the real sleep.
+  sleep(_timeout - _ElapsedTime());
+}
 
-    void sleep(long time) {
-        if(time <= 0) return; 
-    #ifdef WIN32
-        Sleep(time);
-    #else // POSIX 1b
-        timespec time2sleep;
-        time2sleep.tv_sec = 0;
-        time2sleep.tv_nsec = time * 1000 * 1000; // SLEEP in milliseconds
-        nanosleep(&time2sleep, NULL);
-    #endif
-    }
-
+void sleep(long time)
+{
+  if (time <= 0)
+    return;
+#ifdef WIN32
+  Sleep(time);
+#else  // POSIX 1b
+  timespec time2sleep;
+  time2sleep.tv_sec = 0;
+  time2sleep.tv_nsec = time * 1000 * 1000;  // SLEEP in milliseconds
+  nanosleep(&time2sleep, NULL);
+#endif
+}
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot>
+<robot name="robots" xmlns:xacro="http://ros.org/wiki/xacro">
 
   <!-- ros_control plugin -->
   <gazebo>
@@ -80,4 +80,7 @@
 
   <gazebo reference="r_gripper_thumb_link">
   </gazebo>
+
+  <xacro:macro name="robots_sim">
+  </xacro:macro>
 </robot>

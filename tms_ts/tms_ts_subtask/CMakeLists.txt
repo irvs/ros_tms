@@ -12,7 +12,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES tms_ts_subtask
   CATKIN_DEPENDS roscpp std_msgs tms_msg_db tms_msg_ts
-  DEPENDS system_lib
+ # DEPENDS system_lib
 )
 
 ###########

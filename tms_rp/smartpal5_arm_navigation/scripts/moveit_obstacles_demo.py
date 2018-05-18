@@ -21,10 +21,11 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import rospy, sys
+import rospy
+import sys
 import moveit_commander
 from moveit_commander import MoveGroupCommander, PlanningSceneInterface
-from moveit_msgs.msg import  PlanningScene, ObjectColor
+from moveit_msgs.msg import PlanningScene, ObjectColor
 from geometry_msgs.msg import PoseStamped, Pose
 from tf.transformations import quaternion_from_euler
 
@@ -43,7 +44,9 @@ GRIPPER_EFFORT = [1.0]
 
 REFERENCE_FRAME = 'world_link'
 
+
 class MoveItDemo:
+
     def __init__(self):
         # Initialize the move_group API
         moveit_commander.roscpp_initialize(sys.argv)
@@ -174,7 +177,7 @@ class MoveItDemo:
         moveit_commander.os._exit(0)
 
     # Set the color of an object
-    def setColor(self, name, r, g, b, a = 0.9):
+    def setColor(self, name, r, g, b, a=0.9):
         # Initialize a MoveIt color object
         color = ObjectColor()
 

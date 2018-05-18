@@ -9,7 +9,6 @@
 
 #include "myutility.h"
 
-
 /**--------------------------------------------------
  * \class KeyboardEventReader
  */
@@ -18,7 +17,7 @@ KeyboardEventReader::KeyboardEventReader()
   kfd = 0;
   tcgetattr(kfd, &cooked);
   memcpy(&raw, &cooked, sizeof(struct termios));
-  raw.c_lflag &=~ (ICANON | ECHO);
+  raw.c_lflag &= ~(ICANON | ECHO);
 
   raw.c_cc[VEOL] = 1;
   raw.c_cc[VEOF] = 2;
@@ -32,7 +31,7 @@ KeyboardEventReader::~KeyboardEventReader()
 
 bool KeyboardEventReader::getKeycode(char &c)
 {
-  if(read(kfd, &c, 1) < 0)
+  if (read(kfd, &c, 1) < 0)
   {
     perror("read():");
     return false;
