@@ -22,7 +22,8 @@
     http://www.gnu.org/licenses/gpl.html
 """
 
-import rospy, sys
+import rospy
+import sys
 import moveit_commander
 from geometry_msgs.msg import PoseStamped, Pose
 from moveit_commander import MoveGroupCommander, PlanningSceneInterface
@@ -48,7 +49,9 @@ GRIPPER_EFFORT = [1.0]
 
 REFERENCE_FRAME = 'world_link'
 
+
 class MoveItDemo:
+
     def __init__(self):
         # Initialize the move_group API
         moveit_commander.roscpp_initialize(sys.argv)
@@ -201,7 +204,7 @@ class MoveItDemo:
         # Repeat until we succeed or run out of attempts
         while result != MoveItErrorCodes.SUCCESS and n_attempts < max_pick_attempts:
             n_attempts += 1
-            rospy.loginfo("Pick attempt: " +  str(n_attempts))
+            rospy.loginfo("Pick attempt: " + str(n_attempts))
             result = arm.pick(target_id, grasps)
             print('pick result')
             print(result)
@@ -220,7 +223,7 @@ class MoveItDemo:
             # Repeat until we succeed or run out of attempts
             while result != MoveItErrorCodes.SUCCESS and n_attempts < max_place_attempts:
                 n_attempts += 1
-                rospy.loginfo("Place attempt: " +  str(n_attempts))
+                rospy.loginfo("Place attempt: " + str(n_attempts))
                 for place in places:
                     result = arm.place(target_id, place)
                     print('place result')
@@ -325,7 +328,7 @@ class MoveItDemo:
                 # Create a quaternion from the Euler angles
                 # q = quaternion_from_euler(0, p, y)
 
-                # # Set the grasp pose orientation accordingly
+                # Set the grasp pose orientation accordingly
                 # g.grasp_pose.pose.orientation.x = q[0]
                 # g.grasp_pose.pose.orientation.y = q[1]
                 # g.grasp_pose.pose.orientation.z = q[2]
@@ -388,7 +391,7 @@ class MoveItDemo:
                         # Create a quaternion from the Euler angles
                         # q = quaternion_from_euler(0, p, y)
 
-                        # # Set the place pose orientation accordingly
+                        # Set the place pose orientation accordingly
                         # place.pose.orientation.x = q[0]
                         # place.pose.orientation.y = q[1]
                         # place.pose.orientation.z = q[2]
@@ -407,7 +410,7 @@ class MoveItDemo:
         return places
 
     # Set the color of an object
-    def setColor(self, name, r, g, b, a = 0.9):
+    def setColor(self, name, r, g, b, a=0.9):
         # Initialize a MoveIt color object
         color = ObjectColor()
 

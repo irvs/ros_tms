@@ -6,7 +6,8 @@ import serial
 import json
 from time import sleep
 import datetime
-import rospy, roslib
+import rospy
+import roslib
 from tms_msg_rs.srv import *
 from tms_msg_db.msg import TmsdbStamped
 from tms_msg_db.msg import Tmsdb
@@ -14,7 +15,7 @@ import subprocess
 
 BT_ADDR = "20:68:9D:91:D3:05"
 RFCOMM_NUM = "1"
-DEV_PORT = "/dev/rfcomm"+RFCOMM_NUM
+DEV_PORT = "/dev/rfcomm" + RFCOMM_NUM
 
 SYNC_BYTE = 0xaa
 
@@ -22,16 +23,16 @@ SYNC_BYTE = 0xaa
 def main():
     print "Hello World"
 
-    ###init mind wave mobile
-    cmd_release =   "sudo rfcomm release "+RFCOMM_NUM
-    cmd_bind =      "sudo rfcomm bind "+RFCOMM_NUM+" "+BT_ADDR
-    cmd_chmod =     "sudo chmod a+rw /dev/rfcomm"+RFCOMM_NUM
-    print cmd_release+"\n", subprocess.check_output(cmd_release.split(" "))
-    print cmd_bind+"\n",    subprocess.check_output(cmd_bind.split(" "))
-    print cmd_chmod+"\n",   subprocess.check_output(cmd_chmod.split(" "))
+    # init mind wave mobile
+    cmd_release = "sudo rfcomm release " + RFCOMM_NUM
+    cmd_bind = "sudo rfcomm bind " + RFCOMM_NUM + " " + BT_ADDR
+    cmd_chmod = "sudo chmod a+rw /dev/rfcomm" + RFCOMM_NUM
+    print cmd_release + "\n", subprocess.check_output(cmd_release.split(" "))
+    print cmd_bind + "\n", subprocess.check_output(cmd_bind.split(" "))
+    print cmd_chmod + "\n", subprocess.check_output(cmd_chmod.split(" "))
     dev = MindWaveMobile(DEV_PORT)
 
-    ###init ROS
+    # init ROS
     rospy.init_node('tms_ss_vs_mindwave')
     db_pub = rospy.Publisher('tms_db_data', TmsdbStamped, queue_size=10)
     r = rospy.Rate(1)
@@ -41,13 +42,13 @@ def main():
             r.sleep()
             dev.is_updated = False
 
-            ###make json text
+            # make json text
             note_d = {"meditation": str(dev.meditation),
                       "attention": str(dev.attention),
                       "poor_signal": str(dev.poor_signal)}
             note_j = json.dumps(note_d)
 
-            ###regist to DB
+            # regist to DB
             msg = TmsdbStamped()
             db = Tmsdb()
             db.time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
@@ -57,10 +58,10 @@ def main():
             db.place = 1001
             db.note = note_j
             msg.tmsdb.append(db)
-            msg.header.stamp = rospy.get_rostime()+rospy.Duration(9*60*60)
+            msg.header.stamp = rospy.get_rostime() + rospy.Duration(9 * 60 * 60)
             db_pub.publish(msg)
 
-            ###show messege
+            # show messege
             print "Med:",
             print dev.meditation,
             print "    Att:",
@@ -70,6 +71,7 @@ def main():
 
 
 class MindWaveMobile(object):
+
     def __init__(self, port='/dev/rfcomm1'):
         self.meditation = 0
         self.attention = 0
@@ -93,7 +95,7 @@ class MindWaveMobile(object):
             # print "      ",
             # print hex(code),
             if code >= 0x80:    # multi-bytes value
-                vlength = payload.pop(0)  #dont use because vlength can assumed by [code] variable
+                vlength = payload.pop(0)  # dont use because vlength can assumed by [code] variable
                 if code == 0x80:
                     high_word = payload.pop(0)
                     low_word = payload.pop(0)
@@ -118,7 +120,7 @@ class MindWaveMobile(object):
                     self.meditation = val
 
     def update(self):
-        while 1:
+        while True:
             if not self.wait_sync():
                 continue
             self.in_buffer.pop(0)   # perge sync bytes
@@ -135,7 +137,7 @@ class MindWaveMobile(object):
                     break
             if plen > SYNC_BYTE:  # plen must smaller than 0xaa(170 in dec)
                 continue
-            if (len(self.in_buffer) < plen+1):
+            if (len(self.in_buffer) < plen + 1):
                 return False
 
             chksum = 0
@@ -143,8 +145,8 @@ class MindWaveMobile(object):
                 chksum += byte
             chksum = chksum & ord('\xff')
             chksum = (~chksum) & ord('\xff')
-            payload = self.in_buffer[:plen+1]
-            self.in_buffer = self.in_buffer[plen+1:]
+            payload = self.in_buffer[:plen + 1]
+            self.in_buffer = self.in_buffer[plen + 1:]
             if chksum != payload.pop():  # checksum error
                 continue
             else:

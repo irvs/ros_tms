@@ -19,11 +19,11 @@
 
 #define MAX_USERS 12
 
-#define IDENTIFY_RANGE 0.5  // [m]
+#define IDENTIFY_RANGE 0.5     // [m]
 #define FRONT_ANGLE_RANGE 130  // [deg]
 
 //-----------------------------------------------------------------------------
-template <class T>
+template < class T >
 std::string to_str(const T& t)
 {
   std::stringstream ss;
@@ -39,7 +39,7 @@ inline tms_msg_ss::Skeleton initialize_skeleton()
   ret.position.resize(JOINT_NUM);
   ret.orientation.resize(JOINT_NUM);
   ret.confidence.resize(JOINT_NUM);
-  for(int i=0; i<JOINT_NUM; i++)
+  for (int i = 0; i < JOINT_NUM; i++)
   {
     ret.position[i].x = 0.0;
     ret.position[i].y = 0.0;
@@ -56,33 +56,32 @@ inline tms_msg_ss::Skeleton initialize_skeleton()
 //-----------------------------------------------------------------------------
 class SkeletonIntegrator
 {
-  public:
-    SkeletonIntegrator(const std::vector<int>& camera, ros::NodeHandle& nh);
-    ~SkeletonIntegrator();
+public:
+  SkeletonIntegrator(const std::vector< int >& camera, ros::NodeHandle& nh);
+  ~SkeletonIntegrator();
 
-    void callback(const tms_msg_ss::SkeletonStreamWrapper::ConstPtr& msg);
-    void run();
-  private:
-    ros::NodeHandle& nh_;
-    std::vector<int> array;  // using camera's id array
-    tms_msg_ss::SkeletonArray out;
-    int tracked_skeleton_num_;
-    int tracking_validity[MAX_USERS];
+  void callback(const tms_msg_ss::SkeletonStreamWrapper::ConstPtr& msg);
+  void run();
 
-    std::vector<std::map<int, bool> > bFaceStateTable;  // [user_index, [camera_id, is_front?]]
-    std::vector<std::pair<int, float> > storage_evaluation;  // [user_index, [camera_id, value]]
+private:
+  ros::NodeHandle& nh_;
+  std::vector< int > array;  // using camera's id array
+  tms_msg_ss::SkeletonArray out;
+  int tracked_skeleton_num_;
+  int tracking_validity[MAX_USERS];
 
-    void listenSkeletonStream();
+  std::vector< std::map< int, bool > > bFaceStateTable;       // [user_index, [camera_id, is_front?]]
+  std::vector< std::pair< int, float > > storage_evaluation;  // [user_index, [camera_id, value]]
 
-    // For Debug
-    void showStatus();
+  void listenSkeletonStream();
+
+  // For Debug
+  void showStatus();
 };
 
 //-----------------------------------------------------------------------------
-SkeletonIntegrator::SkeletonIntegrator(const std::vector<int> &camera, ros::NodeHandle& nh) :
-  array(camera),
-  tracked_skeleton_num_(0),
-  nh_(nh)
+SkeletonIntegrator::SkeletonIntegrator(const std::vector< int >& camera, ros::NodeHandle& nh)
+  : array(camera), tracked_skeleton_num_(0), nh_(nh)
 {
   out.data.resize(MAX_USERS);
   bFaceStateTable.resize(MAX_USERS);
@@ -90,11 +89,11 @@ SkeletonIntegrator::SkeletonIntegrator(const std::vector<int> &camera, ros::Node
   {
     out.data[i] = initialize_skeleton();
     tracking_validity[i] = 0;
-    for (std::vector<int>::iterator it = array.begin(); it != array.end(); it++)
+    for (std::vector< int >::iterator it = array.begin(); it != array.end(); it++)
     {
       bFaceStateTable[i][*it] = false;
     }
-    storage_evaluation.push_back(std::pair<int, float>(-1, 1));
+    storage_evaluation.push_back(std::pair< int, float >(-1, 1));
   }
   return;
 }
@@ -112,15 +111,9 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
   tms_msg_ss::CameraPosture camera_posture = msg->camera_posture;
 
   // Transform to world coordinate
-  Eigen::Vector3f translation(
-      camera_posture.translation.x,
-      camera_posture.translation.y,
-      camera_posture.translation.z);
-  Eigen::Quaternionf rotation(
-      camera_posture.rotation.w,
-      camera_posture.rotation.x,
-      camera_posture.rotation.y,
-      camera_posture.rotation.z);
+  Eigen::Vector3f translation(camera_posture.translation.x, camera_posture.translation.y, camera_posture.translation.z);
+  Eigen::Quaternionf rotation(camera_posture.rotation.w, camera_posture.rotation.x, camera_posture.rotation.y,
+                              camera_posture.rotation.z);
 
   Eigen::Matrix3f rot_mat = rotation.matrix();
   ROS_INFO("Camera %d status:\n  \
@@ -131,29 +124,19 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
       y-axis (%3.4f, %3.4f, %3.4f)\n    \
       z-axis (%3.4f, %3.4f, %3.4f)\n\
       \n",
-        msg->camera_number,
-        translation[0], translation[1], translation[2],
-        rot_mat(0, 0), rot_mat(1, 0), rot_mat(2, 0),
-        rot_mat(0, 1), rot_mat(1, 1), rot_mat(2, 1),
-        rot_mat(0, 2), rot_mat(1, 2), rot_mat(2, 2));
-
+           msg->camera_number, translation[0], translation[1], translation[2], rot_mat(0, 0), rot_mat(1, 0),
+           rot_mat(2, 0), rot_mat(0, 1), rot_mat(1, 1), rot_mat(2, 1), rot_mat(0, 2), rot_mat(1, 2), rot_mat(2, 2));
 
   tms_msg_ss::Skeleton integrated_skeleton;
   integrated_skeleton.user_id = 0;
   integrated_skeleton.position.resize(JOINT_NUM);
   integrated_skeleton.orientation.resize(JOINT_NUM);
   integrated_skeleton.confidence.resize(JOINT_NUM);
-  for(int i=0; i<JOINT_NUM; i++)
+  for (int i = 0; i < JOINT_NUM; i++)
   {
-    Eigen::Vector3f pos(
-        skeleton.position[i].x,
-        skeleton.position[i].y,
-        skeleton.position[i].z);
-    Eigen::Quaternionf ori(
-        skeleton.orientation[i].w,
-        skeleton.orientation[i].x,
-        skeleton.orientation[i].y,
-        skeleton.orientation[i].z);
+    Eigen::Vector3f pos(skeleton.position[i].x, skeleton.position[i].y, skeleton.position[i].z);
+    Eigen::Quaternionf ori(skeleton.orientation[i].w, skeleton.orientation[i].x, skeleton.orientation[i].y,
+                           skeleton.orientation[i].z);
     pos = rotation.matrix() * pos + translation;
     ori = rotation * ori;
     integrated_skeleton.position[i].x = pos[0];
@@ -171,15 +154,11 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
   int index, user_id;
   for (i = 0; i < out.data.size(); i++)
   {
-    Eigen::Vector3f v1(
-        integrated_skeleton.position[SpineMid].x,
-        integrated_skeleton.position[SpineMid].y,
-        integrated_skeleton.position[SpineMid].z);
-    Eigen::Vector3f v2(
-        out.data[i].position[SpineMid].x,
-        out.data[i].position[SpineMid].y,
-        out.data[i].position[SpineMid].z);
-    if ((v1-v2).norm() <= IDENTIFY_RANGE)
+    Eigen::Vector3f v1(integrated_skeleton.position[SpineMid].x, integrated_skeleton.position[SpineMid].y,
+                       integrated_skeleton.position[SpineMid].z);
+    Eigen::Vector3f v2(out.data[i].position[SpineMid].x, out.data[i].position[SpineMid].y,
+                       out.data[i].position[SpineMid].z);
+    if ((v1 - v2).norm() <= IDENTIFY_RANGE)
     {
       index = i;
       user_id = out.data[i].user_id;
@@ -189,7 +168,7 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
   if (i == MAX_USERS)  // If not detected yet, treat as new skeleton
   {
     user_id = tracked_skeleton_num_;
-    for (i=0; i < MAX_USERS; i++)
+    for (i = 0; i < MAX_USERS; i++)
     {
       if (out.data[i].user_id < 0)  // user_id < 0 means empty
       {
@@ -206,18 +185,16 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
   }
 
   // Update skeleton state
-  bool &table_ref = bFaceStateTable[index][msg->camera_number];
+  bool& table_ref = bFaceStateTable[index][msg->camera_number];
   integrated_skeleton.user_id = user_id;
 
   // Calculate skeleton direction (front is y)
-  Eigen::Vector3f tmp_x(
-      skeleton.position[HipRight].x - skeleton.position[HipLeft].x,
-      skeleton.position[HipRight].y - skeleton.position[HipLeft].y,
-      skeleton.position[HipRight].z - skeleton.position[HipLeft].z);
-  Eigen::Vector3f tmp_z(
-      skeleton.position[SpineMid].x - skeleton.position[SpineBase].x,
-      skeleton.position[SpineMid].y - skeleton.position[SpineBase].y,
-      skeleton.position[SpineMid].z - skeleton.position[SpineBase].z);
+  Eigen::Vector3f tmp_x(skeleton.position[HipRight].x - skeleton.position[HipLeft].x,
+                        skeleton.position[HipRight].y - skeleton.position[HipLeft].y,
+                        skeleton.position[HipRight].z - skeleton.position[HipLeft].z);
+  Eigen::Vector3f tmp_z(skeleton.position[SpineMid].x - skeleton.position[SpineBase].x,
+                        skeleton.position[SpineMid].y - skeleton.position[SpineBase].y,
+                        skeleton.position[SpineMid].z - skeleton.position[SpineBase].z);
   Eigen::Vector3f skeleton_direction_cam;
   Eigen::Vector3f camera_direction_cam;
   skeleton_direction_cam = (tmp_z.cross(tmp_x)).normalized();
@@ -234,12 +211,10 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
     if (table_ref)
     {
       Eigen::Quaternionf skeleton_rotation(
-          integrated_skeleton.orientation[SpineBase].w,
-          integrated_skeleton.orientation[SpineBase].x,
-          integrated_skeleton.orientation[SpineBase].y,
-          integrated_skeleton.orientation[SpineBase].z);
+          integrated_skeleton.orientation[SpineBase].w, integrated_skeleton.orientation[SpineBase].x,
+          integrated_skeleton.orientation[SpineBase].y, integrated_skeleton.orientation[SpineBase].z);
       // Check that skeleton is facing the camera
-      if (dot_skeleton_camera <= cos(FRONT_ANGLE_RANGE*M_PI/180))
+      if (dot_skeleton_camera <= cos(FRONT_ANGLE_RANGE * M_PI / 180))
       {
         // storage as valid skeleton
       }
@@ -248,10 +223,9 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
         table_ref = false;
         // Allow only move
         const tms_msg_ss::Skeleton& last_state = out.data[index];
-        Eigen::Vector3d translation(
-            integrated_skeleton.position[SpineMid].x - last_state.position[SpineMid].x,
-            integrated_skeleton.position[SpineMid].y - last_state.position[SpineMid].y,
-            integrated_skeleton.position[SpineMid].z - last_state.position[SpineMid].z);
+        Eigen::Vector3d translation(integrated_skeleton.position[SpineMid].x - last_state.position[SpineMid].x,
+                                    integrated_skeleton.position[SpineMid].y - last_state.position[SpineMid].y,
+                                    integrated_skeleton.position[SpineMid].z - last_state.position[SpineMid].z);
         for (int i = 0; i < integrated_skeleton.position.size(); i++)
         {
           integrated_skeleton.position[i].x = last_state.position[i].x + translation[0];
@@ -264,10 +238,9 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
     {
       // Allow only move
       const tms_msg_ss::Skeleton& last_state = out.data[index];
-      Eigen::Vector3d translation(
-          integrated_skeleton.position[SpineMid].x - last_state.position[SpineMid].x,
-          integrated_skeleton.position[SpineMid].y - last_state.position[SpineMid].y,
-          integrated_skeleton.position[SpineMid].z - last_state.position[SpineMid].z);
+      Eigen::Vector3d translation(integrated_skeleton.position[SpineMid].x - last_state.position[SpineMid].x,
+                                  integrated_skeleton.position[SpineMid].y - last_state.position[SpineMid].y,
+                                  integrated_skeleton.position[SpineMid].z - last_state.position[SpineMid].z);
       for (int i = 0; i < integrated_skeleton.position.size(); i++)
       {
         integrated_skeleton.position[i].x = last_state.position[i].x + translation[0];
@@ -279,7 +252,7 @@ void SkeletonIntegrator::callback(const tms_msg_ss::SkeletonStreamWrapper::Const
 
   // Choose better data
   if ((msg->camera_number == storage_evaluation[index].first ||
-      dot_skeleton_camera <= storage_evaluation[index].second) &&
+       dot_skeleton_camera <= storage_evaluation[index].second) &&
       table_ref)
   {
     out.data[index] = integrated_skeleton;
@@ -297,17 +270,14 @@ void SkeletonIntegrator::run()
 {
   ros::Rate loop_late(10);
 
-  static boost::thread thread_listener(
-      boost::bind(&SkeletonIntegrator::listenSkeletonStream, this));
+  static boost::thread thread_listener(boost::bind(&SkeletonIntegrator::listenSkeletonStream, this));
 
-  ros::Publisher pub =
-    nh_.advertise<tms_msg_ss::SkeletonArray>(
-        "integrated_skeleton_stream", 1);
+  ros::Publisher pub = nh_.advertise< tms_msg_ss::SkeletonArray >("integrated_skeleton_stream", 1);
 
   while (ros::ok())
   {
     pub.publish(out);
-    for (int i = 0; i<MAX_USERS; i++)
+    for (int i = 0; i < MAX_USERS; i++)
     {
       // decrease validity of skeleton whenever publish
       if (tracking_validity[i] > 0)
@@ -319,7 +289,7 @@ void SkeletonIntegrator::run()
       if (tracking_validity[i] == 0)
       {
         out.data[i] = initialize_skeleton();
-        for (std::vector<int>::iterator camera_id = array.begin(); camera_id != array.end(); camera_id++)
+        for (std::vector< int >::iterator camera_id = array.begin(); camera_id != array.end(); camera_id++)
         {
           bFaceStateTable[i][*camera_id] = false;
         }
@@ -338,14 +308,13 @@ void SkeletonIntegrator::run()
 void SkeletonIntegrator::listenSkeletonStream()
 {
   ros::Rate loop_late(10);
-  std::vector<ros::Subscriber> sub(array.size());
+  std::vector< ros::Subscriber > sub(array.size());
 
   std::cout << "Subscribe ===" << std::endl;
-  for (int i=0; i < array.size(); i++)
+  for (int i = 0; i < array.size(); i++)
   {
     std::string topic_name("skeleton_stream_wrapper");
-    sub[i] =nh_.subscribe(topic_name.append(to_str<int>(array[i])),
-        1,&SkeletonIntegrator::callback, this);
+    sub[i] = nh_.subscribe(topic_name.append(to_str< int >(array[i])), 1, &SkeletonIntegrator::callback, this);
   }
 
   ros::spin();
@@ -360,22 +329,40 @@ void SkeletonIntegrator::showStatus()
   ss.fill(' ');
 
   ss << "User ID" << std::endl;
-  for (int i = 0; i < MAX_USERS; i++) { ss << "|" << std::setw(5) << i; }
+  for (int i = 0; i < MAX_USERS; i++)
+  {
+    ss << "|" << std::setw(5) << i;
+  }
   ss << "|" << std::endl;
-  for (int i = 0; i < MAX_USERS; i++) { ss << "|" << std::setw(5) << out.data[i].user_id; }
-  ss << "|" << std::endl << std::endl;;
+  for (int i = 0; i < MAX_USERS; i++)
+  {
+    ss << "|" << std::setw(5) << out.data[i].user_id;
+  }
+  ss << "|" << std::endl
+     << std::endl;
+  ;
 
   ss << "Validity table" << std::endl;
-  for (int i = 0; i < MAX_USERS; i++) { ss << "|" << std::setw(2) << i; }
+  for (int i = 0; i < MAX_USERS; i++)
+  {
+    ss << "|" << std::setw(2) << i;
+  }
   ss << "|" << std::endl;
-  for (int i = 0; i < MAX_USERS; i++) { ss << "|" << std::setw(2) << tracking_validity[i]; }
-  ss << "|" << std::endl << std::endl;
+  for (int i = 0; i < MAX_USERS; i++)
+  {
+    ss << "|" << std::setw(2) << tracking_validity[i];
+  }
+  ss << "|" << std::endl
+     << std::endl;
 
   ss << "Face state table" << std::endl;
-  for (std::vector<int>::iterator it = array.begin(); it != array.end(); it++)
+  for (std::vector< int >::iterator it = array.begin(); it != array.end(); it++)
   {
-    if (*it == 0) {continue;}
-    ss << "|" << std::setw(2) << *it <<  "|";
+    if (*it == 0)
+    {
+      continue;
+    }
+    ss << "|" << std::setw(2) << *it << "|";
     for (int i = 0; i < MAX_USERS; i++)
     {
       if (bFaceStateTable[i][*it])
@@ -395,9 +382,9 @@ void SkeletonIntegrator::showStatus()
 }
 
 //-----------------------------------------------------------------------------
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-  std::vector<int> cameraID_array;
+  std::vector< int > cameraID_array;
 
   ros::init(argc, argv, "skeleton_integrator");
 

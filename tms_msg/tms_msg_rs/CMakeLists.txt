@@ -5,7 +5,8 @@ cmake_minimum_required(VERSION 2.8.3)
 project(tms_msg_rs)
 
 find_package(
-  catkin REQUIRED COMPONENTS 
+  catkin REQUIRED COMPONENTS
+  genmsg
   std_msgs
   message_generation
 )

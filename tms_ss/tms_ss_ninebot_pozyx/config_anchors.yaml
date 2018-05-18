@@ -1,0 +1,54 @@
+
+# pozyx_anchors:
+#   - id: 0x6e23
+#     coor_x: 10.073
+#     coor_y: -9.460
+#   - id: 0x6e49
+#     coor_x: 11.540
+#     coor_y: 8.810
+#   - id: 0x6e08
+#     coor_x: -7.235
+#     coor_y: 6.019
+#   - id: 0x6e22
+#     coor_x: -8.224
+#     coor_y: -10.837
+#   - id: 0x6e31
+#     coor_x: 1.598
+#     coor_y: -30.148
+#   - id: 0x6e58
+#     coor_x: -2.504
+#     coor_y: -52.789
+#   - id: 0x6e39
+#     coor_x: -7.115
+#     coor_y: -41.871
+#   - id: 0x6e30
+#     coor_x: -6.999
+#     coor_y: -35.079
+
+#6e22橋の上
+
+pozyx_anchors:
+  - id: 0x6e23
+    coor_x: 10.073
+    coor_y: -9.460
+  - id: 0x6e49
+    coor_x: 11.540
+    coor_y: 8.810
+  - id: 0x6e08
+    coor_x: -7.235
+    coor_y: 6.019
+  - id: 0x6e22
+    coor_x: -3.422
+    coor_y: -18.685
+  - id: 0x6e31
+    coor_x: 1.598
+    coor_y: -30.148
+  - id: 0x6e58
+    coor_x: -2.504
+    coor_y: -52.789
+  - id: 0x6e39
+    coor_x: -7.115
+    coor_y: -41.871
+  - id: 0x6e30
+    coor_x: -6.999
+    coor_y: -35.079

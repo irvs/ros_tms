@@ -10,10 +10,10 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 catkin_package(
-  # INCLUDE_DIRS include
+  #INCLUDE_DIRS include
   LIBRARIES tms_db_manager
+  #DEPENDS system_lib
   CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs tms_msg_db
-  DEPENDS system_lib
 )
 
 catkin_python_setup()

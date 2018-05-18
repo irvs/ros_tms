@@ -21,36 +21,38 @@
 #include "KNI_InvKin/KatanaKinematicsDecisionAlgorithms.h"
 #include "common/MathHelperFunctions.h"
 
-namespace KNI {
+namespace KNI
+{
+KinematicsDefaultEncMinAlgorithm::t_iter KinematicsDefaultEncMinAlgorithm::
+operator()(t_iter targetEnc_begin, t_iter targetEnc_end, c_iter currentEnc_begin, c_iter currentEnc_end)
+{
+  // assert on distance(tE_beg, tE_enc) != distance(cE_beg, cE_enc)
+  // assert(::std::distance(targetEnc_begin, targetEnc_end) == ::std::distance(currentEnc_begin, currentEnc_end) &&
+  // "Numbers of target encoders and current encoders provided don't match" );
+  using namespace KNI_MHF;
+  double dist(0), sum(0), mindist = 1000000;
+  t_iter index = targetEnc_end;
 
+  for (t_iter target = targetEnc_begin; target != targetEnc_end; ++target)
+  {
+    sum = 0;
 
-KinematicsDefaultEncMinAlgorithm::t_iter
-KinematicsDefaultEncMinAlgorithm::operator() (t_iter targetEnc_begin, t_iter targetEnc_end, c_iter currentEnc_begin, c_iter currentEnc_end ) {
-	// assert on distance(tE_beg, tE_enc) != distance(cE_beg, cE_enc)
-	//assert(::std::distance(targetEnc_begin, targetEnc_end) == ::std::distance(currentEnc_begin, currentEnc_end) && "Numbers of target encoders and current encoders provided don't match" );
-	using namespace KNI_MHF;
-	double dist(0), sum(0), mindist=1000000;
-	t_iter index = targetEnc_end;
+    c_iter t = (*target).begin();
+    c_iter c = currentEnc_begin;
+    while (t != (*target).end() && c != currentEnc_end)
+    {
+      sum += pow2< double >(*t - *c);
+      ++t;
+      ++c;
+    }
+    dist = sqrt(sum);
+    if (dist < mindist)
+    {
+      index = target;
+      mindist = dist;
+    }
+  }
 
-	for(t_iter target = targetEnc_begin; target != targetEnc_end; ++target) {
-		sum = 0;
-
-		c_iter t = (*target).begin();
-		c_iter c = currentEnc_begin;
-		while( t != (*target).end() && c != currentEnc_end) {
-			sum += pow2<double>( *t - *c);
-			++t;
-			++c;
-		}
-		dist = sqrt(sum);
-		if(dist < mindist) {
-			index = target;
-			mindist = dist;
-		}
-	}
-
-	return index;
+  return index;
 }
-
-
 }

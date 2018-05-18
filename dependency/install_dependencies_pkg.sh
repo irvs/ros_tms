@@ -5,11 +5,8 @@ cmake-curses-gui \
 libboost-all-dev \
 libeigen3-dev \
 libeigen3-doc \
-libqt4-dev \
-libqt4-opengl-dev \
-qt4-dev-tools \
-qt4-qtconfig \
-qt4-doc-html \
+qt5-doc-html \
+qt5-default \
 libode-dev \
 libomniorb4-dev \
 libcos4-dev \
@@ -20,11 +17,10 @@ libqhull-dev \
 liblapack-dev \
 libqwt-dev \
 freeglut3-dev \
-ros-indigo-move-base \
-ros-indigo-kobuki-msgs \
-ros-indigo-kobuki* \
-ros-indigo-amcl \
-ros-indigo-urg-node \
-ros-indigo-moveit-full \
-ros-indigo-smach-viewer \
-mongodb
+ros-kinetic-move-base \
+ros-kinetic-kobuki* \
+ros-kinetic-amcl \
+ros-kinetic-urg-node \
+mongodb \
+ros-kinetic-moveit \
+ros-kinetic-people-msgs

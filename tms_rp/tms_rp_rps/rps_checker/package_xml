@@ -5,7 +5,7 @@
   <license>BSD</license>
   <description>The tms_rp_rps_checker package</description>
 
-  <maintainer email="sakamoto@irvs.ait.kyushu-u.ac.jp">Junya Sakamoto</maintainer>
+  <maintainer email="kawamura@ait.kyushu-u.ac.jp">Akihiro Kawamura</maintainer>
 
   <url type="website">http://robotics.ait.kyushu-u.ac.jp/index-e.html</url>
   <url type="git">https://github.com/irvs/ros_tms</url>

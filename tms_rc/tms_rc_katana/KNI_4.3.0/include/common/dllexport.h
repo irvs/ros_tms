@@ -18,9 +18,6 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
-
-
 #ifndef _DLLEXPORT_H_
 #define _DLLEXPORT_H_
 
@@ -31,45 +28,44 @@
 #define DLLDIR_IK
 #define DLLDIR_LM
 
-#ifdef DLLDIR_EXPORT // export DLL information
-#	undef DLLDIR
+#ifdef DLLDIR_EXPORT  // export DLL information
+#undef DLLDIR
 //#	undef DLLDIR_IK
-#	define DLLDIR  __declspec(dllexport)  
+#define DLLDIR __declspec(dllexport)
 //#	define DLLDIR_IK __declspec(dllexport)
 #endif
 
-#ifdef DLLDIR_IMPORT // import DLL information
-#	undef DLLDIR
-#	undef DLLDIR_IK
-#	undef DLLDIR_LM
-#	define DLLDIR __declspec(dllimport)
-#	define DLLDIR_IK __declspec(dllimport)
-#	define DLLDIR_LM __declspec(dllimport)
+#ifdef DLLDIR_IMPORT  // import DLL information
+#undef DLLDIR
+#undef DLLDIR_IK
+#undef DLLDIR_LM
+#define DLLDIR __declspec(dllimport)
+#define DLLDIR_IK __declspec(dllimport)
+#define DLLDIR_LM __declspec(dllimport)
 #endif
 
 #ifdef DLLDIR_INVKIN_EXPORT
-#	undef DLLDIR
-#	undef DLLDIR_IK
-#	define DLLDIR
-//#	define DLLDIR  __declspec(dllimport)   
-#	define DLLDIR_IK  __declspec(dllexport)
+#undef DLLDIR
+#undef DLLDIR_IK
+#define DLLDIR
+//#	define DLLDIR  __declspec(dllimport)
+#define DLLDIR_IK __declspec(dllexport)
 #endif
 
 #ifdef DLLDIR_LM_EXPORT
-#	undef DLLDIR
-#	undef DLLDIR_IK
-#	undef DLLDIR_LM
-#	define DLLDIR
-#	define DLLDIR_IK
-//#	define DLLDIR  __declspec(dllimport)   
+#undef DLLDIR
+#undef DLLDIR_IK
+#undef DLLDIR_LM
+#define DLLDIR
+#define DLLDIR_IK
+//#	define DLLDIR  __declspec(dllimport)
 //#	define DLLDIR_IK  __declspec(dllimport)
-#	define DLLDIR_LM  __declspec(dllexport)
+#define DLLDIR_LM __declspec(dllexport)
 #endif
 
 #ifdef WIN32
-#pragma warning( disable: 4251 )
-#pragma warning( disable: 4275 )
+#pragma warning(disable : 4251)
+#pragma warning(disable : 4275)
 #endif
 
 #endif
-

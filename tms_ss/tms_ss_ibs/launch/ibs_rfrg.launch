@@ -5,10 +5,10 @@
 		<param name="frame_id" value="refrigerator_link" />
 		<param name="idSensor" value="3018" />
 		<param name="idPlace"  value="2009" />
-		<param name="offset_x"		   value="0.0" />
-		<param name="offset_y"		   value="0.0" />
-		<param name="offset_z"		   value="0.8" />
-		<rosparam param="loadcell_points/x">[0.07, 0.38, 0.07, 0.38]</rosparam>
-		<rosparam param="loadcell_points/y">[0.07, 0.07, 0.41, 0.41]</rosparam>
+		<param name="offset_x"		   value="-0.12" />
+		<param name="offset_y"		   value="0.06" />
+		<param name="offset_z"		   value="0.74" />
+		<rosparam param="loadcell_points/x">[0.0, 0.00, -0.31, -0.31]</rosparam>
+		<rosparam param="loadcell_points/y">[0.0, 0.34, 0.000, 0.34]</rosparam>
 	</node>
 </launch>

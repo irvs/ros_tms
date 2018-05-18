@@ -16,7 +16,7 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES kobuki_virtual_control
   CATKIN_DEPENDS geometry_msgs roscpp tms_msg_db tms_msg_rc nav_msgs
-  DEPENDS system_lib
+ # DEPENDS system_lib
   CATKIN_DEPENDS tf
 )
 
@@ -33,10 +33,10 @@ include_directories(
  add_executable(mimamorukun_node src/mimamorukun_node.cpp src/ClientSocket.cpp src/Socket.cpp)
  add_executable(mimamorukun_node_vicon src/mimamorukun_node_vicon.cpp src/ClientSocket.cpp src/Socket.cpp) 
 
- add_dependencies(mimamorukun_hybrid_control DEPENDS tms_msg_rc_gencpp tms_msg_db_gencpp)
- add_dependencies(mimamorukun_safe_control DEPENDS tms_msg_rc_gencpp tms_msg_db_gencpp)
- add_dependencies(mimamorukun_node DEPENDS tms_msg_rc_gencpp tms_msg_db_gencpp)
- add_dependencies(mimamorukun_node_vicon DEPENDS tms_msg_rc_gencpp tms_msg_db_gencpp)
+ add_dependencies(mimamorukun_hybrid_control tms_msg_rc_gencpp tms_msg_db_gencpp)
+ add_dependencies(mimamorukun_safe_control tms_msg_rc_gencpp tms_msg_db_gencpp)
+ add_dependencies(mimamorukun_node tms_msg_rc_gencpp tms_msg_db_gencpp)
+ add_dependencies(mimamorukun_node_vicon tms_msg_rc_gencpp tms_msg_db_gencpp)
  
 
 ## Specify libraries to link a library or executable target against
