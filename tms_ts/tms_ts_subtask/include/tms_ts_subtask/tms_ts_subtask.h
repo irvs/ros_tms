@@ -25,6 +25,9 @@
 //#include <kobuki_msgs/Sound.h>
 //#include <kobuki_msgs/MotorPower.h>
 //#include <sensor_msgs/PointCloud2.h>
+#include <geometry_msgs/Point.h>
+#include <tf/tf.h>
+#include <tf/transform_broadcaster.h>
 #include <std_srvs/Empty.h>
 
 #include <boost/thread.hpp>
