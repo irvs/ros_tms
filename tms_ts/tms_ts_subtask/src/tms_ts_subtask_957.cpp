@@ -1020,17 +1020,20 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
     case 2012:
     {
       i++;
-      double_goal_pub.header.stamp = now;
-      double_goal_pub.header.frame_id = "map";
-      double_goal_pub.position.x = rp_srv.request.goal_pos.x;
-      double_goal_pub.position.y = rp_srv.request.goal_pos.y;
-      double_goal_pub.position.z = 0;
+      geometry_msgs::PoseStamped double_goal;
+
+      ros::Time now = ros::Time::now() + ros::Duration(9 * 60 * 60); // GMT +9
+      double_goal.header.stamp = now;
+      double_goal.header.frame_id = "map";
+      double_goal.pose.position.x = rp_srv.request.goal_pos.x;
+      double_goal.pose.position.y = rp_srv.request.goal_pos.y;
+      double_goal.pose.position.z = 0;
       
-      geometry_msgs::Quaternion quaternion = tf.transformations.quaternion_from_euler(0,0,rp_srv.request.goal_pos.yaw);
+      geometry_msgs::Quaternion quaternion = tf::createQuaternionMsgFromYaw(rp_srv.request.goal_pos.yaw);
 
-      double_goal_pub.orientation.x = quaternion;
+      double_goal.pose.orientation = quaternion;
 
-      double_goal_pub.publish()
+      double_goal_pub.publish(double_goal);
       while (1)
       {
         tms_msg_db::TmsdbGetData srv;
@@ -1045,25 +1048,25 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
         ROS_INFO("now x:%f y:%f th:%f", srv.response.tmsdb[0].x, srv.response.tmsdb[0].y, srv.response.tmsdb[0].ry);
         double goal_dis = distance(srv.response.tmsdb[0].x, srv.response.tmsdb[0].y, rp_srv.request.goal_pos.x, rp_srv.request.goal_pos.y);
         double goal_rad = DiffRadian(srv.response.tmsdb[0].ry, rp_srv.request.goal_pos.th);
-        ROS_INFO("goal_dis:%f dis:%f goal_rad:%f rad:%f", goal_dis, dis, goal_rad, rad);
+        ROS_INFO("goal_dis:%f goal_rad:%f", goal_dis, goal_rad);
 
         if (goal_rad > -0.2 && goal_rad < 0.2)
         {
             ROS_INFO("arrive goal");
-            double_srv.request.cmd = 10;
-            if (double_control_client.call(double_srv))
-            ROS_INFO("result: %d", double_srv.response.result);
+            // double_srv.request.cmd = 10;
+            // if (double_control_client.call(double_srv))
+            // ROS_INFO("result: %d", double_srv.response.result);
             s_srv.request.state = 1;
             state_client.call(s_srv);
             return true;
         }
-        if (double_control_client.call(double_srv))
-            ROS_INFO("result: %d", double_srv.response.result);
-        else
-        {
-            ROS_ERROR("Failed to call service double_move");
-            return false;
-        }
+        // if (double_control_client.call(double_srv))
+        //     ROS_INFO("result: %d", double_srv.response.result);
+        // else
+        // {
+        //     ROS_ERROR("Failed to call service double_move");
+        //     return false;
+        // }
       }
       break;
     }
