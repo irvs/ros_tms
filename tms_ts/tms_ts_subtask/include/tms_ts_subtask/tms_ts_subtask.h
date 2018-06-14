@@ -139,6 +139,7 @@ private:
   ros::ServiceClient state_client;
 
   ros::Publisher db_pub;
+  ros::Publisher double_goal_pub;
   //	ros::Publisher kobuki_sound;
   //	ros::Publisher kobuki_motorpower;
   //	ros::Subscriber sensing_sub;
