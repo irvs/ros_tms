@@ -10,9 +10,6 @@
     <!--自己位置推定-->
     <node pkg="tms_ss_vicon" type="vicon_stream" name="vicon_stream" />
     <node pkg="tms_rc_double" type="vicon2pose" name="vicon2pose" args="vicon_pose:=initialpose" />
-    <include file="$(find tms_rc_double)/launch/includes/localization.launch.xml">
-      <arg name="is_real" value="true" />
-    </include>
 
     <!-- Move base -->
     <include file="$(find tms_rc_double)/launch/includes/move_base.launch.xml" />

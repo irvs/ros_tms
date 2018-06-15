@@ -1029,7 +1029,7 @@ bool tms_rp::TmsRpSubtask::move(SubtaskData sd)
       double_goal.pose.position.y = rp_srv.request.goal_pos.y;
       double_goal.pose.position.z = 0;
       
-      geometry_msgs::Quaternion quaternion = tf::createQuaternionMsgFromYaw(rp_srv.request.goal_pos.yaw);
+      geometry_msgs::Quaternion quaternion = tf::createQuaternionMsgFromYaw(rp_srv.request.goal_pos.th);
 
       double_goal.pose.orientation = quaternion;
 
