@@ -23,4 +23,9 @@ ros-kinetic-amcl \
 ros-kinetic-urg-node \
 mongodb \
 ros-kinetic-moveit \
-ros-kinetic-people-msgs
+ros-kinetic-people-msgs \
+ros-kinetic-robot-localization \
+ros-kinetic-global-planner \
+ros-kinetic-dwa-local-planner \
+ros-kinetic-social-navigation-layers \
+ros-kinetic-smach*
