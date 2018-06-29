@@ -47,11 +47,11 @@ class TmsUrListener():
         self.bed_pub = rospy.Publisher("rc_bed",Int32,queue_size=10)
         self.tok = Tokenizer()
 
-    #    f = open('/home/rts/apikey','r')
-    #    for line in f:
-    #        self.apikey = line.replace('\n','')
+        f = open('/home/common/apikey','r')
+        for line in f:
+            self.apikey = line.replace('\n','')
 
-    #    f.close()
+        f.close()
         print 'tms_ur_listener_server ready...'
 
     def alarm(self):
