@@ -247,16 +247,23 @@ class TmsUrListener():
             temp_dbdata = Tmsdb()
             temp_dbdata.id = object_id
             temp_dbdata.state = 1
-            target = self.db_reader(temp_dbdata)
+
+            #target = self.db_reader(temp_dbdata)
+            db_target = self.db_reader(temp_dbdata)
+            target = db_target.tmsdb[0]
             if target is None:
                 tim = self.announce(error_msg2)
                 self.julius_power(True,tim.sec)
                 return
+            print target
             place_id = target.place
 
             temp_dbdata = Tmsdb()
             temp_dbdata.id = place_id + sid
-            target = self.db_reader(temp_dbdata)
+
+            db_target =self.db_reader(temp_dbdata)
+            target = db_target.tmsdb[0]
+            #target = self.db_reader(temp_dbdata)
             if target is None:
                 tim = self.announce(error_msg2)
                 self.julius_power(True,tim.sec)
