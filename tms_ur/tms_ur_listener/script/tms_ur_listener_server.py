@@ -37,6 +37,7 @@ class TmsUrListener():
         rospy.Subscriber("/pi4/julius_msg",julius_msg,self.callback, callback_args=4)
         rospy.Subscriber("/pi5/julius_msg",julius_msg,self.callback, callback_args=5)
         rospy.Subscriber("/watch_msg",String,self.callback, callback_args=100)
+        rospy.Subscriber("/line_msg",String, self.callback, callback_args=200)
         self.gSpeech_launched = False
         self.julius_flag = True
         self.timer = threading.Timer(1,self.alarm)
@@ -46,7 +47,8 @@ class TmsUrListener():
         self.bed_pub = rospy.Publisher("rc_bed",Int32,queue_size=10)
         self.tok = Tokenizer()
 
-        f = open('/home/rts/apikey','r')
+        f = open('/home/common/apikey','r')
+        #f = open('/home/rts/apikey','r')
         for line in f:
             self.apikey = line.replace('\n','')
 
@@ -182,7 +184,7 @@ class TmsUrListener():
         user_dic = {1100:"太郎さん"}
         place_dic = {}
         other_words = []
-
+        
         for word in words:
             res = self.tag_reader(word)
             if res is None:
@@ -202,7 +204,7 @@ class TmsUrListener():
                     place_dic[target.id] = target.announce
                 else:
                     other_words.append(word)
-
+    
         print "task:" + str(task_dic)
         print "robot:" + str(robot_dic)
         print "object:" + str(object_dic)
@@ -232,6 +234,7 @@ class TmsUrListener():
             tim = self.announce(announce)
             self.julius_power(True,tim.sec)
             return
+    
         elif task_id == 8100: #search_object
             if len(object_dic) == 1:
                 object_id = object_dic.keys()[0]
@@ -245,7 +248,10 @@ class TmsUrListener():
             temp_dbdata = Tmsdb()
             temp_dbdata.id = object_id
             temp_dbdata.state = 1
-            target = self.db_reader(temp_dbdata)
+
+            #target = self.db_reader(temp_dbdata)
+            db_target = self.db_reader(temp_dbdata)
+            target = db_target.tmsdb[0]
             if target is None:
                 tim = self.announce(error_msg2)
                 self.julius_power(True,tim.sec)
@@ -254,7 +260,10 @@ class TmsUrListener():
 
             temp_dbdata = Tmsdb()
             temp_dbdata.id = place_id + sid
-            target = self.db_reader(temp_dbdata)
+
+            db_target =self.db_reader(temp_dbdata)
+            target = db_target.tmsdb[0]
+            #target = self.db_reader(temp_dbdata)
             if target is None:
                 tim = self.announce(error_msg2)
                 self.julius_power(True,tim.sec)

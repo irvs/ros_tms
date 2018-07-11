@@ -28,3 +28,8 @@ add_executable(tms_ts_subtask src/tms_ts_subtask.cpp)
 add_dependencies(tms_ts_subtask tms_msg_db_generate_messages_cpp tms_msg_ts_generate_messages_cpp)
 target_link_libraries(tms_ts_subtask ${catkin_LIBRARIES})
 
+add_executable(tms_ts_subtask_957 src/tms_ts_subtask_957.cpp)
+add_dependencies(tms_ts_subtask_957 tms_msg_db_generate_messages_cpp tms_msg_ts_generate_messages_cpp)
+target_link_libraries(tms_ts_subtask_957 ${catkin_LIBRARIES})
+
+
