@@ -48,6 +48,7 @@ class TmsUrListener():
         self.tok = Tokenizer()
 
         f = open('/home/common/apikey','r')
+        #f = open('/home/rts/apikey','r')
         for line in f:
             self.apikey = line.replace('\n','')
 
@@ -255,7 +256,6 @@ class TmsUrListener():
                 tim = self.announce(error_msg2)
                 self.julius_power(True,tim.sec)
                 return
-            print target
             place_id = target.place
 
             temp_dbdata = Tmsdb()
