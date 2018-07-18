@@ -29,12 +29,26 @@ include_directories(
 )
 
 ## Declare a cpp executable
- add_executable(double_control src/double_control.cpp) # src/ClientSocket.cpp src/Socket.cpp)
- add_dependencies(double_control tms_msg_rc_gencpp tms_msg_db_gencpp)
+ 
+add_executable(double_control src/double_control.cpp) # src/ClientSocket.cpp src/Socket.cpp)
+add_dependencies(double_control tms_msg_rc_gencpp tms_msg_db_gencpp)
 
+<<<<<<< Updated upstream
+=======
+add_executable(tms_ss_double_pozyx src/main.cpp)
+add_dependencies(tms_ss_double_pozyx tms_msg_db_generate_messages_cpp tms_msg_ss_generate_messages_cpp)
+
+
+>>>>>>> Stashed changes
 ## Specify libraries to link a library or executable target against
  target_link_libraries(double_control
    ${catkin_LIBRARIES}
  )
 
+<<<<<<< Updated upstream
+=======
+  target_link_libraries(tms_ss_double_pozyx
+   ${catkin_LIBRARIES}
+ )
+>>>>>>> Stashed changes
 
