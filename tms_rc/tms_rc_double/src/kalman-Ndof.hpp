@@ -3,32 +3,32 @@
 
 /********************************************************************************************/
 /*																							*/
-/* ƒJƒ‹ƒ}ƒ“ƒtƒBƒ‹ƒ^‚Æ‚ÍCŒë·‚ðŠÜ‚ñ‚¾ŠÏ‘ª’ly‚ª“¾‚ç‚ê‚½‚Æ‚«‚ÉC–¢’m‚Ìó‘Ô•Ï”x‚ð„’è‚·‚é‚à‚Ì	*/
-/* ó‘Ô•û’öŽ® x = A x + B u																	*/
-/* ŠÏ‘ª•û’öŽ® y = C x	 																	*/
+/* ï¿½Jï¿½ï¿½ï¿½}ï¿½ï¿½ï¿½tï¿½Bï¿½ï¿½ï¿½^ï¿½Æ‚ÍCï¿½ë·ï¿½ï¿½ï¿½Ü‚ñ‚¾ŠÏ‘ï¿½ï¿½lyï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½Æ‚ï¿½ï¿½ÉCï¿½ï¿½ï¿½mï¿½Ìï¿½ï¿½Ô•Ïï¿½xï¿½ð„’è‚·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½	*/
+/* ï¿½ï¿½ï¿½Ô•ï¿½ï¿½ï¿½ï¿½ï¿½ x = A x + B u																	*/
+/* ï¿½Ï‘ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ y = C x	 																	*/
 /*																							*/
-/* ^‚Ìó‘Ô•Ï”‚Í (x y ... vx vy ...)		x,y•ûŒü‚ÌˆÊ’u‚Æ‘¬“xi–¢’mj			xr@‚Æ‚·‚é	*/
-/* ŠÏ‘ª’l‚Í (x y ...)						x,y•ûŒü‚ÌˆÊ’u‚Ì‚ÝiŠù’mj			obs	‚Æ‚·‚é	*/
-/* “ü—Í’l‚Í (ax ay ...)						x,y•ûŒü‚Ì‰Á‘¬“xiŠù’mj				u	‚Æ‚·‚é	*/
-/* „’è‚³‚ê‚½ó‘Ô•Ï”‚Í (x y ... vx vy ...)	x,y•ûŒü‚ÌˆÊ’u‚Æ‘¬“xi„’èj			x	‚Æ‚·‚é	*/
+/* ï¿½^ï¿½Ìï¿½ï¿½Ô•Ïï¿½ï¿½ï¿½ (x y ... vx vy ...)		x,yï¿½ï¿½ï¿½ï¿½ï¿½ÌˆÊ’uï¿½Æ‘ï¿½ï¿½xï¿½iï¿½ï¿½ï¿½mï¿½j			xrï¿½@ï¿½Æ‚ï¿½ï¿½ï¿½	*/
+/* ï¿½Ï‘ï¿½ï¿½lï¿½ï¿½ (x y ...)						x,yï¿½ï¿½ï¿½ï¿½ï¿½ÌˆÊ’uï¿½Ì‚Ýiï¿½ï¿½ï¿½mï¿½j			obs	ï¿½Æ‚ï¿½ï¿½ï¿½	*/
+/* ï¿½ï¿½ï¿½Í’lï¿½ï¿½ (ax ay ...)						x,yï¿½ï¿½ï¿½ï¿½ï¿½Ì‰ï¿½ï¿½ï¿½ï¿½xï¿½iï¿½ï¿½ï¿½mï¿½j				u	ï¿½Æ‚ï¿½ï¿½ï¿½	*/
+/* ï¿½ï¿½ï¿½è‚³ï¿½ê‚½ï¿½ï¿½ï¿½Ô•Ïï¿½ï¿½ï¿½ (x y ... vx vy ...)	x,yï¿½ï¿½ï¿½ï¿½ï¿½ÌˆÊ’uï¿½Æ‘ï¿½ï¿½xï¿½iï¿½ï¿½ï¿½ï¿½ï¿½j			x	ï¿½Æ‚ï¿½ï¿½ï¿½	*/
 /*																							*/
 /********************************************************************************************/
 
 class Kalman
 {
 private:
-  int n; /* number of x ó‘Ô•Ï”‚ÌŽŸŒ³ */
-  int m; /* number of y ŠÏ‘ª•Ï”‚ÌŽŸŒ³ */
-  int l; /* number of u “ü—Í•Ï”‚ÌŽŸŒ³ */
+  int n; /* number of x ï¿½ï¿½ï¿½Ô•Ïï¿½ï¿½ÌŽï¿½ï¿½ï¿½ */
+  int m; /* number of y ï¿½Ï‘ï¿½ï¿½Ïï¿½ï¿½ÌŽï¿½ï¿½ï¿½ */
+  int l; /* number of u ï¿½ï¿½ï¿½Í•Ïï¿½ï¿½ÌŽï¿½ï¿½ï¿½ */
 
-  double varw; /*  „’è‚ÌŒë·•ªŽU */
-  double varu; /*  „’è‚ÌŒë·•ªŽU */
-  double DT;   /*  Ï•ªŽžŠÔ */
+  double varw; /*  ï¿½ï¿½ï¿½ï¿½ï¿½ÌŒë·ï¿½ï¿½ï¿½U */
+  double varu; /*  ï¿½ï¿½ï¿½ï¿½ï¿½ÌŒë·ï¿½ï¿½ï¿½U */
+  double DT;   /*  ï¿½Ï•ï¿½ï¿½ï¿½ï¿½ï¿½ */
 
-  double *x;    // „’è’l
-  double *xt;   // XV‚³‚ê‚½„’è’liƒtƒB[ƒhƒoƒbƒN‘Oj
-  double *u;    // “ü—Í
-  double *obs;  // ŽÀÛ‚ÌŠÏ‘ª’l
+  double *x;    // ï¿½ï¿½ï¿½ï¿½ï¿½l
+  double *xt;   // ï¿½Xï¿½Vï¿½ï¿½ï¿½ê‚½ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½iï¿½tï¿½Bï¿½[ï¿½hï¿½oï¿½bï¿½Nï¿½Oï¿½j
+  double *u;    // ï¿½ï¿½ï¿½ï¿½
+  double *obs;  // ï¿½ï¿½ï¿½Û‚ÌŠÏ‘ï¿½ï¿½l
   double *A;
   double *B;
   double *C;
@@ -185,9 +185,9 @@ public:
     dzero(l, 1, u);
     dzero(m, 1, obs);
 
-    deye(n, n, P);  // P‚Ì‰Šú’l@“K“–
+    deye(n, n, P);  // Pï¿½Ìï¿½ï¿½ï¿½ï¿½lï¿½@ï¿½Kï¿½ï¿½
 
-    // ˆÈ‰º@“™‰Á‘¬“x‰^“®‚ð‰¼’è
+    // ï¿½È‰ï¿½ï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     deye(n, n, A);
     for (int i = n / 2; i < n; i++)
       *(A + (i - n / 2) * n + i) = DT;
@@ -198,7 +198,7 @@ public:
     for (int i = 0; i < l; i++)
       *(B + (i + n / 2) * l + i) = DT;
 
-    //ŠÏ‘ª‚ÍˆÊ’u
+    //ï¿½Ï‘ï¿½ï¿½ÍˆÊ’u
     dzero(m, n, C);
     for (int i = 0; i < m; i++)
       *(C + i * n + i) = 1.0;
@@ -265,49 +265,48 @@ public:
     }
 
     /***********************************************/
-    /* ‚±‚±‚©‚çƒJƒ‹ƒ}ƒ“ƒtƒBƒ‹ƒ^‚Å“à•”ó‘Ô x ‚ð„’è */
-    /* —^‚¦‚ç‚ê‚éó‘Ô—Ê‚ÍŒë·‚ðŠÜ‚ÞŠÏ‘ª’l obs ‚¾‚¯ */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½}ï¿½ï¿½ï¿½tï¿½Bï¿½ï¿½ï¿½^ï¿½Å“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ x ï¿½ð„’ï¿½ */
+    /* ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô—Ê‚ÍŒë·ï¿½ï¿½ï¿½Ü‚ÞŠÏ‘ï¿½ï¿½l obs ï¿½ï¿½ï¿½ï¿½ */
 
     /* PD = APA' + BUB' */
     dmat_mul(n, n, n, A, P, matnn[0]);
+
     dtranspose(n, n, A, matnn[1]);
     dmat_mul(n, n, n, matnn[0], matnn[1], matnn[2]);
-
     dmat_mul(n, l, l, B, U, matnl[0]);
+
     dtranspose(n, l, B, matln[0]);
     dmat_mul(n, l, n, matnl[0], matln[0], matnn[3]);
-
     dmat_add(n, n, matnn[2], matnn[3], PD);
 
     /* P= (PD^-1 + C'W^-1 C)^(-1) */
-    //	dinverse22(PD,matnn[0]); // n ‚ª2‚ÌŽž
+    //	dinverse22(PD,matnn[0]); // n ï¿½ï¿½2ï¿½ÌŽï¿½
     dinverse(n, n, PD, matnn[0]);
 
     dtranspose(m, n, C, matnm[0]);
-    // dinverse22(W,invW); // m ‚ª2‚ÌŽž
+    // dinverse22(W,invW); // m ï¿½ï¿½2ï¿½ÌŽï¿½
     dinverse(m, m, W, invW);
+
     dmat_mul(n, m, m, matnm[0], invW, matnm[1]);
     dmat_mul(n, m, n, matnm[1], C, matnn[1]);
-
     dmat_add(n, n, matnn[0], matnn[1], matnn[2]);
 
-    //	dinverse22(matnn[2],P); // n ‚ª2‚ÌŽž
+    //	dinverse22(matnn[2],P); // n ï¿½ï¿½2ï¿½ÌŽï¿½
     dinverse(n, n, matnn[2], P);
 
-    /* ó‘Ô•û’öŽ®‚ÅŒë·‚ª‚È‚¢‚Æ‚µ‚½‚Æ‚«‚Ì„’è’l xt */
+    /* ï¿½ï¿½ï¿½Ô•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÅŒë·ï¿½ï¿½ï¿½È‚ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½l xt */
     /* xt = A x + B u */
     dmat_mul(n, n, 1, A, x, vecn[0]);
     dmat_mul(n, l, 1, B, u, vecn[1]);
     dmat_add(n, 1, vecn[0], vecn[1], xt);
 
-    /* Œë·‚ðƒtƒB[ƒhƒoƒbƒN‚µ‚½„’è—Ê */
+    /* ï¿½ë·ï¿½ï¿½ï¿½tï¿½Bï¿½[ï¿½hï¿½oï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
     /* x = xt + P C' W^-1 ( y - C xt) */
     dtranspose(m, n, C, matnm[0]);
     dmat_mul(n, n, m, P, matnm[0], matnm[1]);
     dmat_mul(n, m, m, matnm[1], invW, matnm[2]);
 
     dmat_mul(m, n, 1, C, xt, vecm[0]);
-
     dmat_sub(m, 1, obs, vecm[0], vecm[2]);
 
     dmat_mul(n, m, 1, matnm[2], vecm[2], vecn[0]);
