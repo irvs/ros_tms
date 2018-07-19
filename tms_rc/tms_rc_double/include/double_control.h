@@ -19,7 +19,7 @@
 #include <geometry_msgs/Point.h>
 #include <stdio.h>
 
-// kobukiの初期位置を保持するための大域変数
+// doubleの初期位置を保持するための大域変数
 double x;
 double y;
 double th;
@@ -34,6 +34,12 @@ double v_pos_x;
 double v_pos_y;
 double v_pos_z;
 double v_ori_th;
+double roll;
+double pitch;
+double yaw;
+double ini_pos_x, ini_pos_y, ini_ori_th;
+double var_pos_x, var_pos_y, var_ori_th;  // ini_th->quaternion to euler
+
 geometry_msgs::Quaternion v_rotation;
 
 double distance(double x0, double y0, double x1, double y1);
