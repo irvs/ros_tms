@@ -39,7 +39,7 @@ Kalman *kalman;
 
 int main(int argc, char **argv)
 {
-  ros::init(argc,argv,"tms_ss_pozyx");
+  ros::init(argc,argv,"tms_ss_double_pozyx");
   ros::NodeHandle n;
   ros::Publisher db_pub = n.advertise<tms_msg_db::TmsdbStamped> ("tms_db_data",1000);
   ros::Publisher pos_pub = n.advertise<visualization_msgs::Marker> ("pozyx",1000);
@@ -157,7 +157,8 @@ int main(int argc, char **argv)
 
       kfX=kalman->getX(0);
       kfY=kalman->getX(1);
-      kfZ=kalman->getX(2);
+      kfZ = 0.0;
+      //kfZ=kalman->getX(2);
 
       ROS_INFO("kfX=%f kfY=%f kfZ=%f",kfX,kfY,kfZ);
 
@@ -172,9 +173,11 @@ int main(int argc, char **argv)
       tms_msg_db::Tmsdb tmpData;
 
       tmpData.time = boost::posix_time::to_iso_extended_string(db_time.toBoost());
-      tmpData.name = "person_pozyx1";
-      tmpData.id = 1100;
-      tmpData.sensor = 0;
+      tmpData.name = "double";
+      tmpData.id = 2012;
+      tmpData.sensor = 3005;
+      //TODO
+      //define sensor id of pozyx and change sensor id
       tmpData.state = 1;
       tmpData.x = kfX;
       tmpData.y = kfY;
@@ -196,7 +199,7 @@ int main(int argc, char **argv)
       db_pub.publish(db_msg);
 
       visualization_msgs::Marker msg;
-      msg.header.frame_id = "world_link";
+      msg.header.frame_id = "map";
       msg.header.stamp = ros::Time();
       msg.type = visualization_msgs::Marker::SPHERE;
       msg.pose.position.x = kfX;
