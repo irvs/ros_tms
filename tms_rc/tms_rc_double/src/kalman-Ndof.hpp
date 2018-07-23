@@ -174,7 +174,7 @@ public:
     memcpy(P, p, n * n * sizeof(double));
   }
 
-  void init(double vw = 0.2, double vu = 0.5, double t = 0.1)
+  void init(double vw = 0.1, double vu = 0.1, double t = 0.1)
   {
     varw = vw;
     varu = vu;

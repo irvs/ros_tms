@@ -8,8 +8,9 @@
       <include file="$(find tms_rc_double)/launch/includes/tf_common.launch.xml" />
       <node pkg="tf2_ros" type="static_transform_publisher" args="2.661 -2.515 0 0.64228116473391323555 0 0 map world" name="tf_world"/>
 
-      <!--tf publisher -->
+      <!--tf publisher
       <node name="double_control" pkg="tms_rc_double" type="double_control" output="screen"/>
+      -->
       <!--rviz -->
       <node name="rviz" pkg="rviz" type="rviz" args="$(find tms_rc_double)/rviz/double.rviz">
         <remap from="/move_base_simple/goal" to="/tms_rc_double/room928/move_base_simple/goal"/>
