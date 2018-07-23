@@ -1,12 +1,10 @@
 /*
- * kobuki_control.h
+ * double_control.h
  *
- *  Created on: 2015/01/16
- *      Author: hashiguchi
  */
 
-#ifndef KOBUKI_CONTROL_H_
-#define KOBUKI_CONTROL_H_
+#ifndef DOUBLE_CONTROL_H_
+#define DOUBLE_CONTROL_H_
 
 #include <tms_msg_rc/rc_robot_control.h>
 
@@ -19,7 +17,7 @@
 #include <geometry_msgs/Point.h>
 #include <stdio.h>
 
-// kobukiの初期位置を保持するための大域変数
+// Doubleの初期位置を保持するための大域変数
 double x;
 double y;
 double th;

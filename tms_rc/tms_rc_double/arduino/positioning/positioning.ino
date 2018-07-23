@@ -84,7 +84,7 @@ uint8_t num_anchors = 4;                                    // the number of anc
 uint16_t anchors[4] = {0x694c, 0x6037, 0x6e0b,  0x6e15};     // the network id of the anchors: change these to the network ids of your anchors.
 int32_t anchors_x[4] = {10000, 10000, 0, 0};               // anchor x-coorindates in mm
 int32_t anchors_y[4] = {0,6500, 0, 6500};                 // anchor y-coordinates in mm
-int32_t heights[4] = {1000,1000, 1000, 1000};              // anchor z-coordinates in mm
+int32_t heights[4] = {1500,1500, 1500, 1500};              // anchor z-coordinates in mm
 
 //uint8_t algorithm = POZYX_POS_ALG_TRACKING; 
 uint8_t algorithm = POZYX_POS_ALG_UWB_ONLY;             // positioning algorithm to use

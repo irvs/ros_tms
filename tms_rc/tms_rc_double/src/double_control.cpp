@@ -30,7 +30,7 @@
 
 
 
-//#define ODOM
+#define ODOM
 //#define VICON
 #define POZYX
 #define DB
@@ -67,7 +67,7 @@ double floor2(double input, int N)
 }
 
 // calculate z-axis rotation from Odom_Quaternion(z, w) -180~+180
-double quaternion_to_enler(double z, double w)
+double quaternion_to_euler(double z, double w)
 {
   double sqw, sqz;
   sqw = w * w;
@@ -81,9 +81,9 @@ double quaternion_to_enler(double z, double w)
 void pub_tf()
 {
   static tf::TransformBroadcaster broadcaster;
-
   geometry_msgs::Quaternion robot_quat;
-  robot_quat = tf::createQuaternionMsgFromRollPitchYaw(roll,pitch,yaw);
+  //robot_quat = tf::createQuaternionMsgFromRollPitchYaw(roll,pitch,yaw);
+  robot_quat = tf::createQuaternionMsgFromYaw(deg2rad(ori_th));
   geometry_msgs::TransformStamped ts;
   ts.header.frame_id = "map";
   ts.child_frame_id = "base_footprint";
@@ -153,18 +153,22 @@ odom_pub.publish(odom);
 }
 */
 
+
 void odomCallback(const nav_msgs::Odometry::ConstPtr &msg)
 {
   double z, w;  // quaternion
   double temp_th;
   //大域変数を更新
-  pos_x = msg->pose.pose.position.x + x;
-  pos_y = msg->pose.pose.position.y + y;
+  //pos_x = msg->pose.pose.position.x + x;
+  //pos_y = msg->pose.pose.position.y + y;
 
   z = msg->pose.pose.orientation.z;
   w = msg->pose.pose.orientation.w;
-  temp_th = quaternion_to_enler(z, w);
-  ori_th = rad2deg(temp_th) + th;
+
+  temp_th = quaternion_to_euler(z, w);
+  temp_th = temp_th + th;
+  ori_th = rad2deg(temp_th);
+  //ori_th = rad2deg(temp_th) + th;
 
   //pub_odom();
 }
@@ -179,12 +183,12 @@ bool control_base(int command, double goal_dis, double goal_ang)
 
 // initialize variables
 #ifdef ODOM
-  ini_pos_x = pos_x;
-  ini_pos_y = pos_y;
+  //ini_pos_x = pos_x;
+  //ini_pos_y = pos_y;
   ini_ori_th = ori_th;
 
-  var_pos_x = pos_x;
-  var_pos_y = pos_y;
+  //var_pos_x = pos_x;
+  //var_pos_y = pos_y;
   var_ori_th = ori_th;
 #endif
 
@@ -207,15 +211,15 @@ bool control_base(int command, double goal_dis, double goal_ang)
   {
     ini_pos_x = srv.response.tmsdb[0].x;
     ini_pos_y = srv.response.tmsdb[0].y;
-    ini_ori_th = srv.response.tmsdb[0].ry;
+    //ini_ori_th = srv.response.tmsdb[0].ry;
 
     var_pos_x = srv.response.tmsdb[0].x;
     var_pos_y = srv.response.tmsdb[0].y;
-    var_ori_th = srv.response.tmsdb[0].ry;
+    //var_ori_th = srv.response.tmsdb[0].ry;
 
-    roll = srv.response.tmsdb[0].rr;
-    pitch = srv.response.tmsdb[0].rp;
-    yaw = srv.response.tmsdb[0].ry;
+    //roll = srv.response.tmsdb[0].rr;
+    //pitch = srv.response.tmsdb[0].rp;
+    //yaw = srv.response.tmsdb[0].ry;
   }
   else
   {
@@ -242,6 +246,7 @@ bool control_base(int command, double goal_dis, double goal_ang)
 #ifdef VICON
             var_ori_th = v_ori_th;
 #endif
+/*
 #ifdef DB
             if (db_client.call(srv))
             {
@@ -252,6 +257,7 @@ bool control_base(int command, double goal_dis, double goal_ang)
               ROS_ERROR("Failed to call service tms db get double's data\n");
             }
 #endif
+*/
           }
           else
           {
@@ -271,6 +277,7 @@ bool control_base(int command, double goal_dis, double goal_ang)
 #ifdef VICON
             var_ori_th = v_ori_th;
 #endif
+/*
 #ifdef DB
             if (db_client.call(srv))
             {
@@ -281,6 +288,7 @@ bool control_base(int command, double goal_dis, double goal_ang)
               ROS_ERROR("Failed to call service tms db get double's data\n");
             }
 #endif
+*/
           }
           else
           {
@@ -307,6 +315,7 @@ bool control_base(int command, double goal_dis, double goal_ang)
 #ifdef VICON
             var_ori_th = v_ori_th;
 #endif
+/*
 #ifdef DB
             if (db_client.call(srv))
             {
@@ -317,6 +326,7 @@ bool control_base(int command, double goal_dis, double goal_ang)
               ROS_ERROR("Failed to call service tms db get double's data\n");
             }
 #endif
+*/
           }
           else
           {
@@ -336,6 +346,7 @@ bool control_base(int command, double goal_dis, double goal_ang)
 #ifdef VICON
             var_ori_th = v_ori_th;
 #endif
+/*
 #ifdef DB
             if (db_client.call(srv))
             {
@@ -346,6 +357,7 @@ bool control_base(int command, double goal_dis, double goal_ang)
               ROS_ERROR("Failed to call service tms db get double's data\n");
             }
 #endif
+*/
           }
           else
           {
@@ -367,14 +379,17 @@ bool control_base(int command, double goal_dis, double goal_ang)
         {                      // 単位：mm
                                // 2.直進
   //        pub_vel(0.15, 0.0);  // 0.25m/s
+/*
 #ifdef ODOM
           var_pos_x = pos_x;
           var_pos_y = pos_y;
 #endif
+*/
 #ifdef VICON
           var_pos_x = v_pos_x;
           var_pos_y = v_pos_y;
 #endif
+
 #ifdef DB
           if (db_client.call(srv))
           {
@@ -418,8 +433,8 @@ bool callback(tms_msg_rc::rc_robot_control::Request &req, tms_msg_rc::rc_robot_c
       // 現在地取得
       double current_x, current_y, current_th;
 #ifdef ODOM
-      current_x = pos_x;
-      current_y = pos_y;
+      //current_x = pos_x;
+      //current_y = pos_y;
       current_th = ori_th;
       ROS_INFO("current_x=%fmm, current_y=%fmm, current_th=%fdeg\n", current_x, current_y, current_th);
 #endif
@@ -437,7 +452,7 @@ bool callback(tms_msg_rc::rc_robot_control::Request &req, tms_msg_rc::rc_robot_c
       {
         current_x = srv.response.tmsdb[0].x;
         current_y = srv.response.tmsdb[0].y;
-        current_th = srv.response.tmsdb[0].ry;
+        //current_th = srv.response.tmsdb[0].ry;
       }
       else
       {
@@ -485,7 +500,7 @@ bool callback(tms_msg_rc::rc_robot_control::Request &req, tms_msg_rc::rc_robot_c
       {
         current_x = srv.response.tmsdb[0].x;
         current_y = srv.response.tmsdb[0].y;
-        current_th = srv.response.tmsdb[0].ry;
+        //current_th = srv.response.tmsdb[0].ry;
       }
       else
       {
@@ -552,11 +567,12 @@ int main(int argc, char **argv)
   {
     var_pos_x = srv.response.tmsdb[0].x;
     var_pos_y = srv.response.tmsdb[0].y;
-    var_ori_th = srv.response.tmsdb[0].ry;
+    ori_th = srv.response.tmsdb[0].ry;
 
     roll = srv.response.tmsdb[0].rr;
     pitch = srv.response.tmsdb[0].rp;
     yaw = srv.response.tmsdb[0].ry;
+    th = 0;
   }
   else
   {
@@ -568,12 +584,12 @@ int main(int argc, char **argv)
 
   ros::ServiceServer service = n.advertiseService("tms_rc_double", callback);
   ROS_INFO("Ready to activate double_control_node\n");
-  //ros::AsyncSpinner spinner(3);
-  //spinner.start();
+  ros::AsyncSpinner spinner(3);
+  spinner.start();
 
   //現在地取得方法(vicon or odom)
   ros::Subscriber vicon_sub = n.subscribe("vicon_stream/output", 10, vicon_sysCallback);
-  ros::Subscriber odom_sub = n.subscribe("odom", 10, odomCallback);  // Odometry情報取得
+  ros::Subscriber odom_sub = n.subscribe("/tms_rc_double/room928/odom", 10, odomCallback);  // Odometry情報取得
   ros::Rate loop_rate(3);
 
   while(ros::ok()){
@@ -587,6 +603,10 @@ int main(int argc, char **argv)
       var_pos_x = srv.response.tmsdb[0].x;
       var_pos_y = srv.response.tmsdb[0].y;
       var_ori_th = srv.response.tmsdb[0].ry;
+
+      roll = srv.response.tmsdb[0].rr;
+      pitch = srv.response.tmsdb[0].rp;
+      yaw = srv.response.tmsdb[0].ry;
     }
     else
     {
