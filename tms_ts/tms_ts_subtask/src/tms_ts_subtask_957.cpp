@@ -40,7 +40,7 @@ tms_rp::TmsRpSubtask::TmsRpSubtask()
   //  kobuki_actual_control_client  = nh1.serviceClient<tms_msg_rc::rc_robot_control>("kobuki_control");
   //  mkun_virtual_control_client   = nh1.serviceClient<tms_msg_rc::rc_robot_control>("mimamorukun_virtual_control");
   mkun_control_client = nh1.serviceClient<tms_msg_rc::rc_robot_control>("mkun_goal_pose");
-  double_goal_pub = nh1.advertise<geometry_msgs::PoseStamped>("/double_control/move_base_simple/goal", 10);
+  double_goal_pub = nh1.advertise<geometry_msgs::PoseStamped>("/tms_rc_double/room957/move_base_simple/goal", 10);
   //egashira
   turtlebot3_control_client = nh1.serviceClient<tms_msg_rc::rc_robot_control>("turtlebot3_goal_pose");
   //
@@ -143,7 +143,8 @@ bool tms_rp::TmsRpSubtask::get_robot_pos(bool type, int robot_id, std::string &r
     srv.request.tmsdb.sensor = 3001; // vicon system
   else                               // simulation
     srv.request.tmsdb.sensor = 3005; // fake odometry
-
+  //TODO
+  //modify to use pozyx as a sensor for robot 
   int ref_i = 0;
   if (get_data_client_.call(srv))
   {
