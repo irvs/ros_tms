@@ -6,11 +6,6 @@ from tms_msg_db.srv import TmsdbGetData
 from flask import Flask, jsonify, abort, make_response,request
 
 api = Flask(__name__)
-task_dic = {}
-robot_dic = {}
-object_dic = {}
-user_dic = {1100:"太郎さん"}
-place_dic = {}
 
 def db_reader(data):
     rospy.wait_for_service('tms_db_reader')
@@ -27,6 +22,7 @@ def tag_reader(data):
     temp_dbdata.tag='「'+data+'」'
     target = db_reader(temp_dbdata)
     return target
+
 
 @api.route('/get', methods=['GET'])
 def get():
@@ -55,31 +51,40 @@ def post():
     req_word[3] = request.json['object']
     req_word[4] = request.json['place']
 
-            
-    if search_db(req_word):
-        status = 200
-    else:
-        status = 500
+    print(req_word)
+    response = search_db(req_word)
+    if not response:
         print status
         return make_response(jsonify({
-            'status':'error',
-            'statusCode':status
+            'message':'Could not find them in tms_db',
         }))
         #else:
         #    status = 503
+    else:
+        status = 200
     print status
     return make_response(jsonify({
-            'status':'OK',
-            'statusCode':status
+            'message':'OK',
+            'service_id':{
+                "robot_id":response[0],
+                "task_id":response[1],
+                "user_id":response[2],
+                "object_id":response[3],
+                "place_id":response[4]
+            }
         }))
 
 def search_db(req_word):
-    for word in req_word:
+    response = [0,0,0,0,0]
+    for i in range(len(req_word)):
+        word = req_word[i]
         if word != "":
             temp_dbdata = Tmsdb()
             res = tag_reader(word)
             if len(res.tmsdb)==1 and res.tmsdb[0].id == 0:
                 return False
-    return True
+            else:
+                response[i] = res.tmsdb[0].id
+    return response
 if __name__ == "__main__":
     api.run(host='localhost', port = 3000)
