@@ -37,10 +37,8 @@ def get():
 def post():
     if(request.headers['Content-Type']!= 'application/json'):
         print request.headers['Content-Type']
-        status = 400
         return jsonify({
-            'status':'error',
-            'statusCode':status
+            "message":"request format is not appropriate"
         })
 
     print request.json
@@ -54,15 +52,12 @@ def post():
     print(req_word)
     response = search_db(req_word)
     if not response:
-        print status
         return make_response(jsonify({
             'message':'Could not find them in tms_db',
         }))
         #else:
         #    status = 503
-    else:
-        status = 200
-    print status
+
     return make_response(jsonify({
             'message':'OK',
             'service_id':{

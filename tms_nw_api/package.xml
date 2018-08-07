@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>tms_nw</name>
+  <name>tms_nw_api</name>
   <version>0.0.0</version>
-  <description>The tms_ur_listener package</description>
+  <description>The tms_nw_api package</description>
 
   <maintainer email="kiyoyama@ait.kyushu-u.ac.jp">Kouhei Kiyoyama</maintainer>
 

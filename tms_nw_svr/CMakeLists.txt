@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(tms_nw)
+project(tms_nw_svr)
 
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
   rospy
   std_msgs
   message_generation
@@ -23,7 +22,7 @@ generate_messages(
 
 catkin_package(
 #  INCLUDE_DIRS include
-   LIBRARIES tms_nw
-   CATKIN_DEPENDS roscpp rospy std_msgs message_generation
+   LIBRARIES tms_nw_svr
+   CATKIN_DEPENDS rospy std_msgs message_generation
 #  DEPENDS system_lib
 )
