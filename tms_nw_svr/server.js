@@ -1,22 +1,47 @@
 const express = require("express");
+//const ipfilter = require("express-ipfilter").IpFilter;
 const bodyParser = require("body-parser");
 const app = express();
 const request = require("request");
 const url = require('url');
+const ipware = require('ipware');
+const ipw = ipware();
 
 let tms_reciever_port = ":3000/post";
 
-const tms_list=["hoge", "http://localhost", "http://localhost"];
+const tms_list=["hoge", "http://127.0.0.1", "http://localhost"];
+
 /*TO DO 
     this list should be get from outside resources such as DB
 */
+//app.use(tms_list.forEach((tms_url) => ipfilter(tms_url, {mode: 'allow'})));
 app.use(bodyParser.json());
+//app.set('trust proxy', true);
 
 app.post("/rms_svr", (req, res) => {
     let tms_sender= "http://";
-    tms_sender += url.parse("http://" + req.headers.host).hostname;
+    //console.log(ipw.get_ip(req));
+    const tms_sender_ip = ((ipw.get_ip(req).clientIp).split(":")).pop();
+    //console.log(tms_sender_ip);
+    tms_sender += tms_sender_ip; 
+    let tmp_tms_list = [];
     console.log("Http request from: " + tms_sender);
     const service = req.body;
+
+    
+    if(tms_list.indexOf(tms_sender) == -1){
+        res.json({
+            "message":"This host has no authority to access this server"
+        });
+        return;
+    }else{
+        tmp_tms_list = tms_list.filter((val) => {
+            if(val != tms_sender){
+                return val;
+            }
+        })
+    }
+
     //console.log(`[${new Date()}] request = [${JSON.stringify(service)}]`);
 /*
     let robot_name = service.robot;
@@ -89,17 +114,17 @@ app.post("/rms_svr", (req, res) => {
     };
     
 //    search_tms(tms_reciever);
-
+    
     let promises = [];
-    for(let i = 0; i < tms_list.length; i++){
-        promises.push(search_tms(tms_list[i] + tms_reciever_port));
+    for(let i = 0; i < tmp_tms_list.length; i++){
+        promises.push(search_tms(tmp_tms_list[i] + tms_reciever_port));
     }
     Promise.all(promises).then(function(results){
-        for(let i = 0; i < tms_list.length; i++){
+        for(let i = 0; i < tmp_tms_list.length; i++){
             if(!results[i] == 0){
                 res.json(results[i]);
                 break;
-            }else if(i == tms_list.length - 1){
+            }else if(i == tmp_tms_list.length - 1){
                 res.json({"message":"Could not find them in all tms"});
             }
         }
