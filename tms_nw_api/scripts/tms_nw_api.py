@@ -4,6 +4,9 @@ import rospy
 from tms_msg_db.msg import Tmsdb
 from tms_msg_db.srv import TmsdbGetData
 from flask import Flask, jsonify, abort, make_response,request
+import os
+host_url = os.getenv("ROS_HOSTNAME", "localhost")
+
 
 api = Flask(__name__)
 
@@ -82,4 +85,5 @@ def search_db(req_word):
                 response[i] = res.tmsdb[0].id
     return response
 if __name__ == "__main__":
-    api.run(host='localhost', port = 3000)
+    #api.run(host='localhost', port = 3000)
+    api.run(host=host_url, port = 3000)

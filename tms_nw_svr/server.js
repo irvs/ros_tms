@@ -7,9 +7,25 @@ const url = require('url');
 const ipware = require('ipware');
 const ipw = ipware();
 
+const fs = require("fs");
+const url_path = "resources/tms.json";
+
 let tms_reciever_port = ":3000/post";
 
-const tms_list=["hoge", "http://127.0.0.1", "http://localhost"];
+const tms_list=["hoge"];
+
+function getUrlList(filepath){
+    let urlList = JSON.parse(fs.readFileSync(filepath, 'utf8'));
+    urlList.tms.forEach(data => {
+        tms_list.push(data.url);
+    });
+    console.log(tms_list);
+}
+
+getUrlList(url_path);
+
+console.log(tms_list);
+
 
 /*TO DO 
     this list should be get from outside resources such as DB
