@@ -90,6 +90,7 @@ req_server.advertise(async (req, res) => {
     remote_service.callService(remote_req, res_remote => {
         res = res_remote;
         console.log(res_remote);
+        ros_remote.close();
     })
         
 

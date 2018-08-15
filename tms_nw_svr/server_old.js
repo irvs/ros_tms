@@ -27,7 +27,6 @@ getUrlList(url_path);
 console.log(tms_list);
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
 
 app.post("/rms_svr", (req, res) => {
     let tms_sender= "http://";
@@ -35,23 +34,21 @@ app.post("/rms_svr", (req, res) => {
     tms_sender += tms_sender_ip; 
     let tmp_tms_list = [];
     console.log("Http request from: " + tms_sender);
+    const service = req.body;
 
-    const words = req.body;
     
-
     if(tms_list.indexOf(tms_sender) == -1){
         res.json({
             "message":"This host has no authority to access this server"
         });
         return;
     }else{
-/*        tmp_tms_list = tms_list.filter((val) => {
+        tmp_tms_list = tms_list.filter((val) => {
             if(val != tms_sender){
                 return val;
             }
-                })
-*/         tmp_tms_list = tms_list;
-          }
+        })
+    }
 
     
     const search_tms = (tms_url) => {
@@ -62,7 +59,13 @@ app.post("/rms_svr", (req, res) => {
             const options = {
                 url: tms_url,
                 headers: headers,
-                json: words
+                json: {
+                    "robot": service.robot,
+                    "task": service.task,
+                    "user": service.user,
+                    "object": service.object,
+                    "place":service.place
+                }
             }
 
             request.post(options, function(error, response, body){
@@ -94,7 +97,6 @@ app.post("/rms_svr", (req, res) => {
         });
     };
     
-
     let promises = [];
     for(let i = 0; i < tmp_tms_list.length; i++){
         promises.push(search_tms(tmp_tms_list[i] + tms_reciever_port));
