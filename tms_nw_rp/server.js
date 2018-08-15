@@ -1,32 +1,6 @@
 const setTimeout =  require("timers").setTimeout;
 const roslib = require("roslib");
 const http = require("http");
-/*
-roslib.Service.prototype._serviceResponse = (rosbridgeRequest) =>{
-    let response = {};
-    
-    let promise = Promise.resolve();
-    promise
-        .then(() =>{
-            return new Promise((resolve, reject) => {
-                let success = this._serviceCallback(rosbridgeRequest.args, response);
-                resolve(success);
-            });
-        }).then(() => {
-            let call = {
-                op: 'service_response',
-                service: this.name,
-                values: new ServiceResponse(response),
-                result: success
-            }
-            if (rosbridgeRequest.id){
-                call.id = rosbridgeRequest.id;
-            }
-            this.ros.callOnConnection(call);
-        });
-
-}
-*/
 
 
 const ros_local = new roslib.Ros({
@@ -91,6 +65,8 @@ req_server.advertise(async (req, res) => {
         res = res_remote;
         console.log(res_remote);
         ros_remote.close();
+    }, (err) => {
+        console.log(err)
     })
         
 

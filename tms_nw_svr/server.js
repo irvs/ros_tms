@@ -45,12 +45,12 @@ app.post("/rms_svr", (req, res) => {
         });
         return;
     }else{
-/*        tmp_tms_list = tms_list.filter((val) => {
+        tmp_tms_list = tms_list.filter((val) => {
             if(val != tms_sender){
                 return val;
             }
                 })
-*/         tmp_tms_list = tms_list;
+//         tmp_tms_list = tms_list;
           }
 
     
