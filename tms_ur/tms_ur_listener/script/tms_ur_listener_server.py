@@ -11,6 +11,7 @@ from janome.tokenizer import Tokenizer
 from tms_msg_db.msg import Tmsdb
 from tms_msg_db.srv import TmsdbGetData
 from tms_msg_ts.srv import ts_req
+from tms_nw_rp.srv import tms_nw_req
 import requests
 import time
 import subprocess
@@ -19,8 +20,9 @@ import json
 import datetime
 import threading
 import urllib
+import os
 
-trigger = ['ROS-TMS']
+trigger = ['ROS-TMS','LOOMO','TARO']
 error_msg0 = "すみません。聞き取れませんでした。"
 error_msg1 = "すみません。よくわかりませんでした。"
 error_msg2 = "エラーが発生したため、処理を中断します"
@@ -53,6 +55,7 @@ class TmsUrListener():
             self.apikey = line.replace('\n','')
 
         f.close()
+
         print 'tms_ur_listener_server ready...'
 
     def alarm(self):
@@ -102,7 +105,7 @@ class TmsUrListener():
     def announce(self,data):
         print data
         rospy.wait_for_service('speaker_srv', timeout=1.0)
-        tim = 0
+        tim = 0.0
         try:
             speak = rospy.ServiceProxy('speaker_srv',speaker_srv)
             tim = speak(data)
@@ -125,6 +128,44 @@ class TmsUrListener():
         temp_dbdata.tag='「'+data+'」'
         target = self.db_reader(temp_dbdata)
         return target
+
+
+    def ask_remote(self, words):
+        payload ={
+            "words":words
+        }
+        tms_master = "192.168.4.94"
+        ret = requests.post("http://" + tms_master + ":4000/rms_svr",json = payload)
+        ret_dict = ret.json()
+        if ret_dict["message"] != "OK":
+            print ret_dict["message"]
+            tim = self.announce(error_msg1)
+            self.julius_power(True,tim.sec)
+            return False
+        else:
+            print 'send command'
+            hostname = str(ret_dict["hostname"])
+            task_id =  ret_dict["service_id"]["task_id"]
+            robot_id =  ret_dict["service_id"]["robot_id"]
+            object_id =  ret_dict["service_id"]["object_id"]
+            user_id =  ret_dict["service_id"]["user_id"]
+            place_id =  ret_dict["service_id"]["place_id"]
+            try:
+                rospy.wait_for_service('tms_nw_req', timeout=1.0)
+            except rospy.ROSException:
+                print "tms_nw_req is not work"
+
+            try:
+                nw_req = rospy.ServiceProxy('tms_nw_req',tms_nw_req)
+                res = nw_req(hostname,"tms_ts_master","tms_nw_rp/tms_nw_req" ,task_id,robot_id,object_id,user_id,place_id,0)
+                print res
+            except rospy.ServiceException as e:
+                print "Service call failed: %s" % e
+
+            print ret.json()
+
+            return True
+
 
     def callback(self, data, id):
         rospy.loginfo(str(id))
@@ -166,22 +207,24 @@ class TmsUrListener():
             words.append("行く")
         if "入る" in words: #同上
             words.append("行く")
+        
         print str(words).decode('string-escape')
 
         task_id = 0
         robot_id = 0
         object_id = 0
-        user_id = 1100
+        user_id = 0#1100
         place_id = 0
         announce = ""
+        task_name = "" #for remote task
         robot_name = ""
         object_name = ""
-        user_name = "太郎さん"
+        user_name = ""#"太郎さん"
         place_name = ""
         task_dic = {}
         robot_dic = {}
         object_dic = {}
-        user_dic = {1100:"太郎さん"}
+        user_dic = {}#{1100:"太郎さん"}
         place_dic = {}
         other_words = []
         
@@ -448,6 +491,7 @@ class TmsUrListener():
             tim = self.announce(announce)
             self.julius_power(True,tim.sec)
             self.bed_pub.publish(msg)
+
         else: #robot_task
             anc_list = announce.split("$")
             announce = ""
@@ -461,8 +505,7 @@ class TmsUrListener():
                         #未実装
 
                     if robot_id==0:
-                        tim = self.announce(error_msg1)
-                        self.julius_power(True,tim.sec)
+                        self.ask_remote(words)
                         return
                     announce += robot_name
                 elif anc == "object":
@@ -474,8 +517,7 @@ class TmsUrListener():
                         #未実装
 
                     if object_id==0:
-                        tim = self.announce(error_msg1)
-                        self.julius_power(True,tim.sec)
+                        self.ask_remote(words)
                         return
                     announce += object_name
                 elif anc == "user":
@@ -487,8 +529,7 @@ class TmsUrListener():
                         #未実装
 
                     if user_id==0:
-                        tim = self.announce(error_msg1)
-                        self.julius_power(True,tim.sec)
+                        self.ask_remote(words)
                         return
                     announce += user_name
                 elif anc == "place":
@@ -500,13 +541,13 @@ class TmsUrListener():
                         #未実装
 
                     if place_id==0:
-                        tim = self.announce(error_msg1)
-                        self.julius_power(True,tim.sec)
+                        self.ask_remote(words)
                         return
                     announce += place_name
                 else:
                     announce += anc
 
+            
             print 'send command'
             try:
                 rospy.wait_for_service('tms_ts_master', timeout=1.0)
