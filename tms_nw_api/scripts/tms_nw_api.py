@@ -102,42 +102,48 @@ def search_db(req_words):
         announce = task_dic[task_id]
     elif len(task_dic) > 1:
         print "len(task_dic) > 1"
+        task_id = min(task_dic.keys())
+        announce = task_dic[task_id]
         #未実装
 
-    anc_list = announce.split("$")
-    for anc in anc_list:
-        if anc == "robot":
-            if len(robot_dic) == 1:
-                robot_id = robot_dic.keys()[0]
-            elif len(robot_dic) > 1:
-                print "len(robot_dic) > 1"
-                                #未実装
-            if robot_id==0:
-                return False
-        elif anc == "object":
-            if len(object_dic) == 1:
-                object_id = object_dic.keys()[0]
-            elif len(object_dic) > 1:
-                print "len(object_dic) > 1"
-                #未実装
-            if object_id==0:
-                return False
-        elif anc == "user":
-            if len(user_dic) == 1:
-                user_id = user_dic.keys()[0]
-            elif len(user_dic) > 1:
-                print "len(user_dic) > 1"
-                #未実装
-            if user_id==0:
-                return False
-        elif anc == "place":
-            if len(place_dic) == 1:
-                place_id = place_dic.keys()[0]
-            elif len(place_dic) > 1:
-                print "len(place_dic) > 1"
-                #未実装
-            if place_id==0:
-                return False
+    task_announce_list = announce.split(";")
+    for i in range(len(task_announce_list)):
+        anc_list = task_announce_list[i].split("$")
+        announce = ""
+        task_flag = 0
+        for anc in anc_list:
+            if anc == "robot":
+                if len(robot_dic) == 1:
+                    robot_id = robot_dic.keys()[0]
+                elif len(robot_dic) > 1:
+                    print "len(robot_dic) > 1"
+                                    #未実装
+                if robot_id==0 and i == len(task_announce_list) - 1:
+                    return False
+            elif anc == "object":
+                if len(object_dic) == 1:
+                    object_id = object_dic.keys()[0]
+                elif len(object_dic) > 1:
+                    print "len(object_dic) > 1"
+                    #未実装
+                if object_id==0 and i == len(task_announce_list) - 1:
+                    return False
+            elif anc == "user":
+                if len(user_dic) == 1:
+                    user_id = user_dic.keys()[0]
+                elif len(user_dic) > 1:
+                    print "len(user_dic) > 1"
+                    #未実装
+                if user_id==0 and i == len(task_announce_list) - 1:
+                    return False
+            elif anc == "place":
+                if len(place_dic) == 1:
+                    place_id = place_dic.keys()[0]
+                elif len(place_dic) > 1:
+                    print "len(place_dic) > 1"
+                    #未実装
+                if place_id==0 and i == len(task_announce_list) - 1:
+                    return False
     response = [task_id, robot_id, user_id, object_id, place_id]
 
     return response
