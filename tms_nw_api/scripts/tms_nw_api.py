@@ -75,12 +75,6 @@ def search_db(req_words):
     object_dic = {}
     place_dic = {}
     task_id = 0
-    robot_id = 0
-    object_id = 0
-    user_id = 0
-    place_id = 0
-
-
     for word in req_words:
         res = tag_reader(word)
         if res is None:
@@ -111,6 +105,11 @@ def search_db(req_words):
         anc_list = task_announce_list[i].split("$")
         announce = ""
         task_flag = 0
+        robot_id = 0
+        object_id = 0
+        user_id = 0
+        place_id = 0
+        print anc_list
         for anc in anc_list:
             if anc == "robot":
                 if len(robot_dic) == 1:
@@ -144,9 +143,9 @@ def search_db(req_words):
                     #未実装
                 if place_id==0 and i == len(task_announce_list) - 1:
                     return False
-    response = [task_id, robot_id, user_id, object_id, place_id]
+        response = [task_id, robot_id, user_id, object_id, place_id]
 
-    return response
+        return response 
 if __name__ == "__main__":
     #api.run(host='localhost', port = 3000)
     api.run(host=host_url, port = 3000)
