@@ -259,8 +259,9 @@ class TmsUrListener():
             announce = task_dic[task_id]
         elif len(task_dic) > 1:
             print "len(task_dic) > 1"
-            #未実装
-            task_id = task_dic.keys()[0]
+            #「ベッド」がタスクとして認識されてしまい、「ベッドに行って」が失敗してしまう
+            # => ロボットによるタスクを優先するため、task_id が小さい方を優先(要検討)
+            task_id = min(task_dic.keys())
             announce = task_dic[task_id]
 
         if task_id == 0:
@@ -493,76 +494,94 @@ class TmsUrListener():
             self.bed_pub.publish(msg)
 
         else: #robot_task
-            anc_list = announce.split("$")
-            announce = ""
-            for anc in anc_list:
-                if anc == "robot":
-                    if len(robot_dic) == 1:
-                        robot_id = robot_dic.keys()[0]
-                        robot_name = robot_dic[robot_id]
-                    elif len(robot_dic) > 1:
-                        print "len(robot_dic) > 1"
-                        #未実装
-
-                    if robot_id==0:
-                        self.ask_remote(words)
-                        return
-                    announce += robot_name
-                elif anc == "object":
-                    if len(object_dic) == 1:
-                        object_id = object_dic.keys()[0]
-                        object_name = object_dic[object_id]
-                    elif len(object_dic) > 1:
-                        print "len(object_dic) > 1"
-                        #未実装
-
-                    if object_id==0:
-                        self.ask_remote(words)
-                        return
-                    announce += object_name
-                elif anc == "user":
-                    if len(user_dic) == 1:
-                        user_id = user_dic.keys()[0]
-                        user_name = user_dic[user_id]
-                    elif len(user_dic) > 1:
-                        print "len(user_dic) > 1"
-                        #未実装
-
-                    if user_id==0:
-                        self.ask_remote(words)
-                        return
-                    announce += user_name
-                elif anc == "place":
-                    if len(place_dic) == 1:
-                        place_id = place_dic.keys()[0]
-                        place_name = place_dic[place_id]
-                    elif len(place_dic) > 1:
-                        print "len(place_dic) > 1"
-                        #未実装
-
-                    if place_id==0:
-                        self.ask_remote(words)
-                        return
-                    announce += place_name
-                else:
-                    announce += anc
-
             
-            print 'send command'
-            try:
-                rospy.wait_for_service('tms_ts_master', timeout=1.0)
-            except rospy.ROSException:
-                print "tms_ts_master is not work"
+            task_announce_list = announce.split(";")
+            for i in range(len(task_announce_list)):
+                anc_list = task_announce_list[i].split("$")
+                announce = ""
+                task_flag = 0
+                for anc in anc_list:
+                    if anc == "robot":
+                        if len(robot_dic) == 1:
+                            robot_id = robot_dic.keys()[0]
+                            robot_name = robot_dic[robot_id]
+                        elif len(robot_dic) > 1:
+                            print "len(robot_dic) > 1"
+                            #未実装
 
-            try:
-                tms_ts_master = rospy.ServiceProxy('tms_ts_master',ts_req)
-                res = tms_ts_master(0,task_id,robot_id,object_id,user_id,place_id,0)
-                print res
-            except rospy.ServiceException as e:
-                print "Service call failed: %s" % e
+                        if robot_id==0:
+                            if i == len(task_announce_list) - 1:
+                                self.ask_remote(words)
+                                return
+                            else:
+                                task_flag = 1
+                        announce += robot_name
+                    elif anc == "object":
+                        if len(object_dic) == 1:
+                            object_id = object_dic.keys()[0]
+                            object_name = object_dic[object_id]
+                        elif len(object_dic) > 1:
+                            print "len(object_dic) > 1"
+                            #未実装
 
-            tim = self.announce(announce)
-            self.julius_power(True,tim.sec)
+                        if object_id==0:
+                            if i == len(task_announce_list) - 1:
+                                self.ask_remote(words)
+                                return
+                            else:
+                                task_flag = 1
+                        announce += object_name
+                    elif anc == "user":
+                        if len(user_dic) == 1:
+                            user_id = user_dic.keys()[0]
+                            user_name = user_dic[user_id]
+                        elif len(user_dic) > 1:
+                            print "len(user_dic) > 1"
+                            #未実装
+
+                        if user_id==0:
+                            if i == len(task_announce_list) - 1:
+                                self.ask_remote(words)
+                                return
+                            else:
+                                task_flag = 1
+                        announce += user_name
+                    elif anc == "place":
+                        if len(place_dic) == 1:
+                            place_id = place_dic.keys()[0]
+                            place_name = place_dic[place_id]
+                        elif len(place_dic) > 1:
+                            print "len(place_dic) > 1"
+                            #未実装
+
+                        if place_id==0:
+                            if i == len(task_announce_list) - 1:
+                                self.ask_remote(words)
+                                return
+                            else:
+                                task_flag = 1
+                        announce += place_name
+                    else:
+                        announce += anc
+
+                if task_flag == 1:
+                    continue
+                print 'send command'
+                try:
+                    rospy.wait_for_service('tms_ts_master', timeout=1.0)
+                except rospy.ROSException:
+                    print "tms_ts_master is not work"
+
+                try:
+                    tms_ts_master = rospy.ServiceProxy('tms_ts_master',ts_req)
+                    res = tms_ts_master(0,task_id,robot_id,object_id,user_id,place_id,0)
+                    print res
+                except rospy.ServiceException as e:
+                    print "Service call failed: %s" % e
+
+                tim = self.announce(announce)
+                self.julius_power(True,tim.sec)
+                return
 
     def shutdown(self):
         rospy.loginfo("Stopping the node")
