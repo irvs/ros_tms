@@ -110,18 +110,10 @@ app.post("/rp", (req, res) => {
             "message":"OK",
             "announce":announce
         });
-        console.log(res);
         return res;
 
 
 });
-
-
-
-
-
-            
-
     });
 
 app.listen(5000);

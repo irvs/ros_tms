@@ -10,7 +10,7 @@ from multiprocessing import Process, Manager
 host_url = os.getenv("ROS_HOSTNAME", "localhost")
 
 api = Flask(__name__)
-
+sid = 100000
 
 def db_reader(data):
     rospy.wait_for_service('tms_db_reader')
@@ -135,11 +135,12 @@ def search_db(req_words):
         #未実装
 
     if task_id == 8100:
+        task_announce = announce
         if len(object_dic) == 1:
             object_id = object_dic.keys()[0]
             object_name = object_dic[object_id]
         elif len(object_dic) > 1:
-                print "len(object_dic) > 1"
+            print "len(object_dic) > 1"
         
         place_id = 0
         place_name = ""
@@ -147,8 +148,7 @@ def search_db(req_words):
         temp_dbdata.id = object_id
         temp_dbdata.state = 1
 
-        #target = self.db_reader(temp_dbdata)
-        db_target = self.db_reader(temp_dbdata)
+        db_target = db_reader(temp_dbdata)
         target = db_target.tmsdb[0]
         if target is None:
             return
@@ -156,9 +156,8 @@ def search_db(req_words):
         temp_dbdata = Tmsdb()
         temp_dbdata.id = place_id + sid
 
-        db_target =self.db_reader(temp_dbdata)
+        db_target =db_reader(temp_dbdata)
         target = db_target.tmsdb[0]
-        #target = self.db_reader(temp_dbdata)
         if target is None:
             return
         place_name = target.announce
@@ -168,8 +167,8 @@ def search_db(req_words):
         else:
             object_announce = object_name
             place_announce = place_name
-        [task_id, 0, 0, object_id, place_id, task_announce, "", "", object_announce, place_announce]
-
+            response = [task_id, 0, 0, object_id, place_id, task_announce, "", "", object_announce, place_announce]
+            return response
     else:
 
         task_announce_list = announce.split(";")
