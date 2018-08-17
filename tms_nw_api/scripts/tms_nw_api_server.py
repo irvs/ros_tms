@@ -3,13 +3,14 @@
 import rospy
 from tms_msg_db.msg import Tmsdb
 from tms_msg_db.srv import TmsdbGetData
+from tms_nw_api.srv import *
 from flask import Flask, jsonify, abort, make_response,request
 import os
+from multiprocessing import Process, Manager
 host_url = os.getenv("ROS_HOSTNAME", "localhost")
 
-
-
 api = Flask(__name__)
+
 
 def db_reader(data):
     rospy.wait_for_service('tms_db_reader')
@@ -26,6 +27,21 @@ def tag_reader(data):
     temp_dbdata.tag='「'+data+'」'
     target = db_reader(temp_dbdata)
     return target
+
+def get_id_callback(req):
+        if req.url in response_dic:
+            res_msg = response_dic.pop(req.url)
+            print res_msg
+            return res_msg
+        else:
+            print response_dic
+            return
+
+def get_id_server():
+    rospy.init_node('get_id_server')
+    s = rospy.Service("get_id", get_id, get_id_callback)
+    print "Ready to get_id server"
+    rospy.spin()
 
 
 @api.route('/get', methods=['GET'])
@@ -47,8 +63,10 @@ def post():
 
     print request.json
     req_word=request.json["words"]
+    tms_url = request.json["url"]
+    print tms_url
 
-    print(req_word)
+    print req_word
     response = search_db(req_word)
     if not response:
         return make_response(jsonify({
@@ -56,16 +74,24 @@ def post():
         }))
         #else:
         #    status = 503
+    res_msg = get_idResponse()
+    res_msg.task_id = response[0]
+    res_msg.robot_id = response[1]
+    res_msg.user_id = response[2]
+    res_msg.object_id = response[3]
+    res_msg.place_id = response[4]
 
+    res_msg.task_announce = response[5]
+    res_msg.robot_announce = response[6]
+    res_msg.user_announce = response[7]
+    res_msg.object_announce = response[8]
+    res_msg.place_announce = response[9]
+    
+    response_dic[tms_url] = res_msg
+    print response_dic
+    print "OK"
     return make_response(jsonify({
-            'message':'OK',
-            'service_id':{
-                "task_id":response[0],
-                "robot_id":response[1],
-                "user_id":response[2],
-                "object_id":response[3],
-                "place_id":response[4]
-            }
+            'message':'OK'
         }))
 
 def search_db(req_words):
@@ -75,6 +101,13 @@ def search_db(req_words):
     object_dic = {}
     place_dic = {}
     task_id = 0
+    announce = ""
+    task_announce = ""
+    robot_announce = ""
+    user_announce = ""
+    object_announce = ""
+    place_announce = ""
+
     for word in req_words:
         res = tag_reader(word)
         if res is None:
@@ -114,6 +147,7 @@ def search_db(req_words):
             if anc == "robot":
                 if len(robot_dic) == 1:
                     robot_id = robot_dic.keys()[0]
+                    robot_announce = robot_dic[robot_id]
                 elif len(robot_dic) > 1:
                     print "len(robot_dic) > 1"
                                     #未実装
@@ -122,6 +156,7 @@ def search_db(req_words):
             elif anc == "object":
                 if len(object_dic) == 1:
                     object_id = object_dic.keys()[0]
+                    object_announce = object_dic[object_id]
                 elif len(object_dic) > 1:
                     print "len(object_dic) > 1"
                     #未実装
@@ -130,6 +165,7 @@ def search_db(req_words):
             elif anc == "user":
                 if len(user_dic) == 1:
                     user_id = user_dic.keys()[0]
+                    user_announce = user_dic[user_id]
                 elif len(user_dic) > 1:
                     print "len(user_dic) > 1"
                     #未実装
@@ -138,14 +174,29 @@ def search_db(req_words):
             elif anc == "place":
                 if len(place_dic) == 1:
                     place_id = place_dic.keys()[0]
+                    place_announce = place_dic[place_id]
                 elif len(place_dic) > 1:
                     print "len(place_dic) > 1"
                     #未実装
                 if place_id==0 and i == len(task_announce_list) - 1:
                     return False
-        response = [task_id, robot_id, user_id, object_id, place_id]
+        task_announce = task_announce_list[i]
+        response = [task_id, robot_id, user_id, object_id, place_id, task_announce, robot_announce, user_announce, object_announce, place_announce]
 
-        return response 
+        return response
+
+def run():
+    api.run(host='localhost', port = 3000)
+
 if __name__ == "__main__":
     #api.run(host='localhost', port = 3000)
-    api.run(host=host_url, port = 3000)
+    with Manager() as manager:
+        response_dic = manager.dict()
+        t1 = Process(name = "http",target = run)
+        t2 = Process(name = "rosservice",target = get_id_server)
+        t2.start()
+        t1.start()
+        t2.join()
+        t1.join()
+    
+    

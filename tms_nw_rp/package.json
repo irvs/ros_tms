@@ -9,6 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.16.3",
+    "http": "0.0.0",
+    "ipware": "^1.0.0",
     "request": "^2.88.0",
     "roslib": "^0.20.0"
   }

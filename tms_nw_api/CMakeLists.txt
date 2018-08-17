@@ -11,9 +11,10 @@ find_package(catkin REQUIRED COMPONENTS
 #  FILES
 #)
 
-#add_service_files(
-#  FILES
-#)
+add_service_files(
+  FILES
+  get_id.srv
+)
 
 generate_messages(
   DEPENDENCIES
