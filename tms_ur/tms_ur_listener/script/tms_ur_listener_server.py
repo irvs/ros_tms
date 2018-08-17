@@ -21,6 +21,8 @@ import datetime
 import threading
 import urllib
 import os
+host_url = os.getenv("ROS_HOSTNAME", "localhost")
+
 
 trigger = ['ROS-TMS','LOOMO','TARO']
 error_msg0 = "すみません。聞き取れませんでした。"
@@ -49,7 +51,7 @@ class TmsUrListener():
         self.bed_pub = rospy.Publisher("rc_bed",Int32,queue_size=10)
         self.tok = Tokenizer()
 
-        f = open('/home/common/apikey','r')
+        f = open('/home/kiyoyama/apikey','r')
         #f = open('/home/rts/apikey','r')
         for line in f:
             self.apikey = line.replace('\n','')
@@ -130,37 +132,61 @@ class TmsUrListener():
         return target
 
 
-    def ask_remote(self, words):
+    def ask_remote(self, words, command = "robot_task"):
         payload ={
             "words":words
         }
-        tms_master = "192.168.4.94"
+        tms_master = "192.168.4.78"
         ret = requests.post("http://" + tms_master + ":4000/rms_svr",json = payload)
-        ret_dict = ret.json()
-        if ret_dict["message"] != "OK":
-            print ret_dict["message"]
-            tim = self.announce(error_msg1)
-            self.julius_power(True,tim.sec)
-            return False
-        else:
-            print 'send command'
-            hostname = str(ret_dict["hostname"])
-            task_id =  ret_dict["service_id"]["task_id"]
-            robot_id =  ret_dict["service_id"]["robot_id"]
-            object_id =  ret_dict["service_id"]["object_id"]
-            user_id =  ret_dict["service_id"]["user_id"]
-            place_id =  ret_dict["service_id"]["place_id"]
-            try:
-                rospy.wait_for_service('tms_nw_req', timeout=1.0)
-            except rospy.ROSException:
-                print "tms_nw_req is not work"
+        remote_tms = ret.json()
+        print remote_tms
+        if remote_tms["message"] == "OK":
+            payload = {
+                "url": remote_tms["hostname"],
+                "room": remote_tms["name"],
+                "command": command,
+            }
+            if command == "robot_task":
+                payload["service"] = "tms_ts_master"
+                payload["service_type"] = "tms_msg_ts/ts_req"
 
-            try:
-                nw_req = rospy.ServiceProxy('tms_nw_req',tms_nw_req)
-                res = nw_req(hostname,"tms_ts_master","tms_nw_rp/tms_nw_req" ,task_id,robot_id,object_id,user_id,place_id,0)
-                print res
-            except rospy.ServiceException as e:
-                print "Service call failed: %s" % e
+            ret = requests.post("http://" + host_url + ":5000/rp",json = payload)
+            if ret_dict["message"] != "OK":
+                print ret_dict["message"]
+                tim = self.announce(error_msg1)
+                self.julius_power(True,tim.sec)
+                return False
+        else:
+            tim = self.ret_dict["announce"]
+            self.julius_power(True,tim.sec)
+            return True
+
+        # if ret_dict["message"] != "OK":
+        #     print ret_dict["message"]
+        #     tim = self.announce(error_msg1)
+        #     self.julius_power(True,tim.sec)
+        #     return False
+        # else:
+        #     print 'send command'
+        #     hostname = str(ret_dict["hostname"])
+        #     task_id =  ret_dict["service_id"]["task_id"]
+        #     robot_id =  ret_dict["service_id"]["robot_id"]
+        #     object_id =  ret_dict["service_id"]["object_id"]
+        #     user_id =  ret_dict["service_id"]["user_id"]
+        #     place_id =  ret_dict["service_id"]["place_id"]
+
+            
+        #     try:
+        #         rospy.wait_for_service('tms_nw_req', timeout=1.0)
+        #     except rospy.ROSException:
+        #         print "tms_nw_req is not work"
+
+        #     try:
+        #         nw_req = rospy.ServiceProxy('tms_nw_req',tms_nw_req)
+        #         res = nw_req(hostname,"tms_ts_master","tms_nw_rp/tms_nw_req" ,task_id,robot_id,object_id,user_id,place_id,0)
+        #         print res
+        #     except rospy.ServiceException as e:
+        #         print "Service call failed: %s" % e
 
             print ret.json()
 
@@ -511,7 +537,7 @@ class TmsUrListener():
 
                         if robot_id==0:
                             if i == len(task_announce_list) - 1:
-                                self.ask_remote(words)
+                                self.ask_remote(words, "robot_task")
                                 return
                             else:
                                 task_flag = 1
@@ -526,7 +552,7 @@ class TmsUrListener():
 
                         if object_id==0:
                             if i == len(task_announce_list) - 1:
-                                self.ask_remote(words)
+                                self.ask_remote(words, "robot_task")
                                 return
                             else:
                                 task_flag = 1
@@ -541,7 +567,7 @@ class TmsUrListener():
 
                         if user_id==0:
                             if i == len(task_announce_list) - 1:
-                                self.ask_remote(words)
+                                self.ask_remote(words, "robot_task")
                                 return
                             else:
                                 task_flag = 1
@@ -556,7 +582,7 @@ class TmsUrListener():
 
                         if place_id==0:
                             if i == len(task_announce_list) - 1:
-                                self.ask_remote(words)
+                                self.ask_remote(words, "robot_task")
                                 return
                             else:
                                 task_flag = 1
