@@ -106,11 +106,17 @@ app.post("/rp", (req, res) => {
             })
 
         }
+        /*
         res.json = ({
             "message":"OK",
             "announce":announce
         });
-        return res;
+        */
+        res.status(200).json({
+            "message":"OK",
+            "announce":announce
+        });
+        return;
 
 
 });
