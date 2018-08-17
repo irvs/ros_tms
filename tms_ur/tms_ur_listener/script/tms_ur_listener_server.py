@@ -51,7 +51,7 @@ class TmsUrListener():
         self.bed_pub = rospy.Publisher("rc_bed",Int32,queue_size=10)
         self.tok = Tokenizer()
 
-        f = open('/home/kiyoyama/apikey','r')
+        f = open('/home/common/apikey','r')
         #f = open('/home/rts/apikey','r')
         for line in f:
             self.apikey = line.replace('\n','')
@@ -151,15 +151,21 @@ class TmsUrListener():
                 payload["service_type"] = "tms_msg_ts/ts_req"
 
             ret = requests.post("http://" + host_url + ":5000/rp",json = payload)
-            if ret_dict["message"] != "OK":
+            ret_dict = ret.json()
+            if ret_dict["message"] == "OK":
+                tim = self.announce(ret_dict["announce"])
+                self.julius_power(True,tim.sec)
+                return True
+            else:
                 print ret_dict["message"]
                 tim = self.announce(error_msg1)
                 self.julius_power(True,tim.sec)
                 return False
+            
         else:
-            tim = self.ret_dict["announce"]
+            tim = self.announce(error_msg1)
             self.julius_power(True,tim.sec)
-            return True
+            return False
 
         # if ret_dict["message"] != "OK":
         #     print ret_dict["message"]
@@ -312,6 +318,8 @@ class TmsUrListener():
             elif len(object_dic) > 1:
                 print "len(object_dic) > 1"
                 #未実装
+            else:
+                self.ask_remote(words, "search_object")
 
             place_id = 0
             place_name = ""
