@@ -22,11 +22,14 @@ app.post("/rp", (req, res) => {
     }
 
     const remote_url = req.body.url;
-    const room_name = req.body.name;
+    const room_name = req.body.room;
     const command = req.body.command;
+
+    let req_service = "";
+    let req_service_type = ""; 
     if(command == "robot_task"){
-        let req_service = req.body.service;
-        let req_service_type = req.body.service_type;
+        req_service = req.body.service;
+        req_service_type = req.body.service_type;
     }
 
 
@@ -48,34 +51,39 @@ app.post("/rp", (req, res) => {
     const get_id = new roslib.Service({
         ros: ros_remote,
         name: "get_id",
-        serviceType: tms_nw_api/get_id
+        serviceType: "tms_nw_api/get_id"
     });
 
     let get_id_req = new roslib.ServiceRequest({
         url: "http://" + local_ip
     });
 
-    get_id_req.callService(get_id_req, id_res => {
+    get_id.callService(get_id_req, id_res => {
         console.log(id_res);
         let anc_list = id_res.task_announce.split("$");
         let announce = "";
-        let room_flag = 1;
+        let room_flag = 0;
         for(let anc in anc_list){
-            if(anc == "object"){
+            if(anc_list[anc] == "object"){
                 announce += id_res.object_announce;
-            }else if(anc == "robot"){
+            }else if(anc_list[anc] == "robot"){
                 announce += id_res.robot_announce;
-            }else if(anc == "place"){
+            }else if(anc_list[anc] == "place"){
                 announce += id_res.place_announce;
-            }else if(anc == "user"){
+            }else if(anc_list[anc] == "user"){
                 announce += id_res.user_announce;
             }else{
-                announce += anc;
-                if(command == "search_object" || command == "robot_task"){
-                    announce += room_name + "の"
+                announce += anc_list[anc];
+                if(room_flag == 0){
+                    room_flag += 1;
+                }
+                else if(room_flag == 1 && (command == "search_object" || command == "robot_task")){
+                    announce += room_name + "の";
+                    room_flag = 2;
                 }
             }
         }
+        console.log(announce);
 
         if(command =="robot_task"){
             const remote_task = new roslib.Service({
@@ -94,16 +102,16 @@ app.post("/rp", (req, res) => {
             });
 
             remote_task.callService(remote_req, service_res =>{
-                res.json = ({
-                    "message":"OK",
-                    "announce":announce
-                });
+                console.log(service_res);
             })
 
-
         }
-        ros_remote.close();
-
+        res.json = ({
+            "message":"OK",
+            "announce":announce
+        });
+        console.log(res);
+        return res;
 
 
 });

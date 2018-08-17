@@ -134,77 +134,115 @@ def search_db(req_words):
         task_dic.clear()
         #未実装
 
-    task_announce_list = announce.split(";")
-    for i in range(len(task_announce_list)):
-        anc_list = task_announce_list[i].split("$")
-        response = ""
-        announce = ""
-        task_flag = 0
-        robot_id = 0
-        object_id = 0
-        user_id = 0
+    if task_id == 8100:
+        if len(object_dic) == 1:
+            object_id = object_dic.keys()[0]
+            object_name = object_dic[object_id]
+        elif len(object_dic) > 1:
+                print "len(object_dic) > 1"
+        
         place_id = 0
-        task_flag = 0
-        print anc_list
-        for anc in anc_list:
-            if anc == "robot":
-                if len(robot_dic) == 1:
-                    robot_id = robot_dic.keys()[0]
-                    robot_announce = robot_dic.pop(robot_id)
-                elif len(robot_dic) > 1:
-                    print "len(robot_dic) > 1"
-                                    #未実装
-                if robot_id==0:
-                    if i == len(task_announce_list) - 1:
-                        return False
-                    else:
-                        task_flag = 1
-            elif anc == "object":
-                if len(object_dic) == 1:
-                    object_id = object_dic.keys()[0]
-                    object_announce = object_dic.pop(object_id)
-                elif len(object_dic) > 1:
-                    print "len(object_dic) > 1"
-                    #未実装
-                if object_id==0:
-                    if i == len(task_announce_list) - 1:
-                        return False
-                    else:
-                        task_flag = 1
-            elif anc == "user":
-                if len(user_dic) == 1:
-                    user_id = user_dic.keys()[0]
-                    user_announce = user_dic.pop(user_id)
-                elif len(user_dic) > 1:
-                    print "len(user_dic) > 1"
-                    #未実装
-                if user_id==0:
-                    if i == len(task_announce_list) - 1:
-                        return False
-                    else:
-                        task_flag = 1
-            elif anc == "place":
-                if len(place_dic) == 1:
-                    place_id = place_dic.keys()[0]
-                    place_announce = place_dic.pop(place_id)
-                elif len(place_dic) > 1:
-                    print "len(place_dic) > 1"
-                    #未実装
-                if place_id==0:
-                    if i == len(task_announce_list) - 1:
-                        return False
-                    else:
-                        task_flag = 1
-        if task_flag == 1:
-            continue
+        place_name = ""
+        temp_dbdata = Tmsdb()
+        temp_dbdata.id = object_id
+        temp_dbdata.state = 1
 
-        task_announce = task_announce_list[i]
-        response = [task_id, robot_id, user_id, object_id, place_id, task_announce, robot_announce, user_announce, object_announce, place_announce]
+        #target = self.db_reader(temp_dbdata)
+        db_target = self.db_reader(temp_dbdata)
+        target = db_target.tmsdb[0]
+        if target is None:
+            return
+        place_id = target.place
+        temp_dbdata = Tmsdb()
+        temp_dbdata.id = place_id + sid
 
-        return response
+        db_target =self.db_reader(temp_dbdata)
+        target = db_target.tmsdb[0]
+        #target = self.db_reader(temp_dbdata)
+        if target is None:
+            return
+        place_name = target.announce
+
+        if object_name == "" or place_name == "":
+            return
+        else:
+            object_announce = object_name
+            place_announce = place_name
+        [task_id, 0, 0, object_id, place_id, task_announce, "", "", object_announce, place_announce]
+
+    else:
+
+        task_announce_list = announce.split(";")
+        for i in range(len(task_announce_list)):
+            anc_list = task_announce_list[i].split("$")
+            response = ""
+            announce = ""
+            task_flag = 0
+            robot_id = 0
+            object_id = 0
+            user_id = 0
+            place_id = 0
+            task_flag = 0
+            print anc_list
+            for anc in anc_list:
+                if anc == "robot":
+                    if len(robot_dic) == 1:
+                        robot_id = robot_dic.keys()[0]
+                        robot_announce = robot_dic.pop(robot_id)
+                    elif len(robot_dic) > 1:
+                        print "len(robot_dic) > 1"
+                                        #未実装
+                    if robot_id==0:
+                        if i == len(task_announce_list) - 1:
+                            return False
+                        else:
+                            task_flag = 1
+                elif anc == "object":
+                    if len(object_dic) == 1:
+                        object_id = object_dic.keys()[0]
+                        object_announce = object_dic.pop(object_id)
+                    elif len(object_dic) > 1:
+                        print "len(object_dic) > 1"
+                        #未実装
+                    if object_id==0:
+                        if i == len(task_announce_list) - 1:
+                            return False
+                        else:
+                            task_flag = 1
+                elif anc == "user":
+                    if len(user_dic) == 1:
+                        user_id = user_dic.keys()[0]
+                        user_announce = user_dic.pop(user_id)
+                    elif len(user_dic) > 1:
+                        print "len(user_dic) > 1"
+                        #未実装
+                    if user_id==0:
+                        if i == len(task_announce_list) - 1:
+                            return False
+                        else:
+                            task_flag = 1
+                elif anc == "place":
+                    if len(place_dic) == 1:
+                        place_id = place_dic.keys()[0]
+                        place_announce = place_dic.pop(place_id)
+                    elif len(place_dic) > 1:
+                        print "len(place_dic) > 1"
+                        #未実装
+                    if place_id==0:
+                        if i == len(task_announce_list) - 1:
+                            return False
+                        else:
+                            task_flag = 1
+            if task_flag == 1:
+                continue
+
+            task_announce = task_announce_list[i]
+            response = [task_id, robot_id, user_id, object_id, place_id, task_announce, robot_announce, user_announce, object_announce, place_announce]
+
+            return response
 
 def run():
-    api.run(host='localhost', port = 3000)
+    api.run(host=host_url, port = 3000)
 
 if __name__ == "__main__":
     #api.run(host='localhost', port = 3000)

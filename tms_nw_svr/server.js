@@ -33,7 +33,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.post("/rms_svr", (req, res) => {
-    console.log(req);
     let tms_sender= "http://";
     const tms_sender_ip = ((ipw.get_ip(req).clientIp).split(":")).pop();
     tms_sender += tms_sender_ip; 
@@ -58,7 +57,6 @@ app.post("/rms_svr", (req, res) => {
           }
     
     const search_tms = (tms_url, tms_name) => {
-        console.log(tms_name);
         return new Promise((resolve, reject) =>{
             const headers = {
                 'Content-Type':'application/json'
