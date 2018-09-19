@@ -1,38 +1,40 @@
+const express = require("express");
 const setTimeout =  require("timers").setTimeout;
 const roslib = require("roslib");
 const http = require("http");
+const url = require('url');
+const ipware = require('ipware');
+const bodyParser = require("body-parser");
+const app = express();
+const ipw = ipware();
 
 
-const ros_local = new roslib.Ros({
-    url:'ws://localhost:9090'
-}); 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.post("/rp", (req, res) => {
+    const request_from = ((ipw.get_ip(req).clientIp).split(":")).pop();
+    const local_ip = req.headers.host.split(":")[0]
+    if(request_from != local_ip){
+        res.json({
+            "message":"This host has no authority to access this server"
+        });
+        return;
+    }
 
-const req_server = new roslib.Service({
-    ros: ros_local,
-    name: '/tms_nw_req',
-    serviceType: 'tms_nw_rp/tms_nw_req',
-});
+    const remote_url = req.body.url;
+    const room_name = req.body.room;
+    const command = req.body.command;
 
-ros_local.on('connection', () => {
-    console.log('Connected to websocket server');
-});
-
-ros_local.on('error', error =>{
-    console.log('Erro connecting to websocket server: ', error);
-});
-
-ros_local.on('close', () => {
-    console.log("Connection to websocket server was closed");
-    req_server.unadvertise();
-});
-
-let req_service_type = 'hoge';
+    let req_service = "";
+    let req_service_type = ""; 
+    if(command == "robot_task"){
+        req_service = req.body.service;
+        req_service_type = req.body.service_type;
+    }
 
 
-
-req_server.advertise(async (req, res) => {
     const ros_remote = new roslib.Ros({
-        url: "ws://" + req.url + ":9090"
+        url: "ws://" + remote_url + ":9090"
     });
     ros_remote.on('connection', () => {
         console.log('Connected to websocket server');
@@ -45,30 +47,79 @@ req_server.advertise(async (req, res) => {
     ros_remote.on('close', () => {
         console.log("Connection to websocket server was closed");
     });
-    res.result = 1;
     
-    const remote_service = new roslib.Service({
+    const get_id = new roslib.Service({
         ros: ros_remote,
-        name: req.service_name,
-        serviceType: req.service_type,
+        name: "get_id",
+        serviceType: "tms_nw_api/get_id"
     });
 
-    delete req.service_name;
-    delete req.service_type;
-    delete req.url;
-    //req.rostime = 0;
+    let get_id_req = new roslib.ServiceRequest({
+        url: "http://" + local_ip
+    });
 
-    let remote_req = new roslib.ServiceRequest(req);
-    console.log(remote_req);
+    get_id.callService(get_id_req, id_res => {
+        console.log(id_res);
+        let anc_list = id_res.task_announce.split("$");
+        let announce = "";
+        let room_flag = 0;
+        for(let anc in anc_list){
+            if(anc_list[anc] == "object"){
+                announce += id_res.object_announce;
+            }else if(anc_list[anc] == "robot"){
+                announce += id_res.robot_announce;
+            }else if(anc_list[anc] == "place"){
+                announce += id_res.place_announce;
+            }else if(anc_list[anc] == "user"){
+                announce += id_res.user_announce;
+            }else{
+                announce += anc_list[anc];
+                if(room_flag == 0){
+                    room_flag += 1;
+                }
+                else if(room_flag == 1 && (command == "search_object" || command == "robot_task")){
+                    announce += room_name + "の";
+                    room_flag = 2;
+                }
+            }
+        }
+        console.log(announce);
 
-    remote_service.callService(remote_req, res_remote => {
-        res = res_remote;
-        console.log(res_remote);
-        ros_remote.close();
-    }, (err) => {
-        console.log(err)
-    })
-        
+        if(command =="robot_task"){
+            const remote_task = new roslib.Service({
+                ros: ros_remote,
+                name: req_service,
+                serviceType: req_service_type
+            });
+
+            const remote_req = new roslib.ServiceRequest({
+                "task_id": id_res.task_id,
+                "robot_id": id_res.robot_id,
+                "object_id":id_res.object_id,
+                "user_id": id_res.user_id,
+                "place_id": id_res.place_id,
+                "priority": 0
+            });
+
+            remote_task.callService(remote_req, service_res =>{
+                console.log(service_res);
+            })
+
+        }
+        /*
+        res.json = ({
+            "message":"OK",
+            "announce":announce
+        });
+        */
+        res.status(200).json({
+            "message":"OK",
+            "announce":announce
+        });
+        return;
+
 
 });
+    });
 
+app.listen(5000);

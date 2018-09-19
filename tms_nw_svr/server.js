@@ -12,17 +12,20 @@ const url_path = "resources/tms.json";
 
 let tms_reciever_port = ":3000/post";
 
-const tms_list=["hoge"];
-
+const tms_list = [];
+const tms_url_list = [];
 function getUrlList(filepath){
     let urlList = JSON.parse(fs.readFileSync(filepath, 'utf8'));
-    urlList.tms.forEach(data => {
-        tms_list.push(data.url);
-    });
-    console.log(tms_list);
-}
 
+    urlList.tms.forEach(data => {
+        tms_list.push(data);
+        tms_url_list.push(data.url);
+    });
+
+}
 getUrlList(url_path);
+
+console.log(url_path);
 
 console.log(tms_list);
 
@@ -36,25 +39,24 @@ app.post("/rms_svr", (req, res) => {
     let tmp_tms_list = [];
     console.log("Http request from: " + tms_sender);
 
-    const words = req.body;
+    const words = req.body.words;
     
 
-    if(tms_list.indexOf(tms_sender) == -1){
+    if(tms_url_list.indexOf(tms_sender) == -1){
         res.json({
             "message":"This host has no authority to access this server"
         });
         return;
     }else{
         tmp_tms_list = tms_list.filter((val) => {
-            if(val != tms_sender){
+            if(val.url != tms_sender){
                 return val;
             }
                 })
 //         tmp_tms_list = tms_list;
           }
-
     
-    const search_tms = (tms_url) => {
+    const search_tms = (tms_url, tms_name) => {
         return new Promise((resolve, reject) =>{
             const headers = {
                 'Content-Type':'application/json'
@@ -62,7 +64,10 @@ app.post("/rms_svr", (req, res) => {
             const options = {
                 url: tms_url,
                 headers: headers,
-                json: words
+                json: {
+                    words,
+                    url: tms_sender   
+                }
             }
 
             request.post(options, function(error, response, body){
@@ -75,6 +80,8 @@ app.post("/rms_svr", (req, res) => {
                         const response_obj = {
                             "message":"OK",
                             "hostname":response.request.uri.hostname,
+                            "name": tms_name
+                            /*
                             "service_id":{
                                 "robot_id":response.body.service_id.robot_id,
                                 "task_id":response.body.service_id.task_id,
@@ -82,6 +89,7 @@ app.post("/rms_svr", (req, res) => {
                                 "object_id":response.body.service_id.object_id,
                                 "place_id":response.body.service_id.place_id,   
                             }
+                            */
                         }
                         resolve(response_obj);
                         return true;
@@ -97,7 +105,7 @@ app.post("/rms_svr", (req, res) => {
 
     let promises = [];
     for(let i = 0; i < tmp_tms_list.length; i++){
-        promises.push(search_tms(tmp_tms_list[i] + tms_reciever_port));
+        promises.push(search_tms(tmp_tms_list[i].url + tms_reciever_port, tmp_tms_list[i].room));
     }
     Promise.all(promises).then(function(results){
         for(let i = 0; i < tmp_tms_list.length; i++){
