@@ -320,6 +320,7 @@ class TmsUrListener():
                 #未実装
             else:
                 self.ask_remote(words, "search_object")
+                return
 
             place_id = 0
             place_name = ""
