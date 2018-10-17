@@ -62,3 +62,5 @@ build-*/
 !camera_para.dat
 
 tms_nw/
+
+.vscode/

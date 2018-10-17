@@ -4,6 +4,7 @@ import rospy
 from tms_ur_listener.msg import julius_msg
 from tms_ur_listener.srv import gSpeech_msg
 from tms_ur_speaker.srv import *
+from tms_ur_slack.srv import *
 from std_msgs.msg import Bool
 from std_msgs.msg import String
 from std_msgs.msg import Int32
@@ -42,6 +43,7 @@ class TmsUrListener():
         rospy.Subscriber("/pi5/julius_msg",julius_msg,self.callback, callback_args=5)
         rospy.Subscriber("/watch_msg",String,self.callback, callback_args=100)
         rospy.Subscriber("/line_msg",String, self.callback, callback_args=200)
+        rospy.Subscriber("/slack_msg",String, self.callback, callback_args=201)
         self.gSpeech_launched = False
         self.julius_flag = True
         self.timer = threading.Timer(1,self.alarm)
@@ -51,7 +53,7 @@ class TmsUrListener():
         self.bed_pub = rospy.Publisher("rc_bed",Int32,queue_size=10)
         self.tok = Tokenizer()
 
-        f = open('/home/common/apikey','r')
+        f = open('/home/kiyoyama/apikey','r')
         #f = open('/home/rts/apikey','r')
         for line in f:
             self.apikey = line.replace('\n','')
@@ -106,13 +108,18 @@ class TmsUrListener():
 
     def announce(self,data):
         print data
-        rospy.wait_for_service('speaker_srv', timeout=1.0)
+        #rospy.wait_for_service('speaker_srv', timeout=1.0)
         tim = 0.0
         try:
             speak = rospy.ServiceProxy('speaker_srv',speaker_srv)
             tim = speak(data)
         except rospy.ServiceException, e:
-            print "Service call failed: %s" % e
+            try:
+                #rospy.wait_for_service('slack_srv', timeout=1.0)
+                send_slack = rospy.ServiceProxy('slack_srv', slack_srv)
+                tim = send_slack(data)
+            except rospy.ServiceException, e:
+                print "Service call failed: %s" % e
         return tim
 
     def db_reader(self,data):
