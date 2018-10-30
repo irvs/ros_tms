@@ -9,6 +9,16 @@ find_package(catkin REQUIRED COMPONENTS
   tf
 )
 
+add_service_files(
+  FILES
+  skype_srv.srv
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
+
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -27,6 +37,8 @@ include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
+
+
 
 ## Declare a cpp executable
  
