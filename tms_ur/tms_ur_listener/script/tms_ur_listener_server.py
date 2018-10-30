@@ -13,6 +13,7 @@ from tms_msg_db.msg import Tmsdb
 from tms_msg_db.srv import TmsdbGetData
 from tms_msg_ts.srv import ts_req
 from tms_nw_rp.srv import tms_nw_req
+from tms_rc_double.srv import skype_srv
 import requests
 import time
 import subprocess
@@ -143,7 +144,7 @@ class TmsUrListener():
         payload ={
             "words":words
         }
-        tms_master = "192.168.4.78"
+        tms_master = "192.168.4.93"
         ret = requests.post("http://" + tms_master + ":4000/rms_svr",json = payload)
         remote_tms = ret.json()
         print remote_tms
@@ -160,6 +161,11 @@ class TmsUrListener():
             ret = requests.post("http://" + host_url + ":5000/rp",json = payload)
             ret_dict = ret.json()
             if ret_dict["message"] == "OK":
+                try:
+                    skype_client = rospy.ServiceProxy('skype_server',skype_srv)
+                    res = skype_client("skype_id")
+                except:
+                    print res
                 tim = self.announce(ret_dict["announce"])
                 self.julius_power(True,tim.sec)
                 return True
