@@ -56,7 +56,7 @@ app.post("/rms_svr", (req, res) => {
 //         tmp_tms_list = tms_list;
           }
     
-    const search_tms = (tms_url, tms_name) => {
+    const search_tms = (tms_url, tms_name, skype_id) => {
         return new Promise((resolve, reject) =>{
             const headers = {
                 'Content-Type':'application/json'
@@ -80,7 +80,8 @@ app.post("/rms_svr", (req, res) => {
                         const response_obj = {
                             "message":"OK",
                             "hostname":response.request.uri.hostname,
-                            "name": tms_name
+                            "name": tms_name,
+                            "skype_id": skype_id,
                             /*
                             "service_id":{
                                 "robot_id":response.body.service_id.robot_id,
@@ -105,7 +106,7 @@ app.post("/rms_svr", (req, res) => {
 
     let promises = [];
     for(let i = 0; i < tmp_tms_list.length; i++){
-        promises.push(search_tms(tmp_tms_list[i].url + tms_reciever_port, tmp_tms_list[i].room));
+        promises.push(search_tms(tmp_tms_list[i].url + tms_reciever_port, tmp_tms_list[i].room, tmp_tms_list[i].skype_id));
     }
     Promise.all(promises).then(function(results){
         for(let i = 0; i < tmp_tms_list.length; i++){

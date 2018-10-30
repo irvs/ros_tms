@@ -47,7 +47,7 @@ app.post("/rp", (req, res) => {
     ros_remote.on('close', () => {
         console.log("Connection to websocket server was closed");
     });
-    
+
     const get_id = new roslib.Service({
         ros: ros_remote,
         name: "get_id",
