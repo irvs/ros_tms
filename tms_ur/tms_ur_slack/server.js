@@ -7,8 +7,8 @@ const roslib = require('roslib');
 const ros = new roslib.Ros({
     url: "ws://localhost:9090"
 });
+const cnannel = 'channel_id';
 
-const channel = "channel_id";
 
 ros.on('connection', () => {
     console.log("Launch websocket server");
@@ -44,11 +44,13 @@ rtm.start();
 
 rtm.on('message', event => {
     console.log(event);
-    let msg = new roslib.Message({
-        data: event.text
-    });
-    slack_msg.publish(msg);
-
+//    if(event.subtype != 'channel_join' && event.subtype != 'channel_leave' && event.subtype != 'message_deleted'){
+    if(!('subtype' in event) && !('bot_id' in event)){    
+        let msg = new roslib.Message({
+            data: event.text
+        });
+        slack_msg.publish(msg);
+    }
     //let rep_message = robot_message;
     //rtm.sendMessage(rep_message, event.channel);
     //rtm.sendMessage(｀<@${event.user}> ${rep_message}｀, event.channel);
