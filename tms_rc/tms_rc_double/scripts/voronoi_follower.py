@@ -9,7 +9,7 @@ from tms_msg_db.srv import TmsdbGetData, TmsdbGetDataRequest
 import datetime
 import pymongo
 from math import sin, cos, atan2, pi, radians, degrees, sqrt
-pub = rospy.Publisher("cmd_vel_mux/input/keyop",Twist,queue_size = 10)
+pub = rospy.Publisher("/tms_rc_double/bsen/cmd_vel",Twist,queue_size = 10)
 
 GOAL = None
 

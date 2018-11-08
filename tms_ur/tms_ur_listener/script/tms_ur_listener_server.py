@@ -163,7 +163,7 @@ class TmsUrListener():
             if ret_dict["message"] == "OK":
                 try:
                     skype_client = rospy.ServiceProxy('skype_server',skype_srv)
-                    res = skype_client("skype_id")
+                    res = skype_client(remote_tms["skype_id"])
                 except:
                     print res
                 tim = self.announce(ret_dict["announce"])
