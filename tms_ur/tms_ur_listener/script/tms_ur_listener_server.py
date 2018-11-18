@@ -161,11 +161,12 @@ class TmsUrListener():
             ret = requests.post("http://" + host_url + ":5000/rp",json = payload)
             ret_dict = ret.json()
             if ret_dict["message"] == "OK":
-                try:
-                    skype_client = rospy.ServiceProxy('skype_server',skype_srv)
-                    res = skype_client(remote_tms["skype_id"])
-                except:
-                    print res
+                if command == "robot_task":
+                    try:
+                        skype_client = rospy.ServiceProxy('skype_server',skype_srv)
+                        res = skype_client(remote_tms["skype_id"])
+                    except:
+                        print res
                 tim = self.announce(ret_dict["announce"])
                 self.julius_power(True,tim.sec)
                 return True
