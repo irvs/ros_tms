@@ -69,6 +69,18 @@ def post():
     print req_word
     response = search_db(req_word)
     if not response:
+        payload = {
+            "words":req_word
+        }
+        ret = requests.post("http://" + host_url + ":4000/rms_svr",json = payload)
+        remote_tms = ret.json()
+        if remote_tms["message"] == "OK":
+            response_url = remote_tms["hostname"]
+            return make_response(jsonify({
+            'message':'OK_nested',
+            'uri':response_url
+            }))
+
         return make_response(jsonify({
             'message':'Could not find them in tms_db',
         }))

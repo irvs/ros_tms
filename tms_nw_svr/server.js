@@ -94,6 +94,15 @@ app.post("/rms_svr", (req, res) => {
                         }
                         resolve(response_obj);
                         return true;
+                }else if(!error && response.body.message == "OK_nested"){
+                    console.log(response.body);
+                    const response_obj = {
+                        "message":"OK",
+                        "hostname":response.body.uri,
+                        "name": tms_name,
+                        "skype_id": skype_id,
+                    }
+
                 }else{
                     console.log('error: '+response.body.message +" @ "+ tms_url);
                     resolve(0);
