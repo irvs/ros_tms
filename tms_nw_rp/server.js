@@ -103,19 +103,16 @@ app.post("/rp", (req, res) => {
 
             remote_task.callService(remote_req, service_res =>{
                 console.log(service_res);
+                ros_remote.close();
             })
 
         }
-        /*
-        res.json = ({
-            "message":"OK",
-            "announce":announce
-        });
-        */
+
         res.status(200).json({
             "message":"OK",
             "announce":announce
         });
+        
         return;
 
 
