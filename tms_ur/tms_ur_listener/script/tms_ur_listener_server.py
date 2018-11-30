@@ -140,7 +140,7 @@ class TmsUrListener():
         return target
 
 
-    def ask_remote(self, words, command = "robot_task"):
+    def ask_remote(self, words, command = "robot_task", talk = False):
         payload ={
             "words":words
         }
@@ -154,7 +154,7 @@ class TmsUrListener():
                 "room": remote_tms["name"],
                 "command": command,
             }
-            if command == "robot_task":
+            if talk:
                 payload["service"] = "tms_ts_master"
                 payload["service_type"] = "tms_msg_ts/ts_req"
 
@@ -569,9 +569,7 @@ class TmsUrListener():
                 return
 
             note = json.loads(target.note)
-            print type(note)
             rate = note["rate"]
-            print rate
             
             anc_list = announce.split("$")
             announce = ""
@@ -586,7 +584,8 @@ class TmsUrListener():
             self.julius_power(True,tim.sec)
 
         else: #robot_task
-            
+            if task_id ==8009:
+                 talk = True
             task_announce_list = announce.split(";")
             for i in range(len(task_announce_list)):
                 anc_list = task_announce_list[i].split("$")
@@ -603,7 +602,7 @@ class TmsUrListener():
 
                         if robot_id==0:
                             if i == len(task_announce_list) - 1:
-                                self.ask_remote(words, "robot_task")
+                                self.ask_remote(words, "robot_task",talk)
                                 return
                             else:
                                 task_flag = 1
@@ -618,7 +617,7 @@ class TmsUrListener():
 
                         if object_id==0:
                             if i == len(task_announce_list) - 1:
-                                self.ask_remote(words, "robot_task")
+                                self.ask_remote(words, "robot_task",talk)
                                 return
                             else:
                                 task_flag = 1
@@ -633,7 +632,7 @@ class TmsUrListener():
 
                         if user_id==0:
                             if i == len(task_announce_list) - 1:
-                                self.ask_remote(words, "robot_task")
+                                self.ask_remote(words, "robot_task",talk)
                                 return
                             else:
                                 task_flag = 1
@@ -648,7 +647,7 @@ class TmsUrListener():
 
                         if place_id==0:
                             if i == len(task_announce_list) - 1:
-                                self.ask_remote(words, "robot_task")
+                                self.ask_remote(words, "robot_task",talk)
                                 return
                             else:
                                 task_flag = 1
