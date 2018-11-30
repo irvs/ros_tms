@@ -542,6 +542,49 @@ class TmsUrListener():
             self.julius_power(True,tim.sec)
             self.bed_pub.publish(msg)
 
+        elif task_id == 8105:
+            print user_dic
+            if len(user_dic) == 1:
+                user_id = user_dic.keys()[0]
+                user_name = user_dic[user_id]
+            elif len(user_dic) > 1:
+                print "len(user_dic) > 1"
+                #未実装
+            else:
+                self.ask_remote(words, "get_health_condition")
+                return
+
+            place_id = 0
+            place_name = ""
+            temp_dbdata = Tmsdb()
+            temp_dbdata.id = user_id
+            temp_dbdata.state = 1
+
+            #target = self.db_reader(temp_dbdata)
+            db_target = self.db_reader(temp_dbdata)
+            target = db_target.tmsdb[0]
+            if target is None:
+                tim = self.announce(error_msg2)
+                self.julius_power(True,tim.sec)
+                return
+
+            note = json.loads(target.note)
+            print type(note)
+            rate = note["rate"]
+            print rate
+            
+            anc_list = announce.split("$")
+            announce = ""
+            for anc in anc_list:
+                if anc == "user":
+                    announce += user_name
+                elif anc == "data":
+                    announce += str(rate)
+                else:
+                    announce += anc
+            tim = self.announce(announce)
+            self.julius_power(True,tim.sec)
+
         else: #robot_task
             
             task_announce_list = announce.split(";")
