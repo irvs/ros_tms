@@ -86,24 +86,25 @@ def post():
         }))
         #else:
         #    status = 503
-    res_msg = get_idResponse()
-    res_msg.task_id = response[0]
-    res_msg.robot_id = response[1]
-    res_msg.user_id = response[2]
-    res_msg.object_id = response[3]
-    res_msg.place_id = response[4]
+        res_msg = get_idResponse()
+        res_msg.task_id = response[0]
+        res_msg.robot_id = response[1]
+        res_msg.user_id = response[2]
+        res_msg.object_id = response[3]
+        res_msg.place_id = response[4]
 
-    res_msg.task_announce = response[5]
-    res_msg.robot_announce = response[6]
-    res_msg.user_announce = response[7]
-    res_msg.object_announce = response[8]
-    res_msg.place_announce = response[9]
-    
-    response_dic[tms_url] = res_msg
-    print response_dic
-    print "OK"
-    return make_response(jsonify({
-            'message':'OK'
+        res_msg.task_announce = response[5]
+        res_msg.robot_announce = response[6]
+        res_msg.user_announce = response[7]
+        res_msg.object_announce = response[8]
+        res_msg.place_announce = response[9]
+        res_msg.data = response[10]
+        
+        response_dic[tms_url] = res_msg
+        print response_dic
+        print "OK"
+        return make_response(jsonify({
+                'message':'OK'
         }))
 
 def search_db(req_words):
@@ -179,8 +180,40 @@ def search_db(req_words):
         else:
             object_announce = object_name
             place_announce = place_name
-            response = [task_id, 0, 0, object_id, place_id, task_announce, "", "", object_announce, place_announce]
+            response = [task_id, 0, 0, object_id, place_id, task_announce, "", "", object_announce, place_announce,""]
             return response
+
+    elif task_id == 8105:
+        print user_dic
+        if len(user_dic) == 1:
+            user_id = user_dic.keys()[0]
+            user_name = user_dic[user_id]
+        elif len(user_dic) > 1:
+            print "len(user_dic) > 1"
+            #未実装
+
+        place_id = 0
+        place_name = ""
+        temp_dbdata = Tmsdb()
+        temp_dbdata.id = user_id
+        temp_dbdata.state = 1
+
+        #target = self.db_reader(temp_dbdata)
+        db_target = self.db_reader(temp_dbdata)
+        target = db_target.tmsdb[0]
+        if target is None:
+            return
+
+        note = json.loads(target.note)
+        rate = note["rate"]
+
+        if rate == "":
+            return
+        else: 
+            response = [task_id, 0, user_id, 0, 0, task_announce, "", user_announce, "", "",rate]
+            return response
+
+
     else:
         task_announce_list = announce.split(";")
         for i in range(len(task_announce_list)):
@@ -252,7 +285,7 @@ def search_db(req_words):
             user_dic.clear()
 
             task_announce = task_announce_list[i]
-            response = [task_id, robot_id, user_id, object_id, place_id, task_announce, robot_announce, user_announce, object_announce, place_announce]
+            response = [task_id, robot_id, user_id, object_id, place_id, task_announce, robot_announce, user_announce, object_announce, place_announce,""]
 
             return response
 
