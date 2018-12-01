@@ -79,24 +79,24 @@ app.post("/rms_svr", (req, res) => {
                     return false;
                 }
                 if (!error && response.body.message == "OK"){
-                        console.log(response.body);
-                        const response_obj = {
-                            "message":"OK",
-                            "hostname":response.request.uri.hostname,
-                            "name": tms_name,
-                            "skype_id": skype_id,
-                            /*
-                            "service_id":{
-                                "robot_id":response.body.service_id.robot_id,
-                                "task_id":response.body.service_id.task_id,
-                                "user_id":response.body.service_id.user_id,
-                                "object_id":response.body.service_id.object_id,
-                                "place_id":response.body.service_id.place_id,   
-                            }
-                            */
+                    console.log(response.body);
+                    const response_obj = {
+                        "message":"OK",
+                        "hostname":response.request.uri.hostname,
+                        "name": tms_name,
+                        "skype_id": skype_id,
+                        /*
+                        "service_id":{
+                            "robot_id":response.body.service_id.robot_id,
+                            "task_id":response.body.service_id.task_id,
+                            "user_id":response.body.service_id.user_id,
+                            "object_id":response.body.service_id.object_id,
+                            "place_id":response.body.service_id.place_id,   
                         }
-                        resolve(response_obj);
-                        return true;
+                        */
+                    }
+                    resolve(response_obj);
+                    return true;
                 }else if(!error && response.body.message == "OK_nested"){
                     console.log(response.body);
                     const response_obj = {
@@ -105,6 +105,8 @@ app.post("/rms_svr", (req, res) => {
                         "name": tms_name,
                         "skype_id": skype_id,
                     }
+                    resolve(response_obj);
+                    return true;
 
                 }else{
                     console.log('error: '+response.body.message +" @ "+ tms_url);
