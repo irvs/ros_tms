@@ -54,8 +54,7 @@ class TmsUrListener():
         self.bed_pub = rospy.Publisher("rc_bed",Int32,queue_size=10)
         self.tok = Tokenizer()
 
-        f = open('/home/kiyoyama/apikey','r')
-        #f = open('/home/rts/apikey','r')
+        f = open('/home/rts/apikey','r')
         for line in f:
             self.apikey = line.replace('\n','')
 
@@ -144,7 +143,7 @@ class TmsUrListener():
         payload ={
             "words":words
         }
-        tms_master = "192.168.4.93"
+        tms_master = "192.168.4.80"
         ret = requests.post("http://" + tms_master + ":4000/rms_svr",json = payload)
         remote_tms = ret.json()
         print remote_tms
@@ -154,14 +153,14 @@ class TmsUrListener():
                 "room": remote_tms["name"],
                 "command": command,
             }
-            if talk:
+            if command == "robot_task":
                 payload["service"] = "tms_ts_master"
                 payload["service_type"] = "tms_msg_ts/ts_req"
 
             ret = requests.post("http://" + host_url + ":5000/rp",json = payload)
             ret_dict = ret.json()
             if ret_dict["message"] == "OK":
-                if command == "robot_task":
+                if talk:
                     try:
                         skype_client = rospy.ServiceProxy('skype_server',skype_srv)
                         res = skype_client(remote_tms["skype_id"])
@@ -586,6 +585,8 @@ class TmsUrListener():
         else: #robot_task
             if task_id ==8009:
                  talk = True
+            else:
+                talk = False
             task_announce_list = announce.split(";")
             for i in range(len(task_announce_list)):
                 anc_list = task_announce_list[i].split("$")
