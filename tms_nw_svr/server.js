@@ -40,7 +40,7 @@ app.post("/rms_svr", (req, res) => {
     console.log("Http request from: " + tms_sender);
 
     const words = req.body.words;
-    
+    console.log(req.body);
 
     if(tms_url_list.indexOf(tms_sender) == -1){
         res.json({
@@ -52,10 +52,13 @@ app.post("/rms_svr", (req, res) => {
             if(val.url != tms_sender){
                 return val;
             }
-                })
+        })
 //         tmp_tms_list = tms_list;
-          }
-    
+    }
+    if('uri' in req.body){
+        tms_sender = req.body.uri;
+    }
+
     const search_tms = (tms_url, tms_name, skype_id) => {
         return new Promise((resolve, reject) =>{
             const headers = {
