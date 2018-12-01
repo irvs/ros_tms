@@ -5,6 +5,7 @@ string robot_announce
 string object_announce
 string user_announce
 string place_announce
+string data
 int32 task_id
 int32 robot_id
 int32 object_id

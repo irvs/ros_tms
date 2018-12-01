@@ -63,6 +63,7 @@ app.post("/rp", (req, res) => {
         let anc_list = id_res.task_announce.split("$");
         let announce = "";
         let room_flag = 0;
+        console.log(anc_list);
         for(let anc in anc_list){
             if(anc_list[anc] == "object"){
                 announce += id_res.object_announce;
@@ -72,14 +73,21 @@ app.post("/rp", (req, res) => {
                 announce += id_res.place_announce;
             }else if(anc_list[anc] == "user"){
                 announce += id_res.user_announce;
+            }else if(anc_list[anc] == "data"){
+                announce += id_res.data;
             }else{
                 announce += anc_list[anc];
-                if(room_flag == 0){
-                    room_flag += 1;
-                }
-                else if(room_flag == 1 && (command == "search_object" || command == "robot_task")){
-                    announce += room_name + "の";
-                    room_flag = 2;
+                if (command == "search_object" || command == "robot_task"){
+                    if(room_flag == 0){
+                        room_flag += 1;
+                    }
+                    else if(room_flag == 1){
+                        announce += room_name + "の";
+                        room_flag = 2;
+                    }
+                }else if(room_flag == 0){
+                    announce += room_name + "の"
+                    room_flag = 2
                 }
             }
         }

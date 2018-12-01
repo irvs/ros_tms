@@ -6,6 +6,8 @@ from tms_msg_db.srv import TmsdbGetData
 from tms_nw_api.srv import *
 from flask import Flask, jsonify, abort, make_response,request
 import os
+import json
+import requests
 from multiprocessing import Process, Manager
 host_url = os.getenv("ROS_HOSTNAME", "localhost")
 
@@ -69,6 +71,20 @@ def post():
     print req_word
     response = search_db(req_word)
     if not response:
+        payload = {
+            "words":req_word,
+            "uri":tms_url
+        }
+        ret = requests.post("http://" + host_url + ":4000/rms_svr",json = payload)
+        remote_tms = ret.json()
+        print remote_tms
+        if remote_tms["message"] == "OK":
+            response_url = remote_tms["hostname"]
+            return make_response(jsonify({
+            'message':'OK_nested',
+            'uri':response_url
+            }))
+
         return make_response(jsonify({
             'message':'Could not find them in tms_db',
         }))
@@ -86,6 +102,7 @@ def post():
     res_msg.user_announce = response[7]
     res_msg.object_announce = response[8]
     res_msg.place_announce = response[9]
+    res_msg.data = response[10]
     
     response_dic[tms_url] = res_msg
     print response_dic
@@ -167,8 +184,44 @@ def search_db(req_words):
         else:
             object_announce = object_name
             place_announce = place_name
-            response = [task_id, 0, 0, object_id, place_id, task_announce, "", "", object_announce, place_announce]
+            response = [task_id, 0, 0, object_id, place_id, task_announce, "", "", object_announce, place_announce,""]
             return response
+
+    elif task_id == 8105:
+        print user_dic
+        task_announce = announce
+        if len(user_dic) == 1:
+            user_id = user_dic.keys()[0]
+            user_name = user_dic[user_id]
+        elif len(user_dic) > 1:
+            print "len(user_dic) > 1"
+            #未実装
+        user_announce = user_name
+        
+        place_id = 0
+        place_name = "" 
+        temp_dbdata = Tmsdb()
+        temp_dbdata.id = user_id
+        temp_dbdata.state = 1
+
+        #target = self.db_reader(temp_dbdata)
+        db_target = db_reader(temp_dbdata)
+        target = db_target.tmsdb[0]
+        if target is None:
+            return
+        if target.note =="":
+            return
+        note = json.loads(target.note)
+        rate = note["rate"]
+
+        if rate == "":
+            return
+        else: 
+            
+            response = [task_id, 0, user_id, 0, 0, task_announce, "", user_announce, "", "",str(rate)]
+            return response
+
+
     else:
         task_announce_list = announce.split(";")
         for i in range(len(task_announce_list)):
@@ -240,7 +293,7 @@ def search_db(req_words):
             user_dic.clear()
 
             task_announce = task_announce_list[i]
-            response = [task_id, robot_id, user_id, object_id, place_id, task_announce, robot_announce, user_announce, object_announce, place_announce]
+            response = [task_id, robot_id, user_id, object_id, place_id, task_announce, robot_announce, user_announce, object_announce, place_announce,""]
 
             return response
 

@@ -40,7 +40,7 @@ app.post("/rms_svr", (req, res) => {
     console.log("Http request from: " + tms_sender);
 
     const words = req.body.words;
-    
+    console.log(req.body);
 
     if(tms_url_list.indexOf(tms_sender) == -1){
         res.json({
@@ -52,10 +52,13 @@ app.post("/rms_svr", (req, res) => {
             if(val.url != tms_sender){
                 return val;
             }
-                })
+        })
 //         tmp_tms_list = tms_list;
-          }
-    
+    }
+    if('uri' in req.body){
+        tms_sender = req.body.uri;
+    }
+
     const search_tms = (tms_url, tms_name, skype_id) => {
         return new Promise((resolve, reject) =>{
             const headers = {
@@ -76,24 +79,35 @@ app.post("/rms_svr", (req, res) => {
                     return false;
                 }
                 if (!error && response.body.message == "OK"){
-                        console.log(response.body);
-                        const response_obj = {
-                            "message":"OK",
-                            "hostname":response.request.uri.hostname,
-                            "name": tms_name,
-                            "skype_id": skype_id,
-                            /*
-                            "service_id":{
-                                "robot_id":response.body.service_id.robot_id,
-                                "task_id":response.body.service_id.task_id,
-                                "user_id":response.body.service_id.user_id,
-                                "object_id":response.body.service_id.object_id,
-                                "place_id":response.body.service_id.place_id,   
-                            }
-                            */
+                    console.log(response.body);
+                    const response_obj = {
+                        "message":"OK",
+                        "hostname":response.request.uri.hostname,
+                        "name": tms_name,
+                        "skype_id": skype_id,
+                        /*
+                        "service_id":{
+                            "robot_id":response.body.service_id.robot_id,
+                            "task_id":response.body.service_id.task_id,
+                            "user_id":response.body.service_id.user_id,
+                            "object_id":response.body.service_id.object_id,
+                            "place_id":response.body.service_id.place_id,   
                         }
-                        resolve(response_obj);
-                        return true;
+                        */
+                    }
+                    resolve(response_obj);
+                    return true;
+                }else if(!error && response.body.message == "OK_nested"){
+                    console.log(response.body);
+                    const response_obj = {
+                        "message":"OK",
+                        "hostname":response.body.uri,
+                        "name": tms_name,
+                        "skype_id": skype_id,
+                    }
+                    resolve(response_obj);
+                    return true;
+
                 }else{
                     console.log('error: '+response.body.message +" @ "+ tms_url);
                     resolve(0);
