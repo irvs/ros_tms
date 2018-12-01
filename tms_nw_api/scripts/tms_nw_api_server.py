@@ -6,6 +6,8 @@ from tms_msg_db.srv import TmsdbGetData
 from tms_nw_api.srv import *
 from flask import Flask, jsonify, abort, make_response,request
 import os
+import json
+import requests
 from multiprocessing import Process, Manager
 host_url = os.getenv("ROS_HOSTNAME", "localhost")
 
@@ -74,6 +76,7 @@ def post():
         }
         ret = requests.post("http://" + host_url + ":4000/rms_svr",json = payload)
         remote_tms = ret.json()
+        print remote_tms
         if remote_tms["message"] == "OK":
             response_url = remote_tms["hostname"]
             return make_response(jsonify({
@@ -199,11 +202,12 @@ def search_db(req_words):
         temp_dbdata.state = 1
 
         #target = self.db_reader(temp_dbdata)
-        db_target = self.db_reader(temp_dbdata)
+        db_target = db_reader(temp_dbdata)
         target = db_target.tmsdb[0]
         if target is None:
             return
-
+        if target.note =="":
+            return
         note = json.loads(target.note)
         rate = note["rate"]
 
