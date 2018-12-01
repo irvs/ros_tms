@@ -72,7 +72,8 @@ def post():
     response = search_db(req_word)
     if not response:
         payload = {
-            "words":req_word
+            "words":req_word,
+            "uri":tms_url
         }
         ret = requests.post("http://" + host_url + ":4000/rms_svr",json = payload)
         remote_tms = ret.json()
@@ -89,25 +90,25 @@ def post():
         }))
         #else:
         #    status = 503
-        res_msg = get_idResponse()
-        res_msg.task_id = response[0]
-        res_msg.robot_id = response[1]
-        res_msg.user_id = response[2]
-        res_msg.object_id = response[3]
-        res_msg.place_id = response[4]
+    res_msg = get_idResponse()
+    res_msg.task_id = response[0]
+    res_msg.robot_id = response[1]
+    res_msg.user_id = response[2]
+    res_msg.object_id = response[3]
+    res_msg.place_id = response[4]
 
-        res_msg.task_announce = response[5]
-        res_msg.robot_announce = response[6]
-        res_msg.user_announce = response[7]
-        res_msg.object_announce = response[8]
-        res_msg.place_announce = response[9]
-        res_msg.data = response[10]
-        
-        response_dic[tms_url] = res_msg
-        print response_dic
-        print "OK"
-        return make_response(jsonify({
-                'message':'OK'
+    res_msg.task_announce = response[5]
+    res_msg.robot_announce = response[6]
+    res_msg.user_announce = response[7]
+    res_msg.object_announce = response[8]
+    res_msg.place_announce = response[9]
+    res_msg.data = response[10]
+    
+    response_dic[tms_url] = res_msg
+    print response_dic
+    print "OK"
+    return make_response(jsonify({
+            'message':'OK'
         }))
 
 def search_db(req_words):
@@ -214,7 +215,7 @@ def search_db(req_words):
         if rate == "":
             return
         else: 
-            response = [task_id, 0, user_id, 0, 0, task_announce, "", user_announce, "", "",rate]
+            response = [task_id, 0, user_id, 0, 0, task_announce, "", user_announce, "", "",str(rate)]
             return response
 
 
