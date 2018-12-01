@@ -189,15 +189,17 @@ def search_db(req_words):
 
     elif task_id == 8105:
         print user_dic
+        task_announce = announce
         if len(user_dic) == 1:
             user_id = user_dic.keys()[0]
             user_name = user_dic[user_id]
         elif len(user_dic) > 1:
             print "len(user_dic) > 1"
             #未実装
-
+        user_announce = user_name
+        
         place_id = 0
-        place_name = ""
+        place_name = "" 
         temp_dbdata = Tmsdb()
         temp_dbdata.id = user_id
         temp_dbdata.state = 1
@@ -215,6 +217,7 @@ def search_db(req_words):
         if rate == "":
             return
         else: 
+            
             response = [task_id, 0, user_id, 0, 0, task_announce, "", user_announce, "", "",str(rate)]
             return response
 
