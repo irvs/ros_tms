@@ -4,10 +4,10 @@ apply plugin: 'eclipse'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "com.example.rts.tms_ur_watch"
-        minSdkVersion 25
+        minSdkVersion 26
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -25,14 +25,14 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile ('org.ros.android_core:android_10:[0.3,)') {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation ('org.ros.android_core:android_10:[0.3,)') {
         exclude group: 'junit'
         exclude group: 'xml-apis'
     }
-    compile 'org.ros.rosjava_core:rosjava:[0.3,0.4)'
-    compile 'org.ros.rosjava_messages:std_msgs:0.5.10'
-    compile 'com.google.android.support:wearable:2.0.0-alpha3'
-    compile 'com.google.android.gms:play-services-wearable:10.0.1'
-    provided 'com.google.android.wearable:wearable:2.0.0-alpha3'
+    implementation 'org.ros.rosjava_core:rosjava:[0.3,0.4)'
+    implementation 'org.ros.rosjava_messages:std_msgs:0.5.10'
+    implementation 'com.google.android.support:wearable:2.0.0-alpha3'
+    implementation 'com.google.android.gms:play-services-wearable:10.0.1'
+    compileOnly 'com.google.android.wearable:wearable:2.0.0-alpha3'
 }
