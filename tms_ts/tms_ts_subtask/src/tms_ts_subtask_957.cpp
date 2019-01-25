@@ -41,9 +41,8 @@ tms_rp::TmsRpSubtask::TmsRpSubtask()
   //  mkun_virtual_control_client   = nh1.serviceClient<tms_msg_rc::rc_robot_control>("mimamorukun_virtual_control");
   mkun_control_client = nh1.serviceClient<tms_msg_rc::rc_robot_control>("mkun_goal_pose");
   double_goal_pub = nh1.advertise<geometry_msgs::PoseStamped>("/tms_rc_double/room957/move_base_simple/goal", 10);
-  //egashira
+
   turtlebot3_control_client = nh1.serviceClient<tms_msg_rc::rc_robot_control>("turtlebot3_goal_pose");
-  //
   voronoi_path_planning_client_ =
       nh1.serviceClient<tms_msg_rp::rps_voronoi_path_planning>("rps_voronoi_path_planning");
   give_obj_client = nh1.serviceClient<tms_msg_rp::rps_goal_planning>("rps_give_obj_pos_planning");
