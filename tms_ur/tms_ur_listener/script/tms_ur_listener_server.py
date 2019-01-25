@@ -4,6 +4,7 @@ import rospy
 from tms_ur_listener.msg import julius_msg
 from tms_ur_listener.srv import gSpeech_msg
 from tms_ur_speaker.srv import *
+from tms_ur_slack.srv import *
 from std_msgs.msg import Bool
 from std_msgs.msg import String
 from std_msgs.msg import Int32
@@ -11,6 +12,8 @@ from janome.tokenizer import Tokenizer
 from tms_msg_db.msg import Tmsdb
 from tms_msg_db.srv import TmsdbGetData
 from tms_msg_ts.srv import ts_req
+from tms_nw_rp.srv import tms_nw_req
+from tms_rc_double.srv import skype_srv
 import requests
 import time
 import subprocess
@@ -19,8 +22,11 @@ import json
 import datetime
 import threading
 import urllib
+import os
+host_url = os.getenv("ROS_HOSTNAME", "localhost")
 
-trigger = ['ROS-TMS']
+
+trigger = ['ROS-TMS','LOOMO','TARO']
 error_msg0 = "すみません。聞き取れませんでした。"
 error_msg1 = "すみません。よくわかりませんでした。"
 error_msg2 = "エラーが発生したため、処理を中断します"
@@ -38,6 +44,7 @@ class TmsUrListener():
         rospy.Subscriber("/pi5/julius_msg",julius_msg,self.callback, callback_args=5)
         rospy.Subscriber("/watch_msg",String,self.callback, callback_args=100)
         rospy.Subscriber("/line_msg",String, self.callback, callback_args=200)
+        rospy.Subscriber("/slack_msg",String, self.callback, callback_args=201)
         self.gSpeech_launched = False
         self.julius_flag = True
         self.timer = threading.Timer(1,self.alarm)
@@ -47,12 +54,12 @@ class TmsUrListener():
         self.bed_pub = rospy.Publisher("rc_bed",Int32,queue_size=10)
         self.tok = Tokenizer()
 
-        f = open('/home/common/apikey','r')
-        #f = open('/home/rts/apikey','r')
+        f = open('/home/rts/apikey','r')
         for line in f:
             self.apikey = line.replace('\n','')
 
         f.close()
+
         print 'tms_ur_listener_server ready...'
 
     def alarm(self):
@@ -101,13 +108,18 @@ class TmsUrListener():
 
     def announce(self,data):
         print data
-        rospy.wait_for_service('speaker_srv', timeout=1.0)
-        tim = 0
+        #rospy.wait_for_service('speaker_srv', timeout=1.0)
+        tim = 0.0
         try:
             speak = rospy.ServiceProxy('speaker_srv',speaker_srv)
             tim = speak(data)
         except rospy.ServiceException, e:
-            print "Service call failed: %s" % e
+            try:
+                #rospy.wait_for_service('slack_srv', timeout=1.0)
+                send_slack = rospy.ServiceProxy('slack_srv', slack_srv)
+                tim = send_slack(data)
+            except rospy.ServiceException, e:
+                print "Service call failed: %s" % e
         return tim
 
     def db_reader(self,data):
@@ -125,6 +137,80 @@ class TmsUrListener():
         temp_dbdata.tag='「'+data+'」'
         target = self.db_reader(temp_dbdata)
         return target
+
+
+    def ask_remote(self, words, command = "robot_task", talk = False):
+        payload ={
+            "words":words
+        }
+        tms_master = "192.168.4.80"
+        ret = requests.post("http://" + tms_master + ":4000/rms_svr",json = payload)
+        remote_tms = ret.json()
+        print remote_tms
+        if remote_tms["message"] == "OK":
+            payload = {
+                "url": remote_tms["hostname"],
+                "room": remote_tms["name"],
+                "command": command,
+            }
+            if command == "robot_task":
+                payload["service"] = "tms_ts_master"
+                payload["service_type"] = "tms_msg_ts/ts_req"
+
+            ret = requests.post("http://" + host_url + ":5000/rp",json = payload)
+            ret_dict = ret.json()
+            if ret_dict["message"] == "OK":
+                if talk:
+                    try:
+                        skype_client = rospy.ServiceProxy('skype_server',skype_srv)
+                        res = skype_client(remote_tms["skype_id"])
+                    except:
+                        print res
+                tim = self.announce(ret_dict["announce"])
+                self.julius_power(True,tim.sec)
+                return True
+            else:
+                print ret_dict["message"]
+                tim = self.announce(error_msg1)
+                self.julius_power(True,tim.sec)
+                return False
+            
+        else:
+            tim = self.announce(error_msg1)
+            self.julius_power(True,tim.sec)
+            return False
+
+        # if ret_dict["message"] != "OK":
+        #     print ret_dict["message"]
+        #     tim = self.announce(error_msg1)
+        #     self.julius_power(True,tim.sec)
+        #     return False
+        # else:
+        #     print 'send command'
+        #     hostname = str(ret_dict["hostname"])
+        #     task_id =  ret_dict["service_id"]["task_id"]
+        #     robot_id =  ret_dict["service_id"]["robot_id"]
+        #     object_id =  ret_dict["service_id"]["object_id"]
+        #     user_id =  ret_dict["service_id"]["user_id"]
+        #     place_id =  ret_dict["service_id"]["place_id"]
+
+            
+        #     try:
+        #         rospy.wait_for_service('tms_nw_req', timeout=1.0)
+        #     except rospy.ROSException:
+        #         print "tms_nw_req is not work"
+
+        #     try:
+        #         nw_req = rospy.ServiceProxy('tms_nw_req',tms_nw_req)
+        #         res = nw_req(hostname,"tms_ts_master","tms_nw_rp/tms_nw_req" ,task_id,robot_id,object_id,user_id,place_id,0)
+        #         print res
+        #     except rospy.ServiceException as e:
+        #         print "Service call failed: %s" % e
+
+            print ret.json()
+
+            return True
+
 
     def callback(self, data, id):
         rospy.loginfo(str(id))
@@ -166,22 +252,24 @@ class TmsUrListener():
             words.append("行く")
         if "入る" in words: #同上
             words.append("行く")
+        
         print str(words).decode('string-escape')
 
         task_id = 0
         robot_id = 0
         object_id = 0
-        user_id = 1100
+        user_id = 0#1100
         place_id = 0
         announce = ""
+        task_name = "" #for remote task
         robot_name = ""
         object_name = ""
-        user_name = "太郎さん"
+        user_name = ""#"太郎さん"
         place_name = ""
         task_dic = {}
         robot_dic = {}
         object_dic = {}
-        user_dic = {1100:"太郎さん"}
+        user_dic = {}#{1100:"太郎さん"}
         place_dic = {}
         other_words = []
         
@@ -216,8 +304,9 @@ class TmsUrListener():
             announce = task_dic[task_id]
         elif len(task_dic) > 1:
             print "len(task_dic) > 1"
-            #未実装
-            task_id = task_dic.keys()[0]
+            #「ベッド」がタスクとして認識されてしまい、「ベッドに行って」が失敗してしまう
+            # => ロボットによるタスクを優先するため、task_id が小さい方を優先(要検討)
+            task_id = min(task_dic.keys())
             announce = task_dic[task_id]
 
         if task_id == 0:
@@ -242,6 +331,9 @@ class TmsUrListener():
             elif len(object_dic) > 1:
                 print "len(object_dic) > 1"
                 #未実装
+            else:
+                self.ask_remote(words, "search_object")
+                return
 
             place_id = 0
             place_name = ""
@@ -448,80 +540,140 @@ class TmsUrListener():
             tim = self.announce(announce)
             self.julius_power(True,tim.sec)
             self.bed_pub.publish(msg)
-        else: #robot_task
+
+        elif task_id == 8105:
+            print user_dic
+            if len(user_dic) == 1:
+                user_id = user_dic.keys()[0]
+                user_name = user_dic[user_id]
+            elif len(user_dic) > 1:
+                print "len(user_dic) > 1"
+                #未実装
+            else:
+                self.ask_remote(words, "get_health_condition")
+                return
+
+            place_id = 0
+            place_name = ""
+            temp_dbdata = Tmsdb()
+            temp_dbdata.id = user_id
+            temp_dbdata.state = 1
+
+            #target = self.db_reader(temp_dbdata)
+            db_target = self.db_reader(temp_dbdata)
+            target = db_target.tmsdb[0]
+            if target is None:
+                tim = self.announce(error_msg2)
+                self.julius_power(True,tim.sec)
+                return
+
+            note = json.loads(target.note)
+            rate = note["rate"]
+            
             anc_list = announce.split("$")
             announce = ""
             for anc in anc_list:
-                if anc == "robot":
-                    if len(robot_dic) == 1:
-                        robot_id = robot_dic.keys()[0]
-                        robot_name = robot_dic[robot_id]
-                    elif len(robot_dic) > 1:
-                        print "len(robot_dic) > 1"
-                        #未実装
-
-                    if robot_id==0:
-                        tim = self.announce(error_msg1)
-                        self.julius_power(True,tim.sec)
-                        return
-                    announce += robot_name
-                elif anc == "object":
-                    if len(object_dic) == 1:
-                        object_id = object_dic.keys()[0]
-                        object_name = object_dic[object_id]
-                    elif len(object_dic) > 1:
-                        print "len(object_dic) > 1"
-                        #未実装
-
-                    if object_id==0:
-                        tim = self.announce(error_msg1)
-                        self.julius_power(True,tim.sec)
-                        return
-                    announce += object_name
-                elif anc == "user":
-                    if len(user_dic) == 1:
-                        user_id = user_dic.keys()[0]
-                        user_name = user_dic[user_id]
-                    elif len(user_dic) > 1:
-                        print "len(user_dic) > 1"
-                        #未実装
-
-                    if user_id==0:
-                        tim = self.announce(error_msg1)
-                        self.julius_power(True,tim.sec)
-                        return
+                if anc == "user":
                     announce += user_name
-                elif anc == "place":
-                    if len(place_dic) == 1:
-                        place_id = place_dic.keys()[0]
-                        place_name = place_dic[place_id]
-                    elif len(place_dic) > 1:
-                        print "len(place_dic) > 1"
-                        #未実装
-
-                    if place_id==0:
-                        tim = self.announce(error_msg1)
-                        self.julius_power(True,tim.sec)
-                        return
-                    announce += place_name
+                elif anc == "data":
+                    announce += str(rate)
                 else:
                     announce += anc
-
-            print 'send command'
-            try:
-                rospy.wait_for_service('tms_ts_master', timeout=1.0)
-            except rospy.ROSException:
-                print "tms_ts_master is not work"
-
-            try:
-                tms_ts_master = rospy.ServiceProxy('tms_ts_master',ts_req)
-                res = tms_ts_master(0,task_id,robot_id,object_id,user_id,place_id,0)
-                print res
-            except rospy.ServiceException as e:
-                print "Service call failed: %s" % e
-
             tim = self.announce(announce)
             self.julius_power(True,tim.sec)
+
+        else: #robot_task
+            if task_id ==8009:
+                 talk = True
+            else:
+                talk = False
+            task_announce_list = announce.split(";")
+            for i in range(len(task_announce_list)):
+                anc_list = task_announce_list[i].split("$")
+                announce = ""
+                task_flag = 0
+                for anc in anc_list:
+                    if anc == "robot":
+                        if len(robot_dic) == 1:
+                            robot_id = robot_dic.keys()[0]
+                            robot_name = robot_dic[robot_id]
+                        elif len(robot_dic) > 1:
+                            print "len(robot_dic) > 1"
+                            #未実装
+
+                        if robot_id==0:
+                            if i == len(task_announce_list) - 1:
+                                self.ask_remote(words, "robot_task",talk)
+                                return
+                            else:
+                                task_flag = 1
+                        announce += robot_name
+                    elif anc == "object":
+                        if len(object_dic) == 1:
+                            object_id = object_dic.keys()[0]
+                            object_name = object_dic[object_id]
+                        elif len(object_dic) > 1:
+                            print "len(object_dic) > 1"
+                            #未実装
+
+                        if object_id==0:
+                            if i == len(task_announce_list) - 1:
+                                self.ask_remote(words, "robot_task",talk)
+                                return
+                            else:
+                                task_flag = 1
+                        announce += object_name
+                    elif anc == "user":
+                        if len(user_dic) == 1:
+                            user_id = user_dic.keys()[0]
+                            user_name = user_dic[user_id]
+                        elif len(user_dic) > 1:
+                            print "len(user_dic) > 1"
+                            #未実装
+
+                        if user_id==0:
+                            if i == len(task_announce_list) - 1:
+                                self.ask_remote(words, "robot_task",talk)
+                                return
+                            else:
+                                task_flag = 1
+                        announce += user_name
+                    elif anc == "place":
+                        if len(place_dic) == 1:
+                            place_id = place_dic.keys()[0]
+                            place_name = place_dic[place_id]
+                        elif len(place_dic) > 1:
+                            print "len(place_dic) > 1"
+                            #未実装
+
+                        if place_id==0:
+                            if i == len(task_announce_list) - 1:
+                                self.ask_remote(words, "robot_task",talk)
+                                return
+                            else:
+                                task_flag = 1
+                        announce += place_name
+                    else:
+                        announce += anc
+
+                if task_flag == 1:
+                    continue
+                print 'send command'
+                try:
+                    rospy.wait_for_service('tms_ts_master', timeout=1.0)
+                except rospy.ROSException:
+                    print "tms_ts_master is not work"
+
+                try:
+                    tms_ts_master = rospy.ServiceProxy('tms_ts_master',ts_req)
+                    res = tms_ts_master(0,task_id,robot_id,object_id,user_id,place_id,0)
+                    print res
+                except rospy.ServiceException as e:
+                    print "Service call failed: %s" % e
+
+                tim = self.announce(announce)
+                self.julius_power(True,tim.sec)
+                return
 
     def shutdown(self):
         rospy.loginfo("Stopping the node")

@@ -60,3 +60,5 @@ build-*/
 
 # tms_ur_client
 !camera_para.dat
+
+.vscode/

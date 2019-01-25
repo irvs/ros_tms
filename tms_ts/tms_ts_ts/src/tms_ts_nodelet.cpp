@@ -597,7 +597,7 @@ bool tms_ts_nodelet::ROS_TMS_TS::tsCallback(tms_msg_ts::ts_req::Request &req, tm
   // get task's data from id table
   tms_msg_db::TmsdbGetData srv;
   srv.request.tmsdb.id = req.task_id + sid;
-
+  ROS_INFO("%d",sid);
   if (db_reader_client.call(srv))
   {
     ROS_INFO("get task data from tms_db\n");
@@ -605,50 +605,114 @@ bool tms_ts_nodelet::ROS_TMS_TS::tsCallback(tms_msg_ts::ts_req::Request &req, tm
     int sp = 0;            // stack pointer
 
     std::string subtask = srv.response.tmsdb[0].etcdata;
-    std::vector< std::string > seq_of_subtask;
+    
+    std::vector< std::string > variable_subtask;
+    variable_subtask.clear();
+    boost::split(variable_subtask, subtask, boost::is_any_of(";"));
+    if(variable_subtask.size() == 1){
+      std::vector< std::string > seq_of_subtask;
+      seq_of_subtask.clear();
+      boost::split(seq_of_subtask, subtask, boost::is_any_of(" "));
+      int cc_count = 0;
+      int index = 0;
+      int type;
+      int num_of_subtasks;
 
-    seq_of_subtask.clear();
-    boost::split(seq_of_subtask, subtask, boost::is_any_of(" "));
-
-    int cc_count = 0;
-    int index = 0;
-    int type;
-    int num_of_subtasks;
-
-    for (int cnt = 0; cnt < seq_of_subtask.size(); cnt++)
-    {
-      // distinguish operator
-      if (seq_of_subtask.at(cnt) == "+")
-      {  // sequential subtask
-        ROS_INFO("+\n");
-        // add state to main function
-        std::string state1 = ArrayPop(stack, &sp);
-        std::string state2 = ArrayPop(stack, &sp);
-        if (state2 == "False")
-        {  // There is one state
-          index = AddOneStateSQ(state1);
+      for (int cnt = 0; cnt < seq_of_subtask.size(); cnt++)
+      {
+        // distinguish operator
+        if (seq_of_subtask.at(cnt) == "+")
+        {  // sequential subtask
+          ROS_INFO("+\n");
+          // add state to main function
+          std::string state1 = ArrayPop(stack, &sp);
+          std::string state2 = ArrayPop(stack, &sp);
+          if (state2 == "False")
+          {  // There is one state
+            index = AddOneStateSQ(state1);
+          }
+          else
+          {
+            ROS_INFO("state1:%s, state2:%s", state1.c_str(), state2.c_str());
+            index = AddStateSQ(state2, state1);
+            ArrayPush(stack, IntToString(index), &sp, N);
+          }
+        }
+        else if (seq_of_subtask.at(cnt) == "|")
+        {  // concurrent subtask
+          // create concurrence container
+          std::string state1 = ArrayPop(stack, &sp);
+          std::string state2 = ArrayPop(stack, &sp);
+          num_of_subtasks = GenerateCC(state2, state1, cc_count);
+          // add state to main function
+          index = AddStateCC(cc_count, num_of_subtasks);
+          ArrayPush(stack, IntToString(index), &sp, N);
+          cc_count++;
         }
         else
         {
-          ROS_INFO("state1:%s, state2:%s", state1.c_str(), state2.c_str());
-          index = AddStateSQ(state2, state1);
-          ArrayPush(stack, IntToString(index), &sp, N);
+          ArrayPush(stack, seq_of_subtask.at(cnt), &sp, N);
         }
       }
-      else if (seq_of_subtask.at(cnt) == "|")
-      {  // concurrent subtask
-        // create concurrence container
-        std::string state1 = ArrayPop(stack, &sp);
-        std::string state2 = ArrayPop(stack, &sp);
-        num_of_subtasks = GenerateCC(state2, state1, cc_count);
-        // add state to main function
-        index = AddStateCC(cc_count, num_of_subtasks);
-        ArrayPush(stack, IntToString(index), &sp, N);
-        cc_count++;
-      }
-      else
-      {
-        ArrayPush(stack, seq_of_subtask.at(cnt), &sp, N);
+    }
+    else{
+      for(int task_cnt = 0; task_cnt < variable_subtask.size(); task_cnt++){
+        std::vector< std::string > seq_of_subtask;
+
+        seq_of_subtask.clear();
+        boost::split(seq_of_subtask, variable_subtask.at(task_cnt), boost::is_any_of(" "));
+        int cc_count = 0;
+        int index = 0;
+        int type;
+        int num_of_subtasks;
+        
+        std::vector< std::string > task_args;
+        task_args.clear();
+        
+        boost::split(task_args, seq_of_subtask.at(0), boost::is_any_of("$"));
+        ROS_INFO("%s", task_args.at(1));
+        if(ConvertArgType(task_args.at(1)) == 0){
+          continue;
+        }
+
+        for (int cnt = 0; cnt < seq_of_subtask.size(); cnt++)
+        {
+          // distinguish operator
+          if (seq_of_subtask.at(cnt) == "+")
+          {  // sequential subtask
+            ROS_INFO("+\n");
+            // add state to main function
+            std::string state1 = ArrayPop(stack, &sp);
+            std::string state2 = ArrayPop(stack, &sp);
+            if (state2 == "False")
+            {  // There is one state
+              index = AddOneStateSQ(state1);
+            }
+            else
+            {
+              ROS_INFO("state1:%s, state2:%s", state1.c_str(), state2.c_str());
+              index = AddStateSQ(state2, state1);
+              ArrayPush(stack, IntToString(index), &sp, N);
+            }
+          }
+          else if (seq_of_subtask.at(cnt) == "|")
+          {  // concurrent subtask
+            // create concurrence container
+            std::string state1 = ArrayPop(stack, &sp);
+            std::string state2 = ArrayPop(stack, &sp);
+            num_of_subtasks = GenerateCC(state2, state1, cc_count);
+            // add state to main function
+            index = AddStateCC(cc_count, num_of_subtasks);
+            ArrayPush(stack, IntToString(index), &sp, N);
+            cc_count++;
+          }
+          else
+          {
+            ArrayPush(stack, seq_of_subtask.at(cnt), &sp, N);
+          }
+        }
+        break;
+        
       }
     }
   }
