@@ -24,8 +24,13 @@ allprojects {
             url "https://github.com/rosjava/rosjava_mvn_repo/raw/master"
 //            url "https://maven.google.com"
         }
+        maven {
+            url "https://maven.google.com"
+        }
         mavenLocal()
+
     }
+
 }
 
 task clean(type: Delete) {

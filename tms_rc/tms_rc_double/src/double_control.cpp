@@ -31,9 +31,9 @@
 
 
 #define ODOM
-//#define VICON
-#define POZYX
-#define DB
+#define VICON
+//#define POZYX
+//#define DB
 
 #ifdef VICON
   int sensor =3001;
@@ -88,8 +88,8 @@ void pub_tf()
   ts.header.frame_id = "map";
   ts.child_frame_id = "base_footprint";
   ts.header.stamp = ros::Time::now();
-  ts.transform.translation.x = var_pos_x;
-  ts.transform.translation.y = var_pos_y;
+  ts.transform.translation.x = var_pos_x / 1000;
+  ts.transform.translation.y = var_pos_y /1000; 
   ts.transform.translation.z = 0;//v_pos_z / 1000;
   // ts.transform.translation.x = pose.x();
   // ts.transform.translation.y = pose.y();
@@ -126,6 +126,9 @@ void vicon_sysCallback(const tms_msg_ss::vicon_data::ConstPtr &msg)
     v_pos_y = msg->translation.y;
     v_pos_z = msg->translation.z;
     v_rotation = msg->rotation;//floor2(rad2deg(msg->eulerXYZ[2]), 1);
+
+    var_pos_x = v_pos_x;
+    var_pos_y = v_pos_y;
 
     std::cout << v_pos_x <<"," << v_pos_y << "," <<v_rotation <<std::endl;
   }
@@ -589,7 +592,7 @@ int main(int argc, char **argv)
 
   //現在地取得方法(vicon or odom)
   ros::Subscriber vicon_sub = n.subscribe("vicon_stream/output", 10, vicon_sysCallback);
-  ros::Subscriber odom_sub = n.subscribe("/tms_rc_double/room928/odom", 10, odomCallback);  // Odometry情報取得
+  ros::Subscriber odom_sub = n.subscribe("/tms_rc_double/room957/odom", 10, odomCallback);  // Odometry情報取得
   ros::Rate loop_rate(3);
 
   while(ros::ok()){
