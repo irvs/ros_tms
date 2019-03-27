@@ -1,0 +1,6 @@
+{
+   "tms":[
+        {"room":"b-sen", "url":"http://192.168.4.170","skype_id":"hoge" },
+        {"room":"957号室", "url":"http://192.168.4.171","skype_id":"fuga" }
+   ]
+}
