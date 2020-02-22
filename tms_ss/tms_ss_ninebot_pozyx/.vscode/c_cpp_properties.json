@@ -1,18 +1,52 @@
 {
     "configurations": [
         {
-            "name": "Linux",
-            "includePath": [
-                "/opt/arduino-1.8.5/hardware/arduino/avr/cores/arduino"
-            ],
             "browse": {
-                "limitSymbolsToIncludedHeaders": false,
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "/opt/arduino-1.8.5/hardware/arduino/avr/cores/arduino"
+                    "/home/common/catkin_ws/devel/include",
+                    "/opt/ros/kinetic/include",
+                    "/home/common/catkin_ws/src/ros_tms/tms_db/tms_db_state_publisher/include",
+                    "/home/common/catkin_ws/src/ros_tms/tms_rc/tms_rc_double/include",
+                    "/home/common/catkin_ws/src/ros_tms/tms_rc/tms_rc_kobuki/kobuki_control/include",
+                    "/home/common/catkin_ws/src/ros_tms/tms_rc/tms_rc_turtlebot/turtlebot_control/include",
+                    "/home/common/catkin_ws/src/ros_tms/tms_ss/tms_ss_pot/include",
+                    "/home/common/catkin_ws/src/ros_tms/tms_ss/tms_ss_tracker/include",
+                    "/home/common/catkin_ws/src/ros_tms/tms_ss/tms_ss_vicon/include",
+                    "/home/common/catkin_ws/src/ros_tms/tms_ts/tms_ts_subtask/include",
+                    "/home/common/catkin_ws/src/ros_tms/tms_ts/tms_ts_ts/include",
+                    "/home/common/catkin_ws/src/ros_tms/tms_ur/tms_ur_gaze/tms_ur_gaze_server/include",
+                    "/home/common/catkin_ws/src/ublox-master/ublox_gps/include",
+                    "/home/common/catkin_ws/src/ublox-master/ublox_msgs/include",
+                    "/home/common/catkin_ws/src/ublox-master/ublox_serialization/include",
+                    "/usr/include"
                 ]
             },
-            "intelliSenseMode": "clang-x64"
+            "includePath": [
+                "/home/common/catkin_ws/devel/include",
+                "/opt/ros/kinetic/include",
+                "/home/common/catkin_ws/src/ros_tms/tms_db/tms_db_state_publisher/include",
+                "/home/common/catkin_ws/src/ros_tms/tms_rc/tms_rc_double/include",
+                "/home/common/catkin_ws/src/ros_tms/tms_rc/tms_rc_kobuki/kobuki_control/include",
+                "/home/common/catkin_ws/src/ros_tms/tms_rc/tms_rc_turtlebot/turtlebot_control/include",
+                "/home/common/catkin_ws/src/ros_tms/tms_ss/tms_ss_pot/include",
+                "/home/common/catkin_ws/src/ros_tms/tms_ss/tms_ss_tracker/include",
+                "/home/common/catkin_ws/src/ros_tms/tms_ss/tms_ss_vicon/include",
+                "/home/common/catkin_ws/src/ros_tms/tms_ts/tms_ts_subtask/include",
+                "/home/common/catkin_ws/src/ros_tms/tms_ts/tms_ts_ts/include",
+                "/home/common/catkin_ws/src/ros_tms/tms_ur/tms_ur_gaze/tms_ur_gaze_server/include",
+                "/home/common/catkin_ws/src/ublox-master/ublox_gps/include",
+                "/home/common/catkin_ws/src/ublox-master/ublox_msgs/include",
+                "/home/common/catkin_ws/src/ublox-master/ublox_serialization/include",
+                "/usr/include"
+            ],
+            "name": "Linux",
+            "intelliSenseMode": "clang-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
         }
     ],
-    "version": 3
+    "version": 4
 }

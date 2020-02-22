@@ -62,7 +62,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "urg_scan");
   ros::NodeHandle nh;
   pub = nh.advertise< sensor_msgs::LaserScan >("/LaserTracker", 1000);
-  sub = nh.subscribe("/most_intense", 1000, LaserSensingCallback);
+  sub = nh.subscribe("/scan", 1000, LaserSensingCallback);
   spinner.spin();
   ros::waitForShutdown();
 

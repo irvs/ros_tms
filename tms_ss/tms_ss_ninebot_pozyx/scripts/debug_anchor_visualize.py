@@ -20,9 +20,6 @@ def publish_anchors():
     pub_anchors = rospy.Publisher('/pozyx_anchors_marker', MarkerArray, queue_size=10)
     markerarray = MarkerArray()
 
-    #offset_x = 12.838
-    #offset_y = 3.330
-
     for m_anchor in my_anchors:
         marker = Marker()
         marker.header.frame_id = "/world_link"
@@ -40,8 +37,6 @@ def publish_anchors():
         marker.lifetime = rospy.Duration()
         marker.pose.position.x = m_anchor['coor_x']
         marker.pose.position.y = m_anchor['coor_y']
-        #marker.pose.position.x = m_anchor['coor_x'] - offset_x
-        #marker.pose.position.y = -(m_anchor['coor_y'] - offset_y)
         markerarray.markers.append(marker)
 
     pub_anchors.publish(markerarray)

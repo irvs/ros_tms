@@ -78,6 +78,10 @@ class VisualizeClass(object):
 
         marker_tag.pose = data.pose
         marker_tag.lifetime = rospy.Duration()
+        marker_tag.pose.orientation.x = 0
+        marker_tag.pose.orientation.y = 0
+        marker_tag.pose.orientation.z = 0
+        marker_tag.pose.orientation.w = 0
 
         self.publish_anchors()
         self.tag_pub.publish(marker_tag)

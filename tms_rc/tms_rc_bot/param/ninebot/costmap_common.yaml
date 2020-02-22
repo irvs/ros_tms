@@ -18,7 +18,7 @@ obstacle_layer:
 
   scan:
     data_type:           LaserScan
-    topic:               scan
+    topic:               hogehoge # LRF: scan
     marking:             true     # マップへの障害物挿入に利用
     clearing:            true     # マップの障害物除去に利用
     min_obstacle_height: 0.0      # これより高さの低い観測点は排除，デフォルトで0.0
