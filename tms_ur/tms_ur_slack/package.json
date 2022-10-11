@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "@slack/client": "^4.8.0",
-    "roslib": "^0.20.0"
+    "roslib": "^1.3.0"
   }
 }
