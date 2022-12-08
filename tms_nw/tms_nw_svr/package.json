@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.3",
+    "express": "^4.17.3",
     "express-ipfilter": "^0.3.1",
     "ipware": "^1.0.0",
     "request": "^2.87.0",
